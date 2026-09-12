@@ -38,7 +38,7 @@ The following resources are linked directly from the announcement.
 | [CMOS5L Verilog template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/cmos5l) | Starting repository for the RTL-to-GDS flow. Its README describes `src/`, `test/`, `docs/info.md`, and LibreLane automation. Preserve the explicit `cmos5l` branch when following this link. |
 | [Tiny Tapeout](https://www.tinytapeout.com/) | Official entry point for HDL guides, testing, technical specifications, and fabrication documentation. |
 | [SRAM example: 1024×8 test](https://www.tinytapeout.com/chips/ttihp0p2/tt_um_urish_sram_test) | Foundry SRAM macro example with controller description, pin mapping, test instructions, and a linked implementation repository. |
-| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library. A candidate to investigate; no language choice has been made here. |
+| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. The current [UART experiment plan](uart-experiment.md) explores Mojo-generated hardware MLIR and CIRCT. |
 | [Competition update form](https://docs.google.com/forms/d/e/1FAIpQLSeF7fq756MegxZRQxotBwUJYZx-cL9MrGjxV0z4uD_J0sADxQ/viewform) | Receives deadline, template, and submission-form updates. Signing up neither commits participation nor enters the competition. |
 
 Useful next reading within the template: [project configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/info.yaml) and [testbench instructions](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/test/README.md).
@@ -51,7 +51,7 @@ Treat the announcement as the competition's authority. The comment alone does no
 
 ## Open project questions
 
-These are questions for Pinwheel, not additional competition rules:
+These are questions for the broader Pinwheel project, not additional competition rules. The bounded first experiment is described in [the UART plan](uart-experiment.md).
 
 - What use case and distinctive capability should guide the design?
 - Which protocol roles and speeds should the first demonstrator support?
