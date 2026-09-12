@@ -4,6 +4,8 @@ Planning record: **2026-09-12**.
 
 Status: proposed implementation direction, recorded for future contributors and agents. No experiment code, dependencies, circuit simulation, or synthesis results exist yet. The user has explicitly kept implementation on hold while planning continues. This document is not authorization to install tools or begin implementation. Commit completed, verified changes when work is authorized.
 
+Repository setup: the user subsequently authorized `uv init --lib`. The resulting Python package scaffold is in `src/pinwheel/`, with Python 3.14 selected by uv and no runtime dependencies. This initializes packaging only; the Mojo/CIRCT experiment remains unimplemented, and its source layout below is still proposed.
+
 ## Objective and scope
 
 Follow the organizer's suggested UART starting point with a small generated circuit, then make its behavior reloadable. See [the competition brief](competition.md) for the external requirements.
