@@ -8,10 +8,17 @@ private def ensure (b : Bool) (message : String) : IO Unit :=
 /-- Target and monitor use only pin commands and resolved wire transitions, never controller phases. -/
 private def transaction (cfg : Config) (request : Request) (reply : Reply)
     (stretch : Nat → Nat) (trace : Bool := false)
-    (transform : Pinwheel.Engine.Reactive.Program → Pinwheel.Engine.Reactive.Program := id) : IO Nat := do
+    (transform : Pinwheel.Engine.Reactive.Program → Pinwheel.Engine.Reactive.Program := id)
+    (looped : Bool := false)
+    (storeTransform : Pinwheel.Engine.Reactive.Fetch.Store → Pinwheel.Engine.Reactive.Fetch.Store := id) : IO Nat := do
   let mut state := initial cfg request
   let p := transform (Pinwheel.Compile.I2C.program cfg request)
-  let mut core := Pinwheel.Engine.Reactive.start p 0
+  let store := storeTransform (Pinwheel.Compile.I2CLoop.program cfg request).store
+  let tick := if looped then Pinwheel.Engine.Reactive.Fetch.advance store
+    else Pinwheel.Engine.Reactive.advance p
+  let mut core := if looped then Pinwheel.Engine.Reactive.Fetch.start store 0
+    else Pinwheel.Engine.Reactive.start p 0
+  let mut baseline := Pinwheel.Engine.Reactive.start p 0
   let mut target : Pins := {}
   let mut previous : Bus := {}
   let mut previousCommand : Pins := {}
@@ -26,6 +33,7 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
   let mut csv := "cycle,scl,sda,controller_scl_low,controller_sda_low,target_scl_low,target_sda_low,phase,slot,remaining,wait_left\n"
   let limit := 128 * cfg.phaseCycles + 20 * (cfg.waitCycles + 2)
   for t in [:limit] do
+    ensure (core == baseline) s!"store state mismatch at {t}"
     ensure (core.pins == Pinwheel.Compile.I2C.encodePins (pins state)) s!"compiler pins at {t}"
     ensure (Pinwheel.Engine.Reactive.busy core == busy state) s!"compiler busy at {t}"
     ensure (Pinwheel.Compile.I2C.outcome core == result state) s!"compiler result at {t}"
@@ -68,7 +76,12 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
     if trace then
       let bit := fun b => if b then 1 else 0
       csv := csv ++ s!"{t},{bit observed.scl},{bit observed.sda},{bit (command.scl == .low)},{bit (command.sda == .low)},{bit (target.scl == .low)},{bit (target.sda == .low)},{repr state.phase},{state.slot.val},{state.remaining.val},{state.waitLeft.val}\n"
-    let resetCore := Pinwheel.Engine.Reactive.step p core true true (Pinwheel.Compile.I2C.encodeInputs observed)
+    let resetCore := if looped then
+        Pinwheel.Engine.Reactive.Fetch.step store core true true (Pinwheel.Compile.I2C.encodeInputs observed)
+      else Pinwheel.Engine.Reactive.step p core true true (Pinwheel.Compile.I2C.encodeInputs observed)
+    if looped then
+      let (loaded, accepted) := Pinwheel.Engine.Reactive.Fetch.load ⟨store, core⟩ store
+      ensure (!accepted && loaded.state == core) "looped busy reload"
     ensure (resetCore == Pinwheel.Engine.Reactive.reset p && resetCore.pins == {}) "compiled reset did not clear/release"
     ensure (Pinwheel.Engine.Reactive.load ⟨p, core⟩ p == (⟨p, core⟩, false)) "compiled busy reload"
     if trace then
@@ -79,16 +92,18 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
           for _ in [:cfg.waitCycles + cfg.phaseCycles + 2] do
             let incoming : Bus := ⟨scl, sda⟩
             refFork := step cfg refFork incoming
-            coreFork := Pinwheel.Engine.Reactive.advance p coreFork (Pinwheel.Compile.I2C.encodeInputs incoming)
+            coreFork := tick coreFork (Pinwheel.Compile.I2C.encodeInputs incoming)
             ensure (coreFork.pins == Pinwheel.Compile.I2C.encodePins (pins refFork)) "fault-path pin mismatch"
             ensure (Pinwheel.Compile.I2C.outcome coreFork == result refFork) "fault-path result mismatch"
     previous := observed
     previousCommand := command
-    core := Pinwheel.Engine.Reactive.advance p core (Pinwheel.Compile.I2C.encodeInputs observed)
+    core := tick core (Pinwheel.Compile.I2C.encodeInputs observed)
+    baseline := Pinwheel.Engine.Reactive.advance p baseline (Pinwheel.Compile.I2C.encodeInputs observed)
     state := step cfg state observed
     stretchLeft := stretchLeft - 1
     cycles := t + 1
     if !busy state then break
+  ensure (core == baseline) "store terminal state mismatch"
   ensure (Pinwheel.Compile.I2C.outcome core == result state) "compiler terminal result"
   ensure (core.pins == Pinwheel.Compile.I2C.encodePins (pins state)) "compiler terminal pins"
   ensure (!busy state) "transaction exceeded harness bound"
@@ -103,7 +118,9 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
       else if k < 17 then request.data.toNat.testBit (16 - k) else !reply.dataAck
     ensure (clocks[k]! == expectedBit) s!"wire bit mismatch at pulse {k}"
   ensure (step cfg state ⟨false, false⟩ == state) "completed state changed without reset"
-  if trace then IO.FS.writeFile "build/compiled-i2c/write-0x53-0xa6-stretched.csv" csv
+  if trace then
+    let dir := if looped then "build/looped-i2c" else "build/compiled-i2c"
+    IO.FS.writeFile s!"{dir}/write-0x53-0xa6-stretched.csv" csv
   return cycles
 
 private def negativeChecks : IO Unit := do
@@ -146,8 +163,61 @@ private def reloadCheck : IO Unit := do
     if p == i2c then ensure (Pinwheel.Compile.I2C.outcome m.state == some .addressNack) "reload I2C result"
   IO.println "Passed UART -> SPI -> I2C write/NACK/STOP -> UART through program replacement."
 
-def main : IO Unit := do
-  IO.FS.createDirAll "build/compiled-i2c"
+private def loopNegativeChecks : IO Unit := do
+  let cfg : Config := ⟨3, 7⟩
+  let request : Request := ⟨0x53, 0x3c⟩
+  let p := Pinwheel.Compile.I2CLoop.program cfg request
+  let variants : List (String × (Pinwheel.Engine.Reactive.Fetch.Store → Pinwheel.Engine.Reactive.Fetch.Store)) := [
+    ("wrong byte selection", fun _ => ({p with data := #v[p.data[0], p.data[0]]}).store),
+    ("wrong bit order", fun _ => ({p with data := p.data.map BitVec.reverse}).store),
+    ("skipped final bit", fun store => {store with
+      fetch := fun pc =>
+        store.fetch (if pc.val == 30 then 34 else pc)}),
+    ("wrong ACK destination", fun store => {store with
+      fetch := fun pc =>
+        (store.fetch pc).map (fun i => match i with
+          | .checked a => .checked {a with terminalCapture := a.terminalCapture.map (fun c => {c with destination := 0})}
+            | _ => i)}),
+    ("ignored NACK branch", fun store => {store with
+      fetch := fun pc =>
+        (store.fetch pc).map (fun i => match i with
+          | .checked a => .checked {a with finish := .sequential}
+          | _ => i)})]
+  for (name, transform) in variants do
+    let failure ← try
+      let _ ← transaction cfg request
+        (if name == "ignored NACK branch" then ⟨false, false⟩ else ⟨true, false⟩)
+        (fun pulse => pulse % 4) false id true transform
+      pure none
+    catch e => pure (some e.toString)
+    ensure (failure.any (fun message => (message.splitOn "store").length > 1))
+      s!"loop mutation not rejected: {name}: {failure}"
+  IO.println "Rejected wrong byte, bit order, loop boundary, ACK destination, and NACK branch variants."
+
+private def loopReloadCheck : IO Unit := do
+  let uart := Pinwheel.Engine.Reactive.Fetch.Store.ofProgram
+    (Pinwheel.Engine.Reactive.embedProgram (Pinwheel.Compile.UART.program ⟨0⟩ 0x53))
+  let spi := Pinwheel.Engine.Reactive.Fetch.Store.ofProgram
+    (Pinwheel.Engine.Reactive.embedProgram (Pinwheel.Compile.SPI.program ⟨0⟩ 0xa6))
+  let first := (Pinwheel.Compile.I2CLoop.program ⟨0, 7⟩ ⟨0x53, 0x3c⟩).store
+  let second := (Pinwheel.Compile.I2CLoop.program ⟨0, 7⟩ ⟨0x27, 0xc3⟩).store
+  let mut m : Pinwheel.Engine.Reactive.Fetch.Machine := ⟨uart, Pinwheel.Engine.Reactive.Fetch.reset uart⟩
+  for store in [uart, spi, first, second, uart] do
+    let (loaded, accepted) := Pinwheel.Engine.Reactive.Fetch.load m store
+    ensure (accepted && loaded.state == Pinwheel.Engine.Reactive.Fetch.reset store) "loop mixed reload stale state"
+    m := {loaded with state := Pinwheel.Engine.Reactive.Fetch.start store 3}
+    for _ in [:128] do
+      let observed : Bus := ⟨!m.state.pins.enabled[0], !m.state.pins.enabled[1]⟩
+      m := {m with state := Pinwheel.Engine.Reactive.Fetch.advance m.program m.state (Pinwheel.Compile.I2C.encodeInputs observed)}
+      if !Pinwheel.Engine.Reactive.busy m.state then break
+    ensure (m.state.control == .stopped .completed) "loop mixed execution failed"
+  IO.println "Passed UART -> SPI -> looped I2C -> changed-data looped I2C -> UART through one fetch machine."
+
+def main (args : List String) : IO Unit := do
+  ensure (args.isEmpty || args == ["--looped"]) "usage: CompiledI2C.lean [--looped]"
+  let looped := args == ["--looped"]
+  let dir := if looped then "build/looped-i2c" else "build/compiled-i2c"
+  IO.FS.createDirAll dir
   let mut count := 0
   let mut edges := 0
   for d in ([0, 3] : List (Fin 256)) do
@@ -157,21 +227,24 @@ def main : IO Unit := do
         for da in [false, true] do
           for stretched in [false, true] do
             edges := edges + (← transaction cfg ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩
-              (fun pulse => if stretched then pulse % 4 else 0))
+              (fun pulse => if stretched then pulse % 4 else 0) false id looped)
             count := count + 1
   for addr in [:128] do
     if 8 <= addr && addr < 120 then
-      edges := edges + (← transaction ⟨0, 7⟩ ⟨Fin.ofNat 128 addr, 0xa6⟩ ⟨true, true⟩ (fun _ => 1))
+      edges := edges + (← transaction ⟨0, 7⟩ ⟨Fin.ofNat 128 addr, 0xa6⟩ ⟨true, true⟩ (fun _ => 1) false id looped)
       count := count + 1
   for byte in [0, 83, 166, 255] do
     for aa in [false, true] do
       for da in [false, true] do
-        edges := edges + (← transaction ⟨255, 255⟩ ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩ (fun _ => 255))
+        edges := edges + (← transaction ⟨255, 255⟩ ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩ (fun _ => 255) false id looped)
         count := count + 1
-  let quiet ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun _ => 0)
-  let stretched ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun pulse => pulse % 4) true
+  let quiet ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun _ => 0) false id looped
+  let stretched ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun pulse => pulse % 4) true id looped
   ensure (stretched == quiet + 27) "stretch delay did not add exact blocked observations"
   negativeChecks
-  reloadCheck
-  IO.FS.writeFile "build/compiled-i2c/coverage.txt" s!"transactions={count}\nobserved_cycles={edges}\nquiet_example_cycles={quiet}\nstretched_example_cycles={stretched}\n"
+  if looped then
+    loopNegativeChecks
+    loopReloadCheck
+  else reloadCheck
+  IO.FS.writeFile s!"{dir}/coverage.txt" s!"transactions={count}\nobserved_cycles={edges}\nquiet_example_cycles={quiet}\nstretched_example_cycles={stretched}\n"
   IO.println s!"Passed {count} transactions across {edges} observed cycles; example {quiet} -> {stretched} cycles with stretching."

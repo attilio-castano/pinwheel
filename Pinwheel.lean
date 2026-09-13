@@ -4,6 +4,7 @@ import Pinwheel.Engine.Compatibility
 import Pinwheel.Engine.ControlProofs
 import Pinwheel.Compile.StretchedPulse
 import Pinwheel.Compile.I2CProofs
+import Pinwheel.Compile.I2CLoopCorrectness
 import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
