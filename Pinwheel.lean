@@ -1,4 +1,5 @@
 import Std
+import Pinwheel.I2C.Proofs
 import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
