@@ -62,4 +62,4 @@ An independent CSV check confirmed literal transmitted bits `01010011`, received
 
 A deliberately false scratch claim that a transfer with `H=1` is already valid at cycle `16` was rejected by `decide` because the proposition is false. This checks the distinction between the final falling edge and completion after the hold interval. Generated traces and scratch proofs remain under ignored `build/`.
 
-These are Lean model results. No RTL, peripheral hardware, synthesis, or electrical timing has been validated. The [shared-engine proposal](shared-engine.md) records the requirements learned from UART and SPI and the next bounded implementation plan.
+These are Lean model results. No RTL, peripheral hardware, synthesis, or electrical timing has been validated. The [shared-engine design](shared-engine.md) records the requirements learned from UART and SPI. The resulting [engine and compiler milestone](engine-model.md) now executes both protocols as reloadable programs with checked correctness proofs.

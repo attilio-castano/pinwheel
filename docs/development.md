@@ -2,7 +2,7 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-The package includes the original bitvector setup check, [pure Lean UART transmitter](uart-model.md), and [pure Lean SPI controller](spi-model.md), with specifications and proofs. Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
+The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
@@ -39,11 +39,12 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the UART and SPI modules and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks both protocol proofs as well as the original toolchain example. Run the executable model checks with:
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the fixed protocol models, engine, and compilers, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks all proofs as well as the original toolchain example. Run the executable model checks with:
 
 ```sh
 lake env lean -DwarningAsError=true --run test/UART.lean
 lake env lean -DwarningAsError=true --run test/SPI.lean
+lake env lean -DwarningAsError=true --run test/Engine.lean
 ```
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
@@ -111,6 +112,31 @@ To reproduce the main SPI axiom checks, place these commands in an ignored scrat
 #print axioms Pinwheel.SPI.mosi_stable_pair
 ```
 
-All four reported `[propext, Classical.choice, Quot.sound]`, with no unfinished-proof or project-defined axioms. The [shared-engine proposal](shared-engine.md) is the next design plan; its implementation has not begun.
+All four reported `[propext, Classical.choice, Quot.sound]`, with no unfinished-proof or project-defined axioms.
+
+## Shared engine milestone
+
+The [engine model record](engine-model.md) documents the implemented 32-slot machine, atomic loading, typed compilers, and proof coverage. The full `lake build` completed with 12 jobs. No dependency was added.
+
+The engine suite passed 2,560 compiled protocol transfers plus mixed-duration, entry-capture, overwrite, halt/fault, reset/restart, busy loading, and UART → SPI → UART cases. The fixed UART and SPI suites also passed. Independent CSV comparison matched the engine's UART trace to all 42 reference rows and its SPI trace to every common field in all 70 reference rows.
+
+To inspect the new main proofs, add these commands to an ignored scratch `.lean` file after `import Pinwheel`, then compile with `lake env lean -DwarningAsError=true`:
+
+```lean
+#print axioms Pinwheel.Engine.countdown
+#print axioms Pinwheel.Engine.action_boundary
+#print axioms Pinwheel.Engine.two_action_boundary
+#print axioms Pinwheel.Engine.load_busy
+#print axioms Pinwheel.Engine.load_stopped
+#print axioms Pinwheel.Compile.UART.run_simulation
+#print axioms Pinwheel.Compile.UART.waveform_correct
+#print axioms Pinwheel.Compile.SPI.run_simulation
+#print axioms Pinwheel.Compile.SPI.waveform_correct
+#print axioms Pinwheel.Compile.SPI.received_correct
+```
+
+The general duration/composition proofs reported `[propext, Quot.sound]`; loading proofs reported `[propext]`; the main compiler proofs reported `[propext, Classical.choice, Quot.sound]`. No unfinished-proof or custom axioms were reported. A false early-completion claim for two consecutive duration-one actions was rejected by `decide` because the proposition is false.
+
+Binary instruction encoding, payload registers, a hardware loading transport, reactive control flow, and RTL remain outside this completed Lean milestone.
 
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).
