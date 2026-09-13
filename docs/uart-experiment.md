@@ -4,7 +4,7 @@ Planning record: **2026-09-12**.
 
 Status: proposed implementation direction, recorded for future contributors and agents. No experiment code, dependencies, circuit simulation, or synthesis results exist yet. The user has explicitly kept implementation on hold while planning continues. This document is not authorization to install tools or begin implementation. Commit completed, verified changes when work is authorized.
 
-Repository setup: the user subsequently authorized `uv init --lib`. The resulting Python package scaffold is in `src/pinwheel/`, with Python 3.14 selected by uv and no runtime dependencies. This initializes packaging only; the Mojo/CIRCT experiment remains unimplemented, and its source layout below is still proposed.
+Repository setup: the unused Python package scaffold has been removed in preparation for a Lean-centered plan. The experiment remains unimplemented; the proposed tool roles and layout below are pending revision.
 
 ## Objective and scope
 

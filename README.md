@@ -11,4 +11,4 @@ We are planning a simulation-only experiment: Mojo generates hardware MLIR, CIRC
 
 Implementation is on hold while planning continues. The full competition architecture and broader protocol scope remain open; more project context will follow from the maintainers.
 
-Documentation lives in `docs/`. A minimal Python library scaffold from `uv init --lib` lives in `src/pinwheel/`; it contains no experiment implementation. Mojo and hardware dependencies have not been added.
+Documentation lives in `docs/`. The unused Python package scaffold has been removed in preparation for a Lean-centered plan. No experiment implementation or toolchain configuration exists yet.
