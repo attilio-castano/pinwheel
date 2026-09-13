@@ -3,6 +3,7 @@ import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
 import Pinwheel.Compile.SPI
+import Pinwheel.Hardware.RawProgram
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
