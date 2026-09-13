@@ -97,7 +97,7 @@ def main():
     mutations = {
         "wrong-decrement": ("r_remaining - 8'h1", "r_remaining - 8'h2", "STATE edge"),
         "early-boundary": ("r_remaining == 8'h0", "r_remaining == 8'h1", "BOUNDARY edge"),
-        "load-over-reset": ("reset\n        ? 8'h0", "(reset & ~load)\n        ? 8'h0", "STATE edge"),
+        "load-over-reset": ("reset ? 8'h0", "(reset & ~load) ? 8'h0", "STATE edge"),
     }
     for name, (before, after, failure) in mutations.items():
         if rtl.count(before) != 1:
