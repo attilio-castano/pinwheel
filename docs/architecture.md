@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Status: selected planning direction. Documentation and scaffold cleanup are authorized; experiment implementation remains on hold. No Lean package, circuit generator, proofs, simulation results, or synthesis results exist yet.
+Setup update: **2026-09-13**. The minimal Lean package and toolchain setup are authorized. The package contains a bitvector setup example; protocol and hardware implementation remain on hold. No UART model, circuit generator, protocol proofs, simulation results, or synthesis results exist yet. See [development setup](development.md) for the installed toolchain and validation evidence.
 
 ## Design objective
 
@@ -55,7 +55,7 @@ Record exactly which artifacts each result covers, along with tool versions, con
 
 ## Proposed repository structure
 
-Create files only when their milestone begins. This tree is a plan, not existing implementation. Keep this document as the single source for the proposed layout.
+The root Lean configuration and `Pinwheel.lean` now exist for setup validation. The domain modules, CLI, tests, and examples below remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -63,7 +63,7 @@ README.md
 lean-toolchain                   # Pinned Lean version
 lakefile.toml                    # Lean library and executable targets
 lake-manifest.json               # Lake-managed dependency resolution
-Pinwheel.lean                    # Public library imports
+Pinwheel.lean                    # Setup example now; public imports as modules arrive
 Pinwheel/
   Trace.lean                     # Cycle-indexed pin observations
   UART/
@@ -84,20 +84,20 @@ docs/
   competition.md                 # External rules and sources
   architecture.md                # Design layers and proof boundaries
   uart-experiment.md             # Milestones and acceptance criteria
-  development.md                 # Verified setup, added when runnable
+  development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache
 ```
 
-The initial Lean package should contain only what the fixed UART milestone needs. Add `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
+The initial package contains only a bitvector setup example. Add domain modules when the fixed UART milestone begins, and `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
 
 When adopting Tiny Tapeout, reserve its conventional `src/`, `test/`, and `info.yaml` paths for the hardware flow, with Lean sources under `Pinwheel/`. Reconcile generated RTL staging, explicit source lists, test commands, and the upstream template revision then. The template is not adopted yet.
 
 ## Toolchain decisions
 
-Select and verify a Lean release before creating `lean-toolchain` and Lake configuration. Let Lake generate its dependency manifest and commit the resolution when dependencies are introduced. No external Lean libraries are selected yet.
+The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries are sufficient for the setup example; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
 
-Select a compatible CIRCT distribution/revision, RTL simulator, and synthesis tool. Use CIRCT's compatible MLIR version. Record actual versions and verified commands in `development.md` once implementation is authorized and runnable.
+Select a compatible CIRCT distribution/revision, RTL simulator, and synthesis tool when hardware implementation is authorized. Use CIRCT's compatible MLIR version and extend `development.md` with verified commands then.
 
 ## Primary technical sources
 

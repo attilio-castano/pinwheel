@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Status: proposed experiment, recorded for future contributors and agents. No experiment code, dependencies, proofs, circuit simulation, or synthesis results exist yet. Implementation remains on hold while planning continues. This document is not authorization to install tools or begin implementation. Commit completed, verified changes when work is authorized.
+Status: proposed experiment, recorded for future contributors and agents. As of **2026-09-13**, the minimal Lean package and toolchain setup are authorized, with a separate bitvector setup example. No UART implementation, protocol proofs, circuit simulation, or synthesis results exist yet. UART and hardware implementation remain on hold while planning continues. Commit completed, verified changes when work is authorized.
 
 ## Objective and scope
 
@@ -67,9 +67,9 @@ Basic synthesis does not prove IHP tile fit, routed timing, or tapeout readiness
 
 ## Setup and evidence
 
-Follow the [architecture plan](architecture.md#proposed-repository-structure) for file placement and its [toolchain decisions](architecture.md#toolchain-decisions) for dependency selection. Create source files as their milestone begins; no tool installation or package initialization is part of the current documentation cleanup.
+Follow the [architecture plan](architecture.md#proposed-repository-structure) for file placement and its [toolchain decisions](architecture.md#toolchain-decisions) for dependency selection. The Lean package setup is described in [development setup](development.md). Create protocol and hardware source files only as their milestone begins.
 
-Once implementation begins, record tool versions, reproducible commands, assumptions, proof coverage, generated artifact identity, simulation results, and synthesis reports. Add `docs/development.md` only when setup has been verified.
+Once experiment implementation begins, extend the development record with assumptions, proof coverage, generated artifact identity, simulation results, and synthesis reports. Toolchain setup alone does not satisfy any UART acceptance criterion.
 
 ## Protocol source
 
