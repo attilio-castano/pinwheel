@@ -1,8 +1,9 @@
 import Std
+import Pinwheel.UART.Tx
 
 /-!
-Minimal package validation using bundled Lean libraries.
-This example checks the toolchain; it does not model a protocol or circuit.
+Pinwheel library entry point, including the pure Lean UART specification and transmitter.
+The small setup example below is retained as a toolchain check.
 -/
 
 namespace Pinwheel.Setup
