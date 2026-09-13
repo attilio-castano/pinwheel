@@ -4,6 +4,8 @@ import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
 import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
+import Pinwheel.Hardware.Countdown
+import Pinwheel.Hardware.Emit
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
