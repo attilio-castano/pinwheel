@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. Binary encoding, circuit generation, RTL simulation, synthesis, and reactive protocol control flow remain unimplemented.
+Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The complete processor and reactive protocol control flow remain future work.
 
 ## Design objective
 
@@ -10,7 +10,7 @@ Build a programmable protocol engine whose instruction semantics make precise pi
 
 The [processor verification plan](processor-verification.md) owns the next hardware milestones: encoded instructions, a circuit description with Lean semantics, a proof that the concrete processor implements the current engine, generated-RTL validation, and physical-flow checks. The goal includes correctness of the register/logic implementation itself. Producing Verilog is one step in establishing and realizing that design.
 
-Lean replaces Mojo's proposed roles in hardware generation, program assembly, and reference checking, and adds specifications and proofs. The prior Python packaging scaffold has been removed. This decision does not establish a working Lean-to-hardware compiler.
+Lean replaces Mojo's proposed roles in hardware generation, program assembly, and reference checking, and adds specifications and proofs. The prior Python packaging scaffold has been removed. The implemented hardware route currently covers the countdown slice, not arbitrary Lean programs.
 
 ## Three connected layers
 
@@ -28,9 +28,9 @@ Hardware generation produces the circuit that would be fabricated. Protocol comp
 
 An action meaning "drive a level for N cycles" must define which edges begin and end the interval. Consecutive actions must account for instruction fetch and decode, including whether consecutive one-cycle actions are implementable. Counter bounds, program capacity, invalid encodings, reset, and loading while halted are part of the machine contract.
 
-Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. Exact storage sizes, clock frequency, and microarchitecture remain open.
+Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. The first instruction bank is specified as 32×16 bits; staging storage, full-core cost, clock frequency, and further microarchitecture choices remain open.
 
-The first physical core will target the existing 32-slot logical engine. Its word encoding and memory implementation remain design decisions. A small register-backed store with combinational read is the first candidate to evaluate; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
+The first physical core will target the existing 32-slot logical engine. Its canonical 16-bit encoding is implemented, and the [next-core baseline](hardware-baseline.md) selects a register-backed store with combinational read; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
 
 ## Proposed hardware path
 
@@ -43,9 +43,9 @@ Program:
 Lean protocol compiler -> encoded instructions -> writable engine memory
 ```
 
-Lean would construct a restricted circuit representation with explicit digital semantics and emit ordinary MLIR text using existing CIRCT hardware dialects. Prove that the represented circuit implements the engine before claiming processor-model correctness. This is a proposed custom emitter, not automatic synthesis of arbitrary Lean functions. A countdown circuit with a checked state correspondence, generated RTL simulation, and initial synthesis is the first complete backend integration gate; see the [processor plan](processor-verification.md#milestone-2-a-small-circuit-language-and-a-complete-vertical-slice).
+Lean now constructs a restricted circuit representation with explicit digital semantics and emits ordinary MLIR text using existing CIRCT hardware dialects for the countdown slice. Prove that the represented circuit implements the engine before claiming processor-model correctness. This is a small custom emitter, not automatic synthesis of arbitrary Lean functions. The countdown circuit has passed the first backend integration gate, with checked state correspondence, generated RTL simulation, and generic synthesis; see the [processor plan](processor-verification.md#milestone-2-a-small-circuit-language-and-a-complete-vertical-slice).
 
-CIRCT remains a candidate backend pending that gate. No custom MLIR dialect or general-purpose hardware compiler is needed for the first experiment.
+CIRCT is now validated for that slice; see the [hardware record](countdown-hardware.md). The complete core and translation proof remain future work. No custom MLIR dialect or general-purpose hardware compiler is needed for the first experiment.
 
 ## Proof and validation boundaries
 
@@ -60,7 +60,7 @@ Record exactly which artifacts each result covers, along with tool versions, con
 
 ## Proposed repository structure
 
-The root Lean configuration, `Pinwheel.lean`, `UART/`, `SPI/`, `Engine/`, `Compile/`, and the UART/SPI/Engine test files below now exist. `Trace.lean`, `Hardware/`, `test/Hardware.lean`, the CLI, and examples remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
+The protocol/engine libraries, hardware encoding and countdown modules, tests, and hardware scripts below now exist. `Trace.lean`, the complete core/refinement/interface modules, the general CLI, and examples remain planned; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -85,20 +85,27 @@ Pinwheel/
     UART.lean                    # UART -> engine program, correctness
     SPI.lean                     # SPI -> engine program, correctness
   Hardware/
-    Encoding.lean                # Planned raw instruction encoding/decoding proofs
-    Circuit.lean                 # Planned restricted circuit structures
-    Semantics.lean               # Planned meaning of logic/register/memory operations
+    Encoding.lean                # Canonical binary format and round-trip proofs
+    RawProgram.lean              # Raw-word execution, faults, encoding refinement
+    Circuit.lean                 # Width-indexed logic/register trees and semantics
+    Countdown.lean               # Timer circuit and engine countdown correspondence
     Core.lean                    # Planned concrete processor circuit
     Refinement.lean              # Planned concrete-to-engine state/trace proofs
     Interface.lean               # Planned host loading ports and commit semantics
-    Emit.lean                    # Planned hardware MLIR emission
+    Emit.lean                    # Structural HW/Comb/Seq MLIR emission
 Main.lean                        # Generation / model execution CLI
 test/
   UART.lean                      # Executable model checks and CSV trace
   SPI.lean                       # Receive/timing/interface checks and CSV trace
   Engine.lean                    # Compiled protocols, reloadability, machine checks
-  Hardware.lean                  # Planned circuit/encoding checks and trace fixtures
-                                 # RTL stimulus/checks will be added later
+  Encoding.lean                  # Exhaustive raw-word and typed instruction checks
+  Hardware.lean                  # Circuit timing checks, MLIR and CSV generation
+  countdown_tb.sv                # Independent RTL timing oracle
+scripts/
+  install-hardware-tools.py      # Checksum-verified local tool installation
+  check-hardware.py              # Proof/RTL checks, negative fixtures, synthesis
+tools/
+  hardware-toolchain.json        # Official archive pins for darwin-arm64
 examples/                        # Small protocol programs
 docs/
   competition.md                 # External rules and sources
@@ -109,6 +116,8 @@ docs/
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan
+  hardware-baseline.md           # Binary format and selected next-core contract
+  countdown-hardware.md          # Implemented circuit slice and artifact evidence
   development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache
@@ -122,7 +131,7 @@ When adopting Tiny Tapeout, reserve its conventional `src/`, `test/`, and `info.
 
 The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries suffice for the setup, protocol, engine, and compiler proofs; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
 
-Select a compatible CIRCT distribution/revision, RTL simulator, and synthesis tool when hardware implementation is authorized. Use CIRCT's compatible MLIR version and extend `development.md` with verified commands then.
+The [pinned hardware tools](../tools/hardware-toolchain.json) use CIRCT firtool-1.159.0 and OSS CAD Suite 2026-09-13. Their verified installation and reproduction commands are in [development.md](development.md#hardware-milestones-1-and-2).
 
 ## Primary technical sources
 

@@ -2,7 +2,7 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
+The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. The [countdown hardware slice](countdown-hardware.md) now includes generation, RTL simulation, and generic synthesis; the complete processor remains future work. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
@@ -97,7 +97,7 @@ These results establish the setup example's proof and executable behavior in Lea
 
 ## UART milestone
 
-The pure Lean portion of the [UART plan](uart-experiment.md) is implemented; see the [model record](uart-model.md) for its contract and verification. CIRCT, an RTL simulator, and synthesis tools have not been installed as part of this work. Add them only when the hardware integration milestone is authorized.
+The pure Lean portion of the [UART plan](uart-experiment.md) is implemented; see the [model record](uart-model.md) for its contract and verification. The UART-only milestone did not install hardware tools. The later authorized hardware batch installed the pinned local tools documented below.
 
 ## SPI milestone
 
@@ -137,8 +137,41 @@ To inspect the new main proofs, add these commands to an ignored scratch `.lean`
 
 The general duration/composition proofs reported `[propext, Quot.sound]`; loading proofs reported `[propext]`; the main compiler proofs reported `[propext, Classical.choice, Quot.sound]`. No unfinished-proof or custom axioms were reported. A false early-completion claim for two consecutive duration-one actions was rejected by `decide` because the proposition is false.
 
-Binary instruction encoding, payload registers, a hardware loading transport, reactive control flow, and RTL remain outside this completed Lean milestone.
+Binary instruction encoding and the countdown RTL slice were added after this engine milestone. Payload registers, a hardware loading transport, reactive control flow, and the complete processor remain future work.
 
-The next hardware work follows the [processor verification plan](processor-verification.md). Its first implementation batch covers encoding and a proved countdown circuit through generation, RTL simulation, and synthesis. Record selected backend/simulator/synthesis versions and reproduction commands here when that work begins; the plan itself adds no installed tools or implementation evidence.
+## Hardware milestones 1 and 2
+
+The [processor verification plan](processor-verification.md)'s first batch is implemented. The [hardware baseline](hardware-baseline.md) records the binary format and next-core contract; the [countdown record](countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
+
+On Apple Silicon macOS with Python 3.12+:
+
+```sh
+python3 scripts/install-hardware-tools.py
+python3 scripts/check-hardware.py
+```
+
+The installer verifies the official archive checksums in `tools/hardware-toolchain.json` and extracts under ignored `build/tools/`. It does not modify shell configuration or install global commands. Both cached archives and extracted tools currently occupy about 3.2 GB. Only `darwin-arm64` archives are pinned; other platforms need separate reviewed pins.
+
+Verified tools: CIRCT `firtool-1.159.0` with its bundled LLVM 24.0.0git, OSS CAD Suite `2026-09-13`, Yosys `0.69+24` (`d0e71cfb7-dirty` as distributed), and Icarus Verilog `14.0 devel` (`s20260301-436-gd254ea49e-dirty` as distributed). The runner invokes their local binaries directly. The exact versions, archive identities, commands, logs, generated RTL/netlists, traces, axiom audit, and machine-readable report are under `build/hardware/`.
+
+The complete library build passed with 17 jobs. Encoding checks cover all 65,536 words. Lean and RTL each passed 38,026 edges with identical CSV output, three faulty RTL variants were rejected for the expected assertion, and generic synthesis passed `check -assert` with 38 cells including nine register bits. The axiom audit accepts only the project's standard Lean axioms. The original UART (768 transfers), SPI (1,792 transfers), and shared-engine (2,560 transfers plus boundary/reload cases) regressions also passed; they remain separate checks using the commands above.
+
+For only the Lean portions, without installing hardware tools:
+
+```sh
+lake build
+lake env lean -DwarningAsError=true --run test/Encoding.lean
+lake env lean -DwarningAsError=true --run test/Hardware.lean
+```
+
+The hardware Lean suite emits `build/hardware/countdown.mlir` and `countdown-lean.csv`. The full runner lowers with `circt-opt --canonicalize --lower-seq-to-sv --lower-hw-to-sv --export-verilog -o /dev/null`, capturing Verilog from stdout; this release does not offer that translation through `circt-translate`. Icarus consumes the emitted SystemVerilog. Yosys uses the generated `synthesis.ys` script for generic synthesis; no technology library or clock target is supplied.
+
+For restricted sessions on this checked host, invoking the installed toolchain binaries directly avoids the Elan proxy's settings write:
+
+```sh
+PATH="$HOME/.elan/toolchains/leanprover--lean4---v4.33.1/bin:$PATH" python3 scripts/check-hardware.py
+```
+
+This is a process-local PATH change, with no shell startup edit. The default reproduction command remains sufficient in an unrestricted terminal.
 
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).

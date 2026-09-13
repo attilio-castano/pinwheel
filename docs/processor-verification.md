@@ -1,6 +1,6 @@
 # Plan: a processor designed and verified in Lean
 
-Planning record: **2026-09-13**. This document defines future implementation milestones. The current completed work is recorded in [engine-model.md](engine-model.md); no circuit representation, encoded processor, RTL backend, or physical implementation is established by this plan.
+Planning and implementation record: **2026-09-13**. Milestones 1–2 are implemented for the first countdown slice; see [hardware-baseline.md](hardware-baseline.md) and [countdown-hardware.md](countdown-hardware.md) for exact scope and evidence. The [engine model](engine-model.md) remains the behavioral reference. Whole-core refinement, translation equivalence, physical loading, and physical implementation remain future work.
 
 ## Objective and relationship to the competition
 
@@ -25,7 +25,7 @@ Preserve these as the behavioral reference. A lower-level implementation may add
 Independent protocol contracts
     ^ checked compiler/controller proofs: already implemented
 Typed programs + instruction-level engine
-    ^ encoding and circuit-refinement proofs: planned
+    ^ encoding and countdown proofs: checked; whole-core refinement: planned
 Explicit register, logic, and memory circuit described in Lean
     ^ translation validation / semantics-preservation work: planned
 Generated Verilog RTL
@@ -34,7 +34,7 @@ Mapped gate implementation
     + physical-flow checks: area, routing, timing, and process rules
 ```
 
-Lean would host a restricted hardware-description language with an explicit meaning for its operations. An executable mathematical next-state function alone does not specify the physical memory ports, clock behavior, or logic structure. The circuit representation must make these choices visible.
+Lean now hosts a small restricted hardware-description language for the timer slice with an explicit meaning for its operations. An executable mathematical next-state function alone does not specify the physical memory ports, clock behavior, or logic structure. The circuit representation must make these choices visible.
 
 The central proof obligation is a relation `R` between concrete circuit state and abstract engine state:
 
@@ -46,7 +46,9 @@ This should hold for all supported loaded programs and input histories, rather t
 
 ## Milestone 1: encoded instructions and a concrete core contract
 
-Select a canonical binary instruction format and define both encoding and decoding in Lean. A candidate to evaluate is a 16-bit word containing an opcode bit, three output bits, eight duration bits, a capture-enable bit, and three receive-slot bits. This is a planning candidate, not a selected external ABI. Specify which unused field combinations are canonical, legal aliases, or rejected.
+**Completed:** canonical 16-bit format, raw-word classification/fault semantics, checked conversion, and legal-program step/run correspondence. The selected next-core contract and edge schedule are in [hardware-baseline.md](hardware-baseline.md). Its complete-core ports and memory remain design decisions for milestone 3.
+
+Select a canonical binary instruction format and define both encoding and decoding in Lean. The selected first format is a 16-bit word containing an opcode bit, three output bits, eight duration bits, a capture-enable bit, and three receive-slot bits. This is an internal baseline, not a frozen external ABI. Specify which unused field combinations are canonical, legal aliases, or rejected.
 
 Prove `decode (encode instruction) = success instruction`. Classify every raw word; malformed words must have defined fault behavior. Invalid binary words have no counterpart in today's typed instruction type, so specify the decoder/error wrapper separately and prove that legal encoded programs preserve the existing semantics. Include halt, disabled capture, and minimum/maximum duration cases. Convert checked external integers to bounded values explicitly; do not use modular conversion as input validation.
 
@@ -57,6 +59,8 @@ For the first core, evaluate a small register-backed instruction store with comb
 **Exit evidence:** a checked encoding/decoding contract, raw-word rejection checks, an explicit state/port/reset contract, and a clock-edge schedule for start, consecutive one-cycle actions, halt, and end-of-memory fault. Preserve the existing abstract engine tests.
 
 ## Milestone 2: a small circuit language and a complete vertical slice
+
+**Completed for the countdown slice:** structural semantics/refinement proofs, generated RTL, 38,026 matching Lean/RTL edges, three rejected faulty RTL fixtures, and 38 generic synthesis cells. See the [hardware record](countdown-hardware.md). Structural bit selection/concatenation and memory ports are deferred until the core actually uses them; the current language contains only the timer primitives.
 
 Define only the circuit primitives needed by the first core: fixed-width constants and signals, bit selection/concatenation, Boolean logic, comparisons, multiplexers, bounded arithmetic, and clocked registers with defined reset/enables. Keep combinational dependencies acyclic. Introduce memory ports with explicit semantics when implementing the store. Avoid a general Lean-to-hardware compiler or a custom MLIR dialect.
 
@@ -110,7 +114,7 @@ Do not postpone the competition's flexibility question until tapeout. Alongside 
 
 ## Execution order and completion criteria
 
-Start with milestones 1 and 2 as the next bounded implementation batch: encoding, core contract, circuit semantics, and a generated/simulated/synthesized countdown slice. This documentation update does not install tools or begin those implementations. Continue to the complete core once that vertical slice establishes a viable route. Begin translation validation with the slice and repeat it for the core and loading interface; the numbered milestones are acceptance boundaries rather than a reason to delay early feedback.
+Milestones 1 and 2 completed the first bounded implementation batch: encoding, core contract, circuit semantics, and a generated/simulated/synthesized countdown slice. Pinned tools and reproduction scripts now exist. Milestone 3 is the next batch: construct and prove the complete execution core, starting with its fetch/decode/boundary path. Begin translation validation with the slice and repeat it for the core and loading interface; the numbered milestones are acceptance boundaries rather than a reason to delay early feedback.
 
 For each batch, preserve the current reference models, run relevant Lean proofs and executable checks, inspect axiom dependencies, record counterexamples and unresolved assumptions, and commit validated increments. Keep generated artifacts under ignored `build/`; retain reproducible source/configuration and concise evidence records in version control. Do not replace an unresolved proof boundary with a blanket claim that the chip is verified.
 

@@ -2,7 +2,7 @@
 
 Implemented and checked: **2026-09-13**, Lean 4.33.1.
 
-This completes the specification and executable-model portion of [stage 1](uart-experiment.md#stage-1-fixed-uart-transmitter). It produces Lean pin traces and checked theorems. RTL generation, RTL simulation, synthesis, and physical timing remain unimplemented.
+This completes the specification and executable-model portion of [stage 1](uart-experiment.md#stage-1-fixed-uart-transmitter). It produces Lean pin traces and checked theorems. RTL generation, simulation, synthesis, and physical timing for the complete UART execution path remain unimplemented. A later [countdown hardware slice](countdown-hardware.md) validates the backend on the shared timer.
 
 ## Interface contract
 

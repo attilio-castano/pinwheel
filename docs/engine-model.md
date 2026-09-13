@@ -77,7 +77,7 @@ A deliberately false scratch theorem claimed that two duration-one actions were 
 
 ## Program cost and next questions
 
-Both programs occupy the same 32-slot store. UART uses 10 actions and reaches halt in slot 10 (11 used instructions); SPI uses 17 actions and reaches halt in slot 17 (18 used instructions). Remaining memory is padded with halt. These counts are checked by the executable suite. There is no chosen binary word size, storage bit count, synthesized area, or clock-rate result yet.
+Both programs occupy the same 32-slot store. UART uses 10 actions and reaches halt in slot 10 (11 used instructions); SPI uses 17 actions and reaches halt in slot 17 (18 used instructions). Remaining memory is padded with halt. These counts are checked by the executable suite. The later [hardware baseline](hardware-baseline.md) selects 16-bit words, or 512 instruction bits per bank. Staging storage is separate, and full-core area and clock-rate results remain pending. The synthesized countdown slice does not establish the cost of this program store.
 
 The experiment establishes a reusable timed-action engine for these fixed schedules. It does not yet separate payload data from program instructions, branch on received inputs, wait conditionally, or control line release. The next design review should examine those needs before extending the instruction set. The exact no-gap timing promise also creates a concrete fetch/decode obligation for a later hardware implementation.
 

@@ -1,6 +1,6 @@
 # Shared engine design from UART and SPI
 
-Design record: **2026-09-13**. The first pure Lean engine and typed UART/SPI program compilers are implemented. The [engine model record](engine-model.md) owns exact semantics, checked proofs, and execution evidence. Binary instruction encoding, a host loading transport, and RTL remain unimplemented.
+Design record: **2026-09-13**. The first pure Lean engine and typed UART/SPI program compilers are implemented. The [engine model record](engine-model.md) owns exact semantics, checked proofs, and execution evidence. The later [hardware baseline](hardware-baseline.md) adds proved binary encoding, and the [countdown slice](countdown-hardware.md) has generated RTL evidence. The complete core and host loading transport remain future work.
 
 The [UART model](uart-model.md) and [SPI model](spi-model.md) supplied two concrete contracts for designing the engine. Both now execute as reloadable programs on one unchanged Lean machine. The original protocol specifications and controllers remain references, and the compiler proofs connect engine execution to the independent specifications through those verified controllers.
 
@@ -46,7 +46,7 @@ The typed compilers expand an outgoing byte into literal output levels. This dem
 
 ## Implementation plan and acceptance gates
 
-The following original plan is complete for the typed, pure Lean milestone. Its results and limits are recorded in [engine-model.md](engine-model.md); binary encoding and hardware gates remain future work.
+The following original plan is complete for the typed, pure Lean milestone. Its results and limits are recorded in [engine-model.md](engine-model.md); encoding and the countdown hardware gate are now covered by the [hardware record](countdown-hardware.md); whole-engine hardware gates remain future work.
 
 1. **Specify the machine interface.** Fix bounded pin/register/program capacities for the experiment, action-entry timing, halted loading, start/reset priority, invalid-program behavior, and idle-profile changes. Use a three-output/one-input instance for the two protocol examples; keep physical pin mapping separate.
 2. **Implement a finite Lean machine.** Separate loaded program/configuration from execution state. Use bounded program, duration, and receive indices. Define explicit faults for invalid encodings when an encoding exists; the typed model must still handle falling off program memory and attempted loading while busy. A rejected operation must have specified outputs and state effects.

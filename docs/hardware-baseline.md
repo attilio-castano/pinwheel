@@ -1,6 +1,6 @@
 # Hardware baseline
 
-Design record: **2026-09-13**. The encoding and raw-program semantics below are implemented in Lean. The complete execution core and physical loading interface remain future work. This is an internal baseline, not a frozen external ABI.
+Design record: **2026-09-13**. The encoding and raw-program semantics below are implemented in Lean; the [countdown slice](countdown-hardware.md) has also been generated, simulated, and synthesized. The complete execution core and physical loading interface remain future work. This is an internal baseline, not a frozen external ABI.
 
 ## Instruction words
 
@@ -20,7 +20,7 @@ The instruction store contains 32 words of 16 bits. Action fields are:
 
 ## Selected core contract for the next implementation
 
-All core signals use one rising-edge clock and stable two-valued inputs at that edge. Reset is synchronous, active high, and takes priority over every execution command. There is no execution clock enable. Physical pin synchronization and loading transport are later interfaces; their timing must be modeled explicitly.
+All core signals use one rising-edge clock and stable two-valued inputs at that edge. Execution reset is synchronous, active high, and takes priority over start and program commit; the separate cold-initialization request takes highest priority. There is no execution clock enable. Physical pin synchronization and loading transport are later interfaces; their timing must be modeled explicitly.
 
 | Register or signal | Width and convention |
 | --- | --- |
@@ -30,13 +30,15 @@ All core signals use one rising-edge clock and stable two-valued inputs at that 
 | Output levels | 3 bits, registered |
 | Receive slots | 8 bits; physical bit `k` holds abstract slot `k` |
 | Idle profile | 3 bits, part of the committed program |
-| Committed-program valid | 1 bit, initialized by the integration environment as described below |
-| Logical execution inputs | `reset`, `start`, one observed input bit |
+| Committed-program valid | 1 bit, cleared by cold initialization, retained by execution reset |
+| Logical execution inputs | `initialize`, `reset`, `start`, one observed input bit |
 | Logical execution outputs | levels, `busy`, `completed`, `fault`, receive bits |
 
-The existing `samplesByte` packs slot 0 as the most significant byte bit. Thus a packed receive port in that byte order reverses the physical slot-indexed register bits; do not silently reinterpret slot order. Outputs are meaningful after an initializing reset. `busy` means active; a result is valid only in completed status and lasts until reset, accepted start, or accepted program commit. Fault and completion retain the captured data but only completion marks it valid.
+The existing `samplesByte` packs slot 0 as the most significant byte bit. Thus a packed receive port in that byte order reverses the physical slot-indexed register bits; do not silently reinterpret slot order. Outputs are meaningful after cold initialization. `busy` means active; a result is valid only in completed status and lasts until initialization, reset, accepted start, or accepted program commit. Fault and completion retain the captured data but only completion marks it valid.
 
-A reset clears status to ready, the receive register, PC, and timer, and applies the committed idle profile (zero if no program exists). It retains committed instruction contents, idle profile, and validity. A separate **initialization assumption** establishes `programValid = 0` on cold startup before requests are accepted; ordinary execution reset cannot both retain a committed program and establish cold validity. The eventual chip interface must implement this distinction, for example with an initialization/reset domain. No arbitrary instruction memory is assumed to power up zero. Until validity is established, outputs and command acceptance are unspecified; after cold initialization, starts without a committed program are rejected, keeping ready and zero idle. This pre-program state has no counterpart in today's abstract `Machine`, which always contains a program. Whole-core refinement applies after an accepted program commit.
+A reset clears status to ready, the receive register, PC, and timer, and applies the committed idle profile (zero if no program exists). It retains committed instruction contents, idle profile, and validity. A separate synchronous, active-high `initialize` request clears validity, idle profile, and all execution registers without clearing instruction memory. It takes priority over reset and all commands and must be asserted at cold startup before any observations or requests are relied upon. Keeping initialization distinct lets ordinary reset retain a committed program without assuming memory powers up zero. The eventual physical interface must provide this initialization behavior; its transport/pin mapping is not selected.
+
+After initialization, starts without a committed program are rejected, keeping ready and zero idle. This pre-program state has no counterpart in today's abstract `Machine`, which always contains a program. Whole-core refinement applies after an accepted program commit. The selected initialization protocol is a contract for milestone 3, not an implemented core interface.
 
 Use a 32×16 register-backed instruction store with combinational read and clocked writes for the first core. Its physical timing/cost is unmeasured. The read address is zero for accepted start and `PC + 1` for an action boundary. Guard the increment at 31. The path is status/timer → address selection → instruction read → decode → next output/timer/status/sample registers. All register updates use the same pre-edge state and input snapshot. Consecutive duration-one actions require this full path to settle within one clock; pipelined fetch cannot add an observable cycle.
 
@@ -48,12 +50,13 @@ State and pin levels described here are **after** the named edge. Input capture 
 
 | Edge | Precondition | Register updates |
 | --- | --- | --- |
+| Initialization | `initialize` asserted | Clear validity/profile/execution; leave instruction words untouched |
 | 0 | Stopped, valid program, accepted start | Clear samples; fetch slot 0; enter action/halt/fault immediately |
 | 1 | Slot 0 action has duration one | Fetch slot 1, update levels and capture if requested; no bubble |
 | 2 | Slot 1 also has duration one | Fetch slot 2 with the same rule |
 | Entry + `D` | Current action duration `D` | Enter next instruction; elapsed time is exactly `D` cycles |
 | Halt entry | Decoded word is `0x8000` | Completed, idle levels, retained samples |
 | Final action boundary | PC is 31 | Fault, idle levels, retained samples; no wrapped fetch |
-| Any edge | Reset asserted | Reset wins, including when start is asserted or the action expires |
+| Any execution edge | Reset asserted, initialization inactive | Reset wins, including when start is asserted or the action expires |
 
 Start requests observed while active are ignored, including the edge that completes an action or enters halt. A held start can be accepted on the following stopped edge. All three existing engine/protocol suites remain the behavioral reference.
