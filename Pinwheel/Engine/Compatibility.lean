@@ -9,9 +9,11 @@ def embedStop : Engine.Stop → Stop
   | .completed => .completed
   | .fault => .fault
 
+def embedPC (pc : Fin 32) : Fin 128 := ⟨pc.val, by omega⟩
+
 def embedControl : Engine.Control → Control
   | .stopped reason => .stopped (embedStop reason)
-  | .active pc remaining => .active pc remaining
+  | .active pc remaining => .active (embedPC pc) remaining
 
 def embedState (s : Engine.State) : State :=
   ⟨embedControl s.control, .pushPull s.levels, s.samples⟩
@@ -23,7 +25,8 @@ def embedInstruction : Engine.Instruction → Instruction
   | .action a => .action ⟨.pushPull a.levels, a.durationMinusOne, embedCapture a.capture⟩
 
 def embedProgram (p : Engine.Program) : Program :=
-  ⟨p.memory.map embedInstruction, .pushPull p.idle⟩
+  ⟨Vector.ofFn (fun pc => if h : pc.val < 32 then embedInstruction p.memory[pc.val] else .halt),
+    .pushPull p.idle, 31⟩
 
 def embedMachine (m : Engine.Machine) : Machine := ⟨embedProgram m.program, embedState m.state⟩
 
@@ -33,17 +36,20 @@ theorem capture_compatibility (slots : Samples) (c : Option (Fin 8)) (inputs : I
   done
 
 theorem enter_compatibility (p : Engine.Program) (pc : Fin 32) (slots : Samples) (inputs : Inputs) :
-    enter (embedProgram p) pc slots inputs = embedState (Engine.enter p pc slots inputs[0]) := by
+    enter (embedProgram p) (embedPC pc) slots inputs = embedState (Engine.enter p pc slots inputs[0]) := by
   cases h : p.memory[pc.val] <;> simp [enter, embedProgram, Program.fetch, Engine.enter,
     Engine.Program.fetch, h, embedInstruction, embedState, embedControl, embedStop,
-    stop, capture_compatibility]
+    stop, capture_compatibility, embedPC]
   done
 
 theorem next_compatibility (p : Engine.Program) (pc : Fin 32) (slots : Samples) (inputs : Inputs) :
-    next (embedProgram p) pc slots inputs = embedState (Engine.next p pc slots inputs[0]) := by
+    next (embedProgram p) (embedPC pc) slots inputs = embedState (Engine.next p pc slots inputs[0]) := by
+  simp only [next, Engine.next, show (embedPC pc).val = pc.val from rfl,
+    show (embedProgram p).last.val = 31 from rfl]
   by_cases h : pc.val + 1 < 32 <;>
-    simp only [next, Engine.next, h, dite_true, dite_false, enter_compatibility]
-  rfl
+    simp only [show (pc.val < 31) ↔ (pc.val + 1 < 32) by omega, h, dite_true, dite_false]
+  case pos => exact enter_compatibility p ⟨pc.val + 1, h⟩ slots inputs
+  case neg => rfl
   done
 
 theorem advance_compatibility (p : Engine.Program) (s : Engine.State) (inputs : Inputs) :

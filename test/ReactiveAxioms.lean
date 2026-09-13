@@ -30,3 +30,11 @@ import Pinwheel
 #print axioms Pinwheel.Engine.Reactive.load_stopped
 #print axioms Pinwheel.Engine.Reactive.stop_uses_idle
 #print axioms Pinwheel.Engine.Reactive.openDrain_never_high
+#print axioms Pinwheel.Engine.Reactive.checked_fault
+#print axioms Pinwheel.Engine.Reactive.checked_boundary
+#print axioms Pinwheel.Engine.Reactive.branch_selection
+#print axioms Pinwheel.Engine.Reactive.invalid_jump
+#print axioms Pinwheel.Engine.Reactive.qualify_blocked
+#print axioms Pinwheel.Engine.Reactive.qualify_ready_count
+#print axioms Pinwheel.Engine.Reactive.qualify_ready_boundary
+#print axioms Pinwheel.Engine.Reactive.qualify_timeout

@@ -40,19 +40,53 @@ structure Wait where
   budgetMinusOne : Fin 256
   deriving DecidableEq, Repr
 
+/-- Match selected observed bits; bits outside the mask are irrelevant. -/
+structure Check where
+  mask : Inputs
+  value : Inputs
+  deriving DecidableEq, Repr
+
+def Check.ready (c : Check) (inputs : Inputs) : Bool :=
+  inputs &&& c.mask == c.value &&& c.mask
+
+inductive Finish where
+  | sequential
+  | jump (target : Fin 128)
+  | branch (sample : Fin 8) (whenTrue whenFalse : Fin 128)
+  deriving DecidableEq, Repr
+
+/-- Guard each edge, capture at the terminal edge, then choose the successor. -/
+structure Checked where
+  action : Action
+  guard : Check
+  terminalCapture : Option Capture := none
+  finish : Finish := .sequential
+  deriving DecidableEq, Repr
+
+/-- Require a consecutive ready interval; blocked input resets it and consumes wait budget. -/
+structure Qualify where
+  pins : Pins
+  condition : Check
+  durationMinusOne : Fin 256
+  budgetMinusOne : Fin 256
+  deriving DecidableEq, Repr
+
 inductive Instruction where
   | action (a : Action)
   | wait (w : Wait)
+  | checked (a : Checked)
+  | qualify (q : Qualify)
   | halt
   deriving DecidableEq, Repr
 
 /-- Idle commands also apply to reset, timeout, and malformed execution. -/
 structure Program where
-  memory : Vector Instruction 32
+  memory : Vector Instruction 128
   idle : Pins
+  last : Fin 128 := 127
   deriving DecidableEq, Repr
 
-def Program.fetch (p : Program) (pc : Fin 32) : Instruction := p.memory[pc.val]
+def Program.fetch (p : Program) (pc : Fin 128) : Instruction := p.memory[pc.val]
 
 inductive Stop where
   | ready | completed | fault | timeout
@@ -60,8 +94,10 @@ inductive Stop where
 
 inductive Control where
   | stopped (reason : Stop)
-  | active (pc : Fin 32) (remaining : Fin 256)
-  | waiting (pc : Fin 32) (remaining : Fin 256)
+  | active (pc : Fin 128) (remaining : Fin 256)
+  | waiting (pc : Fin 128) (remaining : Fin 256)
+  | checked (pc : Fin 128) (remaining : Fin 256)
+  | qualifying (pc : Fin 128) (remaining waitLeft : Fin 256)
   deriving DecidableEq, Repr
 
 structure State where
@@ -89,17 +125,29 @@ def stop (p : Program) (reason : Stop) (slots : Samples) : State :=
 def reset (p : Program) : State := stop p .ready (Vector.replicate 8 false)
 
 /-- Wait entry only applies commands. Its first observation is on the following edge. -/
-def enter (p : Program) (pc : Fin 32) (slots : Samples) (inputs : Inputs) : State :=
+def enter (p : Program) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
   match p.fetch pc with
   | .halt => stop p .completed slots
   | .action a => ⟨.active pc a.durationMinusOne, a.pins, capture slots a.capture inputs⟩
   | .wait w => ⟨.waiting pc w.budgetMinusOne, w.pins, slots⟩
+  | .checked a => ⟨.checked pc a.action.durationMinusOne, a.action.pins,
+      capture slots a.action.capture inputs⟩
+  | .qualify q => ⟨.qualifying pc q.durationMinusOne q.budgetMinusOne, q.pins, slots⟩
 
 def start (p : Program) (inputs : Inputs) : State := enter p 0 (Vector.replicate 8 false) inputs
 
-def next (p : Program) (pc : Fin 32) (slots : Samples) (inputs : Inputs) : State :=
-  if h : pc.val + 1 < 32 then enter p ⟨pc.val + 1, h⟩ slots inputs
+def next (p : Program) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+  if h : pc.val < p.last.val then enter p ⟨pc.val + 1, by omega⟩ slots inputs
   else stop p .fault slots
+
+def jump (p : Program) (target : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+  if target.val ≤ p.last.val then enter p target slots inputs else stop p .fault slots
+
+def dispatch (p : Program) (pc : Fin 128) (finish : Finish) (slots : Samples) (inputs : Inputs) : State :=
+  match finish with
+  | .sequential => next p pc slots inputs
+  | .jump target => jump p target slots inputs
+  | .branch sample yes no => jump p (if slots[sample.val] then yes else no) slots inputs
 
 def advance (p : Program) (s : State) (inputs : Inputs) : State :=
   match s.control with
@@ -114,6 +162,25 @@ def advance (p : Program) (s : State) (inputs : Inputs) : State :=
       if w.condition.ready inputs then next p pc s.samples inputs
       else if h : 0 < remaining.val then
         {s with control := .waiting pc ⟨remaining.val - 1, by omega⟩}
+      else stop p .timeout s.samples
+    | _ => stop p .fault s.samples
+  | .checked pc remaining =>
+    match p.fetch pc with
+    | .checked a =>
+      if !a.guard.ready inputs then stop p .fault s.samples
+      else if h : 0 < remaining.val then
+        {s with control := .checked pc ⟨remaining.val - 1, by omega⟩}
+      else dispatch p pc a.finish (capture s.samples a.terminalCapture inputs) inputs
+    | _ => stop p .fault s.samples
+  | .qualifying pc remaining waitLeft =>
+    match p.fetch pc with
+    | .qualify q =>
+      if q.condition.ready inputs then
+        if h : 0 < remaining.val then
+          {s with control := .qualifying pc ⟨remaining.val - 1, by omega⟩ q.budgetMinusOne}
+        else next p pc s.samples inputs
+      else if h : 0 < waitLeft.val then
+        {s with control := .qualifying pc q.durationMinusOne ⟨waitLeft.val - 1, by omega⟩}
       else stop p .timeout s.samples
     | _ => stop p .fault s.samples
 

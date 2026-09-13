@@ -1,7 +1,9 @@
 import Std
 import Pinwheel.I2C.Proofs
 import Pinwheel.Engine.Compatibility
+import Pinwheel.Engine.ControlProofs
 import Pinwheel.Compile.StretchedPulse
+import Pinwheel.Compile.I2C
 import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART

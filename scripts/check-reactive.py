@@ -38,11 +38,13 @@ def main():
         if set(filter(None, map(str.strip, group.split(',')))) - {'propext', 'Classical.choice', 'Quot.sound'}:
             raise RuntimeError(f'Nonstandard assumptions in {name}')
     print(run([*lean, '--run', 'test/Reactive.lean'], 'checks.log').strip(), flush=True)
+    print(run([*lean, '--run', 'test/Control.lean'], 'control-checks.log').strip(), flush=True)
     coverage = dict((key, int(value)) for key, value in
                     (line.split('=') for line in (OUT / 'coverage.txt').read_text().splitlines()))
     artifacts = sorted(ROOT.glob('Pinwheel/**/*.lean')) + [ROOT / p for p in [
         'Pinwheel.lean', 'lean-toolchain', 'lakefile.toml', 'lake-manifest.json',
         'test/Reactive.lean', 'test/ReactiveAxioms.lean', 'scripts/check-reactive.py',
+        'test/Control.lean', 'build/reactive/control-checks.log',
         'build/reactive/stretched-pulse.csv', 'build/reactive/coverage.txt',
         'build/reactive/axioms.log', 'build/reactive/checks.log']]
     report = dict(lean=version, coverage=coverage, audited_theorems=len(expected),
@@ -50,8 +52,9 @@ def main():
                   negative_variants_rejected=['ignored readiness', 'short post-wait duration', 'lost capture'],
                   sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in artifacts},
                   boundary='Typed candidate engine: universal legacy embedding and wait/timing proofs; '
-                           'sampled stretched-pulse and legacy protocol checks. No full I2C compiler, '
-                           'new binary encoding, structural circuit refinement, or RTL validation.')
+                           'sampled stretched-pulse, guard/branch/qualification, and legacy checks. '
+                           'I2C compiler checks have a separate receipt. No new binary encoding, '
+                           'structural circuit refinement, or RTL validation.')
     (OUT / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(f'Audited {len(expected)} theorems. See build/reactive/report.json.')
 

@@ -14,6 +14,6 @@ def program (durationMinusOne budgetMinusOne : Fin 256) (data : Bool) : Program 
     else if pc.val == 1 then .wait ⟨releasedClock, ⟨0, true⟩, budgetMinusOne⟩
     else if pc.val == 2 then .action ⟨releasedClock, durationMinusOne, none⟩
     else if pc.val == 3 then .action ⟨low, durationMinusOne, some ⟨1, 0⟩⟩
-    else .halt), {}⟩
+    else .halt), {}, 31⟩
 
 end Pinwheel.Compile.StretchedPulse

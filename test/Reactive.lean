@@ -58,7 +58,7 @@ private def boundaries : IO Unit := do
         let wait : Wait := ⟨.openDrain 2, ⟨source, level⟩, w⟩
         let action : Action := ⟨.openDrain 1, w, some ⟨source, 3⟩⟩
         let p : Program := ⟨Vector.ofFn (fun pc => if pc.val == 0 then .wait wait
-          else if pc.val == 1 then .action action else .halt), {}⟩
+          else if pc.val == 1 then .action action else .halt), {}, 31⟩
         let bus := fun value => if source.val == 0 then inputs value (!value) else inputs (!value) value
         let mut s := enter p 0 slots (bus level)
         ensure (s.control == .waiting 0 w && s.samples == slots) "wait used pre-command entry observation"
@@ -86,7 +86,7 @@ private def boundaries : IO Unit := do
         ensure (accepted && loaded.state == reset p) "reload after timeout"
   let p := Compile.StretchedPulse.program 0 0 true
   ensure ((advance p ⟨.waiting 0 0, {}, slots⟩ 3).control == .stopped .fault) "invalid wait PC"
-  let last : Program := ⟨Vector.replicate 32 (.wait ⟨{}, ⟨0, true⟩, 0⟩), {}⟩
+  let last : Program := ⟨Vector.replicate 128 (.wait ⟨{}, ⟨0, true⟩, 0⟩), {}, 31⟩
   ensure ((advance last (enter last 31 slots 0) 1).control == .stopped .fault) "ready wait wrapped at slot 31"
   ensure ((advance last (enter last 31 slots 0) 0).control == .stopped .timeout) "last-slot timeout"
   IO.println "Passed all 256 wait budgets and durations, both inputs/polarities, deadline readiness, capture, timeout/restart/reload, and malformed/final-slot waits."

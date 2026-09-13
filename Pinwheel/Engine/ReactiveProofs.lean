@@ -3,7 +3,7 @@ import Pinwheel.Engine.Reactive
 namespace Pinwheel.Engine.Reactive
 
 /-- A wait's readiness snapshot wins over timeout and enters the successor on this edge. -/
-theorem wait_ready (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256)
+theorem wait_ready (p : Program) (pc : Fin 128) (w : Wait) (remaining : Fin 256)
     (pins : Pins) (slots : Samples) (inputs : Inputs)
     (hp : p.fetch pc = .wait w) (hi : w.condition.ready inputs = true) :
     advance p ⟨.waiting pc remaining, pins, slots⟩ inputs = next p pc slots inputs := by
@@ -11,7 +11,7 @@ theorem wait_ready (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256)
   done
 
 /-- Blocked observations preserve pin commands and all captured data. -/
-theorem wait_countdown (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256)
+theorem wait_countdown (p : Program) (pc : Fin 128) (w : Wait) (remaining : Fin 256)
     (pins : Pins) (slots : Samples) (incoming : Nat → Inputs) (n : Nat)
     (hp : p.fetch pc = .wait w) (hn : n ≤ remaining.val)
     (blocked : ∀ t, 0 < t → t ≤ n → w.condition.ready (incoming t) = false) :
@@ -26,7 +26,7 @@ theorem wait_countdown (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 2
   done
 
 /-- W consecutive blocked observations stop exactly on observation W. -/
-theorem wait_timeout (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256)
+theorem wait_timeout (p : Program) (pc : Fin 128) (w : Wait) (remaining : Fin 256)
     (pins : Pins) (slots : Samples) (incoming : Nat → Inputs)
     (hp : p.fetch pc = .wait w)
     (blocked : ∀ t, 0 < t → t ≤ remaining.val + 1 → w.condition.ready (incoming t) = false) :
@@ -37,7 +37,7 @@ theorem wait_timeout (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256
   simp [advance, hp, blocked (remaining.val + 1) (by omega) (Nat.le_refl _)]
   done
 
-theorem wait_boundary (p : Program) (pc : Fin 32) (w : Wait) (remaining : Fin 256)
+theorem wait_boundary (p : Program) (pc : Fin 128) (w : Wait) (remaining : Fin 256)
     (pins : Pins) (slots : Samples) (incoming : Nat → Inputs) (n : Nat)
     (hp : p.fetch pc = .wait w) (hn : n ≤ remaining.val)
     (blocked : ∀ t, 0 < t → t ≤ n → w.condition.ready (incoming t) = false)
@@ -56,7 +56,7 @@ theorem run_add (p : Program) (s : State) (incoming : Nat → Inputs) (a b : Nat
   | succ b ih => simp [run, Nat.add_assoc, ih]
   done
 
-theorem countdown (p : Program) (pc : Fin 32) (remaining : Fin 256)
+theorem countdown (p : Program) (pc : Fin 128) (remaining : Fin 256)
     (pins : Pins) (slots : Samples) (incoming : Nat → Inputs) (n : Nat)
     (h : n ≤ remaining.val) :
     run p ⟨.active pc remaining, pins, slots⟩ incoming n =
@@ -68,7 +68,7 @@ theorem countdown (p : Program) (pc : Fin 32) (remaining : Fin 256)
     simp [advance, show 0 < remaining.val - n by omega, Nat.sub_sub]
   done
 
-theorem action_boundary (p : Program) (pc : Fin 32) (a : Action) (slots : Samples)
+theorem action_boundary (p : Program) (pc : Fin 128) (a : Action) (slots : Samples)
     (incoming : Nat → Inputs) (h : p.fetch pc = .action a) :
     run p (enter p pc slots (incoming 0)) incoming a.duration =
       next p pc (capture slots a.capture (incoming 0)) (incoming a.duration) := by
@@ -78,21 +78,21 @@ theorem action_boundary (p : Program) (pc : Fin 32) (a : Action) (slots : Sample
   done
 
 /-- A waited-for event anchors the following action's entire duration and capture edge. -/
-theorem wait_then_timed (p : Program) (pc : Fin 32) (w : Wait) (a : Action)
+theorem wait_then_timed (p : Program) (pc : Fin 128) (w : Wait) (a : Action)
     (remaining : Fin 256) (pins : Pins) (slots : Samples) (incoming : Nat → Inputs) (n : Nat)
     (hp : p.fetch pc = .wait w) (hn : n ≤ remaining.val)
-    (succ : pc.val + 1 < 32) (ha : p.fetch ⟨pc.val + 1, succ⟩ = .action a)
+    (succ : pc.val < p.last.val) (ha : p.fetch ⟨pc.val + 1, by omega⟩ = .action a)
     (blocked : ∀ t, 0 < t → t ≤ n → w.condition.ready (incoming t) = false)
     (ready : w.condition.ready (incoming (n + 1)) = true) :
     run p ⟨.waiting pc remaining, pins, slots⟩ incoming (n + 1 + a.duration) =
-      next p ⟨pc.val + 1, succ⟩ (capture slots a.capture (incoming (n + 1)))
+      next p ⟨pc.val + 1, by omega⟩ (capture slots a.capture (incoming (n + 1)))
         (incoming (n + 1 + a.duration)) := by
   rw [run_add, wait_boundary p pc w remaining pins slots incoming n hp hn blocked ready]
   simpa only [next, succ, dite_true, Nat.add_zero] using
-    action_boundary p ⟨pc.val + 1, succ⟩ a slots (fun t => incoming (n + 1 + t)) ha
+    action_boundary p ⟨pc.val + 1, by omega⟩ a slots (fun t => incoming (n + 1 + t)) ha
   done
 
-theorem wait_entry (p : Program) (pc : Fin 32) (w : Wait) (slots : Samples) (inputs : Inputs)
+theorem wait_entry (p : Program) (pc : Fin 128) (w : Wait) (slots : Samples) (inputs : Inputs)
     (h : p.fetch pc = .wait w) :
     enter p pc slots inputs = ⟨.waiting pc w.budgetMinusOne, w.pins, slots⟩ := by
   simp [enter, h]
