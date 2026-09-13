@@ -16,6 +16,7 @@ Start with:
 10. [The hardware baseline](docs/hardware-baseline.md) for the implemented instruction encoding and core contract.
 11. [The countdown hardware record](docs/countdown-hardware.md) for the first circuit slice.
 12. [The execution-core record](docs/core-hardware.md) for complete-core proofs, reloadable RTL, independent checks, and synthesis evidence.
+13. [The pure Lean I²C experiment](docs/i2c-model.md) for open-drain writes, ACK/NACK, stretching, and the next engine extensions.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
@@ -23,7 +24,9 @@ The complete execution core is now described structurally in Lean and proved to 
 
 The same generated SystemVerilog runs both protocols through internal atomic program commits. Lean and RTL matched on **71,703 clock edges**, including **1,032 UART/SPI transfers**. The standalone decoder passed all **65,536** input words. Three faulty RTL variants were rejected, and generic synthesis produced **1,907 cells**, including **543 register bits**. See the [core record](docs/core-hardware.md) for coverage and artifact identities.
 
-These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Next are translation/equivalence evidence and a physical program-loading interface. Programs still embed payload bits; reusable payloads, reactive control flow, line release, and broader protocol support remain future work.
+These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Translation/equivalence evidence and a physical program-loading interface remain open. Programs still embed payload bits; reusable payloads, reactive control flow, line release, and broader protocol support remain future work for the shared core.
+
+A separate pure Lean I²C reference controller now writes an address and one byte over an ideal open-drain bus, handles ACK/NACK, and waits through clock stretching. Its 19 audited theorems cover bus behavior and controller timing; 4,224 closed-loop transactions and three rejected faulty variants provide executable evidence. I²C is not yet compiled onto the shared core. The next engine step separates drive commands from observed inputs and starts timed work after an input-dependent wait. See the [I²C record](docs/i2c-model.md) for scope and proof boundaries; reproduce with `python3 scripts/check-i2c.py`, using only Lean and Python.
 
 The package pins Lean 4.33.1 and uses bundled libraries only. Run `lake build` to check the proofs. Run `lake env lean -DwarningAsError=true --run test/Engine.lean` for compiled protocols and the reference engine's boundary/reload cases. The equivalent commands for `test/UART.lean` and `test/SPI.lean` exercise the fixed reference models. These suites write CSV traces under `build/`.
 

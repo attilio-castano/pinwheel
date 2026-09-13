@@ -39,12 +39,13 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the fixed protocol models, engine, and compilers, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks all proofs as well as the original toolchain example. Run the executable model checks with:
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the protocol models, engine, compilers, and structural hardware proofs, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks all proofs as well as the original toolchain example. Run the executable model checks with:
 
 ```sh
 lake env lean -DwarningAsError=true --run test/UART.lean
 lake env lean -DwarningAsError=true --run test/SPI.lean
 lake env lean -DwarningAsError=true --run test/Engine.lean
+lake env lean -DwarningAsError=true --run test/I2C.lean
 ```
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
@@ -115,6 +116,8 @@ To reproduce the main SPI axiom checks, place these commands in an ignored scrat
 All four reported `[propext, Classical.choice, Quot.sound]`, with no unfinished-proof or project-defined axioms.
 
 ## Shared engine milestone
+
+The later [I²C reference experiment](i2c-model.md) remains separate from this engine; it motivates the next abstract-machine extension.
 
 The [engine model record](engine-model.md) documents the implemented 32-slot machine, atomic loading, typed compilers, and proof coverage. The full `lake build` completed with 12 jobs. No dependency was added.
 
@@ -187,6 +190,18 @@ python3 scripts/check-core.py
 It builds the 24-job library, audits 16 selected theorem dependencies, exports the actual compiled images, checks every raw decoder word, compares 71,703 independent expected edges in Lean and RTL, rejects three faulty RTL variants, and synthesizes the full core. The [core record](core-hardware.md) documents the 1,032-transfer coverage matrix, 1,907 generic cells, 543 flip-flop bits, and remaining proof boundaries. Full reports and hashes are under `build/core/`; this remains separate from the timer's `build/hardware/` receipt.
 
 The generic emitter sets CIRCT's supported-output options and the runner adds `--hw-legalize-modules` before `--export-verilog`. That required pass removes packed-array constructs unsupported by the selected tools. The earlier timer uses no such array read path. Common-expression sharing changed the timer's emitted formatting; its reset-priority mutation fixture was updated and the timer suite rerun. Its original published hashes identify the earlier implementation, not newly generated files.
+
+## I²C reference milestone
+
+The [I²C model record](i2c-model.md) documents single-controller address-plus-byte writes, ACK/NACK, open-drain bus resolution, clock stretching, and abort behavior. No Lean dependency or hardware tool is added. Reproduce its build, 19-theorem axiom audit, bus tests, and negative cases with:
+
+```sh
+python3 scripts/check-i2c.py
+```
+
+For restricted sessions on this host, use the process-local installed-toolchain PATH described above. The runner writes logs, a stretched example CSV, coverage, and source/artifact hashes to ignored `build/i2c/`; it removes an old `report.json` before starting and publishes a new one only after all checks pass.
+
+The library build passed with 28 jobs. The suite passed 4,224 transactions across 822,896 observed cycles, all 256 wait budgets and high durations, and three deliberate faulty-transition checks. The 19 audited theorems depend only on standard Lean axioms or none. The existing 2,560-transfer engine regression and boundary/reload cases also passed. This batch did not change or rerun the structural RTL; the prior hardware records retain their own artifact identities. I²C compilation, full-transaction refinement, and hardware integration remain future work.
 
 The Lean-only portion can be reproduced without hardware tools:
 

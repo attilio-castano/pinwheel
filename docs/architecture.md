@@ -6,6 +6,8 @@ Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-mod
 
 ## Design objective
 
+The [pure Lean I²C write experiment](i2c-model.md) now supplies the next protocol reference: drive/release resolution, observed-clock waits, and ACK-dependent continuation. It has local timing proofs and closed-loop checks, but no shared-engine compiler or structural circuit yet. Its integration plan preserves the proved UART/SPI baseline while extending the abstract machine before the hardware.
+
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
 The [processor verification plan](processor-verification.md) owns the next hardware milestones: encoded instructions, a circuit description with Lean semantics, a proof that the concrete processor implements the current engine, generated-RTL validation, and physical-flow checks. The goal includes correctness of the register/logic implementation itself. Producing Verilog is one step in establishing and realizing that design.
@@ -77,6 +79,11 @@ Pinwheel/
   SPI/
     Spec.lean                    # Mode-0 pins, sample times, receive contract
     Controller.lean              # Finite full-duplex controller and proofs
+  I2C/
+    Bus.lean                     # Drive/release commands and resolved shared lines
+    Spec.lean                    # Address/write bits, replies, and bounded timing
+    Controller.lean              # Pure write controller with ACK and stretching
+    Proofs.lean                  # Wire order, capture, wait, and abort theorems
   Engine/
     ISA.lean                     # Typed actions and bounded program storage
     Step.lean                    # Cycle semantics, state, and atomic loading
@@ -102,6 +109,8 @@ Main.lean                        # Generation / model execution CLI
 test/
   UART.lean                      # Executable model checks and CSV trace
   SPI.lean                       # Receive/timing/interface checks and CSV trace
+  I2C.lean                       # Wire-driven target/monitor, boundaries, negative cases
+  I2CAxioms.lean                 # All I2C theorem dependency checks
   Engine.lean                    # Compiled protocols, reloadability, machine checks
   Encoding.lean                  # Exhaustive raw-word and typed instruction checks
   Hardware.lean                  # Circuit timing checks, MLIR and CSV generation
@@ -111,6 +120,7 @@ test/
   core_tb.sv                    # Full-core RTL observations and memory retention
   decoder_tb.sv                 # Exhaustive standalone RTL decoder checks
 scripts/
+  check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   install-hardware-tools.py      # Checksum-verified local tool installation
   check-hardware.py              # Countdown proof/RTL checks and synthesis
   check-core.py                  # Full-core proof/RTL checks and synthesis
@@ -124,6 +134,7 @@ docs/
   uart-experiment.md             # Milestones and acceptance criteria
   uart-model.md                  # Implemented pure Lean contract and proof coverage
   spi-model.md                   # Implemented SPI contract and proof coverage
+  i2c-model.md                   # Pure I2C experiment and derived engine extensions
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan

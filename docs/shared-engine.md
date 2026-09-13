@@ -20,7 +20,7 @@ The current proofs establish digital behavior of the fixed controllers and their
 
 ## Selected first instruction model
 
-The implemented typed instruction model leaves binary encoding for a later milestone:
+The original typed instruction model has the following operations; the later [hardware baseline](hardware-baseline.md) defines their 16-bit encoding:
 
 ```text
 Action(levels, duration, capture?)
@@ -42,11 +42,11 @@ An explicit receive-slot destination avoids introducing a general register file 
 - **UART 8N1:** ten actions, one for each start/data/stop symbol, each lasting `B` cycles, followed by `Halt`. No input captures. Completion remains at `10B`.
 - **SPI mode 0:** seventeen actions, each lasting `H` cycles, followed by `Halt`. The eight odd-numbered phases capture MISO into slots 0–7 as SCLK rises. The final action holds SCLK low with chip select asserted. Completion remains at `17H`.
 
-The typed compilers expand an outgoing byte into literal output levels. This demonstrates timing and reloadability with a very small machine. It also means changing the transmitted byte changes the program; reusable instruction sequences with separate payload data require another design step. UART uses 11 instructions including halt, SPI 18, in a shared 32-slot store. Storage cost in bits awaits an instruction encoding.
+The typed compilers expand an outgoing byte into literal output levels. This demonstrates timing and reloadability with a very small machine. It also means changing the transmitted byte changes the program; reusable instruction sequences with separate payload data require another design step. UART uses 11 instructions including halt, SPI 18, in a shared 32-slot store. The encoded instruction bank contains 512 bits, excluding execution state and any future upload staging.
 
 ## Implementation plan and acceptance gates
 
-The following original plan is complete for the typed, pure Lean milestone. Its results and limits are recorded in [engine-model.md](engine-model.md); encoding and the countdown hardware gate are now covered by the [hardware record](countdown-hardware.md); whole-engine hardware gates remain future work.
+The following original plan is complete for the typed, pure Lean milestone. Its results and limits are recorded in [engine-model.md](engine-model.md); encoding and the countdown hardware gate are covered by the [hardware record](countdown-hardware.md); the later [core record](core-hardware.md) covers complete structural refinement, RTL simulation, and generic synthesis. Physical loading and implementation remain open.
 
 1. **Specify the machine interface.** Fix bounded pin/register/program capacities for the experiment, action-entry timing, halted loading, start/reset priority, invalid-program behavior, and idle-profile changes. Use a three-output/one-input instance for the two protocol examples; keep physical pin mapping separate.
 2. **Implement a finite Lean machine.** Separate loaded program/configuration from execution state. Use bounded program, duration, and receive indices. Define explicit faults for invalid encodings when an encoding exists; the typed model must still handle falling off program memory and attempted loading while busy. A rejected operation must have specified outputs and state effects.
@@ -61,6 +61,8 @@ Implemented module ownership, consistent with [architecture.md](architecture.md)
 
 The [processor verification plan](processor-verification.md) is the complementary hardware track: implement and prove the circuit that executes the current actions, with explicit encoding, memory, loading, and physical-flow obligations. Use that implementation as a measured baseline while the protocol experiments below challenge the instruction set.
 
-I²C should be the next deliberate challenge to this candidate: first specify the desired role and subset, then examine line drive/release behavior, observed inputs, conditional progress, and bounded waits/timeouts. The current fixed schedule does not yet define those operations. A separate I²C contract should determine which are necessary before extending the instruction set.
+The [pure Lean I²C experiment](i2c-model.md) now exercises a single-controller write, ACK/NACK, and stretching. It establishes the need to separate pin drive from observed levels, wait for observed SCL high before starting the high timer, and branch on an explicitly timed SDA capture. The current fixed schedule does not define those operations. A naïve two-phase expansion already needs 36 actions for 18 clocks before START/STOP, so program capacity and reusable payload storage also need review. Reference-controller phases are not a finalized instruction set.
+
+The next bounded step is a two-line drive/observation contract and wait-then-timed continuation, demonstrated with one stretched bit and a compatibility proof for existing UART/SPI actions. Then add ACK branching and compile the full write. Measure program/storage cost before revising the encoding and structural core. The I²C record owns the detailed acceptance sequence and distinguishes its local proofs from the still-missing universal transaction/compiler proof.
 
 Even for SPI, generated-clock propagation and peripheral setup/hold requirements remain a separate physical obligation. Lean's edge-indexed input history is the boundary of today's proof. RTL simulation, implementation correspondence, synthesis area, and routed timing must be reported as separate evidence.
