@@ -139,4 +139,6 @@ The general duration/composition proofs reported `[propext, Quot.sound]`; loadin
 
 Binary instruction encoding, payload registers, a hardware loading transport, reactive control flow, and RTL remain outside this completed Lean milestone.
 
+The next hardware work follows the [processor verification plan](processor-verification.md). Its first implementation batch covers encoding and a proved countdown circuit through generation, RTL simulation, and synthesis. Record selected backend/simulator/synthesis versions and reproduction commands here when that work begins; the plan itself adds no installed tools or implementation evidence.
+
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).

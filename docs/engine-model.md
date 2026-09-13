@@ -81,4 +81,6 @@ Both programs occupy the same 32-slot store. UART uses 10 actions and reaches ha
 
 The experiment establishes a reusable timed-action engine for these fixed schedules. It does not yet separate payload data from program instructions, branch on received inputs, wait conditionally, or control line release. The next design review should examine those needs before extending the instruction set. The exact no-gap timing promise also creates a concrete fetch/decode obligation for a later hardware implementation.
 
+The [processor verification plan](processor-verification.md) complements this model with a path toward encoded instructions, a concrete register/logic implementation, and a circuit-to-engine refinement proof. It preserves this model as the reference while addressing memory timing, non-atomic physical loading, generated-RTL correspondence, and area/timing evidence. The protocol-flexibility questions above remain a separate design track; this baseline is not the final competition architecture.
+
 No claim here covers RTL translation, synthesized area, electrical timing, or reactive protocol control flow.

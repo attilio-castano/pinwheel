@@ -12,10 +12,13 @@ Start with:
 6. [The pure Lean SPI experiment](docs/spi-model.md) for full-duplex sampling, timing proofs, and runnable checks.
 7. [The shared-engine design](docs/shared-engine.md) for requirements learned from both protocols.
 8. [The implemented engine](docs/engine-model.md) for typed programs, timing proofs, compiler correctness, and reloadability evidence.
+9. [The processor verification plan](docs/processor-verification.md) for building and proving a concrete register/logic implementation, then checking RTL and physical feasibility.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
-The proposed implementation path is Lean-generated hardware MLIR through CIRCT to Verilog, followed by RTL simulation and synthesis. This integration has not been validated. Proofs about a Lean model do not by themselves establish correctness of the generated RTL or physical chip.
+Our next hardware objective is to describe the processor's registers, decoder, logic, and memory in Lean and prove that their clock-by-clock behavior implements the existing engine. That would connect circuit execution to the UART/SPI contracts through the compiler proofs we already have.
+
+The [staged processor plan](docs/processor-verification.md) starts with instruction encoding and a small, proved countdown circuit carried through RTL generation, simulation, and synthesis. It then covers the whole execution core, translation/equivalence checks, a real loading interface, and physical feasibility. The proposed backend remains hardware MLIR through CIRCT to Verilog; this integration is unvalidated. Formal digital correctness, generated-artifact correspondence, and physical area/timing are separate evidence requirements.
 
 The pure Lean UART transmitter, mode-0 SPI controller, bounded programmable engine, and both protocol compilers are implemented. Proofs cover waveform correctness, timing, input capture, receive results, and the defined interfaces. Programs currently embed outgoing payload bits; binary instruction encoding, payload registers, reactive control flow, RTL generation, RTL simulation, and synthesis remain pending. The full competition architecture and broader protocol scope remain open.
 

@@ -59,6 +59,8 @@ Implemented module ownership, consistent with [architecture.md](architecture.md)
 
 ## What remains open for later protocols
 
+The [processor verification plan](processor-verification.md) is the complementary hardware track: implement and prove the circuit that executes the current actions, with explicit encoding, memory, loading, and physical-flow obligations. Use that implementation as a measured baseline while the protocol experiments below challenge the instruction set.
+
 I²C should be the next deliberate challenge to this candidate: first specify the desired role and subset, then examine line drive/release behavior, observed inputs, conditional progress, and bounded waits/timeouts. The current fixed schedule does not yet define those operations. A separate I²C contract should determine which are necessary before extending the instruction set.
 
 Even for SPI, generated-clock propagation and peripheral setup/hold requirements remain a separate physical obligation. Lean's edge-indexed input history is the boundary of today's proof. RTL simulation, implementation correspondence, synthesis area, and routed timing must be reported as separate evidence.

@@ -8,6 +8,8 @@ Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-mod
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
+The [processor verification plan](processor-verification.md) owns the next hardware milestones: encoded instructions, a circuit description with Lean semantics, a proof that the concrete processor implements the current engine, generated-RTL validation, and physical-flow checks. The goal includes correctness of the register/logic implementation itself. Producing Verilog is one step in establishing and realizing that design.
+
 Lean replaces Mojo's proposed roles in hardware generation, program assembly, and reference checking, and adds specifications and proofs. The prior Python packaging scaffold has been removed. This decision does not establish a working Lean-to-hardware compiler.
 
 ## Three connected layers
@@ -16,7 +18,7 @@ Lean replaces Mojo's proposed roles in hardware generation, program assembly, an
 | --- | --- | --- |
 | Protocol specification | Describe observable pin behavior and timing independently of an implementation. | An executable contract; for UART transmission, a cycle-indexed output trace. |
 | Machine and program compiler | Define finite state, instruction encoding, storage, and execution on each clock cycle; translate supported protocols into programs. | Invariants and proofs that executing a compiled program produces the specified observations under explicit assumptions. |
-| Circuit implementation | Realize the machine with bounded registers, combinational logic, and memory. | RTL checks against the contract, a separate model-to-implementation correspondence obligation, and synthesis/physical-flow evidence. |
+| Circuit implementation | Realize the machine with explicitly encoded registers, combinational logic, and memory ports. | A concrete-to-engine refinement proof, separate translation/equivalence evidence for generated artifacts, and synthesis/physical-flow checks. |
 
 The UART contract covers a single output. SPI adds a three-pin output vector and receive behavior defined over arbitrary edge-indexed input histories. Its eight bounded receive slots make input sampling explicit. The shared engine implements timed actions with optional entry-edge capture. General countdown and composition theorems establish exact action timing; compiler simulation proofs connect execution to the independent protocol contracts. A general trace framework is still deferred.
 
@@ -27,6 +29,8 @@ Hardware generation produces the circuit that would be fabricated. Protocol comp
 An action meaning "drive a level for N cycles" must define which edges begin and end the interval. Consecutive actions must account for instruction fetch and decode, including whether consecutive one-cycle actions are implementable. Counter bounds, program capacity, invalid encodings, reset, and loading while halted are part of the machine contract.
 
 Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. Exact storage sizes, clock frequency, and microarchitecture remain open.
+
+The first physical core will target the existing 32-slot logical engine. Its word encoding and memory implementation remain design decisions. A small register-backed store with combinational read is the first candidate to evaluate; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
 
 ## Proposed hardware path
 
@@ -39,7 +43,7 @@ Program:
 Lean protocol compiler -> encoded instructions -> writable engine memory
 ```
 
-Lean would construct a restricted circuit representation and emit ordinary MLIR text using existing CIRCT hardware dialects. This is a proposed custom emitter, not automatic synthesis of arbitrary Lean functions. A minimal circuit accepted by CIRCT and the RTL simulator is the first backend integration gate.
+Lean would construct a restricted circuit representation with explicit digital semantics and emit ordinary MLIR text using existing CIRCT hardware dialects. Prove that the represented circuit implements the engine before claiming processor-model correctness. This is a proposed custom emitter, not automatic synthesis of arbitrary Lean functions. A countdown circuit with a checked state correspondence, generated RTL simulation, and initial synthesis is the first complete backend integration gate; see the [processor plan](processor-verification.md#milestone-2-a-small-circuit-language-and-a-complete-vertical-slice).
 
 CIRCT remains a candidate backend pending that gate. No custom MLIR dialect or general-purpose hardware compiler is needed for the first experiment.
 
@@ -49,13 +53,14 @@ CIRCT remains a candidate backend pending that gate. No custom MLIR dialect or g
 - Keep proofs beside the definitions they establish. Accepted claims must contain no unfinished proof placeholders (`sorry`/`admit`) and must disclose assumptions and axiom dependencies; do not add an axiom to assume the desired result.
 - Prove the fixed transmitter's observations satisfy the UART contract, then prove the UART program compiler against the engine semantics. State supported parameter ranges and initial-state, reset, and loading assumptions.
 - A Lean theorem about a model does not verify the circuit emitter, CIRCT transformations, or emitted RTL. Establish implementation correspondence separately; report simulation as simulation until a proof or equivalence check covers the stated boundary.
+- The circuit-refinement proof must include actual instruction decoding, memory access semantics, register encodings, and execution-edge timing. A host upload may span several clocks; relate accepted commits to atomic abstract loads without allowing extra execution cycles. Document reset/initialization, malformed encodings, unknown-state treatment, and any black-boxed components.
 - Clock-cycle proofs assume a digital clock and defined sampling behavior. Synthesis, mapped area, routed timing, and electrical constraints require their own checks. No first-stage result establishes physical pin behavior or tapeout readiness.
 
 Record exactly which artifacts each result covers, along with tool versions, configurations, program contents, and RTL identity. Preserve failed checks and unresolved assumptions alongside successful evidence.
 
 ## Proposed repository structure
 
-The root Lean configuration, `Pinwheel.lean`, `UART/`, `SPI/`, `Engine/`, `Compile/`, and all three Lean test files below now exist. `Trace.lean`, `Hardware/`, the CLI, and examples remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
+The root Lean configuration, `Pinwheel.lean`, `UART/`, `SPI/`, `Engine/`, `Compile/`, and the UART/SPI/Engine test files below now exist. `Trace.lean`, `Hardware/`, `test/Hardware.lean`, the CLI, and examples remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -80,13 +85,19 @@ Pinwheel/
     UART.lean                    # UART -> engine program, correctness
     SPI.lean                     # SPI -> engine program, correctness
   Hardware/
-    Circuit.lean                 # Restricted circuit representation
-    Emit.lean                    # Proposed hardware MLIR emission
+    Encoding.lean                # Planned raw instruction encoding/decoding proofs
+    Circuit.lean                 # Planned restricted circuit structures
+    Semantics.lean               # Planned meaning of logic/register/memory operations
+    Core.lean                    # Planned concrete processor circuit
+    Refinement.lean              # Planned concrete-to-engine state/trace proofs
+    Interface.lean               # Planned host loading ports and commit semantics
+    Emit.lean                    # Planned hardware MLIR emission
 Main.lean                        # Generation / model execution CLI
 test/
   UART.lean                      # Executable model checks and CSV trace
   SPI.lean                       # Receive/timing/interface checks and CSV trace
   Engine.lean                    # Compiled protocols, reloadability, machine checks
+  Hardware.lean                  # Planned circuit/encoding checks and trace fixtures
                                  # RTL stimulus/checks will be added later
 examples/                        # Small protocol programs
 docs/
@@ -97,6 +108,7 @@ docs/
   spi-model.md                   # Implemented SPI contract and proof coverage
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
+  processor-verification.md      # Staged concrete-processor proof and hardware plan
   development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache
