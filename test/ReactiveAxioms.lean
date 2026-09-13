@@ -1,0 +1,32 @@
+import Pinwheel
+
+#print axioms Pinwheel.Engine.Reactive.capture_compatibility
+#print axioms Pinwheel.Engine.Reactive.enter_compatibility
+#print axioms Pinwheel.Engine.Reactive.next_compatibility
+#print axioms Pinwheel.Engine.Reactive.advance_compatibility
+#print axioms Pinwheel.Engine.Reactive.busy_compatibility
+#print axioms Pinwheel.Engine.Reactive.result_compatibility
+#print axioms Pinwheel.Engine.Reactive.reset_compatibility
+#print axioms Pinwheel.Engine.Reactive.start_compatibility
+#print axioms Pinwheel.Engine.Reactive.step_compatibility
+#print axioms Pinwheel.Engine.Reactive.run_compatibility
+#print axioms Pinwheel.Engine.Reactive.load_compatibility
+#print axioms Pinwheel.Engine.Reactive.execute_compatibility
+#print axioms Pinwheel.Engine.Reactive.uart_waveform
+#print axioms Pinwheel.Engine.Reactive.spi_waveform
+#print axioms Pinwheel.Engine.Reactive.spi_samples
+#print axioms Pinwheel.Engine.Reactive.wait_ready
+#print axioms Pinwheel.Engine.Reactive.wait_countdown
+#print axioms Pinwheel.Engine.Reactive.wait_timeout
+#print axioms Pinwheel.Engine.Reactive.wait_boundary
+#print axioms Pinwheel.Engine.Reactive.run_add
+#print axioms Pinwheel.Engine.Reactive.countdown
+#print axioms Pinwheel.Engine.Reactive.action_boundary
+#print axioms Pinwheel.Engine.Reactive.wait_then_timed
+#print axioms Pinwheel.Engine.Reactive.wait_entry
+#print axioms Pinwheel.Engine.Reactive.reset_priority
+#print axioms Pinwheel.Engine.Reactive.busy_ignores_start
+#print axioms Pinwheel.Engine.Reactive.load_busy
+#print axioms Pinwheel.Engine.Reactive.load_stopped
+#print axioms Pinwheel.Engine.Reactive.stop_uses_idle
+#print axioms Pinwheel.Engine.Reactive.openDrain_never_high
