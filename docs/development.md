@@ -2,7 +2,7 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-This package validates the Lean toolchain with a small bitvector example. UART modeling, protocol proofs, hardware generation, simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
+The package includes the original bitvector setup check and the [pure Lean UART specification, model, and proofs](uart-model.md). Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
@@ -39,7 +39,7 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` contains the setup definition `Pinwheel.Setup.invertByte` and a proof that complementing a byte twice restores it. This is toolchain validation, not a UART implementation.
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the UART modules and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks the UART proofs as well as the original toolchain example. Run the executable model checks with `lake env lean -DwarningAsError=true --run test/UART.lean`.
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
 
@@ -89,8 +89,8 @@ Verified on the setup date:
 
 These results establish the setup example's proof and executable behavior in Lean. They do not establish any UART, RTL, or physical hardware behavior.
 
-## Next milestone
+## UART milestone
 
-The [UART plan](uart-experiment.md) remains on hold. CIRCT, an RTL simulator, and synthesis tools have not been installed as part of this setup. Add them only when the hardware integration milestone is authorized.
+The pure Lean portion of the [UART plan](uart-experiment.md) is implemented; see the [model record](uart-model.md) for its contract and verification. CIRCT, an RTL simulator, and synthesis tools have not been installed as part of this work. Add them only when the hardware integration milestone is authorized.
 
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).

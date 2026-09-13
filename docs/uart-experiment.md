@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Status: proposed experiment, recorded for future contributors and agents. As of **2026-09-13**, the minimal Lean package and toolchain setup are authorized, with a separate bitvector setup example. No UART implementation, protocol proofs, circuit simulation, or synthesis results exist yet. UART and hardware implementation remain on hold while planning continues. Commit completed, verified changes when work is authorized.
+Status: as of **2026-09-13**, the pure Lean specification, executable transmitter, and correctness proofs in stage 1 are implemented. The [model record](uart-model.md) defines the chosen interface and checked claims. Hardware generation, RTL simulation, synthesis, and stage 2 remain unimplemented and outside the currently authorized milestone. Commit completed, verified changes when work is authorized.
 
 ## Objective and scope
 
@@ -16,7 +16,9 @@ The first experiment is **simulation only**: one output pin, one clock, and UART
 
 Before coding, define the clock/reset convention, byte/start handshake, bit duration, busy/completion behavior, and output changes relative to clock edges. Begin with a positive integer number of clock cycles per bit; choose finite counter bounds and supported parameter ranges explicitly. Actual frequency remains open.
 
-Define the UART output trace independently of the transmitter implementation. Model the implementation in Lean using bounded state for its clock counter, shift register, and idle/start/data/stop control. "Fixed" describes its UART behavior; it accepts a byte so all values can be checked.
+Implemented choice: 1–256 cycles per bit, synchronous reset priority, acceptance only while idle, and completion indicated by busy falling after ten bit intervals. The exact edge conventions and the one-cycle idle interval before restart are recorded in the [interface contract](uart-model.md#interface-contract).
+
+Define the UART output trace independently of the transmitter implementation. The Lean implementation uses bounded state for an intra-symbol counter, a captured-byte register, and a symbol index encoding start/data/stop, plus an idle state. "Fixed" describes its UART behavior; it accepts a byte so all values can be checked. A shift-register RTL implementation would require its own correspondence argument.
 
 Proof acceptance:
 
@@ -67,7 +69,7 @@ Basic synthesis does not prove IHP tile fit, routed timing, or tapeout readiness
 
 ## Setup and evidence
 
-Follow the [architecture plan](architecture.md#proposed-repository-structure) for file placement and its [toolchain decisions](architecture.md#toolchain-decisions) for dependency selection. The Lean package setup is described in [development setup](development.md). Create protocol and hardware source files only as their milestone begins.
+Follow the [architecture plan](architecture.md#proposed-repository-structure) for file placement and its [toolchain decisions](architecture.md#toolchain-decisions) for dependency selection. The Lean package setup is described in [development setup](development.md), and the pure Lean execution/proof evidence in the [model record](uart-model.md). Create further protocol and hardware source files only as their milestone begins.
 
 Once experiment implementation begins, extend the development record with assumptions, proof coverage, generated artifact identity, simulation results, and synthesis reports. Toolchain setup alone does not satisfy any UART acceptance criterion.
 

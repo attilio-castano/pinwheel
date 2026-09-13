@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Setup update: **2026-09-13**. The minimal Lean package and toolchain setup are authorized. The package contains a bitvector setup example; protocol and hardware implementation remain on hold. No UART model, circuit generator, protocol proofs, simulation results, or synthesis results exist yet. See [development setup](development.md) for the installed toolchain and validation evidence.
+Implementation update: **2026-09-13**. The pure Lean UART specification, finite-state transmitter, and correctness proofs are implemented. See the [model record](uart-model.md) for the exact interface and proof scope, and [development setup](development.md) for the toolchain. Circuit generation, RTL simulation, synthesis, and the reloadable engine remain unimplemented and outside the currently authorized milestone.
 
 ## Design objective
 
@@ -55,7 +55,7 @@ Record exactly which artifacts each result covers, along with tool versions, con
 
 ## Proposed repository structure
 
-The root Lean configuration and `Pinwheel.lean` now exist for setup validation. The domain modules, CLI, tests, and examples below remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
+The root Lean configuration, `Pinwheel.lean`, `Pinwheel/UART/Spec.lean`, `Pinwheel/UART/Tx.lean`, and `test/UART.lean` now exist. The remaining modules and CLI below remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -63,7 +63,7 @@ README.md
 lean-toolchain                   # Pinned Lean version
 lakefile.toml                    # Lean library and executable targets
 lake-manifest.json               # Lake-managed dependency resolution
-Pinwheel.lean                    # Setup example now; public imports as modules arrive
+Pinwheel.lean                    # UART library imports and retained setup example
 Pinwheel/
   Trace.lean                     # Cycle-indexed pin observations
   UART/
@@ -78,24 +78,27 @@ Pinwheel/
     Circuit.lean                 # Restricted circuit representation
     Emit.lean                    # Proposed hardware MLIR emission
 Main.lean                        # Generation / model execution CLI
-test/                            # RTL stimulus and independent checks
+test/
+  UART.lean                      # Executable model checks and CSV trace
+                                 # RTL stimulus/checks will be added later
 examples/                        # Small protocol programs
 docs/
   competition.md                 # External rules and sources
   architecture.md                # Design layers and proof boundaries
   uart-experiment.md             # Milestones and acceptance criteria
+  uart-model.md                  # Implemented pure Lean contract and proof coverage
   development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache
 ```
 
-The initial package contains only a bitvector setup example. Add domain modules when the fixed UART milestone begins, and `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
+The UART model uses bounded symbol and cycle counters. A standalone `Trace.lean` abstraction was unnecessary for the first single-output specification and remains deferred. Add `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
 
 When adopting Tiny Tapeout, reserve its conventional `src/`, `test/`, and `info.yaml` paths for the hardware flow, with Lean sources under `Pinwheel/`. Reconcile generated RTL staging, explicit source lists, test commands, and the upstream template revision then. The template is not adopted yet.
 
 ## Toolchain decisions
 
-The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries are sufficient for the setup example; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
+The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries suffice for the setup example and UART proofs; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
 
 Select a compatible CIRCT distribution/revision, RTL simulator, and synthesis tool when hardware implementation is authorized. Use CIRCT's compatible MLIR version and extend `development.md` with verified commands then.
 
