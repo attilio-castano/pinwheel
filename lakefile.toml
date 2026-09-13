@@ -1,0 +1,9 @@
+name = "pinwheel"
+version = "0.1.0"
+defaultTargets = ["Pinwheel"]
+
+[leanOptions]
+warningAsError = true
+
+[[lean_lib]]
+name = "Pinwheel"
