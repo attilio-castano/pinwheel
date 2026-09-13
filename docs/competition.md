@@ -13,6 +13,7 @@ Build an open-source protocol-emulator ASIC with programmable pin control and pr
 | Process | IHP 130 nm CMOS5L through Tiny Tapeout |
 | Starting point | Linked CMOS5L Verilog template; set `info.yaml` tile size to `8x4` |
 | Area | Planned maximum: 32 tiles, approximately 1 mm² nominal area |
+| Licensing | Submission must be open source |
 | Deadline | January 18, 2027 |
 | Prize | Selected designs receive funded fabrication, chips, and development boards |
 | Shuttle | Target: March 2027, subject to foundry scheduling |
@@ -27,6 +28,8 @@ These are suggestions and stated interests, not Pinwheel commitments. Source: [a
 - Novel functionality and design/verification methods matter; formal, constrained-random, and AI-assisted verification are welcomed.
 - Synthesize early; verify routed timing and area.
 
+Formal verification is welcomed, not required. Lean is Pinwheel's selected specification and modeling language; it is not an organizer requirement. The [architecture plan](architecture.md) records our design choices separately from the competition rules.
+
 Final submission form: forthcoming. Questions: `asic-competition@janestreet.com`.
 
 ## Primary resources
@@ -38,7 +41,7 @@ The following resources are linked directly from the announcement.
 | [CMOS5L Verilog template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/cmos5l) | Starting repository for the RTL-to-GDS flow. Its README describes `src/`, `test/`, `docs/info.md`, and LibreLane automation. Preserve the explicit `cmos5l` branch when following this link. |
 | [Tiny Tapeout](https://www.tinytapeout.com/) | Official entry point for HDL guides, testing, technical specifications, and fabrication documentation. |
 | [SRAM example: 1024×8 test](https://www.tinytapeout.com/chips/ttihp0p2/tt_um_urish_sram_test) | Foundry SRAM macro example with controller description, pin mapping, test instructions, and a linked implementation repository. |
-| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. The current [UART experiment plan](uart-experiment.md) explores Mojo-generated hardware MLIR and CIRCT. |
+| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. Pinwheel's [UART experiment plan](uart-experiment.md) explores Lean specifications and a proposed Lean-to-CIRCT hardware generation path. |
 | [Competition update form](https://docs.google.com/forms/d/e/1FAIpQLSeF7fq756MegxZRQxotBwUJYZx-cL9MrGjxV0z4uD_J0sADxQ/viewform) | Receives deadline, template, and submission-form updates. Signing up neither commits participation nor enters the competition. |
 
 Useful next reading within the template: [project configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/info.yaml) and [testbench instructions](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/test/README.md).
@@ -55,7 +58,7 @@ These are questions for the broader Pinwheel project, not additional competition
 
 - What use case and distinctive capability should guide the design?
 - Which protocol roles and speeds should the first demonstrator support?
-- What architecture, memory organization, and implementation language suit that scope?
+- What architecture, memory organization, and hardware backend suit that scope, with Lean as the specification and modeling foundation?
 - What evidence will demonstrate functional correctness, timing, and physical feasibility?
 - What team, hardware, compute resources, and schedule are available?
 
