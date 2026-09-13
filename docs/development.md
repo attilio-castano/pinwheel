@@ -240,3 +240,17 @@ lake env lean -DwarningAsError=true --run test/Core.lean check
 ```
 
 The first Core invocation emits circuits and protocol images; the Python step derives independent vectors and adds deterministic raw memory cases; the final invocation checks structural circuit execution. The full runner performs these in order. On this host, a restricted session can use the same process-local toolchain PATH prefix shown above with `scripts/check-core.py`.
+
+## Counted byte-loop comparison
+
+The [loop comparison](looped-i2c.md) adds a bounded instruction-store frontend that reuses 15 templates for the explicit image's 79 execution addresses. The two byte values are separate data. The format permits two nested loops, at most eight iterations each, 128 execution slots, and 64 syntax nodes. This write uses 31 nodes in total. No new tool or dependency is required.
+
+```sh
+python3 scripts/check-compiled-i2c.py --looped
+python3 scripts/check-compiled-i2c.py
+python3 scripts/check-reactive.py
+```
+
+The loop runner uses the same wire target and monitor as the explicit runner and compares full engine states each cycle. It passes 4,224 transactions / 822,896 observed cycles with identical example timings; 6,144 generic serial loops, error forks, five loop-specific negative variants, and mixed program replacement supply additional checks. The original three capture/branch corruptions are also retained. Logs, trace, coverage, 16-theorem dependency audit, and source/artifact hashes are under `build/looped-i2c/`; the current library build has 42 jobs.
+
+The universal fetch/state proofs cover every configuration, request, and input history. One-step loop-to-explicit equality includes reset/start; the inherited full-run reference claims still exclude reset/reload. The original reference-reset distinction remains. Instruction-template counts exclude descriptor metadata and data; no binary storage size, circuit timing, area, or new hardware result is claimed. The next experiment defines the binary representation and compares structural store implementations.

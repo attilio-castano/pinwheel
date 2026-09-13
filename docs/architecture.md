@@ -6,7 +6,7 @@ Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-mod
 
 ## Design objective
 
-The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits; storage/encoding selection and the extended structural circuit remain ahead. The original encoded core remains the measured hardware baseline.
+The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; binary representation, physical storage selection, and the extended structural circuit remain ahead. The original encoded core remains the measured hardware baseline.
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
@@ -92,6 +92,9 @@ Pinwheel/
     ReactiveProofs.lean          # Wait/timer composition and interface guarantees
     ControlProofs.lean           # Guard, terminal capture, branch, qualification guarantees
     Compatibility.lean           # All legacy programs embed; UART/SPI corollaries
+    Fetch.lean                   # Functional-store adapter; no runtime expansion
+    FetchProofs.lean              # Agreeing stores preserve the complete engine state
+    Counted.lean                 # Bounded nested-loop storage and data operands
   Compile/
     UART.lean                    # UART -> engine program, correctness
     SPI.lean                     # SPI -> engine program, correctness
@@ -99,6 +102,9 @@ Pinwheel/
     I2C.lean                     # 79-instruction write compiler and result decoding
     I2CPhases.lean               # Reference/compiled-state relation and phase proofs
     I2CProofs.lean               # Full-run pin, busy, and result correspondence
+    I2CLoop.lean                 # 15-template write and two separate data bytes
+    I2CLoopProofs.lean           # Every fetched instruction equals the explicit image
+    I2CLoopCorrectness.lean      # State equality and reference trace corollaries
   Hardware/
     Encoding.lean                # Canonical binary format and round-trip proofs
     RawProgram.lean              # Raw-word execution, faults, encoding refinement
@@ -124,6 +130,8 @@ test/
   Control.lean                   # Guard/branch/qualification boundaries and faults
   CompiledI2C.lean               # Compiled wire monitor, reference checks, faults/reload
   CompiledI2CAxioms.lean         # Compiler correspondence dependency audit
+  Counted.lean                   # Serial selection, loop boundaries, faults/loading
+  LoopedI2CAxioms.lean           # Counted-store/compiler theorem dependency audit
   Engine.lean                    # Compiled protocols, reloadability, machine checks
   Encoding.lean                  # Exhaustive raw-word and typed instruction checks
   Hardware.lean                  # Circuit timing checks, MLIR and CSV generation
@@ -135,7 +143,7 @@ test/
 scripts/
   check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   check-reactive.py              # Candidate-engine proofs, tests, and artifact receipt
-  check-compiled-i2c.py          # I2C compiler proofs, execution checks, and receipt
+  check-compiled-i2c.py          # Explicit/--looped proofs, shared wire checks, receipts
   install-hardware-tools.py      # Checksum-verified local tool installation
   check-hardware.py              # Countdown proof/RTL checks and synthesis
   check-core.py                  # Full-core proof/RTL checks and synthesis
@@ -152,6 +160,7 @@ docs/
   i2c-model.md                   # Pure I2C experiment and derived engine extensions
   reactive-engine.md             # Candidate extended machine and compatibility evidence
   compiled-i2c.md                # Complete write compilation, proofs, storage decision
+  looped-i2c.md                  # Counted-store comparison, bounds, proof and cost evidence
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan
