@@ -2,7 +2,7 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. The [countdown hardware slice](countdown-hardware.md) now includes generation, RTL simulation, and generic synthesis; the complete processor remains future work. No editor extension is required for this terminal-based workflow.
+The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. The [countdown slice](countdown-hardware.md) and [complete execution core](core-hardware.md) include structural proofs, generation, RTL simulation, and generic synthesis; physical loading and implementation remain future work. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
@@ -137,11 +137,11 @@ To inspect the new main proofs, add these commands to an ignored scratch `.lean`
 
 The general duration/composition proofs reported `[propext, Quot.sound]`; loading proofs reported `[propext]`; the main compiler proofs reported `[propext, Classical.choice, Quot.sound]`. No unfinished-proof or custom axioms were reported. A false early-completion claim for two consecutive duration-one actions was rejected by `decide` because the proposition is false.
 
-Binary instruction encoding and the countdown RTL slice were added after this engine milestone. Payload registers, a hardware loading transport, reactive control flow, and the complete processor remain future work.
+Binary instruction encoding and the countdown RTL slice were added after this engine milestone. The complete execution core was subsequently implemented. Payload registers, a physical loading transport, and reactive control flow remain future work.
 
 ## Hardware milestones 1 and 2
 
-The [processor verification plan](processor-verification.md)'s first batch is implemented. The [hardware baseline](hardware-baseline.md) records the binary format and next-core contract; the [countdown record](countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
+The [processor verification plan](processor-verification.md)'s first batch is implemented. The [hardware baseline](hardware-baseline.md) records the binary format and core contract; the [countdown record](countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
 
 On Apple Silicon macOS with Python 3.12+:
 
@@ -175,3 +175,27 @@ PATH="$HOME/.elan/toolchains/leanprover--lean4---v4.33.1/bin:$PATH" python3 scri
 This is a process-local PATH change, with no shell startup edit. The default reproduction command remains sufficient in an unrestricted terminal.
 
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).
+
+## Hardware milestone 3: complete execution core
+
+Run the full core experiment with the same installed tools:
+
+```sh
+python3 scripts/check-core.py
+```
+
+It builds the 24-job library, audits 16 selected theorem dependencies, exports the actual compiled images, checks every raw decoder word, compares 71,703 independent expected edges in Lean and RTL, rejects three faulty RTL variants, and synthesizes the full core. The [core record](core-hardware.md) documents the 1,032-transfer coverage matrix, 1,907 generic cells, 543 flip-flop bits, and remaining proof boundaries. Full reports and hashes are under `build/core/`; this remains separate from the timer's `build/hardware/` receipt.
+
+The generic emitter sets CIRCT's supported-output options and the runner adds `--hw-legalize-modules` before `--export-verilog`. That required pass removes packed-array constructs unsupported by the selected tools. The earlier timer uses no such array read path. Common-expression sharing changed the timer's emitted formatting; its reset-priority mutation fixture was updated and the timer suite rerun. Its original published hashes identify the earlier implementation, not newly generated files.
+
+The Lean-only portion can be reproduced without hardware tools:
+
+```sh
+lake build
+lake env lean -DwarningAsError=true test/CoreAxioms.lean
+lake env lean -DwarningAsError=true --run test/Core.lean
+python3 scripts/core-vectors.py
+lake env lean -DwarningAsError=true --run test/Core.lean check
+```
+
+The first Core invocation emits circuits and protocol images; the Python step derives independent vectors and adds deterministic raw memory cases; the final invocation checks structural circuit execution. The full runner performs these in order. On this host, a restricted session can use the same process-local toolchain PATH prefix shown above with `scripts/check-core.py`.

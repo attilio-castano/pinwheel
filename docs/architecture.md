@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The complete processor and reactive protocol control flow remain future work.
+Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. Physical loading and reactive protocol control flow remain future work.
 
 ## Design objective
 
@@ -10,7 +10,7 @@ Build a programmable protocol engine whose instruction semantics make precise pi
 
 The [processor verification plan](processor-verification.md) owns the next hardware milestones: encoded instructions, a circuit description with Lean semantics, a proof that the concrete processor implements the current engine, generated-RTL validation, and physical-flow checks. The goal includes correctness of the register/logic implementation itself. Producing Verilog is one step in establishing and realizing that design.
 
-Lean replaces Mojo's proposed roles in hardware generation, program assembly, and reference checking, and adds specifications and proofs. The prior Python packaging scaffold has been removed. The implemented hardware route currently covers the countdown slice, not arbitrary Lean programs.
+Lean replaces Mojo's proposed roles in hardware generation, program assembly, and reference checking, and adds specifications and proofs. The prior Python packaging scaffold has been removed. The implemented hardware route covers the countdown slice and complete timed-action core. It emits a restricted circuit language; it does not synthesize arbitrary Lean programs.
 
 ## Three connected layers
 
@@ -28,9 +28,9 @@ Hardware generation produces the circuit that would be fabricated. Protocol comp
 
 An action meaning "drive a level for N cycles" must define which edges begin and end the interval. Consecutive actions must account for instruction fetch and decode, including whether consecutive one-cycle actions are implementable. Counter bounds, program capacity, invalid encodings, reset, and loading while halted are part of the machine contract.
 
-Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. The first instruction bank is specified as 32×16 bits; staging storage, full-core cost, clock frequency, and further microarchitecture choices remain open.
+Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. The first instruction bank is implemented as 32×16 register bits. Full-core generic synthesis reports 1,907 cells including 543 flip-flop bits. Staging storage, technology-mapped area, clock frequency, and further microarchitecture choices remain open.
 
-The first physical core will target the existing 32-slot logical engine. Its canonical 16-bit encoding is implemented, and the [next-core baseline](hardware-baseline.md) selects a register-backed store with combinational read; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
+The implemented execution core targets the existing 32-slot logical engine. Its canonical 16-bit encoding is implemented, and the [core baseline](hardware-baseline.md) selects a register-backed store with combinational read; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
 
 ## Proposed hardware path
 
@@ -43,9 +43,9 @@ Program:
 Lean protocol compiler -> encoded instructions -> writable engine memory
 ```
 
-Lean now constructs a restricted circuit representation with explicit digital semantics and emits ordinary MLIR text using existing CIRCT hardware dialects for the countdown slice. Prove that the represented circuit implements the engine before claiming processor-model correctness. This is a small custom emitter, not automatic synthesis of arbitrary Lean functions. The countdown circuit has passed the first backend integration gate, with checked state correspondence, generated RTL simulation, and generic synthesis; see the [processor plan](processor-verification.md#milestone-2-a-small-circuit-language-and-a-complete-vertical-slice).
+Lean now constructs a restricted circuit representation with explicit digital semantics and emits ordinary MLIR text using existing CIRCT hardware dialects for the countdown slice and complete core. Prove that the represented circuit implements the engine before claiming processor-model correctness. This is a small custom emitter, not automatic synthesis of arbitrary Lean functions. The countdown circuit has passed the first backend integration gate, with checked state correspondence, generated RTL simulation, and generic synthesis; see the [processor plan](processor-verification.md#milestone-2-a-small-circuit-language-and-a-complete-vertical-slice).
 
-CIRCT is now validated for that slice; see the [hardware record](countdown-hardware.md). The complete core and translation proof remain future work. No custom MLIR dialect or general-purpose hardware compiler is needed for the first experiment.
+CIRCT has simulation validation for the slice and complete core; see the [core record](core-hardware.md). Translation preservation and gate equivalence remain future work. No custom MLIR dialect or general-purpose hardware compiler is needed for the first experiment.
 
 ## Proof and validation boundaries
 
@@ -60,7 +60,7 @@ Record exactly which artifacts each result covers, along with tool versions, con
 
 ## Proposed repository structure
 
-The protocol/engine libraries, hardware encoding and countdown modules, tests, and hardware scripts below now exist. `Trace.lean`, the complete core/refinement/interface modules, the general CLI, and examples remain planned; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
+The protocol/engine libraries, hardware encoding/core/refinement modules, tests, and hardware scripts below now exist. `Trace.lean`, the physical interface module, the general CLI, and examples remain planned; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -89,8 +89,13 @@ Pinwheel/
     RawProgram.lean              # Raw-word execution, faults, encoding refinement
     Circuit.lean                 # Width-indexed logic/register trees and semantics
     Countdown.lean               # Timer circuit and engine countdown correspondence
-    Core.lean                    # Planned concrete processor circuit
-    Refinement.lean              # Planned concrete-to-engine state/trace proofs
+    Decode.lean                  # Structural decoder and canonical-word proofs
+    Store.lean                   # Finite register-bank read circuit and selection proof
+    CoreState.lean               # Typed core ports/registers and state embedding
+    Core.lean                    # Concrete scheduler and executable equations
+    CoreProofs.lean              # Structural register updates match those equations
+    Refinement.lean              # Concrete-to-engine state/trace and commit proofs
+    Protocols.lean               # Core UART/SPI waveform and receive corollaries
     Interface.lean               # Planned host loading ports and commit semantics
     Emit.lean                    # Structural HW/Comb/Seq MLIR emission
 Main.lean                        # Generation / model execution CLI
@@ -101,9 +106,15 @@ test/
   Encoding.lean                  # Exhaustive raw-word and typed instruction checks
   Hardware.lean                  # Circuit timing checks, MLIR and CSV generation
   countdown_tb.sv                # Independent RTL timing oracle
+  Core.lean                      # Core/decoder emission and structural vector checks
+  CoreAxioms.lean                # Selected full-core theorem dependency audit
+  core_tb.sv                    # Full-core RTL observations and memory retention
+  decoder_tb.sv                 # Exhaustive standalone RTL decoder checks
 scripts/
   install-hardware-tools.py      # Checksum-verified local tool installation
-  check-hardware.py              # Proof/RTL checks, negative fixtures, synthesis
+  check-hardware.py              # Countdown proof/RTL checks and synthesis
+  check-core.py                  # Full-core proof/RTL checks and synthesis
+  core-vectors.py                # Independent deadlines and protocol oracles
 tools/
   hardware-toolchain.json        # Official archive pins for darwin-arm64
 examples/                        # Small protocol programs
@@ -116,8 +127,9 @@ docs/
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan
-  hardware-baseline.md           # Binary format and selected next-core contract
+  hardware-baseline.md           # Binary format and implemented core contract
   countdown-hardware.md          # Implemented circuit slice and artifact evidence
+  core-hardware.md               # Complete core, proof/RTL/synthesis evidence
   development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache

@@ -1,6 +1,6 @@
 # Hardware baseline
 
-Design record: **2026-09-13**. The encoding and raw-program semantics below are implemented in Lean; the [countdown slice](countdown-hardware.md) has also been generated, simulated, and synthesized. The complete execution core and physical loading interface remain future work. This is an internal baseline, not a frozen external ABI.
+Design record: **2026-09-13**. The encoding, raw-program semantics, and [complete execution core](core-hardware.md) are implemented in Lean, with core refinement proofs, generated RTL checks, and generic synthesis. A physical loading interface remains future work. This is an internal baseline, not a frozen external ABI.
 
 ## Instruction words
 
@@ -16,9 +16,9 @@ The instruction store contains 32 words of 16 bits. Action fields are:
 
 `0x8000` is the only halt word. Other opcode-one words, and actions with disabled capture but nonzero slot bits, are malformed. Exactly 18,433 of the 65,536 words are accepted. A malformed fetched word stops with fault, applies the program's idle levels, retains receive bits, and exposes no completed result. It never captures input.
 
-`Encoding.decode_encode` proves every typed instruction round-trips. `encode_decode` excludes aliases. `Raw.step_encoded` and `run_encoded` prove that encoding any typed program preserves the existing engine's steps and runs for arbitrary input histories. `malformed_fault` covers rejection separately. Checked host conversion rejects integers above 65,535 rather than wrapping them. These are executable decoder/engine proofs, not a structural decoder circuit yet.
+`Encoding.decode_encode` proves every typed instruction round-trips. `encode_decode` excludes aliases. `Raw.step_encoded` and `run_encoded` prove that encoding any typed program preserves the existing engine's steps and runs for arbitrary input histories. `malformed_fault` covers rejection separately. Checked host conversion rejects integers above 65,535 rather than wrapping them. The structural decoder now has its own correspondence proofs and exhaustive RTL checks; see [core-hardware.md](core-hardware.md).
 
-## Selected core contract for the next implementation
+## Implemented core contract
 
 All core signals use one rising-edge clock and stable two-valued inputs at that edge. Execution reset is synchronous, active high, and takes priority over start and program commit; the separate cold-initialization request takes highest priority. There is no execution clock enable. Physical pin synchronization and loading transport are later interfaces; their timing must be modeled explicitly.
 
@@ -27,6 +27,7 @@ All core signals use one rising-edge clock and stable two-valued inputs at that 
 | Status register | 2 bits: `00` ready, `01` active, `10` completed, `11` fault; all encodings defined |
 | Program counter | 5 bits, valid addresses 0–31; never wrap slot 31 to slot 0 |
 | Remaining duration | 8 bits, stores duration minus one at action entry |
+| Timer active | 1 bit, matches active execution in the canonical state relation |
 | Output levels | 3 bits, registered |
 | Receive slots | 8 bits; physical bit `k` holds abstract slot `k` |
 | Idle profile | 3 bits, part of the committed program |
@@ -38,11 +39,11 @@ The existing `samplesByte` packs slot 0 as the most significant byte bit. Thus a
 
 A reset clears status to ready, the receive register, PC, and timer, and applies the committed idle profile (zero if no program exists). It retains committed instruction contents, idle profile, and validity. A separate synchronous, active-high `initialize` request clears validity, idle profile, and all execution registers without clearing instruction memory. It takes priority over reset and all commands and must be asserted at cold startup before any observations or requests are relied upon. Keeping initialization distinct lets ordinary reset retain a committed program without assuming memory powers up zero. The eventual physical interface must provide this initialization behavior; its transport/pin mapping is not selected.
 
-After initialization, starts without a committed program are rejected, keeping ready and zero idle. This pre-program state has no counterpart in today's abstract `Machine`, which always contains a program. Whole-core refinement applies after an accepted program commit. The selected initialization protocol is a contract for milestone 3, not an implemented core interface.
+After initialization, starts without a committed program are rejected, keeping ready and zero idle. This pre-program state has no counterpart in today's abstract `Machine`, which always contains a program. Whole-core refinement applies after an accepted program commit. The implemented initialization, commit, and execution proofs cover these boundaries explicitly.
 
-Use a 32×16 register-backed instruction store with combinational read and clocked writes for the first core. Its physical timing/cost is unmeasured. The read address is zero for accepted start and `PC + 1` for an action boundary. Guard the increment at 31. The path is status/timer → address selection → instruction read → decode → next output/timer/status/sample registers. All register updates use the same pre-edge state and input snapshot. Consecutive duration-one actions require this full path to settle within one clock; pipelined fetch cannot add an observable cycle.
+The first core uses a 32×16 register-backed instruction store with combinational read and clocked writes. Generic synthesis of the complete core reports 1,907 cells including 543 register bits; technology area and physical timing are unmeasured. The read address is zero for accepted start and `PC + 1` for an action boundary. Guard the increment at 31. The path is status/timer → address selection → instruction read → decode → next output/timer/status/sample registers. All register updates use the same pre-edge state and input snapshot. Consecutive duration-one actions require this full path to settle within one clock; pipelined fetch cannot add an observable cycle.
 
-Logical load/commit retains the existing atomic contract: accepted only while stopped, replaces all words and idle profile, clears execution/results, and establishes validity. Reset suppresses commit/start at the same edge; an accepted stopped commit takes priority over start. Busy commit is rejected without changing the executing program. Physical staging writes must preserve the previous committed program; bank storage, port wiring, and serialized transport are deferred to milestone 5. A parallel full-program value in a proof is not a proposed package pinout.
+Logical load/commit retains the existing atomic contract: accepted only while stopped, replaces all words and idle profile, clears execution/results, and establishes validity. Reset suppresses commit/start at the same edge; an accepted stopped commit takes priority over start. Busy commit is rejected without changing the executing program. Physical staging writes must preserve the previous committed program; bank storage, port wiring, and serialized transport are deferred to milestone 5. The current RTL exposes that parallel full-program value as an internal interface; it is not a proposed package pinout.
 
 ## Edge schedule
 

@@ -1,12 +1,12 @@
 # Countdown hardware: first complete slice
 
-Verified **2026-09-13**, Apple Silicon macOS. Implementation commit: `489a515`. This completes the first encoding/circuit batch in the [processor plan](processor-verification.md). The [hardware baseline](hardware-baseline.md) records the instruction format and selected contract for the future complete core.
+Verified **2026-09-13**, Apple Silicon macOS. Implementation commit: `489a515`. This completes the first encoding/circuit batch in the [processor plan](processor-verification.md). The [hardware baseline](hardware-baseline.md) records the instruction format and core contract. The later [complete-core record](core-hardware.md) documents milestone 3; this page retains the original slice evidence.
 
 ## What now exists
 
 `Hardware/Circuit.lean` defines width-indexed constants, inputs, register reads, inversion, AND, subtraction, zero comparison, and multiplexers. Finite expression trees prevent combinational cycles. Register feedback refers to pre-edge values; `Circuit.step` evaluates every next-register expression from the same input/state snapshot. The types preserve signal widths, and `byte_decrement_wrap` explicitly checks eight-bit underflow. Reset and register enables are ordinary next-state multiplexers, with priority visible in the circuit structure.
 
-`Hardware/Countdown.lean` describes two registers: eight remaining-duration bits and one active bit. `Emit.lean` traverses these same expression trees to generate hardware MLIR. The module adapter declares the fixed ports and registers; it does not independently spell out the countdown logic. The representation currently contains exactly the primitives used by this slice. Structural bit selection/concatenation and memory ports will be added with the core decoder/store, where their semantics and lowering can be exercised.
+`Hardware/Countdown.lean` describes two registers: eight remaining-duration bits and one active bit. `Emit.lean` traverses these same expression trees to generate hardware MLIR. The module adapter declares the fixed ports and registers; it does not independently spell out the countdown logic. At this milestone the representation contained exactly the primitives used by the slice. The later core added slicing, equality, substitution, and a register-bank read circuit.
 
 ```text
 Countdown.circuit ── Expr.eval ── Lean proofs and execution
@@ -27,7 +27,7 @@ The ports are `clk`, active-high `reset`, `load`, eight-bit `duration` (duration
 
 An action loaded on edge 0 with duration `D` has `remaining = D - 1` immediately afterward. The final interval begins after edge `D - 1`; the boundary strobe is consumed on edge `D`. Loading the next action on that edge preserves continuous execution. The slice does not fetch instructions, update protocol pins, or capture receive bits yet.
 
-`tick_refines` proves every reset/load/countdown step agrees with a bounded reference state. `boundary_refines`, `countdown`, `boundary_exact`, and `completed_exact` establish exact duration for every `Fin 256` value, including one and 256 cycles. `engine_countdown` connects the slice directly to the existing `Engine.run` countdown until the next instruction entry. Whole-core correspondence, including behavior at that entry, remains milestone 3.
+`tick_refines` proves every reset/load/countdown step agrees with a bounded reference state. `boundary_refines`, `countdown`, `boundary_exact`, and `completed_exact` establish exact duration for every `Fin 256` value, including one and 256 cycles. `engine_countdown` connects the slice directly to the existing `Engine.run` countdown until the next instruction entry. Whole-core correspondence, including behavior at that entry, was subsequently established in milestone 3; see [core-hardware.md](core-hardware.md).
 
 ## Measured checks
 
@@ -58,7 +58,7 @@ The runner builds Lean, runs encoding/circuit checks, audits theorem dependencie
 
 The pinned CIRCT uses `circt-opt --export-verilog`, which emits Verilog to stdout. An initial attempt with `circt-translate --export-verilog` was rejected because that option is absent in this release; the committed runner uses the verified `circt-opt` route. `-o /dev/null` suppresses its separate MLIR output.
 
-Recorded generated artifact SHA-256 values (full source and artifact list in the receipt):
+Historical generated artifact SHA-256 values for `489a515` (later emitter changes produce different MLIR/RTL/netlist hashes; a fresh receipt identifies the current run):
 
 | Artifact | SHA-256 |
 | --- | --- |
@@ -71,6 +71,6 @@ Recorded generated artifact SHA-256 values (full source and artifact list in the
 
 The Lean theorems cover `Countdown.circuit` under `Expr.eval`. The lowering maps constants to `hw.constant`, AND/subtraction/mux/zero-test to `comb` operations, inversion to XOR with all ones, and registers to `seq.compreg` on a converted rising-edge clock. Reset remains explicit mux logic. CIRCT and the emitter are tested translation tools; their semantics preservation has not been proved.
 
-No emitted-RTL equivalence proof, gate equivalence check, technology mapping, routing, area, or timing result is claimed. The next bounded implementation should construct the decoder/read path and scheduler around this timer, test consecutive one-cycle actions and slot-31 exhaustion first, and then prove whole-core refinement before extending the instruction set or implementing physical loading. The complete staging/commit transport remains milestone 5.
+No emitted-RTL equivalence proof, gate equivalence check, technology mapping, routing, area, or timing result is claimed. The subsequent [core implementation](core-hardware.md) completed the decoder/read path, scheduler, whole-core proofs, and protocol RTL checks. Translation/equivalence evidence is the next hardware proof boundary. The complete staging/commit transport remains milestone 5.
 
 Primary tool references: [CIRCT sequential operations](https://circt.llvm.org/docs/Dialects/Seq/), [CIRCT combinational operations](https://circt.llvm.org/docs/Dialects/Comb/), and [OSS CAD Suite installation](https://github.com/YosysHQ/oss-cad-suite-build#installation). The archive pins and actual command results above determine this experiment's tool versions.

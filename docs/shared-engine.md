@@ -1,6 +1,6 @@
 # Shared engine design from UART and SPI
 
-Design record: **2026-09-13**. The first pure Lean engine and typed UART/SPI program compilers are implemented. The [engine model record](engine-model.md) owns exact semantics, checked proofs, and execution evidence. The later [hardware baseline](hardware-baseline.md) adds proved binary encoding, and the [countdown slice](countdown-hardware.md) has generated RTL evidence. The complete core and host loading transport remain future work.
+Design record: **2026-09-13**. The first pure Lean engine and typed UART/SPI program compilers are implemented. The [engine model record](engine-model.md) owns exact semantics, checked proofs, and execution evidence. The later [hardware baseline](hardware-baseline.md) adds proved binary encoding, and the [countdown slice](countdown-hardware.md) has generated RTL evidence. The later [complete core](core-hardware.md) adds structural execution proofs and reloadable RTL checks. Physical loading transport remains future work.
 
 The [UART model](uart-model.md) and [SPI model](spi-model.md) supplied two concrete contracts for designing the engine. Both now execute as reloadable programs on one unchanged Lean machine. The original protocol specifications and controllers remain references, and the compiler proofs connect engine execution to the independent specifications through those verified controllers.
 
