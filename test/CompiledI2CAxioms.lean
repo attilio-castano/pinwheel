@@ -1,0 +1,31 @@
+import Pinwheel
+
+#print axioms Pinwheel.Compile.I2C.input_clock
+#print axioms Pinwheel.Compile.I2C.input_data
+#print axioms Pinwheel.Compile.I2C.check_clock
+#print axioms Pinwheel.Compile.I2C.check_both
+#print axioms Pinwheel.Compile.I2C.check_none
+#print axioms Pinwheel.Compile.I2C.fetch_bit
+#print axioms Pinwheel.Compile.I2C.advance_free
+#print axioms Pinwheel.Compile.I2C.advance_start
+#print axioms Pinwheel.Compile.I2C.advance_stopLow
+#print axioms Pinwheel.Compile.I2C.advance_stopRise
+#print axioms Pinwheel.Compile.I2C.advance_stopHigh
+#print axioms Pinwheel.Compile.I2C.advance_stopFree
+#print axioms Pinwheel.Compile.I2C.advance_finished
+#print axioms Pinwheel.Compile.I2C.advance_setup
+#print axioms Pinwheel.Compile.I2C.advance_rise
+#print axioms Pinwheel.Compile.I2C.advance_high
+#print axioms Pinwheel.Compile.I2C.advance_fall
+#print axioms Pinwheel.Compile.I2C.advance_simulation
+#print axioms Pinwheel.Compile.I2C.request_retained
+#print axioms Pinwheel.Compile.I2C.run_request
+#print axioms Pinwheel.Compile.I2C.initial_matches
+#print axioms Pinwheel.Compile.I2C.run_simulation
+#print axioms Pinwheel.Compile.I2C.waveform_correct
+#print axioms Pinwheel.Compile.I2C.outcome_matches
+#print axioms Pinwheel.Compile.I2C.result_correct
+#print axioms Pinwheel.Compile.I2C.busy_lift
+#print axioms Pinwheel.Compile.I2C.busy_correct
+#print axioms Pinwheel.Compile.I2C.reset_releases
+#print axioms Pinwheel.I2C.wire_order
