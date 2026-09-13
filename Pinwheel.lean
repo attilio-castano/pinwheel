@@ -1,8 +1,9 @@
 import Std
 import Pinwheel.UART.Tx
+import Pinwheel.SPI.Controller
 
 /-!
-Pinwheel library entry point, including the pure Lean UART specification and transmitter.
+Pinwheel library entry point, including the pure Lean UART and SPI models and proofs.
 The small setup example below is retained as a toolchain check.
 -/
 
