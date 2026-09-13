@@ -1,6 +1,6 @@
 # Pure Lean I²C experiment
 
-Implementation record: **2026-09-13**. This is a finite reference controller and ideal shared-bus model. It is not yet an I²C program for the [shared engine](engine-model.md), a structural circuit, or generated RTL.
+Implementation record: **2026-09-13**. This is a finite reference controller and ideal shared-bus model. A later [I²C compiler](compiled-i2c.md) now targets the candidate shared Lean engine and proves pin/busy/result correspondence to this reference. The extension has no structural circuit or generated RTL yet.
 
 ## Supported transaction
 
@@ -49,7 +49,7 @@ The wait-to-high transition introduces an observation edge, so external high int
 
 The 19 audited theorems establish bus resolution, independent wire-order correspondence, ACK-slot release and decisions, NACK routing, high-phase data retention, exact high countdown and terminal capture, stretch retention and exact persistent-block timeout, reset release, and finished-state retention. They quantify over their stated states, inputs, and bounded parameters. Dependencies are limited to standard Lean axioms (`propext`, `Classical.choice`, `Quot.sound`); the bus-resolution proofs use none.
 
-These are reusable local and multi-cycle theorems. A universal closed-loop transaction theorem against an independently specified target remains future work. Passing executable transactions supplies additional sampled evidence, not that missing theorem.
+These are reusable local and multi-cycle theorems. The later compiler proves full-run correspondence to this reference for arbitrary sampled inputs. A universal closed-loop transaction/liveness theorem against an independently specified target remains future work. Passing executable transactions supplies additional sampled evidence, not that missing target theorem.
 
 The target simulator and protocol monitor use pin commands and resolved wire transitions, not controller phases or its bit-selection function. The monitor checks START/STOP, pulse counts, bit order, ACK release, and minimum high/low intervals. It independently calculates the expected address byte, payload, and result.
 
@@ -73,7 +73,7 @@ The runner builds the library, audits each named theorem, executes the bus tests
 
 ## Implications for the shared engine
 
-Follow-up status: the first drive/observe/wait milestone below is now implemented in the [candidate reactive engine](reactive-engine.md), with 30 audited theorems, legacy compatibility, and a programmable stretched pulse. The original encoded hardware and this I²C reference remain intact. Full I²C compilation and the extended circuit are still open.
+Follow-up status: the [candidate reactive engine](reactive-engine.md) implements drive/observe/wait and now adds guard, terminal capture, branch, and qualification operations. [Full write compilation](compiled-i2c.md) has reference correspondence proofs and executable evidence. The original encoded hardware and this I²C reference remain intact; the extended circuit remains open.
 
 The existing fixed-schedule core remains a useful measured baseline. This experiment exposes four missing capabilities:
 
@@ -84,6 +84,6 @@ The existing fixed-schedule core remains a useful measured baseline. This experi
 
 The first bounded implementation added the two-line drive/observation contract and a wait-then-timed continuation to a candidate abstract engine, with a one-bit stretched-clock example. An embedding of existing actions proves the original UART/SPI observations unchanged. Checks cover duration one, immediate readiness, readiness at the deadline, persistent blocking, reset, and stopped reload. See the candidate-engine record for exact observation timing and evidence.
 
-Next add ACK-dependent continuation and account for bus-free qualification, clock-high faults, and STOP/error paths before compiling this complete write transaction. Selected-input capture now exists, including a capture on entry to the falling-clock action; conditional branches do not. Prove correspondence to an independent protocol contract under explicit target assumptions, then demonstrate UART → SPI → I²C → UART through program replacement on one machine. Measure instruction and data storage before choosing a revised binary encoding or enlarging memory.
+ACK-dependent continuation, bus-free qualification, clock-high faults, and STOP/error paths are now compiled, with terminal high-edge capture and complete reference correspondence. UART → SPI → I²C → UART program replacement passes in Lean. The expansion needs 79 instructions and uses an experimental 128-slot bank with per-program limits; compare reusable payloads/loops before choosing a revised binary encoding and physical memory organization. Target-level liveness and electrical assumptions retain their separate obligations.
 
 Only then extend the structural decoder/store/scheduler and circuit refinement, regenerate RTL, rerun independent traces and fault injections, and compare synthesized cost with the current core. Translation/equivalence, physical loading, synchronizers, pad enables, and electrical timing retain their separate proof and implementation obligations in the [processor plan](processor-verification.md).

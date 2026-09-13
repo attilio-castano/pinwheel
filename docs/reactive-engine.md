@@ -2,6 +2,8 @@
 
 Implementation record: **2026-09-13**. The next pure Lean milestone is implemented in `Pinwheel.Engine.Reactive`: three output values with independent drive enables, two observed inputs, selected-input capture, and a bounded wait instruction. A five-slot program emits one stretched clock pulse. This is a candidate extension of the [shared engine](engine-model.md), with a proved embedding of every existing typed program. The existing 16-bit encoding and structural hardware still implement the original engine.
 
+Follow-up: [compiled I²C](compiled-i2c.md) now adds guarded timing, terminal capture/branching, input qualification, and complete write correspondence. The candidate bank has expanded to 128 slots with a per-program last address. This page retains the pulse experiment's timing/evidence; the compiled-I²C record owns the additional operations and storage decision.
+
 ## Instruction and interface contract
 
 ```text
@@ -10,7 +12,7 @@ Wait(pin commands, input/value condition, blocked-observation budget)
 Halt
 ```
 
-Programs retain 32 typed slots and an idle pin-command profile. Duration and wait budget each range from 1 to 256. There are no branches, loops, arithmetic instructions, or separate payload registers yet. Typed instructions have no new binary encoding in this milestone.
+Programs now have 128 typed slots, a last executable address, and an idle pin-command profile. Embedded original programs and the pulse retain last address 31. Duration and wait budget each range from 1 to 256. The later `Checked` and `Qualify` operations add guarded timing, terminal capture, jumps/branches, and consecutive input qualification; see the compiled-I²C contract. There are no arithmetic instructions or separate payload registers yet. Typed instructions have no new binary encoding.
 
 `Pins.levels` holds three output values; `Pins.enabled` selects which drivers are enabled. Disabled outputs are released. `Inputs` contains two independently observed Boolean levels. The transition function never substitutes a commanded output for an observed input.
 
@@ -46,11 +48,11 @@ In the emitted example, `H=4`, `W=8`, `B=3`: SCL is released at edge 4; the targ
 
 The CSV row at cycle `t` shows post-edge commands and their resolved bus; that observation feeds the transition to `t+1`. Consequently external SCL can be high one cycle before the timed-high action begins. The guarantee is an exact internal duration after observed readiness, with an external high interval at least that long under the test's stable-high target assumption.
 
-This pulse has no START, address, ACK decision, or STOP. It is a timing experiment, not a complete I²C transaction. Ordinary timed actions do not monitor continued readiness: unexpected SCL low after wait completion is not detected by this candidate. Matching the reference controller's bus-fault behavior will require an explicit guard or another justified mechanism in a later extension.
+This pulse has no START, address, ACK decision, or STOP. It is a timing experiment, not a complete I²C transaction. Its ordinary timed actions do not monitor continued readiness. The later checked-action variant supplies that guard for complete I²C programs and now matches the reference's bus-fault behavior.
 
 ## Proof and execution evidence
 
-Thirty audited theorems cover two boundaries:
+The initial milestone's thirty theorems cover two boundaries below. The current audit has 38 after adding guard, branch, and qualification theorems; the compiler has a separate 29-theorem audit.
 
 1. **Legacy compatibility:** all original typed programs, states, and input histories embed into the candidate engine with identical pin values, fully enabled outputs, samples, busy/result status, and execution-edge behavior. Reset/start priority and accepted/rejected loads are preserved. The first observed input carries the original input; the second may vary arbitrarily. Composed corollaries establish UART and SPI waveforms and SPI samples against their existing specifications.
 2. **Wait and timed execution:** blocked-prefix retention, exact timeout, ready-at-deadline priority, exact continuation, timed countdown and boundaries, and their composition. `wait_then_timed` proves that `B` blocked observations followed by readiness anchor a complete action duration at observation `B + 1`. Interface lemmas cover wait entry, reset, busy starts, and loading.
@@ -73,10 +75,10 @@ Reproduce with Lean and Python only:
 python3 scripts/check-reactive.py
 ```
 
-The runner builds, audits all 30 named theorems, executes checks, and publishes source/artifact hashes in ignored `build/reactive/report.json` only on success. Logs, `coverage.txt`, and `stretched-pulse.csv` accompany it. Direct executable/audit entry points are `test/Reactive.lean` and `test/ReactiveAxioms.lean` through `lake env lean -DwarningAsError=true` after building.
+The runner builds, audits all 38 named theorems, executes the pulse/legacy suite and `test/Control.lean`, and publishes source/artifact hashes in ignored `build/reactive/report.json` only on success. Logs, `coverage.txt`, and `stretched-pulse.csv` accompany it. Direct executable/audit entry points are `test/Reactive.lean`, `test/Control.lean`, and `test/ReactiveAxioms.lean` through `lake env lean -DwarningAsError=true` after building.
 
 ## Next bounded step
 
-Add conditional continuation from captured data and an explicit outcome/abort contract, then express ACK/NACK paths. Before claiming the complete [I²C reference](i2c-model.md) is compiled, account for bus-free qualification, unexpected clock changes, STOP preparation, and every timeout/fault path as well as the successful byte sequence. State target assumptions and prove transaction/compiler correspondence.
+Conditional continuation, qualification, guarded phases, and complete [I²C compilation](compiled-i2c.md) are now implemented with reference correspondence. Reset remains the engine's status-clearing interface, separately documented from the reference's `resetAbort` result.
 
-Measure expanded program size and compare loops, reusable payload storage, and a larger store before freezing a revised encoding. Only after the abstract extension is established should the decoder, scheduler, pin-enable registers, and storage change in the structural core, followed by refinement proofs, RTL checks, fault injections, and synthesis. Translation/equivalence, physical loading, synchronization, and electrical timing remain separate obligations in the [processor plan](processor-verification.md).
+The measured expansion is 79 typed instructions. Compare loops, reusable payload storage, and the experimental larger bank before freezing a revised encoding. Then extend the structural decoder, scheduler, pin-enable registers, and storage, followed by refinement proofs, RTL checks, fault injections, and synthesis. Translation/equivalence, physical loading, synchronization, and electrical timing remain separate obligations in the [processor plan](processor-verification.md).

@@ -47,6 +47,8 @@ lake env lean -DwarningAsError=true --run test/SPI.lean
 lake env lean -DwarningAsError=true --run test/Engine.lean
 lake env lean -DwarningAsError=true --run test/I2C.lean
 lake env lean -DwarningAsError=true --run test/Reactive.lean
+lake env lean -DwarningAsError=true --run test/Control.lean
+lake env lean -DwarningAsError=true --run test/CompiledI2C.lean
 ```
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
@@ -213,6 +215,19 @@ python3 scripts/check-reactive.py
 ```
 
 The 32-job library build and all 30 named theorem audits passed. The executable suite passed 1,024 pulses across 528,384 observations, all wait budgets and durations with both input selectors/polarities, 1,024 UART/SPI compatibility transfers, mixed UART → SPI → pulse → UART reload, and three rejected faulty transitions. The suite checks legacy protocols against their independent waveform/sample contracts as well as original engine execution. Logs, trace, coverage, and source/artifact hashes are under ignored `build/reactive/`. This receipt covers typed Lean semantics and executable checks, with no new hardware encoding, RTL, or synthesis result.
+
+## Compiled I²C milestone
+
+The later [compiled-I²C record](compiled-i2c.md) adds masked guards, terminal capture/branching, qualification, and a 79-instruction write program. The candidate now uses 128 slots with per-program execution limits; the old encoded core remains unchanged. Reproduce:
+
+```sh
+python3 scripts/check-compiled-i2c.py
+python3 scripts/check-reactive.py
+```
+
+The full build passes with 36 jobs. The compiler audit checks 29 theorems, including arbitrary-input run correspondence and pin/busy/result corollaries. The generic reactive audit now checks 38 theorems and also runs `test/Control.lean`. Both audits allow only standard Lean axioms or none.
+
+Compiled execution passes 4,224 transactions across 822,896 cycles, matches the reference cycle by cycle, and passes an independent wire monitor, sampled error-path forks, three rejected corrupted programs, and UART → SPI → I²C → UART reload. Generic pulse, UART/SPI, guard/branch, qualification, and interface regressions also pass. The compiled receipt, source hashes, logs, and trace are under `build/compiled-i2c/`; generic evidence remains under `build/reactive/`. The full-run compiler theorem excludes reset during execution; engine reset clears status and releases lines, while the reference exposes `resetAbort`. No RTL/synthesis flow was rerun for this Lean-only extension.
 
 The Lean-only portion can be reproduced without hardware tools:
 
