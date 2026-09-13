@@ -73,6 +73,8 @@ The runner builds the library, audits each named theorem, executes the bus tests
 
 ## Implications for the shared engine
 
+Follow-up status: the first drive/observe/wait milestone below is now implemented in the [candidate reactive engine](reactive-engine.md), with 30 audited theorems, legacy compatibility, and a programmable stretched pulse. The original encoded hardware and this I²C reference remain intact. Full I²C compilation and the extended circuit are still open.
+
 The existing fixed-schedule core remains a useful measured baseline. This experiment exposes four missing capabilities:
 
 1. **Separate output drive from input observation.** Preserve push-pull output values for UART/SPI while adding per-pin output enable and observing both SDA and SCL. An open-drain configuration must never actively drive high. Give idle, reset, and faults explicit release behavior.
@@ -80,8 +82,8 @@ The existing fixed-schedule core remains a useful measured baseline. This experi
 3. **Capture and branch.** Sample SDA at the terminal high-period boundary and select continuation from ACK/NACK. Normal NACK should execute STOP; timeout should use an abort path that releases lines. Specify branch target validation, result codes, and counter/capture retention.
 4. **Revisit program capacity and payload storage.** Even a naïve expansion into two timed phases per clock needs 36 actions for 18 clocks, before START/STOP. That exceeds the existing 32-slot store. This is an expansion estimate, not a lower bound for every ISA: combined operations, loops, and reusable byte data can change it. Reference phases do not each imply a hardware instruction.
 
-The next bounded implementation should add the two-line drive/observation contract and a wait-then-timed continuation to the abstract engine, with a one-bit stretched-clock example. First define an embedding of existing actions and prove the original UART/SPI observations unchanged. Test duration one, immediate readiness, readiness at the deadline, persistent blocking, reset, and stopped reload.
+The first bounded implementation added the two-line drive/observation contract and a wait-then-timed continuation to a candidate abstract engine, with a one-bit stretched-clock example. An embedding of existing actions proves the original UART/SPI observations unchanged. Checks cover duration one, immediate readiness, readiness at the deadline, persistent blocking, reset, and stopped reload. See the candidate-engine record for exact observation timing and evidence.
 
-After that, add ACK capture/branch semantics and compile this complete write transaction. Prove its correspondence to an independent protocol contract under explicit target assumptions, then demonstrate UART → SPI → I²C → UART through program replacement on one machine. Measure instruction and data storage before choosing a revised binary encoding or enlarging memory.
+Next add ACK-dependent continuation and account for bus-free qualification, clock-high faults, and STOP/error paths before compiling this complete write transaction. Selected-input capture now exists, including a capture on entry to the falling-clock action; conditional branches do not. Prove correspondence to an independent protocol contract under explicit target assumptions, then demonstrate UART → SPI → I²C → UART through program replacement on one machine. Measure instruction and data storage before choosing a revised binary encoding or enlarging memory.
 
 Only then extend the structural decoder/store/scheduler and circuit refinement, regenerate RTL, rerun independent traces and fault injections, and compare synthesized cost with the current core. Translation/equivalence, physical loading, synchronizers, pad enables, and electrical timing retain their separate proof and implementation obligations in the [processor plan](processor-verification.md).

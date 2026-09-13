@@ -46,6 +46,7 @@ lake env lean -DwarningAsError=true --run test/UART.lean
 lake env lean -DwarningAsError=true --run test/SPI.lean
 lake env lean -DwarningAsError=true --run test/Engine.lean
 lake env lean -DwarningAsError=true --run test/I2C.lean
+lake env lean -DwarningAsError=true --run test/Reactive.lean
 ```
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
@@ -202,6 +203,16 @@ python3 scripts/check-i2c.py
 For restricted sessions on this host, use the process-local installed-toolchain PATH described above. The runner writes logs, a stretched example CSV, coverage, and source/artifact hashes to ignored `build/i2c/`; it removes an old `report.json` before starting and publishes a new one only after all checks pass.
 
 The library build passed with 28 jobs. The suite passed 4,224 transactions across 822,896 observed cycles, all 256 wait budgets and high durations, and three deliberate faulty-transition checks. The 19 audited theorems depend only on standard Lean axioms or none. The existing 2,560-transfer engine regression and boundary/reload cases also passed. This batch did not change or rerun the structural RTL; the prior hardware records retain their own artifact identities. I²C compilation, full-transaction refinement, and hardware integration remain future work.
+
+## Candidate reactive-engine milestone
+
+The [candidate-engine record](reactive-engine.md) documents drive enables, two observed inputs, selected capture, and observation-anchored timed continuation. The old engine and structural hardware remain intact. Reproduce using the existing Lean toolchain and Python:
+
+```sh
+python3 scripts/check-reactive.py
+```
+
+The 32-job library build and all 30 named theorem audits passed. The executable suite passed 1,024 pulses across 528,384 observations, all wait budgets and durations with both input selectors/polarities, 1,024 UART/SPI compatibility transfers, mixed UART → SPI → pulse → UART reload, and three rejected faulty transitions. The suite checks legacy protocols against their independent waveform/sample contracts as well as original engine execution. Logs, trace, coverage, and source/artifact hashes are under ignored `build/reactive/`. This receipt covers typed Lean semantics and executable checks, with no new hardware encoding, RTL, or synthesis result.
 
 The Lean-only portion can be reproduced without hardware tools:
 
