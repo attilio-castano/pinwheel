@@ -2,7 +2,7 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-The package includes the original bitvector setup check and the [pure Lean UART specification, model, and proofs](uart-model.md). Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
+The package includes the original bitvector setup check, [pure Lean UART transmitter](uart-model.md), and [pure Lean SPI controller](spi-model.md), with specifications and proofs. Hardware generation, RTL simulation, and synthesis remain future milestones. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
@@ -39,7 +39,12 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the UART modules and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks the UART proofs as well as the original toolchain example. Run the executable model checks with `lake env lean -DwarningAsError=true --run test/UART.lean`.
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the UART and SPI modules and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks both protocol proofs as well as the original toolchain example. Run the executable model checks with:
+
+```sh
+lake env lean -DwarningAsError=true --run test/UART.lean
+lake env lean -DwarningAsError=true --run test/SPI.lean
+```
 
 Commit `lean-toolchain`, `lakefile.toml`, `lake-manifest.json`, and Lean sources. Lake generates the dependency manifest; this package has no external dependencies. `.lake/` and `build/` are ignored generated artifacts. A successful incremental `lake build` may reuse already checked artifacts.
 
@@ -92,5 +97,20 @@ These results establish the setup example's proof and executable behavior in Lea
 ## UART milestone
 
 The pure Lean portion of the [UART plan](uart-experiment.md) is implemented; see the [model record](uart-model.md) for its contract and verification. CIRCT, an RTL simulator, and synthesis tools have not been installed as part of this work. Add them only when the hardware integration milestone is authorized.
+
+## SPI milestone
+
+The [SPI model record](spi-model.md) documents the implemented mode-0 controller, proofs, 1,792 passing executable transfers, independent CSV check, and rejected early-completion claim. No additional dependency was needed. `lake build` completed with seven jobs, including both protocol libraries. The existing UART regression also passed.
+
+To reproduce the main SPI axiom checks, place these commands in an ignored scratch `.lean` file after `import Pinwheel`, then compile it with `lake env lean -DwarningAsError=true`:
+
+```lean
+#print axioms Pinwheel.SPI.waveform_correct
+#print axioms Pinwheel.SPI.run_samples
+#print axioms Pinwheel.SPI.result_exact
+#print axioms Pinwheel.SPI.mosi_stable_pair
+```
+
+All four reported `[propext, Classical.choice, Quot.sound]`, with no unfinished-proof or project-defined axioms. The [shared-engine proposal](shared-engine.md) is the next design plan; its implementation has not begun.
 
 Primary references: [Lean 4.33.1 release](https://github.com/leanprover/lean4/releases/tag/v4.33.1), [Elan toolchain management](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Managing-Toolchains-with-Elan/), and [Lake documentation](https://lean-lang.org/doc/reference/latest/Build-Tools-and-Distribution/Lake/).

@@ -2,7 +2,7 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-13**. The pure Lean UART specification, finite-state transmitter, and correctness proofs are implemented. See the [model record](uart-model.md) for the exact interface and proof scope, and [development setup](development.md) for the toolchain. Circuit generation, RTL simulation, synthesis, and the reloadable engine remain unimplemented and outside the currently authorized milestone.
+Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md) and [mode-0 SPI controller](spi-model.md) are implemented with specifications, finite state, and correctness proofs. See [development setup](development.md) for the toolchain. The [shared-engine proposal](shared-engine.md) derives the next machine design from both experiments. Circuit generation, RTL simulation, synthesis, and the reloadable engine remain unimplemented.
 
 ## Design objective
 
@@ -18,9 +18,9 @@ Lean replaces Mojo's proposed roles in hardware generation, program assembly, an
 | Machine and program compiler | Define finite state, instruction encoding, storage, and execution on each clock cycle; translate supported protocols into programs. | Invariants and proofs that executing a compiled program produces the specified observations under explicit assumptions. |
 | Circuit implementation | Realize the machine with bounded registers, combinational logic, and memory. | RTL checks against the contract, a separate model-to-implementation correspondence obligation, and synthesis/physical-flow evidence. |
 
-The first trace abstraction covers a single UART output. Interactive protocols will require behavior dependent on input histories, including sampling and synchronization assumptions. Add those abstractions when a concrete protocol requires them.
+The UART contract covers a single output. SPI adds a three-pin output vector and receive behavior defined over arbitrary edge-indexed input histories. Its eight bounded receive slots make input sampling explicit. These concrete contracts now inform the shared engine; a general trace framework is still deferred.
 
-Hardware generation produces the circuit that would be fabricated. Protocol compilation produces reloadable instructions for that circuit. Updating a protocol program must not require regenerating RTL. The fixed UART transmitter is an initial milestone toward that engine.
+Hardware generation produces the circuit that would be fabricated. Protocol compilation produces reloadable instructions for that circuit. Updating a protocol program must not require regenerating RTL. The fixed UART and SPI controllers are reference milestones toward that engine.
 
 ## Let timing obligations inform hardware
 
@@ -55,7 +55,7 @@ Record exactly which artifacts each result covers, along with tool versions, con
 
 ## Proposed repository structure
 
-The root Lean configuration, `Pinwheel.lean`, `Pinwheel/UART/Spec.lean`, `Pinwheel/UART/Tx.lean`, and `test/UART.lean` now exist. The remaining modules and CLI below remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
+The root Lean configuration, `Pinwheel.lean`, both `UART/` and `SPI/` module pairs, and both protocol test files now exist. `Trace.lean`, `Engine/`, `Compile/`, `Hardware/`, the CLI, and examples below remain a plan; create them only when their milestone begins. Keep this document as the single source for the proposed layout.
 
 ```text
 README.md
@@ -63,23 +63,29 @@ README.md
 lean-toolchain                   # Pinned Lean version
 lakefile.toml                    # Lean library and executable targets
 lake-manifest.json               # Lake-managed dependency resolution
-Pinwheel.lean                    # UART library imports and retained setup example
+Pinwheel.lean                    # UART/SPI imports and retained setup example
 Pinwheel/
   Trace.lean                     # Cycle-indexed pin observations
   UART/
     Spec.lean                    # Independent 8N1 behavior
     Tx.lean                      # Finite-state transmitter and proofs
+  SPI/
+    Spec.lean                    # Mode-0 pins, sample times, receive contract
+    Controller.lean              # Finite full-duplex controller and proofs
   Engine/
     ISA.lean                     # Instructions, encoding, validity
     Step.lean                    # Cycle semantics and invariants
   Compile/
     UART.lean                    # UART -> engine program, correctness
+    SPI.lean                     # SPI -> engine program, correctness
   Hardware/
     Circuit.lean                 # Restricted circuit representation
     Emit.lean                    # Proposed hardware MLIR emission
 Main.lean                        # Generation / model execution CLI
 test/
   UART.lean                      # Executable model checks and CSV trace
+  SPI.lean                       # Receive/timing/interface checks and CSV trace
+  Engine.lean                    # Planned reloadability and machine checks
                                  # RTL stimulus/checks will be added later
 examples/                        # Small protocol programs
 docs/
@@ -87,18 +93,20 @@ docs/
   architecture.md                # Design layers and proof boundaries
   uart-experiment.md             # Milestones and acceptance criteria
   uart-model.md                  # Implemented pure Lean contract and proof coverage
+  spi-model.md                   # Implemented SPI contract and proof coverage
+  shared-engine.md               # Derived requirements and next implementation plan
   development.md                 # Toolchain setup and verification commands
 build/                           # Ignored generated RTL, traces, reports
 .lake/                           # Ignored Lean build/dependency cache
 ```
 
-The UART model uses bounded symbol and cycle counters. A standalone `Trace.lean` abstraction was unnecessary for the first single-output specification and remains deferred. Add `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
+The UART model uses bounded symbol and cycle counters. SPI uses bounded phase and cycle counters plus eight receive registers. A standalone `Trace.lean` abstraction remains deferred until shared definitions help the engine proofs. Add `Engine/` and `Compile/` for programmability. Expand the backend's circuit representation only for operations the implementation uses.
 
 When adopting Tiny Tapeout, reserve its conventional `src/`, `test/`, and `info.yaml` paths for the hardware flow, with Lean sources under `Pinwheel/`. Reconcile generated RTL staging, explicit source lists, test commands, and the upstream template revision then. The template is not adopted yet.
 
 ## Toolchain decisions
 
-The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries suffice for the setup example and UART proofs; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
+The package pins `leanprover/lean4:v4.33.1` in `lean-toolchain` and uses Lake for builds. Its generated dependency manifest contains no external packages. Bundled Lean libraries suffice for the setup example and UART/SPI proofs; Mathlib is not a dependency. See [development setup](development.md) for verified versions and commands.
 
 Select a compatible CIRCT distribution/revision, RTL simulator, and synthesis tool when hardware implementation is authorized. Use CIRCT's compatible MLIR version and extend `development.md` with verified commands then.
 

@@ -2,7 +2,9 @@
 
 Planning record: **2026-09-12**.
 
-Status: as of **2026-09-13**, the pure Lean specification, executable transmitter, and correctness proofs in stage 1 are implemented. The [model record](uart-model.md) defines the chosen interface and checked claims. Hardware generation, RTL simulation, synthesis, and stage 2 remain unimplemented and outside the currently authorized milestone. Commit completed, verified changes when work is authorized.
+Status: as of **2026-09-13**, the pure Lean specification, executable transmitter, and correctness proofs in stage 1 are implemented. The [model record](uart-model.md) defines the chosen interface and checked claims. Hardware generation, RTL simulation, synthesis, and stage 2 remain unimplemented. Commit completed, verified changes when work is authorized.
+
+Sequencing update: the [pure Lean SPI experiment](spi-model.md) is also complete, adding multiple outputs and input sampling before the machine design is fixed. The next proposed Lean milestone is the [shared engine for UART and SPI](shared-engine.md). It refines the stage-2 model plan below; the hardware acceptance gates remain pending and separate.
 
 ## Objective and scope
 
