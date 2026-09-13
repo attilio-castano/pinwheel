@@ -6,6 +6,10 @@ namespace Pinwheel.Engine
 abbrev Levels := BitVec 3
 abbrev Samples := Vector Bool 8
 
+/-- Slot zero is the most-significant bit when interpreting the eight receive slots as a byte. -/
+def samplesByte (slots : Samples) : BitVec 8 :=
+  BitVec.ofBoolListBE [slots[0], slots[1], slots[2], slots[3], slots[4], slots[5], slots[6], slots[7]]
+
 /-- Capture reads the single logical input into a named receive slot. -/
 structure Action where
   levels : Levels
