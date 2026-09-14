@@ -2,11 +2,11 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. Physical loading and structural reactive protocol control remain future work.
+Implementation update: **2026-09-14**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. The later [reactive core](reactive-core-hardware.md) now integrates both E64 stores with structural control and complete-machine refinement. Atomic physical loading remains future work.
 
 ## Design objective
 
-The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. The [E64 layout](execution-records.md) and [frontend experiment](execution-hardware.md) now supply a wider decoder and measured direct/indexed stores. The extended structural scheduler and physical loader remain ahead. The original encoded core remains the measured hardware baseline.
+The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. The [E64 layout](execution-records.md) and [frontend experiment](execution-hardware.md) now supply a wider decoder and measured direct/indexed stores. The [integrated reactive core](reactive-core-hardware.md) now supplies the extended structural scheduler, metadata, and raw setup interface. Atomic loading remains ahead; the original encoded core remains a separate measured baseline.
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
@@ -121,6 +121,16 @@ Pinwheel/
     Execution.lean              # Decoded loading/execution and I2C correspondence
     Storage.lean                # Exact serialized-image byte accounting
   Hardware/
+    Reactive/                   # Structural reactive scheduler and complete E64 core
+      State.lean                # Fixed-width register encoding and model relation
+      Scheduler.lean            # Timers, guards, capture forwarding and successor selection
+      Equations.lean            # Explicit register-update equations
+      Primitives.lean           # Capture/input circuit lemmas
+      SchedulerProofs.lean      # Circuit equations
+      Refinement.lean           # Scheduler-to-engine step/history proofs
+      Core.lean                 # Direct/indexed stores, metadata and raw write interlocks
+      CoreProofs.lean           # Full-register-bank machine correspondence
+      Emit.lean                 # Named component bindings and MLIR adapter
     Execution/
       Record.lean               # E64 literal fields and canonical codec
       RecordProofs.lean         # Typed round trips and accepted-word canonicality
@@ -153,6 +163,9 @@ test/
   I2CRead.lean                   # Combined-read wire matrix and packed fetch backends
   I2CReadAxioms.lean             # Read compiler/reference theorem audit
   Execution.lean                # E64 emission, file lowering, independent vector checks
+  ReactiveCore.lean            # Core emission and structural component/oracle checks
+  ReactiveCoreAxioms.lean      # Every public reactive hardware theorem audit
+  reactive_core_tb.sv          # Integrated RTL against independent expected states
   ExecutionAxioms.lean          # Every public E64 theorem dependency audit
   execution_decoder_tb.sv       # Raw E64 decoder oracle checks
   execution_store_tb.sv         # Direct/indexed write/read edges and CSV comparison
@@ -177,6 +190,8 @@ scripts/
   check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   check-reactive.py              # Candidate-engine proofs, tests, and artifact receipt
   check-i2c-read.py              # Combined-read proofs, wire checks, and receipt
+  check-reactive-core.py         # Whole-machine proof/RTL/synthesis receipt
+  reactive-core-vectors.py       # Independent E64 machine and wire protocol oracle
   check-execution.py             # E64 audit, Lean/RTL checks, mutations, synthesis
   execution-vectors.py           # Independent E64 grammar and raw store stimuli
   check-compiled-i2c.py          # Explicit/--looped proofs, shared wire checks, receipts
@@ -237,4 +252,4 @@ These links are live documentation, not immutable snapshots. Verify compatibilit
 
 ## Register-read capacity experiment
 
-The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The E64 layout now accounts for those wider addresses and destinations. Its direct and indexed stores have proved read/write/decoder equations and measured generic RTL costs. The indexed candidate saves storage while adding lookup depth; its full integration with the reactive scheduler and atomic physical loading remains ahead.
+The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The E64 layout now accounts for those wider addresses and destinations. Its direct and indexed stores have proved read/write/decoder equations and measured generic RTL costs. The [integrated reactive core](reactive-core-hardware.md) now connects both stores to the scheduler and proves complete-register-bank correspondence. Its indexed candidate saves generic cells while lengthening the dependent read path. Atomic physical loading and technology-constrained timing remain ahead.

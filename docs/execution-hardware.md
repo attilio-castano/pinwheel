@@ -39,8 +39,9 @@ There is **no assumed power-up memory value, staging bank, atomic commit, reset
 port, or completeness check** in this slice. The testbench initializes every
 physical register before checking outputs. Raw uploads can expose partial new
 contents; a system must not start execution until loading is complete. This is
-not yet an implementation of the engine's atomic load operation. Idle pins,
-last-address metadata, and commit/start interlocks need their own integration.
+not an implementation of the engine's atomic load operation. The later
+[integrated core](reactive-core-hardware.md) adds idle/last metadata and
+reset/start write interlocks; atomic commit remains open.
 Any staging required to preserve an old program must be counted later.
 
 ## Proof boundary
@@ -59,8 +60,9 @@ no native decision assumptions. The audit covers:
   proof, given a successful indexed-lowering certificate.
 
 The circuit equations prove the frontend behavior. The complete-run theorems
-still use the Lean reactive scheduler; they do not claim that a wider reactive
-RTL processor has been built. Lowering accepts at most 64 distinct records and
+use the Lean reactive scheduler. The subsequent
+[integrated-core proof](reactive-core-hardware.md) supplies its structural RTL
+implementation; it is a separate result from the frontend experiment recorded here. Lowering accepts at most 64 distinct records and
 checks all 256 expanded lookups. Actual V0 explicit/counted write files are
 tested to lower to identical E64 words. Full V0-to-wide-machine refinement and
 physical upload refinement are separate from these lookup certificates.
@@ -131,11 +133,10 @@ artifact hashes. The success receipt is removed before a run and written only
 after every check passes. The emitter/CIRCT path is tested, not formally proved;
 gate equivalence remains open.
 
-The next bounded integration should connect this frontend to structural reactive
-control, timers, pin enables, and the 16-slot capture bank, then prove complete
-machine refinement and repeat UART/SPI/I²C traces on generated RTL. Terminal
-capture must feed the branch decision on the intended edge. Follow with the
-staging/commit loader and a technology-constrained area/timing check, counting
-metadata and upload storage. Further I²C features can then be chosen against
+The [integrated reactive core](reactive-core-hardware.md) now completes that
+connection, with structural control, timers, pin enables, 16 capture slots,
+whole-machine refinement, and UART/SPI/I²C RTL checks. This document records the
+standalone frontend measurements. Next are the staging/commit loader and a
+technology-constrained area/timing check, counting metadata and upload storage. Further I²C features can then be chosen against
 that working hardware boundary; this batch does not add arbitration, recovery,
 analog timing, or arbitrary-length reads.

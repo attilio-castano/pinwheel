@@ -2,6 +2,8 @@
 
 An early-stage project exploring an entry in Jane Street's protocol emulator ASIC competition.
 
+The E64 frontends now run with the **structural reactive scheduler**, with **55 audited hardware theorems** establishing complete-machine correspondence for fixed loaded programs. Both generated cores run UART, SPI, I²C write, and repeated-START I²C read; the independent oracle matches **27,753 direct / 31,785 indexed edges**. Generic synthesis measures **86,705 direct / 29,732 indexed cells**, with longest combinational paths of **68 / 86 stages**. Raw setup writes are blocked while busy, resetting, or starting. Setup remains non-atomic; staged upload/commit and constrained physical measurements are next. See [the integrated core record](docs/reactive-core-hardware.md); reproduce with `python3 scripts/check-reactive-core.py`.
+
 Start with:
 
 1. [The competition brief](docs/competition.md) for official constraints and primary sources.
@@ -23,21 +25,22 @@ Start with:
 17. [PWL binary images](docs/binary-images.md) for the version-0 format, encoder/decoder proofs, generated files, and exact byte accounting.
 18. [Bounded I²C register reads](docs/i2c-register-read.md) for repeated START, received data, and the wider engine capacities.
 19. [E64 execution records](docs/execution-records.md) for the selected layout and certified lowering.
-20. [Decoder/store hardware](docs/execution-hardware.md) for circuit proofs, RTL checks, measured costs, and the next integration boundary.
+20. [Decoder/store hardware](docs/execution-hardware.md) for the standalone frontend comparison.
+21. [The integrated reactive core](docs/reactive-core-hardware.md) for whole-machine correspondence, UART/SPI/I²C RTL, and current hardware costs.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
-The complete execution core is now described structurally in Lean and proved to implement the engine: a 32×16 instruction store, decoder, scheduler, timer, pin registers, and input capture. Composed proofs recover UART/SPI waveform correctness and SPI receive correctness for the concrete core.
+The original complete execution core is described structurally in Lean and proved to implement the engine: a 32×16 instruction store, decoder, scheduler, timer, pin registers, and input capture. Composed proofs recover UART/SPI waveform correctness and SPI receive correctness for the concrete core.
 
 The same generated SystemVerilog runs both protocols through internal atomic program commits. Lean and RTL matched on **71,703 clock edges**, including **1,032 UART/SPI transfers**. The standalone decoder passed all **65,536** input words. Three faulty RTL variants were rejected, and generic synthesis produced **1,907 cells**, including **543 register bits**. See the [core record](docs/core-hardware.md) for coverage and artifact identities.
 
-These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Translation/equivalence evidence and a physical program-loading interface remain open. The hardware baseline still embeds payload bits; the later Lean candidates below explore reusable data, reactive control flow, and line release before structural implementation.
+These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Translation/equivalence evidence and a physical program-loading interface remain open. The original hardware baseline embeds payload bits. The later reactive core implements input-dependent control and line release; counted load images still lower to literal E64 execution records.
 
 A separate pure Lean I²C reference controller writes an address and one byte over an ideal open-drain bus, handles ACK/NACK, and waits through clock stretching. Its 19 audited theorems cover bus behavior and controller timing; 4,224 closed-loop transactions and three rejected faulty variants provide executable evidence. See the [I²C record](docs/i2c-model.md) for scope and proof boundaries; reproduce with `python3 scripts/check-i2c.py`, using only Lean and Python.
 
 A candidate Lean engine separates drive commands from two observed inputs and supports waits, guarded timing, terminal capture, conditional branches, and input qualification. Its 38 audited theorems retain legacy compatibility and establish the general operations. Checks pass 1,024 stretched pulses and 1,024 UART/SPI transfers; reproduce with `python3 scripts/check-reactive.py`.
 
-I²C now runs as a 79-instruction program on that candidate engine. Compiler proofs establish identical pin commands, busy status, and results to the reference for arbitrary sampled input histories during a run. The compiled suite passes 4,224 transactions, fault injections, three corrupted programs, and UART → SPI → I²C → UART reload. See [compiled I²C](docs/compiled-i2c.md) for the 29-theorem audit, reset boundary, and experimental 128-slot bank; reproduce with `python3 scripts/check-compiled-i2c.py`. The encoded hardware still implements the original UART/SPI engine. The E64 milestone below implements the wider decoder and stores; the structural reactive scheduler remains ahead.
+I²C now runs as a 79-instruction program on that candidate engine. Compiler proofs establish identical pin commands, busy status, and results to the reference for arbitrary sampled input histories during a run. The compiled suite passes 4,224 transactions, fault injections, three corrupted programs, and UART → SPI → I²C → UART reload. See [compiled I²C](docs/compiled-i2c.md) for the 29-theorem audit, reset boundary, and experimental 128-slot bank; reproduce with `python3 scripts/check-compiled-i2c.py`. The original encoded core remains the UART/SPI baseline. The integrated E64 core now implements the reactive scheduler as well.
 
 A counted-loop alternative now stores **15 templates plus two loop descriptors and two data bytes**, reusing one bit body and one ACK body for both bytes. Its 16 audited theorems establish fetched-instruction and complete-state equality with the explicit image, with no extra modeled cycles. The same 4,224 transactions pass, alongside 6,144 generic serial loops and five rejected loop-specific corruptions. See [the byte-loop comparison](docs/looped-i2c.md); reproduce with `python3 scripts/check-compiled-i2c.py --looped`. The execution PC still spans 79 addresses; a decoder derives the loop indices. The binary-image milestone below measures serialized size; generic E64 decoder/store costs are measured below; physical delay and total chip area remain unmeasured.
 

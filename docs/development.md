@@ -284,4 +284,14 @@ python3 scripts/check-execution.py
 
 Run the binary suite first to create the actual `.pwl` inputs. The execution runner writes its success receipt only after proofs, native lowering, independent vectors, Lean/RTL CSV equality, expected mutation rejections, synthesis, and both packed read matrices pass. Outputs live under ignored `build/execution/`; the typed read receipt and wire trace remain under `build/i2c-read/`.
 
-The Lean-only frontend commands are `lake env lean -DwarningAsError=true --run test/Execution.lean`, `python3 scripts/execution-vectors.py`, then the same Lean command with `check` appended. Use `test/ExecutionAxioms.lean` for the audit and `test/I2CRead.lean direct` or `indexed` for packed wire suites. This proves/checks the frontends and runs the Lean scheduler; the wider structural reactive scheduler and atomic physical loader are still pending.
+The Lean-only frontend commands are `lake env lean -DwarningAsError=true --run test/Execution.lean`, `python3 scripts/execution-vectors.py`, then the same Lean command with `check` appended. Use `test/ExecutionAxioms.lean` for the audit and `test/I2CRead.lean direct` or `indexed` for packed wire suites. This reproduces the standalone frontends. The wider structural core is covered by the following runner; atomic physical loading remains open.
+
+## Integrated reactive core
+
+```sh
+python3 scripts/check-reactive-core.py
+```
+
+The [integrated-core record](reactive-core-hardware.md) documents the 55-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
+
+For Lean-only validation, run `lake build`, `lake env lean test/ReactiveCoreAxioms.lean`, `lake env lean --run test/ReactiveCore.lean`, `python3 scripts/reactive-core-vectors.py`, and `lake env lean --run test/ReactiveCore.lean check`. The last command evaluates structural scheduler and store-read components using the named bindings also used during export. Existing `check-core.py` and `check-execution.py` retain the original complete-core and standalone frontend regressions.
