@@ -83,3 +83,42 @@ writes its proof audit, independent traces, generated RTL, mapping logs/netlists
 and source hashes under `build/storage/`, with `report.json` written only after
 success. Reference evidence is in `build/loader/report.json` and
 `build/technology/report.json`; these are distinct evidence snapshots.
+
+## Current-instruction cache
+
+The cache adds 64 register bits and removes the current-PC combinational read
+from the active store. The successor port remains combinational. During a wait
+or countdown the current word is held; when starting or changing PC it is loaded
+from the successor read. A self-branch can retain the word because the active
+program is immutable while busy. Idle cache contents are irrelevant; starting
+always loads the new entry, including after reset or commit.
+
+Eighteen audited Lean theorems establish the cache invariant, its preservation,
+arbitrary-run correspondence to the atomic reference, and structural circuit
+next-state correspondence. The emitter uses named component boundaries and
+remains independently checked rather than formally verified.
+
+| 64-entry design | Corner | Cell area, µm² | FF bits | ABC combinational delay, ps |
+|---|---|---:|---:|---:|
+| With current-word cache | Typical | 978,426.2376 | 11,417 | 7,109.94 |
+| With current-word cache | Slow | 978,972.3720 | 11,417 | 9,952.98 |
+
+The cache reduces mapped area despite adding registers, and improves the measured
+combinational path. Lean and emitted RTL pass **21,342** independent oracle edges,
+with **13,107,904** storage observations in RTL. Added cases cover consecutive
+one-cycle actions, self-branches, both outcomes of a terminal-capture branch, and
+successor entry overwriting that captured slot. RTL checks the cache invariant
+on every busy edge; a cache held at halt is rejected by the same oracle.
+
+Reproduce the cache experiment after generating the baseline loader vectors:
+
+```sh
+lake build Pinwheel.Hardware.Storage.CacheEmit
+lake env lean --run test/Storage.lean
+lake env lean -DwarningAsError=true test/StorageCacheAxioms.lean
+python3 scripts/measure-storage-variant.py cached --ff 11417
+lake env lean -DwarningAsError=true --run test/StorageCache.lean
+```
+
+The cache measurements are isolated from the 32-entry capacity change. Receipts,
+logs, mutation, and generated artifacts are under `build/storage/cached/`.
