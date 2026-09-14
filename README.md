@@ -22,6 +22,8 @@ Start with:
 16. [Reusable byte loops](docs/looped-i2c.md) for the 79-versus-15 storage comparison, cycle-preservation proofs, and remaining hardware costs.
 17. [PWL binary images](docs/binary-images.md) for the version-0 format, encoder/decoder proofs, generated files, and exact byte accounting.
 
+18. [Bounded I²C register reads](docs/i2c-register-read.md) for repeated START, received data, and the capacity requirements for the next hardware layout.
+
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
 The complete execution core is now described structurally in Lean and proved to implement the engine: a 32×16 instruction store, decoder, scheduler, timer, pin registers, and input capture. Composed proofs recover UART/SPI waveform correctness and SPI receive correctness for the concrete core.
@@ -43,3 +45,5 @@ Canonical **PWL version 0** images now encode both forms: **715 bytes explicit v
 The package pins Lean 4.33.1 and uses bundled libraries only. Run `lake build` to check the proofs. Run `lake env lean -DwarningAsError=true --run test/Engine.lean` for compiled protocols and the reference engine's boundary/reload cases. The equivalent commands for `test/UART.lean` and `test/SPI.lean` exercise the fixed reference models. These suites write CSV traces under `build/`.
 
 Run `python3 scripts/install-hardware-tools.py` once for the pinned Apple Silicon tools, then `python3 scripts/check-core.py` to reproduce the complete-core proofs, axiom audit, independent traces, RTL simulations, fault injections, and generic synthesis. `python3 scripts/check-hardware.py` reproduces the separate countdown/encoding experiment. See [development setup](docs/development.md) for commands and requirements.
+
+The combined I²C register-read experiment now runs on a 256-address, 16-sample instance of the same reactive engine. It preserves the four-phase bit schedule, uses 155 addresses and eleven sample bits, and passes 4,468 wire transactions with compiler/reference correspondence proofs. Existing program and PWL V0 bounds retain their defaults. See [the register-read record](docs/i2c-register-read.md).

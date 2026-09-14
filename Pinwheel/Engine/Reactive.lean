@@ -14,18 +14,18 @@ structure Pins where
 def Pins.pushPull (levels : Levels) : Pins := ⟨levels, 7⟩
 def Pins.openDrain (pullLow : Levels) : Pins := ⟨0, pullLow⟩
 
-structure Capture where
+structure Capture (lastSample : Nat := 7) where
   input : Fin 2
-  destination : Fin 8
+  destination : Fin (lastSample + 1)
   deriving DecidableEq, Repr
 
-structure Action where
+structure Action (lastSample : Nat := 7) where
   pins : Pins
   durationMinusOne : Fin 256
-  capture : Option Capture := none
+  capture : Option (Capture lastSample) := none
   deriving DecidableEq, Repr
 
-def Action.duration (a : Action) : Nat := a.durationMinusOne.val + 1
+def Action.duration (a : Action lastSample) : Nat := a.durationMinusOne.val + 1
 
 structure Condition where
   input : Fin 2
@@ -49,18 +49,18 @@ structure Check where
 def Check.ready (c : Check) (inputs : Inputs) : Bool :=
   inputs &&& c.mask == c.value &&& c.mask
 
-inductive Finish where
+inductive Finish (lastAddress : Nat := 127) (lastSample : Nat := 7) where
   | sequential
-  | jump (target : Fin 128)
-  | branch (sample : Fin 8) (whenTrue whenFalse : Fin 128)
+  | jump (target : Fin (lastAddress + 1))
+  | branch (sample : Fin (lastSample + 1)) (whenTrue whenFalse : Fin (lastAddress + 1))
   deriving DecidableEq, Repr
 
 /-- Guard each edge, capture at the terminal edge, then choose the successor. -/
-structure Checked where
-  action : Action
+structure Checked (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  action : Action lastSample
   guard : Check
-  terminalCapture : Option Capture := none
-  finish : Finish := .sequential
+  terminalCapture : Option (Capture lastSample) := none
+  finish : Finish lastAddress lastSample := .sequential
   deriving DecidableEq, Repr
 
 /-- Require a consecutive ready interval; blocked input resets it and consumes wait budget. -/
@@ -71,61 +71,61 @@ structure Qualify where
   budgetMinusOne : Fin 256
   deriving DecidableEq, Repr
 
-inductive Instruction where
-  | action (a : Action)
+inductive Instruction (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  | action (a : Action lastSample)
   | wait (w : Wait)
-  | checked (a : Checked)
+  | checked (a : Checked lastAddress lastSample)
   | qualify (q : Qualify)
   | halt
   deriving DecidableEq, Repr
 
 /-- Idle commands also apply to reset, timeout, and malformed execution. -/
-structure Program where
-  memory : Vector Instruction 128
+structure Program (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  memory : Vector (Instruction lastAddress lastSample) (lastAddress + 1)
   idle : Pins
-  last : Fin 128 := 127
+  last : Fin (lastAddress + 1) := ⟨lastAddress, by omega⟩
   deriving DecidableEq, Repr
 
-def Program.fetch (p : Program) (pc : Fin 128) : Instruction := p.memory[pc.val]
+def Program.fetch (p : Program lastAddress lastSample) (pc : Fin (lastAddress + 1)) : Instruction lastAddress lastSample := p.memory[pc.val]
 
 inductive Stop where
   | ready | completed | fault | timeout
   deriving DecidableEq, Repr
 
-inductive Control where
+inductive Control (lastAddress : Nat := 127) where
   | stopped (reason : Stop)
-  | active (pc : Fin 128) (remaining : Fin 256)
-  | waiting (pc : Fin 128) (remaining : Fin 256)
-  | checked (pc : Fin 128) (remaining : Fin 256)
-  | qualifying (pc : Fin 128) (remaining waitLeft : Fin 256)
+  | active (pc : Fin (lastAddress + 1)) (remaining : Fin 256)
+  | waiting (pc : Fin (lastAddress + 1)) (remaining : Fin 256)
+  | checked (pc : Fin (lastAddress + 1)) (remaining : Fin 256)
+  | qualifying (pc : Fin (lastAddress + 1)) (remaining waitLeft : Fin 256)
   deriving DecidableEq, Repr
 
-structure State where
-  control : Control
+structure State (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  control : Control lastAddress
   pins : Pins
-  samples : Samples
+  samples : Vector Bool (lastSample + 1)
   deriving DecidableEq, Repr
 
-def busy (s : State) : Bool := match s.control with
+def busy (s : State lastAddress lastSample) : Bool := match s.control with
   | .stopped _ => false
   | _ => true
 
-def result (s : State) : Option Samples := match s.control with
+def result (s : State lastAddress lastSample) : Option (Vector Bool (lastSample + 1)) := match s.control with
   | .stopped .completed => some s.samples
   | _ => none
 
-def capture (slots : Samples) (c : Option Capture) (inputs : Inputs) : Samples :=
+def capture (slots : Vector Bool (lastSample + 1)) (c : Option (Capture lastSample)) (inputs : Inputs) : Vector Bool (lastSample + 1) :=
   match c with
   | none => slots
   | some c => Engine.capture slots (some c.destination) inputs[c.input.val]
 
-def stop (p : Program) (reason : Stop) (slots : Samples) : State :=
+def stop (p : Program lastAddress lastSample) (reason : Stop) (slots : Vector Bool (lastSample + 1)) : State lastAddress lastSample :=
   ⟨.stopped reason, p.idle, slots⟩
 
-def reset (p : Program) : State := stop p .ready (Vector.replicate 8 false)
+def reset (p : Program lastAddress lastSample) : State lastAddress lastSample := stop p .ready (Vector.replicate (lastSample + 1) false)
 
 /-- Wait entry only applies commands. Its first observation is on the following edge. -/
-def enter (p : Program) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def enter (p : Program lastAddress lastSample) (pc : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   match p.fetch pc with
   | .halt => stop p .completed slots
   | .action a => ⟨.active pc a.durationMinusOne, a.pins, capture slots a.capture inputs⟩
@@ -134,22 +134,22 @@ def enter (p : Program) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : Sta
       capture slots a.action.capture inputs⟩
   | .qualify q => ⟨.qualifying pc q.durationMinusOne q.budgetMinusOne, q.pins, slots⟩
 
-def start (p : Program) (inputs : Inputs) : State := enter p 0 (Vector.replicate 8 false) inputs
+def start (p : Program lastAddress lastSample) (inputs : Inputs) : State lastAddress lastSample := enter p 0 (Vector.replicate (lastSample + 1) false) inputs
 
-def next (p : Program) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def next (p : Program lastAddress lastSample) (pc : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   if h : pc.val < p.last.val then enter p ⟨pc.val + 1, by omega⟩ slots inputs
   else stop p .fault slots
 
-def jump (p : Program) (target : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def jump (p : Program lastAddress lastSample) (target : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   if target.val ≤ p.last.val then enter p target slots inputs else stop p .fault slots
 
-def dispatch (p : Program) (pc : Fin 128) (finish : Finish) (slots : Samples) (inputs : Inputs) : State :=
+def dispatch (p : Program lastAddress lastSample) (pc : Fin (lastAddress + 1)) (finish : Finish lastAddress lastSample) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   match finish with
   | .sequential => next p pc slots inputs
   | .jump target => jump p target slots inputs
   | .branch sample yes no => jump p (if slots[sample.val] then yes else no) slots inputs
 
-def advance (p : Program) (s : State) (inputs : Inputs) : State :=
+def advance (p : Program lastAddress lastSample) (s : State lastAddress lastSample) (inputs : Inputs) : State lastAddress lastSample :=
   match s.control with
   | .stopped _ => s
   | .active pc remaining =>
@@ -184,22 +184,22 @@ def advance (p : Program) (s : State) (inputs : Inputs) : State :=
       else stop p .timeout s.samples
     | _ => stop p .fault s.samples
 
-def step (p : Program) (s : State) (resetRequested startRequested : Bool) (inputs : Inputs) : State :=
+def step (p : Program lastAddress lastSample) (s : State lastAddress lastSample) (resetRequested startRequested : Bool) (inputs : Inputs) : State lastAddress lastSample :=
   if resetRequested then reset p
   else if busy s then advance p s inputs
   else if startRequested then start p inputs
   else s
 
-def run (p : Program) (s : State) (incoming : Nat → Inputs) : Nat → State
+def run (p : Program lastAddress lastSample) (s : State lastAddress lastSample) (incoming : Nat → Inputs) : Nat → State lastAddress lastSample
   | 0 => s
   | n + 1 => advance p (run p s incoming n) (incoming (n + 1))
 
-structure Machine where
-  program : Program
-  state : State
+structure Machine (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  program : Program lastAddress lastSample
+  state : State lastAddress lastSample
   deriving DecidableEq, Repr
 
-def load (m : Machine) (p : Program) : Machine × Bool :=
+def load (m : Machine lastAddress lastSample) (p : Program lastAddress lastSample) : Machine lastAddress lastSample × Bool :=
   if busy m.state then (m, false) else (⟨p, reset p⟩, true)
 
 end Pinwheel.Engine.Reactive

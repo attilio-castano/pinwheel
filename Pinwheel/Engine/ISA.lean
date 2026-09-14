@@ -32,7 +32,8 @@ structure Program where
 
 def Program.fetch (p : Program) (pc : Fin 32) : Instruction := p.memory[pc.val]
 
-def capture (slots : Samples) (destination : Option (Fin 8)) (input : Bool) : Samples :=
+def capture {lastSample : Nat} (slots : Vector Bool (lastSample + 1))
+    (destination : Option (Fin (lastSample + 1))) (input : Bool) : Vector Bool (lastSample + 1) :=
   Vector.ofFn fun slot => if destination = some slot then input else slots[slot.val]
 
 end Pinwheel.Engine

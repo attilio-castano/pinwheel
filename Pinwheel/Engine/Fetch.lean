@@ -4,20 +4,20 @@ import Pinwheel.Engine.Reactive
 The adapter fetches only the current instruction; it never builds an expanded bank. -/
 namespace Pinwheel.Engine.Reactive.Fetch
 
-structure Store where
-  fetch : Fin 128 → Option Instruction
+structure Store (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  fetch : Fin (lastAddress + 1) → Option (Instruction lastAddress lastSample)
   idle : Pins
-  last : Fin 128
+  last : Fin (lastAddress + 1)
 
-def Store.ofProgram (p : Program) : Store := ⟨fun pc => some (p.fetch pc), p.idle, p.last⟩
+def Store.ofProgram (p : Program lastAddress lastSample) : Store lastAddress lastSample := ⟨fun pc => some (p.fetch pc), p.idle, p.last⟩
 
-def stop (p : Store) (reason : Stop) (slots : Samples) : State :=
+def stop (p : Store lastAddress lastSample) (reason : Stop) (slots : Vector Bool (lastSample + 1)) : State lastAddress lastSample :=
   ⟨.stopped reason, p.idle, slots⟩
 
-def reset (p : Store) : State := stop p .ready (Vector.replicate 8 false)
+def reset (p : Store lastAddress lastSample) : State lastAddress lastSample := stop p .ready (Vector.replicate (lastSample + 1) false)
 
 /-- Wait entry only applies commands. Its first observation is on the following edge. -/
-def enter (p : Store) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def enter (p : Store lastAddress lastSample) (pc : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   match p.fetch pc with
   | none => stop p .fault slots
   | some .halt => stop p .completed slots
@@ -27,22 +27,22 @@ def enter (p : Store) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State
       capture slots a.action.capture inputs⟩
   | some (.qualify q) => ⟨.qualifying pc q.durationMinusOne q.budgetMinusOne, q.pins, slots⟩
 
-def start (p : Store) (inputs : Inputs) : State := enter p 0 (Vector.replicate 8 false) inputs
+def start (p : Store lastAddress lastSample) (inputs : Inputs) : State lastAddress lastSample := enter p 0 (Vector.replicate (lastSample + 1) false) inputs
 
-def next (p : Store) (pc : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def next (p : Store lastAddress lastSample) (pc : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   if h : pc.val < p.last.val then enter p ⟨pc.val + 1, by omega⟩ slots inputs
   else stop p .fault slots
 
-def jump (p : Store) (target : Fin 128) (slots : Samples) (inputs : Inputs) : State :=
+def jump (p : Store lastAddress lastSample) (target : Fin (lastAddress + 1)) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   if target.val ≤ p.last.val then enter p target slots inputs else stop p .fault slots
 
-def dispatch (p : Store) (pc : Fin 128) (finish : Finish) (slots : Samples) (inputs : Inputs) : State :=
+def dispatch (p : Store lastAddress lastSample) (pc : Fin (lastAddress + 1)) (finish : Finish lastAddress lastSample) (slots : Vector Bool (lastSample + 1)) (inputs : Inputs) : State lastAddress lastSample :=
   match finish with
   | .sequential => next p pc slots inputs
   | .jump target => jump p target slots inputs
   | .branch sample yes no => jump p (if slots[sample.val] then yes else no) slots inputs
 
-def advance (p : Store) (s : State) (inputs : Inputs) : State :=
+def advance (p : Store lastAddress lastSample) (s : State lastAddress lastSample) (inputs : Inputs) : State lastAddress lastSample :=
   match s.control with
   | .stopped _ => s
   | .active pc remaining =>
@@ -77,21 +77,21 @@ def advance (p : Store) (s : State) (inputs : Inputs) : State :=
       else stop p .timeout s.samples
     | _ => stop p .fault s.samples
 
-def step (p : Store) (s : State) (resetRequested startRequested : Bool) (inputs : Inputs) : State :=
+def step (p : Store lastAddress lastSample) (s : State lastAddress lastSample) (resetRequested startRequested : Bool) (inputs : Inputs) : State lastAddress lastSample :=
   if resetRequested then reset p
   else if busy s then advance p s inputs
   else if startRequested then start p inputs
   else s
 
-def run (p : Store) (s : State) (incoming : Nat → Inputs) : Nat → State
+def run (p : Store lastAddress lastSample) (s : State lastAddress lastSample) (incoming : Nat → Inputs) : Nat → State lastAddress lastSample
   | 0 => s
   | n + 1 => advance p (run p s incoming n) (incoming (n + 1))
 
-structure Machine where
-  program : Store
-  state : State
+structure Machine (lastAddress : Nat := 127) (lastSample : Nat := 7) where
+  program : Store lastAddress lastSample
+  state : State lastAddress lastSample
 
-def load (m : Machine) (p : Store) : Machine × Bool :=
+def load (m : Machine lastAddress lastSample) (p : Store lastAddress lastSample) : Machine lastAddress lastSample × Bool :=
   if busy m.state then (m, false) else (⟨p, reset p⟩, true)
 
 end Pinwheel.Engine.Reactive.Fetch

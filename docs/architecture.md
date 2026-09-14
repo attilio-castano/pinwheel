@@ -84,6 +84,7 @@ Pinwheel/
     Spec.lean                    # Address/write bits, replies, and bounded timing
     Controller.lean              # Pure write controller with ACK and stretching
     Proofs.lean                  # Wire order, capture, wait, and abort theorems
+    RegisterRead.lean            # Combined register-read reference with repeated START
   Engine/
     ISA.lean                     # Typed actions and bounded program storage
     Step.lean                    # Cycle semantics, state, and atomic loading
@@ -99,6 +100,8 @@ Pinwheel/
     UART.lean                    # UART -> engine program, correctness
     SPI.lean                     # SPI -> engine program, correctness
     StretchedPulse.lean          # Five-slot program for candidate reactive engine
+    I2CRead.lean                 # Bounded register-read compiler (256 addresses, 16 samples)
+    I2CReadProofs.lean           # Universal read compiler/reference correspondence
     I2C.lean                     # 79-instruction write compiler and result decoding
     I2CPhases.lean               # Reference/compiled-state relation and phase proofs
     I2CProofs.lean               # Full-run pin, busy, and result correspondence
@@ -209,3 +212,7 @@ The [pinned hardware tools](../tools/hardware-toolchain.json) use CIRCT firtool-
 - [CIRCT setup](https://circt.llvm.org/docs/GettingStarted/): toolchain setup and LLVM/MLIR revisions.
 
 These links are live documentation, not immutable snapshots. Verify compatibility against selected revisions during setup.
+
+## Register-read capacity experiment
+
+The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The next decoder/store layout must account for the wider addresses and destinations.
