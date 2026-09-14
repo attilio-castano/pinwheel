@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -52,10 +53,22 @@ def main():
                 artifacts[str(path.relative_to(ROOT))] = sha(path)
 
     collect({k: v for k, v in last.items() if k != "metrics"})
-    checks = {k: v for k, v in metrics.items() if any(s in k for s in ["violation", "unconstrained", "drc", "antenna", "lvs", "unconnected"])}
+    checks = {k: v for k, v in metrics.items() if any(s in k for s in [
+        "violation", "_vio__", "unconstrained", "unannotated", "drc", "antenna",
+        "lvs", "unconnected", "floating",
+    ])}
+    routing_passes = []
+    for log in run.glob("*-openroad-detailedrouting/openroad-detailedrouting.log"):
+        iteration = None
+        for line in log.read_text().splitlines():
+            if match := re.search(r"Start (\d+)(?:st|nd|rd|th) (?:optimization|stubborn tiles|guides tiles) iteration", line):
+                iteration = int(match[1])
+            if match := re.search(r"Number of violations = (\d+)", line):
+                routing_passes.append({"iteration": iteration, "violations": int(match[1])})
     report = {
         "tag": args.tag, "flow_exit_code": invocation["exit_code"],
         "last_completed_step": states[-1].parent.name,
+        "completed_steps": [p.parent.name for p in states],
         "detailed_routing_completed": any("-openroad-detailedrouting" in p.parent.name for p in states),
         "extracted_timing_completed": any("-openroad-stapostpnr" in p.parent.name for p in states),
         "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
@@ -68,6 +81,7 @@ def main():
         "timing_violation_corners": resolved["TIMING_VIOLATION_CORNERS"],
         "enabled_checks": {k: v for k, v in resolved.items() if k.startswith("RUN_")},
         "metrics": metrics, "checks": checks, "stages": stages, "artifact_sha256": artifacts,
+        "routing_passes": routing_passes,
         "boundary": invocation["boundary"] + " Flow completion alone is not comprehensive sign-off. Inspect enabled checks, timing constraints, extracted RC assumptions, and all violations. Formal translation equivalence and asynchronous pin behavior remain separate.",
     }
     (BASE / (args.tag + "-report.json")).write_text(json.dumps(report, indent=2) + "\n")

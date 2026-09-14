@@ -250,11 +250,14 @@ and records latch cell costs. Synchronous SRAM reads require successor prefetch
 and a worst-case schedule; transparent latches require a phase-aware write
 contract. Neither is a drop-in implementation of the current store semantics.
 
-Carry the **32-entry dense cached flip-flop machine** into a separate physical
-validation milestone. Retain the 64-entry backend for capacity overflow and the
+The **32-entry dense cached flip-flop machine** has now entered the separate
+[physical validation milestone](physical-validation.md). Retain the 64-entry backend for capacity overflow and the
 bounded repetition backend as research into reusable templates and payload data.
-The next milestone must establish the actual usable floorplan, placed/routed
-area, constrained timing, and translation/equivalence evidence. The present area
-sum and ABC path estimates establish neither competition fit nor operating
-frequency. External serial loading and the physical wrapper remain subsequent
-integration work.
+The first diagnostic routes the general core within a supported 6×4 rectangle,
+at 736,821 µm² before filler insertion, with zero router DRC and antenna
+violations. The implemented netlist passes the functional regression. Extracted
+slow-corner setup misses the 20 ns target by 6.254 ns; slew, capacitance, and
+fanout violations also remain. The missing official 8×4 floorplan, timing and
+electrical closure, and translation equivalence remain open. External serial
+loading and the physical wrapper remain subsequent integration work. The area
+sums and ABC estimates in this study are separate from that routed evidence.

@@ -135,6 +135,100 @@ This does not perform delay-annotated simulation or prove universal equivalence.
 The default LibreLane EQY step does not support this PDK; it is not silently
 counted as a passing formal check.
 
+## Implementation cost
+
+The `initial` run completed synthesis, placement, clock-tree synthesis, timing
+repair, and global routing. Its usable core is **902,417 µm²**, inside the
+**916,214 µm²** diagnostic rectangle. Completed stages show why mapped cell area
+alone was insufficient:
+
+| Stage | Cell area | Cells | Core utilization |
+|---|---:|---:|---:|
+| Physical-flow synthesis | 579,144 µm² | 33,446 | — |
+| After post-CTS timing repair | 735,199 µm² | 45,615 | 81.47% |
+| After global-routing antenna repair | 736,167 µm² | 45,793 | 81.58% |
+| After detailed routing and antenna repair | 736,821 µm² | 45,913 | 81.65% |
+
+Filler insertion subsequently reports 902,417 µm² and 76,249 instances because
+fill cells occupy the remaining rows. That filled area must not be mistaken for
+functional-cell demand; the pre-fill utilization above is the useful comparison.
+
+The synthesis figure differs from the storage study's 561,587 µm² because this
+experiment uses a different pinned tool flow and full timing boundary; it is not
+a changed Lean circuit. This is not a paired routed-area comparison with the
+64-entry reference, which has not been routed.
+
+Post-CTS repair inserted **3,959 hold buffers**, as well as 26 setup buffers and
+182 cell upsizes. The initial worst setup path ran from `incoming[1]`, through
+branch/successor selection, into the cached instruction. Hold repair retains the
+template's extra 0.1 ns margin and the stated minimum I/O delays. Its cost is
+conditional on those integration assumptions. The cache saves lookup work on
+ordinary cycles but does not remove the input-dependent successor path.
+
+The earlier synthesized netlist passed **21,409 atomic/protocol edges and
+3,510,998 defined output-bit comparisons**; the inverted-output mutant was
+rejected. This is functional evidence before physical implementation, recorded
+in `build/physical/synthesis-check/report.json`.
+
+## Routed timing and functional result
+
+`routed4` completed detailed routing with **zero routing DRC errors and zero
+remaining antenna violations**, after three diode-repair passes. Extracted STA
+analyzes the same implemented netlist at all three PVT corners, using nominal RC
+rules inherited by the pinned CMOS5L PDK. Separate best/worst RC corners were not
+measured.
+
+| Corner | Worst setup slack | Worst hold slack |
+|---|---:|---:|
+| Fast, 1.32 V / −40 °C | +7.020 ns | +0.0417 ns |
+| Typical, 1.20 V / 25 °C | +2.184 ns | +0.1141 ns |
+| Slow, 1.08 V / 125 °C | **−6.254 ns** | +0.2753 ns |
+
+At the **20 ns target**, there are **112 setup-violating endpoints** in the slow
+corner and no hold violations. The worst path remains `incoming[1]` to
+`r_cached_word[49]` through successor selection and storage lookup. The design
+therefore **does not close 50 MHz across the measured PVT corners**.
+
+The electrical checks also report 48 slow-corner slew violations, up to nine
+capacitance violations per corner, and 443 fanout violations against the Liberty
+default maximum of eight loads. Of these, 413 are clock-buffer violations.
+The synthesis configuration's fanout target is ten; the custom final SDC does
+not override the library limit. Relaxing the clock alone would not fix these violations;
+subtracting the setup shortfall from a clock-frequency estimate would not produce
+a qualified operating frequency. `check_setup` reported no missing-clock,
+missing-input-delay, unconstrained-endpoint, or combinational-loop warnings.
+The flow reports 336 raw unannotated drivers and zero after its filtering.
+
+The implemented, filled netlist passed **21,409 atomic/protocol edges and
+3,510,998 defined output-bit comparisons**, and the inverted-output mutant was
+rejected again. Its SHA-256 is
+`ee71ab6ea567c5d7fa92e8f18bce2177960a33a34faf5356d5b14b097d31caea`;
+the receipt is `build/physical/routed-check/report.json`. This preserves the
+functional evidence after cell sizing, buffer insertion, clock-tree creation,
+and antenna repair. It remains a zero-delay simulation, not a translation proof
+or a substitute for timing closure.
+
+## Next bounded experiment
+
+Preserve this run as the first physical baseline. Before altering the machine's
+observable schedule, investigate the implementation flow:
+
+1. Align synthesis fanout and clock-leaf clustering with the library's effective
+   limit. Account for the resulting clock-tree area and hold effects.
+2. Enable and measure design/timing repair after global routing, with all three
+   corners and the same 20 ns/I/O constraints. This baseline leaves those two
+   post-global-route repair stages disabled. Post-CTS repair already loaded all
+   three timing corners; merely adding a slow library is not the missing step.
+3. Repeat routing, extraction, electrical checks, layout checks, and the final
+   netlist regression. Compare cell area and the same worst successor path.
+4. If that path still dominates, compare implementations that reduce lookup or
+   selection delay. Any extra execution cycle requires a revised Lean timing
+   contract and correspondence proof before it can replace this core.
+
+The official 8×4 floorplan and external pin/loader budget remain separate
+integration gates. These measurements provide a concrete route to the next
+experiment; they do not establish a maximum frequency or a tapeout-ready chip.
+
 ## Acceptance boundary
 
 Record actual core area/utilization, routing completion and violations, clock

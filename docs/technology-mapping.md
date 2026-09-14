@@ -82,11 +82,15 @@ The separate bounded I²C runtime backend reaches 192,057.0372 µm², with narro
 protocol scope. These use the same mapping constraints as the reference.
 
 The [primitive review](storage-primitives.md) identifies real SRAM and latch
-options, but their read/phase contracts need further work. Carry the general
-flip-flop candidate into floorplanning, place-and-route, full constrained timing,
-and translation/equivalence validation. Establish the exact usable tile dimensions
-and resolve the competition/template discrepancy before claiming fit. External
-serial loading and the physical wrapper follow that feasibility decision.
+options, but their read/phase contracts need further work. The subsequent
+[physical diagnostic](physical-validation.md) routes the general flip-flop core
+in a supported 6×4 rectangle, at 736,821 µm² before filler insertion. Routing and
+antenna checks are clean; extracted slow-corner setup misses 20 ns by 6.254 ns,
+and electrical-limit violations remain. The physical flow uses different tool
+and timing constraints from this mapping study. The announced 8×4 floorplan is
+absent from pinned support files, so competition fit remains unestablished.
+Timing/electrical closure, translation equivalence, external serial loading,
+and the physical wrapper remain separate work.
 
 A cheaper in-place upload that invalidates the old program is a different
 observable contract. It remains an explicit alternative for discussion, not an
@@ -95,4 +99,5 @@ and its tests give that future comparison a precise baseline.
 
 The official [CMOS5L flow template](https://github.com/IHP-GmbH/ihp-sg13cmos5l-librelane-template)
 and [Tiny Tapeout CMOS5L template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/cmos5l)
-are references for the later physical-flow integration; neither is adopted here.
+inform the separately pinned physical flow. This document's earlier mapping
+measurements remain reproducible with their original tools and constraints.
