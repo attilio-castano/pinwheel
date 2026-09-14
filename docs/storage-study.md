@@ -122,3 +122,57 @@ lake env lean -DwarningAsError=true --run test/StorageCache.lean
 
 The cache measurements are isolated from the 32-entry capacity change. Receipts,
 logs, mutation, and generated artifacts are under `build/storage/cached/`.
+
+## Dense physical records
+
+A 55-bit record retains the low 17 bits (kind, pin commands, duration). Its upper
+38 bits hold either the qualify budget/check (12 bits, padded) or the other
+operations' check/captures/finish/targets (38 bits). Expansion reconstructs the
+original E64 word, including its reserved zero bit. The external accepted E64
+language is unchanged; malformed E64 words are checked before compression.
+
+Lean proves exact round trips for every typed operation and every accepted E64
+word, structural codec and store correctness, and the dense atomic machine's
+one-step and arbitrary-run correspondence. The physical store holds its old
+55-bit value when not writing; it does not repeatedly canonicalize unknown or
+inactive storage. Both instruction images and their metadata remain staged.
+
+The independent codec oracle passes **104,642** raw input pairs in Lean and RTL,
+including **45,778 valid E64 round trips** and random noncanonical 55-bit inputs.
+A corrupted expansion input is rejected. The complete 64-entry dense variant
+passes **21,667** atomic/protocol edges, including a program with more than 32
+unique records. Both combined 32-entry variants pass **21,409** edges, including
+the additional capacity rejections, and **13,151,052** storage observations.
+
+| Design | Corner | Cell area, µm² | Mapped FF bits | ABC combinational delay, ps |
+|---|---|---:|---:|---:|
+| Dense, 64 entries | Typical | 955,962.9450 | 10,201 | 9,960.46 |
+| Dense, 64 entries | Slow | 961,192.0458 | 10,201 | 12,536.90 |
+| Dense, 32 entries | Typical | 598,358.4642 | 6,169 | 9,939.01 |
+| Dense, 32 entries | Slow | 602,012.6658 | 6,169 | 12,497.57 |
+| Dense, 32 entries, cached | Typical | 561,587.4558 | 6,226 | 7,703.55 |
+| Dense, 32 entries, cached | Slow | 561,952.1502 | 6,226 | 9,951.14 |
+
+The combined design has 6,233 declared register bits; synthesis retains 6,226.
+The logical cache is 64 bits, but seven extra physical FFs are eliminated in
+this combination. Use the measured count rather than assuming every logical
+cache bit becomes a new register.
+
+The density saving survives the extra codec logic, though the raw cell count
+increases. The combined result is **46.8% lower mapped area** than the reference
+at the typical corner. Keep the distinction between proved transformations and
+the tested combined serializer/RTL boundary; the emitted combined RTL has not
+been formally equated to the circuit model.
+
+```sh
+lake build Pinwheel.Hardware.Storage.DenseEmit
+lake env lean --run test/Storage.lean
+python3 scripts/check-dense-codec.py
+python3 scripts/measure-storage-variant.py dense --ff 10201
+python3 scripts/measure-storage-variant.py small-dense --ff 6169
+python3 scripts/measure-storage-variant.py small-dense-cached --ff 6226
+```
+
+`check-storage.py` audits all 38 public storage theorems present at this milestone
+and retains the isolated 32-entry regression. Codec and per-variant receipts are
+separate snapshots under `build/storage/`.

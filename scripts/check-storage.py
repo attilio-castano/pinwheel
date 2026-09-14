@@ -23,14 +23,14 @@ def main():
     lake = shutil.which('lake')
     suite = ROOT/'build/tools/oss-cad-suite/bin'
     circt = ROOT/'build/tools/firtool-1.159.0/bin/circt-opt'
-    run([lake, 'build', 'Pinwheel.Hardware.Storage.Emit'], 'build.log')
+    run([lake, 'build', 'Pinwheel.Hardware.Storage.DenseEmit'], 'build.log')
     paths = sorted((ROOT/'Pinwheel/Hardware/Storage').glob('*.lean'))
     expected = []
     for p in paths:
         ns = re.search(r'^namespace (\S+)', p.read_text(), re.M)[1]
         expected += [ns+'.'+n for n in re.findall(r'^theorem (\w+)', p.read_text(), re.M)]
     audit_file = OUT/'Axioms.lean'
-    audit_file.write_text('import Pinwheel.Hardware.Storage.Emit\n'+''.join(f'#print axioms {n}\n' for n in expected))
+    audit_file.write_text('import Pinwheel.Hardware.Storage.DenseEmit\n'+''.join(f'#print axioms {n}\n' for n in expected))
     audit = run([lake, 'env', 'lean', '-DwarningAsError=true', audit_file], 'axioms.log')
     entries = re.findall(r"'([^']+)' (?:depends on axioms: \[([^]]*)\]|does not depend on any axioms)", audit)
     assert sorted(n for n, _ in entries) == sorted(expected)
@@ -59,7 +59,6 @@ def main():
     m.edge(command=2, data=32); assert m.gates == [0, 0, 0, 1] and m.cursor == 64
     # Begin this extension with a full overwrite, so the physical observation scoreboard agrees.
     # Existing bank data are intentionally retained across init; no zero-initialization assumption.
-    m.rows = m.rows[:1] + m.rows[1:]
     with (OUT/'vectors.txt').open('a') as f:
         f.write(''.join(' '.join(map(str, row))+'\n' for row in m.rows))
     coverage['edges'] += len(m.rows)

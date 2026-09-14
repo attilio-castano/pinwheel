@@ -4,7 +4,7 @@ An early-stage project exploring an entry in Jane Street's protocol emulator ASI
 
 The indexed reactive core now has a **proved atomic loader**: incomplete uploads preserve the old program, and commit switches instructions and metadata together. **41 audited loader theorems** extend the prior 55-theorem reactive-core foundation. Generated RTL runs UART, SPI, and I²C through the same host interface; see [the loader record](docs/atomic-loader.md).
 
-Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The [cheaper-storage study](docs/storage-study.md) now has a proved 32-entry candidate mapping to **0.636 mm²**, preserving execution timing with an explicit capacity check; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
+Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The [cheaper-storage study](docs/storage-study.md) now combines a 32-entry dictionary, proved 55-bit record compression, and proved current-word caching; the combined RTL maps to **0.562 mm²** with an explicit capacity check; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
 
 Start with:
 

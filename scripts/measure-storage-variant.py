@@ -30,7 +30,15 @@ def main():
     rtl = run([circt, BASE/(a.name+'.mlir'), '--canonicalize', '--lower-seq-to-sv', '--lower-hw-to-sv', '--hw-legalize-modules', '--export-verilog', '-o', '/dev/null'], 'export.log')
     (out/'design.sv').write_text(rtl)
     ns = runpy.run_path(str(ROOT/'scripts/loader-vectors.py'))
-    m, pack = ns['Atomic'](), ns['pack']
+    class Small(ns['Atomic']):
+        def __init__(self):
+            super().__init__()
+            for image in self.images: image[32:64] = [4]*32
+        def edge(self, init=0, reset=0, command=0, data=0, incoming=0):
+            fits = self.cursor < 32 or (data == 4 if self.cursor < 64 else data < 32 if self.cursor < 320 else True)
+            super().edge(init, reset, 6 if command == 2 and not fits else command, data, incoming)
+            self.rows[-1][2] = command
+    m, pack = (Small() if 'small' in a.name else ns['Atomic']()), ns['pack']
     m.edge(init=1)
     m.load('consecutive-one-cycle', [pack(dict(kind=0,levels=k,enabled=7)) for k in range(6)]+[4], 6)
     m.edge(command=5)
@@ -48,6 +56,14 @@ def main():
         if incoming: assert m.s[1] == 1 and m.s[6] == 0 and m.s[4] == 5
         else: assert m.s[0] == 5
         m.edge(); m.edge(reset=1)
+    if 'small' in a.name:
+        m.edge(command=1)
+        for _ in range(32): m.edge(command=2, data=4)
+        m.edge(command=2, data=0); assert m.gates == [0,0,0,1] and m.cursor == 32
+        for _ in range(32): m.edge(command=2, data=4)
+        m.edge(command=2, data=32); assert m.gates == [0,0,0,1] and m.cursor == 64
+    else:
+        m.load('full-capacity-retained', [pack(dict(kind=0,duration=k)) for k in range(33)]+[4], 33)
     vectors = (ROOT/'build/loader/vectors.txt').read_text()+''.join(' '.join(map(str,row))+'\n' for row in m.rows)
     (out/'vectors.txt').write_text(vectors)
     tb = (ROOT/'test/loader_tb.sv').read_text().replace('pinwheel_atomic_indexed', top)
