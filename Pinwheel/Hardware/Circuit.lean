@@ -10,6 +10,7 @@ inductive Expr (Input Register : Nat → Type) : Nat → Type where
   | input : Input w → Expr Input Register w
   | reg : Register w → Expr Input Register w
   | lit : BitVec w → Expr Input Register w
+  | concat : Expr Input Register a → Expr Input Register b → Expr Input Register (a + b)
   | inv : Expr Input Register w → Expr Input Register w
   | band : Expr Input Register w → Expr Input Register w → Expr Input Register w
   | sub : Expr Input Register w → Expr Input Register w → Expr Input Register w
@@ -23,6 +24,7 @@ def Expr.eval (inputs : Values I) (registers : Values R) : Expr I R w → BitVec
   | .input i => inputs i
   | .reg r => registers r
   | .lit v => v
+  | .concat x y => x.eval inputs registers ++ y.eval inputs registers
   | .inv x => ~~~x.eval inputs registers
   | .band x y => x.eval inputs registers &&& y.eval inputs registers
   | .sub x y => x.eval inputs registers - y.eval inputs registers
@@ -38,6 +40,7 @@ def Expr.bind (input : {w : Nat} → I w → Expr J S w)
   | .input i => input i
   | .reg r => register r
   | .lit v => .lit v
+  | .concat x y => .concat (x.bind input register) (y.bind input register)
   | .inv x => .inv (x.bind input register)
   | .band x y => .band (x.bind input register) (y.bind input register)
   | .sub x y => .sub (x.bind input register) (y.bind input register)

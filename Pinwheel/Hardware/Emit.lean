@@ -28,6 +28,10 @@ def expression (inputName : {w : Nat} → I w → String)
   | _, .input i => return inputName i
   | _, .reg r => return registerName r
   | w, .lit v => bindOp s!"hw.constant {v.toNat} : i{w}"
+  | _, .concat (a := a) (b := b) x y =>
+    let hi ← expression inputName registerName x
+    let lo ← expression inputName registerName y
+    bindOp s!"comb.concat {hi}, {lo} : i{a}, i{b}"
   | w, .inv x =>
     let a ← expression inputName registerName x
     let ones ← bindOp s!"hw.constant {2^w - 1} : i{w}"

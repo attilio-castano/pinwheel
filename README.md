@@ -4,7 +4,7 @@ An early-stage project exploring an entry in Jane Street's protocol emulator ASI
 
 The indexed reactive core now has a **proved atomic loader**: incomplete uploads preserve the old program, and commit switches instructions and metadata together. **41 audited loader theorems** extend the prior 55-theorem reactive-core foundation. Generated RTL runs UART, SPI, and I²C through the same host interface; see [the loader record](docs/atomic-loader.md).
 
-Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The next study is cheaper storage with the same timing and loading contract; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
+Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The [cheaper-storage study](docs/storage-study.md) now has a proved 32-entry candidate mapping to **0.636 mm²**, preserving execution timing with an explicit capacity check; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
 
 Start with:
 
@@ -30,7 +30,8 @@ Start with:
 20. [Decoder/store hardware](docs/execution-hardware.md) for the standalone frontend comparison.
 21. [The integrated reactive core](docs/reactive-core-hardware.md) for fixed-program correspondence and the direct/indexed comparison.
 22. [Atomic loading](docs/atomic-loader.md) for staging, validation, commit, initialization, proofs, and RTL checks.
-23. [Early CMOS5L mapping](docs/technology-mapping.md) for measured area pressure and the next storage study.
+23. [Early CMOS5L mapping](docs/technology-mapping.md) for measured area pressure.
+24. [Cheaper storage](docs/storage-study.md) for the bounded study, capacity certificates, and 32-entry measurements.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
