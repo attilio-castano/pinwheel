@@ -1,6 +1,6 @@
 # Explicit I²C versus a reusable byte loop
 
-Implementation record: **2026-09-13**. The explicit [79-instruction write](compiled-i2c.md) now has a counted-loop alternative. Both run in Lean and have universally identical fetched instructions and complete engine states. The loop stores **15 instruction templates, two repeat descriptors, and two data bytes**. This is a storage and execution-model result; no binary format, circuit, area estimate, or new RTL has been produced.
+Implementation record: **2026-09-13**. The explicit [79-instruction write](compiled-i2c.md) now has a counted-loop alternative. Both run in Lean and have universally identical fetched instructions and complete engine states. The loop stores **15 instruction templates, two repeat descriptors, and two data bytes**. The follow-up [PWL v0 format](binary-images.md) now encodes the two forms in 715 and 205 bytes respectively, with codec and decoded-execution proofs. No extended circuit, area estimate, or new RTL has been produced.
 
 ## What is actually reused
 
@@ -47,13 +47,14 @@ No separate loop-index registers were added to `Reactive.State`. There are no lo
 | Execution address width | 7 bits | 7 bits |
 | Phase/wait counters, samples, pin registers | Existing reactive state | Exactly the same state |
 | Main extra selection logic | Direct instruction lookup | Loop/template, byte/bit, sample, and successor selection |
-| Encoded byte size / synthesized area | Not established for the extended engine | Not established |
+| V0 example serialized image | 715 bytes, including bank padding | 205 bytes, including layout and data |
+| Synthesized area | Not established for the extended engine | Not established |
 
 The typed counted format admits at most **128 execution slots, 64 syntax nodes, two nested loops, eight iterations per loop, and two data bytes**. Sample slots remain eight, observed inputs two, and output value/enable pairs three. Timed durations and wait budgets remain 1–256 cycles. A successor allows at most one loop-index comparison; its branches select sequential execution, a jump, or a sample-dependent branch.
 
-A loop operand can read either of the two nesting depths; initial environment values are zero. Data selections outside the two-byte bank fail fetch and fault on entry, restoring idle commands. `next` targets cannot wrap beyond address 127, and dispatch still checks the per-program last address. Padding fetches halt, while ordinary sequential exhaustion faults as before. The typed format enforces its tree bounds; a future binary loader still needs validation of encoded input.
+A loop operand can read either of the two nesting depths; initial environment values are zero. Data selections outside the two-byte bank fail fetch and fault on entry, restoring idle commands. `next` targets cannot wrap beyond address 127, and dispatch still checks the per-program last address. Padding fetches halt, while ordinary sequential exhaustion faults as before. The typed format enforces its tree bounds; the [V0 decoder](binary-images.md) now validates encoded input before reconstructing the typed program. A physical loader remains separate work.
 
-The **15-versus-79 count excludes descriptor fields, operand selectors, and data bits**. The tree's sequence nodes also need representation or a proved lowering into a flat layout. Multiplying either count by the original hardware's 16-bit word width is invalid: that older encoding cannot express the reactive operations or these templates. The current evidence supports pursuing compressed storage; it does not settle physical memory allocation or ASIC area.
+The **15-versus-79 count excludes descriptor fields, operand selectors, and data bits**. The tree's sequence nodes also need representation or a proved lowering into a flat layout. Multiplying either count by the original hardware's 16-bit word width is invalid: that older encoding cannot express the reactive operations or these templates. V0 now provides exact serialized byte accounting for this tree. The evidence supports pursuing compressed storage; it does not settle physical memory allocation or ASIC area.
 
 ## Proof and executable evidence
 
@@ -81,9 +82,9 @@ Only the pinned Lean toolchain and Python are required. Loop-mode coverage, trac
 
 ## Decision and next implementation
 
-Keep the explicit image as the correctness baseline and carry the counted store into the next encoding experiment. The demonstrated gain is substantial instruction reuse without modeled timing changes. The unresolved cost is the physical representation and selection path.
+Keep the explicit image as the correctness baseline and carry the counted store into the next encoding experiment. The demonstrated gain is substantial instruction reuse without modeled timing changes. V0 establishes the load-image representation and byte cost. The unresolved cost is the physical execution representation and selection path.
 
-1. Define a flat, bounded binary representation for templates, loop descriptors, and byte data. Account for every field and byte. Prove decoding/lookup agrees with the current typed tree, including validation and execution limits; do not silently hardwire the I²C layout into the general core.
+1. Use the [proved V0 load image](binary-images.md) as the reference when choosing direct byte-stream execution or load-time lowering into fixed-width execution records. Account for all storage and prove lookup correspondence; do not silently hardwire the I²C layout into the general core.
 2. Implement explicit and counted instruction-store frontends against the same reactive execution circuitry and storage assumptions. Prove structural refinement and run independent RTL checks for both.
 3. Synthesize under identical constraints and compare total storage, registers, logic, and critical paths. If counted fetch is too expensive or slow, compare an explicit bit/byte-counter sequencer against this proven baseline.
 

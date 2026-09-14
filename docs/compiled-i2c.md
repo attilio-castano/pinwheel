@@ -1,6 +1,6 @@
 # I²C programs on the candidate Lean engine
 
-Implementation record: **2026-09-13**. The [candidate reactive engine](reactive-engine.md) now executes the [I²C reference](i2c-model.md)'s address-plus-byte write as a loaded program. It handles ACK/NACK, clock stretching, bus-free qualification, clock-high faults, and STOP/error paths. The original encoded UART/SPI hardware is unchanged; this extension has no binary encoding or structural circuit yet.
+Implementation record: **2026-09-13**. The [candidate reactive engine](reactive-engine.md) now executes the [I²C reference](i2c-model.md)'s address-plus-byte write as a loaded program. It handles ACK/NACK, clock stretching, bus-free qualification, clock-high faults, and STOP/error paths. The original encoded UART/SPI hardware is unchanged. The later [PWL v0 format](binary-images.md) encodes candidate programs with round-trip and execution proofs; an extended structural circuit is still pending.
 
 ## General operations added
 
@@ -29,7 +29,7 @@ Address ACK is captured from SDA on the terminal edge of slot 36 into sample 0. 
 
 The original 32-slot capacity cannot contain this expansion. The Lean candidate therefore has a **128-slot bounded bank plus a per-program last address**. This compiler sets the last address to 78 and pads remaining storage with halt. Embedded original programs retain last address 31, preserving their exhaustion behavior; the compatibility proof includes that boundary. The pulse program also retains its 32-slot execution limit.
 
-This is an experiment capacity, not a hardware memory allocation or area result. Literal expansion makes timing and correspondence explicit but stores payload bits in instruction contents. The follow-up [counted byte loop](looped-i2c.md) stores 15 templates, two repeat descriptors, and two data bytes, with proved complete-state equality. It derives loop indices from the existing execution PC, adding selection logic without extra modeled cycles. Encoded storage and synthesized cost still need comparison before choosing the physical design. Multiplying the new slot count by the old 16-bit word width would be misleading: the old encoding cannot express these instructions.
+This is an experiment capacity, not a hardware memory allocation or area result. Literal expansion makes timing and correspondence explicit but stores payload bits in instruction contents. The follow-up [counted byte loop](looped-i2c.md) stores 15 templates, two repeat descriptors, and two data bytes, with proved complete-state equality. It derives loop indices from the existing execution PC, adding selection logic without extra modeled cycles. The [V0 image comparison](binary-images.md) now reports 715 bytes explicit versus 205 counted. Physical allocated storage and synthesized cost still need comparison before choosing the circuit design. Multiplying the new slot count by the old 16-bit word width would be misleading: the old encoding cannot express these instructions.
 
 ## Formal correspondence
 
@@ -66,4 +66,4 @@ Only the installed Lean toolchain and Python are required. The compiled runner w
 
 ## Next hardware-facing decision
 
-The [byte-loop comparison](looped-i2c.md) now establishes instruction reuse, supported bounds, and exact cycle preservation. Next define and prove a flat binary representation for the counted store, compare its complete encoded footprint with this explicit baseline, then implement the new decoder, qualification/wait counters, guard and branch logic, and pin-enable registers structurally, and prove that circuit implements the candidate semantics. Repeat independent RTL checks and synthesis to measure the cost. Translation/equivalence and physical loading remain open in the [processor plan](processor-verification.md); this milestone does not settle the competition area or clock target.
+The [byte-loop comparison](looped-i2c.md) now establishes instruction reuse, supported bounds, and exact cycle preservation. The [V0 image milestone](binary-images.md) now supplies codec proofs and exact byte costs. Next choose direct byte-stream execution or a proved lowering into fixed-width records, then implement the new decoder, qualification/wait counters, guard and branch logic, and pin-enable registers structurally, and prove that circuit implements the candidate semantics. Repeat independent RTL checks and synthesis to measure the cost. Translation/equivalence and physical loading remain open in the [processor plan](processor-verification.md); this milestone does not settle the competition area or clock target.

@@ -88,6 +88,8 @@ private def fixtures : IO Unit := do
     ("spi-explicit", .explicit (embedProgram (Compile.SPI.program ⟨3⟩ 0xa6))),
     ("i2c-explicit", .explicit (Compile.I2C.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩)),
     ("i2c-counted", .counted (Compile.I2CLoop.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩))]
+  let seed := Compile.I2CLoop.program ⟨0, 7⟩ ⟨0x53, 0xa6⟩
+  let mut machine : Fetch.Machine := ⟨seed.store, Fetch.reset seed.store⟩
   let mut csv := "image,header_bytes,instruction_bytes,layout_bytes,data_bytes,padding_bytes,total_bytes\n"
   for (name, image) in rows do
     checkImage name image
@@ -97,7 +99,24 @@ private def fixtures : IO Unit := do
     IO.FS.writeBinFile path (encodeBytes image)
     let bytes ← IO.FS.readBinFile path
     ensure (bytes == encodeBytes image && (decodeBytes bytes).isSome) s!"{name}: file round trip"
+    let (loaded, accepted) := Binary.load machine (fromBytes bytes)
+    ensure accepted s!"{name}: file-backed replacement rejected"
+    machine := {loaded with state := Fetch.start loaded.program 3}
+    for _ in [:1024] do
+      let bus : Pinwheel.I2C.Bus := ⟨!machine.state.pins.enabled[0], !machine.state.pins.enabled[1]⟩
+      machine := {machine with state := Fetch.advance machine.program machine.state (Compile.I2C.encodeInputs bus)}
+      if !busy machine.state then break
+    ensure (machine.state.control == .stopped .completed) s!"{name}: file-backed execution failed"
+    if name.startsWith "i2c" then
+      ensure (Compile.I2C.outcome machine.state == some .addressNack) "file-backed I2C STOP/result"
+    let mut fetched := "pc,record_bytes\n"
+    for pc in [:128] do
+      let some instruction := image.store.fetch (Fin.ofNat 128 pc)
+        | throw (IO.userError "fixture fetch fault")
+      fetched := fetched ++ s!"{pc},{String.intercalate ":" ((putInstruction instruction).map (fun b => toString b.val))}\n"
+    IO.FS.writeFile s!"{dir}/{name}.fetch.csv" fetched
   IO.FS.writeFile s!"{dir}/storage.csv" csv
+  IO.println "Passed file-backed UART -> SPI -> explicit I2C -> counted I2C replacement and execution."
   IO.println csv.trimAscii.toString
 
 def main : IO Unit := do

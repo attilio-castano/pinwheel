@@ -5,18 +5,28 @@ open Pinwheel.I2C
 private def ensure (b : Bool) (message : String) : IO Unit :=
   unless b do throw (IO.userError message)
 
+private def outputDir (looped binary : Bool) : String :=
+  if binary then if looped then "build/binary-looped" else "build/binary-explicit"
+  else if looped then "build/looped-i2c" else "build/compiled-i2c"
+
 /-- Target and monitor use only pin commands and resolved wire transitions, never controller phases. -/
 private def transaction (cfg : Config) (request : Request) (reply : Reply)
     (stretch : Nat → Nat) (trace : Bool := false)
     (transform : Pinwheel.Engine.Reactive.Program → Pinwheel.Engine.Reactive.Program := id)
     (looped : Bool := false)
-    (storeTransform : Pinwheel.Engine.Reactive.Fetch.Store → Pinwheel.Engine.Reactive.Fetch.Store := id) : IO Nat := do
+    (storeTransform : Pinwheel.Engine.Reactive.Fetch.Store → Pinwheel.Engine.Reactive.Fetch.Store := id) (binary : Bool := false) : IO Nat := do
   let mut state := initial cfg request
   let p := transform (Pinwheel.Compile.I2C.program cfg request)
-  let store := storeTransform (Pinwheel.Compile.I2CLoop.program cfg request).store
-  let tick := if looped then Pinwheel.Engine.Reactive.Fetch.advance store
+  let store ← if binary then do
+      let image := if looped then Pinwheel.Binary.Image.counted (Pinwheel.Compile.I2CLoop.program cfg request)
+        else Pinwheel.Binary.Image.explicit p
+      let some decoded := Pinwheel.Binary.decodeBytes (Pinwheel.Binary.encodeBytes image)
+        | throw (IO.userError "binary image rejected before execution")
+      pure (storeTransform decoded.store)
+    else pure (storeTransform (Pinwheel.Compile.I2CLoop.program cfg request).store)
+  let tick := if looped || binary then Pinwheel.Engine.Reactive.Fetch.advance store
     else Pinwheel.Engine.Reactive.advance p
-  let mut core := if looped then Pinwheel.Engine.Reactive.Fetch.start store 0
+  let mut core := if looped || binary then Pinwheel.Engine.Reactive.Fetch.start store 0
     else Pinwheel.Engine.Reactive.start p 0
   let mut baseline := Pinwheel.Engine.Reactive.start p 0
   let mut target : Pins := {}
@@ -76,10 +86,10 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
     if trace then
       let bit := fun b => if b then 1 else 0
       csv := csv ++ s!"{t},{bit observed.scl},{bit observed.sda},{bit (command.scl == .low)},{bit (command.sda == .low)},{bit (target.scl == .low)},{bit (target.sda == .low)},{repr state.phase},{state.slot.val},{state.remaining.val},{state.waitLeft.val}\n"
-    let resetCore := if looped then
+    let resetCore := if looped || binary then
         Pinwheel.Engine.Reactive.Fetch.step store core true true (Pinwheel.Compile.I2C.encodeInputs observed)
       else Pinwheel.Engine.Reactive.step p core true true (Pinwheel.Compile.I2C.encodeInputs observed)
-    if looped then
+    if looped || binary then
       let (loaded, accepted) := Pinwheel.Engine.Reactive.Fetch.load ⟨store, core⟩ store
       ensure (!accepted && loaded.state == core) "looped busy reload"
     ensure (resetCore == Pinwheel.Engine.Reactive.reset p && resetCore.pins == {}) "compiled reset did not clear/release"
@@ -119,7 +129,7 @@ private def transaction (cfg : Config) (request : Request) (reply : Reply)
     ensure (clocks[k]! == expectedBit) s!"wire bit mismatch at pulse {k}"
   ensure (step cfg state ⟨false, false⟩ == state) "completed state changed without reset"
   if trace then
-    let dir := if looped then "build/looped-i2c" else "build/compiled-i2c"
+    let dir := outputDir looped binary
     IO.FS.writeFile s!"{dir}/write-0x53-0xa6-stretched.csv" csv
   return cycles
 
@@ -214,9 +224,11 @@ private def loopReloadCheck : IO Unit := do
   IO.println "Passed UART -> SPI -> looped I2C -> changed-data looped I2C -> UART through one fetch machine."
 
 def main (args : List String) : IO Unit := do
-  ensure (args.isEmpty || args == ["--looped"]) "usage: CompiledI2C.lean [--looped]"
-  let looped := args == ["--looped"]
-  let dir := if looped then "build/looped-i2c" else "build/compiled-i2c"
+  ensure (args.isEmpty || args == ["--looped"] || args == ["--binary-explicit"] || args == ["--binary-looped"])
+    "usage: CompiledI2C.lean [--looped|--binary-explicit|--binary-looped]"
+  let looped := args == ["--looped"] || args == ["--binary-looped"]
+  let binary := args == ["--binary-explicit"] || args == ["--binary-looped"]
+  let dir := outputDir looped binary
   IO.FS.createDirAll dir
   let mut count := 0
   let mut edges := 0
@@ -227,19 +239,19 @@ def main (args : List String) : IO Unit := do
         for da in [false, true] do
           for stretched in [false, true] do
             edges := edges + (← transaction cfg ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩
-              (fun pulse => if stretched then pulse % 4 else 0) false id looped)
+              (fun pulse => if stretched then pulse % 4 else 0) false id looped id binary)
             count := count + 1
   for addr in [:128] do
     if 8 <= addr && addr < 120 then
-      edges := edges + (← transaction ⟨0, 7⟩ ⟨Fin.ofNat 128 addr, 0xa6⟩ ⟨true, true⟩ (fun _ => 1) false id looped)
+      edges := edges + (← transaction ⟨0, 7⟩ ⟨Fin.ofNat 128 addr, 0xa6⟩ ⟨true, true⟩ (fun _ => 1) false id looped id binary)
       count := count + 1
   for byte in [0, 83, 166, 255] do
     for aa in [false, true] do
       for da in [false, true] do
-        edges := edges + (← transaction ⟨255, 255⟩ ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩ (fun _ => 255) false id looped)
+        edges := edges + (← transaction ⟨255, 255⟩ ⟨0x53, BitVec.ofNat 8 byte⟩ ⟨aa, da⟩ (fun _ => 255) false id looped id binary)
         count := count + 1
-  let quiet ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun _ => 0) false id looped
-  let stretched ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun pulse => pulse % 4) true id looped
+  let quiet ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun _ => 0) false id looped id binary
+  let stretched ← transaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ ⟨true, true⟩ (fun pulse => pulse % 4) true id looped id binary
   ensure (stretched == quiet + 27) "stretch delay did not add exact blocked observations"
   negativeChecks
   if looped then

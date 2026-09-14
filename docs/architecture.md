@@ -2,11 +2,11 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. Physical loading and reactive protocol control flow remain future work.
+Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. Physical loading and structural reactive protocol control remain future work.
 
 ## Design objective
 
-The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; binary representation, physical storage selection, and the extended structural circuit remain ahead. The original encoded core remains the measured hardware baseline.
+The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. Physical storage selection and the extended structural circuit remain ahead. The original encoded core remains the measured hardware baseline.
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
@@ -105,6 +105,18 @@ Pinwheel/
     I2CLoop.lean                 # 15-template write and two separate data bytes
     I2CLoopProofs.lean           # Every fetched instruction equals the explicit image
     I2CLoopCorrectness.lean      # State equality and reference trace corollaries
+  Binary/
+    Basic.lean                  # Bounded byte/bit/Boolean codecs and prefix laws
+    Collections.lean            # Fixed-count list/vector codecs and proofs
+    Records.lean                # Canonical operand and instruction record grammar
+    RecordProofs.lean           # Every record preserves its following suffix
+    Layout.lean                 # Preorder loop/sequence encoding and bounded parser
+    Explicit.lean               # Literal instruction adapter and round-trip proof
+    Image.lean                  # PWL v0 headers, bounds, canonical whole-image decoding
+    ImageProofs.lean            # Whole-image round trips and canonicality
+    Bytes.lean                  # Native ByteArray conversions and proofs
+    Execution.lean              # Decoded loading/execution and I2C correspondence
+    Storage.lean                # Exact serialized-image byte accounting
   Hardware/
     Encoding.lean                # Canonical binary format and round-trip proofs
     RawProgram.lean              # Raw-word execution, faults, encoding refinement
@@ -132,6 +144,8 @@ test/
   CompiledI2CAxioms.lean         # Compiler correspondence dependency audit
   Counted.lean                   # Serial selection, loop boundaries, faults/loading
   LoopedI2CAxioms.lean           # Counted-store/compiler theorem dependency audit
+  Binary.lean                    # Goldens, malformed images, file/load checks, storage CSV
+  BinaryAxioms.lean              # Every public binary theorem dependency audit
   Engine.lean                    # Compiled protocols, reloadability, machine checks
   Encoding.lean                  # Exhaustive raw-word and typed instruction checks
   Hardware.lean                  # Circuit timing checks, MLIR and CSV generation
@@ -144,6 +158,8 @@ scripts/
   check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   check-reactive.py              # Candidate-engine proofs, tests, and artifact receipt
   check-compiled-i2c.py          # Explicit/--looped proofs, shared wire checks, receipts
+  check-binary.py                # Binary proofs, files, independent lookup, decoded wire suites
+  binary_v0.py                   # Independent Python format/lookup oracle
   install-hardware-tools.py      # Checksum-verified local tool installation
   check-hardware.py              # Countdown proof/RTL checks and synthesis
   check-core.py                  # Full-core proof/RTL checks and synthesis
@@ -161,6 +177,7 @@ docs/
   reactive-engine.md             # Candidate extended machine and compatibility evidence
   compiled-i2c.md                # Complete write compilation, proofs, storage decision
   looped-i2c.md                  # Counted-store comparison, bounds, proof and cost evidence
+  binary-images.md               # PWL v0 grammar, proof boundaries, exact storage report
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan
