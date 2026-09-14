@@ -75,19 +75,18 @@ bits; roughly half of the total cell area is sequential storage. Read selection
 and writes also cost gates. Optimizing the twelve loader-control bits cannot
 recover the required budget.
 
-The next bounded study should:
+The [completed storage study](storage-study.md) reduces typical mapped cell area
+to **561,587.4558 µm²** using a 32-entry dictionary, 55-bit records, and a current
+instruction cache. It preserves both image banks with an explicit capacity check.
+The separate bounded I²C runtime backend reaches 192,057.0372 µm², with narrower
+protocol scope. These use the same mapping constraints as the reference.
 
-1. Establish the exact usable tile area and whether the pinned CMOS5L flow
-   provides a suitable small memory macro. Record port count, widths/depths,
-   read latency, write rules, and area; do not assume SRAM is available.
-2. Compare smaller allocated banks or a denser execution representation with
-   the actual UART/SPI/I²C images. Separate capacity/flexibility losses from
-   implementation savings; preserve the current image as the reference.
-3. For a synchronous store, propose and prove a fetch/prefetch schedule that
-   preserves timed pin updates and terminal-capture-dependent branching.
-   Re-measure the complete machine, including staging and buffers.
-4. Select storage before adopting the external serial loader and full physical
-   wrapper, then run a constrained place-and-route flow on the identified design.
+The [primitive review](storage-primitives.md) identifies real SRAM and latch
+options, but their read/phase contracts need further work. Carry the general
+flip-flop candidate into floorplanning, place-and-route, full constrained timing,
+and translation/equivalence validation. Establish the exact usable tile dimensions
+and resolve the competition/template discrepancy before claiming fit. External
+serial loading and the physical wrapper follow that feasibility decision.
 
 A cheaper in-place upload that invalidates the old program is a different
 observable contract. It remains an explicit alternative for discussion, not an

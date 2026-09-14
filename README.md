@@ -6,6 +6,8 @@ The indexed reactive core now has a **proved atomic loader**: incomplete uploads
 
 Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The [cheaper-storage study](docs/storage-study.md) now combines a 32-entry dictionary, proved 55-bit record compression, and proved current-word caching; the combined RTL maps to **0.562 mm²** with an explicit capacity check; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
 
+The completed study also measures a bounded two-byte I²C runtime-repetition machine at **0.192 mm²**, with separate payload bytes and 15 templates. It has narrower scope than the general candidate. The [SRAM/latch review](docs/storage-primitives.md) records real primitive costs and the timing contracts needed to use them. The next milestone is physical validation of the general candidate.
+
 Start with:
 
 1. [The competition brief](docs/competition.md) for official constraints and primary sources.
@@ -31,7 +33,8 @@ Start with:
 21. [The integrated reactive core](docs/reactive-core-hardware.md) for fixed-program correspondence and the direct/indexed comparison.
 22. [Atomic loading](docs/atomic-loader.md) for staging, validation, commit, initialization, proofs, and RTL checks.
 23. [Early CMOS5L mapping](docs/technology-mapping.md) for measured area pressure.
-24. [Cheaper storage](docs/storage-study.md) for the bounded study, capacity certificates, and 32-entry measurements.
+24. [Cheaper storage](docs/storage-study.md) for capacity certificates, caching, dense records, and runtime repetition.
+25. [Storage primitives](docs/storage-primitives.md) for pinned SRAM/latch evidence and scheduling requirements.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
@@ -39,7 +42,7 @@ The original complete execution core is described structurally in Lean and prove
 
 The same generated SystemVerilog runs both protocols through internal atomic program commits. Lean and RTL matched on **71,703 clock edges**, including **1,032 UART/SPI transfers**. The standalone decoder passed all **65,536** input words. Three faulty RTL variants were rejected, and generic synthesis produced **1,907 cells**, including **543 register bits**. See the [core record](docs/core-hardware.md) for coverage and artifact identities.
 
-These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Translation/equivalence evidence and a physical program-loading interface remain open. The original hardware baseline embeds payload bits. The later reactive core implements input-dependent control and line release; counted load images still lower to literal E64 execution records.
+These results establish digital circuit-model correctness and measured RTL behavior. The emitter and CIRCT transformations have not been proved correct; generic synthesis establishes neither competition area fit nor operating frequency. Translation/equivalence evidence and a physical program-loading interface remain open. The original hardware baseline embeds payload bits. The later reactive core implements input-dependent control and line release; the general backend lowers counted load images to literal E64 execution records, while the separate bounded write prototype reconstructs them at runtime.
 
 A separate pure Lean I²C reference controller writes an address and one byte over an ideal open-drain bus, handles ACK/NACK, and waits through clock stretching. Its 19 audited theorems cover bus behavior and controller timing; 4,224 closed-loop transactions and three rejected faulty variants provide executable evidence. See the [I²C record](docs/i2c-model.md) for scope and proof boundaries; reproduce with `python3 scripts/check-i2c.py`, using only Lean and Python.
 
