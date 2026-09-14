@@ -1,4 +1,7 @@
 import Std
+import Pinwheel.Binary.Execution
+import Pinwheel.Binary.Bytes
+import Pinwheel.Binary.Storage
 import Pinwheel.I2C.Proofs
 import Pinwheel.Engine.Compatibility
 import Pinwheel.Engine.ControlProofs
