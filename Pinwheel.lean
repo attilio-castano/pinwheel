@@ -1,3 +1,4 @@
+import Pinwheel.Hardware.Loader.Contract
 import Std
 import Pinwheel.Binary.Execution
 import Pinwheel.Binary.Bytes
