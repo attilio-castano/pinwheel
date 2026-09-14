@@ -2,11 +2,11 @@
 
 Planning record: **2026-09-12**.
 
-Implementation update: **2026-09-14**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. The later [reactive core](reactive-core-hardware.md) now integrates both E64 stores with structural control and complete-machine refinement. Atomic physical loading remains future work.
+Implementation update: **2026-09-14**. The pure Lean [UART transmitter](uart-model.md), [mode-0 SPI controller](spi-model.md), and [shared programmable engine with both compilers](engine-model.md) are implemented with correctness proofs. See [development setup](development.md) for the toolchain and [shared-engine design](shared-engine.md) for the rationale. The [binary encoding](hardware-baseline.md) and [structural countdown slice](countdown-hardware.md) are also implemented, with Lean proofs, generated RTL simulation, and generic synthesis. The [complete execution core](core-hardware.md) now has structural refinement proofs, generated RTL checks, and generic synthesis. The later [reactive core](reactive-core-hardware.md) now integrates both E64 stores with structural control and complete-machine refinement. The [atomic loader](atomic-loader.md) now implements synchronous staging/commit for the indexed core. External serialized loading remains future work.
 
 ## Design objective
 
-The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. The [E64 layout](execution-records.md) and [frontend experiment](execution-hardware.md) now supply a wider decoder and measured direct/indexed stores. The [integrated reactive core](reactive-core-hardware.md) now supplies the extended structural scheduler, metadata, and raw setup interface. Atomic loading remains ahead; the original encoded core remains a separate measured baseline.
+The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. The [E64 layout](execution-records.md) and [frontend experiment](execution-hardware.md) now supply a wider decoder and measured direct/indexed stores. The [integrated reactive core](reactive-core-hardware.md) now supplies the extended structural scheduler, metadata, and raw setup interface. The atomic loader now preserves the prior image during upload. [CMOS5L mapping](technology-mapping.md) finds its double-bank register storage too large for the nominal allocation; the original encoded core remains a separate measured baseline.
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
@@ -30,9 +30,9 @@ Hardware generation produces the circuit that would be fabricated. Protocol comp
 
 An action meaning "drive a level for N cycles" must define which edges begin and end the interval. Consecutive actions must account for instruction fetch and decode, including whether consecutive one-cycle actions are implementable. Counter bounds, program capacity, invalid encodings, reset, and loading while halted are part of the machine contract.
 
-Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. The first instruction bank is implemented as 32×16 register bits. Full-core generic synthesis reports 1,907 cells including 543 flip-flop bits. Staging storage, technology-mapped area, clock frequency, and further microarchitecture choices remain open.
+Use these obligations to evaluate instruction encoding, counters, and possible prefetching. Prove timing claims for the supported finite ranges; measure hardware cost through synthesis before expanding the instruction set. The first instruction bank is implemented as 32×16 register bits. Full-core generic synthesis reports 1,907 cells including 543 flip-flop bits. The later atomic-loader experiment now counts staging storage and measures technology-mapped area. Clock frequency, physical fit, and the next storage architecture remain open.
 
-The implemented execution core targets the existing 32-slot logical engine. Its canonical 16-bit encoding is implemented, and the [core baseline](hardware-baseline.md) selects a register-backed store with combinational read; synchronous memory would require explicit fetch-latency and buffering arguments. The current atomic load operation also needs a separate refinement to a concrete write/commit interface, including all staging storage and behavior during interrupted uploads.
+The implemented execution core targets the existing 32-slot logical engine. Its canonical 16-bit encoding is implemented, and the [core baseline](hardware-baseline.md) selects a register-backed store with combinational read; synchronous memory would require explicit fetch-latency and buffering arguments. The later indexed reactive core now has a separate [synchronous loading refinement](atomic-loader.md), counting both images and defining interrupted-upload behavior. External transport and pin mapping still need their own refinement.
 
 ## Proposed hardware path
 
@@ -131,6 +131,14 @@ Pinwheel/
       Core.lean                 # Direct/indexed stores, metadata and raw write interlocks
       CoreProofs.lean           # Full-register-bank machine correspondence
       Emit.lean                 # Named component bindings and MLIR adapter
+    Loader/
+      Control.lean              # Ordered upload commands, validation and structural control
+      Proofs.lean               # Gate/update correspondence and completion/cursor claims
+      Store.lean                # Indexed image plus metadata, structural reads/writes
+      Machine.lean              # Two images, one reactive scheduler, atomic selection
+      MachineProofs.lean        # Complete register-bank step/history correspondence
+      Contract.lean             # Preservation, commit, startup and validity invariants
+      Emit.lean                 # Named component bindings and MLIR adapter
     Execution/
       Record.lean               # E64 literal fields and canonical codec
       RecordProofs.lean         # Typed round trips and accepted-word canonicality
@@ -152,7 +160,7 @@ Pinwheel/
     CoreProofs.lean              # Structural register updates match those equations
     Refinement.lean              # Concrete-to-engine state/trace and commit proofs
     Protocols.lean               # Core UART/SPI waveform and receive corollaries
-    Interface.lean               # Planned host loading ports and commit semantics
+    Interface.lean               # Planned serialized transport and physical pin mapping
     Emit.lean                    # Structural HW/Comb/Seq MLIR emission
 Main.lean                        # Generation / model execution CLI
 test/
@@ -163,6 +171,9 @@ test/
   I2CRead.lean                   # Combined-read wire matrix and packed fetch backends
   I2CReadAxioms.lean             # Read compiler/reference theorem audit
   Execution.lean                # E64 emission, file lowering, independent vector checks
+  Loader.lean                  # Atomic RTL emission and component/oracle checks
+  LoaderAxioms.lean            # Every public loader theorem audit
+  loader_tb.sv                 # Host commands and physical memory retention checks
   ReactiveCore.lean            # Core emission and structural component/oracle checks
   ReactiveCoreAxioms.lean      # Every public reactive hardware theorem audit
   reactive_core_tb.sv          # Integrated RTL against independent expected states
@@ -190,6 +201,10 @@ scripts/
   check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   check-reactive.py              # Candidate-engine proofs, tests, and artifact receipt
   check-i2c-read.py              # Combined-read proofs, wire checks, and receipt
+  check-loader.py                # Atomic loader proof/RTL/mutation/synthesis receipt
+  loader-vectors.py              # Independent host protocol and reload oracle
+  check-technology.py            # Pinned CMOS5L mapping of core and atomic loader
+  install-technology-library.py  # Hash-verified local Liberty files and license
   check-reactive-core.py         # Whole-machine proof/RTL/synthesis receipt
   reactive-core-vectors.py       # Independent E64 machine and wire protocol oracle
   check-execution.py             # E64 audit, Lean/RTL checks, mutations, synthesis
@@ -203,6 +218,7 @@ scripts/
   core-vectors.py                # Independent deadlines and protocol oracles
 tools/
   hardware-toolchain.json        # Official archive pins for darwin-arm64
+  technology-library.json        # IHP CMOS5L commit and Liberty/license hashes
 examples/                        # Small protocol programs
 docs/
   competition.md                 # External rules and sources
@@ -217,6 +233,8 @@ docs/
   binary-images.md               # PWL v0 grammar, proof boundaries, exact storage report
   i2c-register-read.md           # Combined-read contract and capacity consequences
   execution-records.md           # E64 layout, lowering, and storage choice
+  atomic-loader.md              # Host contract, proof boundaries and measured storage
+  technology-mapping.md         # Early mapped area/delay and next storage decision
   execution-hardware.md          # Frontend proofs, RTL checks, measurements, next boundary
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
@@ -252,4 +270,4 @@ These links are live documentation, not immutable snapshots. Verify compatibilit
 
 ## Register-read capacity experiment
 
-The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The E64 layout now accounts for those wider addresses and destinations. Its direct and indexed stores have proved read/write/decoder equations and measured generic RTL costs. The [integrated reactive core](reactive-core-hardware.md) now connects both stores to the scheduler and proves complete-register-bank correspondence. Its indexed candidate saves generic cells while lengthening the dependent read path. Atomic physical loading and technology-constrained timing remain ahead.
+The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The E64 layout now accounts for those wider addresses and destinations. Its direct and indexed stores have proved read/write/decoder equations and measured generic RTL costs. The [integrated reactive core](reactive-core-hardware.md) now connects both stores to the scheduler and proves complete-register-bank correspondence. Its indexed candidate saves generic cells while lengthening the dependent read path. The [atomic loader](atomic-loader.md) now supplies synchronous loading and the [technology study](technology-mapping.md) measures early mapped area/delay. Its area result makes storage reduction the next architecture task. Serialized physical loading and routed timing remain ahead.

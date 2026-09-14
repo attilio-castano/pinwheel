@@ -295,3 +295,36 @@ python3 scripts/check-reactive-core.py
 The [integrated-core record](reactive-core-hardware.md) documents the 55-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
 
 For Lean-only validation, run `lake build`, `lake env lean test/ReactiveCoreAxioms.lean`, `lake env lean --run test/ReactiveCore.lean`, `python3 scripts/reactive-core-vectors.py`, and `lake env lean --run test/ReactiveCore.lean check`. The last command evaluates structural scheduler and store-read components using the named bindings also used during export. Existing `check-core.py` and `check-execution.py` retain the original complete-core and standalone frontend regressions.
+
+
+## Atomic loader and early technology mapping
+
+The [atomic-loader record](atomic-loader.md) defines the synchronous word-level
+interface, double-bank storage, initialization, commit, and proof boundaries.
+Use the existing pinned Lean and hardware tools:
+
+```sh
+python3 scripts/check-loader.py
+```
+
+This builds/audits all loader proofs, emits RTL and actual compiler images,
+generates independent command/protocol vectors, compares Lean components and
+RTL, checks memory retention, rejects five RTL mutations, and runs generic
+synthesis. It needs no prior binary fixtures. Its success receipt and artifacts
+are under ignored `build/loader/`.
+
+For the early technology comparison, fetch only the pinned official Liberty
+corners and license into `build/tools/ihp-cmos5l/`, then map both designs:
+
+```sh
+python3 scripts/install-technology-library.py
+python3 scripts/check-technology.py
+```
+
+The first command needs network access only when files are absent. Both commands
+verify the hashes in `tools/technology-library.json`. The mapping runner re-emits
+the designs and writes `build/technology/report.json` after all four mappings
+pass; it does not install a complete PDK or run placement/routing. See
+[technology mapping](technology-mapping.md) for exact constraints and the area
+result, which makes the current double-bank register implementation unsuitable
+for the nominal allocation.

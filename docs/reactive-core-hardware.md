@@ -88,7 +88,7 @@ pins and metadata known.
 
 This interface is **non-atomic**. A host can start a partially replaced program;
 there is no staging bank, validation/commit protocol, or physical transport yet.
-Those are the next loader obligations, including their storage and pin costs.
+The later [atomic-loader reference](atomic-loader.md) implements staging, validation, and commit for the indexed core; these two raw-interface modules remain the comparison baselines. Physical transport and pin mapping remain open.
 
 ## Executable evidence
 
@@ -163,8 +163,10 @@ repeated expansion of the same read trees. The scheduler and memory gate
 expressions still come from their Lean circuit descriptions; this adapter is
 part of the unproved translation boundary.
 
-Next: define and prove staged upload/validation/commit, accounting for metadata
-and preservation of the old program; then measure the resulting design under
-technology, clock, and I/O constraints. Translation equivalence remains a
-separate milestone. Further I²C features can be selected against this working
-shared core rather than changing its timing contract implicitly.
+The subsequent [atomic-loader milestone](atomic-loader.md) implements and proves
+staged upload, validation, commit, and old-program preservation for the indexed
+candidate. [Early CMOS5L mapping](technology-mapping.md) now measures this raw
+indexed baseline alongside that loader: the double-bank register design exceeds
+the nominal area allocation before physical overhead. Next resolve storage cost
+while preserving execution timing and the loading contract. Translation
+equivalence, external transport, and routed timing remain separate milestones.

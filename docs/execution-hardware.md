@@ -41,8 +41,7 @@ physical register before checking outputs. Raw uploads can expose partial new
 contents; a system must not start execution until loading is complete. This is
 not an implementation of the engine's atomic load operation. The later
 [integrated core](reactive-core-hardware.md) adds idle/last metadata and
-reset/start write interlocks; atomic commit remains open.
-Any staging required to preserve an old program must be counted later.
+reset/start write interlocks. The subsequent [atomic-loader reference](atomic-loader.md) now adds staging/commit for indexed storage and counts both complete images.
 
 ## Proof boundary
 
@@ -136,7 +135,9 @@ gate equivalence remains open.
 The [integrated reactive core](reactive-core-hardware.md) now completes that
 connection, with structural control, timers, pin enables, 16 capture slots,
 whole-machine refinement, and UART/SPI/I²C RTL checks. This document records the
-standalone frontend measurements. Next are the staging/commit loader and a
-technology-constrained area/timing check, counting metadata and upload storage. Further I²C features can then be chosen against
+standalone frontend measurements. The later [atomic loader](atomic-loader.md)
+and [early mapping](technology-mapping.md) now cover staging and technology costs.
+Remaining work includes storage reduction, a physical loading interface, and
+placed/routed area and timing checks. Further I²C features can be chosen against
 that working hardware boundary; this batch does not add arbitration, recovery,
 analog timing, or arbitrary-length reads.

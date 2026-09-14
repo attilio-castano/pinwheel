@@ -2,7 +2,9 @@
 
 An early-stage project exploring an entry in Jane Street's protocol emulator ASIC competition.
 
-The E64 frontends now run with the **structural reactive scheduler**, with **55 audited hardware theorems** establishing complete-machine correspondence for fixed loaded programs. Both generated cores run UART, SPI, I²C write, and repeated-START I²C read; the independent oracle matches **27,753 direct / 31,785 indexed edges**. Generic synthesis measures **86,705 direct / 29,732 indexed cells**, with longest combinational paths of **68 / 86 stages**. Raw setup writes are blocked while busy, resetting, or starting. Setup remains non-atomic; staged upload/commit and constrained physical measurements are next. See [the integrated core record](docs/reactive-core-hardware.md); reproduce with `python3 scripts/check-reactive-core.py`.
+The indexed reactive core now has a **proved atomic loader**: incomplete uploads preserve the old program, and commit switches instructions and metadata together. **41 audited loader theorems** extend the prior 55-theorem reactive-core foundation. Generated RTL runs UART, SPI, and I²C through the same host interface; see [the loader record](docs/atomic-loader.md).
+
+Early CMOS5L mapping exposes the next constraint: the double-bank reference occupies **1.055 mm² of standard cells**, versus **0.550 mm²** for the prior single-image core. It exceeds the nominal competition area before placement/routing. The next study is cheaper storage with the same timing and loading contract; [the technology record](docs/technology-mapping.md) gives measurements and boundaries. External serial loading, routed timing, and translation equivalence remain open.
 
 Start with:
 
@@ -26,7 +28,9 @@ Start with:
 18. [Bounded I²C register reads](docs/i2c-register-read.md) for repeated START, received data, and the wider engine capacities.
 19. [E64 execution records](docs/execution-records.md) for the selected layout and certified lowering.
 20. [Decoder/store hardware](docs/execution-hardware.md) for the standalone frontend comparison.
-21. [The integrated reactive core](docs/reactive-core-hardware.md) for whole-machine correspondence, UART/SPI/I²C RTL, and current hardware costs.
+21. [The integrated reactive core](docs/reactive-core-hardware.md) for fixed-program correspondence and the direct/indexed comparison.
+22. [Atomic loading](docs/atomic-loader.md) for staging, validation, commit, initialization, proofs, and RTL checks.
+23. [Early CMOS5L mapping](docs/technology-mapping.md) for measured area pressure and the next storage study.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 
@@ -42,7 +46,7 @@ A candidate Lean engine separates drive commands from two observed inputs and su
 
 I²C now runs as a 79-instruction program on that candidate engine. Compiler proofs establish identical pin commands, busy status, and results to the reference for arbitrary sampled input histories during a run. The compiled suite passes 4,224 transactions, fault injections, three corrupted programs, and UART → SPI → I²C → UART reload. See [compiled I²C](docs/compiled-i2c.md) for the 29-theorem audit, reset boundary, and experimental 128-slot bank; reproduce with `python3 scripts/check-compiled-i2c.py`. The original encoded core remains the UART/SPI baseline. The integrated E64 core now implements the reactive scheduler as well.
 
-A counted-loop alternative now stores **15 templates plus two loop descriptors and two data bytes**, reusing one bit body and one ACK body for both bytes. Its 16 audited theorems establish fetched-instruction and complete-state equality with the explicit image, with no extra modeled cycles. The same 4,224 transactions pass, alongside 6,144 generic serial loops and five rejected loop-specific corruptions. See [the byte-loop comparison](docs/looped-i2c.md); reproduce with `python3 scripts/check-compiled-i2c.py --looped`. The execution PC still spans 79 addresses; a decoder derives the loop indices. The binary-image milestone below measures serialized size; generic E64 decoder/store costs are measured below; physical delay and total chip area remain unmeasured.
+A counted-loop alternative now stores **15 templates plus two loop descriptors and two data bytes**, reusing one bit body and one ACK body for both bytes. Its 16 audited theorems establish fetched-instruction and complete-state equality with the explicit image, with no extra modeled cycles. The same 4,224 transactions pass, alongside 6,144 generic serial loops and five rejected loop-specific corruptions. See [the byte-loop comparison](docs/looped-i2c.md); reproduce with `python3 scripts/check-compiled-i2c.py --looped`. The execution PC still spans 79 addresses; a decoder derives the loop indices. The binary-image milestone below measures serialized size; generic E64 decoder/store costs are measured below; early standard-cell mapping is now measured for the integrated indexed core and atomic loader; routed timing and total chip area remain unmeasured.
 
 Canonical **PWL version 0** images now encode both forms: **715 bytes explicit versus 205 bytes counted** for the I²C example, including headers, layout, data, and bank padding. All 37 binary theorems pass the standard-axiom audit. Native file round trips, independent Python lookup, malformed-image checks, and 4,224 wire transactions through each decoded backend pass. See [the format and storage report](docs/binary-images.md); reproduce with `python3 scripts/check-binary.py`. The decoder reconstructs typed programs before execution. These are load-image sizes, not physical memory or chip-area measurements.
 
