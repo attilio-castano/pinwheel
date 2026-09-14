@@ -50,7 +50,13 @@ Useful next reading within the template: [project configuration](https://github.
 
 The [template configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/info.yaml), as checked above, defaults to `1x1`; its comment listing valid sizes stops at `8x2` and omits `8x4`.
 
-Treat the announcement as the competition's authority. The comment alone does not establish what the build flow accepts. Before adopting the template, verify the current branch and flow support the competition allocation, and record the exact upstream commit used.
+Treat the announcement as the competition's authority. The later [physical-flow
+inspection](physical-validation.md#target-and-upstream-pins) checks support commit
+`da63c9927411e3aca350977d653d24bbf5bca972`: its CMOS5L tile table and DEF inventory
+also lack 8×4, so this is more than a stale template comment. The core experiment
+uses a smaller supported 6×4 rectangle, with a separate internal-port boundary.
+It does not establish an accepted competition allocation or final pin-interface
+fit. The announced 8×4 integration remains unresolved.
 
 ## Open project questions
 

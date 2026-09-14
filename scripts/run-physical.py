@@ -21,7 +21,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="initial")
     parser.add_argument("--to", help="Optional LibreLane stopping step; partial runs never establish final fit")
+    parser.add_argument("--from-step", help="Resume at a named LibreLane step")
+    parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
     args = parser.parse_args()
+    if bool(args.from_step) != bool(args.state):
+        parser.error("--from-step and --state must be supplied together")
     if not args.tag.replace("-", "").replace("_", "").isalnum():
         parser.error("tag must contain only letters, numbers, hyphens, or underscores")
     receipt_path = BASE / (args.tag + "-invocation.json")
@@ -59,6 +63,7 @@ def main():
         if not actual.is_symlink() or os.readlink(actual) != target:
             raise RuntimeError(f"Modified PDK symlink: {path}")
     snapshot.mkdir(parents=True)
+    (BASE / "core/runs" / args.tag).mkdir(parents=True)
     for name in ["design.sv", "core.json", "core.sdc", "inputs.json"]:
         shutil.copyfile(BASE / "core" / name, snapshot / name)
     command = [
@@ -72,9 +77,16 @@ def main():
     ]
     if args.to:
         command += ["--to", args.to]
+    checkpoint = None
+    if args.state:
+        checkpoint = args.state.resolve()
+        relative = checkpoint.relative_to((BASE / "core").resolve())
+        command += ["--from", args.from_step, "--with-initial-state", "/work/core/" + str(relative)]
     command += [f"/work/core/experiments/{args.tag}/core.json"]
     receipt = {
         "command": command, "image_id": image_id, "stop_step": args.to,
+        "resume_step": args.from_step,
+        "checkpoint_sha256": sha(checkpoint) if checkpoint else None,
         "inputs_sha256": sha(BASE / "core/inputs.json"),
         "config_sha256": sha(BASE / "core/core.json"),
         "sdc_sha256": sha(BASE / "core/core.sdc"),

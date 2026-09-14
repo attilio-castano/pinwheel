@@ -100,10 +100,27 @@ initial installation used verified host-side downloads and archive import after
 Docker registry requests timed out.
 
 Runs have unique tags, preserve inputs and logs, and execute with networking
-disabled, four CPUs, a 6 GiB memory limit, and the PDK mounted read-only. A separate
+disabled, four CPUs, four explicit OpenROAD threads, a 6 GiB memory limit, and the
+PDK mounted read-only. A separate
 input snapshot is retained for each run. The initial run was launched before
 snapshot support was added; its matching inputs are archived under
 `build/physical/core/experiments/initial/`.
+
+The initial run was deliberately stopped during detailed routing because the
+null `OPENROAD_THREADS` default resulted in one thread despite the four-CPU
+container allocation. `routed4` resumes the completed global-routing/STA checkpoint
+with four threads; that is its only configuration change. No timing or area
+requirement was relaxed. Resume with an explicit checkpoint when needed:
+
+```sh
+python3 scripts/run-physical.py --tag routed4 --from-step OpenROAD.DetailedRouting --state build/physical/core/runs/initial/43-openroad-stamidpnr-3/state_out.json
+python3 scripts/report-physical.py --tag routed4
+```
+
+The collector requires a completed invocation, preserves failure status, and
+identifies whether detailed routing and extracted multi-corner STA completed.
+Intermediate flow states inherit older metrics; fast/slow figures from an early
+step must not be presented as current after a typical-only timing update.
 
 The zero-delay functional check can be applied to a synthesized or routed netlist:
 
