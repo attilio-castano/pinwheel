@@ -253,7 +253,7 @@ python3 scripts/check-reactive.py
 
 The loop runner uses the same wire target and monitor as the explicit runner and compares full engine states each cycle. It passes 4,224 transactions / 822,896 observed cycles with identical example timings; 6,144 generic serial loops, error forks, five loop-specific negative variants, and mixed program replacement supply additional checks. The original three capture/branch corruptions are also retained. Logs, trace, coverage, 16-theorem dependency audit, and source/artifact hashes are under `build/looped-i2c/`; the current library build has 42 jobs.
 
-The universal fetch/state proofs cover every configuration, request, and input history. One-step loop-to-explicit equality includes reset/start; the inherited full-run reference claims still exclude reset/reload. The original reference-reset distinction remains. Instruction-template counts exclude descriptor metadata and data; no binary storage size, circuit timing, area, or new hardware result is claimed. The following V0 milestone now defines a load-image representation; structural store comparison remains ahead.
+The universal fetch/state proofs cover every configuration, request, and input history. One-step loop-to-explicit equality includes reset/start; the inherited full-run reference claims still exclude reset/reload. The original reference-reset distinction remains. Instruction-template counts exclude descriptor metadata and data; no binary storage size, circuit timing, area, or new hardware result is claimed. The following V0 milestone now defines a load-image representation; the later E64 frontend comparison below now provides structural store evidence.
 
 ## PWL V0 binary-image milestone
 
@@ -269,3 +269,19 @@ The 53-job build and all 37 binary theorem audits pass. Validation includes 1,28
 `build/binary/` contains native `.pwl` files, exact `storage.csv`, fetch CSVs, audit/logs, and the reproducible success receipt. The I²C images are 715 bytes explicit and 205 bytes counted, including metadata and explicit padding. The two wire backends write traces and coverage under `build/binary-explicit/` and `build/binary-looped/`. Python import caches are ignored alongside generated build artifacts.
 
 The decoder reconstructs typed programs before execution. It does not yet define raw-byte cycle timing, physical memory widths, circuit decoding, or upload hardware. Serialized-image savings are distinct from allocated chip memory and area; no RTL/synthesis flow was rerun for this milestone.
+
+## Combined I²C read and E64 frontends
+
+The [read experiment](i2c-register-read.md) uses 256 addresses and 16 capture slots on the same parameterized reactive semantics. Its 24 public compiler theorems and 4,468-transaction wire matrix require only Lean and Python. Existing 128-address/eight-sample defaults and PWL V0 remain intact.
+
+The [E64 record](execution-records.md) adds fixed-width literal encoding and certified indexed lowering. The [hardware record](execution-hardware.md) documents the writable decoder/store ports, 21-theorem audit, RTL vector and mutation checks, and comparable generic synthesis results. The full frontend runner uses the existing pinned hardware tools; no new dependency is needed.
+
+```sh
+python3 scripts/check-binary.py
+python3 scripts/check-i2c-read.py
+python3 scripts/check-execution.py
+```
+
+Run the binary suite first to create the actual `.pwl` inputs. The execution runner writes its success receipt only after proofs, native lowering, independent vectors, Lean/RTL CSV equality, expected mutation rejections, synthesis, and both packed read matrices pass. Outputs live under ignored `build/execution/`; the typed read receipt and wire trace remain under `build/i2c-read/`.
+
+The Lean-only frontend commands are `lake env lean -DwarningAsError=true --run test/Execution.lean`, `python3 scripts/execution-vectors.py`, then the same Lean command with `check` appended. Use `test/ExecutionAxioms.lean` for the audit and `test/I2CRead.lean direct` or `indexed` for packed wire suites. This proves/checks the frontends and runs the Lean scheduler; the wider structural reactive scheduler and atomic physical loader are still pending.

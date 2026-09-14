@@ -78,8 +78,8 @@ operands are widened without changing values, and unused upper addresses halt.
 Native checks compare actual explicit/counted V0 files after lowering. E64 does
 not enlarge V0's source-format limits or provide a V0 encoding for the wider read.
 
-The next implementation step is to measure writable decoder/store circuits with
-the same ports and synthesis flow. Allocated bits alone do not measure selection
+The [decoder/store experiment](execution-hardware.md) now measures writable
+circuits with the same ports and synthesis flow. Allocated bits alone do not measure selection
 logic, delay, total processor cost, or physical area. Program idle pins and the
 last-address limit remain separate metadata; a concrete loader must eventually
 commit them together with the records.

@@ -16,6 +16,7 @@ import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
 import Pinwheel.Hardware.Emit
+import Pinwheel.Hardware.Execution.Emit
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 

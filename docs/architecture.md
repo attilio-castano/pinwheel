@@ -6,7 +6,7 @@ Implementation update: **2026-09-13**. The pure Lean [UART transmitter](uart-mod
 
 ## Design objective
 
-The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. Physical storage selection and the extended structural circuit remain ahead. The original encoded core remains the measured hardware baseline.
+The [pure Lean I²C write experiment](i2c-model.md) supplies the next protocol reference. The [candidate reactive engine](reactive-engine.md) now implements drive enables, observed-input waits, guarded timing, terminal capture, conditional continuation, and input qualification. [Compiled I²C](compiled-i2c.md) has complete reference-controller correspondence and executable reload evidence alongside UART/SPI. Its 79-instruction expansion uses an experimental 128-slot typed bank with per-program execution limits. A [counted byte loop](looped-i2c.md) now reuses 15 templates with separate byte data and proves complete-state equality; a [canonical V0 binary image](binary-images.md) now preserves both program forms. The [E64 layout](execution-records.md) and [frontend experiment](execution-hardware.md) now supply a wider decoder and measured direct/indexed stores. The extended structural scheduler and physical loader remain ahead. The original encoded core remains the measured hardware baseline.
 
 Build a programmable protocol engine whose instruction semantics make precise pin timing explicit. Use Lean to specify behavior, execute reference models, and prove properties that inform the circuit design. The [competition brief](competition.md) owns external requirements; the [UART experiment](uart-experiment.md) owns the first milestones.
 
@@ -121,6 +121,16 @@ Pinwheel/
     Execution.lean              # Decoded loading/execution and I2C correspondence
     Storage.lean                # Exact serialized-image byte accounting
   Hardware/
+    Execution/
+      Record.lean               # E64 literal fields and canonical codec
+      RecordProofs.lean         # Typed round trips and accepted-word canonicality
+      Images.lean               # Direct/indexed lowering, certificates, V0 operand widening
+      Memory.lean               # Balanced generic read tree and lookup proof
+      Decode.lean               # E64 validity checks and structural output wires
+      DecodeProofs.lean          # Universal validity and wire-output correspondence
+      Stores.lean               # Equal-interface writable direct/indexed circuits
+      StoreProofs.lean          # Read/write, busy retention, fetch/run composition
+      Emit.lean                 # E64 MLIR modules and port/register names
     Encoding.lean                # Canonical binary format and round-trip proofs
     RawProgram.lean              # Raw-word execution, faults, encoding refinement
     Circuit.lean                 # Width-indexed logic/register trees and semantics
@@ -140,6 +150,12 @@ test/
   SPI.lean                       # Receive/timing/interface checks and CSV trace
   I2C.lean                       # Wire-driven target/monitor, boundaries, negative cases
   I2CAxioms.lean                 # All I2C theorem dependency checks
+  I2CRead.lean                   # Combined-read wire matrix and packed fetch backends
+  I2CReadAxioms.lean             # Read compiler/reference theorem audit
+  Execution.lean                # E64 emission, file lowering, independent vector checks
+  ExecutionAxioms.lean          # Every public E64 theorem dependency audit
+  execution_decoder_tb.sv       # Raw E64 decoder oracle checks
+  execution_store_tb.sv         # Direct/indexed write/read edges and CSV comparison
   Reactive.lean                  # Pulse deadlines, legacy contracts, waits and reload
   ReactiveAxioms.lean            # Candidate-engine theorem dependency audit
   Control.lean                   # Guard/branch/qualification boundaries and faults
@@ -160,6 +176,9 @@ test/
 scripts/
   check-i2c.py                   # Pure Lean I2C build/audit/checks and artifact receipt
   check-reactive.py              # Candidate-engine proofs, tests, and artifact receipt
+  check-i2c-read.py              # Combined-read proofs, wire checks, and receipt
+  check-execution.py             # E64 audit, Lean/RTL checks, mutations, synthesis
+  execution-vectors.py           # Independent E64 grammar and raw store stimuli
   check-compiled-i2c.py          # Explicit/--looped proofs, shared wire checks, receipts
   check-binary.py                # Binary proofs, files, independent lookup, decoded wire suites
   binary_v0.py                   # Independent Python format/lookup oracle
@@ -181,6 +200,9 @@ docs/
   compiled-i2c.md                # Complete write compilation, proofs, storage decision
   looped-i2c.md                  # Counted-store comparison, bounds, proof and cost evidence
   binary-images.md               # PWL v0 grammar, proof boundaries, exact storage report
+  i2c-register-read.md           # Combined-read contract and capacity consequences
+  execution-records.md           # E64 layout, lowering, and storage choice
+  execution-hardware.md          # Frontend proofs, RTL checks, measurements, next boundary
   shared-engine.md               # Derived requirements and implementation rationale
   engine-model.md                # Implemented engine contract and proof/test evidence
   processor-verification.md      # Staged concrete-processor proof and hardware plan
@@ -215,4 +237,4 @@ These links are live documentation, not immutable snapshots. Verify compatibilit
 
 ## Register-read capacity experiment
 
-The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The next decoder/store layout must account for the wider addresses and destinations.
+The [bounded register read](i2c-register-read.md) preserves four phases per bit and requires 155 execution addresses plus eleven meaningful sample slots. `Reactive` and `Fetch` now parameterize those capacities while retaining the previous defaults, so the read shares the same instruction semantics at 256 addresses and 16 samples. PWL V0, counted programs, and the measured 32×16 hardware retain their earlier contracts. The E64 layout now accounts for those wider addresses and destinations. Its direct and indexed stores have proved read/write/decoder equations and measured generic RTL costs. The indexed candidate saves storage while adding lookup depth; its full integration with the reactive scheduler and atomic physical loading remains ahead.

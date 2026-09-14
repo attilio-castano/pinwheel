@@ -1,4 +1,5 @@
 import Pinwheel.Compile.I2CReadProofs
+import Pinwheel.Hardware.Execution.Images
 
 open Pinwheel.I2C
 open Pinwheel.Compile.I2CRead
@@ -137,7 +138,22 @@ private def negatives : IO Unit := do
     ensure (error.any (fun s => (s.splitOn "mismatch").length > 1)) s!"mutation not rejected: {name}: {error}"
   IO.println "Rejected six capture, status, NACK, repeated-START, and final-NACK mutations."
 
-def main : IO Unit := do
+private def packedTransaction (mode : String) (cfg : Config) (request : RegisterRead.Request)
+    (byte : BitVec 8) (acks : Vector Bool 3) (stretch : Nat → Nat) (trace : Bool := false) : IO Nat := do
+  let p := program cfg request
+  let words := Pinwheel.Hardware.Execution.imageWords p
+  let store ← if mode == "direct" then
+      pure (Pinwheel.Hardware.Execution.directStore words p.idle p.last)
+    else if mode == "indexed" then do
+      let some lowered := Pinwheel.Hardware.Execution.lowerIndexed words
+        | throw (IO.userError "register-read dictionary overflow")
+      pure (lowered.val.store p.idle p.last)
+    else pure (Pinwheel.Engine.Reactive.Fetch.Store.ofProgram p)
+  readTransaction cfg request byte acks stretch (trace && mode == "typed") id (fun _ => store)
+
+def main (args : List String) : IO Unit := do
+  ensure (args.isEmpty || args == ["direct"] || args == ["indexed"]) "usage: I2CRead.lean [direct|indexed]"
+  let mode := args.headD "typed"
   IO.FS.createDirAll "build/i2c-read"
   let mut count := 0
   let mut edges := 0
@@ -146,22 +162,22 @@ def main : IO Unit := do
     for byte in [:256] do
       for acks in replies do
         for stretched in [false, true] do
-          edges := edges + (← readTransaction ⟨d, 7⟩ ⟨0x53, 0xa6⟩ (BitVec.ofNat 8 byte) acks
+          edges := edges + (← packedTransaction mode ⟨d, 7⟩ ⟨0x53, 0xa6⟩ (BitVec.ofNat 8 byte) acks
             (fun n => if stretched then n % 4 else 0))
           count := count + 1
   for register in [:256] do
-    edges := edges + (← readTransaction ⟨0, 7⟩ ⟨0x53, BitVec.ofNat 8 register⟩ 0x69 #v[true,true,true] (fun _ => 1))
+    edges := edges + (← packedTransaction mode ⟨0, 7⟩ ⟨0x53, BitVec.ofNat 8 register⟩ 0x69 #v[true,true,true] (fun _ => 1))
     count := count + 1
   for address in [:128] do
     if 8 <= address && address < 120 then
-      edges := edges + (← readTransaction ⟨0, 7⟩ ⟨Fin.ofNat 128 address, 0xa6⟩ 0x96 #v[true,true,true] (fun _ => 0))
+      edges := edges + (← packedTransaction mode ⟨0, 7⟩ ⟨Fin.ofNat 128 address, 0xa6⟩ 0x96 #v[true,true,true] (fun _ => 0))
       count := count + 1
   for acks in replies do
-    edges := edges + (← readTransaction ⟨255, 255⟩ ⟨0x53, 0xa6⟩ 0x96 acks (fun _ => 255))
+    edges := edges + (← packedTransaction mode ⟨255, 255⟩ ⟨0x53, 0xa6⟩ 0x96 acks (fun _ => 255))
     count := count + 1
-  negatives
-  let quiet ← readTransaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ 0x96 #v[true,true,true] (fun _ => 0)
-  let stretched ← readTransaction ⟨3, 7⟩ ⟨0x53, 0xa6⟩ 0x96 #v[true,true,true] (fun n => n % 4) true
+  if mode == "typed" then negatives
+  let quiet ← packedTransaction mode ⟨3, 7⟩ ⟨0x53, 0xa6⟩ 0x96 #v[true,true,true] (fun _ => 0)
+  let stretched ← packedTransaction mode ⟨3, 7⟩ ⟨0x53, 0xa6⟩ 0x96 #v[true,true,true] (fun n => n % 4) true
   ensure (stretched == quiet + 55) "stretch accounting"
-  IO.FS.writeFile "build/i2c-read/coverage.txt" s!"transactions={count}\nobserved_cycles={edges}\nquiet_example_cycles={quiet}\nstretched_example_cycles={stretched}\n"
-  IO.println s!"Passed {count} register reads/NACK transactions, {edges} cycles; example {quiet} -> {stretched}."
+  IO.FS.writeFile (if mode == "typed" then "build/i2c-read/coverage.txt" else s!"build/execution/{mode}-read-coverage.txt") s!"transactions={count}\nobserved_cycles={edges}\nquiet_example_cycles={quiet}\nstretched_example_cycles={stretched}\n"
+  IO.println s!"{mode}: passed {count} register reads/NACK transactions, {edges} cycles; example {quiet} -> {stretched}."

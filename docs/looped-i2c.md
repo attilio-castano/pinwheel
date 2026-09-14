@@ -80,12 +80,10 @@ python3 scripts/check-reactive.py
 
 Only the pinned Lean toolchain and Python are required. Loop-mode coverage, trace, theorem audit, logs, and source/artifact hashes are written under ignored `build/looped-i2c/`. A success receipt is removed before each run and recreated only after all checks pass. The library build now has 42 jobs. Hardware evidence remains tied to its earlier source snapshot.
 
-## Decision and next implementation
+## Decision and subsequent hardware evidence
 
-Keep the explicit image as the correctness baseline and carry the counted store into the next encoding experiment. The demonstrated gain is substantial instruction reuse without modeled timing changes. V0 establishes the load-image representation and byte cost. The unresolved cost is the physical execution representation and selection path.
+Keep the explicit image as the correctness baseline. The counted representation demonstrates instruction reuse without modeled timing changes, and [PWL V0](binary-images.md) measures its load-image savings.
 
-1. Use the [proved V0 load image](binary-images.md) as the reference when choosing direct byte-stream execution or load-time lowering into fixed-width execution records. Account for all storage and prove lookup correspondence; do not silently hardwire the I²C layout into the general core.
-2. Implement explicit and counted instruction-store frontends against the same reactive execution circuitry and storage assumptions. Prove structural refinement and run independent RTL checks for both.
-3. Synthesize under identical constraints and compare total storage, registers, logic, and critical paths. If counted fetch is too expensive or slow, compare an explicit bit/byte-counter sequencer against this proven baseline.
+The subsequent [E64 decision](execution-records.md) resolves counted operands during loading and deduplicates literal records. It avoids executing the syntax tree on each edge. Explicit and counted V0 write files produce identical E64 words. The [hardware comparison](execution-hardware.md) now measures direct and indexed stores with matching ports, writable contents, and independent RTL validation. It does not measure a dedicated runtime counted-loop decoder.
 
-A conventional register-counter loop, arbitrary-length data streams, data writes during execution, and additional protocols are outside this batch. The storage choice remains reversible until those measurements justify it.
+The indexed store uses fewer bits and generic cells, with greater lookup depth and a limit of 64 distinct records. Carry it into the structural reactive scheduler integration while retaining direct storage as a baseline. Atomic loading, technology-mapped timing/area, conventional register-counter loops, arbitrary-length streams, and data writes during execution remain separate work.
