@@ -51,6 +51,10 @@ def expression (inputName : {w : Nat} → I w → String)
     let a ← expression inputName registerName x
     let b ← expression inputName registerName y
     bindOp s!"comb.icmp eq {a}, {b} : i{v}"
+  | _, .ult (w := v) x y =>
+    let a ← expression inputName registerName x
+    let b ← expression inputName registerName y
+    bindOp s!"comb.icmp ult {a}, {b} : i{v}"
   | w, .mux c t f =>
     let select ← expression inputName registerName c
     let yes ← expression inputName registerName t

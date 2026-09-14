@@ -15,6 +15,7 @@ inductive Expr (Input Register : Nat → Type) : Nat → Type where
   | sub : Expr Input Register w → Expr Input Register w → Expr Input Register w
   | slice (start len : Nat) (fits : start + len ≤ w) : Expr Input Register w → Expr Input Register len
   | equal : Expr Input Register w → Expr Input Register w → Expr Input Register 1
+  | ult : Expr Input Register w → Expr Input Register w → Expr Input Register 1
   | zero : Expr Input Register w → Expr Input Register 1
   | mux : Expr Input Register 1 → Expr Input Register w → Expr Input Register w → Expr Input Register w
 
@@ -27,6 +28,7 @@ def Expr.eval (inputs : Values I) (registers : Values R) : Expr I R w → BitVec
   | .sub x y => x.eval inputs registers - y.eval inputs registers
   | .slice start len _ x => (x.eval inputs registers).extractLsb' start len
   | .equal x y => BitVec.ofBool (decide (x.eval inputs registers = y.eval inputs registers))
+  | .ult x y => BitVec.ofBool (decide ((x.eval inputs registers).toNat < (y.eval inputs registers).toNat))
   | .zero x => BitVec.ofBool (decide (x.eval inputs registers = 0))
   | .mux c t f => if c.eval inputs registers = 1 then t.eval inputs registers else f.eval inputs registers
 
@@ -41,6 +43,7 @@ def Expr.bind (input : {w : Nat} → I w → Expr J S w)
   | .sub x y => .sub (x.bind input register) (y.bind input register)
   | .slice start len fits x => .slice start len fits (x.bind input register)
   | .equal x y => .equal (x.bind input register) (y.bind input register)
+  | .ult x y => .ult (x.bind input register) (y.bind input register)
   | .zero x => .zero (x.bind input register)
   | .mux c t f => .mux (c.bind input register) (t.bind input register) (f.bind input register)
 
