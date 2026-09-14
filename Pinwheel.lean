@@ -21,6 +21,7 @@ import Pinwheel.Hardware.Execution.Emit
 import Pinwheel.Hardware.Reactive.Emit
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
+import Pinwheel.Hardware.Storage
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.

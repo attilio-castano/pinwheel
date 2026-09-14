@@ -23,14 +23,14 @@ def main():
     lake = shutil.which('lake')
     suite = ROOT/'build/tools/oss-cad-suite/bin'
     circt = ROOT/'build/tools/firtool-1.159.0/bin/circt-opt'
-    run([lake, 'build', 'Pinwheel.Hardware.Storage.DenseEmit'], 'build.log')
+    run([lake, 'build', 'Pinwheel.Hardware.Storage.RepetitionEmit'], 'build.log')
     paths = sorted((ROOT/'Pinwheel/Hardware/Storage').glob('*.lean'))
     expected = []
     for p in paths:
         ns = re.search(r'^namespace (\S+)', p.read_text(), re.M)[1]
         expected += [ns+'.'+n for n in re.findall(r'^theorem (\w+)', p.read_text(), re.M)]
     audit_file = OUT/'Axioms.lean'
-    audit_file.write_text('import Pinwheel.Hardware.Storage.DenseEmit\n'+''.join(f'#print axioms {n}\n' for n in expected))
+    audit_file.write_text('import Pinwheel.Hardware.Storage.RepetitionEmit\n'+''.join(f'#print axioms {n}\n' for n in expected))
     audit = run([lake, 'env', 'lean', '-DwarningAsError=true', audit_file], 'axioms.log')
     entries = re.findall(r"'([^']+)' (?:depends on axioms: \[([^]]*)\]|does not depend on any axioms)", audit)
     assert sorted(n for n, _ in entries) == sorted(expected)

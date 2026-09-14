@@ -5,6 +5,12 @@ capture, and atomic replacement of a committed program. Count both staging and
 active storage, selection/read logic, validation, and additional execution state.
 The 64-entry atomic machine remains the reference.
 
+**Completed:** the general 32-entry, dense, cached candidate reduces typical mapped
+cell area from 1.055 to 0.562 mm² (46.8%). The separate two-byte I²C repetition
+prototype reaches 0.192 mm² with narrower protocol scope. The final primitive
+review identifies concrete SRAM and latch options, each requiring a new timing
+contract. Physical feasibility and RTL translation equivalence remain open.
+
 ## Sequence and decision gates
 
 1. Freeze the reference measurements and determine compiler dictionary demand.
@@ -154,7 +160,7 @@ the additional capacity rejections, and **13,151,052** storage observations.
 | Dense, 32 entries, cached | Slow | 561,952.1502 | 6,226 | 9,951.14 |
 
 The combined design has 6,233 declared register bits; synthesis retains 6,226.
-The logical cache is 64 bits, but seven extra physical FFs are eliminated in
+The logical cache is 64 bits, but synthesis eliminates seven declared bits in
 this combination. Use the measured count rather than assuming every logical
 cache bit becomes a new register.
 
@@ -176,3 +182,79 @@ python3 scripts/measure-storage-variant.py small-dense-cached --ff 6226
 `check-storage.py` audits all 38 public storage theorems present at this milestone
 and retains the isolated 32-entry regression. Codec and per-variant receipts are
 separate snapshots under `build/storage/`.
+
+
+## Bounded runtime repetition
+
+This experiment implements a flat runtime layout for the existing two-byte I²C
+write. It reuses the same reactive scheduler and preserves its external edges.
+It is not a general implementation of the counted syntax tree, and does not
+replace the UART/SPI/I²C-read candidate above.
+
+Each bank stores 15 literal E64 templates (960 bits), two payload bytes (16 bits),
+four descriptor bytes (32 bits), and idle/last metadata (14 bits): **1,022 bits**.
+Both banks, the 12-bit loader controller, 49-bit scheduler, and 64-bit current-word
+cache total **2,169 declared bits**; synthesis retains **2,163 flip-flops**.
+Descriptors specify body start 2, byte span 36, serial-bit span 32, and STOP 74.
+The execution address selects a template, byte, bit, and phase; the reader patches
+SDA enable, ACK capture destination, and the second ACK successor. There are no
+extra loop-control cycles. Changing the two payload bytes retains the templates.
+
+For comparison, loading still uses 322 host words: slots 0–14 contain templates,
+15–16 payload bytes, 17–20 the four validated descriptors, 21–319 canonical halt
+padding, and 320–321 metadata. Padding consumes upload time but no storage bits.
+Atomic staging, rejected values without cursor advance, and busy-write rejection
+remain part of the measured machine.
+
+`Repetition.lower` returns an image with a kernel-checked certificate that all
+256 fetched words equal the explicit compiler image, or rejects it. Lean proves
+lookup agreement and arbitrary-input-run equality for accepted images. It also
+proves the structural reader, host-layout checks, physical writes, and active-bank
+preservation. These component proofs do not constitute a new monolithic proof of
+the emitted atomic repetition machine; its complete integration is independently
+checked. The emitter/CIRCT translation remains outside the formal proof boundary.
+
+The certificate matrix passes **32,777 images**: all 32,768 address/data pairs at
+one timing configuration plus nine timer/budget boundary combinations at a fixed
+payload. This is not a universal theorem that lowering succeeds for all settings.
+An independent literal-program peer, native Lean components, and emitted RTL
+agree on **19,525 edges**, covering 50 wire transactions, all ACK/NACK outcomes,
+stretching, timeout, changed payload, busy commit, and 39 interrupted uploads.
+There are 322 rejected upload-value cases and **9,324,174** RTL storage/padding
+observations. Five deliberate cache/descriptor/byte-selection corruptions fail.
+
+| Bounded I²C design | Corner | Cell area, µm² | Mapped FF bits | ABC combinational delay, ps |
+|---|---|---:|---:|---:|
+| Runtime repetition, cached | Typical | 192,057.0372 | 2,163 | 8,225.99 |
+| Runtime repetition, cached | Slow | 192,655.7892 | 2,163 | 11,526.70 |
+
+The complete mapped design includes both banks, descriptors, payload, decoder,
+loader, scheduler, and cache. Repetition saves area but its slow-corner path is
+longer than the general combined candidate's. Its narrower scope prevents treating
+these figures as an interchangeable implementation comparison.
+
+```sh
+python3 scripts/check-repetition-storage.py
+```
+
+This runner audits all **48 public storage theorems**, checks the certificate
+matrix, generates independent traces, evaluates Lean components, simulates and
+maps RTL, and rejects the mutants. It writes `build/storage/repetition/checked-report.json`
+only after success, with source/RTL hashes and individual logs. The default
+`lake build` now includes the storage study through `Pinwheel.Hardware.Storage`.
+
+## Decision and remaining work
+
+The [primitive-feasibility review](storage-primitives.md) pins actual SRAM views
+and records latch cell costs. Synchronous SRAM reads require successor prefetch
+and a worst-case schedule; transparent latches require a phase-aware write
+contract. Neither is a drop-in implementation of the current store semantics.
+
+Carry the **32-entry dense cached flip-flop machine** into a separate physical
+validation milestone. Retain the 64-entry backend for capacity overflow and the
+bounded repetition backend as research into reusable templates and payload data.
+The next milestone must establish the actual usable floorplan, placed/routed
+area, constrained timing, and translation/equivalence evidence. The present area
+sum and ABC path estimates establish neither competition fit nor operating
+frequency. External serial loading and the physical wrapper remain subsequent
+integration work.
