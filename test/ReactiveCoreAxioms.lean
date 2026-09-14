@@ -1,5 +1,21 @@
-import Pinwheel.Hardware.Reactive.Refinement
+import Pinwheel.Hardware.Reactive.CoreProofs
 
+#print axioms Pinwheel.Hardware.Reactive.Core.address_correct
+#print axioms Pinwheel.Hardware.Reactive.Core.base_correct
+#print axioms Pinwheel.Hardware.Reactive.Core.blocked_correct
+#print axioms Pinwheel.Hardware.Reactive.Core.busy_correct
+#print axioms Pinwheel.Hardware.Reactive.Core.core_next
+#print axioms Pinwheel.Hardware.Reactive.Core.direct_represents
+#print axioms Pinwheel.Hardware.Reactive.Core.direct_run
+#print axioms Pinwheel.Hardware.Reactive.Core.direct_stable
+#print axioms Pinwheel.Hardware.Reactive.Core.indexed_represents
+#print axioms Pinwheel.Hardware.Reactive.Core.indexed_run
+#print axioms Pinwheel.Hardware.Reactive.Core.indexed_stable
+#print axioms Pinwheel.Hardware.Reactive.Core.inputs_correct
+#print axioms Pinwheel.Hardware.Reactive.Core.machine_next
+#print axioms Pinwheel.Hardware.Reactive.Core.machine_run
+#print axioms Pinwheel.Hardware.Reactive.Core.memory_write_hold
+#print axioms Pinwheel.Hardware.Reactive.Core.metadata_hold
 #print axioms Pinwheel.Hardware.Reactive.advance_active
 #print axioms Pinwheel.Hardware.Reactive.advance_checked
 #print axioms Pinwheel.Hardware.Reactive.advance_correct

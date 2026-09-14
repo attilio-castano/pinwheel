@@ -17,7 +17,7 @@ import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
 import Pinwheel.Hardware.Emit
 import Pinwheel.Hardware.Execution.Emit
-import Pinwheel.Hardware.Reactive.Refinement
+import Pinwheel.Hardware.Reactive.Emit
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 
