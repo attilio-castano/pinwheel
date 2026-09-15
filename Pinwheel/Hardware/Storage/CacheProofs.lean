@@ -28,7 +28,7 @@ theorem run_correct (s : State) (h : Valid s) (requests : List Machine.Inputs) :
   done
 
 theorem idle_valid (s : State) (h : Reactive.runningValue s.machine.core = false) : Valid s := by
-  simp [Valid, h]
+  simp [Valid, Reactive.Fetch.CurrentValid, h]
   done
 
 end Pinwheel.Hardware.Storage.Cache

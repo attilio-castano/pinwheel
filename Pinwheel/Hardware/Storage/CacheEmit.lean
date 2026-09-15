@@ -1,4 +1,5 @@
-import Pinwheel.Hardware.Storage.CacheCircuit
+import Pinwheel.Hardware.Storage.CacheContract
+import Pinwheel.Hardware.Loader.Emit
 
 namespace Pinwheel.Hardware.Loader.Machine.CachedEmit
 open Machine

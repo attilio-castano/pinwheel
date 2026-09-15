@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.Loader.Store
+import Pinwheel.Hardware.Reactive.Fetch
 
 namespace Pinwheel.Hardware.Loader.Machine
 
@@ -49,8 +50,7 @@ def baseInput (i : Inputs) (s : State) : Reactive.Inputs :=
     current := Store.read m s.core.pc
     successor := 4 }
 def schedulerInput (i : Inputs) (s : State) : Reactive.Inputs :=
-  let base := baseInput i s
-  {base with successor := Store.read (s.memory (selected i s)) (Reactive.targetValue base s.core)}
+  Reactive.Fetch.resolve (baseInput i s) s.core (Store.read (s.memory (selected i s)))
 
 /-- Functional atomic loader plus the existing scheduler equations. -/
 def next (i : Inputs) (s : State) : State :=

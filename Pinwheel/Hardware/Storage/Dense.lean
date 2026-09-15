@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.Loader.Emit
+import Pinwheel.Hardware.Loader.Contract
 
 namespace Pinwheel.Hardware.Storage.Dense
 open Execution

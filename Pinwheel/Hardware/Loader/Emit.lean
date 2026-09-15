@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.Loader.Contract
+import Pinwheel.Hardware.Reactive.Emit
 
 namespace Pinwheel.Hardware.Loader
 

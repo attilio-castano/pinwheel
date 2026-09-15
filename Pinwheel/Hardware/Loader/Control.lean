@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.Reactive.Emit
+import Pinwheel.Hardware.Reactive.CoreProofs
 
 namespace Pinwheel.Hardware.Loader
 

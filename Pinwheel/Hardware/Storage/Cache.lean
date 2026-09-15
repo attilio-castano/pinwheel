@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.Loader.Emit
+import Pinwheel.Hardware.Loader.Contract
 
 namespace Pinwheel.Hardware.Storage.Cache
 open Loader
@@ -8,15 +8,15 @@ structure State where
   current : BitVec 64
 
 def Valid (s : State) : Prop :=
-  Reactive.runningValue s.machine.core = true →
-    s.current = Loader.Store.read (s.machine.memory s.machine.control.active) s.machine.core.pc
+  Reactive.Fetch.CurrentValid s.machine.core s.current
+    (Loader.Store.read (s.machine.memory s.machine.control.active))
 
 def base (i : Machine.Inputs) (s : State) : Reactive.Inputs :=
   {Machine.baseInput i s.machine with current := s.current}
 
 def feed (i : Machine.Inputs) (s : State) : Reactive.Inputs :=
-  {base i s with successor := (Loader.Store.read (s.machine.memory (Machine.selected i s.machine))
-    (Reactive.targetValue (base i s) s.machine.core))}
+  Reactive.Fetch.resolve (base i s) s.machine.core
+    (Loader.Store.read (s.machine.memory (Machine.selected i s.machine)))
 
 def next (i : Machine.Inputs) (s : State) : State :=
   let core := Reactive.stepValue (feed i s) s.machine.core
