@@ -106,7 +106,7 @@ def main():
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean'))
     sources += [Path(__file__).resolve(), baseline_path, ROOT / 'test/TimedContracts.lean', ROOT / 'test/Interfaces.lean',
                 ROOT / 'test/FetchChoice.lean',
-                ROOT / 'test/FetchChoiceEmit.lean',
+                ROOT / 'test/FetchChoiceEmit.lean', ROOT / 'test/CommandSplitEmit.lean',
                 ROOT / 'test/Storage.lean', ROOT / 'test/StorageCache.lean', ROOT / 'test/StorageDense.lean',
                 ROOT / 'lean-toolchain', ROOT / 'lakefile.toml', ROOT / 'tools/hardware-toolchain.json']
     fixtures = [ORACLE / n for n in baseline['oracle_sha256']]

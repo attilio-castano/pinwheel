@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Screen a proved fetch topology using independent traces and full-core mapping."""
+"""Screen a proved fetch or command-decoder topology using independent traces and full-core mapping."""
 import argparse
 import hashlib
 import json
@@ -21,7 +21,7 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('variant', choices=['late-index', 'late-record'])
+    parser.add_argument('variant', choices=['late-index', 'late-record', 'command-split'])
     parser.add_argument('--tag', default='initial')
     args = parser.parse_args()
     if not args.tag.replace('-', '').replace('_', '').isalnum():
@@ -33,6 +33,10 @@ def main():
     contract = json.loads(contract_path.read_text())
     required = ['Pinwheel.Hardware.Storage.FetchChoice.' + n for n in
                 ['fetch_correct', 'step_same', 'observe_same', 'refinement', 'completeRefinement', 'trace_correct']]
+    if args.variant == 'command-split':
+        required = ['Pinwheel.Hardware.Storage.CommandSplit.' + n for n in
+                    ['expression_correct', 'adapted_small', 'commit_structure', 'start_structure',
+                     'component_same', 'trace_correct']]
     if not set(required).issubset(contract['audited_declarations']):
         raise RuntimeError('Run the expanded timed-contract proof audit first')
     for name, expected in contract['source_sha256'].items():
@@ -68,7 +72,8 @@ def main():
             raise RuntimeError(f'Command failed; inspect {out / label}')
         return log
 
-    run([lake, 'env', 'lean', '--run', 'test/FetchChoiceEmit.lean'], 'emit.log')
+    emitter = 'CommandSplitEmit' if args.variant == 'command-split' else 'FetchChoiceEmit'
+    run([lake, 'env', 'lean', '--run', f'test/{emitter}.lean'], 'emit.log')
     shutil.copyfile(BASE / args.variant / 'candidate.mlir', out / 'candidate.mlir')
     circt = ROOT / 'build/tools/firtool-1.159.0/bin/circt-opt'
     suite = ROOT / 'build/tools/oss-cad-suite/bin'
@@ -103,8 +108,14 @@ def main():
     print(simulation.strip(), flush=True)
     mutant, count = re.subn(r'(\bwire\s+fetch_choice_condition\s*=\s*)([^;]+);',
                             lambda m: m[1]+'~('+m[2]+');', rtl)
+    mutation = 'branch-selection'
+    if args.variant == 'command-split':
+        # Remove only the rejection mux, leaving the raw push command intact.
+        mutant, count = re.subn(r"\(command == 3'h2\s*& ~\(.*?\)\s*\? 3'h6\s*: command\)",
+                                'command', rtl, flags=re.S)
+        mutation = 'capacity-rejection-bypass'
     if count != 1:
-        raise RuntimeError(f'Expected one named branch-selection mutation anchor; found {count}')
+        raise RuntimeError(f'Expected one {mutation} mutation anchor; found {count}')
     (out / 'mutant.sv').write_text(mutant)
     run([out / 'mutant.sv' if p == out / 'design.sv' else p for p in compile_command], 'mutant-compile.log')
     run([suite / 'vvp', out / 'sim.vvp'], 'mutant.log', reject=True)
@@ -112,7 +123,7 @@ def main():
     run(['python3', ROOT / 'scripts/check-physical-netlist.py', out / 'design.sv',
          '--label', label, '--vectors', out / 'vectors.txt'], 'ports.log')
     port_receipt = ROOT / f'build/physical/{label}-check/report.json'
-    print('Branch-selection mutation rejected; all defined baseline output bits match.', flush=True)
+    print(f'{mutation} mutation rejected; all defined baseline output bits match.', flush=True)
 
     (out / 'abc.constr').write_text('set_driving_cell sg13cmos5l_buf_2\nset_load 10\n')
     metrics = {}
@@ -135,13 +146,13 @@ def main():
                                flip_flops=ff, cells=len(cells))
         print(args.variant, corner, metrics[corner], flush=True)
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean')) + [Path(__file__).resolve(),
-              ROOT / 'test/FetchChoiceEmit.lean', ROOT / 'scripts/check-physical-netlist.py',
+              ROOT / f'test/{emitter}.lean', ROOT / 'scripts/check-physical-netlist.py',
               ROOT / 'scripts/loader-vectors.py', ROOT / 'scripts/reactive-core-vectors.py',
               ROOT / 'scripts/execution-vectors.py', ROOT / 'tools/technology-library.json',
               ROOT / 'tools/hardware-toolchain.json']
     report = dict(variant=args.variant, tag=args.tag, metrics=metrics, baseline_metrics=mapping['metrics'],
                   oracle_simulation=simulation, port_comparison=json.loads(port_receipt.read_text()),
-                  branch_selection_mutant_rejected=True, additional_branch_edges=128,
+                  mutation_rejected=mutation, additional_branch_edges=128,
                   source_sha256={str(p.relative_to(ROOT)): sha(p) for p in sources},
                   artifact_sha256={str(p.relative_to(ROOT)): sha(p) for p in
                                    [out / 'design.sv', out / 'candidate.mlir', out / 'vectors.txt',

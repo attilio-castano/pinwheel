@@ -2,6 +2,7 @@ import Pinwheel.Hardware.Storage.DenseStore
 import Pinwheel.Hardware.Storage.CacheEmit
 import Pinwheel.Hardware.Storage.Emit
 import Pinwheel.Hardware.Storage.FetchChoice
+import Pinwheel.Hardware.Storage.CommandSplit
 
 namespace Pinwheel.Hardware.Storage.Dense
 
@@ -26,7 +27,9 @@ inductive SelectInput (width : Nat) : Nat → Type where
   | no : SelectInput width width
 
 def moduleText (small : Bool := false) (cached : Bool := false)
-    (choice : Option FetchChoice.Variant := none) : Except String String := do
+    (choice : Option FetchChoice.Variant := none) (splitCommand : Bool := false) : Except String String := do
+  if splitCommand && (!(small && cached) || choice.isSome) then
+    throw "Command-split experiment requires the baseline small dense cached fetch backend"
   if choice.isSome && !(small && cached) then
     throw "Fetch-choice experiments require the general small dense cached backend"
   let rn : {w : Nat} → Register w → String := fun {w} r => match w, r with
@@ -56,7 +59,14 @@ def moduleText (small : Bool := false) (cached : Bool := false)
     let busy ← Hardware.Emit.expression (fun _ => "%init") cn Reactive.running
     let li : {w : Nat} → Loader.Input w → String := fun p => match p with
       | .init => "%init" | .reset => "%reset" | .busy => busy | .command => hn .command | .data => "%data"
-    let selected ← Hardware.Emit.expression hn rn selectedGate
+    let machineExpr {w : Nat} (e : Machine.E w) : Hardware.Emit.M String :=
+      if splitCommand then Hardware.Emit.expression (fun p => "%" ++ inputLabel p) rn
+        (CommandSplit.expression CommandSplit.capacity e)
+      else Hardware.Emit.expression hn rn e
+    let loaderExpr {w : Nat} (e : Loader.E w) : Hardware.Emit.M String :=
+      if splitCommand then machineExpr (e.bind controlInputs controlReg)
+      else Hardware.Emit.expression li ln e
+    let selected ← machineExpr selectedGate
     let read (address : String) : Hardware.Emit.M String :=
       Hardware.Emit.expression (I := Cut) (R := Register) (fun p => match p with | Cut.selection => selected | Cut.address => address) rn
         (Execution.readTree 6 (fun k => .mux (.input Cut.selection) (.reg (.memory true (.word k))) (.reg (.memory false (.word k))))
@@ -76,11 +86,11 @@ def moduleText (small : Bool := false) (cached : Bool := false)
         (fun p => match p with | .condition => condition | .yes => yes | .no => no) rn
         (.mux (.input .condition) (.input .yes) (.input .no))
     let current ← if cached then pure "%r_cached_word" else read (cn .pc)
-    let reset ← Hardware.Emit.expression hn rn (baseInputs .reset)
-    let start ← Hardware.Emit.expression li ln Loader.startGate
-    let idleLevels ← Hardware.Emit.expression hn rn (baseInputs .idleLevels)
-    let idleEnabled ← Hardware.Emit.expression hn rn (baseInputs .idleEnabled)
-    let last ← Hardware.Emit.expression hn rn (baseInputs .last)
+    let reset ← machineExpr (baseInputs .reset)
+    let start ← loaderExpr Loader.startGate
+    let idleLevels ← machineExpr (baseInputs .idleLevels)
+    let idleEnabled ← machineExpr (baseInputs .idleEnabled)
+    let last ← machineExpr (baseInputs .last)
     let base : {w : Nat} → Reactive.Input w → String := fun p => match p with
       | .reset => reset | .start => start | .incoming => "%incoming" | .idleLevels => idleLevels
       | .idleEnabled => idleEnabled | .last => last | .current => current | .successor => current
@@ -106,7 +116,7 @@ def moduleText (small : Bool := false) (cached : Bool := false)
       | .successor => successor | _ => base p
     let mut declarations := #[]
     for ⟨w, r⟩ in Loader.registers do
-      let value ← Hardware.Emit.expression li ln (Loader.circuit.next r)
+      let value ← loaderExpr (Loader.circuit.next r)
       declarations := declarations.push s!"    {ln r} = seq.compreg {value}, %clock : i{w}"
     let nextValues ← Reactive.registerInterface.mapM fun r =>
       Hardware.Emit.expression si cn (Reactive.circuit.next r)
@@ -118,7 +128,7 @@ def moduleText (small : Bool := false) (cached : Bool := false)
       let value ← Hardware.Emit.expression ci (fun _ => "%init") CachedEmit.update
       declarations := declarations.push s!"    %r_cached_word = seq.compreg {value}, %clock : i64"
     for b in #[false, true] do
-      let write ← Hardware.Emit.expression hn rn (memoryInputs b .write)
+      let write ← machineExpr (memoryInputs b .write)
       let mi : {w : Nat} → Store.Input w → String := fun p => match p with
         | .write => write | .cursor => ln .cursor | .data => "%data" | .address => address
       let dn : {w : Nat} → Dense.Register w → String := fun r => match r with
@@ -137,7 +147,7 @@ def moduleText (small : Bool := false) (cached : Bool := false)
     let mut out := #[]
     for ⟨_, o⟩ in outputs do
       out := out.push (← match o with
-        | .control o => Hardware.Emit.expression li ln (Loader.circuit.output o)
+        | .control o => loaderExpr (Loader.circuit.output o)
         | .core o => Hardware.Emit.expression si cn (Reactive.circuit.output o))
     return (declarations, out) : Hardware.Emit.M _).run {}
   let ports := #["in %clk : i1"] ++ inputs.map (fun ⟨w, i⟩ => s!"in %{inputLabel i} : i{w}") ++
