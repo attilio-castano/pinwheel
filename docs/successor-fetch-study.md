@@ -91,11 +91,12 @@ candidate.
 ## Reproduction and status
 
 The pure foundation for A and B is implemented in
-`Pinwheel/Hardware/Reactive/FetchChoice.lean`: five audited theorems establish
+`Pinwheel/Hardware/Reactive/FetchChoice.lean`: eight audited theorems establish
 candidate-address independence, address selection and complete scheduler-input
-equality after either index or record selection. A focused 128-edge sequence
+equality after either index or record selection, and structural expression
+correctness that composes with parent-machine registers and readers. A focused 128-edge sequence
 checks uninterrupted one-cycle branches and detects stale selection on 63 edges.
-The full contract suite audits 80 declarations and confirms unchanged MLIR/RTL.
+The full contract suite audits 83 declarations and confirms unchanged MLIR/RTL.
 No speculative-read RTL has been selected or measured yet.
 
 F1's extracted timing and netlist regression are complete. Its slow-corner worst

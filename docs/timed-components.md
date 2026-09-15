@@ -50,6 +50,12 @@ scheduler inputs with the existing `resolve`. They add no execution cycles or
 effects for the unselected read. These are lookup proofs; candidate RTL and its
 complete-machine correspondence remain separate experiment gates.
 
+`branchExpr_correct` and `candidateExpr_correct` connect the corresponding
+structural expressions to those values. `selectionExpr_correct` accepts the
+parent's register/input namespaces and a proved combinational reader, allowing
+the late selector to compose with writable stores. The focused check evaluates
+both structural lookup arrangements as well as the value-level functions.
+
 The focused `FetchChoice` check runs 128 consecutive one-cycle branches, including
 self branches and entry capture overwriting the branch slot. Both lookup forms
 match the reference state. A stale-selection mutation differs on 63 edges.
@@ -151,7 +157,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **80 declarations**, matched **21,342** independent
+The completed checks audited **83 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.

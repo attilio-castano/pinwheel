@@ -18,6 +18,13 @@ def main : IO Unit := do
   let index : BitVec 8 → BitVec 6 := fun a => if a == 0 then 2 else 1
   let dictionary : BitVec 6 → BitVec 64 := fun k => if k == 2 then word0 else word1
   let read : Reactive.Fetch.Reader := fun a => dictionary (index a)
+  let readExpr (address : Reactive.E 8) : Reactive.E 64 :=
+    Execution.readTree 8 (fun a => .lit (read a)) address
+  let indexExpr (address : Reactive.E 8) : Reactive.E 6 :=
+    Execution.readTree 8 (fun a => .lit (index a)) address
+  let recordChoice := Reactive.Fetch.selectionExpr Reactive.Fetch.branchExpr Reactive.Fetch.candidateExpr readExpr
+  let indexChoice := Execution.readTree 6 (fun k => .lit (dictionary k))
+    (Reactive.Fetch.selectionExpr Reactive.Fetch.branchExpr Reactive.Fetch.candidateExpr indexExpr)
   let mut state : Reactive.State := ⟨3, 0, 0, 0, {}, Vector.replicate 16 false⟩
   let mut staleDifferences := 0
   for n in [:128] do
@@ -28,6 +35,9 @@ def main : IO Unit := do
     let reference := Reactive.stepValue (Reactive.Fetch.resolve context state read) state
     let records := Reactive.stepValue (Reactive.Fetch.resolveCandidates r read) state
     let indices := Reactive.stepValue (Reactive.Fetch.resolveIndexedCandidates r index dictionary) state
+    ensure (recordChoice.eval context.values state.values == read expectedPC &&
+      indexChoice.eval context.values state.values == read expectedPC)
+      s!"structural candidate lookup at edge {n}"
     ensure (decide (records = reference ∧ indices = reference)) s!"candidate state mismatch at edge {n}"
     ensure (reference.pc == expectedPC && reference.mode == 3 && reference.remaining == 0 &&
       reference.pins.levels == (if expectedPC == 0 then 1 else 2) &&
