@@ -67,14 +67,13 @@ def moduleText (small : Bool := false) (cached : Bool := false) : Except String 
     for ⟨w, r⟩ in Loader.registers do
       let value ← Hardware.Emit.expression li ln (Loader.circuit.next r)
       declarations := declarations.push s!"    {ln r} = seq.compreg {value}, %clock : i{w}"
-    let mut nextPC := ""
-    for ⟨w, r⟩ in Reactive.registers do
-      let value ← Hardware.Emit.expression si cn (Reactive.circuit.next r)
-      if Reactive.registerLabel r == "pc" then nextPC := value
-      declarations := declarations.push s!"    {cn r} = seq.compreg {value}, %clock : i{w}"
+    let nextValues ← Reactive.registerInterface.mapM fun r =>
+      Hardware.Emit.expression si cn (Reactive.circuit.next r)
+    for ⟨w, r⟩ in Reactive.registerInterface.ports do
+      declarations := declarations.push s!"    {cn r} = seq.compreg {nextValues r}, %clock : i{w}"
     if cached then
       let ci : {w : Nat} → CachedEmit.CacheInput w → String := fun p => match p with
-        | .busy => busy | .oldPC => cn .pc | .newPC => nextPC | .successor => successor | .current => current
+        | .busy => busy | .oldPC => cn .pc | .newPC => nextValues .pc | .successor => successor | .current => current
       let value ← Hardware.Emit.expression ci (fun _ => "%init") CachedEmit.update
       declarations := declarations.push s!"    %r_cached_word = seq.compreg {value}, %clock : i64"
     for b in #[false, true] do

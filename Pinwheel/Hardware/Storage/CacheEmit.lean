@@ -43,13 +43,12 @@ def moduleText : Except String String := do
     for ⟨w, r⟩ in Loader.registers do
       let value ← Hardware.Emit.expression li ln (Loader.circuit.next r)
       declarations := declarations.push s!"    {ln r} = seq.compreg {value}, %clock : i{w}"
-    let mut nextPC := ""
-    for ⟨w, r⟩ in Reactive.registers do
-      let value ← Hardware.Emit.expression si cn (Reactive.circuit.next r)
-      if Reactive.registerLabel r == "pc" then nextPC := value
-      declarations := declarations.push s!"    {cn r} = seq.compreg {value}, %clock : i{w}"
+    let nextValues ← Reactive.registerInterface.mapM fun r =>
+      Hardware.Emit.expression si cn (Reactive.circuit.next r)
+    for ⟨w, r⟩ in Reactive.registerInterface.ports do
+      declarations := declarations.push s!"    {cn r} = seq.compreg {nextValues r}, %clock : i{w}"
     let ci : {w : Nat} → CacheInput w → String := fun p => match p with
-      | .busy => busy | .oldPC => cn .pc | .newPC => nextPC | .successor => successor | .current => current
+      | .busy => busy | .oldPC => cn .pc | .newPC => nextValues .pc | .successor => successor | .current => current
     let cached ← Hardware.Emit.expression ci (fun _ => "%init") update
     declarations := declarations.push s!"    {current} = seq.compreg {cached}, %clock : i64"
     for b in #[false, true] do

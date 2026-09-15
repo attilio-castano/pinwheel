@@ -1,18 +1,8 @@
 import Pinwheel.Hardware.Reactive.CoreProofs
 import Pinwheel.Hardware.Execution.Emit
+import Pinwheel.Hardware.Reactive.Interface
 
 namespace Pinwheel.Hardware.Reactive
-
-def registers : Array (Sigma Register) :=
-  #[⟨3, .mode⟩, ⟨8, .pc⟩, ⟨8, .remaining⟩, ⟨8, .waitLeft⟩, ⟨3, .levels⟩, ⟨3, .enabled⟩] ++
-    Array.ofFn (fun k : Fin 16 => ⟨1, .sample k⟩)
-def registerLabel : {w : Nat} → Register w → String
-  | _, .mode => "mode" | _, .pc => "pc" | _, .remaining => "remaining" | _, .waitLeft => "wait_left"
-  | _, .levels => "levels" | _, .enabled => "enabled" | _, .sample k => s!"sample{k.val}"
-def outputs : Array (Sigma Output) := registers.map (fun ⟨w, r⟩ => ⟨w, .state r⟩) ++
-  #[⟨8, .readA⟩, ⟨8, .readB⟩, ⟨1, .busy⟩]
-def outputLabel : {w : Nat} → Output w → String
-  | _, .state r => registerLabel r | _, .readA => "read_a" | _, .readB => "read_b" | _, .busy => "busy"
 
 namespace Core
 
