@@ -8,6 +8,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import physical_checkpoint
+
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "build/physical"
 
@@ -23,16 +25,22 @@ def main():
     parser.add_argument("--to", help="Optional LibreLane stopping step; partial runs never establish final fit")
     parser.add_argument("--from-step", help="Resume at a named LibreLane step")
     parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
+    parser.add_argument("--checkpoint-manifest", type=Path, help="Previously captured checkpoint artifact manifest; required for resume")
     parser.add_argument("--overrides", type=Path, help="JSON implementation-flow controls; preserves RTL, timing boundary and floorplan")
     args = parser.parse_args()
     if bool(args.from_step) != bool(args.state):
         parser.error("--from-step and --state must be supplied together")
+    if bool(args.state) != bool(args.checkpoint_manifest):
+        parser.error("--state and --checkpoint-manifest must be supplied together")
     if not args.tag.replace("-", "").replace("_", "").isalnum():
         parser.error("tag must contain only letters, numbers, hyphens, or underscores")
     receipt_path = BASE / (args.tag + "-invocation.json")
     snapshot = BASE / "core/experiments" / args.tag
     if receipt_path.exists() or snapshot.exists() or (BASE / "core/runs" / args.tag).exists():
         raise RuntimeError("Choose a new tag to preserve earlier run evidence")
+    # Reject changed checkpoints before Docker inspection or run-directory creation.
+    if args.state:
+        physical_checkpoint.verify(args.state, args.checkpoint_manifest, BASE / "core")
     lock = json.loads((ROOT / "tools/physical-toolchain.json").read_text())
     inputs = json.loads((BASE / "core/inputs.json").read_text())
     for name in ["core.json", "core.sdc"]:
@@ -76,10 +84,17 @@ def main():
         shutil.copyfile(BASE / "core" / name, snapshot / name)
     (snapshot / "core.json").write_text(json.dumps(config, indent=2) + "\n")
     (snapshot / "overrides.json").write_text(json.dumps(overrides, indent=2) + "\n")
+    checkpoint_receipt = None
+    checkpoint_mount = []
+    if args.state:
+        checkpoint_receipt = physical_checkpoint.snapshot(
+            args.state, args.checkpoint_manifest, snapshot / "checkpoint", BASE / "core")
+        checkpoint_mount = ["--mount", f"type=bind,source={snapshot / 'checkpoint'},target={checkpoint_receipt['mount_path']},readonly"]
     command = [
         "docker", "run", "--rm", "--network", "none", "--cpus", "4", "--memory", "6g",
         "--mount", f"type=bind,source={BASE / 'core'},target=/work/core",
         "--mount", f"type=bind,source={BASE / 'pdk'},target=/work/pdk,readonly",
+        *checkpoint_mount,
         "--workdir", "/work/core", image_id,
         "python3", "-m", "librelane", "--manual-pdk", "--pdk-root", "/work/pdk",
         "--pdk", "ihp-sg13cmos5l", "--jobs", "4", "--run-tag", args.tag,
@@ -87,21 +102,20 @@ def main():
     ]
     if args.to:
         command += ["--to", args.to]
-    checkpoint = None
     if args.state:
-        checkpoint = args.state.resolve()
-        relative = checkpoint.relative_to((BASE / "core").resolve())
-        command += ["--from", args.from_step, "--with-initial-state", "/work/core/" + str(relative)]
+        command += ["--from", args.from_step, "--with-initial-state", checkpoint_receipt["state_path"]]
     command += [f"/work/core/experiments/{args.tag}/core.json"]
     receipt = {
         "command": command, "image_id": image_id, "stop_step": args.to,
         "resume_step": args.from_step,
-        "checkpoint_sha256": sha(checkpoint) if checkpoint else None,
+        "checkpoint_sha256": checkpoint_receipt["source_state_sha256"] if checkpoint_receipt else None,
+        "checkpoint": checkpoint_receipt,
         "inputs_sha256": sha(BASE / "core/inputs.json"),
         "config_sha256": sha(snapshot / "core.json"),
         "base_config_sha256": sha(BASE / "core/core.json"),
         "overrides": overrides,
         "runner_sha256": sha(Path(__file__).resolve()),
+        "checkpoint_helper_sha256": sha(Path(physical_checkpoint.__file__).resolve()),
         "sdc_sha256": sha(BASE / "core/core.sdc"),
         "pdk_receipt_sha256": sha(BASE / "pdk/installed.json"),
         "boundary": inputs["boundary"],

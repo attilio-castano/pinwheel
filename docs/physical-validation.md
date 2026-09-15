@@ -113,9 +113,35 @@ with four threads; that is its only configuration change. No timing or area
 requirement was relaxed. Resume with an explicit checkpoint when needed:
 
 ```sh
-python3 scripts/run-physical.py --tag routed4 --from-step OpenROAD.DetailedRouting --state build/physical/core/runs/initial/43-openroad-stamidpnr-3/state_out.json
-python3 scripts/report-physical.py --tag routed4
+python3 scripts/physical_checkpoint.py capture --state build/physical/core/runs/initial/43-openroad-stamidpnr-3/state_out.json --manifest build/physical/core/initial-midpnr-checkpoint.json
+python3 scripts/run-physical.py --tag new-resume --from-step OpenROAD.DetailedRouting --state build/physical/core/runs/initial/43-openroad-stamidpnr-3/state_out.json --checkpoint-manifest build/physical/core/initial-midpnr-checkpoint.json
+python3 scripts/report-physical.py --tag new-resume
 ```
+
+Capture the manifest when preserving a checkpoint. It records the JSON and every
+referenced artifact, including nested corner views. Capture refuses to overwrite
+an existing manifest. Missing or changed files make resume fail before Docker is
+invoked. The runner copies and verifies those contents into the new experiment's
+checkpoint directory, rewrites artifact paths to those copies, and mounts that
+directory read-only for LibreLane. The invocation and collected report identify
+the manifest and rewritten state; source file edits after copying cannot change
+the snapshot consumed by the flow. This protects against accidental source edits,
+not a host deliberately modifying the snapshot or its manifest during execution.
+
+For legacy checkpoints, capture describes contents observed **now**, not verified
+contents at the time of an earlier run. Existing historical receipts are not
+retroactively upgraded. Do not recapture changed files to make a failed resume
+pass under the old identity. A new manifest represents a new observed checkpoint.
+
+The portable checkpoint regression uses disposable files and mocked Docker calls:
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'
+```
+
+It covers changed/missing artifacts, nested views, state edits, manifest
+completeness, snapshot isolation, repeated resumes, and rejection before launch.
+It does not run or establish a new physical measurement.
 
 The collector requires a completed invocation, preserves failure status, and
 identifies whether detailed routing and extracted multi-corner STA completed.

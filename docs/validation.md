@@ -34,7 +34,9 @@ The gate:
    certificate checks. Their existing negative cases remain included.
 4. Independently decodes and checks generated PWL images with the Python oracle.
 
-`.github/workflows/lean.yml` runs the same entry point on pull requests and pushes
+`.github/workflows/lean.yml` first runs the disposable-file checkpoint provenance
+regression (`python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'`),
+which needs no CAD tools. It then runs the same Lean entry point on pull requests and pushes
 to `main`, on Ubuntu 24.04 with no Lake cache. It uses the repository Lean pin and
 commit-pinned checkout/Lean actions. It has read-only repository permissions and
 a 30-minute job limit. CI does not install the macOS CAD archives or start Docker

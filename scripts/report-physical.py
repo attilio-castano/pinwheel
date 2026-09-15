@@ -75,6 +75,7 @@ def main():
         "requested_stop": invocation["stop_step"],
         "resume_step": invocation.get("resume_step"),
         "checkpoint_sha256": invocation.get("checkpoint_sha256"),
+        "checkpoint": invocation.get("checkpoint"),
         "termination_note": (BASE / (args.tag + "-stop-reason.txt")).read_text() if (BASE / (args.tag + "-stop-reason.txt")).exists() else None,
         "invocation_sha256": sha(invocation_path), "resolved_config_sha256": sha(run / "resolved.json"),
         "clock_period_ns": resolved["CLOCK_PERIOD"], "sta_corners": resolved["STA_CORNERS"],
