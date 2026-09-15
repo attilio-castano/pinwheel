@@ -69,6 +69,24 @@ while the core is running. Idle cache contents are unrestricted. The existing
 atomic-loader rules still own image selection, commit, and write exclusion; the
 reader abstraction does not replace those rules.
 
+## Capacity-independent command decoding
+
+`Hardware/Storage/CommandSplit.lean` supplies a narrow expression transformation
+for the small-store experiment. Capacity rejection changes push command 2 into
+reject command 6. Comparisons to every other command can use the raw command;
+commit/start decisions therefore need no capacity/data input. The original
+adapter remains on the command uses that need it.
+
+`expression_correct` proves evaluation equality for arbitrary input/register
+values. `adapted_small` identifies the original small-store semantics, while
+`component_same` and `trace_correct` preserve all updates and pre/post-edge outputs
+of any transformed circuit for every finite input history. There are no new
+cycles, state invariants, or scheduling assumptions. As elsewhere, these are
+settled two-state values; glitches and propagation delays belong to physical
+validation. The optional dense emitter is checked separately against the unchanged
+baseline. See the [decoder experiment](successor-fetch-study.md#command-decoder-experiment)
+for mapping, connectivity, and independent trace results.
+
 ## Concrete proof composition
 
 `Hardware/Storage/CacheContract.lean` supplies three components:
@@ -161,7 +179,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **95 declarations**, matched **21,342** independent
+The completed checks audited **102 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.

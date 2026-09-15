@@ -1,0 +1,138 @@
+{
+  "source_commit": "1a0c960",
+  "variant": "command-split",
+  "rtl_sha256": "1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42",
+  "baseline_rtl_sha256": "1664dc719bff05307e3f17a6a8c611aba520917d49be132f1bf164bf1c53548b",
+  "metrics": {
+    "typical": {
+      "standard_cell_area_um2": 555522.3702,
+      "abc_combinational_delay_ps": 6945.01,
+      "flip_flops": 6226,
+      "cells": 27614
+    },
+    "slow": {
+      "standard_cell_area_um2": 555660.2646,
+      "abc_combinational_delay_ps": 9932.71,
+      "flip_flops": 6226,
+      "cells": 27614
+    }
+  },
+  "baseline_metrics": {
+    "typical": {
+      "standard_cell_area_um2": 561587.4558,
+      "abc_combinational_delay_ps": 7703.55,
+      "flip_flops": 6226,
+      "cells": 28961
+    },
+    "slow": {
+      "standard_cell_area_um2": 561952.1502,
+      "abc_combinational_delay_ps": 9951.14,
+      "flip_flops": 6226,
+      "cells": 28966
+    }
+  },
+  "oracle_edges": 21864,
+  "physical_storage_observations": 13444072,
+  "defined_output_bit_comparisons": 3585618,
+  "audited_declarations": 102,
+  "mutants_rejected": [
+    "capacity-rejection-bypass",
+    "output-inversion"
+  ],
+  "mapped_connectivity": {
+    "typical": {
+      "baseline": {
+        "cache_register_bits": 57,
+        "eliminated_unused_bits": 6,
+        "cache_input_pins": 57,
+        "families": {
+          "loader_data": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      },
+      "candidate": {
+        "cache_register_bits": 57,
+        "eliminated_unused_bits": 6,
+        "cache_input_pins": 57,
+        "families": {
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      }
+    },
+    "slow": {
+      "baseline": {
+        "cache_register_bits": 57,
+        "eliminated_unused_bits": 6,
+        "cache_input_pins": 57,
+        "families": {
+          "loader_data": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      },
+      "candidate": {
+        "cache_register_bits": 57,
+        "eliminated_unused_bits": 6,
+        "cache_input_pins": 57,
+        "families": {
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "receipts": {
+    "build/successor-fetch/command-split-screen/report.json": "09c7aabcdfb5fd2a20a9e5b5ba8b3acbfcd32302ebf66936ddc774b403e70d6e",
+    "build/successor-fetch/command-split-screen/cones.json": "fc9da82b7cd52d5ca9edaaf5379d322a1e463bff7624d1e59e4de98eb809c746",
+    "build/contracts/report.json": "39de5fdd611604ef607849eb6f8edacde3811cbb8d607caa2b31de1ca57cf734"
+  },
+  "boundary": "Generic Lean circuit transformation preserves every pre/post-edge observation for arbitrary two-state initial values and input sequences. Dense emitter/CIRCT translation remains separately tested. Mapping and connectivity only; this candidate has not been routed. Default implementation unchanged."
+}

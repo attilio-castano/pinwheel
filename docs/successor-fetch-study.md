@@ -242,19 +242,86 @@ python3 scripts/check-targeted-timing.py --run fetch-repair-route --tag repair-f
 
 ## Command-decoder experiment
 
-Inspect the path from the small-store capacity check through command decoding
-and bank/cache selection. `Storage.Small.inputs` rewrites a rejected push command
-to command 6, then all loader gates decode that transformed command. This is a
-concrete candidate for an unnecessary data dependency in commit/start logic.
-The new `Small.adapt_command_predicate` theorem proves that every command
-comparison except push (2) and reject (6) is unchanged by capacity adaptation,
-including commit (3) and start (5). The generated baseline RTL nevertheless
-feeds `checked_command` into those comparisons. This establishes a useful
-algebraic simplification to investigate in the mapped cone, not grounds for
-declaring timing paths false. A follow-up should isolate push validation from
-unrelated control decisions, prove complete command/loader correspondence, and
-measure under the same constraints. Antenna-induced fanout and the remaining
-protocol-input path stay separate closure issues.
+The `command-split` candidate isolates small-store push validation from unrelated
+command decisions. Previously, `Small.inputs` rewrote a rejected push (2) into
+reject (6), then commit/start/bank-selection logic decoded that rewritten value.
+The new `Storage.CommandSplit.expression` transformation decodes comparisons to
+0, 1, 3, 4, 5 and 7 directly from the raw command. Push/reject comparisons and
+other uses retain the adapter. The candidate keeps the same storage format,
+registers, loader transfer, cache update policy and protocol timing.
+
+`expression_correct` proves the transformation against the original adapter for
+every expression and input/register valuation. `adapted_small` connects it to the
+existing small-store model; `commit_structure` and `start_structure` prove that
+those expressions remain the raw, capacity-independent gates. `component_same`
+and `trace_correct` lift the equality to every register update and every
+pre/post-edge observation of any transformed circuit, for arbitrary initial
+values and input sequences. This is a structural two-state theorem; the manually
+composed dense emitter and CIRCT translation retain their separate test boundary.
+
+The complete contract audit now covers **102 declarations**, with standard Lean
+axioms only. All five default MLIR hashes and the default RTL hash remain
+unchanged. The candidate passes **21,864 independent loader/protocol edges**,
+**13,444,072 physical-storage observations**, and **3,585,618 defined output-bit
+comparisons** against the baseline. A capacity-rejection bypass fails on the
+invalid padding upload at edge 21,375; an output-inversion mutation also fails.
+The existing reset/reload/invalid-upload suite and 128 continuous one-cycle
+branches, including self branches and rejected busy commands, remain included.
+
+| Mapping metric | Baseline | Command split |
+| --- | ---: | ---: |
+| Typical cell area (µm²) | 561,587.4558 | 555,522.3702 |
+| Typical ABC delay (ns) | 7.70355 | 6.94501 |
+| Slow cell area (µm²) | 561,952.1502 | 555,660.2646 |
+| Slow ABC delay (ns) | 9.95114 | 9.93271 |
+| Flip-flops | 6,226 | 6,226 |
+
+Cell area falls about **1.1%**. The typical delay estimate improves about **9.8%**;
+the slow estimate changes only about **0.19%**, too little to infer a routed
+improvement near the same 10 ns ABC mapping target. Both corners use the same
+libraries, driving cell, output load and mapping script as the baseline.
+
+The mapped connectivity check finds a loader-data path to all **57 retained
+cache-register data pins** in both baseline mappings, and **zero** in both
+candidate mappings. Protocol-input connectivity remains at all 57. Six unused
+named cache bits have been removed and one is constant; these do not count as
+physical register endpoints. The check identifies sequential cells from Liberty,
+cuts every flip-flop boundary, and checks cache data/reset/set inputs. This is
+connectivity evidence, not a proof that a path is sensitizable or meets timing.
+It establishes removal of the specific within-cycle loader-data dependency;
+loaded data still intentionally affects later execution through memory registers.
+
+Reproduce with a fresh screen tag after the proof audit:
+
+```sh
+python3 scripts/check-timed-contracts.py
+python3 scripts/check-fetch-choice.py command-split --tag screen-new
+python3 scripts/report-command-cones.py --candidate build/successor-fetch/command-split-screen-new
+```
+
+The compact committed receipt is
+[`command-split-results.json`](../physical/experiments/command-split-results.json).
+Full source/artifact hashes, RTL, vectors, mutants and mapping logs are retained
+under `build/successor-fetch/command-split-screen/`; the validated implementation
+is commit `1a0c960`.
+
+## Next decision
+
+The bounded decoder experiment is complete. The next useful experiment is one
+matched physical implementation of `command-split` using F2's flow controls,
+unchanged 20 ns clock, I/O constraints and diagnostic floorplan. This candidate
+removes the demonstrated dependency while slightly reducing mapped area, so it
+has a better basis for that expense than the larger speculative-read layouts.
+A candidate-aware physical runner must freeze the new RTL separately and retain
+the original comparison reference. It must start from synthesis: an old routed
+checkpoint cannot be reused with changed RTL.
+
+After routing, compare extracted launch-family paths, area, hold, electrical
+limits, antenna/DRC/LVS checks, and all defined output bits. The existing protocol
+path is already nearly tied with loader data, so the working expectation is a
+cleaner control cone, not automatic timing closure. Antenna-induced fanout and
+protocol-input delay remain separate issues. The candidate has **not** been
+routed or promoted to the default implementation.
 
 ## Reproducing the physical controls
 
@@ -271,7 +338,7 @@ python3 scripts/report-physical.py --tag fetch-fanout-route
 python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
-Both physical controls and both architectural screens are complete. No
-architectural candidate was promoted to routing, and the default implementation
+Both physical controls, the two speculative-read screens and the command-decoder
+screen are complete. No architectural candidate was promoted to routing, and the default implementation
 and physical configuration remain unchanged. Mid-PnR states can inherit stale
 corner metrics; only final extracted STA supports a routed timing comparison.
