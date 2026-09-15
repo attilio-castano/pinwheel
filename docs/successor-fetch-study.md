@@ -99,7 +99,7 @@ checks uninterrupted one-cycle branches and detects stale selection on 63 edges.
 `Pinwheel/Hardware/Storage/FetchChoice.lean` integrates both arrangements with the
 logical writable stores and complete cached circuit. Its refinement composes
 with the reference machine, preserving all pre/post-edge outputs and register
-updates under the existing cache invariant. The full contract suite audits 94
+updates under the existing cache invariant. The full contract suite audits 95
 declarations and confirms unchanged baseline MLIR/RTL. The dense physical
 emitter remains a separate translation boundary, checked by RTL regression.
 
@@ -143,7 +143,12 @@ F2's intermediate fanout diagnosis found antenna-diode loads on all 13 listed
 violating drivers, with eight or fewer non-antenna loads each. This explains a
 flow interaction without waiving the library limit. The intermediate receipt is
 `build/successor-fetch/fetch-repair/fanout-diagnosis.json`; final counts must be
-checked after detailed-route antenna repair.
+checked after detailed-route antenna repair. In the final slow-corner reports,
+all 18 listed F1 drivers and all 20 listed F2 drivers have antenna-diode loads
+and no more than eight non-antenna loads; none is a clock buffer. These listed
+driver counts differ from the flow's violation-count metric in the table above;
+they are retained as separate quantities. Final receipts are the
+`fanout-diagnosis.json` files under each routed tag in `build/successor-fetch/`.
 
 ## Architectural screen
 
@@ -199,11 +204,20 @@ completed their mutation and mapping checks.
 
 ## Next decision
 
+First request extracted timing paths explicitly from each input family. The
+general maximum-path report can select a loader path over a protocol path to
+the same endpoint; its observed `incoming` rows do not establish that family's
+complete worst slack. Preserve the present all-path result as the baseline.
+
 Inspect the path from the small-store capacity check through command decoding
 and bank/cache selection. `Storage.Small.inputs` rewrites a rejected push command
 to command 6, then all loader gates decode that transformed command. This is a
-concrete candidate for an unnecessary data dependency in commit/start logic;
-it is a hypothesis to prove and trace through the mapped cone, not grounds for
+concrete candidate for an unnecessary data dependency in commit/start logic.
+The new `Small.adapt_command_predicate` theorem proves that every command
+comparison except push (2) and reject (6) is unchanged by capacity adaptation,
+including commit (3) and start (5). The generated baseline RTL nevertheless
+feeds `checked_command` into those comparisons. This establishes a useful
+algebraic simplification to investigate in the mapped cone, not grounds for
 declaring timing paths false. A follow-up should isolate push validation from
 unrelated control decisions, prove complete command/loader correspondence, and
 measure under the same constraints. Antenna-induced fanout and the remaining

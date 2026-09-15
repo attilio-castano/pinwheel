@@ -161,7 +161,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **94 declarations**, matched **21,342** independent
+The completed checks audited **95 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.

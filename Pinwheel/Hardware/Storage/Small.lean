@@ -50,6 +50,17 @@ def capacity (cursor : BitVec 9) (data : BitVec 64) : Bool :=
 def adapt (i : Machine.Inputs) (s : State) : Machine.Inputs :=
   {i with command := if i.command == 2 && !capacity s.control.cursor i.data then 6 else i.command}
 
+/-- Capacity rejection changes only push (2) into reject (6). Predicates for
+other commands can decode the original command without a capacity/data input. -/
+theorem adapt_command_predicate (i : Machine.Inputs) (s : State) (command : BitVec 3)
+    (hpush : command ≠ 2) (hreject : command ≠ 6) :
+    ((adapt i s).command == command) = (i.command == command) := by
+  by_cases hp : i.command = 2 <;> cases hc : capacity s.control.cursor i.data <;>
+    simp_all [adapt]
+  exact (beq_eq_false_iff_ne.mpr (Ne.symm hreject)).trans
+    (beq_eq_false_iff_ne.mpr (Ne.symm hpush)).symm
+  done
+
 def next (i : Machine.Inputs) (s : State) : State := project (Machine.next (adapt i s) s.reference)
 
 abbrev E := Expr Input Register
