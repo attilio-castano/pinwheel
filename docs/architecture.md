@@ -16,6 +16,13 @@ Lean replaces Mojo's proposed roles in hardware generation, program assembly, an
 
 ## Three connected layers
 
+The [timed component contract](timed-components.md) now gives hardware components
+explicit pre/post-edge observations and a composable refinement relation. The
+first implementation connects the structural current-word cache to the reference
+atomic machine and shares successor-fetch resolution between them. It preserves
+the existing emitted circuit; memory latency and physical timing remain separate
+design obligations.
+
 | Layer | Responsibility | Intended evidence |
 | --- | --- | --- |
 | Protocol specification | Describe observable pin behavior and timing independently of an implementation. | An executable contract; for UART transmission, a cycle-indexed output trace. |
@@ -121,7 +128,9 @@ Pinwheel/
     Execution.lean              # Decoded loading/execution and I2C correspondence
     Storage.lean                # Exact serialized-image byte accounting
   Hardware/
+    Timed.lean                  # Exact edge observations and composable refinement
     Reactive/                   # Structural reactive scheduler and complete E64 core
+      Fetch.lean                # Same-cycle successor request, resolution and cache invariant
       State.lean                # Fixed-width register encoding and model relation
       Scheduler.lean            # Timers, guards, capture forwarding and successor selection
       Equations.lean            # Explicit register-update equations
@@ -139,6 +148,12 @@ Pinwheel/
       MachineProofs.lean        # Complete register-bank step/history correspondence
       Contract.lean             # Preservation, commit, startup and validity invariants
       Emit.lean                 # Named component bindings and MLIR adapter
+    Storage/
+      Cache.lean                # Cached-current state and functional correspondence
+      CacheProofs.lean          # Cache invariant preservation and run correspondence
+      CacheCircuit.lean         # Structural circuit and register-update proof
+      CacheContract.lean        # Composed structural/reference timed trace contract
+      CacheEmit.lean            # Cached atomic-machine emission adapter
     Execution/
       Record.lean               # E64 literal fields and canonical codec
       RecordProofs.lean         # Typed round trips and accepted-word canonicality

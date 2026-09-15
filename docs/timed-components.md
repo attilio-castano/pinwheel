@@ -1,0 +1,132 @@
+# Timed component contracts
+
+Implemented 2026-09-14. This first library refinement makes the existing cache and
+successor-fetch assumptions explicit while preserving the generated circuit.
+
+## The abstraction
+
+`Hardware/Timed.lean` defines a component by its state transition and observation
+function. An observation may depend on both inputs and registers. For each input
+snapshot, `edge` observes the circuit before and after its register update, holding
+that input snapshot fixed. `trace` retains both observations for every clock edge.
+This describes settled digital values; it does not model propagation delay or glitches.
+
+A `Refinement` relates implementation state to specification state. It requires
+equal observations and preservation of the relation after **one edge on each
+side**. Refinements compose through an intermediate state. `edge_eq` and
+`trace_eq` then establish exact observation equality without allowing extra cycles.
+That matters for a protocol engine: a delayed output can carry the right value and
+still violate the required waveform.
+
+## Fetch and capture order
+
+`Hardware/Reactive/Fetch.lean` names the request context, core registers, address,
+reader, current-word invariant, and resolution operation. Both the reference atomic
+machine and the cached machine now use `Fetch.resolve`.
+
+The reader returns the E64 word at the selected address from the selected pre-edge
+program image. It is a **combinational read contract**. `resolve_congr` says readers
+that agree at this address supply identical scheduler inputs; `address_resolved`
+proves the fetched successor cannot feed back into its own address selection.
+
+For a checked branch, the order is:
+
+1. Use the current execution record and the current input snapshot to perform the
+   terminal capture logically.
+2. Select the successor address using that updated sample slot.
+3. Read the successor record and use its entry capture when computing next state.
+
+These are dependencies within one modeled clock cycle, not three execution cycles.
+`branch_uses_terminal_capture` proves the address rule. The executable check uses
+an old false sample, a terminal capture of true, and a successor entry capture of
+false: it must take the yes branch and finish with a false sample.
+
+`CurrentValid` requires the cached word to equal the active image at the current PC
+while the core is running. Idle cache contents are unrestricted. The existing
+atomic-loader rules still own image selection, commit, and write exclusion; the
+reader abstraction does not replace those rules.
+
+## Concrete proof composition
+
+`Hardware/Storage/CacheContract.lean` supplies three components:
+
+| Component | State and execution |
+| --- | --- |
+| Structural cache | Register valuation evaluated by `Cache.circuit.step` |
+| Cache model | `Cache.State` updated by `Cache.next` |
+| Reference machine | `Machine.State` updated by `Machine.next` |
+
+`structuralRefinement` uses the existing register-update correctness theorem.
+`refinement` uses cache validity, preservation, and machine-state correspondence,
+plus a new proof covering **every machine output**, including loader responses,
+core state, and both diagnostic read addresses. `completeRefinement` composes them;
+`structural_trace_correct` preserves every pre/post-edge observation for any finite
+input history from a valid cache state.
+
+`initialize_valid` establishes cache validity after initialization without assuming
+initial cache bits or memory contents. `initialize_machine_next` also establishes
+reference-state agreement on that update. The trace guarantee applies from the
+initialized states; arbitrary pre-initialization observations are not claimed equal.
+
+The original state/run proofs remain available. Cache and dense-record semantics
+now import semantic contracts instead of emitters; emission modules import their
+own emission dependencies explicitly.
+
+## Evidence and limits
+
+Run `python3 scripts/check-timed-contracts.py` with the pinned Lean toolchain on
+`PATH`. It requires the hardware tools and generated oracle fixtures from the
+completed [storage study](storage-study.md); it reports missing or changed fixtures
+instead of silently replacing them. For a Lean-only check, run `lake build` and
+`lake env lean --run test/TimedContracts.lean`.
+
+The runner audits the new contracts and existing storage theorems for standard
+Lean axioms, runs the focused timing check and existing cache/codec regressions,
+re-emits five storage MLIR modules, and compares them against the hashes recorded
+before this refactor at commit `7dcd064`. It exports the general 32-entry dense
+cached candidate to SystemVerilog and requires the prior RTL hash:
+
+```text
+1664dc719bff05307e3f17a6a8c611aba520917d49be132f1bf164bf1c53548b
+```
+
+It then compiles that freshly exported RTL, replays the independent atomic-loader
+oracle, and requires a deliberately corrupted cache update to fail. Logs, source
+and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
+and physical-flow receipts are retained separately.
+
+The completed checks audited **64 declarations**, matched **21,342** independent
+oracle edges in the Lean cache components and **104,642** codec vectors, and passed
+**21,409** generated-RTL edges with **13,151,052** storage observations. All five
+MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.
+
+The new composed theorem covers the structural E64 cache and reference machine.
+The dense codec and bounded store retain their existing individual proofs; the
+combined emitted candidate has regression and byte-identity evidence here. This
+does not add a proof of the emitter or CIRCT translation, nor new area/frequency
+evidence. The [physical timing failure](physical-validation.md) remains open.
+
+## Sources and next application
+
+The useful lessons from other hardware libraries are narrow and concrete:
+
+- [Hardcaml interfaces](https://docs.hardcaml.org/hardcaml-docs/using-interfaces/module_interfaces/)
+  encourage one declared interface across construction and simulation. Its
+  [simulation model](https://docs.hardcaml.org/hardcaml-docs/simulating-circuits/simulation/)
+  makes the clock observation phase explicit.
+- [Kôika](https://github.com/mit-plv/koika) makes scheduling and forwarding within a
+  cycle explicit. Pinwheel needs the capture/branch/entry order above.
+- [Kami](https://adam.chlipala.net/papers/KamiICFP17/KamiICFP17.pdf) motivates modular
+  refinement and replacement. Pinwheel's contract deliberately requires exact
+  cycles for its timing-sensitive observations.
+- [Calyx static control](https://docs.calyxir.org/lang/static.html) makes latency a
+  component contract. A synchronous SRAM cannot implement our current reader API
+  merely by returning the same word later.
+
+These are design influences, not new dependencies or claims that the libraries
+share identical semantics.
+
+The next bounded use is to describe a proposed memory backend's availability
+schedule and prove that prefetch supplies each successor by its existing execution
+edge. If it cannot, that is an architectural timing change. This contract gives us
+a precise way to expose that change before attempting physical optimization.
