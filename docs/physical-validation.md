@@ -243,11 +243,12 @@ qualify the eventual chip power network. The flow treats slew/capacitance
 violations as warnings; their presence remains a closure failure even though
 the final exit message names setup timing alone.
 
-## Next bounded experiment
+## Follow-up sequence at baseline closeout
 
-The [successor-fetch study](successor-fetch-study.md) records the measured path
-breakdown and implements this sequence as separately tagged flow controls,
-followed by conditional architecture experiments.
+The sequence below records the original follow-up plan. Its flow controls and two
+architectural screens are now completed in the [successor-fetch study](successor-fetch-study.md).
+[Research status](research/status.md) owns the current allocation; do not restart
+these experiments from this historical plan.
 
 Preserve this run as the first physical baseline. Before altering the machine's
 observable schedule, investigate the implementation flow:

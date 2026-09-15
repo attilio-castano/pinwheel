@@ -210,7 +210,9 @@ The useful lessons from other hardware libraries are narrow and concrete:
 These are design influences, not new dependencies or claims that the libraries
 share identical semantics.
 
-The next bounded use is to describe a proposed memory backend's availability
+A future memory replacement must describe the proposed backend's availability
 schedule and prove that prefetch supplies each successor by its existing execution
 edge. If it cannot, that is an architectural timing change. This contract gives us
 a precise way to expose that change before attempting physical optimization.
+This is a conditional application; [research status](research/status.md) owns
+the current experiment and priority.

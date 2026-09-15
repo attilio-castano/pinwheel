@@ -1,0 +1,39 @@
+# Research results
+
+This index records completed conclusions and what could justify reopening them.
+Detailed studies own measurements, assumptions, commands, and proof boundaries.
+[Status](status.md) alone owns the active allocation; [journal](journal.md) provides
+historical identities. Updated 2026-09-15, through `5d89d95`.
+
+| Study / evidence owner | Conclusion and disposition | Reopening condition or remaining obligation |
+| --- | --- | --- |
+| [UART/SPI shared engine](../engine-model.md), [original complete core](../core-hardware.md) | Timed actions and precise capture support both protocols on one reloadable machine, with compiler/core proofs and independent RTL checks. Retain as the original baseline. | New protocol needs must be expressed in the semantics and validated; this original core alone does not cover reactive I²C. |
+| [Reactive I²C](../compiled-i2c.md), [register reads](../i2c-register-read.md) | Waits, drive/release, guarded timing, and conditional branches support the bounded write/read models on the shared engine. | Broader I²C behavior, synchronization, analog effects, and physical compliance need their own assumptions and evidence. |
+| [Counted byte loops](../looped-i2c.md), [binary images](../binary-images.md) | Reusable templates preserve the modeled cycles and reduce the example load image from 715 to 205 bytes. | Serialized bytes do not determine hardware cost; distinguish load-time expansion from runtime repetition. |
+| [E64 frontends](../execution-hardware.md), [integrated core](../reactive-core-hardware.md) | Indexed stores save generic storage/cells at the cost of a longer lookup dependency. Retain direct and indexed evidence. | Compare complete implementations under matched capacity and timing, not isolated memory counts. |
+| [Atomic loader](../atomic-loader.md), [technology mapping](../technology-mapping.md) | Atomic staging/commit is proved; the 64-entry double-bank mapped reference is too large for the nominal allocation before routing. | A different storage organization or capacity contract must retain replacement semantics and include the complete machine cost. |
+| [General storage candidate](../storage-study.md) | A 32-entry dictionary, 55-bit records, and a current-word cache reduce typical mapped cell area from 1.055 to 0.562 mm². Selected for physical investigation. | Capacity remains explicit; emitter equivalence and physical feasibility do not follow from component proofs or area sums. |
+| [Bounded runtime repetition](../storage-study.md#bounded-runtime-repetition) | A two-byte I²C prototype maps to 0.192 mm², with narrower scope and a longer slow mapping estimate than the general combined candidate. Retain as research. | Generalize the accepted programs and establish complete integration/timing evidence before treating it as a replacement. |
+| [SRAM/latch review](../storage-primitives.md) | Concrete primitives exist, but their latency and write behavior differ from the current combinational reader. Deferred. | Prove successor availability for continuous one-cycle branches and image replacement; measure the complete wrapper and implementation. |
+| [Timed components and interfaces](../timed-components.md) | Exact-edge refinements and checked signal interfaces make replacement obligations explicit; the completed refactor preserved baseline emitted bytes. Adopted within the documented scope. | Extend abstractions when actual callers need them; no full-library migration or emitter proof is implied. |
+| [Initial physical baseline](../physical-validation.md) | The diagnostic 6×4 core routes and passes recorded layout/netlist checks, but slow setup misses by 6.254 ns and electrical limits remain. Keep as a failed timing baseline. | Require final extracted timing/electrical closure and official wrapper/floorplan integration before fit or frequency claims. |
+| [F1/F2 flow controls](../successor-fetch-study.md) | F1 leaves worst setup essentially unchanged; F2 reduces the miss to 5.055 ns with less hold margin and more slew violations. Neither qualifies a default. | A further change must improve complete closure under the same comparison boundary, not one metric alone. |
+| [Late-index / late-record screens](../successor-fetch-study.md#architectural-screen) | Both preserve structural behavior and pass RTL regression. Late record is larger/slower than late index in both mapped corners. Late index costs about 4.8% area without measured slow-corner gain. Neither routed. | A new bottleneck diagnosis or materially improved candidate must justify physical expense; the screen does not prove routing could never help. |
+| [Targeted source-family STA](../successor-fetch-study.md#targeted-launch-family-timing) | F2 protocol-input slack is −4.928 ns, close to loader-data slack of −5.055 ns. The earlier −1.299 ns protocol row was not the family worst. | Decoder cleanup alone cannot establish closure; compare both families and retain the same constraints. |
+| [Command-decoder isolation](../successor-fetch-study.md#command-decoder-experiment) | Complete: exact structural pre/post-edge trace preservation, 102 audited declarations, 21,864 regression edges and rejected mutations. Mapped area falls about 1.1%; loader-data connectivity to all 57 retained cache-register data inputs is removed in both mapped corners. Retain as a candidate for matched physical validation. | Not routed or promoted. Protocol connectivity remains at all 57 inputs; −4.928 ns is the earlier routed F2 protocol slack, not this candidate's timing. Require fresh extracted timing, electrical/layout checks, and implemented-netlist regression. |
+
+## Outside research and adoption
+
+These entries index the prior source review, not a new online verification. Source
+links and detailed applicability live in the [timed-components record](../timed-components.md#sources-and-next-application).
+
+| Reference | Lesson used here | Boundary / decision |
+| --- | --- | --- |
+| Hardcaml | Checked signal interfaces, typed lookup, explicit observation phases | Implemented for the scheduler and cache consumers; retain other interfaces until a concrete migration need appears. |
+| Kôika | Make within-cycle scheduling and forwarding dependencies explicit | Capture → branch → successor entry is explicit in Pinwheel; no rule-language adoption is established or required by that lesson. |
+| Kami | Compose refinement across replaceable components | Pinwheel uses exact-edge correspondence; this is an influence, not an imported framework or equivalence of semantics. |
+| Calyx static control | Treat availability/latency as part of a component's contract | Applied to the memory-replacement obligation; no Calyx backend is implemented. |
+
+The decoder screen is closed; its [result manifest](../../physical/experiments/command-split-results.json)
+pins the validated implementation and receipts. [Status](status.md) owns the pending
+matched physical comparison.

@@ -2,7 +2,13 @@
 
 Setup record: **2026-09-13**, macOS on Apple Silicon (`arm64`).
 
-The package includes the original bitvector setup check, [UART transmitter](uart-model.md), [SPI controller](spi-model.md), and [shared engine with both protocol compilers](engine-model.md), with specifications and proofs. The [countdown slice](countdown-hardware.md) and [complete execution core](core-hardware.md) include structural proofs, generation, RTL simulation, and generic synthesis; physical loading and implementation remain future work. No editor extension is required for this terminal-based workflow.
+The package includes protocol specifications, compilers, and structural hardware proofs.
+The [technical catalog](README.md) routes the milestone-specific checks below;
+[research status](research/status.md) owns the current evidence and next decision.
+For research work, follow the [bounded workflow](research/README.md) and complete
+its evidence writeback. The later core has synchronous atomic loading and a
+[physical diagnostic](physical-validation.md); external serial loading and physical
+closure remain open. No editor extension is required for this terminal-based workflow.
 
 ## Toolchain
 
