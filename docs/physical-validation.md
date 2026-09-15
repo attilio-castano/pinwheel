@@ -208,6 +208,41 @@ functional evidence after cell sizing, buffer insertion, clock-tree creation,
 and antenna repair. It remains a zero-delay simulation, not a translation proof
 or a substitute for timing closure.
 
+## Completed physical checks
+
+The resumed flow reached its final manufacturability report and saved final
+views, then exited with **code 2 because of the slow-corner setup failure**.
+This was a completed measurement with a rejected timing target, not an
+interrupted physical run. The collector preserves that failure in
+`build/physical/routed4-report.json`.
+
+| Check | Result |
+|---|---|
+| Detailed-router DRC | 0 errors |
+| Post-route antenna check | 0 violating nets or pins |
+| Magic full DRC on final GDS | 0 errors |
+| Netgen layout versus netlist | Circuits match uniquely; 0 errors |
+| Hold timing, all three PVT corners | Pass |
+| Setup timing, all three PVT corners | Fail at slow corner |
+| Slew / capacitance / fanout | Violations remain, as recorded above |
+
+Magic checked and extracted the KLayout-streamed GDS with SHA-256
+`e1467f2ceb8fb55f0a2130847419b84a8ece726f069b7736183bebf28dde92c3`.
+The final flow netlist is byte-identical to the netlist used by the successful
+implemented-netlist regression. The independent Magic scan took about half an
+hour; the resumed flow took approximately 65 minutes in the stated local
+container allocation. Its layout image is
+`build/physical/core/runs/routed4/16-klayout-render/pinwheel_atomic_small_dense_cached.png`.
+
+These checks are bounded by the pinned decks and enabled flow stages. KLayout
+DRC, cross-tool GDS XOR, and formal EQY were disabled; the long-wire threshold
+check was skipped because no threshold was configured. OpenROAD warned that
+some LEF58 enclosure forms were unsupported. The IR-drop report uses default
+source assumptions without explicit supply-source locations, so it does not
+qualify the eventual chip power network. The flow treats slew/capacitance
+violations as warnings; their presence remains a closure failure even though
+the final exit message names setup timing alone.
+
 ## Next bounded experiment
 
 Preserve this run as the first physical baseline. Before altering the machine's

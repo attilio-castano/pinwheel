@@ -8,7 +8,7 @@ Early CMOS5L mapping exposes the next constraint: the double-bank reference occu
 
 The completed study also measures a bounded two-byte I²C runtime-repetition machine at **0.192 mm²**, with separate payload bytes and 15 templates. It has narrower scope than the general candidate. The [SRAM/latch review](docs/storage-primitives.md) records real primitive costs and the timing contracts needed to use them.
 
-The first [physical implementation](docs/physical-validation.md) routes the general core in a **6×4 diagnostic rectangle**, with **0.737 mm² of cells before filler insertion**, zero router DRC errors, and zero antenna violations. Its implemented netlist passes the functional regression. **50 MHz does not close:** extracted slow-corner setup misses by **6.254 ns**, with electrical-limit violations also remaining. The pinned competition flow lacks the announced 8×4 floorplan; this establishes neither submission fit nor a qualified operating frequency. Timing/electrical closure, external serial loading, and translation equivalence remain open.
+The first [physical implementation](docs/physical-validation.md) routes the general core in a **6×4 diagnostic rectangle**, with **0.737 mm² of cells before filler insertion**, zero router/Magic DRC errors, zero antenna violations, and matching layout-versus-netlist checks. Its implemented netlist passes the functional regression. **50 MHz does not close:** extracted slow-corner setup misses by **6.254 ns**, with electrical-limit violations also remaining. The pinned competition flow lacks the announced 8×4 floorplan; this establishes neither submission fit nor a qualified operating frequency. Timing/electrical closure, external serial loading, and translation equivalence remain open.
 
 Start with:
 
