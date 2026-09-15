@@ -10,6 +10,11 @@ its evidence writeback. The later core has synchronous atomic loading and a
 [physical diagnostic](physical-validation.md); external serial loading and physical
 closure remain open. No editor extension is required for this terminal-based workflow.
 
+## Merge validation
+
+Use the [validation guide](validation.md) for the portable CI entry point,
+whole-library axiom audit, independent model checks, and hardware fixture order.
+
 ## Toolchain
 
 The project pins **Lean 4.33.1** using `leanprover/lean4:v4.33.1` in `lean-toolchain`. This was the latest non-prerelease reported by the official release API during setup. Lake is included with the Lean toolchain. Elan manages installation and chooses the pinned version when commands run in the repository.

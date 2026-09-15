@@ -33,6 +33,15 @@ lake build
 lake env lean -DwarningAsError=true --run test/Engine.lean
 ```
 
+Run the portable merge gate (Python 3.12+, no CAD tools or pre-existing fixtures):
+
+```sh
+python3 scripts/check-foundation.py --tag first-check
+```
+
+Use a fresh tag on later runs. The [validation guide](docs/validation.md) explains
+the CI scope, hardware prerequisites, and evidence boundaries.
+
 Hardware checks additionally require the pinned tools and prerequisite artifacts
 described in the relevant study. Generated evidence lives under ignored `build/`;
 source, tests, concise research records, and selected result manifests are tracked.

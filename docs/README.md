@@ -34,3 +34,5 @@ historical next-step statements are not the current work queue.
 28. [Physical validation](physical-validation.md) for the first routed baseline, extracted timing, layout checks, and limitations.
 
 [Research workflow](research/README.md) explains how to record new evidence.
+
+[Validation and foundation review](validation.md) describes the portable CI gate, hardware prerequisites, and review order.
