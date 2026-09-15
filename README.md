@@ -38,6 +38,7 @@ Start with:
 24. [Cheaper storage](docs/storage-study.md) for capacity certificates, caching, dense records, and runtime repetition.
 25. [Storage primitives](docs/storage-primitives.md) for pinned SRAM/latch evidence and scheduling requirements.
 26. [Timed component contracts](docs/timed-components.md) for shared fetch semantics, checked signal interfaces, named edge observations, and composed structural-cache refinement.
+27. [Successor-fetch experiments](docs/successor-fetch-study.md) for the measured path breakdown and controlled flow/architecture comparison with exact-cycle preservation.
 
 Pinwheel centers on Lean specifications, executable machine models, and proofs that connect protocol behavior to a programmable engine. Fixed UART and SPI models establish concrete contracts. A shared Lean engine now runs both as reloadable timed-action programs, with compiler correctness proofs against those contracts.
 

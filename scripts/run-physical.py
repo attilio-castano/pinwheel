@@ -23,6 +23,7 @@ def main():
     parser.add_argument("--to", help="Optional LibreLane stopping step; partial runs never establish final fit")
     parser.add_argument("--from-step", help="Resume at a named LibreLane step")
     parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
+    parser.add_argument("--overrides", type=Path, help="JSON implementation-flow controls; preserves RTL, timing boundary and floorplan")
     args = parser.parse_args()
     if bool(args.from_step) != bool(args.state):
         parser.error("--from-step and --state must be supplied together")
@@ -39,6 +40,13 @@ def main():
             raise RuntimeError("Physical inputs are stale; rerun prepare-physical.py")
     if sha(BASE / "core/design.sv") != inputs["rtl_sha256"]:
         raise RuntimeError("Prepared RTL changed")
+    config = json.loads((BASE / "core/core.json").read_text())
+    overrides = json.loads(args.overrides.read_text()) if args.overrides else {}
+    allowed = {"MAX_FANOUT_CONSTRAINT", "CTS_SINK_CLUSTERING_SIZE",
+               "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING"}
+    if not isinstance(overrides, dict) or set(overrides) - allowed:
+        raise RuntimeError("Overrides must contain only the four documented implementation-flow controls")
+    config.update(overrides)
     image = lock["container_tag"]
     image_info = json.loads(subprocess.check_output(["docker", "image", "inspect", image], text=True))[0]
     image_id = image_info["Id"]
@@ -66,6 +74,8 @@ def main():
     (BASE / "core/runs" / args.tag).mkdir(parents=True)
     for name in ["design.sv", "core.json", "core.sdc", "inputs.json"]:
         shutil.copyfile(BASE / "core" / name, snapshot / name)
+    (snapshot / "core.json").write_text(json.dumps(config, indent=2) + "\n")
+    (snapshot / "overrides.json").write_text(json.dumps(overrides, indent=2) + "\n")
     command = [
         "docker", "run", "--rm", "--network", "none", "--cpus", "4", "--memory", "6g",
         "--mount", f"type=bind,source={BASE / 'core'},target=/work/core",
@@ -88,7 +98,10 @@ def main():
         "resume_step": args.from_step,
         "checkpoint_sha256": sha(checkpoint) if checkpoint else None,
         "inputs_sha256": sha(BASE / "core/inputs.json"),
-        "config_sha256": sha(BASE / "core/core.json"),
+        "config_sha256": sha(snapshot / "core.json"),
+        "base_config_sha256": sha(BASE / "core/core.json"),
+        "overrides": overrides,
+        "runner_sha256": sha(Path(__file__).resolve()),
         "sdc_sha256": sha(BASE / "core/core.sdc"),
         "pdk_receipt_sha256": sha(BASE / "pdk/installed.json"),
         "boundary": inputs["boundary"],

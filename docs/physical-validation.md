@@ -245,6 +245,10 @@ the final exit message names setup timing alone.
 
 ## Next bounded experiment
 
+The [successor-fetch study](successor-fetch-study.md) records the measured path
+breakdown and implements this sequence as separately tagged flow controls,
+followed by conditional architecture experiments.
+
 Preserve this run as the first physical baseline. Before altering the machine's
 observable schedule, investigate the implementation flow:
 
