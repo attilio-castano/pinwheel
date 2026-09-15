@@ -129,8 +129,10 @@ Pinwheel/
     Storage.lean                # Exact serialized-image byte accounting
   Hardware/
     Timed.lean                  # Exact edge observations and composable refinement
+    Interface.lean              # Complete typed interfaces, lookup and named edge comparisons
     Reactive/                   # Structural reactive scheduler and complete E64 core
       Fetch.lean                # Same-cycle successor request, resolution and cache invariant
+      Interface.lean            # Checked scheduler input/register/output descriptors
       State.lean                # Fixed-width register encoding and model relation
       Scheduler.lean            # Timers, guards, capture forwarding and successor selection
       Equations.lean            # Explicit register-update equations

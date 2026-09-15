@@ -46,16 +46,22 @@ def main():
         if not path.exists() or digest(path) != expected:
             raise RuntimeError(f'Missing or changed storage-study fixture: {path}')
     run([lake, 'build'], 'build.log')
-    paths = [ROOT / 'Pinwheel/Hardware/Timed.lean', ROOT / 'Pinwheel/Hardware/Reactive/Fetch.lean']
+    paths = [ROOT / 'Pinwheel/Hardware/Timed.lean', ROOT / 'Pinwheel/Hardware/Reactive/Fetch.lean',
+             ROOT / 'Pinwheel/Hardware/Interface.lean', ROOT / 'Pinwheel/Hardware/Reactive/Interface.lean']
     paths += sorted((ROOT / 'Pinwheel/Hardware/Storage').glob('*.lean'))
     expected = []
     for path in paths:
         source = path.read_text()
         namespace = re.search(r'^namespace (\S+)', source, re.M)[1]
+        if path == ROOT / 'Pinwheel/Hardware/Interface.lean':
+            namespace += '.Interface'
         expected += [namespace + '.' + n for n in re.findall(r'^theorem ([\w.]+)', source, re.M)]
     expected += ['Pinwheel.Hardware.Timed.Refinement.' + n for n in ['refl', 'trans']]
     expected += ['Pinwheel.Hardware.Storage.Cache.' + n for n in
                  ['refinement', 'structuralRefinement', 'completeRefinement']]
+    expected += ['Pinwheel.Hardware.Interface.namedRefinement']
+    expected += ['Pinwheel.Hardware.Reactive.' + n for n in
+                 ['inputInterface', 'registerInterface', 'outputInterface']]
     audit_file = OUT / 'Axioms.lean'
     audit_file.write_text('import Pinwheel\n' + ''.join(f'#print axioms {n}\n' for n in expected))
     audit = run([lake, 'env', 'lean', '-DwarningAsError=true', audit_file], 'axioms.log')
@@ -67,7 +73,7 @@ def main():
         if extra:
             raise RuntimeError(f'Unexpected axioms for {name}: {extra}')
     print(f'Audited {len(entries)} declarations.', flush=True)
-    for name in ['TimedContracts', 'StorageCache', 'StorageDense']:
+    for name in ['TimedContracts', 'Interfaces', 'StorageCache', 'StorageDense']:
         print(run([lake, 'env', 'lean', '-DwarningAsError=true', '--run', f'test/{name}.lean'],
                   f'{name}.log').strip(), flush=True)
     run([lake, 'env', 'lean', '--run', 'test/Storage.lean'], 'emit.log')
@@ -95,7 +101,7 @@ def main():
          ORACLE / 'tb.sv'], 'mutant-compile.log')
     run([suite / 'vvp', OUT / 'mutant.vvp'], 'mutant.log', reject=True)
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean'))
-    sources += [Path(__file__).resolve(), baseline_path, ROOT / 'test/TimedContracts.lean',
+    sources += [Path(__file__).resolve(), baseline_path, ROOT / 'test/TimedContracts.lean', ROOT / 'test/Interfaces.lean',
                 ROOT / 'test/Storage.lean', ROOT / 'test/StorageCache.lean', ROOT / 'test/StorageDense.lean',
                 ROOT / 'lean-toolchain', ROOT / 'lakefile.toml', ROOT / 'tools/hardware-toolchain.json']
     fixtures = [ORACLE / n for n in baseline['oracle_sha256']]

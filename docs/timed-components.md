@@ -72,16 +72,59 @@ The original state/run proofs remain available. Cache and dense-record semantics
 now import semantic contracts instead of emitters; emission modules import their
 own emission dependencies explicitly.
 
+## Checked interfaces and named observations
+
+The Hardcaml-inspired interface layer is implemented in `Hardware/Interface.lean`.
+A descriptor contains an ordered signal enumeration, a typed position lookup,
+and external names. Its proofs establish that every signal is present and that
+names identify distinct slots. Widths remain part of the existing Lean signal
+types. This checks the enumeration against those types; adding a constructor
+requires updating the descriptor and its coverage proof.
+
+`Hardware/Reactive/Interface.lean` owns the scheduler's eight inputs, 22 registers,
+and 25 outputs. Existing register/output arrays and names moved out of the emitter
+without changing their order or public identifiers. The functional `Inputs` and
+`State` records and their value conversions remain explicit.
+
+`Interface.mapM` performs an operation on each declared signal in order, then
+returns a function indexed by typed signal identity. Both `CacheEmit` and
+`DenseEmit` now retrieve the PC expression with `nextValues .pc`. The old
+string-label comparison and empty-string fallback are removed. `rename_mapM`
+proves that changing descriptor names leaves this traversal and lookup unchanged
+for the same callback; `mapM_pure` proves the pure lookup round trip.
+
+`namedComponent` reuses the timed component's transition and records each
+observation's name, width, and value. `namedRefinement` carries an existing timed
+refinement through this observation adapter. `edgeDifferences` compares both
+phases and includes the cycle and component supplied by the caller. An injected
+post-edge PC error in `test/Interfaces.lean` produces:
+
+```text
+cycle 42 after cache.core.pc (8 bits): expected 0, got 1
+```
+
+`differences_empty_iff` proves that an empty comparison means every typed signal
+agrees. The executable checks also exercise renamed PC lookup, effect order,
+named observations of the cache component, and a pre-edge error in sample slot 15.
+
+This is a bounded migration of the scheduler interface and its cache consumers.
+Loader/store interfaces and other emitter adapters retain their existing wiring.
+It does not add RTL module hierarchy, generate all simulator bindings, or prove
+the serializer. Strings are still used at the emission boundary; they no longer
+select the PC result in these two adapters.
+
 ## Evidence and limits
 
 Run `python3 scripts/check-timed-contracts.py` with the pinned Lean toolchain on
 `PATH`. It requires the hardware tools and generated oracle fixtures from the
 completed [storage study](storage-study.md); it reports missing or changed fixtures
 instead of silently replacing them. For a Lean-only check, run `lake build` and
-`lake env lean --run test/TimedContracts.lean`.
+`lake env lean --run test/TimedContracts.lean`. Run
+`lake env lean --run test/Interfaces.lean` for the interface regression.
 
-The runner audits the new contracts and existing storage theorems for standard
-Lean axioms, runs the focused timing check and existing cache/codec regressions,
+The runner audits the timed/interface contracts, checked descriptors, and existing
+storage theorems for standard Lean axioms, runs the focused timing/interface
+checks and existing cache/codec regressions,
 re-emits five storage MLIR modules, and compares them against the hashes recorded
 before this refactor at commit `7dcd064`. It exports the general 32-entry dense
 cached candidate to SystemVerilog and requires the prior RTL hash:
@@ -95,7 +138,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **64 declarations**, matched **21,342** independent
+The completed checks audited **75 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.
