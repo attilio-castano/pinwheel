@@ -41,6 +41,19 @@ These are dependencies within one modeled clock cycle, not three execution cycle
 an old false sample, a terminal capture of true, and a successor entry capture of
 false: it must take the yes branch and finish with a false sample.
 
+`Hardware/Reactive/FetchChoice.lean` supplies the pure foundation for speculative
+reads. `candidateAddress` prepares both possible addresses independently of
+incoming pins; `address_choice` preserves sequential, jump, branch and idle
+selection. `readCandidates_eq` permits selection after either address-map reads
+or complete-record reads. Both resolution theorems establish equality of all
+scheduler inputs with the existing `resolve`. They add no execution cycles or
+effects for the unselected read. These are lookup proofs; candidate RTL and its
+complete-machine correspondence remain separate experiment gates.
+
+The focused `FetchChoice` check runs 128 consecutive one-cycle branches, including
+self branches and entry capture overwriting the branch slot. Both lookup forms
+match the reference state. A stale-selection mutation differs on 63 edges.
+
 `CurrentValid` requires the cached word to equal the active image at the current PC
 while the core is running. Idle cache contents are unrestricted. The existing
 atomic-loader rules still own image selection, commit, and write exclusion; the
@@ -138,7 +151,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **75 declarations**, matched **21,342** independent
+The completed checks audited **80 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.

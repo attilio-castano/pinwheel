@@ -90,6 +90,46 @@ candidate.
 
 ## Reproduction and status
 
+The pure foundation for A and B is implemented in
+`Pinwheel/Hardware/Reactive/FetchChoice.lean`: five audited theorems establish
+candidate-address independence, address selection and complete scheduler-input
+equality after either index or record selection. A focused 128-edge sequence
+checks uninterrupted one-cycle branches and detects stale selection on 63 edges.
+The full contract suite audits 80 declarations and confirms unchanged MLIR/RTL.
+No speculative-read RTL has been selected or measured yet.
+
+F1's extracted timing and netlist regression are complete. Its slow-corner worst
+slack is **−6.254080 ns**, effectively unchanged from the baseline. The reported
+worst path now starts at **`data[1]`** and ends at **`r_cached_word[0]`**. The
+worst reported protocol-input path is `incoming[0]` at **−5.463827 ns**. The
+retained 1,000-path report contains 95 violating paths from `data[1]` and 17 from
+`incoming[0]`; it does not enumerate every alternative path to every endpoint.
+
+| Extracted measurement | Baseline | F1 |
+| --- | ---: | ---: |
+| Cells before fillers (µm²) | 736,821 | 749,175 |
+| Instances before fillers | 45,913 | 46,357 |
+| Fast setup slack (ns) | +7.020443 | +6.940689 |
+| Typical setup slack (ns) | +2.184279 | +2.059968 |
+| Slow setup slack (ns) | −6.254101 | −6.254080 |
+| Worst hold slack (ns) | +0.041695 | +0.071192 |
+| Worst slew violation count | 48 | 45 |
+| Fanout violation count | 443 | 36 |
+| Worst capacitance violation count | 9 | 8 |
+
+F1 has zero final router and antenna violations, and zero filtered unannotated
+nets at all three extracted corners. The implemented netlist passes 21,409
+edges and 3,510,998 defined output-bit comparisons; output inversion is rejected.
+Layout DRC and LVS are still pending. These improvements do not close timing or
+electrical limits. The path reporter now groups results by startpoint to expose
+movement between protocol-input and loader-input paths.
+
+F2's intermediate fanout diagnosis found antenna-diode loads on all 13 listed
+violating drivers, with eight or fewer non-antenna loads each. This explains a
+flow interaction without waiving the library limit. The intermediate receipt is
+`build/successor-fetch/fetch-repair/fanout-diagnosis.json`; final counts must be
+checked after detailed-route antenna repair.
+
 The runner allows only the four controls above in `--overrides`. Clock period,
 I/O constraints, floorplan and RTL cannot be changed through that option. Each
 run gets a new tag, frozen config/RTL/SDC, and a receipt with source identities.
@@ -103,8 +143,7 @@ python3 scripts/report-physical.py --tag fetch-fanout-route
 python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
-The baseline decomposition is complete. F1 has reached global routing, and its
-unrepaired continuation is running. F2's repair stages are running from the same
-checkpoint, stopping before detailed routing. The conditional architectural
-gates remain pending. Mid-PnR states can inherit stale corner metrics; only
-final extracted STA supports a routed timing comparison.
+F1 is completing layout checks. F2's repaired checkpoint is now routing as
+`fetch-repair-route`. The conditional architectural implementation gates remain
+pending. Mid-PnR states can inherit stale corner metrics; only final extracted
+STA supports a routed timing comparison.

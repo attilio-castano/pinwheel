@@ -97,9 +97,16 @@ def main():
         q = re.search(r'\.Q\(\s*(.*?)\s*\)', match[1]) if match else None
         path['endpoint_q'] = q[1] if q else None
     worst = min(paths, key=lambda p: p['slack_ns'])
+    by_startpoint = {}
+    for start in sorted({p['start'] for p in paths}):
+        group = [p for p in paths if p['start'] == start]
+        by_startpoint[start] = dict(reported_paths=len(group),
+                                   violating_reported_paths=sum(p['slack_ns'] < 0 for p in group),
+                                   worst_slack_ns=min(p['slack_ns'] for p in group))
     report = dict(tag=args.tag, corner=args.corner, reported_paths=len(paths),
                   violating_reported_paths=sum(p['slack_ns'] < 0 for p in paths),
                   startpoints=dict(Counter(p['start'] for p in paths)),
+                  by_startpoint=by_startpoint,
                   median_slack_ns=median(p['slack_ns'] for p in paths), worst=worst,
                   top20=top20,
                   source_sha256={str(p.relative_to(ROOT)): digest(p) for p in

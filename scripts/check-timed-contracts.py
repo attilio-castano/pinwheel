@@ -47,6 +47,7 @@ def main():
             raise RuntimeError(f'Missing or changed storage-study fixture: {path}')
     run([lake, 'build'], 'build.log')
     paths = [ROOT / 'Pinwheel/Hardware/Timed.lean', ROOT / 'Pinwheel/Hardware/Reactive/Fetch.lean',
+             ROOT / 'Pinwheel/Hardware/Reactive/FetchChoice.lean',
              ROOT / 'Pinwheel/Hardware/Interface.lean', ROOT / 'Pinwheel/Hardware/Reactive/Interface.lean']
     paths += sorted((ROOT / 'Pinwheel/Hardware/Storage').glob('*.lean'))
     expected = []
@@ -73,7 +74,7 @@ def main():
         if extra:
             raise RuntimeError(f'Unexpected axioms for {name}: {extra}')
     print(f'Audited {len(entries)} declarations.', flush=True)
-    for name in ['TimedContracts', 'Interfaces', 'StorageCache', 'StorageDense']:
+    for name in ['TimedContracts', 'FetchChoice', 'Interfaces', 'StorageCache', 'StorageDense']:
         print(run([lake, 'env', 'lean', '-DwarningAsError=true', '--run', f'test/{name}.lean'],
                   f'{name}.log').strip(), flush=True)
     run([lake, 'env', 'lean', '--run', 'test/Storage.lean'], 'emit.log')
@@ -102,6 +103,7 @@ def main():
     run([suite / 'vvp', OUT / 'mutant.vvp'], 'mutant.log', reject=True)
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean'))
     sources += [Path(__file__).resolve(), baseline_path, ROOT / 'test/TimedContracts.lean', ROOT / 'test/Interfaces.lean',
+                ROOT / 'test/FetchChoice.lean',
                 ROOT / 'test/Storage.lean', ROOT / 'test/StorageCache.lean', ROOT / 'test/StorageDense.lean',
                 ROOT / 'lean-toolchain', ROOT / 'lakefile.toml', ROOT / 'tools/hardware-toolchain.json']
     fixtures = [ORACLE / n for n in baseline['oracle_sha256']]
