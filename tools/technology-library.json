@@ -1,0 +1,21 @@
+{
+  "repository": "https://github.com/IHP-GmbH/ihp-sg13cmos5l",
+  "commit": "607e18d4bd9214a52575c194b4181ef449f9252f",
+  "files": [
+    {
+      "path": "libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib",
+      "name": "sg13cmos5l_stdcell_typ_1p20V_25C.lib",
+      "sha256": "34163f3e7de9f854afac57332ba06f1739b78e7ac35660a8a5ddd39c570124ad"
+    },
+    {
+      "path": "libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_slow_1p08V_125C.lib",
+      "name": "sg13cmos5l_stdcell_slow_1p08V_125C.lib",
+      "sha256": "3ee222c580ba33acb2131ac2bf224ff8ee9700751835b73aaec72b670bb31d3c"
+    },
+    {
+      "path": "LICENSE",
+      "name": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}

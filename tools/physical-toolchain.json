@@ -1,0 +1,39 @@
+{
+  "librelane_version": "3.1.0.dev3",
+  "container_tag": "ghcr.io/librelane/librelane:3.1.0.dev3",
+  "container_arm64_digest": "sha256:32244c826f512166840284332874bd9c26e5fd780b11cf23076c5dae8e2c3e04",
+  "pdk_repository": "https://github.com/IHP-GmbH/IHP-Open-PDK",
+  "pdk_revision": "2bbec755dc67ca3db0261c3d6163e15735d66710",
+  "template_revision": "b86a2a781484bcab7ba522dc5de540086695a430",
+  "action_revision": "3412659307918422f3f0727917cf9b499aaca588",
+  "support_revision": "da63c9927411e3aca350977d653d24bbf5bca972",
+  "allocation": {
+    "competition_tiles": "8x4",
+    "supported_in_pinned_cmos5l_flow": false,
+    "diagnostic_rectangle_tiles": "6x4",
+    "die_um": [
+      0,
+      0,
+      1289.28,
+      710.64
+    ],
+    "tt_def_template_used": false
+  },
+  "upstream_sha256": {
+    "action.yml": "22ffe0ce5625475d00f426c1f7c95a695d1dc56e363f00401413a0c129a3960d",
+    "install-pdk.sh": "de2f8388758b074c70009b896b3155106840eff4755308e5ea846890f7937847",
+    "tile_sizes.yaml": "b70060737ca784124602a6104041055d5245175d3ca2c08519226abcfd577c63",
+    "template-config.json": "4b192dffa877dcefa4ab969af9dedf105375921aa179c677524fa88ac94bb510",
+    "image-manifest.json": "d109140b8f17fc54f4fca998beb8124f4949404ec52e339eebd2250854a18b5a",
+    "image-arm64.json": "32244c826f512166840284332874bd9c26e5fd780b11cf23076c5dae8e2c3e04",
+    "support.tar.gz": "df7183c0b3474ef9f4e0340cce674d5be6189fabcd2b3255d2cd0f1b4f12d58e",
+    "librelane.tar.gz": "ba75b393482b4ad59ad95e71f94c006c914f4fe76464b90dca9adecfc1e5c3fc"
+  },
+  "container_config_digest": "sha256:f0c40906e06854aa0be8d852dc586abf57d40870a72890144ed67670cde5f050",
+  "pdk_tree_sha256": "c2b35ce6a43d5bd2a860792f24a067b32bfbe0d3b2a19dcd2f6142297cf0bc63",
+  "container_rootfs_diff_ids": [
+    "sha256:28a304a636df855befd89183646493605836795e10fb72274805efc97e18a426",
+    "sha256:1f3defac1f9ce4d88820d76df5db89c736ce4a3e1726b40d4536ed8bef9f603a"
+  ],
+  "container_runtime_config_sha256": "1cb10a3ad40599fd3024680505bef500797e4d2bd92ae0c87de5757401619e73"
+}

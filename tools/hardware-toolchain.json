@@ -1,0 +1,19 @@
+{
+  "platform": "darwin-arm64",
+  "packages": {
+    "circt": {
+      "release": "firtool-1.159.0",
+      "directory": "firtool-1.159.0",
+      "archive": "circt-full-shared-macos-arm64.tar.gz",
+      "url": "https://github.com/llvm/circt/releases/download/firtool-1.159.0/circt-full-shared-macos-arm64.tar.gz",
+      "sha256": "c52c3af2dce2edeeec73df3deca4b9f57c092875c7a8a0860125eb09c44a945e"
+    },
+    "oss-cad-suite": {
+      "release": "2026-09-13",
+      "directory": "oss-cad-suite",
+      "archive": "oss-cad-suite-darwin-arm64-20260913.tgz",
+      "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-09-13/oss-cad-suite-darwin-arm64-20260913.tgz",
+      "sha256": "9d9a5401e2671d114c63b9354d2f4fdf4e9c43acfcf479dbe8f00928daffeb10"
+    }
+  }
+}
