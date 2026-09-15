@@ -1,0 +1,224 @@
+{
+  "experiments": [
+    {
+      "run": "routed4",
+      "corner": "nom_slow_1p08V_125C",
+      "results": {
+        "all": {
+          "worst": {
+            "start": "incoming[1]",
+            "endpoint": "_49693_",
+            "slack_ns": -6.254101
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "loader_command": {
+          "worst": {
+            "start": "command[1]",
+            "endpoint": "_49693_",
+            "slack_ns": -4.547978
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "loader_data": {
+          "worst": {
+            "start": "data[14]",
+            "endpoint": "_49693_",
+            "slack_ns": -6.018224
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "protocol": {
+          "worst": {
+            "start": "incoming[1]",
+            "endpoint": "_49693_",
+            "slack_ns": -6.254101
+          },
+          "reported_paths": 120,
+          "reported_negative_paths": 112
+        },
+        "registers": {
+          "worst": {
+            "start": "_49606_",
+            "endpoint": "_49693_",
+            "slack_ns": -5.016371
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "reset": {
+          "worst": {
+            "start": "init",
+            "endpoint": "_49693_",
+            "slack_ns": -3.957737
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 104
+        }
+      },
+      "source_sha256": {
+        "build/physical/core/runs/routed4/12-openroad-stapostpnr/state_out.json": "88e2ca362fef3415874d227095eb0d29377d459521bb1e395f28e3dc049e7b16",
+        "build/physical/core/runs/routed4/12-openroad-stapostpnr/nom_slow_1p08V_125C/_env_ThreadPoolExecutor-3_1.tcl": "e018b7bd543ab23788267a4e08b143f1b0c2197e7c55327b5312aabe52404d0d",
+        "build/physical/core/runs/routed4/12-openroad-stapostpnr/nom_slow_1p08V_125C/max.rpt": "7d616dd4fcec0c7e5c07791b6fe20f03705d86153634e3dc97318dd88397c453",
+        "build/physical/core/runs/routed4/09-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "ee71ab6ea567c5d7fa92e8f18bce2177960a33a34faf5356d5b14b097d31caea",
+        "build/physical/core/runs/routed4/11-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef": "66219477f68777b98b630610547a4c007e2f1f877a139e4ed8a396712d66b0f1",
+        "build/physical/core/experiments/routed4/core.sdc": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_slow_1p08V_125C.lib": "3ee222c580ba33acb2131ac2bf224ff8ee9700751835b73aaec72b670bb31d3c",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_io/lib/sg13cmos5l_io_slow_1p08V_3p0V_125C.lib": "0dbb628168f9855eb88aee0d557da25c4cefb8c6b727a496fa2a02fd40da5cdb",
+        "scripts/check-targeted-timing.py": "6a98b0c45b40af3f2257cbc269d70de34cfb16e6d88d38e492d4eb03b11c933f"
+      },
+      "receipt_sha256": "e4cc0b51a97cf8c487d137dee41c7901b8a1c80d0c8c6b4c03c6fc66709a5102",
+      "receipt": "build/physical/core/targeted-sta/baseline-families/report.json"
+    },
+    {
+      "run": "fetch-fanout-route",
+      "corner": "nom_slow_1p08V_125C",
+      "results": {
+        "all": {
+          "worst": {
+            "start": "data[1]",
+            "endpoint": "_49644_",
+            "slack_ns": -6.25408
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "loader_command": {
+          "worst": {
+            "start": "command[1]",
+            "endpoint": "_49644_",
+            "slack_ns": -4.581484
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 105
+        },
+        "loader_data": {
+          "worst": {
+            "start": "data[1]",
+            "endpoint": "_49644_",
+            "slack_ns": -6.25408
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "protocol": {
+          "worst": {
+            "start": "incoming[0]",
+            "endpoint": "_49644_",
+            "slack_ns": -6.080494
+          },
+          "reported_paths": 120,
+          "reported_negative_paths": 112
+        },
+        "registers": {
+          "worst": {
+            "start": "_49606_",
+            "endpoint": "_49693_",
+            "slack_ns": -4.933728
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "reset": {
+          "worst": {
+            "start": "init",
+            "endpoint": "_49644_",
+            "slack_ns": -4.738444
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 105
+        }
+      },
+      "source_sha256": {
+        "build/physical/core/runs/fetch-fanout-route/16-openroad-stapostpnr/state_out.json": "52961a950d32c4b14cd7558ec0d336ffca19133e32b5899d6bf00c9c8c18abe1",
+        "build/physical/core/runs/fetch-fanout-route/16-openroad-stapostpnr/nom_slow_1p08V_125C/_env_ThreadPoolExecutor-3_1.tcl": "b005bf1124f6825fa72f7a5b937e216c4a01ce14922967a09c46f4c645f35011",
+        "build/physical/core/runs/fetch-fanout-route/16-openroad-stapostpnr/nom_slow_1p08V_125C/max.rpt": "c2acf01a281b2223fe18aeea3d321aa7a60ffdb2b47a45a64027b6ad994fbf87",
+        "build/physical/core/runs/fetch-fanout-route/13-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "9b230ade83212b4ee0c50617ac0271b5b52d3b1e4e733f0f59d6168e5918d18d",
+        "build/physical/core/runs/fetch-fanout-route/15-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef": "45ebb81db15545273ca43ea1a501d9fa4ecdbc4df88d9dda87f0ea9eb14eb04a",
+        "build/physical/core/experiments/fetch-fanout-route/core.sdc": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_slow_1p08V_125C.lib": "3ee222c580ba33acb2131ac2bf224ff8ee9700751835b73aaec72b670bb31d3c",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_io/lib/sg13cmos5l_io_slow_1p08V_3p0V_125C.lib": "0dbb628168f9855eb88aee0d557da25c4cefb8c6b727a496fa2a02fd40da5cdb",
+        "scripts/check-targeted-timing.py": "6a98b0c45b40af3f2257cbc269d70de34cfb16e6d88d38e492d4eb03b11c933f"
+      },
+      "receipt_sha256": "7c6052fafe49697e23118fb5cab39d32212c9d20d6f1279e578dd7dfc442c65a",
+      "receipt": "build/physical/core/targeted-sta/fanout-families/report.json"
+    },
+    {
+      "run": "fetch-repair-route",
+      "corner": "nom_slow_1p08V_125C",
+      "results": {
+        "all": {
+          "worst": {
+            "start": "data[45]",
+            "endpoint": "_49644_",
+            "slack_ns": -5.055013
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "loader_command": {
+          "worst": {
+            "start": "command[1]",
+            "endpoint": "_49644_",
+            "slack_ns": -3.861475
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 105
+        },
+        "loader_data": {
+          "worst": {
+            "start": "data[45]",
+            "endpoint": "_49644_",
+            "slack_ns": -5.055013
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 112
+        },
+        "protocol": {
+          "worst": {
+            "start": "incoming[0]",
+            "endpoint": "_49644_",
+            "slack_ns": -4.927642
+          },
+          "reported_paths": 120,
+          "reported_negative_paths": 112
+        },
+        "registers": {
+          "worst": {
+            "start": "_49606_",
+            "endpoint": "_49693_",
+            "slack_ns": -4.091041
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 105
+        },
+        "reset": {
+          "worst": {
+            "start": "init",
+            "endpoint": "_49644_",
+            "slack_ns": -3.884335
+          },
+          "reported_paths": 1000,
+          "reported_negative_paths": 105
+        }
+      },
+      "source_sha256": {
+        "build/physical/core/runs/fetch-repair-route/12-openroad-stapostpnr/state_out.json": "59382bb95af66de4532d99715ad6937ea40cdb000c6d6dd4875b7df4260b7ab1",
+        "build/physical/core/runs/fetch-repair-route/12-openroad-stapostpnr/nom_slow_1p08V_125C/_env_ThreadPoolExecutor-3_1.tcl": "35345fd5c2aee52aea10690a8c16cbe70c436d63c6143c3375962dfa4dd3419f",
+        "build/physical/core/runs/fetch-repair-route/12-openroad-stapostpnr/nom_slow_1p08V_125C/max.rpt": "0f024e9bd7cf87c186cbf6989e2d92d7ded7cb24af6cc3f2bb9a3ff499ad1a49",
+        "build/physical/core/runs/fetch-repair-route/09-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "b96ab8b871215f0697daea0fe2e581e2919fa4709311f26713ccc25fbd45a8c7",
+        "build/physical/core/runs/fetch-repair-route/11-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef": "36b08e522d25e16a5d370605eae690fb94300b061fc1a56cc71c594889964871",
+        "build/physical/core/experiments/fetch-repair-route/core.sdc": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_slow_1p08V_125C.lib": "3ee222c580ba33acb2131ac2bf224ff8ee9700751835b73aaec72b670bb31d3c",
+        "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_io/lib/sg13cmos5l_io_slow_1p08V_3p0V_125C.lib": "0dbb628168f9855eb88aee0d557da25c4cefb8c6b727a496fa2a02fd40da5cdb",
+        "scripts/check-targeted-timing.py": "6a98b0c45b40af3f2257cbc269d70de34cfb16e6d88d38e492d4eb03b11c933f"
+      },
+      "receipt_sha256": "b410221e79e55f76eafea0bc014a4d77de56717a6bf4c59802ac6f4f96e364d0",
+      "receipt": "build/physical/core/targeted-sta/repair-families/report.json"
+    }
+  ],
+  "boundary": "Independent launch-family queries reproduce all three retained all-path setup slacks. Counts are report-limited; unchanged constraints and extracted parasitics."
+}

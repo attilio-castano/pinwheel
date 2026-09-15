@@ -10,7 +10,7 @@ The completed study also measures a bounded two-byte I²C runtime-repetition mac
 
 The first [physical implementation](docs/physical-validation.md) routes the general core in a **6×4 diagnostic rectangle**, with **0.737 mm² of cells before filler insertion**, zero router/Magic DRC errors, zero antenna violations, and matching layout-versus-netlist checks. Its implemented netlist passes the functional regression. **50 MHz does not close:** extracted slow-corner setup misses by **6.254 ns**, with electrical-limit violations also remaining. The pinned competition flow lacks the announced 8×4 floorplan; this establishes neither submission fit nor a qualified operating frequency. Timing/electrical closure, external serial loading, and translation equivalence remain open.
 
-The [successor-fetch experiments](docs/successor-fetch-study.md) reduce the routed slow-corner miss to **5.055 ns** with flow repair. Two proved speculative-read layouts pass RTL regression, but their mapping results do not justify additional routing yet. The remaining worst path originates in loader data; timing and electrical closure remain open.
+The [successor-fetch experiments](docs/successor-fetch-study.md) reduce the routed slow-corner miss to **5.055 ns** with flow repair. Two proved speculative-read layouts pass RTL regression, but their mapping results do not justify additional routing yet. Targeted timing reports show nearly tied misses from loader data (**5.055 ns**) and protocol inputs (**4.928 ns**); timing and electrical closure remain open.
 
 Start with:
 

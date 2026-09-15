@@ -207,12 +207,40 @@ output-mutation harness stopped because it expected a mapped scalar net instead
 of an RTL vector port. The harness now supports both forms; both `screen` runs
 completed their mutation and mapping checks.
 
-## Next decision
+## Targeted launch-family timing
 
-First request extracted timing paths explicitly from each input family. The
-general maximum-path report can select a loader path over a protocol path to
-the same endpoint; its observed `incoming` rows do not establish that family's
-complete worst slack. Preserve the present all-path result as the baseline.
+Independent extracted STA queries now cover each launch family in all three
+retained implementations. Every rerun reproduces its original all-path worst
+slack within 2 ps, using the same pinned container, libraries, netlist, SPEF and
+SDC. No case analysis or timing exceptions were added.
+
+| Slow-corner setup slack (ns) | Baseline | F1: fanout | F2: repair |
+| --- | ---: | ---: | ---: |
+| Protocol inputs | -6.254101 | -6.080494 | -4.927642 |
+| Loader data | -6.018224 | -6.254080 | -5.055013 |
+| Loader command | -4.547978 | -4.581484 | -3.861475 |
+| Init/reset | -3.957737 | -4.738444 | -3.884335 |
+| Register launches | -5.016371 | -4.933728 | -4.091041 |
+
+The earlier F2 protocol row of -1.298986 ns was only an observed row in the
+unrestricted report, **not** the worst protocol-input path. The targeted query
+finds -4.927642 ns: protocol and loader paths remain nearly tied. F1 similarly
+has a -6.080494 ns protocol path, worse than the previously observed row.
+Removing the loader dependency alone cannot establish timing closure.
+Each family report is capped at 1,000 paths; its negative-path count is not a
+complete violation count. The protocol family returns 120 paths in each run.
+
+The compact committed receipt is
+[`fetch-launch-families.json`](../physical/experiments/fetch-launch-families.json).
+Full reports and hashed inputs are retained under
+`build/physical/core/targeted-sta/{baseline,fanout,repair}-families/`.
+Reproduce with a fresh output tag:
+
+```sh
+python3 scripts/check-targeted-timing.py --run fetch-repair-route --tag repair-families-new
+```
+
+## Command-decoder experiment
 
 Inspect the path from the small-store capacity check through command decoding
 and bank/cache selection. `Storage.Small.inputs` rewrites a rejected push command
