@@ -40,23 +40,36 @@ def parse_path(block):
         if len(fields) not in (3, 5):
             raise RuntimeError(f'Unexpected timing row: {line}')
         delay, time = map(float, fields[-2:])
-        category = 'wire' if len(fields) == 3 else 'port' if match[3] == 'in' else 'buffer' if '_buf_' in match[3] else 'logic'
+        category = ('wire' if len(fields) == 3 else 'port' if match[3] == 'in'
+                    else 'buffer' if '_buf_' in match[3]
+                    else 'delay_cell' if '_dlygate' in match[3] else 'logic')
         rows.append(dict(pin=match[2], cell=match[3], category=category, delay_ns=delay,
                          time_ns=time, slew_ns=float(fields[-3]),
                          fanout=int(fields[0]) if len(fields) == 5 else None))
     external_match = re.search(r'([-\d.]+)\s+([-\d.]+)\s+[\^v] input external delay', data)
     external = float(external_match[1]) if external_match else None
-    sums = {k: sum(r['delay_ns'] for r in rows if r['category'] == k) for k in ['logic', 'buffer', 'wire', 'port']}
-    # Input paths allow an independent accounting check. Register paths include
-    # launch-clock contributions and are retained without this simplification.
-    if external is not None and abs(external + sum(sums.values()) - arrival) > 0.0001:
+    launch_clock = None
+    if external is None:
+        # Separate the launch clock tree from the data path. Keep clock-to-Q as
+        # its own contribution rather than counting the launch FF as logic.
+        launch = next((n for n, r in enumerate(rows)
+                       if r['pin'].startswith(start + '/') and r['fanout'] is not None), None)
+        if launch is None:
+            raise RuntimeError(f'Cannot identify launch register output for {start}')
+        rows = rows[launch:]
+        launch_clock = rows[0]['time_ns'] - rows[0]['delay_ns']
+        rows[0]['category'] = 'clock_to_q'
+    sums = {k: sum(r['delay_ns'] for r in rows if r['category'] == k)
+            for k in ['logic', 'buffer', 'delay_cell', 'wire', 'port', 'clock_to_q']}
+    origin = external if external is not None else launch_clock
+    if abs(origin + sum(sums.values()) - arrival) > 0.0001:
         raise RuntimeError(f'Timing accounting mismatch for {start} -> {endpoint}')
     return dict(start=start, endpoint=endpoint, arrival_ns=arrival, required_ns=required, slack_ns=slack,
-                external_delay_ns=external, delay_ns=sums,
-                output_cell_arcs=sum(r['category'] in ('buffer', 'logic') for r in rows),
+                external_delay_ns=external, launch_clock_arrival_ns=launch_clock, delay_ns=sums,
+                output_cell_arcs=sum(r['category'] in ('buffer', 'logic', 'delay_cell', 'clock_to_q') for r in rows),
                 max_slew_ns=max(r['slew_ns'] for r in rows),
                 max_data_fanout=max((r['fanout'] or 0) for r in rows),
-                before_read_b_ns=read_b_time - external if read_b_time is not None and external is not None else None,
+                before_read_b_ns=read_b_time - origin if read_b_time is not None else None,
                 after_read_b_ns=arrival - read_b_time if read_b_time is not None else None,
                 slowest_arcs=sorted(rows, key=lambda r: r['delay_ns'], reverse=True)[:5])
 
@@ -97,7 +110,8 @@ def main():
                            'not a complete separation of address-map and dictionary logic.')
     out = ROOT / 'build/successor-fetch' / args.tag
     out.mkdir(parents=True, exist_ok=True)
-    (out / 'paths.json').write_text(json.dumps(report, indent=2) + '\n')
+    filename = 'paths.json' if args.corner == 'nom_slow_1p08V_125C' else f'paths-{args.corner}.json'
+    (out / filename).write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({k: v for k, v in report.items() if k not in ['top20', 'source_sha256']}, indent=2))
 
 

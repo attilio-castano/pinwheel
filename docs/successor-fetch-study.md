@@ -46,6 +46,11 @@ does **not** establish that wiring is unimportant. The path's clock leaf drives
 15 loads. Buffering and electrical limits therefore merit a controlled test
 before changing the fetch architecture.
 
+The parser checks that delay contributions sum to arrival time. It separately
+accounts for dedicated delay cells and register clock-to-Q, excluding the launch
+clock tree from data-path totals. Validation covered 3,000 baseline setup paths,
+50 register-launched hold paths, and rejection of a corrupted external delay.
+
 ## Experiment gates
 
 1. **F1: fanout control.** Use `physical/experiments/fanout.json` to set the
@@ -99,6 +104,7 @@ python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
 The baseline decomposition is complete. F1 has reached global routing, and its
-unrepaired continuation is running. F2 and the conditional architectural gates
-remain pending. Mid-PnR states can inherit stale corner metrics; only final
-extracted STA supports a routed timing comparison.
+unrepaired continuation is running. F2's repair stages are running from the same
+checkpoint, stopping before detailed routing. The conditional architectural
+gates remain pending. Mid-PnR states can inherit stale corner metrics; only
+final extracted STA supports a routed timing comparison.
