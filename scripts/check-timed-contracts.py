@@ -60,6 +60,8 @@ def main():
     expected += ['Pinwheel.Hardware.Timed.Refinement.' + n for n in ['refl', 'trans']]
     expected += ['Pinwheel.Hardware.Storage.Cache.' + n for n in
                  ['refinement', 'structuralRefinement', 'completeRefinement']]
+    expected += ['Pinwheel.Hardware.Storage.FetchChoice.' + n for n in
+                 ['refinement', 'completeRefinement']]
     expected += ['Pinwheel.Hardware.Interface.namedRefinement']
     expected += ['Pinwheel.Hardware.Reactive.' + n for n in
                  ['inputInterface', 'registerInterface', 'outputInterface']]
@@ -104,6 +106,7 @@ def main():
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean'))
     sources += [Path(__file__).resolve(), baseline_path, ROOT / 'test/TimedContracts.lean', ROOT / 'test/Interfaces.lean',
                 ROOT / 'test/FetchChoice.lean',
+                ROOT / 'test/FetchChoiceEmit.lean',
                 ROOT / 'test/Storage.lean', ROOT / 'test/StorageCache.lean', ROOT / 'test/StorageDense.lean',
                 ROOT / 'lean-toolchain', ROOT / 'lakefile.toml', ROOT / 'tools/hardware-toolchain.json']
     fixtures = [ORACLE / n for n in baseline['oracle_sha256']]

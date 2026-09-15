@@ -19,6 +19,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("netlist", type=Path)
     parser.add_argument("--label", default="netlist")
+    parser.add_argument("--vectors", type=Path, default=ROOT / "build/storage/small-dense-cached/vectors.txt",
+                        help="Atomic oracle vectors; the selected file is included in the receipt")
     args = parser.parse_args()
     out = BASE / (args.label + "-check")
     out.mkdir(parents=True, exist_ok=True)
@@ -48,7 +50,7 @@ def main():
     start = tb.index("      for (k = 0; k < 644;")
     end = tb.index("      count = count+1;", start)
     tb = tb[:start] + tb[end:]
-    tb = tb.replace("build/loader/vectors.txt", "build/storage/small-dense-cached/vectors.txt")
+    tb = tb.replace('"build/loader/vectors.txt"', json.dumps(str(args.vectors.resolve())))
     wires = "".join(f"  wire [{w-1}:0] g_{n};\n" for n, w in outputs)
     connections = ", ".join(f".{n}({'g_' if d == 'output' else ''}{n})" for n, d, _ in ports)
     wires += f"  pinwheel_reference golden({connections});\n"
@@ -85,13 +87,21 @@ def main():
             raise RuntimeError(f"Netlist check failed; see {out / name}")
     simulation = result.stdout
     original = args.netlist.read_text()
-    if "levels[0]" not in original:
-        raise RuntimeError("Mutation anchor is missing")
-    mutant = original.replace("levels[0]", "corrupt_level0")
-    header_end = mutant.index(");") + 2
-    mutant = mutant[:header_end] + "\nwire corrupt_level0;\n" + mutant[header_end:]
+    header_end = original.index(");") + 2
+    if "levels[0]" in original:
+        mutant = original.replace("levels[0]", "corrupt_level0")
+        mutant = mutant[:header_end] + "\nwire corrupt_level0;\n" + mutant[header_end:]
+        corruption = "\nassign levels[0] = ~corrupt_level0;\n"
+    else:
+        # CIRCT RTL uses an ANSI vector port; mapped netlists above use bit nets.
+        # Retain the public port name and rename only its internal driver.
+        body, count = re.subn(r'\blevels\b', 'corrupt_levels', original[header_end:])
+        if not count or not re.search(r'output\b[^;]*\blevels\b', original[:header_end], re.S):
+            raise RuntimeError("Mutation anchor is missing")
+        mutant = original[:header_end] + "\nwire [2:0] corrupt_levels;\n" + body
+        corruption = "\nassign levels = corrupt_levels ^ 3'b001;\n"
     end = mutant.rindex("endmodule")
-    mutant = mutant[:end] + "\nassign levels[0] = ~corrupt_level0;\n" + mutant[end:]
+    mutant = mutant[:end] + corruption + mutant[end:]
     (out / "mutant.v").write_text(mutant)
     mutated_command = [str(out / "mutant.v") if x == str(args.netlist) else x for x in command]
     result = subprocess.run(mutated_command, cwd=ROOT, capture_output=True, text=True)
@@ -103,7 +113,7 @@ def main():
     if result.returncode == 0 or not any(s in result.stdout for s in ["NETLIST edge", "LOADER edge"]):
         raise RuntimeError("Output corruption was not rejected by the behavioral check")
     receipt = {"simulation": simulation, "mutants_rejected": 1, "boundary": "Zero-delay gate simulation; reference-X bits excluded. No timing simulation or universal equivalence proof."}
-    paths = [args.netlist, models, primitives, BASE / "core/design.sv", ROOT / "test/loader_tb.sv", ROOT / "build/storage/small-dense-cached/vectors.txt", Path(__file__).resolve()]
+    paths = [args.netlist, models, primitives, BASE / "core/design.sv", ROOT / "test/loader_tb.sv", args.vectors, Path(__file__).resolve()]
     receipt["sha256"] = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     (out / "report.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(simulation + "Rejected output corruption mutant.")

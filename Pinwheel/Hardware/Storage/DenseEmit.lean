@@ -1,6 +1,7 @@
 import Pinwheel.Hardware.Storage.DenseStore
 import Pinwheel.Hardware.Storage.CacheEmit
 import Pinwheel.Hardware.Storage.Emit
+import Pinwheel.Hardware.Storage.FetchChoice
 
 namespace Pinwheel.Hardware.Storage.Dense
 
@@ -16,8 +17,18 @@ namespace Pinwheel.Hardware.Loader.Machine.DenseEmit
 open Machine
 open Pinwheel.Hardware.Storage
 
+inductive IndexCut : Nat → Type where
+  | selection : IndexCut 1 | index : IndexCut 6
 
-def moduleText (small : Bool := false) (cached : Bool := false) : Except String String := do
+inductive SelectInput (width : Nat) : Nat → Type where
+  | condition : SelectInput width 1
+  | yes : SelectInput width width
+  | no : SelectInput width width
+
+def moduleText (small : Bool := false) (cached : Bool := false)
+    (choice : Option FetchChoice.Variant := none) : Except String String := do
+  if choice.isSome && !(small && cached) then
+    throw "Fetch-choice experiments require the general small dense cached backend"
   let rn : {w : Nat} → Register w → String := fun {w} r => match w, r with
     | _, .memory _ (.word _) => "%logical_" ++ registerLabel r
     | _, .memory _ (.index _) => (if small then "%logical_" else "%r_") ++ registerLabel r
@@ -50,6 +61,20 @@ def moduleText (small : Bool := false) (cached : Bool := false) : Except String 
       Hardware.Emit.expression (I := Cut) (R := Register) (fun p => match p with | Cut.selection => selected | Cut.address => address) rn
         (Execution.readTree 6 (fun k => .mux (.input Cut.selection) (.reg (.memory true (.word k))) (.reg (.memory false (.word k))))
           (Execution.readTree 8 (fun k => .mux (.input Cut.selection) (.reg (.memory true (.index k))) (.reg (.memory false (.index k)))) (.input Cut.address)))
+    let readIndex (address : String) : Hardware.Emit.M String :=
+      Hardware.Emit.expression (I := Cut) (R := Register)
+        (fun p => match p with | .selection => selected | .address => address) rn
+        (Execution.readTree 8 (fun k => .mux (.input .selection)
+          (.reg (.memory true (.index k))) (.reg (.memory false (.index k)))) (.input .address))
+    let readDictionary (index : String) : Hardware.Emit.M String :=
+      Hardware.Emit.expression (I := IndexCut) (R := Register)
+        (fun p => match p with | .selection => selected | .index => index) rn
+        (Execution.readTree 6 (fun k => .mux (.input .selection)
+          (.reg (.memory true (.word k))) (.reg (.memory false (.word k)))) (.input .index))
+    let choose (width : Nat) (condition yes no : String) : Hardware.Emit.M String :=
+      Hardware.Emit.expression (I := SelectInput width) (R := Register)
+        (fun p => match p with | .condition => condition | .yes => yes | .no => no) rn
+        (.mux (.input .condition) (.input .yes) (.input .no))
     let current ← if cached then pure "%r_cached_word" else read (cn .pc)
     let reset ← Hardware.Emit.expression hn rn (baseInputs .reset)
     let start ← Hardware.Emit.expression li ln Loader.startGate
@@ -60,7 +85,23 @@ def moduleText (small : Bool := false) (cached : Bool := false) : Except String 
       | .reset => reset | .start => start | .incoming => "%incoming" | .idleLevels => idleLevels
       | .idleEnabled => idleEnabled | .last => last | .current => current | .successor => current
     let address ← Hardware.Emit.expression base cn Reactive.target
-    let successor ← read address
+    let successor ← match choice with
+      | none => read address
+      | some v => do
+        let condition ← Hardware.Emit.expression base cn Reactive.Fetch.branchExpr
+        modify fun buf => {buf with lines := buf.lines.push s!"    %fetch_choice_condition = hw.wire {condition} : i1"}
+        let yes ← Hardware.Emit.expression base cn (Reactive.Fetch.candidateExpr true)
+        let no ← Hardware.Emit.expression base cn (Reactive.Fetch.candidateExpr false)
+        match v with
+        | .lateIndex =>
+          let yesIndex ← readIndex yes
+          let noIndex ← readIndex no
+          let index ← choose 6 "%fetch_choice_condition" yesIndex noIndex
+          readDictionary index
+        | .lateRecord =>
+          let yesWord ← read yes
+          let noWord ← read no
+          choose 64 "%fetch_choice_condition" yesWord noWord
     let si : {w : Nat} → Reactive.Input w → String := fun p => match p with
       | .successor => successor | _ => base p
     let mut declarations := #[]

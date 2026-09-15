@@ -88,7 +88,7 @@ stop at that evidence gate and assess the value of architectural complexity.
 The experiment list is conditional; it is not a commitment to build every
 candidate.
 
-## Reproduction and status
+## Proof foundation and flow results
 
 The pure foundation for A and B is implemented in
 `Pinwheel/Hardware/Reactive/FetchChoice.lean`: eight audited theorems establish
@@ -96,8 +96,12 @@ candidate-address independence, address selection and complete scheduler-input
 equality after either index or record selection, and structural expression
 correctness that composes with parent-machine registers and readers. A focused 128-edge sequence
 checks uninterrupted one-cycle branches and detects stale selection on 63 edges.
-The full contract suite audits 83 declarations and confirms unchanged MLIR/RTL.
-No speculative-read RTL has been selected or measured yet.
+`Pinwheel/Hardware/Storage/FetchChoice.lean` integrates both arrangements with the
+logical writable stores and complete cached circuit. Its refinement composes
+with the reference machine, preserving all pre/post-edge outputs and register
+updates under the existing cache invariant. The full contract suite audits 94
+declarations and confirms unchanged baseline MLIR/RTL. The dense physical
+emitter remains a separate translation boundary, checked by RTL regression.
 
 F1's extracted timing and netlist regression are complete. Its slow-corner worst
 slack is **−6.254080 ns**, effectively unchanged from the baseline. The reported
@@ -106,30 +110,106 @@ worst reported protocol-input path is `incoming[0]` at **−5.463827 ns**. The
 retained 1,000-path report contains 95 violating paths from `data[1]` and 17 from
 `incoming[0]`; it does not enumerate every alternative path to every endpoint.
 
-| Extracted measurement | Baseline | F1 |
-| --- | ---: | ---: |
-| Cells before fillers (µm²) | 736,821 | 749,175 |
-| Instances before fillers | 45,913 | 46,357 |
-| Fast setup slack (ns) | +7.020443 | +6.940689 |
-| Typical setup slack (ns) | +2.184279 | +2.059968 |
-| Slow setup slack (ns) | −6.254101 | −6.254080 |
-| Worst hold slack (ns) | +0.041695 | +0.071192 |
-| Worst slew violation count | 48 | 45 |
-| Fanout violation count | 443 | 36 |
-| Worst capacitance violation count | 9 | 8 |
+| Extracted measurement | Baseline | F1 | F2 |
+| --- | ---: | ---: | ---: |
+| Cells before fillers (µm²) | 736,821 | 749,175 | 749,721 |
+| Instances before fillers | 45,913 | 46,357 | 46,363 |
+| Fast setup slack (ns) | +7.020443 | +6.940689 | +7.444266 |
+| Typical setup slack (ns) | +2.184279 | +2.059968 | +2.746583 |
+| Slow setup slack (ns) | −6.254101 | −6.254080 | −5.055013 |
+| Worst hold slack (ns) | +0.041695 | +0.071192 | +0.022140 |
+| Worst slew violation count | 48 | 45 | 51 |
+| Fanout violation count | 443 | 36 | 34 |
+| Worst capacitance violation count | 9 | 8 | 7 |
 
 F1 has zero final router and antenna violations, and zero filtered unannotated
 nets at all three extracted corners. The implemented netlist passes 21,409
 edges and 3,510,998 defined output-bit comparisons; output inversion is rejected.
-Layout DRC and LVS are still pending. These improvements do not close timing or
-electrical limits. The path reporter now groups results by startpoint to expose
-movement between protocol-input and loader-input paths.
+F1's full Magic DRC and LVS also pass. F2 likewise has zero final router and
+antenna violations, zero filtered unannotated nets at all three corners, and the
+same successful netlist regression counts and rejected mutation. Its layout DRC
+and LVS are still pending. Neither control closes timing or electrical limits.
+The path reporter groups results by startpoint to expose movement between
+protocol-input and loader-input paths.
+
+F2's worst path starts at `data[45]` and ends at `r_cached_word[0]`; its worst
+reported protocol-input path is `incoming[0]` at −1.298986 ns. Its retained report
+contains 104 violating paths from `data[45]` and eight from `incoming[0]`.
+Post-global-route repair improves worst setup slack by about 1.20 ns relative
+to F1, while reducing hold margin and increasing slew violations. It is an
+experimental flow setting, not a newly qualified default.
 
 F2's intermediate fanout diagnosis found antenna-diode loads on all 13 listed
 violating drivers, with eight or fewer non-antenna loads each. This explains a
 flow interaction without waiving the library limit. The intermediate receipt is
 `build/successor-fetch/fetch-repair/fanout-diagnosis.json`; final counts must be
 checked after detailed-route antenna repair.
+
+## Architectural screen
+
+Both A and B are implemented as optional dense-emitter variants; the default
+emitter remains byte-identical to the baseline. No program-format, capacity,
+clock-cycle, sampling, register-count or host-interface change is involved.
+
+Each variant passes **21,864 independent oracle edges**, **13,444,072 storage
+observations**, and **3,585,618 defined baseline output-bit comparisons** on both
+sides of the clock edge. The extension includes 128 uninterrupted one-cycle
+branches with self branches, terminal-to-entry capture ordering and rejected
+host commands during execution. Branch-selection inversion and output inversion
+are detected. This complements the universal structural E64 proof; it does not
+prove the emitter or CIRCT.
+
+| Full-core mapping | Baseline | A: late index | B: late record |
+| --- | ---: | ---: | ---: |
+| Typical cell area (µm²) | 561,587 | 588,567 | 606,659 |
+| Typical ABC combinational delay (ns) | 7.70355 | 7.12096 | 7.43034 |
+| Slow cell area (µm²) | 561,952 | 588,779 | 607,479 |
+| Slow ABC combinational delay (ns) | 9.95114 | 9.95779 | 10.02479 |
+| Flip-flops | 6,226 | 6,226 | 6,226 |
+
+These use the existing separate-corner mapping recipe: buffer-2 input driver,
+10 fF output load and a 10,000 ps ABC target. They are combinational estimates
+without setup, clock-to-Q, placement or extracted interconnect. Tiny differences
+near the mapping target do not establish a physical speed difference.
+
+B is larger and slower than A in both mapped corners and is screened out.
+A buys a 7.6% typical-corner delay improvement for about 4.8% more cell area,
+but offers no measured slow-corner gain. Because the physical limit is at the
+slow corner and the worst path now originates in loader data, A is not promoted
+to a full routing run on this evidence. This is a decision about the next
+experiment's value, not proof that A could never help after placement.
+Neither candidate has been physically routed. C's expansion change and
+latency-changing storage are deferred: the observed loader dependency deserves
+investigation before changing the storage format or execution schedule.
+
+Reproduce after the contract audit, using a fresh tag for each new run:
+
+```sh
+python3 scripts/check-timed-contracts.py
+python3 scripts/check-fetch-choice.py late-index --tag screen
+python3 scripts/check-fetch-choice.py late-record --tag screen
+```
+
+Receipts, frozen MLIR/RTL, oracle vectors and mapped netlists are under
+`build/successor-fetch/late-index-screen/` and `late-record-screen/`. The earlier
+`late-index-initial` artifacts are retained: its comparisons passed, then the
+output-mutation harness stopped because it expected a mapped scalar net instead
+of an RTL vector port. The harness now supports both forms; both `screen` runs
+completed their mutation and mapping checks.
+
+## Next decision
+
+Inspect the path from the small-store capacity check through command decoding
+and bank/cache selection. `Storage.Small.inputs` rewrites a rejected push command
+to command 6, then all loader gates decode that transformed command. This is a
+concrete candidate for an unnecessary data dependency in commit/start logic;
+it is a hypothesis to prove and trace through the mapped cone, not grounds for
+declaring timing paths false. A follow-up should isolate push validation from
+unrelated control decisions, prove complete command/loader correspondence, and
+measure under the same constraints. Antenna-induced fanout and the remaining
+protocol-input path stay separate closure issues.
+
+## Reproducing the physical controls
 
 The runner allows only the four controls above in `--overrides`. Clock period,
 I/O constraints, floorplan and RTL cannot be changed through that option. Each
@@ -144,7 +224,7 @@ python3 scripts/report-physical.py --tag fetch-fanout-route
 python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
-F1 is completing layout checks. F2's repaired checkpoint is now routing as
-`fetch-repair-route`. The conditional architectural implementation gates remain
-pending. Mid-PnR states can inherit stale corner metrics; only final extracted
+F1's full physical checks and both architectural screens are complete. F2's
+extracted timing and functional checks are complete; layout checks remain in
+progress. Mid-PnR states can inherit stale corner metrics; only final extracted
 STA supports a routed timing comparison.

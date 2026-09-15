@@ -47,8 +47,12 @@ incoming pins; `address_choice` preserves sequential, jump, branch and idle
 selection. `readCandidates_eq` permits selection after either address-map reads
 or complete-record reads. Both resolution theorems establish equality of all
 scheduler inputs with the existing `resolve`. They add no execution cycles or
-effects for the unselected read. These are lookup proofs; candidate RTL and its
-complete-machine correspondence remain separate experiment gates.
+effects for the unselected read. `Hardware/Storage/FetchChoice.lean` binds these
+expressions to writable stores, proves equality of every register update and
+output, and composes the result with the existing cache refinement. Its
+`trace_correct` covers complete pre/post-edge traces of the structural E64
+machine from the existing cache invariant. Dense encoding and emitted RTL retain
+the separate translation evidence described below.
 
 `branchExpr_correct` and `candidateExpr_correct` connect the corresponding
 structural expressions to those values. `selectionExpr_correct` accepts the
@@ -157,7 +161,7 @@ oracle, and requires a deliberately corrupted cache update to fail. Logs, source
 and fixture hashes, and the final receipt live under `build/contracts/`. Mapping
 and physical-flow receipts are retained separately.
 
-The completed checks audited **83 declarations**, matched **21,342** independent
+The completed checks audited **94 declarations**, matched **21,342** independent
 oracle edges in the Lean cache components and **104,642** codec vectors, and passed
 **21,409** generated-RTL edges with **13,151,052** storage observations. All five
 MLIR hashes and the RTL hash matched; the held-cache mutation was rejected.
