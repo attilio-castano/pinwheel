@@ -1,0 +1,164 @@
+{
+  "baseline_rtl_sha256": "1664dc719bff05307e3f17a6a8c611aba520917d49be132f1bf164bf1c53548b",
+  "physical_controls": [
+    {
+      "tag": "fetch-fanout-route",
+      "flow_exit_code": 2,
+      "overrides": {
+        "MAX_FANOUT_CONSTRAINT": 8,
+        "CTS_SINK_CLUSTERING_SIZE": 8
+      },
+      "sdc_sha256": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+      "cell_area_before_fill_um2": 749175,
+      "instances_before_fill": 46357,
+      "setup_slack_ns": {
+        "nom_fast_1p32V_m40C": 6.940689108789536,
+        "nom_slow_1p08V_125C": -6.254080097486466,
+        "nom_typ_1p20V_25C": 2.059968254281936
+      },
+      "hold_slack_ns": {
+        "nom_fast_1p32V_m40C": 0.07119166568874519,
+        "nom_slow_1p08V_125C": 0.36361270579233346,
+        "nom_typ_1p20V_25C": 0.16315760315720793
+      },
+      "worst_corner_violation_metrics": {
+        "design__max_slew_violation__count": 45,
+        "design__max_fanout_violation__count": 36,
+        "design__max_cap_violation__count": 8
+      },
+      "final_checks": {
+        "route__drc_errors": 0,
+        "magic__drc_error__count": 0,
+        "antenna__violating__nets": 0,
+        "antenna__violating__pins": 0,
+        "design__lvs_error__count": 0,
+        "timing__unannotated_net_filtered__count": 0
+      },
+      "regression_edges": 21409,
+      "defined_output_bit_comparisons": 3510998,
+      "mutants_rejected": 1,
+      "artifact_sha256": {
+        "build/physical/core/runs/fetch-fanout-route/13-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "9b230ade83212b4ee0c50617ac0271b5b52d3b1e4e733f0f59d6168e5918d18d",
+        "build/physical/core/runs/fetch-fanout-route/18-magic-streamout/pinwheel_atomic_small_dense_cached.magic.gds": "c9d057bf3ecbbce1f89e2f718b7c035c6a621c8a3192ea2d04c625ec0b02c024",
+        "build/physical/core/runs/fetch-fanout-route/19-klayout-streamout/pinwheel_atomic_small_dense_cached.klayout.gds": "344d6e06fec15c97c6156993ef58a4433d69c238e74600e44d35f5f2b3400699",
+        "build/physical/core/runs/fetch-fanout-route/19-klayout-streamout/pinwheel_atomic_small_dense_cached.gds": "344d6e06fec15c97c6156993ef58a4433d69c238e74600e44d35f5f2b3400699"
+      },
+      "receipt_sha256": {
+        "build/physical/fetch-fanout-route-report.json": "938ff8f5a484a5d96bef68d627582acd9fab85ed6955d458ae8039a47a9e127f",
+        "build/physical/fetch-fanout-route-check/report.json": "540bfbacb0b4ad20b50de7164b4609865115fdb26f35cfd97601619043471256",
+        "build/physical/fetch-fanout-route-invocation.json": "384b0dd4fc8d8ce3c6c07166d7311c9138dbbcd03e82816e1bd3219cff57704e",
+        "build/successor-fetch/fetch-fanout-route/paths.json": "7361a17670c8b208d6a93e0155ec5c8211555187d23f9b8e79be530ee990e577",
+        "build/successor-fetch/fetch-fanout-route/fanout-diagnosis.json": "5262503972a4452eb8b318cb4d3b33c51bcd81ae691d776142b8af12923f2840"
+      }
+    },
+    {
+      "tag": "fetch-repair-route",
+      "flow_exit_code": 2,
+      "overrides": {
+        "MAX_FANOUT_CONSTRAINT": 8,
+        "CTS_SINK_CLUSTERING_SIZE": 8,
+        "RUN_POST_GRT_DESIGN_REPAIR": true,
+        "RUN_POST_GRT_RESIZER_TIMING": true
+      },
+      "sdc_sha256": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+      "cell_area_before_fill_um2": 749721,
+      "instances_before_fill": 46363,
+      "setup_slack_ns": {
+        "nom_fast_1p32V_m40C": 7.444265858897977,
+        "nom_slow_1p08V_125C": -5.05501255162676,
+        "nom_typ_1p20V_25C": 2.7465834828341196
+      },
+      "hold_slack_ns": {
+        "nom_fast_1p32V_m40C": 0.022140234716697165,
+        "nom_slow_1p08V_125C": 0.29316427892844377,
+        "nom_typ_1p20V_25C": 0.11089252052719163
+      },
+      "worst_corner_violation_metrics": {
+        "design__max_slew_violation__count": 51,
+        "design__max_fanout_violation__count": 34,
+        "design__max_cap_violation__count": 7
+      },
+      "final_checks": {
+        "route__drc_errors": 0,
+        "magic__drc_error__count": 0,
+        "antenna__violating__nets": 0,
+        "antenna__violating__pins": 0,
+        "design__lvs_error__count": 0,
+        "timing__unannotated_net_filtered__count": 0
+      },
+      "regression_edges": 21409,
+      "defined_output_bit_comparisons": 3510998,
+      "mutants_rejected": 1,
+      "artifact_sha256": {
+        "build/physical/core/runs/fetch-repair-route/09-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "b96ab8b871215f0697daea0fe2e581e2919fa4709311f26713ccc25fbd45a8c7",
+        "build/physical/core/runs/fetch-repair-route/14-magic-streamout/pinwheel_atomic_small_dense_cached.magic.gds": "0934668cb2732519a05692c966422fc89475b02f39d6279387db7c64f081e1b5",
+        "build/physical/core/runs/fetch-repair-route/15-klayout-streamout/pinwheel_atomic_small_dense_cached.klayout.gds": "150bf2fbde68e9eb845b0e6da1297937df694f4e6b40ecb0a02b89e484813262",
+        "build/physical/core/runs/fetch-repair-route/15-klayout-streamout/pinwheel_atomic_small_dense_cached.gds": "150bf2fbde68e9eb845b0e6da1297937df694f4e6b40ecb0a02b89e484813262"
+      },
+      "receipt_sha256": {
+        "build/physical/fetch-repair-route-report.json": "6b84931291262f1cff498eac3b5630abf9058c26a960d22cc4910af820a70622",
+        "build/physical/fetch-repair-route-check/report.json": "b6acdfed0e6dd2ed70e10a6618b38477dd27879e419f9df9eb56de17a40b2c67",
+        "build/physical/fetch-repair-route-invocation.json": "fa4961da52594d8c11e56354ca0dc9a6626fe945660bf838f2eb6c9eb7e79a1f",
+        "build/successor-fetch/fetch-repair-route/paths.json": "cb37f380895caed5912928918e234bb1351c72308a71688d2a4d7cb095509f6f",
+        "build/successor-fetch/fetch-repair-route/fanout-diagnosis.json": "44e437d2a283ea4e1374fc6fa15a76aaec5ea104776a96a62662bc6d00ff0080"
+      }
+    }
+  ],
+  "architectural_screens": [
+    {
+      "variant": "late-index",
+      "source_commit": "d9d76d2",
+      "metrics": {
+        "typical": {
+          "standard_cell_area_um2": 588567.0546,
+          "abc_combinational_delay_ps": 7120.96,
+          "flip_flops": 6226,
+          "cells": 31181
+        },
+        "slow": {
+          "standard_cell_area_um2": 588779.3394,
+          "abc_combinational_delay_ps": 9957.79,
+          "flip_flops": 6226,
+          "cells": 31177
+        }
+      },
+      "oracle_edges": 21864,
+      "storage_observations": 13444072,
+      "defined_output_bit_comparisons": 3585618,
+      "mutants_rejected": 2,
+      "rtl_sha256": "643caf885db972534710e21987b7312ead0ac85b09d557233bfb0024b349291e",
+      "receipt_sha256": "f0c62d0fea00c04fda7477266ebe89ecce3fa1bc95748c5144f3bccbcf565d0c",
+      "receipt": "build/successor-fetch/late-index-screen/report.json",
+      "decision": "Not promoted to physical routing; see study for the separate-corner tradeoff."
+    },
+    {
+      "variant": "late-record",
+      "source_commit": "d9d76d2",
+      "metrics": {
+        "typical": {
+          "standard_cell_area_um2": 606658.6638,
+          "abc_combinational_delay_ps": 7430.34,
+          "flip_flops": 6226,
+          "cells": 30642
+        },
+        "slow": {
+          "standard_cell_area_um2": 607478.7726,
+          "abc_combinational_delay_ps": 10024.79,
+          "flip_flops": 6226,
+          "cells": 30641
+        }
+      },
+      "oracle_edges": 21864,
+      "storage_observations": 13444072,
+      "defined_output_bit_comparisons": 3585618,
+      "mutants_rejected": 2,
+      "rtl_sha256": "4cc3e337e192c448bec10497530eb89c2e92170906989583b6f80be38e56dcec",
+      "receipt_sha256": "cba54a16644768ce5ed45977b82c39a87977f4604c9d32fe71369b75ecfc63a7",
+      "receipt": "build/successor-fetch/late-record-screen/report.json",
+      "decision": "Not promoted to physical routing; see study for the separate-corner tradeoff."
+    }
+  ],
+  "proof_declarations_audited": 95,
+  "proof_receipt_sha256": "04c77e8b87e7a3d89d9d9acec510e45fad4509a6738bd5eca6e9d02fc4d6363f",
+  "boundary": "Diagnostic 6x4 core only, fixed 20 ns and I/O constraints. Both routed controls fail setup and electrical closure. Architectural mapping is not extracted STA; structural proofs do not prove the emitter/CIRCT. Flow metrics and listed timing-report drivers are separate quantities."
+}

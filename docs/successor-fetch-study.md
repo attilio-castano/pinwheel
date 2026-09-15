@@ -6,6 +6,10 @@ address, looks up its instruction, and writes the current-word cache. This
 study seeks a shorter implementation of that operation while preserving the
 same protocol observations on every clock edge.
 
+The committed [result manifest](../physical/experiments/fetch-results.json)
+retains final measurements and hashes of the primary run, netlist and regression
+receipts for both physical controls and both architectural screens.
+
 ## Fixed contract and baseline
 
 Preserve every program accepted by the current backend, its capacity checks,
@@ -127,8 +131,9 @@ nets at all three extracted corners. The implemented netlist passes 21,409
 edges and 3,510,998 defined output-bit comparisons; output inversion is rejected.
 F1's full Magic DRC and LVS also pass. F2 likewise has zero final router and
 antenna violations, zero filtered unannotated nets at all three corners, and the
-same successful netlist regression counts and rejected mutation. Its layout DRC
-and LVS are still pending. Neither control closes timing or electrical limits.
+same successful netlist regression counts and rejected mutation. Its full Magic
+DRC and LVS also pass. Both flow invocations finish with exit code 2 because the
+slow-corner setup check fails. Neither control closes timing or electrical limits.
 The path reporter groups results by startpoint to expose movement between
 protocol-input and loader-input paths.
 
@@ -238,7 +243,7 @@ python3 scripts/report-physical.py --tag fetch-fanout-route
 python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
-F1's full physical checks and both architectural screens are complete. F2's
-extracted timing and functional checks are complete; layout checks remain in
-progress. Mid-PnR states can inherit stale corner metrics; only final extracted
-STA supports a routed timing comparison.
+Both physical controls and both architectural screens are complete. No
+architectural candidate was promoted to routing, and the default implementation
+and physical configuration remain unchanged. Mid-PnR states can inherit stale
+corner metrics; only final extracted STA supports a routed timing comparison.
