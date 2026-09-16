@@ -14,6 +14,7 @@ import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
 import Pinwheel.Compile.UARTLink
+import Pinwheel.Compile.UARTRxStream
 import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
