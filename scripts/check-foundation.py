@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = [
-    ('UART', []), ('SPI', []), ('Engine', []), ('I2C', []), ('Reactive', []),
+    ('UART', []), ('UARTRx', []), ('SPI', []), ('Engine', []), ('I2C', []), ('Reactive', []),
     ('Control', []), ('CompiledI2C', []), ('Counted', []),
     ('CompiledI2C', ['--looped']), ('Binary', []),
     ('CompiledI2C', ['--binary-explicit']), ('CompiledI2C', ['--binary-looped']),
@@ -65,7 +65,9 @@ def main():
     modules = check_imports()
     sources = [ROOT / p for p in ['Pinwheel.lean', 'lean-toolchain', 'lakefile.toml',
                                  'lake-manifest.json', 'scripts/check-foundation.py',
-                                 'scripts/binary_v0.py', '.github/workflows/lean.yml']]
+                                 'scripts/binary_v0.py', '.github/workflows/lean.yml',
+                                 'scripts/check-uart-rx.py', 'scripts/uart_rx_oracle.py',
+                                 'scripts/reactive-core-vectors.py', 'scripts/execution-vectors.py']]
     sources += sorted((ROOT / 'Pinwheel').rglob('*.lean')) + sorted((ROOT / 'test').glob('*.lean'))
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     out.mkdir(parents=True)
@@ -103,6 +105,8 @@ def main():
         run([*lean, '--run', f'test/{name}.lean', *flags], label)
         if name == 'Binary':
             run([sys.executable, 'scripts/binary_v0.py'], 'independent-binary')
+        if name == 'UARTRx':
+            run([sys.executable, 'scripts/check-uart-rx.py'], 'independent-uart-rx')
     for path in sources:
         if sha(path) != hashes[str(path.relative_to(ROOT))]:
             raise RuntimeError(f'Source changed during validation: {path}')
@@ -110,7 +114,7 @@ def main():
                   audited_theorems=int(counts[2]), executable_suites=len(SUITES),
                   untrusted_axiom_rejected=True, commands=commands, source_sha256=hashes,
                   elapsed_seconds=round(time.monotonic()-started, 3),
-                  boundary='Fresh-source-capable Lean/model gate and independent PWL lookup. '
+                  boundary='Fresh-source-capable Lean/model gate, independent PWL lookup and UART RX/E64 oracle. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')

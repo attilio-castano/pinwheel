@@ -148,6 +148,7 @@ def main():
     sources = sorted((ROOT / 'Pinwheel').rglob('*.lean')) + [Path(__file__).resolve(),
               ROOT / f'test/{emitter}.lean', ROOT / 'scripts/check-physical-netlist.py',
               ROOT / 'scripts/loader-vectors.py', ROOT / 'scripts/reactive-core-vectors.py',
+              ROOT / 'scripts/uart_rx_oracle.py',
               ROOT / 'scripts/execution-vectors.py', ROOT / 'tools/technology-library.json',
               ROOT / 'tools/hardware-toolchain.json']
     report = dict(variant=args.variant, tag=args.tag, metrics=metrics, baseline_metrics=mapping['metrics'],

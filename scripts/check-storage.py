@@ -89,7 +89,7 @@ def main():
         assert ff == 6745, ff
         metrics[corner] = dict(standard_cell_area_um2=float(re.findall(r'Chip area for module.*?:\s*([\d.]+)', log)[-1]), sequential_area_um2=float(re.findall(r'of which used for sequential elements:\s*([\d.]+)', log)[-1]), abc_combinational_delay_ps=float(re.findall(r'ABC(?: RESULTS)?:.*?Delay\s*=\s*([\d.]+)', log)[-1]), flip_flops=ff, cells=len(cells))
         print(corner, metrics[corner], flush=True)
-    sources = sorted((ROOT/'Pinwheel').rglob('*.lean')) + [ROOT/'scripts/check-storage.py', ROOT/'test/Storage.lean', ROOT/'test/StorageCapacity.lean', ROOT/'scripts/loader-vectors.py', ROOT/'scripts/reactive-core-vectors.py', ROOT/'test/loader_tb.sv', ROOT/'tools/technology-library.json', ROOT/'tools/hardware-toolchain.json', ROOT/'lean-toolchain']
+    sources = sorted((ROOT/'Pinwheel').rglob('*.lean')) + [ROOT/'scripts/check-storage.py', ROOT/'test/Storage.lean', ROOT/'test/StorageCapacity.lean', ROOT/'scripts/loader-vectors.py', ROOT/'scripts/reactive-core-vectors.py', ROOT/'scripts/uart_rx_oracle.py', ROOT/'test/loader_tb.sv', ROOT/'tools/technology-library.json', ROOT/'tools/hardware-toolchain.json', ROOT/'lean-toolchain']
     report = dict(metrics=metrics, coverage=coverage, audited_theorems=expected, source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}, rtl_sha256=hashlib.sha256(rtl.encode()).hexdigest(), boundary='32-entry experimental capacity; same 256 addresses and 322-word host transfer. Mapped cell area and ABC combinational delay only; no routed fit or STA claim.')
     (OUT/'report.json').write_text(json.dumps(report, indent=2)+'\n')
 
