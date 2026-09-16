@@ -29,10 +29,20 @@ The gate:
    `propext`, `Classical.choice`, and `Quot.sound` are allowed. An injected custom
    axiom must fail for the expected diagnostic. Counts include generated
    theorems; they are not counts of manually written mathematical results.
-3. Runs UART/SPI, shared engine, reactive I²C, explicit/counted/binary execution,
+3. Runs UART TX/RX, link timing, continuous buffered reception with ideal and
+   unequal clocks, SPI, shared engine, reactive I²C, explicit/counted/binary execution,
    register reads, encoding, countdown, timed-interface/fetch, and storage
    certificate checks. Their existing negative cases remain included.
-4. Independently decodes and checks generated PWL images with the Python oracle.
+4. Independently decodes and checks generated PWL images and UART RX E64 execution
+   with Python oracles. RX includes every supported period/input storage configuration.
+
+The [continuous UART suite](uart-stream.md#validation-and-reproduction) checks
+all 65,536 ordered byte pairs, independent wire/queue oracles, consumer stalls,
+reset/error recovery, and exact correspondence with the compiled RX supervisor.
+The [unequal-clock stream suite](uart-stream-clocks.md#validation-and-reproduction)
+adds independent physical-time wire and detection schedules, varying observation
+age, relative phases, rearm boundaries, and cases outside the sufficient bounds.
+These are Lean/model checks; the supervisor's new buffer has no RTL validation yet.
 
 `.github/workflows/lean.yml` first runs the disposable-file checkpoint provenance
 regression (`python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'`),
@@ -57,6 +67,7 @@ For a new checkout, the relevant dependency chain is:
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
+| UART RX integration | No prior fixtures; `check-uart-rx-hardware.py --tag <fresh-tag>` regenerates mixed-protocol traces and simulates four backends, including the default dense cached core | [UART receive](uart-receive.md) |
 | E64 frontends | Run `check-binary.py`, then `check-execution.py` | [E64 hardware](execution-hardware.md) |
 | Dense codec | Execution decoder vectors from the preceding frontend check; create `build/storage` with `test/Storage.lean`, then run `check-dense-codec.py` | [Storage study](storage-study.md) |
 | Cached/dense storage | Loader vectors and observation include from `check-loader.py`; emit with `test/Storage.lean`, then run the storage measurement commands below | [Storage study](storage-study.md) |

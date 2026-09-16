@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = [
-    ('UART', []), ('UARTRx', []), ('UARTLink', []), ('UARTStream', []),
+    ('UART', []), ('UARTRx', []), ('UARTLink', []), ('UARTStream', []), ('UARTStreamClocks', []),
     ('SPI', []), ('Engine', []), ('I2C', []), ('Reactive', []),
     ('Control', []), ('CompiledI2C', []), ('Counted', []),
     ('CompiledI2C', ['--looped']), ('Binary', []),
@@ -115,7 +115,7 @@ def main():
                   audited_theorems=int(counts[2]), executable_suites=len(SUITES),
                   untrusted_axiom_rejected=True, commands=commands, source_sha256=hashes,
                   elapsed_seconds=round(time.monotonic()-started, 3),
-                  boundary='Fresh-source-capable Lean/model gate, compiled UART link timing and continuous RX supervisor, '
+                  boundary='Fresh-source-capable Lean/model gate, compiled UART link/stream timing and continuous RX supervisor, '
                            'independent PWL lookup and UART RX/E64 oracle. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')

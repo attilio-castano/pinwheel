@@ -8,6 +8,17 @@ and conditional execution. Lean specifies the behavior and proves correspondence
 between protocol models and machine implementations. Structural circuits lower
 through CIRCT to SystemVerilog for independent simulation and hardware measurement.
 
+[UART reception](docs/uart-receive.md) now supports one 8N1 byte with start
+confirmation and framing-error reporting, compiled for the same reloadable engine.
+The [UART link proof](docs/uart-link.md) connects transmitted bytes to received
+bytes under explicit clock and digital observation-delay bounds.
+The [continuous receive model](docs/uart-stream.md) adds automatic rearm, a
+one-entry result buffer, explicit consumption/overrun, and proofs for finite
+ideal back-to-back frames through a compiled-program supervisor.
+The [continuous clock contract](docs/uart-stream-clocks.md) extends those proofs
+to unequal TX/RX clocks and varying bounded observation age, including time to
+rearm and observe idle high between adjacent frames.
+
 The project has a general reloadable core with atomic program replacement,
 compressed instruction storage, and a current-instruction cache. Its first physical
 implementation exposed a slow-corner timing failure. The project has not established
