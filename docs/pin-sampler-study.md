@@ -99,8 +99,9 @@ rejects a one-stage age claim.
 
 Not proved: anything about asynchronous arrival, metastability resolution,
 thresholds, or that a physical flip-flop pair meets an age bound. The bridge from
-`PinSampler.delayed` to cycle-indexed histories, the SPI rate condition and the
-I²C echo hazards that the added two edges cause are in
+`PinSampler.delayed` to cycle-indexed histories, the SPI rate condition, the I²C
+echo hazards that the added two edges cause, and the I²C revision that lets both
+compiled programs complete behind this sampler are in
 [input latency](input-latency.md).
 
 ## Emitted artifact

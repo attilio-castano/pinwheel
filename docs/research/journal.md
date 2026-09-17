@@ -605,6 +605,42 @@ external interface integration retain their separate contracts.
   suite (a `d = 3`, two-cycle-phase case faulted with no clock pulses) and then
   stated as a theorem.
 
+## 2026-09-17: I²C recompiled for input latency
+
+- **Scope:** both I²C reference controllers, the explicit, counted and
+  register-read programs with their correspondence proofs, the independent
+  vector generators, and the RTL regressions by simulation and equivalence.
+  No place-and-route; no instruction-set or RTL change.
+- **Result:** bus-free time after STOP is qualified like the interval before
+  START (`I2C/Controller.lean`, `I2C/RegisterRead.lean`). Address 77, counted
+  template 13 and read address 153 became the existing `qualify` record, identical
+  to address 0; `advance_stopFree` and the read lift were re-proved and every
+  downstream theorem builds unchanged. `I2C/Latency.lean` keeps the hazard as
+  `guarded_stop_echo_faults` and adds `stop_echo_is_waited_out`,
+  `blocked_prefix`, `rise_behind_pipeline` and `stop_completes_behind_pipeline`
+  (also for the register read). Library audit: standard axioms only.
+  `test/Latency.lean`: 111 write and 64 register-read closed-loop runs, reference
+  and compiled. Images: 713 and 203 bytes (were 715 and 205); distinct E64 records
+  for the write 13 (was 14), read 25; capacity sweep maxima 3/11/13/25.
+  Gates rerun: `check-i2c`, `check-compiled-i2c`, `check-i2c-read`,
+  `check-binary`, `check-reactive`, `check-execution`, `check-reactive-core`
+  (40,881 direct and 45,297 indexed edges), `check-loader` (33,858 edges).
+  `check-sampled --tag i2c-02`: 6,319 reference and 6,313 gate equivalence
+  points; 35,824 edges with pins presented two edges early, among them eight
+  closed-loop I²C runs behind the two registers and the former guarded record
+  faulting after a complete wire transaction; unshifted and inner-shifted replays
+  rejected; `sampled.sv` byte-identical to the routed candidate.
+  `check-foundation --tag i2c-qualify-01`: 150 modules, 11,319 declarations,
+  5,933 theorems, 28 suites, untrusted axiom rejected, 1,045 s. 38 Python unit
+  tests pass.
+- **Disposition:** the [study](../input-latency.md) owns the contract, the
+  `d = 0` behaviour change (a line held low after STOP now ends in `timeout`, not
+  `busFault`) and the remaining obligations. `check-reactive-core.py` had been
+  failing on `main` since the fetch-choice and interface modules were added: its
+  audit list lacked their 14 theorems and its rule assumed one namespace. Both were
+  repaired so the gate could run; the theorems were already covered by the
+  library-wide audit.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

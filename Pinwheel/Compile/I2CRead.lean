@@ -43,7 +43,7 @@ def instruction (cfg : Pinwheel.I2C.Config) (r : Pinwheel.I2C.RegisterRead.Reque
   else if pc.val == 150 then .action ⟨.openDrain 3, cfg.phaseMinusOne, none⟩
   else if pc.val == 151 then .wait ⟨.openDrain 2, ⟨0, true⟩, cfg.waitMinusOne⟩
   else if pc.val == 152 then .checked ⟨⟨.openDrain 2, cfg.phaseMinusOne, none⟩, I2C.clockHigh, none, .sequential⟩
-  else if pc.val == 153 then .checked ⟨⟨{}, cfg.phaseMinusOne, none⟩, I2C.bothHigh, none, .sequential⟩
+  else if pc.val == 153 then .qualify ⟨{}, I2C.bothHigh, cfg.phaseMinusOne, cfg.waitMinusOne⟩
   else .halt
 
 def program (cfg : Pinwheel.I2C.Config) (r : Pinwheel.I2C.RegisterRead.Request) : ReadProgram :=

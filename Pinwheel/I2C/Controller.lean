@@ -84,9 +84,13 @@ def step (cfg : Config) (s : State) (bus : Bus) (reset : Bool := false) : State 
   | .stopHigh =>
     if !bus.scl then finish s .busFault
     else if s.remaining.val == 0 then move cfg s .stopFree else count s
+  -- Bus-free time after STOP is qualified exactly as it is before START. Behind input
+  -- registers the first observations still show the controller's own SDA low.
   | .stopFree =>
-    if !(bus.scl && bus.sda) then finish s .busFault
-    else if s.remaining.val == 0 then finish s s.outcome else count s
+    if bus.scl && bus.sda then
+      if s.remaining.val == 0 then finish s s.outcome
+      else {count s with waitLeft := cfg.waitMinusOne}
+    else blocked cfg s
   | .startHold =>
     if !bus.scl then finish s .busFault
     else if s.remaining.val == 0 then move cfg s .setup else count s

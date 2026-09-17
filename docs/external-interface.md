@@ -30,8 +30,10 @@ clock/reset release, input timing assumptions, and electrical behavior. A fixed
 two-edge digital delay is not an unconditional analog detection-time bound.
 
 [Input latency](input-latency.md) now carries this delay through each protocol's
-contract: UART bounds shift, SPI gains a rate condition, and the I²C controller as
-specified reports a false bus fault and needs a small revision.
+contract: UART bounds shift, SPI gains a rate condition, and I²C needs
+`d ≤ phaseCycles` and `d < waitCycles`. The I²C controllers and compiled programs
+were revised on 2026-09-17 to qualify bus-free time after STOP; the former guard
+reported a false bus fault behind any input register.
 
 Protocol bounds must account for this delay. For example, a wait with four
 remaining core observation opportunities has fewer opportunities to see a

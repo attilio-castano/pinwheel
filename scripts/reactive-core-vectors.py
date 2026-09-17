@@ -157,8 +157,12 @@ class Machine:
         self.edge(reset=1)
 
 
-def i2c(m, read, byte=0x96, acks=(1, 1, 1), stretched=False):
+def i2c(m, read, byte=0x96, acks=(1, 1, 1), stretched=False, latency=0, finished=5):
+    """Closed loop around an independent target and wire monitor. With `latency`, the
+    target still sees the core's pins at once, but the core consumes the bus that many
+    edges late, as it does behind input registers; the bus was idle-high before START."""
     m.edge(start=1, incoming=3)
+    pipe = [3]*latency
     expected_clocks = (9 if not acks[0] else 18 if not acks[1] else 27 if not acks[2] else 36) if read else 18
     previous, previous_command = [1, 1], [0, 0]
     target_sda, stretch_left, releases, starts, stopped = 0, 0, 0, 0, False
@@ -197,13 +201,14 @@ def i2c(m, read, byte=0x96, acks=(1, 1, 1), stretched=False):
         if bus[0] and pending is not None and len(clocks) < expected_clocks and (len(clocks) % 9 == 8 or (read and len(clocks) >= 27)):
             assert not command[1], 'controller drove ACK/data/NACK'
         # Attempt writes to all banks, including metadata, throughout execution.
-        m.edge(incoming=bus[0] | bus[1] << 1, write=1, bank=t % 4,
+        pipe.append(bus[0] | bus[1] << 1)
+        m.edge(incoming=pipe.pop(0), write=1, bank=t % 4,
                address=(t//4) % 2, data=(1 << 64)-1, start=int(t % 13 == 0))
         previous, previous_command = bus, command
         stretch_left = max(0, stretch_left-1)
         if m.s[0] >= 5:
             break
-    assert m.s[0] == 5 and stopped
+    assert m.s[0] == finished and stopped, (m.s[0], stopped)
     n = (9 if not acks[0] else 18 if not acks[1] else 27 if not acks[2] else 36) if read else 18
     assert len(clocks) == n, (len(clocks), n)
     assert starts == (2 if read and acks[0] and acks[1] else 1)
@@ -217,6 +222,30 @@ def i2c(m, read, byte=0x96, acks=(1, 1, 1), stretched=False):
     if read and all(acks):
         assert m.s[6] & 255 == int(f'{byte:08b}'[::-1], 2)
     return t+1
+
+
+def i2c_latency(m, images, latency=2):
+    """Both I2C programs behind `latency` input registers (docs/input-latency.md).
+    Shifting these rows' pin column `latency` edges earlier gives exactly the bus a
+    target would present at the pins, so the pin-sampled RTL replays a closed loop."""
+    runs = []
+    for name, read in [('i2c-read', True), ('i2c-write', False)]:
+        words, last, idle = images[name]
+        m.load(name+'-delayed', words, last, idle)
+        for byte in [0x69, 0x96]:
+            for stretch in [False, True]:
+                runs.append(i2c(m, read, byte, stretched=stretch, latency=latency))
+        # Until 2026-09-17 the bus-free hold before halt was a guarded action. That record
+        # completes on an undelayed bus; behind a register it sees the controller's own
+        # STOP and faults after a complete, correct wire transaction.
+        hold = fields(words[last-1])
+        assert hold['kind'] == 3 and words[last-1] == words[0]
+        guarded = list(words)
+        guarded[last-1] = pack(dict(kind=2, duration=hold['duration'], check=hold['check']))
+        m.load(name+'-guarded-stop', guarded, last, idle)
+        i2c(m, read, stretched=True)
+        i2c(m, read, stretched=True, latency=latency, finished=7)
+    return runs
 
 
 def generate():
@@ -262,6 +291,7 @@ def generate():
         for ack_bits in range(7):
             acks = tuple((ack_bits >> k) & 1 for k in range(3))
             reads.append(i2c(m, True, acks=acks, stretched=True))
+        delayed = i2c_latency(m, images)
         rx_frames = uart_rx['exercise'](m, images)
         # Terminal capture feeds branch, then successor entry may overwrite that slot.
         p = [pack(dict(kind=2, terminal=63, finish=2, sample=15, yes=1, no=2)),
@@ -314,7 +344,8 @@ def generate():
             m.edge(start=1); assert m.s[0] == 7
         name = 'indexed' if indexed else 'direct'
         (OUT/f'{name}-vectors.txt').write_text(''.join(' '.join(map(str, row))+'\n' for row in m.rows))
-        coverage[name] = dict(edges=len(m.rows), cases=m.cases, i2c_reads=len(reads), uart_rx_frames=rx_frames,
+        coverage[name] = dict(edges=len(m.rows), cases=m.cases, i2c_reads=len(reads),
+                              i2c_behind_two_registers=len(delayed), uart_rx_frames=rx_frames,
                               quiet_read_cycles=reads[0], stretched_read_cycles=reads[1])
     (OUT/'coverage.json').write_text(json.dumps(coverage, indent=2)+'\n')
     return coverage

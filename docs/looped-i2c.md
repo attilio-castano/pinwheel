@@ -1,6 +1,6 @@
 # Explicit I²C versus a reusable byte loop
 
-Implementation record: **2026-09-13**. The explicit [79-instruction write](compiled-i2c.md) now has a counted-loop alternative. Both run in Lean and have universally identical fetched instructions and complete engine states. The loop stores **15 instruction templates, two repeat descriptors, and two data bytes**. The follow-up [PWL v0 format](binary-images.md) now encodes the two forms in 715 and 205 bytes respectively, with codec and decoded-execution proofs. The later [storage study](storage-study.md#bounded-runtime-repetition) implements and maps a separate flat runtime decoder for this bounded two-byte write. It does not implement the generic counted syntax tree.
+Implementation record: **2026-09-13**. The explicit [79-instruction write](compiled-i2c.md) now has a counted-loop alternative. Both run in Lean and have universally identical fetched instructions and complete engine states. The loop stores **15 instruction templates, two repeat descriptors, and two data bytes**. The follow-up [PWL v0 format](binary-images.md) now encodes the two forms in 713 and 203 bytes respectively, with codec and decoded-execution proofs. The later [storage study](storage-study.md#bounded-runtime-repetition) implements and maps a separate flat runtime decoder for this bounded two-byte write. It does not implement the generic counted syntax tree.
 
 ## What is actually reused
 
@@ -12,7 +12,7 @@ repeat 2 bytes:
     repeat 8 bits:
         setup selected bit; wait for SCL; guarded high; low hold
     ACK setup; wait for SCL; guarded high/capture; low hold/continuation
-STOP low; wait for SCL; guarded STOP setup; bus-free hold; halt
+STOP low; wait for SCL; guarded STOP setup; qualified bus-free hold; halt
 ```
 
 The address byte is `address << 1`, with the write-direction bit zero; the other byte is the payload. They live in a separate two-byte data bank. The code depends on timing configuration, not the address or payload. During the inner loop, a pin expression selects a bit from the byte named by the outer loop. During ACK, the outer index selects sample 0 or 1. Only the address ACK branches to STOP on NACK; the data ACK proceeds to STOP for either result, as in the explicit baseline.
@@ -47,7 +47,7 @@ No separate loop-index registers were added to `Reactive.State`. There are no lo
 | Execution address width | 7 bits | 7 bits |
 | Phase/wait counters, samples, pin registers | Existing reactive state | Exactly the same state |
 | Main extra selection logic | Direct instruction lookup | Loop/template, byte/bit, sample, and successor selection |
-| V0 example serialized image | 715 bytes, including bank padding | 205 bytes, including layout and data |
+| V0 example serialized image | 713 bytes, including bank padding | 203 bytes, including layout and data |
 | Synthesized area | Not established for the extended engine | Not established |
 
 The typed counted format admits at most **128 execution slots, 64 syntax nodes, two nested loops, eight iterations per loop, and two data bytes**. Sample slots remain eight, observed inputs two, and output value/enable pairs three. Timed durations and wait budgets remain 1–256 cycles. A successor allows at most one loop-index comparison; its branches select sequential execution, a jump, or a sample-dependent branch.

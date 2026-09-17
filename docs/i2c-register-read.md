@@ -17,7 +17,7 @@ Three ACK flags and eight received bits require eleven meaningful sample slots w
 
 The reactive engine and functional fetch adapter now parameterize their address and sample capacities. Defaults remain **128 addresses and eight samples**, preserving the existing UART/SPI/I²C write programs, counted programs, and PWL version-0 format. The read instantiates **256 addresses and 16 samples**. It adds no opcode, extra bookkeeping cycle, or second scheduler implementation. Timers and wait budgets remain 1–256 observations.
 
-The four repeated-START phases release SDA while SCL is low, wait for observed SCL high, guard both lines high for a setup interval, and pull SDA low for the START hold. Stretching therefore applies to repeated START and STOP as well as data clocks.
+The four repeated-START phases release SDA while SCL is low, wait for observed SCL high, guard both lines high for a setup interval, and pull SDA low for the START hold. Stretching therefore applies to repeated START and STOP as well as data clocks. After STOP the bus-free hold is qualified like the interval before the first START: a low observation restarts the count and spends the wait budget instead of faulting. That revision (2026-09-17) lets the read run behind input registers; see [input latency](input-latency.md).
 
 ## Proof and executable evidence
 

@@ -1,10 +1,12 @@
 import Pinwheel.Latency
 import Pinwheel.I2C.Proofs
+import Pinwheel.I2C.RegisterRead
 
 /-! The I2C write controller behind an input pipeline. Unlike UART and SPI, this
 controller checks the bus right after changing its own drive, so a delayed view
-shows it its own earlier command. Two consequences are proved here for every
-target, and a minimally revised controller is given that removes the first. -/
+shows it its own earlier command. The consequences are proved here for every
+target. The first led to a revision of `step` itself: bus-free time after STOP is
+now qualified, as it already was before START. -/
 namespace Pinwheel.I2C
 
 /-- While it prepares and holds STOP the controller itself keeps SDA low. -/
@@ -19,21 +21,42 @@ theorem low_phases_hold_clock_low (s : State) (target : Pins)
     (resolve (pins s) target).scl = false := by
   rcases h with h | h | h <;> simp [pins, h, resolve, resolveLine]
 
-/-- **Echo hazard.** In `stopFree` the controller expects a released bus at once.
-Any observation that is still from its own STOP preparation reports a bus fault,
-whatever the target does. Behind `d ≥ 1` input registers the first observation
-consumed in `stopFree` is such an observation. -/
-theorem stale_stop_observation_faults (cfg : Config) (s earlier : State) (target : Pins)
+/-- The bus-free transition specified before input latency was considered: any
+observation without both lines high is a bus fault. Kept to record the hazard. -/
+def guardedStopFree (s : State) (bus : Bus) : State :=
+  if !(bus.scl && bus.sda) then finish s .busFault
+  else if s.remaining.val == 0 then finish s s.outcome else count s
+
+/-- **Echo hazard of the guarded transition.** An observation that is still from
+the controller's own STOP preparation shows SDA low, whatever the target does, so
+the guarded transition reports a bus fault. Behind `d ≥ 1` input registers the
+first observation consumed in `stopFree` is such an observation. -/
+theorem guarded_stop_echo_faults (s earlier : State) (target : Pins)
+    (stale : earlier.phase = .stopLow ∨ earlier.phase = .stopRise ∨ earlier.phase = .stopHigh) :
+    result (guardedStopFree s (resolve (pins earlier) target)) = some .busFault := by
+  have low := stop_holds_data_low earlier target stale
+  simp [guardedStopFree, low, finish, result, busy]
+
+/-- **The qualified transition waits the echo out.** `step` now treats bus-free
+time after STOP as it treats it before START: a blocked observation restarts the
+interval and spends wait budget. -/
+theorem stop_echo_is_waited_out (cfg : Config) (s earlier : State) (target : Pins)
     (now : s.phase = .stopFree)
     (stale : earlier.phase = .stopLow ∨ earlier.phase = .stopRise ∨ earlier.phase = .stopHigh) :
-    result (step cfg s (resolve (pins earlier) target)) = some .busFault := by
+    step cfg s (resolve (pins earlier) target) = blocked cfg s := by
   have low := stop_holds_data_low earlier target stale
-  simp [step, now, low, finish, result, busy]
+  simp [step, now, low]
+
+/-- A full bus-free interval still completes with the transaction's outcome. -/
+theorem stop_completes (cfg : Config) (s : State) (now : s.phase = .stopFree)
+    (last : s.remaining.val = 0) : result (step cfg s ⟨true, true⟩) = some s.outcome := by
+  simp [step, now, last, finish, result, busy]
 
 /-- **Wait-budget hazard.** After releasing SCL the controller counts every
 observation in which SCL still reads low as blocking. Observations from its own
 clock-low phases are of that kind, so each clock rise spends one unit of the wait
-budget per register of input latency before any target stretches at all. -/
+budget per register of input latency before any target stretches at all; so does
+the bus-free interval after STOP (`stop_echo_is_waited_out`). -/
 theorem stale_clock_observation_blocks (cfg : Config) (s earlier : State) (target : Pins)
     (now : s.phase = .rise ∨ s.phase = .stopRise)
     (stale : earlier.phase = .setup ∨ earlier.phase = .fall ∨ earlier.phase = .stopLow) :
@@ -60,37 +83,172 @@ theorem echo_exhausts_wait (cfg : Config) (s : State) (sda : Nat → Bool)
     result (run cfg s (fun t => ⟨false, sda t⟩) (s.waitLeft.val + 1)) = some .timeout :=
   stretch_timeout_exact cfg s sda rising fresh
 
-/-- A revised controller: in `stopFree`, SDA still reading low *before any
-bus-free cycle has been counted* is waited out against the wait budget, exactly as
-a low SCL is in `rise`. Every other transition is unchanged. -/
-def tolerantStep (cfg : Config) (s : State) (bus : Bus) (reset : Bool := false) : State :=
-  if !reset && s.phase == .stopFree && bus.scl && !bus.sda && s.remaining == cfg.phaseMinusOne
-  then blocked cfg s else step cfg s bus reset
+/-! Multi-step closed forms: what the wait budget buys behind the pipeline. -/
 
-/-- The revision is conservative: it differs only on that one kind of observation. -/
-theorem tolerantStep_eq_step (cfg : Config) (s : State) (bus : Bus) (reset : Bool)
-    (h : reset = true ∨ s.phase ≠ .stopFree ∨ bus.scl = false ∨ bus.sda = true ∨
-      s.remaining ≠ cfg.phaseMinusOne) :
-    tolerantStep cfg s bus reset = step cfg s bus reset := by
-  unfold tolerantStep
-  rcases h with h | h | h | h | h <;> simp [h]
+/-- Runs compose: the later part sees the history shifted by the earlier part's length. -/
+theorem run_add (cfg : Config) (s : State) (incoming : Nat → Bus) (a b : Nat) :
+    run cfg s incoming (a + b) = run cfg (run cfg s incoming a) (fun t => incoming (a + t)) b := by
+  induction b with
+  | zero => rfl
+  | succ b ih =>
+    show step cfg (run cfg s incoming (a + b)) (incoming (a + b + 1)) = _
+    rw [ih]
+    rfl
 
-/-- The echo no longer faults: it is waited out while budget remains. -/
-theorem tolerant_waits_out_stop_echo (cfg : Config) (s earlier : State) (target : Pins)
-    (now : s.phase = .stopFree) (fresh : s.remaining = cfg.phaseMinusOne)
-    (stale : earlier.phase = .stopRise ∨ earlier.phase = .stopHigh)
-    (clock : (resolve (pins earlier) target).scl = true) :
-    tolerantStep cfg s (resolve (pins earlier) target) = blocked cfg s := by
-  have low := stop_holds_data_low earlier target (Or.inr stale)
-  simp [tolerantStep, now, fresh, low, clock]
+/-- Observations that block a fresh waiting phase change nothing but the budget, as long as
+the budget covers them. `stale_clock_observation_blocks` and `stop_echo_is_waited_out`
+show that the controller's own echo is such an observation. -/
+theorem blocked_prefix (cfg : Config) (s : State) (incoming : Nat → Bus) (n : Nat)
+    (ht : s.remaining = cfg.phaseMinusOne) (hn : n ≤ s.waitLeft.val)
+    (blocks : ∀ (u : State) (t : Nat), u.phase = s.phase → 1 ≤ t → t ≤ n →
+      step cfg u (incoming t) = blocked cfg u) :
+    run cfg s incoming n =
+      {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - n, by omega⟩} := by
+  induction n with
+  | zero => simp [run, ← ht]
+  | succ n ih =>
+    rw [run, ih (by omega) (fun u t hu h1 h2 => blocks u t hu h1 (by omega)),
+      blocks {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - n, by omega⟩}
+        (n + 1) rfl (by omega) (Nat.le_refl _)]
+    simp [blocked, show 0 < s.waitLeft.val - n by omega, Nat.sub_sub]
 
-/-- Once a bus-free cycle has been counted, a low SDA is again a fault: another
-controller's START is not mistaken for an echo. Needs a phase of two or more cycles,
-since the revision tells the cases apart by the phase timer. -/
-theorem tolerant_faults_after_free (cfg : Config) (s : State) (scl : Bool)
-    (now : s.phase = .stopFree) (counted : s.remaining ≠ cfg.phaseMinusOne) :
-    result (tolerantStep cfg s ⟨scl, false⟩) = some .busFault := by
-  rw [tolerantStep_eq_step cfg s ⟨scl, false⟩ false (Or.inr (Or.inr (Or.inr (Or.inr counted))))]
-  simp [step, now, finish, result, busy]
+/-- **A clock rise behind an input pipeline.** `d` observations that still show the clock
+low — the controller's own echo behind `d` input registers, a stretching target, or both —
+are waited out when the budget covers them; the first high observation then starts a full
+high period. Without the budget the same prefix is `echo_exhausts_wait`. -/
+theorem rise_behind_pipeline (cfg : Config) (s : State) (incoming : Nat → Bus) (d : Nat)
+    (hp : s.phase = .rise) (ht : s.remaining = cfg.phaseMinusOne) (hd : d ≤ s.waitLeft.val)
+    (echo : ∀ t, 1 ≤ t → t ≤ d → (incoming t).scl = false)
+    (ready : (incoming (d + 1)).scl = true) :
+    run cfg s incoming (d + 1) = move cfg s .high := by
+  rw [run, blocked_prefix cfg s incoming d ht hd
+    (fun u t hu h1 h2 => by simp [step, hu.trans hp, echo t h1 h2])]
+  simp [step, hp, ready, move]
+
+/-- Free observations count the bus-free interval down without touching the outcome. -/
+theorem stop_free_countdown (cfg : Config) (s : State) (incoming : Nat → Bus) (n : Nat)
+    (hp : s.phase = .stopFree) (hn : n ≤ s.remaining.val)
+    (free : ∀ t, 1 ≤ t → t ≤ n → incoming t = ⟨true, true⟩) :
+    (run cfg s incoming n).phase = .stopFree ∧
+      (run cfg s incoming n).remaining.val = s.remaining.val - n ∧
+      (run cfg s incoming n).outcome = s.outcome := by
+  induction n with
+  | zero => simp [run, hp]
+  | succ n ih =>
+    obtain ⟨p, r, o⟩ := ih (by omega) (fun t h1 h2 => free t h1 (by omega))
+    have obs := free (n + 1) (by omega) (Nat.le_refl _)
+    have positive : (run cfg s incoming n).remaining.val ≠ 0 := by omega
+    rw [run, step, p, obs]
+    simp only [Bool.and_self, if_true, beq_iff_eq, positive, if_false, count]
+    refine ⟨p, ?_, o⟩
+    show (run cfg s incoming n).remaining.val - 1 = s.remaining.val - (n + 1)
+    omega
+
+/-- **STOP completes behind an input pipeline.** From a fresh bus-free hold, `d` blocked
+observations — the controller's own STOP echo behind `d` input registers
+(`stop_holds_data_low`), or anything else — followed by `phaseCycles` free observations
+report the transaction's outcome, provided the wait budget covers the blocked ones. -/
+theorem stop_completes_behind_pipeline (cfg : Config) (s : State) (incoming : Nat → Bus) (d : Nat)
+    (hp : s.phase = .stopFree) (ht : s.remaining = cfg.phaseMinusOne) (hd : d ≤ s.waitLeft.val)
+    (echo : ∀ t, 1 ≤ t → t ≤ d → ((incoming t).scl && (incoming t).sda) = false)
+    (free : ∀ t, d < t → t ≤ d + cfg.phaseCycles → incoming t = ⟨true, true⟩) :
+    result (run cfg s incoming (d + cfg.phaseCycles)) = some s.outcome := by
+  -- The echo leaves a fresh interval; the free observations then count it down.
+  let waited : State :=
+    {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - d, by omega⟩}
+  have waitedOut : run cfg s incoming d = waited :=
+    blocked_prefix cfg s incoming d ht hd
+      (fun u t hu h1 h2 => by simp [step, hu.trans hp, echo t h1 h2])
+  obtain ⟨p, r, o⟩ := stop_free_countdown cfg waited (fun t => incoming (d + t))
+    cfg.phaseMinusOne.val hp (Nat.le_refl _)
+    (fun t _ h2 => free (d + t) (by omega) (by simp only [Config.phaseCycles]; omega))
+  have last := free (d + cfg.phaseCycles) (by simp only [Config.phaseCycles]; omega) (Nat.le_refl _)
+  have split : d + cfg.phaseCycles = d + cfg.phaseMinusOne.val + 1 := by
+    simp only [Config.phaseCycles]; omega
+  have zero : (run cfg waited (fun t => incoming (d + t)) cfg.phaseMinusOne.val).remaining.val = 0 := by
+    simpa [waited] using r
+  rw [split, run, run_add, waitedOut, ← split, last, step, p]
+  simp [zero, finish, result, busy, o, waited]
 
 end Pinwheel.I2C
+
+namespace Pinwheel.I2C.RegisterRead
+
+/-- The register-read controller holds SDA low through its STOP preparation too. -/
+theorem stop_holds_data_low (r : Request) (phase : Phase) (target : Pins)
+    (h : phase = .stopLow ∨ phase = .stopRise ∨ phase = .stopHigh) :
+    (resolve (pins r phase) target).sda = false := by
+  rcases h with h | h | h <;> simp [pins, h, resolve, resolveLine]
+
+/-- Its qualified bus-free interval waits that echo out as well. -/
+theorem stop_echo_is_waited_out (cfg : Config) (r : Request) (s : State) (earlier : Phase)
+    (target : Pins) (now : s.phase = .stopFree)
+    (stale : earlier = .stopLow ∨ earlier = .stopRise ∨ earlier = .stopHigh) :
+    step cfg s (resolve (pins r earlier) target) = blocked cfg s := by
+  have low := stop_holds_data_low r earlier target stale
+  simp [step, now, low]
+
+theorem run_add (cfg : Config) (s : State) (incoming : Nat → Bus) (a b : Nat) :
+    run cfg s incoming (a + b) = run cfg (run cfg s incoming a) (fun t => incoming (a + t)) b := by
+  induction b with
+  | zero => rfl
+  | succ b ih =>
+    show step cfg (run cfg s incoming (a + b)) (incoming (a + b + 1)) = _
+    rw [ih]
+    rfl
+
+theorem blocked_prefix (cfg : Config) (s : State) (incoming : Nat → Bus) (n : Nat)
+    (ht : s.remaining = cfg.phaseMinusOne) (hn : n ≤ s.waitLeft.val)
+    (blocks : ∀ (u : State) (t : Nat), u.phase = s.phase → 1 ≤ t → t ≤ n →
+      step cfg u (incoming t) = blocked cfg u) :
+    run cfg s incoming n =
+      {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - n, by omega⟩} := by
+  induction n with
+  | zero => simp [run, ← ht]
+  | succ n ih =>
+    rw [run, ih (by omega) (fun u t hu h1 h2 => blocks u t hu h1 (by omega)),
+      blocks {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - n, by omega⟩}
+        (n + 1) rfl (by omega) (Nat.le_refl _)]
+    simp [blocked, show 0 < s.waitLeft.val - n by omega, Nat.sub_sub]
+
+theorem stop_free_countdown (cfg : Config) (s : State) (incoming : Nat → Bus) (n : Nat)
+    (hp : s.phase = .stopFree) (hn : n ≤ s.remaining.val)
+    (free : ∀ t, 1 ≤ t → t ≤ n → incoming t = ⟨true, true⟩) :
+    (run cfg s incoming n).phase = .stopFree ∧
+      (run cfg s incoming n).remaining.val = s.remaining.val - n ∧
+      (run cfg s incoming n).samples = s.samples := by
+  induction n with
+  | zero => simp [run, hp]
+  | succ n ih =>
+    obtain ⟨p, r, o⟩ := ih (by omega) (fun t h1 h2 => free t h1 (by omega))
+    have obs := free (n + 1) (by omega) (Nat.le_refl _)
+    have positive : (run cfg s incoming n).remaining.val ≠ 0 := by omega
+    rw [run, step, p, obs]
+    simp only [Bool.and_self, if_true, beq_iff_eq, positive, if_false, count]
+    refine ⟨p, ?_, o⟩
+    show (run cfg s incoming n).remaining.val - 1 = s.remaining.val - (n + 1)
+    omega
+
+/-- The register read completes its STOP behind an input pipeline in the same way. -/
+theorem stop_completes_behind_pipeline (cfg : Config) (s : State) (incoming : Nat → Bus) (d : Nat)
+    (hp : s.phase = .stopFree) (ht : s.remaining = cfg.phaseMinusOne) (hd : d ≤ s.waitLeft.val)
+    (echo : ∀ t, 1 ≤ t → t ≤ d → ((incoming t).scl && (incoming t).sda) = false)
+    (free : ∀ t, d < t → t ≤ d + cfg.phaseCycles → incoming t = ⟨true, true⟩) :
+    result (run cfg s incoming (d + cfg.phaseCycles)) = some (outcome s.samples) := by
+  let waited : State :=
+    {s with remaining := cfg.phaseMinusOne, waitLeft := ⟨s.waitLeft.val - d, by omega⟩}
+  have waitedOut : run cfg s incoming d = waited :=
+    blocked_prefix cfg s incoming d ht hd
+      (fun u t hu h1 h2 => by simp [step, hu.trans hp, echo t h1 h2])
+  obtain ⟨p, r, o⟩ := stop_free_countdown cfg waited (fun t => incoming (d + t))
+    cfg.phaseMinusOne.val hp (Nat.le_refl _)
+    (fun t _ h2 => free (d + t) (by omega) (by simp only [Config.phaseCycles]; omega))
+  have last := free (d + cfg.phaseCycles) (by simp only [Config.phaseCycles]; omega) (Nat.le_refl _)
+  have split : d + cfg.phaseCycles = d + cfg.phaseMinusOne.val + 1 := by
+    simp only [Config.phaseCycles]; omega
+  have zero : (run cfg waited (fun t => incoming (d + t)) cfg.phaseMinusOne.val).remaining.val = 0 := by
+    simpa [waited] using r
+  rw [split, run, run_add, waitedOut, ← split, last, step, p]
+  simp [zero, move, result, o, waited]
+
+end Pinwheel.I2C.RegisterRead

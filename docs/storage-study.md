@@ -39,7 +39,7 @@ image. It does not establish that every possible compiler configuration fits.
 The executable sweep covers 198,656 configurations: UART/SPI each cover all 256
 payload bytes at four timer values; I²C write/read each cover all address/payload
 pairs at fixed timing and all timer/budget pairs at a fixed payload. The maximum
-unique E64 records are respectively **3, 11, 14, and 25**. Payload and timing
+unique E64 records are respectively **3, 11, 13, and 25** (14 for the write before the 2026-09-17 [STOP revision](input-latency.md)). Payload and timing
 sweeps are separate; their full Cartesian product was not enumerated. A deliberately
 over-capacity image is rejected.
 

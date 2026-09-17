@@ -218,15 +218,23 @@ unchanged up to age bounds two RX ticks later. **SPI**: samples are taken `d`
 cycles before each rising edge, so a mode-0 peripheral with output delay `tco` is
 read correctly whenever **`d + tco ≤ halfCycles`**, proved for the reference and the
 compiled program and tight in execution; with the sampler that is SCK at most one
-sixth of the system clock. **I²C**: the write controller observes its own drive,
-and three hazards hold for every target — a false `busFault` at STOP for any
-`d ≥ 1`, `d` units of wait budget spent per clock rise, and a premature high phase
-when `d > phaseCycles`. A one-transition revision (`tolerantStep`) removes the
-first; closed-loop executions confirm the specified controller faults after a
-complete, correct wire transaction and the revised one succeeds for
-`d ≤ phaseCycles`, `d < waitCycles`. The reactive compiler and its proofs still
-implement the unrevised controller, so **I²C behind the sampler currently reports
-bus faults**; the register-read controller has the same STOP guard.
+sixth of the system clock. **I²C**: the controllers observe their own drive, and
+three hazards were proved for every target — under the former guarded STOP hold, a
+false `busFault` for any `d ≥ 1`; `d` units of wait budget spent per clock rise;
+and a premature high phase when `d > phaseCycles`. The first is now removed at the source: both reference
+controllers **qualify** bus-free time after STOP as they already did before START,
+and the explicit, counted and register-read programs use the existing `qualify`
+instruction there (address 77, template 13, address 153). No instruction or
+hardware changed, the emitted RTL is byte-identical, the compiler correspondence
+theorems are re-proved for every input history, and the write images shrink to
+713 and 203 bytes. Closed-loop executions of the references **and the compiled
+programs** succeed for `d ≤ phaseCycles`, `d < waitCycles`, including stretching
+and NACKs. The pin-sampled RTL, byte-identical to the routed candidate, replays eight
+closed-loop writes and register reads with the bus seen two edges late
+(35,824 edges); the former guarded record faults there after a complete wire
+transaction. For `d = 0` one outcome changes: a line held low after
+STOP now ends in `timeout` after the wait budget instead of an immediate
+`busFault`.
 
 ## Next discriminators
 
@@ -253,10 +261,10 @@ bus faults**; the register-read controller has the same STOP guard.
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. Recompile and re-prove I²C (write and register read) against the revised STOP
-   handling in [input latency](../input-latency.md), and decide whether SPI keeps
-   the `d + tco ≤ halfCycles` rate condition or the compiler captures `d` cycles
-   later. Resolve the actual wrapper/I/O budget and loading transport, then compose the
+3. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
+   [input latency](../input-latency.md) or the compiler captures `d` cycles later,
+   and whether the compilers should reject a `Config` that violates a declared
+   latency's conditions (I²C: `d ≤ phaseCycles`, `d < waitCycles`). Resolve the actual wrapper/I/O budget and loading transport, then compose the
    [external timing contract](../external-interface.md) with protocol assumptions.
    Synchronizer delay must appear in those bounds; no asynchronous or analog
    detection guarantee follows from the digital two-edge theorem.
