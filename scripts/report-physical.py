@@ -23,6 +23,10 @@ def main():
     invocation = json.loads(invocation_path.read_text())
     if "exit_code" not in invocation:
         raise RuntimeError("Run has not completed; no final result can be collected")
+    if invocation.get("stop_reason") == "wall_time_limit" and invocation.get(
+            "container_termination", {}).get("status") not in {"stopped", "absent"}:
+        raise RuntimeError("Timed-out container termination is unconfirmed; "
+                           "artifacts may still be changing, so no final result can be collected")
     run = BASE / "core/runs" / args.tag
     states = sorted(run.glob("[0-9]*-*/state_out.json"), key=lambda p: int(p.parent.name.split("-", 1)[0]))
     if not states:
@@ -70,6 +74,7 @@ def main():
         "variant": invocation.get("variant", "small-dense-cached"),
         "timeout_seconds": invocation.get("timeout_seconds"),
         "stop_reason": invocation.get("stop_reason"),
+        "container_termination": invocation.get("container_termination"),
         "last_completed_step": states[-1].parent.name,
         "completed_steps": [p.parent.name for p in states],
         "detailed_routing_completed": any("-openroad-detailedrouting" in p.parent.name for p in states),

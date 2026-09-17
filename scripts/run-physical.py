@@ -19,6 +19,54 @@ def sha(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def write_receipt(path, receipt):
+    temporary = path.with_suffix(".json.tmp")
+    temporary.write_text(json.dumps(receipt, indent=2) + "\n")
+    temporary.replace(path)
+
+
+def stop_container(name, log):
+    """Keep cleanup failure separate from the already-recorded timeout."""
+    termination = {"status": "unconfirmed"}
+    try:
+        result = subprocess.run(["docker", "stop", "--time", "10", name],
+                                stdout=log, stderr=subprocess.STDOUT, timeout=30)
+        termination["stop_exit_code"] = result.returncode
+        if result.returncode == 0:
+            termination["status"] = "stopped"
+            return termination
+    except (subprocess.TimeoutExpired, OSError) as error:
+        termination["stop_error"] = f"{type(error).__name__}: {error}"
+
+    # --rm can remove the container before stop reaches it. A failed stop alone
+    # does not prove absence: require a successful query of the Docker daemon.
+    try:
+        result = subprocess.run(
+            ["docker", "container", "ls", "--all", "--filter", f"name={name}",
+             "--format", "{{json .}}"], capture_output=True, text=True, timeout=10)
+        termination["query_exit_code"] = result.returncode
+        if result.returncode != 0:
+            termination["query_error"] = result.stderr
+            return termination
+        states = []
+        for line in result.stdout.splitlines():
+            row = json.loads(line)
+            if not isinstance(row, dict) or not all(
+                    isinstance(row.get(key), str) for key in ("Names", "State")):
+                raise ValueError("Malformed Docker container listing")
+            # Docker's name filter also matches substrings.
+            if name in row["Names"].split(","):
+                states.append(row["State"])
+        termination["observed_states"] = states
+        if not states:
+            termination["status"] = "absent"
+        elif states == ["exited"]:
+            termination["status"] = "stopped"
+    except (subprocess.TimeoutExpired, OSError, ValueError) as error:
+        termination["query_error"] = f"{type(error).__name__}: {error}"
+    return termination
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="initial")
@@ -127,18 +175,26 @@ def main():
         "variant": inputs.get("variant", "small-dense-cached"),
         "timeout_seconds": args.timeout_seconds,
     }
-    receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+    write_receipt(receipt_path, receipt)
     with (BASE / (args.tag + ".log")).open("w") as log:
         try:
             result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=args.timeout_seconds)
             exit_code = result.returncode
         except subprocess.TimeoutExpired:
-            subprocess.run(["docker", "stop", "--time", "10", container_name],
-                           stdout=log, stderr=subprocess.STDOUT, timeout=30, check=True)
             exit_code = 124
+            receipt["exit_code"] = exit_code
             receipt["stop_reason"] = "wall_time_limit"
+            receipt["container_termination"] = {"status": "unconfirmed"}
+            write_receipt(receipt_path, receipt)
+            try:
+                receipt["container_termination"] = stop_container(container_name, log)
+            finally:
+                write_receipt(receipt_path, receipt)
+            if receipt["container_termination"]["status"] == "unconfirmed":
+                print(f"Container {container_name} termination is unconfirmed; "
+                      "inspect the invocation receipt before collecting evidence.")
     receipt["exit_code"] = exit_code
-    receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
+    write_receipt(receipt_path, receipt)
     print(f"Physical run {args.tag}: exit {exit_code}; inspect build/physical/{args.tag}.log")
     raise SystemExit(exit_code)
 

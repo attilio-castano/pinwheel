@@ -93,6 +93,16 @@ python3 scripts/prepare-physical.py
 python3 scripts/run-physical.py --tag initial
 ```
 
+The default attempt limit is 3,600 seconds (`--timeout-seconds` overrides it).
+On timeout, the runner atomically saves exit code 124 and `wall_time_limit`
+before cleanup. It records container termination separately: `stopped`,
+`absent`, or `unconfirmed`. Cleanup allows up to 30 seconds for the stop command
+and, if needed, 10 seconds to query the daemon. A failed query never establishes
+absence. Reporting refuses timed-out runs whose termination is unconfirmed,
+including older timeout receipts without termination evidence; their existing
+historical reports remain unchanged. Cleanup errors remain in the invocation
+receipt for diagnosis. Tests exercise these paths with mocked Docker calls.
+
 The runner checks the ARM64 image's uncompressed layer identities and runtime
 configuration. Docker's containerd store can assign a different manifest digest
 when importing a verified archive; that alone is not a filesystem change. The
