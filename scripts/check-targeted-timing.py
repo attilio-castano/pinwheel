@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = ROOT / 'build/physical/core'
+PHYSICAL = ROOT / 'build/physical'
 CORNER = 'nom_slow_1p08V_125C'
 
 
@@ -20,8 +20,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--run', required=True)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--design', default='core', help='Prepared design under build/physical that owns the run')
     args = parser.parse_args()
-    for value in [args.run, args.tag]:
+    BASE = PHYSICAL / args.design
+    for value in [args.run, args.tag, args.design]:
         if not value.replace('-', '').replace('_', '').isalnum():
             parser.error('Use alphanumeric names, hyphens and underscores')
     stages = list((BASE / 'runs' / args.run).glob('*-openroad-stapostpnr'))
@@ -98,7 +100,7 @@ def main():
     for path in source_paths:
         if sha(path) != hashes[str(path.relative_to(ROOT))]:
             raise RuntimeError('Retained timing input changed during analysis')
-    receipt = dict(run=args.run, tag=args.tag, corner=CORNER, results=results,
+    receipt = dict(run=args.run, tag=args.tag, design=args.design, corner=CORNER, results=results,
                    baseline_reproduced=True, command=command, source_sha256=hashes,
                    artifact_sha256={p.name: sha(p) for p in out.iterdir() if p.is_file()},
                    boundary='Extracted setup timing under unchanged SDC. Each family is independently queried; '

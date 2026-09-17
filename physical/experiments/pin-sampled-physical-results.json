@@ -196,7 +196,9 @@
     "control": {
       "incoming_port_worst_ns": -0.797,
       "data_port_worst_ns": 3.38,
-      "violating_paths_from_incoming": 67
+      "violating_paths_from_incoming": 67,
+      "register_family_worst_ns": -0.294,
+      "register_family_negative_paths": 64
     },
     "candidate": {
       "register_worst_ns": 0.09,
@@ -208,7 +210,8 @@
         "wire": 0.458,
         "logic_cell_count": 38
       }
-    }
+    },
+    "correction": "The default report lists the worst path per endpoint. The per-family query (combined-physical-results.json) shows the control's register-launched family at -0.294 ns with 64 negative paths; all families are met in pin-sampled-02."
   },
   "implemented_netlist_regression": {
     "receipt": "build/physical/pin-sampled-02-netlist-check/report.json",

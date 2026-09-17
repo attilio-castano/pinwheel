@@ -1,0 +1,243 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/pin-sampler-study.md#combined-with-clock-gating",
+  "disposition": "Negative for timing in this run: the pin sampler and width-8 clock gating together route at 67.4% utilization with hold margin and passing functional checks, but slow setup is -2.251 ns. The register-to-register path into the cached-word clock gate alone misses by 2.054 ns. Retain as evidence; no promotion.",
+  "fixed_contract": "Pin-sampled command-split RTL 3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1, physical/experiments/combined.json, 20 ns clock, unchanged I/O constraints and diagnostic 6x4 floorplan, four CPUs, 6 GiB, stop after OpenROAD.STAPostPNR. Magic DRC and LVS not run.",
+  "attempts": [
+    {
+      "design": "pin-sampled",
+      "tag": "combined-01",
+      "exit_code": 125,
+      "stop_reason": null,
+      "timeout_seconds": 3600,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+      "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+      "invocation_sha256": "f2959219ef20d4b0f8a35f43c96772a7b70be632f99e4a6e97477deef7ee1008"
+    },
+    {
+      "design": "pin-sampled",
+      "tag": "combined-02",
+      "exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "timeout_seconds": 3600,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+      "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+      "invocation_sha256": "d89d21423e1efc510014bda6f531bae28ff065aea8e3a9d6c8a0c8aaa0281d0e"
+    }
+  ],
+  "attempt_notes": {
+    "combined-01": "Infrastructure failure: Docker client lost its connection during detailed routing (exit 125). Not a flow result.",
+    "combined-02": "One-hour wall-time limit in the 39th detailed-routing iteration with five spacing violations left; its first ten iterations reproduce combined-01 exactly."
+  },
+  "result": {
+    "design": "pin-sampled",
+    "tag": "combined-03",
+    "exit_code": 0,
+    "stop_reason": null,
+    "timeout_seconds": 5400,
+    "resume_step": "OpenROAD.DetailedRouting",
+    "checkpoint_sha256": "f7944d8df4d10290f98384bd8391bfd07ccebf0bf7d10ca4a376dace52ba2a65",
+    "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "83cb6b3000298bde42f578fde1a633615617a2bd585b1bba8d5479eed09a8dcf",
+    "sta_summary_sha256": "4ce496c3f8ad922d6573bfd95d339badbd93bd4e4bf06c061664810ae4d52bf0",
+    "slow": {
+      "setup_ws_ns": -2.251342,
+      "setup_tns_ns": -30.043,
+      "setup_violations": 40,
+      "hold_ws_ns": 0.53863,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 4.454734,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.232117,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 7.730172,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.059152,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 30,
+      "capacitance": 0,
+      "fanout": 29
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 608058.05,
+    "utilization": 0.67381,
+    "routed_wirelength_um": 1753794,
+    "detailed_routing": {
+      "iterations": 58,
+      "runtime": "01:11:20.990"
+    }
+  },
+  "result_note": "Resumed at OpenROAD.DetailedRouting from the verified combined-02 step-45 checkpoint with a 90-minute cap for this one run. Detailed routing needed 58 iterations and 71 minutes to reach zero violations.",
+  "slow_launch_families": {
+    "composed-control-01": {
+      "receipt": "build/physical/composed-control/targeted-sta/composed-control-01-families/report.json",
+      "sha256": "0bb125d94f24cb1ee2a93d376de737e29b0958d9848b7c2e84157f1a48038d1a",
+      "all": {
+        "worst_ns": -0.797,
+        "negative_reported": 67
+      },
+      "loader_command": {
+        "worst_ns": 0.019,
+        "negative_reported": 0
+      },
+      "loader_data": {
+        "worst_ns": 3.38,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": -0.797,
+        "negative_reported": 67
+      },
+      "registers": {
+        "worst_ns": -0.294,
+        "negative_reported": 64
+      },
+      "reset": {
+        "worst_ns": 0.2,
+        "negative_reported": 0
+      }
+    },
+    "pin-sampled-02": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/pin-sampled-02-families/report.json",
+      "sha256": "43d391d7b687eedd3b0bb5332ef30dad9d8263f904e35f8b8a2cca3fddc18483",
+      "all": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "loader_command": {
+        "worst_ns": 0.175,
+        "negative_reported": 0
+      },
+      "loader_data": {
+        "worst_ns": 1.996,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.354,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "reset": {
+        "worst_ns": 0.255,
+        "negative_reported": 0
+      }
+    },
+    "clock-gated-03": {
+      "receipt": "build/physical/core/targeted-sta/clock-gated-03-families/report.json",
+      "sha256": "c8df03d70d88e525dc2445fe532d7b2fa03abbe7b06682da45022689ce6f0f27",
+      "all": {
+        "worst_ns": -0.617,
+        "negative_reported": 16
+      },
+      "loader_command": {
+        "worst_ns": -0.327,
+        "negative_reported": 5
+      },
+      "loader_data": {
+        "worst_ns": 0.997,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": -0.617,
+        "negative_reported": 16
+      },
+      "registers": {
+        "worst_ns": -0.058,
+        "negative_reported": 1
+      },
+      "reset": {
+        "worst_ns": -0.545,
+        "negative_reported": 13
+      }
+    },
+    "combined-03": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/combined-03-families/report.json",
+      "sha256": "ffdb97c36d7c117fb8a3fccd62b86d247dbb598498be631c968e7402539d8d52",
+      "all": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_command": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_data": {
+        "worst_ns": 0.116,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.496,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": -2.054,
+        "negative_reported": 38
+      },
+      "reset": {
+        "worst_ns": -2.053,
+        "negative_reported": 38
+      }
+    }
+  },
+  "worst_register_path": {
+    "pin-sampled-02": {
+      "launch_clock_ns": 1.449,
+      "capture_clock_ns": 1.09,
+      "path_delay_ns": 19.155,
+      "logic_ns": 12.634,
+      "buffers_ns": 6.063,
+      "setup_ns": 0.201,
+      "slack_ns": 0.09,
+      "endpoint": "r_cached_word flip-flop"
+    },
+    "clock-gated-03": {
+      "launch_clock_ns": 1.166,
+      "capture_clock_ns": 0.488,
+      "path_delay_ns": 19.051,
+      "logic_ns": 11.282,
+      "buffers_ns": 7.434,
+      "setup_ns": 0.129,
+      "slack_ns": -0.058,
+      "endpoint": "r_cached_word clock gate"
+    },
+    "combined-03": {
+      "launch_clock_ns": 1.187,
+      "capture_clock_ns": 0.541,
+      "path_delay_ns": 20.964,
+      "logic_ns": 14.171,
+      "buffers_ns": 6.094,
+      "setup_ns": 0.243,
+      "slack_ns": -2.054,
+      "endpoint": "r_cached_word clock gate"
+    }
+  },
+  "implemented_netlist_regression": {
+    "receipt": "build/physical/combined-03-netlist-check/report.json",
+    "sha256": "6f4fc0e8cbe3dae0f51c529fb6dd22c044d616119e87f24669ec049ffa4a16ae",
+    "result": "29,062 edges, 4,766,090 defined output-bit comparisons against pin-shifted extended vectors and the source RTL; output mutant rejected"
+  },
+  "clock_gate_mutation": {
+    "receipt": "build/physical/combined-03-netlist-gates/report.json",
+    "sha256": "5b785b68ee7134ef46c85f9e134655f6a6e7ff8e4fcc4db263e5f7ef1283d17d",
+    "rejected": 134,
+    "mutants": 134
+  },
+  "boundary": "One completed run on one host. The three gated/sampled runs differ in RTL emitter, hold margins and placement, so the 1.8 ns longer critical-path delay of this run is not attributed to one cause. No wrapper, official floorplan, layout sign-off or frequency claim."
+}

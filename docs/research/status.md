@@ -147,8 +147,9 @@ depths are rejected, and the independent oracle passes 28,165 edges with pins
 presented two edges early. The sampled RTL has no direct Lean read-back.
 
 Matched physical comparison on the calibrated flow: the composed control misses
-slow setup by **0.797 ns**, and **all 67** violating paths launch from `incoming`
-ports. The sampled candidate's first attempt fails global routing with an
+slow setup by **0.797 ns**; the worst path into each of its 67 violating endpoints
+launches from an `incoming` port, and the per-family query shows register-launched
+paths into the same endpoints also missing by 0.294 ns. The sampled candidate's first attempt fails global routing with an
 overflow of one; with marginal overflow left to the detailed router
 (`pin-sampled-02`) it routes with zero violations and **meets extracted setup and
 hold at all three corners: slow setup +0.090 ns, no violating endpoints**, 1.5%
@@ -159,15 +160,30 @@ observed 0.6 ns spread between equivalent RTLs; electrical-limit violations
 remain, layout checks were not run, and the boundary is still the diagnostic
 6×4 core. No frequency, fit or default claim follows.
 
+**Combining the sampler with clock gating does not stack for timing.**
+`combined-03` (after a Docker failure and a one-hour timeout, resumed from a
+verified checkpoint with a 90-minute cap) routes cleanly at 67.4% utilization
+with 608,058 µm² of cells, +0.059 ns worst hold and passing functional and
+clock-gate mutation checks, but slow setup is **−2.251 ns**, and register-launched
+paths alone miss by **2.054 ns**. Every family's worst path ends at the clock gate
+of `r_cached_word`: gating moves the endpoint of the critical successor loop up
+the clock tree (about 0.3 ns more adverse skew), and this run's path delay is a
+further 1.8 ns longer than in the sampled-only or gated-only runs, which is not
+attributed. Detailed routing needed 58 iterations and 71 minutes; gated designs
+are consistently harder to detail-route despite lower utilization.
+
 ## Next discriminators
 
 0. The calibrated flow and the matched composed control are now the comparison
    baseline for physical work. Open flow-level questions, each needing its own
    allocation: repeatability of the sampled result (placement/seed variation or
-   a modest clock margin); clock gating combined with the pin sampler, with
-   explicit hold margin; finer gating of the five-bit index registers (scratch
-   synthesis: 455,658 µm², 582 gates); and a routability experiment on the
-   official 8×4 outline, where Metal3 capacity rather than area may bind.
+   a modest clock margin); clock gating that leaves the cached word ungated, or
+   the proved cache-enable variant behind the sampler, since the cache-update
+   decision is now the limiting endpoint; finer gating of the five-bit index
+   registers (scratch synthesis: 455,658 µm², 582 gates); and a routability
+   experiment on the official 8×4 outline, where Metal3 capacity rather than
+   area may bind. Use `check-targeted-timing.py --design` for every comparison:
+   the default report hides all but the worst launch point per endpoint.
    The `r_cached_word` successor loop is the path the architectural candidates
    should now be measured against, with the sampler and calibrated flow in place.
 

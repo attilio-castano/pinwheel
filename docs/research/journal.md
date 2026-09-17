@@ -531,6 +531,27 @@ external interface integration retain their separate contracts.
   (`build/physical/combined-02-step45-checkpoint.json`) with a 90-minute cap for
   this one run; detailed routing restarts from its first iteration.
 
+## 2026-09-17: combined run completes (`combined-03`) and corrects a launch-family claim
+
+- **Scope:** resume of the authorized combined run from the verified `combined-02`
+  step-45 checkpoint, 90-minute cap for this run; per-family extracted STA on four
+  retained designs; gate-level functional checks.
+- **Result:** exit 0; detailed routing 58 iterations / 71 min to zero violations.
+  608,058 µm², 67.4% utilization, worst hold +0.059 ns, slow setup −2.251 ns (40
+  endpoints), 30 slew and 29 fanout violations. Families (slow, worst ns):
+  `incoming` +14.496, `command` −2.251, `data` +0.116, `init`/`reset` −2.053,
+  registers −2.054 (38 negative); all worst paths end at the `r_cached_word` clock
+  gate. Regression 29,062 edges; 134/134 clock-gate mutants rejected.
+- **Correction:** the earlier statement that no register-launched path violated
+  in `composed-control-01` was wrong: the default report shows only the worst
+  launch point per endpoint. Per-family STA gives registers −0.294 ns (64
+  negative) there and +0.090 ns in `pin-sampled-02`. Study, status, results and the
+  sampler manifest are corrected.
+- **Disposition and identity:**
+  [combined manifest](../../physical/experiments/combined-physical-results.json);
+  the [study](../pin-sampler-study.md#combined-with-clock-gating) owns
+  interpretation. `check-targeted-timing.py` now takes `--design`.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

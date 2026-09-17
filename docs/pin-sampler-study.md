@@ -184,10 +184,14 @@ is **−0.797 ns** with 67 violating endpoints (TNS −46.3 ns); typical/fast se
 violations. Utilization is 82.4% and routed wirelength 1.773 m. Every global
 route has zero overflow.
 
-**All 67 violating slow-corner paths launch from the `incoming` ports.** Of the
-1,000 worst slow-corner paths, 112 launch from `incoming` (worst −0.797 ns) and
-888 from the loader `data` port (worst **+3.380 ns**); no register-launched path
-is among them. The legacy command-split RTL under the same flow
+In the default report, which shows the worst path per endpoint, every one of the
+67 violating endpoints is reached worst from an `incoming` port: of the 1,000
+listed paths, 112 launch from `incoming` (worst −0.797 ns) and 888 from the loader
+`data` port (worst **+3.380 ns**). That report hides other launch points behind
+the worst one. The [per-family query](#launch-families) added later shows that
+register-launched paths into the same endpoints also miss, by 0.294 ns at 64
+endpoints. An earlier version of this record said no register-launched path
+violated; that was wrong. The legacy command-split RTL under the same flow
 (`rc-calibrated-01`) reached −0.153 ns with its `data` family at +0.120 ns, so two
 sequentially equivalent RTLs differ by about 0.6 ns here. That is why the
 candidate is compared with this control and not with the earlier run.
@@ -249,10 +253,32 @@ defined output-bit comparisons, with the output-corruption mutant rejected
 (`build/physical/pin-sampled-02-netlist-check/report.json`). This is zero-delay
 gate simulation with reference-X bits excluded.
 
+### Launch families
+
+`scripts/check-targeted-timing.py --design NAME` re-queries each retained
+extracted design per launch family under the unchanged constraints (slow corner,
+worst slack in ns, reported negative paths in parentheses):
+
+| Launch family | Control | Sampled `pin-sampled-02` |
+| --- | ---: | ---: |
+| `incoming` ports | −0.797 (67) | +14.354 (0) |
+| Loader `command` ports | +0.019 (0) | +0.175 (0) |
+| Loader `data` ports | +3.380 (0) | +1.996 (0) |
+| `init` / `reset` | +0.200 (0) | +0.255 (0) |
+| Registers | **−0.294 (64)** | **+0.090 (0)** |
+
+The sampler moves the `incoming` family from the worst to the least critical by
+15 ns. The register family also improves by 0.38 ns in this run, which the sampler
+cannot cause directly: its endpoints are the same cached-word flip-flops, so with
+the port family out of the way the optimizer's effort reaches them. That gain is
+within the spread seen between equivalent RTLs and should not be relied on.
+
 ### What the comparison does and does not establish
 
-- Registering `incoming` removes every violating path of the matched control and
-  costs no area; the protocol-visible price is the two-edge latency proved above.
+- Registering `incoming` removes the worst launch family of the matched control
+  and costs no area; the protocol-visible price is the two-edge latency proved
+  above. The control's register-launched paths also missed (−0.294 ns); in this
+  run they are met too, but only by 0.090 ns.
 - +0.090 ns is **not** a qualified 50 MHz result. It is one run on one host with
   no seed or placement variation, and two sequentially equivalent RTLs differed
   by about 0.6 ns under this same flow. Electrical-limit violations remain
@@ -265,6 +291,73 @@ gate simulation with reference-X bits excluded.
 [Physical manifest](../physical/experiments/pin-sampled-physical-results.json)
 pins the receipts; the [identity manifest](../physical/experiments/pin-sampled-results.json)
 is unchanged from the bytes used to prepare both designs.
+
+## Combined with clock gating
+
+Authorized 2026-09-17: the sampled RTL with `physical/experiments/combined.json`
+— calibrated estimates, width-8 [clock gating](physical-correlation-study.md#third-attempt-clock-gated-03-routes),
+62% placement density, tolerated global overflow, and hold-repair margins raised
+from 0.10/0.05 to 0.15/0.10 ns.
+
+- `combined-01` lost its Docker connection during detailed routing (exit 125): an
+  infrastructure failure, not a flow result.
+- `combined-02`, identical, reproduces those routing iterations exactly and hits
+  the one-hour cap in the 39th iteration with five spacing violations left.
+- `combined-03` resumes at detailed routing from the verified `combined-02`
+  checkpoint with a 90-minute cap for this one run. Detailed routing needs **58
+  iterations and 71 minutes** to reach zero violations (17–19 iterations for
+  ungated designs, 35 for `clock-gated-03`). All global routes end with zero
+  overflow.
+
+| Extracted metric | Sampled only `pin-sampled-02` | Gated only `clock-gated-03` (legacy RTL) | Combined `combined-03` |
+| --- | ---: | ---: | ---: |
+| Functional cell area | 732,103 µm² | 608,454 µm² | **608,058 µm²** |
+| Utilization | 81.1% | 67.4% | 67.4% |
+| Slow setup worst slack / endpoints | +0.090 ns / 0 | −0.617 ns / 16 | **−2.251 ns / 40** |
+| Typical / fast setup worst slack | +5.912 / +8.204 | +5.230 / +7.530 | +4.455 / +7.730 |
+| Worst hold slack (fast) | +0.052 ns | +0.003 ns | **+0.059 ns** |
+| Slew / capacitance / fanout violations | 4 / 1 / 17 | 11 / 0 / 18 | 30 / 0 / 29 |
+| `incoming` family | +14.354 | −0.617 | +14.496 |
+| `command` family | +0.175 | −0.327 | −2.251 |
+| `data` family | +1.996 | +0.997 | +0.116 |
+| `init`/`reset` family | +0.255 | −0.545 | −2.053 |
+| Register family (negative paths) | +0.090 (0) | −0.058 (1) | **−2.054 (38)** |
+
+The area saving and the added hold margin carry over. Timing does not: this run
+is about 2 ns worse than either ingredient. It is not a port-budget artifact —
+the register-launched family alone misses by 2.054 ns. Every family's worst path
+ends at the same place, the integrated clock gate of `r_cached_word` (the other
+violating endpoints are core state registers reached through `loader_commit` and
+core reset).
+
+| Worst register-launched path | `pin-sampled-02` | `clock-gated-03` | `combined-03` |
+| --- | ---: | ---: | ---: |
+| Endpoint | cached-word flip-flop | cached-word clock gate | cached-word clock gate |
+| Launch clock arrival | 1.449 ns | 1.166 ns | 1.187 ns |
+| Capture clock arrival | 1.090 ns | 0.488 ns | 0.541 ns |
+| Setup requirement | 0.201 ns | 0.129 ns | 0.243 ns |
+| Path delay (logic + buffers) | 19.155 (12.634 + 6.063) | 19.051 (11.282 + 7.434) | **20.964 (14.171 + 6.094)** |
+| Slack | +0.090 ns | −0.058 ns | −2.054 ns |
+
+Two effects are separable. **Gating the cached word moves the endpoint of the
+design's critical loop up the clock tree:** the clock reaches the gate 0.65–0.68 ns
+before it reaches the launching flip-flops, against 0.36 ns of adverse skew at an
+ordinary flip-flop endpoint — a structural cost of about 0.3 ns, for 63 flip-flops'
+worth of multiplexers and hold cells (about 0.4% of area). Second, this run's path
+delay is 1.8 ns longer than in either other run. The three runs differ in RTL
+emitter (legacy versus composed), hold margins and placement, so that part is
+not attributed; it is three times the spread seen so far between equivalent RTLs.
+
+The routed netlist passes the implemented-netlist regression with pin-shifted
+extended vectors (29,062 edges, 4,766,090 comparisons, output mutant rejected),
+and all 134 stuck clock-gate-enable mutants are rejected.
+
+Consequences for the next experiment, none of them measured: keep the cached word
+out of clock gating (the pinned flow only offers a minimum width, and the cached
+word is the widest group, so this needs a synthesis-script or attribute hook);
+or measure the proved [cache-enable](cache-enable-study.md) variant behind the
+sampler, since it simplifies exactly the decision that now lands on the gate.
+[Combined manifest](../physical/experiments/combined-physical-results.json).
 
 ## Reproduction
 

@@ -295,6 +295,13 @@ area 455,658 µm² with 582 gates, against 505,878 µm² (67 gates) and 578,449 
 ungated. It has not been placed, routed or checked; 582 gated branches would
 stress clock-tree synthesis and hold.
 
+Per-family extracted STA (`check-targeted-timing.py`) for this run, slow corner:
+`incoming` −0.617 ns, `init`/`reset` −0.545, `command` −0.327, registers −0.058
+(one path), `data` +0.997. Every worst path ends at the clock gate of
+`r_cached_word`, where the clock arrives 0.68 ns before it reaches the launching
+flip-flops. The [combined run](pin-sampler-study.md#combined-with-clock-gating)
+with the pin sampler shows the same endpoint missing by 2 ns.
+
 [Physical manifest](../physical/experiments/clock-gated-physical-results.json)
 pins the receipts for the control, both failed attempts and this run.
 
