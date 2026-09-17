@@ -588,6 +588,23 @@ external interface integration retain their separate contracts.
   instead. An empty-plan control first failed on an invalid `select -none`
   combination and is retained as `build/gated/none-01`.
 
+## 2026-09-17: input latency as a contract parameter
+
+- **Scope:** Lean definitions, theorems and one executable suite. No CAD tool.
+- **Result:** `Pinwheel/Latency.lean`, `Hardware/InputLatency.lean`,
+  `SPI/Latency.lean`, `Compile/SPILatency.lean`, `I2C/Latency.lean` and the UART
+  corollary build with warnings as errors and standard axioms.
+  `test/Latency.lean`: 600 SPI transfers correct inside `d + tco ≤ halfCycles`
+  and `0xAA` misread one cycle beyond; 58 closed-loop I²C runs — the specified
+  controller reports `busFault` after a complete wire transaction for
+  `1 ≤ d ≤ phaseCycles`, the revised controller succeeds (also stretched, and with
+  both NACKs), `d = phaseCycles + 1` faults before any clock pulse, wait budget
+  `d` times out and `d + 1` succeeds.
+- **Disposition:** the [study](../input-latency.md) owns the contracts and the
+  open I²C recompilation. The premature-high hazard was found by the closed-loop
+  suite (a `d = 3`, two-cycle-phase case faulted with no clock pulses) and then
+  stated as a theorem.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

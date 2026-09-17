@@ -208,6 +208,26 @@ storage register observed, and rejects every stuck-enable mutant
 delay unchanged; only 64 bits then recirculate, against 6,172, which predicts a
 further large fall in hold-repair area that no routed run has yet measured.
 
+## Input latency (2026-09-17)
+
+[Input latency](../input-latency.md) makes the sampler's delay a parameter of the
+pin-level contracts. `Latency.delayed` and a bridge theorem tie the structural
+pipeline to cycle-indexed histories; because protocol and compiler theorems hold
+for every input history, pin-level statements follow by substitution. **UART**:
+unchanged up to age bounds two RX ticks later. **SPI**: samples are taken `d`
+cycles before each rising edge, so a mode-0 peripheral with output delay `tco` is
+read correctly whenever **`d + tco ≤ halfCycles`**, proved for the reference and the
+compiled program and tight in execution; with the sampler that is SCK at most one
+sixth of the system clock. **I²C**: the write controller observes its own drive,
+and three hazards hold for every target — a false `busFault` at STOP for any
+`d ≥ 1`, `d` units of wait budget spent per clock rise, and a premature high phase
+when `d > phaseCycles`. A one-transition revision (`tolerantStep`) removes the
+first; closed-loop executions confirm the specified controller faults after a
+complete, correct wire transaction and the revised one succeeds for
+`d ≤ phaseCycles`, `d < waitCycles`. The reactive compiler and its proofs still
+implement the unrevised controller, so **I²C behind the sampler currently reports
+bus faults**; the register-read controller has the same STOP guard.
+
 ## Next discriminators
 
 0. Screen structural questions with `check-structure.py` before any mapped or
@@ -233,7 +253,10 @@ further large fall in hold-repair area that no routed run has yet measured.
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. Resolve the actual wrapper/I/O budget and loading transport, then compose the
+3. Recompile and re-prove I²C (write and register read) against the revised STOP
+   handling in [input latency](../input-latency.md), and decide whether SPI keeps
+   the `d + tco ≤ halfCycles` rate condition or the compiler captures `d` cycles
+   later. Resolve the actual wrapper/I/O budget and loading transport, then compose the
    [external timing contract](../external-interface.md) with protocol assumptions.
    Synchronizer delay must appear in those bounds; no asynchronous or analog
    detection guarantee follows from the digital two-edge theorem.

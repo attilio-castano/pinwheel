@@ -1,4 +1,5 @@
 import Pinwheel.UART.StreamLink
+import Pinwheel.Latency
 
 /-! A registered input pipeline in front of a receiver. Every stage delays each
 digital observation by one RX tick and leaves the observation-age spread
@@ -69,6 +70,15 @@ theorem pipelined_observe (t : Timing) (b : Latency) (safe : Safe t b) (source :
   · rw [if_neg draining]
     have split : cycle = cycle - stages + stages := by omega
     rw [split, observe_pipeline, ← split]
+
+/-- The same statement in the shared vocabulary: what a receiver consumes behind
+`stages` idle-high registers is an ordinary observation history with later age. -/
+theorem delayed_observe (t : Timing) (b : Latency) (safe : Safe t b) (source : Nat → Bool)
+    (age : Nat → Nat) (within : b.Contains age) (stages : Nat) :
+    Pinwheel.Latency.delayed stages true (observe t source age) =
+      observe t source (pipelineAge t stages age) := by
+  funext cycle
+  exact pipelined_observe t b safe source age within stages cycle
 
 end Pinwheel.UART.Link
 

@@ -29,6 +29,10 @@ Physical integration must separately establish the synchronizer implementation,
 clock/reset release, input timing assumptions, and electrical behavior. A fixed
 two-edge digital delay is not an unconditional analog detection-time bound.
 
+[Input latency](input-latency.md) now carries this delay through each protocol's
+contract: UART bounds shift, SPI gains a rate condition, and the I²C controller as
+specified reports a false bus fault and needs a small revision.
+
 Protocol bounds must account for this delay. For example, a wait with four
 remaining core observation opportunities has fewer opportunities to see a
 new package event once the input pipeline is included. Recheck receive sampling,

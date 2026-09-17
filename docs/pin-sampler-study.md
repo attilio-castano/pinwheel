@@ -98,10 +98,10 @@ program on explicit two-stage pipelined histories under the delayed bounds, and
 rejects a one-stage age claim.
 
 Not proved: anything about asynchronous arrival, metastability resolution,
-thresholds, or that a physical flip-flop pair meets an age bound; and no bridge
-theorem yet connects `PinSampler.delayed` on loader-machine input lists to the
-`Nat → Bool` histories of the UART link model. I²C stretching/timeout contracts
-have not been rechecked against the added two edges.
+thresholds, or that a physical flip-flop pair meets an age bound. The bridge from
+`PinSampler.delayed` to cycle-indexed histories, the SPI rate condition and the
+I²C echo hazards that the added two edges cause are in
+[input latency](input-latency.md).
 
 ## Emitted artifact
 
