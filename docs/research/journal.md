@@ -448,6 +448,29 @@ external interface integration retain their separate contracts.
   clock-tree and hold repair) stands; routability is unresolved. See the
   [study](../physical-correlation-study.md).
 
+## 2026-09-17: pin-sampler proofs, artifact checks and physical attempts
+
+- **Scope:** Lean wrapper/refinement work, emitted-artifact checks, and bounded
+  physical runs under the user's authorization to carry the input pipeline into
+  the physical design (four CPUs, 6 GiB, one-hour cap each, calibrated flow).
+- **Proof/artifact result:** `Netlist.extend`, pair traces, `PinSampler.trace_eq`,
+  `Sampled.trace_correct`/`initialized_trace`/`reference_registered` and the UART
+  `Safe.delayed`/`pipelined_observe` lemmas build with warnings as errors.
+  Foundation gate `build/validation/pin-sampler-01/report.json`: 142 modules,
+  10,927 declarations / 5,683 theorems, standard axioms only, 25 suites,
+  1,093 s. `build/sampled/cs-02/report.json` (re-run as `cs-03` on final sources
+  with identical artifacts): inner RTL identical to the read-back-proved control
+  `318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764`; sampled RTL
+  `3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1`; 6,319 / 6,313
+  equivalence points; 28,165 oracle edges; four rejections.
+- **Physical result so far:** `composed-control-01` exits 0 with slow setup
+  −0.797 ns, all 67 violating paths launched from `incoming` ports and the next
+  family at +3.380 ns. `pin-sampled-01` exits 2 at the first global route with
+  overflow 1 on Metal3. `pin-sampled-02` retries with `GRT_ALLOW_CONGESTION`.
+- **Disposition:** the [study](../pin-sampler-study.md) owns measurements and the
+  trust boundary; the identity manifest is
+  `physical/experiments/pin-sampled-results.json`. No default promotion.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

@@ -113,7 +113,7 @@ def main():
                "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING",
                "LAYERS_RC", "SIGNAL_WIRE_RC_LAYERS",
                "SYNTH_CLOCKGATE_MIN_WIDTH", "SYNTH_CLOCKGATE_POSEDGE_ICG",
-               "PL_TARGET_DENSITY_PCT"}
+               "PL_TARGET_DENSITY_PCT", "GRT_ALLOW_CONGESTION"}
     if not isinstance(overrides, dict) or set(overrides) - allowed:
         raise RuntimeError("Overrides must contain only the documented implementation-flow controls")
     config.update(overrides)

@@ -86,8 +86,10 @@ host-command and pin histories.
    apply unchanged to those delayed bounds. The idle precondition is an explicit
    obligation on when a receiver program is started.
 
-The environment audit passes with standard axioms only (10,902 declarations,
-5,664 theorems on this branch). `test/PinSampler.lean` executes a small wrapped
+The portable foundation gate `build/validation/pin-sampler-01/report.json` passes
+142 modules, 10,927 declarations / 5,683 theorems with standard axioms only, the
+injected-axiom rejection and all 25 executable suites (1,093 s on this host, run
+alongside a physical flow). `test/PinSampler.lean` executes a small wrapped
 netlist against hand-computed registered and combinational observations,
 checks the pair-trace equality, shows that a held input differs only in
 combinational post-edge observations, and rejects a one-stage pipeline.
@@ -161,10 +163,49 @@ left open. Technology-mapped equivalence remains open as before.
 
 ## Physical comparison
 
-Pending: matched runs of the composed command-split control and the sampled
-candidate under the [calibrated flow](physical-correlation-study.md), unchanged
-20 ns clock, I/O constraints and diagnostic floorplan, stopping after final
-extracted timing.
+All runs use the [calibrated flow](physical-correlation-study.md), the unchanged
+20 ns clock, I/O constraints and diagnostic 6×4 floorplan, four CPUs, 6 GiB, a
+one-hour cap, no network, and stop after `OpenROAD.STAPostPNR`. Magic DRC, LVS and
+later layout checks are deliberately not run: these are extracted-timing
+comparisons on routed designs, not layout sign-off. Each prepared design lives in
+its own directory under `build/physical/`, so earlier evidence is not overwritten.
+
+### Control: `composed-control-01`
+
+The composed command-split RTL (`31893069…c6c6f764`) exits 0. Extracted slow setup
+is **−0.797 ns** with 67 violating endpoints (TNS −46.3 ns); typical/fast setup
++5.277 / +8.352 ns; worst hold +0.035 ns; one capacitance and 19 fanout
+violations. Utilization is 82.4% and routed wirelength 1.773 m. Every global
+route has zero overflow.
+
+**All 67 violating slow-corner paths launch from the `incoming` ports.** Of the
+1,000 worst slow-corner paths, 112 launch from `incoming` (worst −0.797 ns) and
+888 from the loader `data` port (worst **+3.380 ns**); no register-launched path
+is among them. The legacy command-split RTL under the same flow
+(`rc-calibrated-01`) reached −0.153 ns with its `data` family at +0.120 ns, so two
+sequentially equivalent RTLs differ by about 0.6 ns here. That is why the
+candidate is compared with this control and not with the earlier run.
+
+### Candidate, first attempt: `pin-sampled-01` (failed)
+
+The sampled RTL fails at the first global route (`OpenROAD.GlobalRouting`,
+exit 2, `GRT-0116`) with a total overflow of **1**, on Metal3 at 69.7% of its
+30%-derated capacity; the tool's own hint is to reduce the adjustment from 30% to
+29%. There is no routed design. Before routing the candidate is smaller than the
+control: 727,420 versus 739,617 µm² after post-CTS repair, with 48 versus 115
+setup buffers and 356 versus 589 upsizes, consistent with the `incoming` family
+no longer needing repair. Together with the
+[clock-gated attempts](physical-correlation-study.md#retry-at-lower-placement-density-clock-gated-02-failed-later)
+this places the diagnostic floorplan at the edge of horizontal (Metal3) global
+routability: functionally trivial changes decide whether the hard congestion gate
+passes.
+
+### Candidate, second attempt: `pin-sampled-02`
+
+One change: `GRT_ALLOW_CONGESTION` (`physical/experiments/rc-calibrated-tolerant.json`)
+lets global routing hand marginal overflow to the detailed router, while the
+detailed-routing DRC gate still fails the run on any remaining violation. The flag
+is inert for the control, whose global routes never overflow. Result pending.
 
 ## Reproduction
 

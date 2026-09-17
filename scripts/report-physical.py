@@ -27,7 +27,9 @@ def main():
             "container_termination", {}).get("status") not in {"stopped", "absent"}:
         raise RuntimeError("Timed-out container termination is unconfirmed; "
                            "artifacts may still be changing, so no final result can be collected")
-    run = BASE / "core/runs" / args.tag
+    # Receipts written before designs were selectable describe the original one.
+    design = BASE / invocation.get("design", "core")
+    run = design / "runs" / args.tag
     states = sorted(run.glob("[0-9]*-*/state_out.json"), key=lambda p: int(p.parent.name.split("-", 1)[0]))
     if not states:
         raise RuntimeError("No completed physical-flow steps")
@@ -52,7 +54,7 @@ def main():
             for v in value:
                 collect(v)
         elif isinstance(value, str) and value.startswith("/work/core/"):
-            path = BASE / "core" / value.removeprefix("/work/core/")
+            path = design / value.removeprefix("/work/core/")
             if path.is_file():
                 artifacts[str(path.relative_to(ROOT))] = sha(path)
 
@@ -72,6 +74,7 @@ def main():
     report = {
         "tag": args.tag, "flow_exit_code": invocation["exit_code"],
         "variant": invocation.get("variant", "small-dense-cached"),
+        "design": invocation.get("design", "core"),
         "timeout_seconds": invocation.get("timeout_seconds"),
         "stop_reason": invocation.get("stop_reason"),
         "container_termination": invocation.get("container_termination"),
