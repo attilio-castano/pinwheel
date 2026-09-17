@@ -71,6 +71,7 @@ For a new checkout, the relevant dependency chain is:
 | Composed dense cached backend | `check-backend.py --tag NAME` builds the native emitter and loader fixtures; pinned hardware tools and technology libraries required | [Composed backend](hardware-closure.md#composed-backend) |
 | Program-bank selection variants | `check-backend-readback.py --variant command-split` or `--variant late-bank`, followed by `check-bank-select.py` with the exact proof receipt | [Bank-selection study](bank-selection-study.md) |
 | Cache-enable variant | `check-backend-readback.py --variant enable-split`, followed by `check-bank-select.py` and exact-cache regression | [Cache-enable study](cache-enable-study.md) |
+| Pin-sampled backend | `check-sampled.py --tag NAME --variant command-split`: inner emission identical to the read-back-proved RTL, reference-pipeline equivalence, wrong-depth rejections, pin-shifted independent oracle and mapping | [Pin-sampler study](pin-sampler-study.md) |
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
