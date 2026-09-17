@@ -70,6 +70,8 @@ def stop_container(name, log):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag", default="initial")
+    parser.add_argument("--design", default="core",
+                        help="Prepared design under build/physical; each holds one frozen RTL identity")
     parser.add_argument("--to", help="Optional LibreLane stopping step; partial runs never establish final fit")
     parser.add_argument("--from-step", help="Resume at a named LibreLane step")
     parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
@@ -86,28 +88,32 @@ def main():
         parser.error("--state and --checkpoint-manifest must be supplied together")
     if not args.tag.replace("-", "").replace("_", "").isalnum():
         parser.error("tag must contain only letters, numbers, hyphens, or underscores")
+    if not args.design.replace("-", "").replace("_", "").isalnum() or args.design == "pdk":
+        parser.error("design must contain only letters, numbers, hyphens, or underscores")
+    design = BASE / args.design
     receipt_path = BASE / (args.tag + "-invocation.json")
-    snapshot = BASE / "core/experiments" / args.tag
-    if receipt_path.exists() or snapshot.exists() or (BASE / "core/runs" / args.tag).exists():
+    snapshot = design / "experiments" / args.tag
+    if receipt_path.exists() or snapshot.exists() or (design / "runs" / args.tag).exists():
         raise RuntimeError("Choose a new tag to preserve earlier run evidence")
     # Reject changed checkpoints before Docker inspection or run-directory creation.
     if args.state:
-        physical_checkpoint.verify(args.state, args.checkpoint_manifest, BASE / "core")
+        physical_checkpoint.verify(args.state, args.checkpoint_manifest, design)
     lock = json.loads((ROOT / "tools/physical-toolchain.json").read_text())
-    inputs = json.loads((BASE / "core/inputs.json").read_text())
+    inputs = json.loads((design / "inputs.json").read_text())
     for name in ["core.json", "core.sdc"]:
-        if sha(BASE / "core" / name) != sha(ROOT / "physical" / name):
+        if sha(design / name) != sha(ROOT / "physical" / name):
             raise RuntimeError("Physical inputs are stale; rerun prepare-physical.py")
-    if sha(BASE / "core/design.sv") != inputs["rtl_sha256"]:
+    if sha(design / "design.sv") != inputs["rtl_sha256"]:
         raise RuntimeError("Prepared RTL changed")
-    config = json.loads((BASE / "core/core.json").read_text())
+    config = json.loads((design / "core.json").read_text())
     overrides = json.loads(args.overrides.read_text()) if args.overrides else {}
     # Estimation controls change what the optimizer believes about wires; final
     # timing still comes from extraction of the routed layout.
     allowed = {"MAX_FANOUT_CONSTRAINT", "CTS_SINK_CLUSTERING_SIZE",
                "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING",
                "LAYERS_RC", "SIGNAL_WIRE_RC_LAYERS",
-               "SYNTH_CLOCKGATE_MIN_WIDTH", "SYNTH_CLOCKGATE_POSEDGE_ICG"}
+               "SYNTH_CLOCKGATE_MIN_WIDTH", "SYNTH_CLOCKGATE_POSEDGE_ICG",
+               "PL_TARGET_DENSITY_PCT"}
     if not isinstance(overrides, dict) or set(overrides) - allowed:
         raise RuntimeError("Overrides must contain only the documented implementation-flow controls")
     config.update(overrides)
@@ -135,21 +141,21 @@ def main():
         if not actual.is_symlink() or os.readlink(actual) != target:
             raise RuntimeError(f"Modified PDK symlink: {path}")
     snapshot.mkdir(parents=True)
-    (BASE / "core/runs" / args.tag).mkdir(parents=True)
+    (design / "runs" / args.tag).mkdir(parents=True)
     for name in ["design.sv", "core.json", "core.sdc", "inputs.json"]:
-        shutil.copyfile(BASE / "core" / name, snapshot / name)
+        shutil.copyfile(design / name, snapshot / name)
     (snapshot / "core.json").write_text(json.dumps(config, indent=2) + "\n")
     (snapshot / "overrides.json").write_text(json.dumps(overrides, indent=2) + "\n")
     checkpoint_receipt = None
     checkpoint_mount = []
     if args.state:
         checkpoint_receipt = physical_checkpoint.snapshot(
-            args.state, args.checkpoint_manifest, snapshot / "checkpoint", BASE / "core")
+            args.state, args.checkpoint_manifest, snapshot / "checkpoint", design)
         checkpoint_mount = ["--mount", f"type=bind,source={snapshot / 'checkpoint'},target={checkpoint_receipt['mount_path']},readonly"]
     container_name = "pinwheel-" + args.tag
     command = [
         "docker", "run", "--rm", "--name", container_name, "--network", "none", "--cpus", "4", "--memory", "6g",
-        "--mount", f"type=bind,source={BASE / 'core'},target=/work/core",
+        "--mount", f"type=bind,source={design},target=/work/core",
         "--mount", f"type=bind,source={BASE / 'pdk'},target=/work/pdk,readonly",
         *checkpoint_mount,
         "--workdir", "/work/core", image_id,
@@ -167,16 +173,17 @@ def main():
         "resume_step": args.from_step,
         "checkpoint_sha256": checkpoint_receipt["source_state_sha256"] if checkpoint_receipt else None,
         "checkpoint": checkpoint_receipt,
-        "inputs_sha256": sha(BASE / "core/inputs.json"),
+        "inputs_sha256": sha(design / "inputs.json"),
         "config_sha256": sha(snapshot / "core.json"),
-        "base_config_sha256": sha(BASE / "core/core.json"),
+        "base_config_sha256": sha(design / "core.json"),
         "overrides": overrides,
         "runner_sha256": sha(Path(__file__).resolve()),
         "checkpoint_helper_sha256": sha(Path(physical_checkpoint.__file__).resolve()),
-        "sdc_sha256": sha(BASE / "core/core.sdc"),
+        "sdc_sha256": sha(design / "core.sdc"),
         "pdk_receipt_sha256": sha(BASE / "pdk/installed.json"),
         "boundary": inputs["boundary"],
         "variant": inputs.get("variant", "small-dense-cached"),
+        "design": args.design,
         "timeout_seconds": args.timeout_seconds,
     }
     write_receipt(receipt_path, receipt)

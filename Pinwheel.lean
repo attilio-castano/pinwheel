@@ -16,6 +16,7 @@ import Pinwheel.Compile.UART
 import Pinwheel.Compile.UARTLink
 import Pinwheel.Compile.UARTRxStream
 import Pinwheel.Compile.UARTStreamLink
+import Pinwheel.UART.LinkPipeline
 import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
@@ -32,6 +33,7 @@ import Pinwheel.Hardware.Storage.BackendReadback
 import Pinwheel.Hardware.Storage.BankSelect
 import Pinwheel.Hardware.Storage.BankSelectReadback
 import Pinwheel.Hardware.Storage.CacheEnable
+import Pinwheel.Hardware.Storage.SampledBackend
 import Pinwheel.Hardware.Readback.Boolean
 import Pinwheel.Hardware.Reactive.FetchChoice
 import Pinwheel.Hardware.UARTRx

@@ -1,0 +1,51 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/pin-sampler-study.md",
+  "disposition": "Experimental variant; validation recorded below, physical comparison pending.",
+  "control": {
+    "variant": "command-split",
+    "rtl_sha256": "318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764",
+    "identity": "Byte-identical to the composed command-split control in bank-selection-results.json"
+  },
+  "candidate": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "mlir_sha256": "1180c4b1903bb5d8a40dee736befeb51e4fc8fe04e8f1a10af99a3fbdcfb1e1e",
+    "register_fields": 609,
+    "register_bits": 6237
+  },
+  "fixed_contract": "Ports, module name, host-port timing and every inner expression are unchanged. Engine-side incoming is the second of two pipeline registers that never reset.",
+  "proofs_and_checks": {
+    "lean": "Netlist.extend, PinSampler.trace_eq and Sampled.trace_correct/initialized_trace: every pre/post-edge observation equals the reference machine's on the delayed pin history, for arbitrary pipeline contents.",
+    "reference_equivalence_points": 6319,
+    "generic_gate_equivalence_points": 6313,
+    "rejected_pipelines": [
+      "one-stage",
+      "bypass"
+    ],
+    "independent_regression": "Passed 28165 atomic loader edges and 17501916 physical storage observations",
+    "rejected_traces": [
+      "sampled RTL with unshifted pins",
+      "inner RTL with shifted pins"
+    ]
+  },
+  "mapping": {
+    "typical": {
+      "standard_cell_area_um2": 547995.1806,
+      "abc_combinational_delay_ps": 6802.53,
+      "flip_flops": 6236,
+      "cells": 27306
+    },
+    "slow": {
+      "standard_cell_area_um2": 548114.931,
+      "abc_combinational_delay_ps": 9944.97,
+      "flip_flops": 6236,
+      "cells": 27306
+    }
+  },
+  "receipts": {
+    "check": "build/sampled/cs-02/report.json",
+    "check_sha256": "0f2e9aa8950c3f080e7e09424b01ab7751ab3e246cba44341c6beec883f62f73"
+  },
+  "boundary": "No direct Lean read-back of the sampled RTL, technology-mapped equivalence, metastability, electrical or routed-timing claim."
+}

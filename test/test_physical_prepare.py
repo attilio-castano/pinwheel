@@ -28,10 +28,11 @@ class PrepareTests(unittest.TestCase):
         self.digest = hashlib.sha256(self.rtl.read_bytes()).hexdigest()
         (self.root / "physical/experiments/command-split-results.json").write_text(json.dumps({"rtl_sha256": self.digest}))
 
-    def invoke(self):
-        with patch.object(prepare, "ROOT", self.root), patch.object(prepare, "OUT", self.out), \
+    def invoke(self, arguments=None):
+        arguments = arguments or ["--validated-command-split", str(self.rtl)]
+        with patch.object(prepare, "ROOT", self.root), patch.object(prepare, "BASE", self.out.parent), \
                 patch.object(prepare, "__file__", str(self.root / "scripts/prepare-physical.py")), \
-                patch.object(sys, "argv", ["prepare", "--validated-command-split", str(self.rtl)]), \
+                patch.object(sys, "argv", ["prepare", *arguments]), \
                 patch.object(prepare.subprocess, "run") as cad:
             prepare.main()
             cad.assert_not_called()
@@ -56,6 +57,28 @@ class PrepareTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Preserve"):
             self.invoke()
         self.assertEqual((self.out / "inputs.json").read_text(), "preserve")
+
+    def test_named_manifest_role_prepares_a_separate_design(self):
+        manifest = self.root / "physical/experiments/pin-sampled-results.json"
+        manifest.write_text(json.dumps({"candidate": {"rtl_sha256": self.digest, "variant": "pin-sampled"}}))
+        self.invoke()
+        arguments = ["--validated-rtl", str(self.rtl), "--manifest", str(manifest),
+                     "--role", "candidate", "--design", "sampled"]
+        self.invoke(arguments)
+        report = json.loads((self.out.parent / "sampled/inputs.json").read_text())
+        self.assertEqual((report["variant"], report["manifest_role"]), ("pin-sampled", "candidate"))
+        self.assertEqual(json.loads((self.out / "inputs.json").read_text())["variant"], "command-split")
+        with self.assertRaisesRegex(RuntimeError, "Preserve"):
+            self.invoke(arguments)
+
+    def test_untracked_manifest_and_partial_options_are_rejected(self):
+        outside = self.root / "manifest.json"
+        outside.write_text(json.dumps({"rtl_sha256": self.digest}))
+        with self.assertRaisesRegex(RuntimeError, "tracked result"):
+            self.invoke(["--validated-rtl", str(self.rtl), "--manifest", str(outside), "--design", "other"])
+        with self.assertRaises(SystemExit):
+            self.invoke(["--validated-rtl", str(self.rtl), "--design", "other"])
+        self.assertFalse((self.out.parent / "other").exists())
 
 
 if __name__ == "__main__":

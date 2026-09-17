@@ -435,6 +435,19 @@ external interface integration retain their separate contracts.
 - **Disposition:** retain the failed evidence. A retry needs its own allocation
   and one stated change; see the [study](../physical-correlation-study.md).
 
+## 2026-09-17: clock-gated retry `clock-gated-02` (failed)
+
+- **Scope:** one authorized retry; only `PL_TARGET_DENSITY_PCT` 70 → 62 added to
+  the clock-gated overlay. Same limits, RTL, constraints and floorplan.
+- **Result:** the first three global routes pass with zero overflow. Exit 2 at
+  `OpenROAD.ResizerTimingPostGRT` (`GRT-0116`): after antenna repair the global
+  route overflows by 3 on Metal3 (70.0% of derated capacity). No routed design
+  or final timing.
+- **Disposition:** retain the failed evidence under
+  `build/physical/core/runs/clock-gated-02/`. The area result (−18.5% after
+  clock-tree and hold repair) stands; routability is unresolved. See the
+  [study](../physical-correlation-study.md).
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

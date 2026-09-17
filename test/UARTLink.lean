@@ -1,4 +1,5 @@
 import Pinwheel.Compile.UARTLink
+import Pinwheel.UART.LinkPipeline
 
 open Pinwheel
 open UART.Link
@@ -147,6 +148,31 @@ private def counterexamples : IO Unit := do
   let (works, _) ← simulate conservative (.fixed 0) 0xa6 (fun _ => 0) false
   ensure (works == some (.byte 0xa6)) "sufficient-bound example did not recover byte"
 
+/-- Behind two input registers that hold idle at receiver start, the engine-side
+history is an ordinary link history whose age bounds are two RX ticks later. -/
+private def pipelined : IO Nat := do
+  let mut frames := 0
+  for (txCycles, rxCycles, txTick, rxTick) in [(8, 8, 97, 100), (16, 16, 103, 100), (8, 16, 200, 100)] do
+    for phase in [0, 1, rxTick - 1] do
+      let t ← timing txCycles rxCycles txTick rxTick (3 * rxTick + 1) phase
+      let b := bounds 20 40
+      let later := b.delayed (2 * t.rxTick)
+      ensure (decide (Safe t b) && decide (Safe t later)) "pipeline delay left the sufficient bounds"
+      let trace ← txTrace t 0x53
+      let source := fun cycle => trace[cycle]?.getD true
+      for mode in [:4] do
+        let age := ageAt b mode
+        let mut distinguished := false
+        for cycle in [:completion t (firstEdge t later.latest) + 3] do
+          let engine := if cycle < 2 then true else observe t source age (cycle - 2)
+          ensure (engine == observe t source (pipelineAge t 2 age) cycle) s!"pipelined history at {cycle}"
+          if engine != observe t source (pipelineAge t 1 age) cycle then distinguished := true
+        ensure distinguished "one-stage age claim matched a two-stage pipeline"
+        for value in [0, 0x53, 0xa6, 255] do
+          let _ ← simulate t later (BitVec.ofNat 8 value) (pipelineAge t 2 age)
+          frames := frames + 1
+  pure frames
+
 def main : IO Unit := do
   IO.FS.createDirAll "build/uart-link"
   let mut idealFrames := 0
@@ -189,4 +215,6 @@ def main : IO Unit := do
   IO.FS.writeFile "build/uart-link/report.json"
     s!"\{\"ideal_frames\":{idealFrames},\"varied_frames\":{variedFrames},\"rx_edges\":{edges},\"safe_timings\":{accepted},\"outside_sufficient_bounds\":{excluded},\"failing_assumption_examples\":4,\"successful_outside_bounds\":1,\"boundary\":\"Lean TX/RX and compiled program instances; integer clocks and digital observation age; no RTL or physical sampler validation\"}\n"
   IO.println s!"UART link varied clocks/delay: {variedFrames} frames; {edges} total RX edges."
+  let pipelineFrames ← pipelined
+  IO.println s!"Two-register input pipeline: {pipelineFrames} frames delivered under bounds delayed by two RX ticks."
   IO.println s!"Timing sweep: {accepted} safe, {excluded} outside sufficient bounds; four failing assumptions and one successful outside-bound example."

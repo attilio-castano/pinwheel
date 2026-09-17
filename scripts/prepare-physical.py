@@ -8,7 +8,7 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "build/physical/core"
+BASE = ROOT / "build/physical"
 
 
 def sha(path):
@@ -19,9 +19,25 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--validated-command-split", type=Path,
                         help="Freeze the exact RTL identified by the committed command-split result")
+    parser.add_argument("--validated-rtl", type=Path,
+                        help="Freeze the exact RTL identified by --manifest (and --role)")
+    parser.add_argument("--manifest", type=Path, help="Committed result manifest naming rtl_sha256 and variant")
+    parser.add_argument("--role", help="Manifest entry holding rtl_sha256, such as control or candidate")
+    parser.add_argument("--design", default="core",
+                        help="Prepared design under build/physical; each holds one frozen RTL identity")
     args = parser.parse_args()
-    manifest = ROOT / "physical/experiments/command-split-results.json"
+    if not args.design.replace("-", "").replace("_", "").isalnum() or args.design == "pdk":
+        parser.error("design must contain only letters, numbers, hyphens, or underscores")
+    if bool(args.validated_rtl) != bool(args.manifest) or (args.validated_rtl and args.validated_command_split):
+        parser.error("Use --validated-rtl with --manifest, or --validated-command-split alone")
+    OUT = BASE / args.design
+    manifest = (args.manifest.resolve() if args.manifest
+                else ROOT / "physical/experiments/command-split-results.json")
+    if not manifest.is_relative_to(ROOT / "physical/experiments"):
+        raise RuntimeError("The manifest must be a tracked result under physical/experiments")
+    args.validated_command_split = args.validated_rtl or args.validated_command_split
     candidate = json.loads(manifest.read_text()) if args.validated_command_split else None
+    if candidate and args.role: candidate = candidate[args.role]
     if candidate and sha(args.validated_command_split) != candidate["rtl_sha256"]:
         raise RuntimeError("Candidate RTL differs from the committed validated artifact")
     if candidate and (OUT / "inputs.json").exists():
@@ -51,8 +67,9 @@ def main():
     report = {
         "rtl_sha256": sha(OUT / "design.sv"),
         "storage_receipt_sha256": sha(receipt_path),
-        "variant": "command-split" if candidate else "small-dense-cached",
-        "generation": "Frozen artifact from committed command-split evidence" if candidate else "Current source emission",
+        "variant": candidate.get("variant", "command-split") if candidate else "small-dense-cached",
+        "manifest_role": args.role,
+        "generation": "Frozen artifact from committed evidence" if candidate else "Current source emission",
         "validation_receipt": str(receipt_path.relative_to(ROOT)),
         "source_sha256": {str(p.relative_to(ROOT)): sha(p) for p in sorted(sources)},
         "boundary": "Full observable core with synchronous internal word-loader ports. 6x4-sized core rectangle; no Tiny Tapeout pin wrapper, external serial loader, or 8x4 submission-fit claim.",

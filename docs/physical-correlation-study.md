@@ -221,6 +221,27 @@ The failed run is retained under `build/physical/core/runs/clock-gated-01/` with
 `build/physical/clock-gated-01-invocation.json` and its log. The gated netlist has
 had no functional regression or gate equivalence; none is claimed.
 
+### Retry at lower placement density (`clock-gated-02`, failed later)
+
+Authorized as one retry with one change: `PL_TARGET_DENSITY_PCT` 70 → 62
+(`physical/experiments/clock-gated-spread.json`). Spreading removes the first
+failure: three global routes complete with zero overflow at about 2.23 m and
+Metal3 at 67% of its derated capacity. The run then **fails at step 44**
+(`OpenROAD.ResizerTimingPostGRT`, exit 2, `GRT-0116`): after post-route design
+repair and antenna repair (56 jumpers, 118 diodes), the next global route is
+2.384 m with Metal3 at 70.0% and a total overflow of **3**. No detailed route,
+extraction or final timing exists. Post-CTS-repair area and utilization repeat
+the first attempt (604,163 µm², 67.0%).
+
+Metal3 is the only horizontal signal layer under the template's Metal4 routing
+ceiling, and the diagnostic rectangle is 1.8 times wider than tall. The calibrated
+control also runs Metal3 at 72.7% of derated capacity, without overflow. The
+official 8×4 outline is wider still, so horizontal routing capacity, not cell
+area, may be the binding fit constraint; that is a hypothesis for the wrapper
+floorplan, not a measurement. A third attempt would need its own allocation and
+one stated change, such as allowing the detailed router to resolve marginal
+global overflow while keeping the final routing-DRC gate.
+
 ## Reproduction
 
 ```sh

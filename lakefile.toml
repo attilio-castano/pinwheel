@@ -15,3 +15,7 @@ root = "test.Backend"
 [[lean_exe]]
 name = "bank_select_emit"
 root = "test.BankSelect"
+
+[[lean_exe]]
+name = "sampled_emit"
+root = "test.Sampled"

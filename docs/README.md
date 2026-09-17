@@ -41,6 +41,7 @@ historical next-step statements are not the current work queue.
 35. [Program-bank selection experiment](bank-selection-study.md) for the composed command-split control, parallel bank reads, full RTL read-back, and mapping/physical advance gates.
 36. [Cache-update enable experiment](cache-enable-study.md) for factored update decisions, exact cache observations, and the matched mapping screen.
 37. [Physical correlation study](physical-correlation-study.md) for the estimate-versus-extraction capacitance gap, hold-repair area, and flow-level discriminators on unchanged RTL.
+38. [Pin-sampler study](pin-sampler-study.md) for the structural two-register input pipeline, its delayed-history refinement, emitted-RTL checks, UART age composition, and the matched physical comparison.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 

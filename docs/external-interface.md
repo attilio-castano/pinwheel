@@ -18,6 +18,11 @@ clears both stages to an explicitly selected reset-sample profile; that profile
 must match the board/protocol idle assumptions. Two capture edges refill the
 pipeline before relying on a new external sample.
 
+The [pin-sampler study](pin-sampler-study.md) now builds this pipeline
+structurally in front of the proved backends, with the reset tied low, and proves
+that every observation equals the reference machine's on the delayed pin history.
+It is an experimental emitted variant; the default core still has no pipeline.
+
 This theorem concerns digital samples. An asynchronous transition near a clock
 edge can be captured later, and metastability resolution is not modeled here.
 Physical integration must separately establish the synchronizer implementation,
