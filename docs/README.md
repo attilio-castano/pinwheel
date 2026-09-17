@@ -40,6 +40,7 @@ historical next-step statements are not the current work queue.
 34. [External interface contract](external-interface.md) for input-pipeline latency, open-drain pads, and loading transport obligations.
 35. [Program-bank selection experiment](bank-selection-study.md) for the composed command-split control, parallel bank reads, full RTL read-back, and mapping/physical advance gates.
 36. [Cache-update enable experiment](cache-enable-study.md) for factored update decisions, exact cache observations, and the matched mapping screen.
+37. [Physical correlation study](physical-correlation-study.md) for the estimate-versus-extraction capacitance gap, hold-repair area, and flow-level discriminators on unchanged RTL.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 

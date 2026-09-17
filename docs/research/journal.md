@@ -391,6 +391,22 @@ All source and evidence changes remain local and uncommitted. The next formal
 obligation remains technology-mapped equivalence; physical measurement and
 external interface integration retain their separate contracts.
 
+## 2026-09-17: estimate/extraction correlation diagnosis
+
+- **Scope:** read-only analysis of the retained `command-split-closure` run plus
+  one scratch pair of synthesis-only container runs (about 38 s each, two CPUs,
+  no network). No place-and-route run, Lean change or RTL change.
+- **Result:** the resizer's final slow-corner view is +0.055 ns against −5.049 ns
+  extracted. Fitted extracted capacitance is 0.161 / 0.192 / 0.139 fF/µm on
+  Metal2–4 versus about 0.092 fF/µm estimated. Hold repair contributes 6,423
+  delay cells. Clock gating reduces mapped area 578,449 → 505,878 µm² in the
+  unrecorded screen.
+- **Disposition and identity:** the [study](../physical-correlation-study.md)
+  owns the measurements; routed DEF SHA-256 `e668da67060aca2bc12d57651229cdfe97cbf95c58d1674bce1b5f0fd5db6a04`,
+  nominal SPEF `6d4df224254d646f6a117353b5df429d3e261c250ee5dbd499117bd972b2b536`.
+  `scripts/fit-wire-rc.py` and its unit test reproduce the fit. The screen has no
+  retained receipt and supports only a recorded follow-up.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

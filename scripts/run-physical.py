@@ -102,10 +102,13 @@ def main():
         raise RuntimeError("Prepared RTL changed")
     config = json.loads((BASE / "core/core.json").read_text())
     overrides = json.loads(args.overrides.read_text()) if args.overrides else {}
+    # Estimation controls change what the optimizer believes about wires; final
+    # timing still comes from extraction of the routed layout.
     allowed = {"MAX_FANOUT_CONSTRAINT", "CTS_SINK_CLUSTERING_SIZE",
-               "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING"}
+               "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING",
+               "LAYERS_RC", "SIGNAL_WIRE_RC_LAYERS"}
     if not isinstance(overrides, dict) or set(overrides) - allowed:
-        raise RuntimeError("Overrides must contain only the four documented implementation-flow controls")
+        raise RuntimeError("Overrides must contain only the documented implementation-flow controls")
     config.update(overrides)
     image = lock["container_tag"]
     image_info = json.loads(subprocess.check_output(["docker", "image", "inspect", image], text=True))[0]

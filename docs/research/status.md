@@ -93,7 +93,26 @@ not establish routed improvement. No physical run or default promotion occurred.
 The [cache-enable manifest](../../physical/experiments/cache-enable-results.json)
 pins eight completed receipts and 914 verified source/artifact hash entries.
 
+## Flow-correlation finding (2026-09-17)
+
+The [physical correlation study](../physical-correlation-study.md) re-reads the
+retained command-split run without a new physical run. The resizer sees the slow
+corner and finishes at **+0.055 ns** on global-route estimates; extraction then
+reports −5.049 ns. A fit over 10,410 routed nets (R² 0.986) puts extracted wire
+capacitance at 1.5–2.1× the technology-LEF values used for estimation. Separately,
+6,423 hold-delay cells — about one per flip-flop — make timing-repair buffers
+18.6% of functional area and lift utilization from 70% to 82%. A scratch
+synthesis-only screen with integrated clock gates cuts mapped area 12.5%.
+The earlier logic-depth candidates were therefore compared through a flow that
+could not see the dominant delay term. This is a diagnosis, not closure.
+
 ## Next discriminators
+
+0. Before another architectural candidate, run the two flow-level discriminators
+   in the [correlation study](../physical-correlation-study.md#proposed-discriminators)
+   on byte-identical RTL: calibrated wire estimates
+   (`physical/experiments/rc-calibrated.json`), then a recorded clock-gating
+   screen. Each physical run still needs its own allocation.
 
 1. Extend sequential equivalence from generic gates to a selected technology
    mapping, explicitly accounting for initial-state correspondence and eliminated
