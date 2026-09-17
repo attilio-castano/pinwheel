@@ -39,4 +39,4 @@ historical next-step statements are not the current work queue.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 
-[Validation and foundation review](validation.md) describes the portable CI gate, hardware prerequisites, and review order.
+[Validation and foundation review](validation.md) describes the local pre-push checks, hardware prerequisites, and review order.

@@ -1,17 +1,21 @@
 # Validation and review gates
 
-The foundation PR uses the portable gate below. Hardware experiments remain
+Run the local checks below before pushing a PR. Hardware experiments remain
 separately reproducible with the pinned Apple Silicon tools and explicit fixture
 prerequisites. Passing the portable gate does not establish emitted-RTL
 equivalence, physical fit, or an operating frequency.
 
-## Portable gate
+## Local pre-push checks
 
 Install the repository's `lean-toolchain` with Elan and use Python 3.12+:
 
 ```sh
+python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
+
+The first command checks physical-checkpoint provenance using disposable files;
+it requires no CAD tools. The second runs the portable Lean/model gate.
 
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
 commands, source hashes and a success receipt under `build/validation/<tag>/`.
@@ -44,14 +48,11 @@ adds independent physical-time wire and detection schedules, varying observation
 age, relative phases, rearm boundaries, and cases outside the sufficient bounds.
 These are Lean/model checks; the supervisor's new buffer has no RTL validation yet.
 
-`.github/workflows/lean.yml` first runs the disposable-file checkpoint provenance
-regression (`python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'`),
-which needs no CAD tools. It then runs the same Lean entry point on pull requests and pushes
-to `main`, on Ubuntu 24.04 with no Lake cache. It uses the repository Lean pin and
-commit-pinned checkout/Lean actions. It has read-only repository permissions and
-a 30-minute job limit. CI does not install the macOS CAD archives or start Docker
-physical runs. The action's own optional build/test steps are disabled so there
-is one owner for the gate's command sequence.
+Validation runs locally; the repository has no automatic GitHub Actions workflow.
+Include the check results and source identity in the PR description. Before
+pushing, verify that the committed sources match the validated sources. If code,
+tests, or validation inputs change, run the affected checks again. Documentation
+edits require link and whitespace checks.
 
 ## Hardware prerequisite order
 

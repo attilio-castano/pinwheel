@@ -66,7 +66,7 @@ def main():
     modules = check_imports()
     sources = [ROOT / p for p in ['Pinwheel.lean', 'lean-toolchain', 'lakefile.toml',
                                  'lake-manifest.json', 'scripts/check-foundation.py',
-                                 'scripts/binary_v0.py', '.github/workflows/lean.yml',
+                                 'scripts/binary_v0.py',
                                  'scripts/check-uart-rx.py', 'scripts/uart_rx_oracle.py',
                                  'scripts/reactive-core-vectors.py', 'scripts/execution-vectors.py']]
     sources += sorted((ROOT / 'Pinwheel').rglob('*.lean')) + sorted((ROOT / 'test').glob('*.lean'))
