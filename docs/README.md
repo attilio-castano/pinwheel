@@ -32,7 +32,11 @@ historical next-step statements are not the current work queue.
 26. [Timed component contracts](timed-components.md) for shared fetch semantics, checked signal interfaces, named edge observations, and composed structural-cache refinement.
 27. [Successor-fetch experiments](successor-fetch-study.md) for the measured path breakdown and controlled flow/architecture comparison with exact-cycle preservation.
 28. [Physical validation](physical-validation.md) for the first routed baseline, extracted timing, layout checks, and limitations.
+29. [One-byte UART receive](uart-receive.md) for input timing, compiler proofs, E64/storage integration, framing errors, and remaining receive capabilities.
+30. [UART link timing](uart-link.md) for TX-to-RX roundtrip proofs, independent clocks, bounded observation delay, and compiler composition.
+31. [Continuous UART receive](uart-stream.md) for automatic rearm, buffered delivery, explicit loss accounting, finite frame-sequence proofs, and the compiled-program supervisor.
+32. [Continuous reception with unequal clocks](uart-stream-clocks.md) for sufficient clock/observation-age bounds, rearm margins, finite-stream proofs, and compiled receiver composition.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 
-[Validation and foundation review](validation.md) describes the portable CI gate, hardware prerequisites, and review order.
+[Validation and foundation review](validation.md) describes the local pre-push checks, hardware prerequisites, and review order.

@@ -2,6 +2,9 @@
 
 Implemented and checked: **2026-09-13**, Lean 4.33.1.
 
+This record covers the original transmitter milestone. The [receive counterpart](uart-receive.md)
+adds one-byte 8N1 reception through the shared reactive engine.
+
 This completes the specification and executable-model portion of [stage 1](uart-experiment.md#stage-1-fixed-uart-transmitter). It produces Lean pin traces and checked theorems. RTL generation, simulation, synthesis, and physical timing for the complete UART execution path remain unimplemented. A later [countdown hardware slice](countdown-hardware.md) validates the backend on the shared timer.
 
 ## Interface contract

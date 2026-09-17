@@ -107,6 +107,7 @@ def main():
     paths = sorted((ROOT/'Pinwheel').rglob('*.lean')) + [ROOT/p for p in [
         'Pinwheel.lean', 'test/ReactiveCore.lean', 'test/ReactiveCoreAxioms.lean', 'test/reactive_core_tb.sv',
         'scripts/check-reactive-core.py', 'scripts/reactive-core-vectors.py', 'scripts/execution-vectors.py',
+        'scripts/uart_rx_oracle.py',
         'lean-toolchain', 'tools/hardware-toolchain.json']]
     hashes = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     artifacts = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(OUT.iterdir())

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'build/reactive-core'
 codec = runpy.run_path(str(ROOT / 'scripts/execution-vectors.py'))
 pack, valid = codec['pack'], codec['decode']
+uart_rx = runpy.run_path(str(ROOT / 'scripts/uart_rx_oracle.py'))
 
 
 def fields(word):
@@ -261,6 +262,7 @@ def generate():
         for ack_bits in range(7):
             acks = tuple((ack_bits >> k) & 1 for k in range(3))
             reads.append(i2c(m, True, acks=acks, stretched=True))
+        rx_frames = uart_rx['exercise'](m, images)
         # Terminal capture feeds branch, then successor entry may overwrite that slot.
         p = [pack(dict(kind=2, terminal=63, finish=2, sample=15, yes=1, no=2)),
              pack(dict(kind=0, levels=5, enabled=7, entry=61)), 4]
@@ -312,7 +314,7 @@ def generate():
             m.edge(start=1); assert m.s[0] == 7
         name = 'indexed' if indexed else 'direct'
         (OUT/f'{name}-vectors.txt').write_text(''.join(' '.join(map(str, row))+'\n' for row in m.rows))
-        coverage[name] = dict(edges=len(m.rows), cases=m.cases, i2c_reads=len(reads),
+        coverage[name] = dict(edges=len(m.rows), cases=m.cases, i2c_reads=len(reads), uart_rx_frames=rx_frames,
                               quiet_read_cycles=reads[0], stretched_read_cycles=reads[1])
     (OUT/'coverage.json').write_text(json.dumps(coverage, indent=2)+'\n')
     return coverage

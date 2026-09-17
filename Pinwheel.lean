@@ -13,6 +13,9 @@ import Pinwheel.Compile.I2CLoopCorrectness
 import Pinwheel.UART.Tx
 import Pinwheel.SPI.Controller
 import Pinwheel.Compile.UART
+import Pinwheel.Compile.UARTLink
+import Pinwheel.Compile.UARTRxStream
+import Pinwheel.Compile.UARTStreamLink
 import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
@@ -23,6 +26,7 @@ import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 import Pinwheel.Hardware.Storage
 import Pinwheel.Hardware.Reactive.FetchChoice
+import Pinwheel.Hardware.UARTRx
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
