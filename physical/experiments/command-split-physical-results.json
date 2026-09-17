@@ -1,0 +1,180 @@
+{
+  "date": "2026-09-15",
+  "tag": "command-split-closure",
+  "source_commit": "1a0c960",
+  "rtl_sha256": "1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42",
+  "baseline_tag": "fetch-repair-route",
+  "baseline_rtl_sha256": "1664dc719bff05307e3f17a6a8c611aba520917d49be132f1bf164bf1c53548b",
+  "flow_exit_code": 124,
+  "stop_reason": "wall_time_limit",
+  "last_completed_step": "63-odb-checkdesignantennaproperties",
+  "detailed_routing_completed": true,
+  "extracted_timing_completed": true,
+  "incomplete_checks": [
+    "Magic DRC",
+    "layout-versus-schematic and later flow checks"
+  ],
+  "resource_limits": {
+    "implementation_attempts": 1,
+    "container_cpus": 4,
+    "container_memory_gib": 6,
+    "timeout_seconds": 3600,
+    "network": "none",
+    "targeted_sta_analysis_runs": 1,
+    "historical_cumulative_use": "unrecorded"
+  },
+  "matched_controls": {
+    "MAX_FANOUT_CONSTRAINT": 8,
+    "CTS_SINK_CLUSTERING_SIZE": 8,
+    "RUN_POST_GRT_DESIGN_REPAIR": true,
+    "RUN_POST_GRT_RESIZER_TIMING": true
+  },
+  "clock_period_ns": 20,
+  "sdc_sha256": "92ca404af797d1d873a7e6371f2888cfbac8d4a9a84f3d5ab768c268207bc359",
+  "resolved_config_differences": [
+    "DESIGN_DIR",
+    "FALLBACK_SDC",
+    "PNR_SDC_FILE",
+    "SIGNOFF_SDC_FILE",
+    "VERILOG_FILES"
+  ],
+  "metrics": {
+    "design__instance__area__stdcell": 742886,
+    "timing__setup__ws": -5.049415251067507,
+    "timing__setup_vio__count": 1426,
+    "timing__hold__ws": 0.002859434991943666,
+    "timing__hold_vio__count": 0,
+    "design__max_slew_violation__count": 49,
+    "design__max_cap_violation__count": 3,
+    "design__max_fanout_violation__count": 21
+  },
+  "baseline_metrics": {
+    "design__instance__area__stdcell": 749721,
+    "timing__setup__ws": -5.05501255162676,
+    "timing__setup_vio__count": 112,
+    "timing__hold__ws": 0.022140234716697165,
+    "timing__hold_vio__count": 0,
+    "design__max_slew_violation__count": 51,
+    "design__max_cap_violation__count": 7,
+    "design__max_fanout_violation__count": 34
+  },
+  "setup_slack_ns": {
+    "nom_fast_1p32V_m40C": 7.515725143854377,
+    "nom_slow_1p08V_125C": -5.049415251067507,
+    "nom_typ_1p20V_25C": 3.1566448126659576
+  },
+  "hold_slack_ns": {
+    "nom_fast_1p32V_m40C": 0.002859434991943666,
+    "nom_slow_1p08V_125C": 0.20932467462970453,
+    "nom_typ_1p20V_25C": 0.07248579719400004
+  },
+  "final_checks": {
+    "route__drc_errors": 0,
+    "antenna__violating__nets": 0,
+    "antenna__violating__pins": 0,
+    "magic__drc_error__count": null,
+    "design__lvs_error__count": null,
+    "timing__unannotated_net_filtered__count": 0
+  },
+  "absent_check_meaning": "null means incomplete or unavailable, never zero violations",
+  "launch_families": {
+    "all": {
+      "worst": {
+        "start": "_45583_",
+        "endpoint": "_45626_",
+        "slack_ns": -5.049415
+      },
+      "reported_paths": 1000,
+      "reported_negative_paths": 1000
+    },
+    "loader_command": {
+      "worst": {
+        "start": "command[1]",
+        "endpoint": "_45626_",
+        "slack_ns": -3.944994
+      },
+      "reported_paths": 1000,
+      "reported_negative_paths": 104
+    },
+    "loader_data": {
+      "worst": {
+        "start": "data[2]",
+        "endpoint": "_47265_",
+        "slack_ns": -3.207992
+      },
+      "reported_paths": 1000,
+      "reported_negative_paths": 1000
+    },
+    "protocol": {
+      "worst": {
+        "start": "incoming[1]",
+        "endpoint": "_45626_",
+        "slack_ns": -4.594396
+      },
+      "reported_paths": 120,
+      "reported_negative_paths": 104
+    },
+    "registers": {
+      "worst": {
+        "start": "_45583_",
+        "endpoint": "_45626_",
+        "slack_ns": -5.049415
+      },
+      "reported_paths": 1000,
+      "reported_negative_paths": 105
+    },
+    "reset": {
+      "worst": {
+        "start": "reset",
+        "endpoint": "_45626_",
+        "slack_ns": -3.927788
+      },
+      "reported_paths": 1000,
+      "reported_negative_paths": 104
+    }
+  },
+  "critical_register_fields": {
+    "start": "loader_cursor[5]",
+    "endpoint": "r_cached_word[12]"
+  },
+  "regression_edges": 21864,
+  "defined_output_bit_comparisons": 3585618,
+  "mutants_rejected": 1,
+  "artifact_sha256": {
+    "build/physical/core/runs/command-split-closure/05-yosys-jsonheader/pinwheel_atomic_small_dense_cached.h.json": "68505b955647ff89ebef35e85a751a46e720f85b853a14fe968c9e9d592819b3",
+    "build/physical/core/runs/command-split-closure/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "c4d49876b97208969c6bf276e863a51a4637530969108a831d0e153ab3787873",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_fast_1p32V_m40C/pinwheel_atomic_small_dense_cached__nom_fast_1p32V_m40C.sdf": "eae48b50dc507da8c0848035ce501e209f6dbe1a0e1cbc72a0210da145d459d9",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_slow_1p08V_125C/pinwheel_atomic_small_dense_cached__nom_slow_1p08V_125C.sdf": "7e10134133014ac5d92ac2fbec322730e60ed417cc42b182581cd794028daa03",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_typ_1p20V_25C/pinwheel_atomic_small_dense_cached__nom_typ_1p20V_25C.sdf": "e4200d8f789e066a43d509be16e83db248c7c1066b1ff2889f8f1dc02d0926e8",
+    "build/physical/core/runs/command-split-closure/55-odb-cellfrequencytables/pinwheel_atomic_small_dense_cached.odb": "b7c6e3317e7a565ed6a2a2f1f1795774d986771c5c767cd635464e43d9bec85a",
+    "build/physical/core/runs/command-split-closure/55-odb-cellfrequencytables/pinwheel_atomic_small_dense_cached.def": "e668da67060aca2bc12d57651229cdfe97cbf95c58d1674bce1b5f0fd5db6a04",
+    "build/physical/core/runs/command-split-closure/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.sdc": "c0b5db55c90c639b5f144754297524147247b3c2899a0c235ede258827463722",
+    "build/physical/core/runs/command-split-closure/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.pnl.v": "6a69d28b12860b7787a6f4111e6d9e3112b9d9345358c06e8f55c4be43235dc4",
+    "build/physical/core/runs/command-split-closure/29-odb-writeverilogheader/pinwheel_atomic_small_dense_cached.vh": "91d6a2c26821da6b5588d035ca1154356491b9e59d2c4d5147d7f6e91593aed7",
+    "build/physical/core/runs/command-split-closure/56-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef": "6d4df224254d646f6a117353b5df429d3e261c250ee5dbd499117bd972b2b536",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_fast_1p32V_m40C/pinwheel_atomic_small_dense_cached__nom_fast_1p32V_m40C.lib": "e4d9114e28fc2c0a794b1daf189f112055558549c2cdaa76832ebeae9650e4a5",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_slow_1p08V_125C/pinwheel_atomic_small_dense_cached__nom_slow_1p08V_125C.lib": "f40bc6928b30070184e7d717f38d45701dde1a008dd06e6c1d4ab2e3f9fdb039",
+    "build/physical/core/runs/command-split-closure/57-openroad-stapostpnr/nom_typ_1p20V_25C/pinwheel_atomic_small_dense_cached__nom_typ_1p20V_25C.lib": "bce3cd64430dbe4e0ee113269f2245f305606ae105238333e043c0b0793e5c7d",
+    "build/physical/core/runs/command-split-closure/59-magic-streamout/pinwheel_atomic_small_dense_cached.magic.gds": "aac6e9fb7a9f7d365317e0daa5bd9fe2314bc9a9ac496d9a8928cef2efd3c84d",
+    "build/physical/core/runs/command-split-closure/59-magic-streamout/pinwheel_atomic_small_dense_cached.mag": "5c273ffacc89335f357f914abad9ce59f1760f9afe3924f249614ab600bdb7d1",
+    "build/physical/core/runs/command-split-closure/60-klayout-streamout/pinwheel_atomic_small_dense_cached.klayout.gds": "9f7929a5d93c6d6efd044603aeda391786f76f8c51a01667dbb2c2f012e797c8",
+    "build/physical/core/runs/command-split-closure/60-klayout-streamout/pinwheel_atomic_small_dense_cached.gds": "9f7929a5d93c6d6efd044603aeda391786f76f8c51a01667dbb2c2f012e797c8",
+    "build/physical/core/runs/command-split-closure/61-klayout-render/pinwheel_atomic_small_dense_cached.png": "8163ccbacd39e5762cfd888fce58542ee59e6ebc40010afd8a2a12d225e89002",
+    "build/physical/core/runs/command-split-closure/62-magic-writelef/pinwheel_atomic_small_dense_cached.lef": "28cd5ff6514372a5de5c6a5d41f4217cc0ce254fee76b41bd4a92a983e8c6bd5"
+  },
+  "receipt_sha256": {
+    "build/physical/command-split-closure-report.json": "00f8523aa0650d933d5180c4a2226773414f343df6050e3c55704dffeac0c8cf",
+    "build/physical/command-split-closure-invocation.json": "8f6ede4dbc40eb21a9b5738ca2588eaa93c5921b023875339ab79d9bb8e16c47",
+    "build/physical/core/inputs.json": "29c060f3520189c5bc6979fbda1d43719182735d77aa9551ce259ab9aacd4c6d",
+    "build/physical/command-split-netlist-validation-check/report.json": "c8c841e83fbbaef26ff365aa4563ea9d0a218b652e308f852f23d8976bcd6d88",
+    "build/physical/core/targeted-sta/command-split-closure-families/report.json": "511f8181f7524a821b1f39349c235ba8e20e605f52d1ee64cfd54df11013c017",
+    "build/successor-fetch/command-split-closure/paths.json": "dabccb4d93dda7fb6c915029a20f0ca6842705d4b7035af83dc2f4f104e667a1",
+    "physical/experiments/command-split-results.json": "3214c72bd9787b4a17a55aaf70aa2a6fc17fc651e228a49261ebf8949e2751cd",
+    "scripts/report-physical.py": "38bda61226039a198fcce7276c1a93d0ca98bdcd44a49258c6fa55b85ac71e39"
+  },
+  "baseline_receipt_sha256": {
+    "build/physical/fetch-repair-route-report.json": "6b84931291262f1cff498eac3b5630abf9058c26a960d22cc4910af820a70622"
+  },
+  "decision": "Do not promote: setup/electrical closure failed; inspect registered loader-control-to-cache dependency before another screen.",
+  "boundary": "Final extracted three-corner timing and zero-delay implemented-netlist regression under the fixed diagnostic 6x4 core constraints. The one-hour attempt stopped during Magic DRC; DRC/LVS sign-off is incomplete. No full wrapper, 8x4 fit, technology-mapped sequential equivalence or physical qualification claim. The composed Lean backend is a separate artifact."
+}

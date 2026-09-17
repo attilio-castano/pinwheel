@@ -1,0 +1,546 @@
+{
+  "date": "2026-09-15",
+  "study": "Cache-update enable on the composed command-split control",
+  "disposition": "Retain as a verified experimental variant. Mapping supports a fresh matched physical comparison; no default promotion or physical run in this batch.",
+  "hypothesis_result": "Partial structural isolation: direct cursor/command and full next-PC-wire dependencies leave the enable, but the shared successor read retains an indirect cursor/command path.",
+  "control": {
+    "variant": "command-split",
+    "rtl_sha256": "318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764"
+  },
+  "candidate": {
+    "variant": "enable-split",
+    "rtl_sha256": "ac7b8617254320fd8f249c0871a3cb1617a2d1a8bb75896782e1bd2c8492ee79"
+  },
+  "legacy_command_split_rtl_sha256": "1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42",
+  "fixed_contract": "Reference execution, capacity adapter, 607 register fields / 6233 bits, 322-word uploads, and every register update remain fixed. No additional state, instruction read, or cycle.",
+  "proofs_and_checks": {
+    "control": {
+      "variant": "command-split",
+      "register_fields": 607,
+      "register_bits": 6233,
+      "outputs": 33,
+      "checked_local_equalities": 3209,
+      "largest_local_expression": 213,
+      "standard_axioms_only": true,
+      "mutation_rejections": [
+        "loader-initialization",
+        "upload-cursor",
+        "capture",
+        "pc-output",
+        "rejected-command",
+        "cache-update"
+      ],
+      "unchanged_reimport_certificate": "passed",
+      "theorems": [
+        "Pinwheel.Artifact.Backend.model_next",
+        "Pinwheel.Artifact.Backend.model_output",
+        "Pinwheel.Artifact.Backend.initialized_trace"
+      ],
+      "audited_declarations": 65301,
+      "audited_theorems": 40174,
+      "readback_elapsed_seconds": 996.059,
+      "downstream_elapsed_seconds": 101.633,
+      "legacy_equivalence_points": 6315,
+      "generic_gate_equivalence_points": 6309,
+      "oracle_edges": 21409,
+      "physical_storage_observations": 13151052
+    },
+    "candidate": {
+      "variant": "enable-split",
+      "register_fields": 607,
+      "register_bits": 6233,
+      "outputs": 33,
+      "checked_local_equalities": 3230,
+      "largest_local_expression": 213,
+      "standard_axioms_only": true,
+      "mutation_rejections": [
+        "loader-initialization",
+        "upload-cursor",
+        "capture",
+        "pc-output",
+        "rejected-command",
+        "cache-update"
+      ],
+      "unchanged_reimport_certificate": "passed",
+      "theorems": [
+        "Pinwheel.Artifact.Backend.model_next",
+        "Pinwheel.Artifact.Backend.model_output",
+        "Pinwheel.Artifact.Backend.initialized_trace"
+      ],
+      "audited_declarations": 65605,
+      "audited_theorems": 40375,
+      "readback_elapsed_seconds": 1057.938,
+      "downstream_elapsed_seconds": 101.293,
+      "legacy_equivalence_points": 6315,
+      "generic_gate_equivalence_points": 6309,
+      "oracle_edges": 21409,
+      "physical_storage_observations": 13151052
+    }
+  },
+  "metrics": {
+    "control": {
+      "typical": {
+        "standard_cell_area_um2": 546109.9056,
+        "abc_combinational_delay_ps": 7106.18,
+        "flip_flops": 6226,
+        "cells": 27242
+      },
+      "slow": {
+        "standard_cell_area_um2": 546547.176,
+        "abc_combinational_delay_ps": 9955.5,
+        "flip_flops": 6226,
+        "cells": 27273
+      }
+    },
+    "candidate": {
+      "typical": {
+        "standard_cell_area_um2": 544060.5786,
+        "abc_combinational_delay_ps": 6458.93,
+        "flip_flops": 6226,
+        "cells": 27857
+      },
+      "slow": {
+        "standard_cell_area_um2": 544075.0938,
+        "abc_combinational_delay_ps": 9824.85,
+        "flip_flops": 6226,
+        "cells": 27857
+      }
+    }
+  },
+  "candidate_percent_change": {
+    "typical": {
+      "standard_cell_area_um2": -0.375259,
+      "abc_combinational_delay_ps": -9.108269,
+      "cells": 2.257543
+    },
+    "slow": {
+      "standard_cell_area_um2": -0.452309,
+      "abc_combinational_delay_ps": -1.31234,
+      "cells": 2.141312
+    }
+  },
+  "mapped_cache_cones": {
+    "typical": {
+      "control": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 47,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 48,
+            "maximum_logic_depth": 35,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      },
+      "candidate": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 40,
+            "maximum_logic_depth": 28,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 40,
+            "maximum_logic_depth": 29,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 39,
+            "maximum_logic_depth": 28,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          }
+        }
+      }
+    },
+    "slow": {
+      "control": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 47,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 49,
+            "maximum_logic_depth": 35,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5147/D",
+              "$auto$ff.cc:337:slice$5148/D",
+              "$auto$ff.cc:337:slice$5149/D"
+            ]
+          }
+        }
+      },
+      "candidate": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 40,
+            "maximum_logic_depth": 28,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0,
+            "example_pins": []
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 40,
+            "maximum_logic_depth": 29,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 39,
+            "maximum_logic_depth": 28,
+            "maximum_combinational_fanout": 10,
+            "example_pins": [
+              "$auto$ff.cc:337:slice$5232/D",
+              "$auto$ff.cc:337:slice$5233/D",
+              "$auto$ff.cc:337:slice$5234/D"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "source_enable_dependencies": {
+    "control": {
+      "complete": {
+        "cursor": true,
+        "command": true,
+        "loader_data": false,
+        "next_pc_wire": true,
+        "dictionary_or_index_registers": 576,
+        "expression_depth_from_cursor": 51
+      },
+      "successor_abstracted": {
+        "cursor": true,
+        "command": true,
+        "loader_data": false,
+        "next_pc_wire": true,
+        "dictionary_or_index_registers": 0,
+        "expression_depth_from_cursor": 23
+      }
+    },
+    "candidate": {
+      "complete": {
+        "cursor": true,
+        "command": true,
+        "loader_data": false,
+        "next_pc_wire": false,
+        "dictionary_or_index_registers": 576,
+        "expression_depth_from_cursor": 46
+      },
+      "successor_abstracted": {
+        "cursor": false,
+        "command": false,
+        "loader_data": false,
+        "next_pc_wire": false,
+        "dictionary_or_index_registers": 0,
+        "expression_depth_from_cursor": null
+      }
+    }
+  },
+  "cache_cases": {
+    "coverage": {
+      "edges": 5910,
+      "cases": [
+        {
+          "name": "halt-from-zero",
+          "edge": 1
+        },
+        {
+          "name": "halt-from-one",
+          "edge": 328
+        },
+        {
+          "name": "range-fault-zero",
+          "edge": 656
+        },
+        {
+          "name": "range-fault-one",
+          "edge": 983
+        },
+        {
+          "name": "hold-then-halt",
+          "edge": 1311
+        },
+        {
+          "name": "self-zero",
+          "edge": 1641
+        },
+        {
+          "name": "self-one",
+          "edge": 1971
+        },
+        {
+          "name": "branch-back-zero",
+          "edge": 2302
+        },
+        {
+          "name": "guard-fault-zero",
+          "edge": 2634
+        },
+        {
+          "name": "guard-fault-one",
+          "edge": 2961
+        },
+        {
+          "name": "wait-timeout-zero",
+          "edge": 3289
+        },
+        {
+          "name": "wait-timeout-one",
+          "edge": 3616
+        },
+        {
+          "name": "qualify-timeout-zero",
+          "edge": 3944
+        },
+        {
+          "name": "qualify-timeout-one",
+          "edge": 4271
+        },
+        {
+          "name": "reset-running-0",
+          "edge": 4599
+        },
+        {
+          "name": "reset-running-1",
+          "edge": 4926
+        },
+        {
+          "name": "full-pending-upload",
+          "edge": 5254
+        }
+      ],
+      "coverage": {
+        "exact_cache_edges": 5585,
+        "idle_write": 5540,
+        "running_hold": 25,
+        "stop_mode_5_from_pc_0": 4,
+        "running_write": 20,
+        "stop_mode_5_from_pc_1": 1,
+        "stop_mode_7_from_pc_0": 2,
+        "stop_mode_7_from_pc_1": 2,
+        "reset_from_pc_0": 3,
+        "reset_from_pc_1": 2,
+        "stop_mode_6_from_pc_0": 2,
+        "stop_mode_6_from_pc_1": 2,
+        "busy_commit_rejected_at_full_cursor": 4
+      }
+    },
+    "mutations_rejected": [
+      "always-hold",
+      "always-refresh",
+      "reset-holds-cache"
+    ]
+  },
+  "bank_cases": {
+    "coverage": {
+      "edges": 2090,
+      "immediate_transitions": [
+        {
+          "last_upload_edge": 324,
+          "commit_edge": 325,
+          "start_edge": 326,
+          "bank": 1,
+          "levels": 1
+        },
+        {
+          "last_upload_edge": 651,
+          "commit_edge": 652,
+          "start_edge": 653,
+          "bank": 0,
+          "levels": 6
+        },
+        {
+          "last_upload_edge": 978,
+          "commit_edge": 979,
+          "start_edge": 980,
+          "bank": 1,
+          "levels": 3
+        },
+        {
+          "last_upload_edge": 1305,
+          "commit_edge": 1306,
+          "start_edge": 1307,
+          "bank": 0,
+          "levels": 4
+        }
+      ],
+      "continuous_branch_edges": 128,
+      "counters": {
+        "push": 1932,
+        "commit": 5,
+        "start": 6,
+        "rejected": 137
+      }
+    },
+    "mutations_rejected": [
+      "wrong-bank",
+      "early-commit",
+      "stale-cache"
+    ]
+  },
+  "physical_runs_consumed": 0,
+  "trusted_boundary": "Lean checks the full imported artifact with standard axioms. Yosys Verilog/proc and restricted JSON interpretation remain trusted; unsigned inequality support adds four rejected shapes and 64 truth-table cases. Generic-gate equivalence is separate from technology-mapped equivalence and extracted timing.",
+  "receipts": {
+    "build/backend/enable-control-proof/report.json": "8b5a21eb89a0131b1ff4045d257a07869f979b3d0fcf48d6ca39dadfe0706131",
+    "build/backend/enable-control-check/report.json": "27e07d1fa74facbee34f71f62c8a1ca1e5ef88926b43f246958aa0753bac6a8d",
+    "build/backend/enable-candidate-proof/report.json": "491fc19a7e689e0c0f98b18c1428c7a28dab694850530dc86eb13160d11efb51",
+    "build/backend/enable-candidate-check/report.json": "a3b23cf7080534c1d924345edbca20e7746b66fc55992f031a165990f95c3f7c",
+    "build/backend/enable-cases-final/report.json": "df833dbbb55456c72b1318f21c3a14909608a5ddcd868296c3d3dc5e25d9edf2",
+    "build/backend/enable-bank-cases-final/report.json": "1249757bc24f5008e9f9561d2291906d0dcebfbf6aa83a59f0416fc4159fa354",
+    "build/backend/enable-cones.json": "567f347885693aac523ad6e98004009df03f9a31edc0eeae0a1e0bd972e0addc",
+    "build/backend/enable-dependencies.json": "9bb76d226032fdf12cbd6896deea3770281bdcef901903c0d0e690e0fdf03420"
+  },
+  "verified_hash_entries": 914,
+  "summary_script_sha256": "cb95b556dc681e5c6c3c37e03f807d4be9809bba8e8d758b449f7ccdbf75f76c"
+}

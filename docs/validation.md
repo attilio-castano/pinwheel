@@ -10,11 +10,12 @@ equivalence, physical fit, or an operating frequency.
 Install the repository's `lean-toolchain` with Elan and use Python 3.12+:
 
 ```sh
-python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'
+python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
 
-The first command checks physical-checkpoint provenance using disposable files;
+The first command checks physical input/checkpoint provenance, backend import
+boundaries, receipt binding, and bank-selection helpers using disposable files;
 it requires no CAD tools. The second runs the portable Lean/model gate.
 
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
@@ -65,6 +66,11 @@ For a new checkout, the relevant dependency chain is:
 
 | Gate | Inputs to generate first | Evidence owner |
 | --- | --- | --- |
+| Countdown artifact/equivalence | `check-hardware.py` generates its own fixtures; pinned CIRCT/Yosys/Icarus binaries required | [Hardware closure](hardware-closure.md#countdown-artifact-interpretation-rather-than-a-compiler-proof) |
+| Full-backend Lean RTL read-back | `check-backend-readback.py --tag NAME` regenerates its own artifact; pinned CIRCT/Yosys/Z3 binaries required | [Full read-back](hardware-closure.md#full-backend-rtl-read-back) |
+| Composed dense cached backend | `check-backend.py --tag NAME` builds the native emitter and loader fixtures; pinned hardware tools and technology libraries required | [Composed backend](hardware-closure.md#composed-backend) |
+| Program-bank selection variants | `check-backend-readback.py --variant command-split` or `--variant late-bank`, followed by `check-bank-select.py` with the exact proof receipt | [Bank-selection study](bank-selection-study.md) |
+| Cache-enable variant | `check-backend-readback.py --variant enable-split`, followed by `check-bank-select.py` and exact-cache regression | [Cache-enable study](cache-enable-study.md) |
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
@@ -95,6 +101,24 @@ Existing retained fixtures may also be used for a focused regression after their
 hashes are checked. Label that result as a regression against frozen fixtures,
 not as proof that every prerequisite was regenerated from a clean checkout.
 
+The composed-backend gate retains old/new RTL equivalence, RTL/generic-gate
+equivalence, independent storage regression, and two mapped corners under a
+fresh `build/backend/<tag>/`. Run `check-backend-readback.py --tag NAME` to check
+the full emitted transition and initialized traces in Lean. Pass its receipt to
+`check-backend.py --readback-report PATH --tag NAME` to require exact source and
+artifact identities across both gates. Both countdown and full-backend read-back
+retain an explicit trusted parser/frontend boundary. See
+[hardware closure](hardware-closure.md) for initial-state relations and mutations.
+
+Candidate staging and timeout/provenance regressions use disposable files and no
+CAD execution:
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_physical_*.py'
+python3 -B -m unittest discover -s test -p 'test_backend_readback.py'
+python3 -B -m unittest discover -s test -p 'test_bank_select.py'
+```
+
 ## Foundation review order
 
 1. **Protocol semantics and compilers:** exact pin edges, capture order, bounded
@@ -106,7 +130,7 @@ not as proof that every prerequisite was regenerated from a clean checkout.
 4. **Measurements and research records:** baseline identities, fixed constraints,
    default versus experimental backends, and remaining physical limitations.
 
-The foundation preserves the incremental milestone history because committed
-research records reference those commits. Prefer a merge commit when the PR is
-approved. The optional command-decoder candidate's physical run is a follow-up;
-no new timing closure or default promotion is a prerequisite for this merge.
+Preserve historical experiment identities when integrating new work. The hardware
+closure and optimization studies record their own artifact-specific evidence;
+new physical timing closure or default promotion is not a prerequisite for
+merging those functional proofs and experimental variants.

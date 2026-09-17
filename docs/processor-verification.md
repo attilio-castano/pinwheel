@@ -89,6 +89,16 @@ Check the hardest timing cases early: consecutive one-cycle actions, an entry ca
 
 ## Milestone 4: connect proofs to emitted RTL and mapped gates
 
+The [2026-09-15 closure batch](hardware-closure.md) adds countdown RTL read-back
+with kernel-checked transition/trace equality and RTL-to-generic-gate equivalence.
+It also proves one composed dense cached netlist and checks old/new RTL plus
+generic-gate equivalence. The [full-backend read-back gate](hardware-closure.md#full-backend-rtl-read-back)
+now connects every register update and output of that emitted artifact to the
+Lean netlist and its initialized trace theorem. Yosys's Verilog/process frontend
+and the restricted JSON interpretation remain trusted; emission/MLIR hints and
+solver suggestions must pass Lean proofs. Technology-mapped and physical
+sequential equivalence remain separate obligations.
+
 Record exactly what the Lean theorem covers: the semantics of a particular circuit structure. Generating Verilog from that structure does not automatically extend the proof to emitted text or downstream transformations.
 
 For each emitted operation, document the correspondence between Lean circuit semantics and the selected CIRCT operations. Validate widths, reset behavior, clock enables, input sampling, and memory read/write behavior. Keep the emitter small and deterministic. Use independent RTL tests and deliberate faulty fixtures to check that the validation catches wrong reset priority, off-by-one duration, and wrong capture edges.
@@ -104,6 +114,9 @@ Evaluate an RTL-to-mapped-netlist equivalence check using a suitable formal hard
 The [atomic-loader record](atomic-loader.md) owns the implemented synchronous
 interface and its evidence. Serialized transport, pin allocation, and synchronization
 must satisfy the additional boundary below.
+The [external interface contract](external-interface.md) now specifies a proposed
+two-edge digital sampling delay and open-drain interpretation, with Lean lemmas;
+the physical wrapper and transport remain to be implemented.
 
 Today's load operation replaces the complete program and idle profile atomically. A chip will receive writes over a concrete interface. Define accepted commands, response/status, address/data widths, reset behavior, and priority among writes, commit, and start. Begin at synchronous core ports; select a serialized transport and package-pin mapping only after checking the available I/O budget.
 

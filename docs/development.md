@@ -158,6 +158,37 @@ Binary instruction encoding and the countdown RTL slice were added after this en
 
 ## Hardware milestones 1 and 2
 
+The later [hardware closure batch](hardware-closure.md) extends the countdown
+runner with actual-RTL read-back proofs and generic-gate equivalence. Run
+`python3 scripts/check-backend-readback.py --tag first-readback` with pinned
+CIRCT/Yosys/Z3 to check the full backend's emitted RTL in Lean. With the technology
+libraries also installed, bind that proof to the equivalence/regression gate:
+
+```sh
+python3 scripts/check-backend.py --tag first-check \
+  --readback-report build/backend/first-readback/report.json
+```
+
+The gate builds
+the optional native `backend_emit` Lake target, generates both comparison designs,
+and retains each run under its fresh tag. The historical results below describe
+the original slice; current acceptance boundaries live in the closure record.
+
+The [program-bank experiment](bank-selection-study.md) adds the optional
+`bank_select_emit` executable. Select `--variant command-split` or
+`--variant late-bank` in `check-backend-readback.py`, then pass the receipt to
+`check-bank-select.py --readback-report PATH --tag NAME`. Both variants retain
+the existing state/port contract and have complete Lean refinements. The study
+records focused bank-switch regressions, mapped cone analysis and the decision
+gate for a fresh physical comparison.
+
+The [cache-enable experiment](cache-enable-study.md) uses the same executable and
+receipt gate with `--variant enable-split`. It factors the cache update decision
+while preserving the shared instruction read and complete register transition.
+Its focused regression checks exact cache contents on stopped and running edges;
+the source dependency report distinguishes direct control paths from paths
+through the shared read.
+
 The [processor verification plan](processor-verification.md)'s first batch is implemented. The [hardware baseline](hardware-baseline.md) records the binary format and core contract; the [countdown record](countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
 
 On Apple Silicon macOS with Python 3.12+:

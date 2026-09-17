@@ -36,6 +36,10 @@ historical next-step statements are not the current work queue.
 30. [UART link timing](uart-link.md) for TX-to-RX roundtrip proofs, independent clocks, bounded observation delay, and compiler composition.
 31. [Continuous UART receive](uart-stream.md) for automatic rearm, buffered delivery, explicit loss accounting, finite frame-sequence proofs, and the compiled-program supervisor.
 32. [Continuous reception with unequal clocks](uart-stream-clocks.md) for sufficient clock/observation-age bounds, rearm margins, finite-stream proofs, and compiled receiver composition.
+33. [Hardware correspondence closure](hardware-closure.md) for countdown artifact interpretation, the composed dense cached backend, and equivalence boundaries.
+34. [External interface contract](external-interface.md) for input-pipeline latency, open-drain pads, and loading transport obligations.
+35. [Program-bank selection experiment](bank-selection-study.md) for the composed command-split control, parallel bank reads, full RTL read-back, and mapping/physical advance gates.
+36. [Cache-update enable experiment](cache-enable-study.md) for factored update decisions, exact cache observations, and the matched mapping screen.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 

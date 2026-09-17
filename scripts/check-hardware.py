@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Reproduce Lean/RTL countdown checks, negative fixtures, and generic synthesis."""
 import collections
+import copy
 import hashlib
 import json
 import platform
 import shutil
 import subprocess
 from pathlib import Path
+
+from countdown_import import interpret, lean_source
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "build/hardware"
@@ -115,23 +118,114 @@ def main():
     ])
     (OUT / "synthesis.ys").write_text(commands.replace("; ", "\n") + "\n")
     run([suite / "yosys", "-Q", "-T", "-s", "build/hardware/synthesis.ys"], log="synthesis.log")
+
+    # Read back the actual emitted RTL. The parser is trusted; the generated
+    # theorem proves the interpreted transition, not a second emitter output.
+    def validate_artifact(source, label, reject=False):
+        imported = OUT / f"{label}-import.json"
+        command = (f"read_verilog -sv {source}; hierarchy -check -top pinwheel_countdown; "
+                   f"proc; opt_clean; check -assert; write_json {imported.relative_to(ROOT)}")
+        run([suite / "yosys", "-Q", "-T", "-p", command], log=f"{label}-import.log")
+        proof = OUT / f"{label}-Artifact.lean"
+        proof.write_text(lean_source(imported))
+        result = subprocess.run([lake, "env", "lean", "-DwarningAsError=true", str(proof)],
+                                cwd=ROOT, text=True, capture_output=True)
+        audit = result.stdout + result.stderr
+        (OUT / f"{label}-proof.log").write_text(audit)
+        if reject:
+            if result.returncode == 0 or "unsolved goals" not in audit:
+                raise RuntimeError(f"Corrupt RTL did not fail the correspondence theorem: {audit}")
+        else:
+            if result.returncode:
+                raise RuntimeError(f"RTL interpretation proof failed: {audit}")
+            groups = re.findall(r"depends on axioms: \[([^]]*)\]", audit)
+            if len(groups) != 2 or any(set(x.strip() for x in g.split(",")) - {
+                    "propext", "Classical.choice", "Quot.sound"} for g in groups):
+                raise RuntimeError(f"Incomplete or untrusted artifact proof: {audit}")
+        return imported, proof
+
+    imported, artifact_proof = validate_artifact("build/hardware/countdown.sv", "countdown")
+    malformed = {}
+    raw = json.loads(imported.read_text())
+    for label in ("clock", "constant-clock", "driven-clock", "unknown-cell", "signed", "unknown-bit", "missing-state", "port-width"):
+        bad_json = copy.deepcopy(raw)
+        m = bad_json["modules"]["pinwheel_countdown"]
+        ff = next(c for c in m["cells"].values() if c["type"] == "$dff")
+        op = next(c for c in m["cells"].values() if c["type"] == "$and")
+        if label == "clock": ff["parameters"]["CLK_POLARITY"] = "0"
+        elif label == "constant-clock":
+            m["ports"]["clk"]["bits"] = ["0"]
+            for cell in m["cells"].values():
+                if cell["type"] == "$dff": cell["connections"]["CLK"] = ["0"]
+        elif label == "driven-clock": op["connections"]["Y"] = m["ports"]["clk"]["bits"]
+        elif label == "unknown-cell": op["type"] = "$unsupported"
+        elif label == "signed": op["parameters"]["A_SIGNED"] = "1"
+        elif label == "unknown-bit": ff["connections"]["D"][0] = "x"
+        elif label == "missing-state":
+            del m["cells"][next(n for n, c in m["cells"].items() if c is ff)]
+        else: m["ports"]["duration"]["bits"].pop()
+        path = OUT / f"reject-import-{label}.json"
+        path.write_text(json.dumps(bad_json, indent=2) + "\n")
+        try:
+            interpret(path)
+        except (ValueError, KeyError) as error:
+            malformed[label] = str(error)
+        else:
+            raise RuntimeError(f"Unsafe artifact shape was accepted: {label}")
+    for label in mutations:
+        validate_artifact(f"build/hardware/{label}.sv", label, reject=True)
+
+    equivalence = "\n".join([
+        "read_verilog -sv build/hardware/countdown.sv", "proc", "rename pinwheel_countdown gold",
+        "read_verilog build/hardware/countdown-netlist.v", "proc", "rename pinwheel_countdown gate",
+        "equiv_make gold gate equiv", "hierarchy -check -top equiv", "equiv_simple",
+        "equiv_status -assert", "",
+    ])
+    (OUT / "equivalence.ys").write_text(equivalence)
+    proof_log = run([suite / "yosys", "-Q", "-T", "-s", "build/hardware/equivalence.ys"],
+                    log="equivalence.log")
+    comparison = re.search(r"Of those cells (\d+) are proven and 0 are unproven", proof_log)
+    if not comparison or int(comparison[1]) < 19:
+        raise RuntimeError("Missing complete state/output equivalence evidence")
+    # A valid but corrupted implementation must fail the same equivalence gate.
+    mutant_eq = equivalence.replace("read_verilog build/hardware/countdown-netlist.v",
+                                    "read_verilog -sv build/hardware/wrong-decrement.sv")
+    (OUT / "reject-equivalence.ys").write_text(mutant_eq)
+    bad = subprocess.run([suite / "yosys", "-Q", "-T", "-s", "build/hardware/reject-equivalence.ys"],
+                         cwd=ROOT, text=True, capture_output=True)
+    (OUT / "reject-equivalence.log").write_text(bad.stdout + bad.stderr)
+    if bad.returncode == 0 or "unproven" not in bad.stdout + bad.stderr:
+        raise RuntimeError("Corrupted implementation did not fail equivalence")
+    print("Kernel-checked RTL transition/trace; all RTL/gate points proved; corrupt artifacts rejected", flush=True)
     module = json.loads((OUT / "countdown-netlist.json").read_text())["modules"]["pinwheel_countdown"]
     cells = dict(sorted(collections.Counter(c["type"] for c in module["cells"].values()).items()))
     artifacts = [
         "Pinwheel/Hardware/Circuit.lean", "Pinwheel/Hardware/Countdown.lean",
+        "Pinwheel/Hardware/CountdownContract.lean", "scripts/countdown_import.py",
         "Pinwheel/Hardware/Emit.lean", "test/Hardware.lean", "test/countdown_tb.sv",
         "scripts/check-hardware.py", "tools/hardware-toolchain.json",
         "build/hardware/countdown.mlir", "build/hardware/countdown.sv",
         "build/hardware/countdown-lean.csv", "build/hardware/countdown-rtl.csv",
         "build/hardware/countdown-netlist.json", "build/hardware/countdown-netlist.v",
+        str(imported.relative_to(ROOT)), str(artifact_proof.relative_to(ROOT)),
+        "build/hardware/countdown-proof.log", "build/hardware/equivalence.ys", "build/hardware/equivalence.log",
     ]
     report = {
         "host": f"{platform.system()} {platform.machine()}", "versions": versions,
         "toolchain": manifest, "trace_edges": edges, "traces_identical": True,
         "negative_fixtures_rejected": list(mutations), "standard_axioms_only": True,
         "generic_cells": cells, "total_generic_cells": sum(cells.values()),
+        "rtl_interpretation": {"kernel_checked": True, "standard_axioms_only": True,
+            "initial_relation": "Equal arbitrary two-state register values; reset establishes zero state",
+            "claim": "Every transition and all pre/post-edge observations for arbitrary input histories",
+            "rejected_mutations": list(mutations), "rejected_import_shapes": malformed},
+        "gate_equivalence": {"proven_points": int(comparison[1]), "unproven_points": 0,
+            "tool": "Yosys equiv_simple/equiv_status", "mutation_rejected": True,
+            "initial_relation": "Corresponding countdown register bits are equal"},
         "sha256": {p: sha256(ROOT / p) for p in artifacts},
-        "boundary": "Lean circuit proofs; RTL simulation; generic synthesis. No translation proof, gate equivalence, technology area, or timing result.",
+        "boundary": "Lean kernel checks the read-back RTL transition and trace. Trusted: Yosys Verilog/proc frontend, "
+                    "restricted JSON interpreter, and Yosys RTL-to-generic-gates equivalence. "
+                    "No universal emitter/CIRCT proof, four-state equivalence, technology mapping, or physical timing claim.",
     }
     (OUT / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"Matched {edges} edges; synthesized {sum(cells.values())} generic cells. See build/hardware/report.json.")

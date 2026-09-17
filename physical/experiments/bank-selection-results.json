@@ -1,0 +1,393 @@
+{
+  "date": "2026-09-15",
+  "study": "Program-bank selection after complete independent reads",
+  "disposition": "Retain proved candidate; stop before routing; no default promotion",
+  "control": {
+    "variant": "command-split",
+    "rtl_sha256": "318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764"
+  },
+  "candidate": {
+    "variant": "late-bank",
+    "rtl_sha256": "f1061a2e90f244d3ef40160a205750a83288caae411940f3afac24e053d7b91f"
+  },
+  "legacy_command_split_rtl_sha256": "1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42",
+  "fixed_contract": "Same reference execution and loader semantics, capacity adapter, 607 register fields / 6233 bits, 322-word uploads, no added cycles or registers. Reads use the same pre-edge state.",
+  "proofs_and_checks": {
+    "control": {
+      "variant": "command-split",
+      "register_fields": 607,
+      "register_bits": 6233,
+      "outputs": 33,
+      "checked_local_equalities": 3209,
+      "largest_local_expression": 213,
+      "standard_axioms_only": true,
+      "mutation_rejections": [
+        "loader-initialization",
+        "upload-cursor",
+        "capture",
+        "pc-output",
+        "rejected-command",
+        "cache-update"
+      ],
+      "unchanged_reimport_certificate": "passed",
+      "theorems": [
+        "Pinwheel.Artifact.Backend.model_next",
+        "Pinwheel.Artifact.Backend.model_output",
+        "Pinwheel.Artifact.Backend.initialized_trace"
+      ],
+      "readback_elapsed_seconds": 1004.539,
+      "downstream_elapsed_seconds": 92.361,
+      "legacy_equivalence_points": 6315,
+      "generic_gate_equivalence_points": 6309,
+      "oracle_edges": 21409,
+      "physical_storage_observations": 13151052
+    },
+    "candidate": {
+      "variant": "late-bank",
+      "register_fields": 607,
+      "register_bits": 6233,
+      "outputs": 33,
+      "checked_local_equalities": 3214,
+      "largest_local_expression": 213,
+      "standard_axioms_only": true,
+      "mutation_rejections": [
+        "loader-initialization",
+        "upload-cursor",
+        "capture",
+        "pc-output",
+        "rejected-command",
+        "cache-update"
+      ],
+      "unchanged_reimport_certificate": "passed",
+      "theorems": [
+        "Pinwheel.Artifact.Backend.model_next",
+        "Pinwheel.Artifact.Backend.model_output",
+        "Pinwheel.Artifact.Backend.initialized_trace"
+      ],
+      "readback_elapsed_seconds": 923.856,
+      "downstream_elapsed_seconds": 96.801,
+      "legacy_equivalence_points": 6315,
+      "generic_gate_equivalence_points": 6309,
+      "oracle_edges": 21409,
+      "physical_storage_observations": 13151052
+    }
+  },
+  "metrics": {
+    "control": {
+      "typical": {
+        "standard_cell_area_um2": 546109.9056,
+        "abc_combinational_delay_ps": 7106.18,
+        "flip_flops": 6226,
+        "cells": 27242
+      },
+      "slow": {
+        "standard_cell_area_um2": 546547.176,
+        "abc_combinational_delay_ps": 9955.5,
+        "flip_flops": 6226,
+        "cells": 27273
+      }
+    },
+    "candidate": {
+      "typical": {
+        "standard_cell_area_um2": 557432.5932,
+        "abc_combinational_delay_ps": 7575.09,
+        "flip_flops": 6226,
+        "cells": 27766
+      },
+      "slow": {
+        "standard_cell_area_um2": 557846.2764,
+        "abc_combinational_delay_ps": 9940.25,
+        "flip_flops": 6226,
+        "cells": 27766
+      }
+    }
+  },
+  "candidate_percent_change": {
+    "typical": {
+      "standard_cell_area_um2": 2.073335,
+      "abc_combinational_delay_ps": 6.598623,
+      "cells": 1.9235
+    },
+    "slow": {
+      "standard_cell_area_um2": 2.06736,
+      "abc_combinational_delay_ps": -0.153182,
+      "cells": 1.807649
+    }
+  },
+  "mapped_cache_cones": {
+    "typical": {
+      "control": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 47,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 48,
+            "maximum_logic_depth": 35,
+            "maximum_combinational_fanout": 10
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          }
+        }
+      },
+      "candidate": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 30,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 51,
+            "maximum_logic_depth": 38,
+            "maximum_combinational_fanout": 10
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 29,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 29,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          }
+        }
+      }
+    },
+    "slow": {
+      "control": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 47,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 49,
+            "maximum_logic_depth": 35,
+            "maximum_combinational_fanout": 10
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 45,
+            "maximum_logic_depth": 32,
+            "maximum_combinational_fanout": 10
+          }
+        }
+      },
+      "candidate": {
+        "cache_input_pins": 57,
+        "families": {
+          "cursor": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 30,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          },
+          "loader_data": {
+            "reached_cache_pins": 0,
+            "maximum_cell_depth": 0,
+            "maximum_logic_depth": 0,
+            "maximum_combinational_fanout": 0
+          },
+          "protocol": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 51,
+            "maximum_logic_depth": 38,
+            "maximum_combinational_fanout": 10
+          },
+          "command": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 29,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          },
+          "reset": {
+            "reached_cache_pins": 57,
+            "maximum_cell_depth": 29,
+            "maximum_logic_depth": 25,
+            "maximum_combinational_fanout": 10
+          }
+        }
+      }
+    }
+  },
+  "source_stages": {
+    "control": {
+      "address": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "selection": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 5
+      },
+      "indexValue": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 14
+      },
+      "successorValue": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 26
+      },
+      "pcValue": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 46
+      }
+    },
+    "candidate": {
+      "address": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "selection": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 5
+      },
+      "index0": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "word0": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "index1": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "word1": {
+        "cursor_dependency": false,
+        "expression_depth_from_cursor": null
+      },
+      "successorValue": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 6
+      },
+      "pcValue": {
+        "cursor_dependency": true,
+        "expression_depth_from_cursor": 26
+      }
+    }
+  },
+  "focused_regression": {
+    "coverage": {
+      "edges": 2090,
+      "immediate_transitions": [
+        {
+          "last_upload_edge": 324,
+          "commit_edge": 325,
+          "start_edge": 326,
+          "bank": 1,
+          "levels": 1
+        },
+        {
+          "last_upload_edge": 651,
+          "commit_edge": 652,
+          "start_edge": 653,
+          "bank": 0,
+          "levels": 6
+        },
+        {
+          "last_upload_edge": 978,
+          "commit_edge": 979,
+          "start_edge": 980,
+          "bank": 1,
+          "levels": 3
+        },
+        {
+          "last_upload_edge": 1305,
+          "commit_edge": 1306,
+          "start_edge": 1307,
+          "bank": 0,
+          "levels": 4
+        }
+      ],
+      "continuous_branch_edges": 128,
+      "counters": {
+        "push": 1932,
+        "commit": 5,
+        "start": 6,
+        "rejected": 137
+      }
+    },
+    "mutations_rejected": [
+      "wrong-bank",
+      "early-commit",
+      "stale-cache"
+    ]
+  },
+  "physical_gate": {
+    "decision": "do-not-route",
+    "reason": "Slow mapping improves only 0.153%, typical mapping worsens 6.599%, and area rises about 2.07%. Cursor logic depth improves 32 to 25 but protocol logic depth worsens 35 to 38. This does not meet the planned useful slow-corner improvement gate.",
+    "authorized_maximum_runs": 2,
+    "authorized_per_run": {
+      "cpus": 4,
+      "memory_gib": 6,
+      "timeout_seconds": 3600
+    },
+    "new_runs": [],
+    "physical_runtime_seconds": 0,
+    "settings_if_reopened": "Pinned offline tools/PDK, F2 flow controls, unchanged 20 ns/I/O constraints and diagnostic 6x4 floorplan; require fresh composed control because its RTL differs from the earlier routed control.",
+    "boundary": "The screen does not prove that routing could never improve this candidate. No new routed measurement or closure claim."
+  },
+  "next_question": "Can the cache-update enable be factored by idle/running state to remove the residual loader-control dependency without duplicating the lookup? No such new enable theorem or candidate is implemented here.",
+  "receipts": {
+    "build/backend/bank-control-initial/report.json": "ebe957de2b958eac30b237d0d738837e6707e3119452e82a38ea6f2face86c7e",
+    "build/backend/bank-control-check/report.json": "6fcf621926f1e72284f340b75a2603ef7fa7f1a11ec785c70bd2bc5b2470e735",
+    "build/backend/bank-candidate-initial/report.json": "6d2297df519f209434c737aaa397f47ce8650f4020622ef91e39c3fe1e44d73a",
+    "build/backend/bank-candidate-check/report.json": "6c2d72199848b40ccef3fd9c38d62e0435717b74c10785df241e091a6227fb07",
+    "build/backend/bank-cases-initial/report.json": "9a02425270868c83b7576341797e30014accfd28199515fc20c960a3f3292d41",
+    "build/backend/bank-cases-final/report.json": "0d65457540724dc727f531c1961e2f7de0ed8a49034d3ec8293e3bab6adc25c7",
+    "build/backend/bank-selection-cones.json": "f5305bdff37da888e1d87b2f5bcffb7cf5b36e71daef75cf89c3d77a107b4d2c"
+  },
+  "boundary": "Lean checks the selected complete netlists and actual emitted RTL, with explicit Yosys Verilog/proc and restricted JSON interpretation trust. Generic-gate sequential equivalence is separate from technology mapping. Maximum graph depth is structural, not gate delay or sensitization. Technology-mapped equivalence, external integration and physical closure remain open."
+}

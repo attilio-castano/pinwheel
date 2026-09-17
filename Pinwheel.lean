@@ -19,12 +19,20 @@ import Pinwheel.Compile.UARTStreamLink
 import Pinwheel.Compile.SPI
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
+import Pinwheel.Hardware.CountdownContract
+import Pinwheel.Hardware.PinBoundary
 import Pinwheel.Hardware.Emit
 import Pinwheel.Hardware.Execution.Emit
 import Pinwheel.Hardware.Reactive.Emit
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 import Pinwheel.Hardware.Storage
+import Pinwheel.Hardware.Storage.BackendEmit
+import Pinwheel.Hardware.Storage.BackendReadback
+import Pinwheel.Hardware.Storage.BankSelect
+import Pinwheel.Hardware.Storage.BankSelectReadback
+import Pinwheel.Hardware.Storage.CacheEnable
+import Pinwheel.Hardware.Readback.Boolean
 import Pinwheel.Hardware.Reactive.FetchChoice
 import Pinwheel.Hardware.UARTRx
 

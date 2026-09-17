@@ -69,6 +69,12 @@ Historical generated artifact SHA-256 values for `489a515` (later emitter change
 
 ## Remaining proof boundary and next step
 
+**2026-09-15 update:** the [hardware closure batch](hardware-closure.md) adds a
+kernel-checked interpretation of the actual emitted RTL's Yosys transition graph
+and RTL-to-generic-gates equivalence. `check-hardware.py` now checks both, rejects
+corrupted artifacts and unsupported import shapes, and records their distinct
+trust/initial-state boundaries. The original milestone claims below are historical.
+
 The Lean theorems cover `Countdown.circuit` under `Expr.eval`. The lowering maps constants to `hw.constant`, AND/subtraction/mux/zero-test to `comb` operations, inversion to XOR with all ones, and registers to `seq.compreg` on a converted rising-edge clock. Reset remains explicit mux logic. CIRCT and the emitter are tested translation tools; their semantics preservation has not been proved.
 
 No emitted-RTL equivalence proof, gate equivalence check, technology mapping, routing, area, or timing result is claimed. The subsequent [core implementation](core-hardware.md) completed the decoder/read path, scheduler, whole-core proofs, and protocol RTL checks. Translation/equivalence evidence is the next hardware proof boundary. The complete staging/commit transport remains milestone 5.
