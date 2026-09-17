@@ -7,3 +7,11 @@ warningAsError = true
 
 [[lean_lib]]
 name = "Pinwheel"
+
+[[lean_exe]]
+name = "backend_emit"
+root = "test.Backend"
+
+[[lean_exe]]
+name = "bank_select_emit"
+root = "test.BankSelect"

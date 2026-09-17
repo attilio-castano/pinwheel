@@ -88,8 +88,15 @@ def main():
     simulation = result.stdout
     original = args.netlist.read_text()
     header_end = original.index(");") + 2
-    if "levels[0]" in original:
-        mutant = original.replace("levels[0]", "corrupt_level0")
+    vector_driver = re.search(r"\bassign\s+levels\s*=\s*([^;]+);", original)
+    if vector_driver:
+        # Preserve both ANSI/non-ANSI port declarations and similarly named
+        # state such as r_levels. Corrupt only the public output expression.
+        mutant = (original[:vector_driver.start(1)] + "(" + vector_driver[1]
+                  + ") ^ 3'b001" + original[vector_driver.end(1):])
+        corruption = ""
+    elif re.search(r"(?<![\w$])levels\[0\]", original):
+        mutant = re.sub(r"(?<![\w$])levels\[0\]", "corrupt_level0", original)
         mutant = mutant[:header_end] + "\nwire corrupt_level0;\n" + mutant[header_end:]
         corruption = "\nassign levels[0] = ~corrupt_level0;\n"
     else:

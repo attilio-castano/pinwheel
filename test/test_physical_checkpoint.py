@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -130,7 +131,7 @@ class CheckpointTests(unittest.TestCase):
             launch.assert_not_called()
         self.assertFalse((self.core / "experiments/resume").exists())
 
-    def test_runner_uses_snapshot_and_records_identity(self):
+    def prepare_runner(self):
         (self.root / "tools").mkdir()
         (self.root / "physical").mkdir()
         (self.core.parent / "pdk").mkdir()
@@ -149,6 +150,10 @@ class CheckpointTests(unittest.TestCase):
         (self.core.parent / "pdk/installed.json").write_text(json.dumps({
             "tree_sha256": "test-tree", "revision": "test-revision",
             "files_sha256": {}, "symlinks": {}}))
+        return image
+
+    def test_runner_uses_snapshot_and_records_identity(self):
+        image = self.prepare_runner()
         with patch.object(runner, "ROOT", self.root), \
                 patch.object(runner, "BASE", self.core.parent), \
                 patch.object(sys, "argv", ["run-physical.py", "--tag", "resume",
@@ -167,6 +172,24 @@ class CheckpointTests(unittest.TestCase):
         self.assertEqual(command[command.index("--with-initial-state") + 1], mount + "/state.json")
         self.assertEqual(receipt["checkpoint"]["artifact_count"], 2)
         self.assertEqual(receipt["checkpoint_sha256"], checkpoint.sha(self.state))
+
+    def test_runner_timeout_stops_only_its_named_container(self):
+        image = self.prepare_runner()
+        with patch.object(runner, "ROOT", self.root), \
+                patch.object(runner, "BASE", self.core.parent), \
+                patch.object(sys, "argv", ["run-physical.py", "--tag", "bounded", "--timeout-seconds", "7"]), \
+                patch.object(runner.subprocess, "check_output", return_value=json.dumps([image])), \
+                patch.object(runner.subprocess, "run") as launch:
+            launch.side_effect = [subprocess.TimeoutExpired("docker", 7), subprocess.CompletedProcess("stop", 0)]
+            with self.assertRaises(SystemExit) as result:
+                runner.main()
+            self.assertEqual(result.exception.code, 124)
+            self.assertEqual(launch.call_args_list[0].kwargs["timeout"], 7)
+            self.assertEqual(launch.call_args_list[1].args[0],
+                             ["docker", "stop", "--time", "10", "pinwheel-bounded"])
+        receipt = json.loads((self.core.parent / "bounded-invocation.json").read_text())
+        self.assertEqual(receipt["stop_reason"], "wall_time_limit")
+        self.assertEqual(receipt["exit_code"], 124)
 
 
 if __name__ == "__main__":

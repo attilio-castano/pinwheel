@@ -27,7 +27,11 @@ def main():
     parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
     parser.add_argument("--checkpoint-manifest", type=Path, help="Previously captured checkpoint artifact manifest; required for resume")
     parser.add_argument("--overrides", type=Path, help="JSON implementation-flow controls; preserves RTL, timing boundary and floorplan")
+    parser.add_argument("--timeout-seconds", type=int, default=3600,
+                        help="Wall-time limit for this attempt; timeout stops only this run's named container")
     args = parser.parse_args()
+    if args.timeout_seconds <= 0:
+        parser.error("--timeout-seconds must be positive")
     if bool(args.from_step) != bool(args.state):
         parser.error("--from-step and --state must be supplied together")
     if bool(args.state) != bool(args.checkpoint_manifest):
@@ -90,8 +94,9 @@ def main():
         checkpoint_receipt = physical_checkpoint.snapshot(
             args.state, args.checkpoint_manifest, snapshot / "checkpoint", BASE / "core")
         checkpoint_mount = ["--mount", f"type=bind,source={snapshot / 'checkpoint'},target={checkpoint_receipt['mount_path']},readonly"]
+    container_name = "pinwheel-" + args.tag
     command = [
-        "docker", "run", "--rm", "--network", "none", "--cpus", "4", "--memory", "6g",
+        "docker", "run", "--rm", "--name", container_name, "--network", "none", "--cpus", "4", "--memory", "6g",
         "--mount", f"type=bind,source={BASE / 'core'},target=/work/core",
         "--mount", f"type=bind,source={BASE / 'pdk'},target=/work/pdk,readonly",
         *checkpoint_mount,
@@ -119,14 +124,23 @@ def main():
         "sdc_sha256": sha(BASE / "core/core.sdc"),
         "pdk_receipt_sha256": sha(BASE / "pdk/installed.json"),
         "boundary": inputs["boundary"],
+        "variant": inputs.get("variant", "small-dense-cached"),
+        "timeout_seconds": args.timeout_seconds,
     }
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
     with (BASE / (args.tag + ".log")).open("w") as log:
-        result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
-    receipt["exit_code"] = result.returncode
+        try:
+            result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, timeout=args.timeout_seconds)
+            exit_code = result.returncode
+        except subprocess.TimeoutExpired:
+            subprocess.run(["docker", "stop", "--time", "10", container_name],
+                           stdout=log, stderr=subprocess.STDOUT, timeout=30, check=True)
+            exit_code = 124
+            receipt["stop_reason"] = "wall_time_limit"
+    receipt["exit_code"] = exit_code
     receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
-    print(f"Physical run {args.tag}: exit {result.returncode}; inspect build/physical/{args.tag}.log")
-    raise SystemExit(result.returncode)
+    print(f"Physical run {args.tag}: exit {exit_code}; inspect build/physical/{args.tag}.log")
+    raise SystemExit(exit_code)
 
 
 if __name__ == "__main__":

@@ -15,8 +15,10 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('name', choices=['cached', 'dense', 'small-dense', 'small-cached', 'small-dense-cached', 'repetition'])
     p.add_argument('--ff', type=int, required=True)
+    p.add_argument('--mlir', type=Path, help='Explicit candidate emission; keeps the default artifact separate')
+    p.add_argument('--output', type=Path, help='Separate result directory for an explicit candidate')
     a = p.parse_args()
-    out = BASE/a.name
+    out = (a.output or BASE/a.name).resolve()
     out.mkdir(parents=True, exist_ok=True)
     (out/'report.json').unlink(missing_ok=True)
     def run(args, label):
@@ -27,7 +29,8 @@ def main():
     top = 'pinwheel_atomic_'+a.name.replace('-', '_')
     circt = ROOT/'build/tools/firtool-1.159.0/bin/circt-opt'
     suite = ROOT/'build/tools/oss-cad-suite/bin'
-    rtl = run([circt, BASE/(a.name+'.mlir'), '--canonicalize', '--lower-seq-to-sv', '--lower-hw-to-sv', '--hw-legalize-modules', '--export-verilog', '-o', '/dev/null'], 'export.log')
+    mlir = a.mlir or BASE/(a.name+'.mlir')
+    rtl = run([circt, mlir, '--canonicalize', '--lower-seq-to-sv', '--lower-hw-to-sv', '--hw-legalize-modules', '--export-verilog', '-o', '/dev/null'], 'export.log')
     (out/'design.sv').write_text(rtl)
     if a.name == 'repetition':
         tb=(out/'runtime_tb.sv').read_text()
@@ -120,7 +123,7 @@ def main():
         metrics[corner] = dict(standard_cell_area_um2=float(re.findall(r'Chip area for module.*?:\s*([\d.]+)', log)[-1]), abc_combinational_delay_ps=float(re.findall(r'ABC(?: RESULTS)?:.*?Delay\s*=\s*([\d.]+)', log)[-1]), flip_flops=ff, cells=len(cells))
         print(a.name, corner, metrics[corner], flush=True)
     sources = sorted((ROOT/'Pinwheel').rglob('*.lean')) + [Path(__file__).resolve(), ROOT/'test/loader_tb.sv', ROOT/'test/Storage.lean', ROOT/'test/StorageCache.lean', ROOT/'test/StorageCacheAxioms.lean', ROOT/'test/StorageRepetition.lean', ROOT/'test/StorageRepetitionEmit.lean', ROOT/'scripts/repetition-vectors.py', ROOT/'scripts/loader-vectors.py', ROOT/'scripts/reactive-core-vectors.py', ROOT/'tools/technology-library.json', ROOT/'tools/hardware-toolchain.json', ROOT/'lean-toolchain']
-    report = dict(metrics=metrics, simulation=simulation, rtl_sha256=hashlib.sha256(rtl.encode()).hexdigest(), vectors_sha256=hashlib.sha256(vectors.encode()).hexdigest(), source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}, boundary='Independent RTL traces and separately mapped CMOS5L corners. No full STA or physical fit claim. Proof audit is separate.')
+    report = dict(metrics=metrics, simulation=simulation, mlir_path=str(mlir), mlir_sha256=hashlib.sha256(mlir.read_bytes()).hexdigest(), rtl_sha256=hashlib.sha256(rtl.encode()).hexdigest(), vectors_sha256=hashlib.sha256(vectors.encode()).hexdigest(), source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sources}, boundary='Independent RTL traces and separately mapped CMOS5L corners. No full STA or physical fit claim. Proof audit is separate.')
     (out/'report.json').write_text(json.dumps(report,indent=2)+'\n')
 
 if __name__ == '__main__': main()

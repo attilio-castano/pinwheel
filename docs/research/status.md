@@ -1,80 +1,125 @@
 # Research status
 
-Updated 2026-09-15 from committed evidence through `5d89d95`. This is the current
-decision brief; [results](results.md) owns completed conclusions and
-[journal](journal.md) routes historical evidence. The bounded command-decoder
-experiment is complete; candidate physical validation remains pending.
+Updated 2026-09-15 with the [cache-enable follow-up](../cache-enable-study.md).
+This is the current decision brief; [results](results.md) owns completed
+conclusions and [journal](journal.md) routes historical evidence.
 
 ## Objective and current belief
 
-Build a general reloadable protocol engine whose implementation preserves specified
-pin timing, input capture, branching, and atomic program replacement, then establish
-its physical feasibility under the [competition constraints](../competition.md).
+Build a general reloadable protocol engine whose implementation preserves
+specified pin timing, input capture, branching, and atomic program replacement,
+then establish physical feasibility under the [competition constraints](../competition.md).
+Keep the reference execution semantics steady while closing implementation gaps.
 
-The general 32-entry dense cached core remains the default implementation and
-physical comparison baseline. Its first routed slow-corner setup slack is
-−6.254 ns. F2 flow repair improves the overall worst slack to −5.055 ns, but does
-not close timing or electrical limits. Two speculative-read layouts were proved
-and screened without earning a routing run. See [completed results](results.md).
+The formal work now connects the emitted RTL of one explicitly composed 32-entry
+dense cached Lean netlist to the reference machine. Its initialization, per-edge
+state relation, and every pre/post-edge
+observation refine the atomic machine with the existing 322-word capacity
+restriction. The serializer consumes that netlist. The legacy dense cached
+emitter remains the default and physical comparison baseline.
 
-The completed `command-split` candidate removes capacity-check dependencies from
-commit/start decoding while retaining push validation and all existing semantics:
+Completed validation distinguishes the two translation endpoints:
 
-- Structural Lean theorems preserve every pre/post-edge observation for arbitrary
-  two-state initial values and input histories; **102 declarations** pass the
-  standard-axiom audit. Dense emission and CIRCT retain a separate test boundary.
-- **21,864 regression edges**, 13,444,072 storage observations, and 3,585,618
-  defined output-bit comparisons pass; capacity-bypass and output-inversion
-  mutations are rejected.
-- Mapped cell area falls about **1.1%**, with 6,226 flip-flops unchanged. Typical
-  ABC delay improves about 9.8%; the slow estimate changes only about 0.19%.
-- Loader-data connectivity to the **57 retained cache-register data inputs**
-  falls from 57 to zero in both mapped corners. Protocol inputs still reach all
-  57. This establishes removal of the within-cycle dependency, not timing closure;
-  loaded data still affects later execution through memory registers.
+- **Countdown:** actual emitted RTL is interpreted back into Lean, with
+  kernel-checked transition/trace equality and rejected corrupted artifacts.
+  Yosys proves all 19 RTL/generic-gate comparison points.
+- **Composed backend:** Lean checks the actual emitted RTL against the complete
+  netlist refinement, covering 607 registers, 33 outputs and initialized traces.
+  Its audit permits only standard axioms. Yosys proves
+  all 6,315 old/new RTL and 6,309 RTL/generic-gate comparison points under the
+  recorded state correspondence. Independent loader/storage regression and two
+  mapped corners pass. The Verilog frontend/JSON adapter remain explicit trusted
+  boundaries; technology-mapped sequential equivalence remains open.
+- **External interface:** a proposed two-register sampling pipeline and
+  open-drain interpretation have Lean contracts. They add no latency to the
+  current core; the wrapper, serial transport and electrical assumptions remain
+  integration work.
 
-The [decoder closeout](../successor-fetch-study.md#command-decoder-experiment) and
-[committed manifest](../../physical/experiments/command-split-results.json) own the
-exact measurements and source identities. The candidate has not been routed or
-promoted to the default implementation.
+The [bank-selection experiment](../bank-selection-study.md) applies that method
+to a composed command-split control and one candidate that selects between
+completed bank reads. Both full circuit refinements and actual emitted-RTL
+read-backs pass, including initialization, all 607 register updates and all 33
+outputs. Each passes legacy/generic-gate equivalence, independent loader/storage
+regressions, focused bank-switch cases and corruption checks. The actual circuit
+can now be changed and measured with an explicit proof for each emitted variant.
 
-## Active question: does decoder isolation help after routing?
+The [cache-enable follow-up](../cache-enable-study.md) preserves the shared read
+and every register update while simplifying the update decision. Both fresh
+control and candidate pass complete emitted-RTL read-back, the standard-axiom
+audit, equivalence and independent regressions. Exact-cache cases cover stopped
+and running edges, faults, reset, self-branches and busy commit rejection. The
+result removes direct control dependencies from the enable, while an indirect
+cursor/command path remains through successor decoding.
 
-Does one matched physical implementation of `command-split` improve extracted
-area/timing and electrical behavior under F2's flow controls?
+The earlier portable gate passed 109 modules, 9,125 declarations / 4,665 theorems using
+only standard Lean axioms, and all 20 executable suites. See the owning
+[closure record](../hardware-closure.md) for exact hashes, initial-state
+assumptions and failed attempts.
 
-The [targeted source-family baseline](../successor-fetch-study.md#targeted-launch-family-timing)
-measures **−4.928 ns protocol-input slack in the previously routed F2 design**,
-nearly tied with its −5.055 ns loader-data slack. That value is not a routed
-measurement of `command-split`. The evidence supports cleaner command logic and
-slightly smaller mapped area; it does not predict automatic physical closure.
+## Physical finding
 
-## Continuation and gates
+The matched `command-split-closure` candidate completed routing and final
+three-corner extracted timing with unchanged F2 controls and constraints.
+Worst setup is **−5.049 ns**, essentially unchanged from F2's **−5.055 ns**.
+Cell area excluding fill falls about 0.91%, while setup violations rise from
+112 to 1,426 and the worst hold margin shrinks to about 2.9 ps. Electrical
+violations remain. The implemented-netlist regression passes.
 
-1. Recover the validated candidate at `1a0c960`, its receipt, and actual checkout/run
-   state before starting anything. Preserve the default reference and freeze the
-   candidate RTL separately in a candidate-aware physical runner.
-2. For the next authorized physical comparison, start from synthesis with F2's
-   controls, the same 20 ns clock, I/O constraints, and diagnostic floorplan. A
-   routed checkpoint for the old RTL cannot initialize the changed candidate.
-3. Compare final extracted paths by launch family, area, setup/hold, electrical
-   limits, antenna/DRC/LVS checks, and defined-output regression. Investigate where
-   the critical path moves; mapped connectivity alone cannot establish timing.
-4. Record the physical result and allocation in the owning study and these records.
-   Preserve failures and decide the next experiment from the remaining bottleneck.
+The worst path now starts at `loader_cursor[5]` and ends in the current-word
+cache. Loader-data timing improves, but that does not close the core. The
+[matched comparison](../successor-fetch-study.md#matched-command-split-physical-comparison)
+owns launch-family measurements and the final layout-check disposition. The
+one-hour attempt stopped during Magic DRC with exit 124. Magic DRC, LVS and later
+checks are incomplete; routing/antenna checks report zero violations. The
+[physical manifest](../../physical/experiments/command-split-physical-results.json)
+pins that partial flow result. No candidate is promoted to the default.
 
-Scope and resource limits come from the approved main task and its retained run
-briefs; this documentation adds no compute budget, new run, or external authority.
-No aggregate historical resource total was reconstructed here.
+The new bank-selection candidate stops at the matched mapping gate. Cursor-to-cache
+logic depth falls from 32 to 25, but protocol-input depth grows from 35 to 38.
+Area rises about 2.1%; typical ABC delay worsens 6.6% and the slow estimate improves
+only 0.15%. This does not justify routing under the agreed gate. No new physical
+run was started, and the conditional two-run allocation was unused. The
+[bank-selection manifest](../../physical/experiments/bank-selection-results.json)
+retains the proved candidate and exact receipts. These mapping measurements
+do not replace the legacy artifact's extracted physical timing.
+
+The cache-enable candidate improves the matched mapping screen: typical/slow
+cell area falls 0.375% / 0.452%, and ABC delay falls 9.108% / 1.312%. Cursor logic
+depth drops 32 → 28; protocol depth drops 35 → 32. Commands and reset also get
+shallower, with unchanged maximum fanout. Retain this experimental variant; the
+modest slow-corner gain supports a fresh matched physical comparison but does
+not establish routed improvement. No physical run or default promotion occurred.
+The [cache-enable manifest](../../physical/experiments/cache-enable-results.json)
+pins eight completed receipts and 914 verified source/artifact hash entries.
+
+## Next discriminators
+
+1. Extend sequential equivalence from generic gates to a selected technology
+   mapping, explicitly accounting for initial-state correspondence and eliminated
+   bits. Preserve independent tests with uninitialized storage.
+2. Use the [cache-enable candidate](../cache-enable-study.md) for the next matched
+   physical discriminator, with a separately accounted fresh composed control,
+   unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
+   dependency visible when interpreting the worst path. The current completed
+   batch ends at mapping; the next physical allocation remains a separate step.
+3. Resolve the actual wrapper/I/O budget and loading transport, then compose the
+   [external timing contract](../external-interface.md) with protocol assumptions.
+   Synchronizer delay must appear in those bounds; no asynchronous or analog
+   detection guarantee follows from the digital two-edge theorem.
+
+The completed command-split physical attempt used four CPUs, a 6 GiB limit and a
+one-hour cap; its receipt records the end state. The bank-selection and
+cache-enable follow-ups consumed no additional physical run. Historical cumulative
+resource use remains unknown. This status record grants no additional run or
+external action.
 
 ## Deferred questions
 
 - Synchronous SRAM/latches need a proved availability/write schedule for arbitrary
   accepted programs; average protocol idle time is insufficient.
 - The bounded I²C repetition prototype has narrower scope than the general engine.
-- Antenna-related fanout, protocol-input delay, the official 8×4 wrapper, external
-  serial loading, and translation equivalence remain separate obligations.
+- The official 8×4 wrapper, package pins, electrical limits and physical timing
+  closure remain separate obligations.
 
 Reopen these when evidence changes the allocation, using the conditions in
-[results](results.md). Preserve earlier studies' detailed limitations and frozen
-comparison contracts.
+[results](results.md). Preserve detailed limitations and frozen comparison contracts.

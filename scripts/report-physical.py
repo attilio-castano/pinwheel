@@ -67,6 +67,9 @@ def main():
                 routing_passes.append({"iteration": iteration, "violations": int(match[1])})
     report = {
         "tag": args.tag, "flow_exit_code": invocation["exit_code"],
+        "variant": invocation.get("variant", "small-dense-cached"),
+        "timeout_seconds": invocation.get("timeout_seconds"),
+        "stop_reason": invocation.get("stop_reason"),
         "last_completed_step": states[-1].parent.name,
         "completed_steps": [p.parent.name for p in states],
         "detailed_routing_completed": any("-openroad-detailedrouting" in p.parent.name for p in states),

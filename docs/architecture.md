@@ -77,6 +77,17 @@ the [bounded repetition prototype](storage-study.md#bounded-runtime-repetition)
 separately investigates reconstruction at runtime. Load-image byte counts and
 allocated hardware storage are different measurements.
 
+The [composed dense cached backend](hardware-closure.md#composed-backend) uses
+typed combinational bindings so shared successor/PC logic has one explicit
+definition. Its netlist semantics evaluates all bindings from the same pre-edge
+register state. The generic serializer consumes that proved netlist; the legacy
+emitter remains the comparison baseline. The [external timing contract](external-interface.md)
+separately defines the proposed sampled-pin delay and open-drain interpretation.
+The [full-backend read-back](hardware-closure.md#full-backend-rtl-read-back) checks
+the actual emitted RTL against that netlist and composes its initialized trace
+refinement. Source/MLIR matching and solver queries only suggest proof boundaries;
+Lean must check every accepted equality.
+
 ## Proof and validation boundaries
 
 [Processor verification](processor-verification.md#the-chain-of-evidence) defines
@@ -106,12 +117,17 @@ modules rather than defining their contracts.
 | `Pinwheel/Compile/` | Protocol compilers and correspondence, including explicit and looped I²C programs. |
 | `Pinwheel/Binary/` | PWL codecs, layout, round trips, decoded execution, and serialized-size accounting. |
 | `Pinwheel/Hardware/Circuit.lean` | Width-indexed expressions, register updates, and their digital semantics. |
+| `Pinwheel/Hardware/Netlist.lean`, `NetlistEmit.lean` | Typed shared combinational bindings, their semantics, and generic MLIR serialization. |
+| `Pinwheel/Hardware/CountdownContract.lean`, `scripts/countdown_import.py` | Countdown trace correspondence and restricted read-back of actual emitted RTL. |
+| `Pinwheel/Hardware/Storage/BackendReadback.lean`, `scripts/backend_readback.py`, `check-backend-readback.py` | Full-backend artifact interpretation, composed Lean proofs, initialization/trace closure and corruption checks. |
+| `Pinwheel/Hardware/PinBoundary.lean` | Proposed digital input-pipeline delay and open-drain pad interpretation; no physical wrapper. |
 | `Pinwheel/Hardware/Timed.lean`, `Pinwheel/Hardware/Interface.lean` | Exact-edge component refinement and checked signal interfaces; the latter is not a physical loading interface. |
 | `Pinwheel/Hardware/Encoding.lean`, `Core*.lean`, `Refinement.lean`, `Protocols.lean` | Original encoded UART/SPI core and compiler-proof composition. |
 | `Pinwheel/Hardware/Execution/` | E64 encoding/lowering, decoder, direct/indexed storage, and proofs. |
 | `Pinwheel/Hardware/Reactive/` | Structural reactive scheduler, capture/fetch order, interfaces, and integrated core refinement. |
 | `Pinwheel/Hardware/Loader/` | Atomic two-bank image loading, validation, machine composition, and proofs. |
 | `Pinwheel/Hardware/Storage/` | Capacity-limited, cached, dense, and repetition variants; fetch-choice and command-split experiments. |
+| `Pinwheel/Hardware/Storage/Backend*.lean` | One composed 32-entry dense cached circuit/netlist, its full refinement, and emission entry point. |
 | `Pinwheel/Hardware/Emit.lean` and subsystem emission modules | Structural-to-MLIR serialization and concrete wiring adapters. |
 | `test/`, `scripts/` | Executable Lean checks, independent oracles, RTL testbenches, audits, and measurement runners. |
 | `tools/`, `physical/` | Tool/library pins, physical constraints, controlled experiment configuration, and selected result manifests. |

@@ -34,8 +34,8 @@ The gate:
    certificate checks. Their existing negative cases remain included.
 4. Independently decodes and checks generated PWL images with the Python oracle.
 
-`.github/workflows/lean.yml` first runs the disposable-file checkpoint provenance
-regression (`python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'`),
+`.github/workflows/lean.yml` first runs the disposable-file input/checkpoint provenance
+regressions (`python3 -B -m unittest discover -s test -p 'test_physical_*.py'`),
 which needs no CAD tools. It then runs the same Lean entry point on pull requests and pushes
 to `main`, on Ubuntu 24.04 with no Lake cache. It uses the repository Lean pin and
 commit-pinned checkout/Lean actions. It has read-only repository permissions and
@@ -54,6 +54,11 @@ For a new checkout, the relevant dependency chain is:
 
 | Gate | Inputs to generate first | Evidence owner |
 | --- | --- | --- |
+| Countdown artifact/equivalence | `check-hardware.py` generates its own fixtures; pinned CIRCT/Yosys/Icarus binaries required | [Hardware closure](hardware-closure.md#countdown-artifact-interpretation-rather-than-a-compiler-proof) |
+| Full-backend Lean RTL read-back | `check-backend-readback.py --tag NAME` regenerates its own artifact; pinned CIRCT/Yosys/Z3 binaries required | [Full read-back](hardware-closure.md#full-backend-rtl-read-back) |
+| Composed dense cached backend | `check-backend.py --tag NAME` builds the native emitter and loader fixtures; pinned hardware tools and technology libraries required | [Composed backend](hardware-closure.md#composed-backend) |
+| Program-bank selection variants | `check-backend-readback.py --variant command-split` or `--variant late-bank`, followed by `check-bank-select.py` with the exact proof receipt | [Bank-selection study](bank-selection-study.md) |
+| Cache-enable variant | `check-backend-readback.py --variant enable-split`, followed by `check-bank-select.py` and exact-cache regression | [Cache-enable study](cache-enable-study.md) |
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
@@ -82,6 +87,24 @@ investigate, not a reason to replace the baseline hashes automatically.
 Existing retained fixtures may also be used for a focused regression after their
 hashes are checked. Label that result as a regression against frozen fixtures,
 not as proof that every prerequisite was regenerated from a clean checkout.
+
+The composed-backend gate retains old/new RTL equivalence, RTL/generic-gate
+equivalence, independent storage regression, and two mapped corners under a
+fresh `build/backend/<tag>/`. Run `check-backend-readback.py --tag NAME` to check
+the full emitted transition and initialized traces in Lean. Pass its receipt to
+`check-backend.py --readback-report PATH --tag NAME` to require exact source and
+artifact identities across both gates. Both countdown and full-backend read-back
+retain an explicit trusted parser/frontend boundary. See
+[hardware closure](hardware-closure.md) for initial-state relations and mutations.
+
+Candidate staging and timeout/provenance regressions use disposable files and no
+CAD execution:
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_physical_*.py'
+python3 -B -m unittest discover -s test -p 'test_backend_readback.py'
+python3 -B -m unittest discover -s test -p 'test_bank_select.py'
+```
 
 ## Foundation review order
 

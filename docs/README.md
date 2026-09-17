@@ -32,6 +32,10 @@ historical next-step statements are not the current work queue.
 26. [Timed component contracts](timed-components.md) for shared fetch semantics, checked signal interfaces, named edge observations, and composed structural-cache refinement.
 27. [Successor-fetch experiments](successor-fetch-study.md) for the measured path breakdown and controlled flow/architecture comparison with exact-cycle preservation.
 28. [Physical validation](physical-validation.md) for the first routed baseline, extracted timing, layout checks, and limitations.
+29. [Hardware correspondence closure](hardware-closure.md) for countdown artifact interpretation, the composed dense cached backend, and equivalence boundaries.
+30. [External interface contract](external-interface.md) for input-pipeline latency, open-drain pads, and loading transport obligations.
+31. [Program-bank selection experiment](bank-selection-study.md) for the composed command-split control, parallel bank reads, full RTL read-back, and mapping/physical advance gates.
+32. [Cache-update enable experiment](cache-enable-study.md) for factored update decisions, exact cache observations, and the matched mapping screen.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 

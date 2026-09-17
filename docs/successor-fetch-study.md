@@ -305,23 +305,77 @@ Full source/artifact hashes, RTL, vectors, mutants and mapping logs are retained
 under `build/successor-fetch/command-split-screen/`; the validated implementation
 is commit `1a0c960`.
 
-## Next decision
+## Matched command-split physical comparison
 
-The bounded decoder experiment is complete. The next useful experiment is one
-matched physical implementation of `command-split` using F2's flow controls,
-unchanged 20 ns clock, I/O constraints and diagnostic floorplan. This candidate
-removes the demonstrated dependency while slightly reducing mapped area, so it
-has a better basis for that expense than the larger speculative-read layouts.
-A candidate-aware physical runner must freeze the new RTL separately and retain
-the original comparison reference. It must start from synthesis: an old routed
-checkpoint cannot be reused with changed RTL.
+Run `command-split-closure` on 2026-09-15 freezes the exact previously validated
+candidate RTL from `command-split-results.json` and starts from synthesis. It uses
+F2's controls, the same pinned image/PDK, 20 ns clock, I/O constraints and diagnostic
+6x4 floorplan. The resolved configurations differ only in run-local paths and the
+selected RTL path. This run is separate from the new
+[composed Lean backend](hardware-closure.md#composed-backend).
 
-After routing, compare extracted launch-family paths, area, hold, electrical
-limits, antenna/DRC/LVS checks, and all defined output bits. The existing protocol
-path is already nearly tied with loader data, so the working expectation is a
-cleaner control cone, not automatic timing closure. Antenna-induced fanout and
-protocol-input delay remain separate issues. The candidate has **not** been
-routed or promoted to the default implementation.
+Final three-corner extracted STA completed. The comparison below uses its metrics;
+the overall flow's incomplete layout checks are recorded separately below.
+
+| Extracted metric | F2 baseline | Command split |
+| --- | ---: | ---: |
+| Cell area excluding fill (µm²) | 749,721 | 742,886 |
+| Worst setup slack (ns) | −5.055013 | −5.049415 |
+| Reported setup-violation count | 112 | 1,426 |
+| Worst hold slack (ns) | 0.022140 | 0.002859 |
+| Hold violations | 0 | 0 |
+| Worst-corner slew violations | 51 | 49 |
+| Worst-corner capacitance violations | 7 | 3 |
+| Worst-corner fanout violations | 34 | 21 |
+
+Area falls about 0.91%, but the worst setup miss changes by only 0.0056 ns. Hold
+margin shrinks to about 2.9 ps, and the setup-violation count increases. Neither
+timing nor electrical closure is established. This candidate is not promoted.
+
+Each launch family was independently queried with the retained extracted
+netlist, parasitics, libraries and unchanged constraints. The all-path query
+reproduces final STA within report precision.
+
+| Slow-corner launch family | F2 slack (ns) | Command-split slack (ns) |
+| --- | ---: | ---: |
+| Protocol inputs | −4.927642 | −4.594396 |
+| Loader data | −5.055013 | −3.207992 |
+| Loader commands | −3.861475 | −3.944994 |
+| Init/reset | −3.884335 | −3.927788 |
+| Registers | −4.091041 | −5.049415 |
+
+The worst path now starts at `_45583_` (`loader_cursor[5]` in the synthesized
+netlist) and ends at `_45626_`, whose Q is `r_cached_word[12]`. This supports a
+shift in the bottleneck to registered loader control feeding the cache. It does
+not imply that every loader dependency was removed. The path contains 13.704 ns
+of logic-cell delay, 9.813 ns of buffer delay, 0.471 ns of wire delay and 0.633 ns
+of clock-to-Q delay. Cell delays include load/slew effects. Family report counts
+are capped at 1,000 and are not total violation counts.
+
+The implemented netlist passes 21,864 atomic/protocol edges and 3,585,618 defined
+output-bit comparisons against the frozen candidate RTL. Output inversion is
+rejected. This remains zero-delay simulation with reference-X bits excluded,
+separate from the full backend's generic-gate equivalence proof.
+
+Receipts: `build/physical/command-split-netlist-validation-check/report.json`,
+`build/physical/core/targeted-sta/command-split-closure-families/report.json`, and
+`build/successor-fetch/command-split-closure/paths.json`. The flow receipt is
+`build/physical/command-split-closure-report.json`. The
+[compact physical manifest](../physical/experiments/command-split-physical-results.json)
+pins their hashes and the matched input identities.
+
+The one-hour attempt stops during `64-magic-drc`, with exit 124 and
+`stop_reason = wall_time_limit`; step 63 is the last completed checkpoint.
+OpenROAD routing DRC and antenna checks report zero violations. Magic DRC, LVS
+and later flow checks did not complete, so this is a partial layout result with
+completed extracted timing. No additional implementation attempt was started.
+
+The [program-bank selection follow-up](bank-selection-study.md) proves both
+composed variants and their actual emitted RTL, then stops at mapping: cursor
+depth improves, but protocol depth and area increase without a useful slow-corner
+gain. It consumes no further physical run. That study also identifies the final
+cache update selector in this retained path and records the next enable-factoring
+hypothesis. Current allocation is owned by [research status](research/status.md).
 
 ## Reproducing the physical controls
 
@@ -339,6 +393,7 @@ python3 scripts/report-fetch-paths.py --tag fetch-fanout-route
 ```
 
 Both physical controls, the two speculative-read screens and the command-decoder
-screen are complete. No architectural candidate was promoted to routing, and the default implementation
-and physical configuration remain unchanged. Mid-PnR states can inherit stale
-corner metrics; only final extracted STA supports a routed timing comparison.
+screen are complete. The command-split physical comparison above adds a routed
+candidate without changing the default implementation or physical configuration.
+Mid-PnR states can inherit stale corner metrics; only final extracted STA supports
+a routed timing comparison.
