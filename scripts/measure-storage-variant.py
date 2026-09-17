@@ -72,6 +72,19 @@ def main():
             m.edge(command=2, data=0); assert m.gates == [0,0,0,1] and m.cursor == 32
             for _ in range(32): m.edge(command=2, data=4)
             m.edge(command=2, data=32); assert m.gates == [0,0,0,1] and m.cursor == 64
+            # Fill and execute all 32 dictionary words of each bank. A word register that
+            # never loads, or loads on every push, must change an observable trace.
+            for offset in (0, 3):
+                words = [pack(dict(kind=0, levels=(k+offset) % 8, enabled=7, duration=k//8+offset)) for k in range(31)]
+                assert len(set(words)) == 31 and 4 not in words
+                bank = m.active
+                m.load(f'full-dictionary-{offset}', words+[4], 31)
+                assert m.active != bank
+                m.edge(command=5)
+                for _ in range(400):
+                    m.edge()
+                    if not 1 <= m.s[0] <= 4: break
+                else: raise AssertionError('full-dictionary program did not finish')
         else:
             m.load('full-capacity-retained', [pack(dict(kind=0,duration=k)) for k in range(33)]+[4], 33)
         vectors = (ROOT/'build/loader/vectors.txt').read_text()+''.join(' '.join(map(str,row))+'\n' for row in m.rows)

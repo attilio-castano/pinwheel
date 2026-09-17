@@ -488,6 +488,25 @@ external interface integration retain their separate contracts.
   the [study](../pin-sampler-study.md) owns interpretation. One run, no margin
   against the observed spread between equivalent RTLs; no promotion or claim.
 
+## 2026-09-17: clock-gated design routes (`clock-gated-03`)
+
+- **Scope:** one user-authorized bounded run (same limits); `GRT_ALLOW_CONGESTION`
+  added to the 62%-density clock-gated overlay. Follow-up gate simulations and one
+  scratch synthesis-only screen; no further physical run.
+- **Result:** exit 0; global overflow 0, 0, 0, 3, 0; zero detailed-routing and
+  antenna violations. Functional area 608,454 µm² versus 748,353 (−18.7%),
+  utilization 67.4%, wirelength 1.670 m. Slow setup −0.617 ns / 16 endpoints, all
+  launched from `incoming`; worst hold +0.0034 ns; 11 slew and 18 fanout
+  violations. Netlist regression passes with the original (28,165 edges) and
+  extended (29,062 edges) vectors. Stuck clock-gate enables rejected: 84/134
+  with the original vectors, 134/134 with the extended ones.
+- **Disposition and identity:**
+  [manifest](../../physical/experiments/clock-gated-physical-results.json);
+  the [study](../physical-correlation-study.md#third-attempt-clock-gated-03-routes)
+  owns interpretation. `scripts/measure-storage-variant.py` now exercises every
+  dictionary word, so fresh regression counts differ from earlier receipts.
+  No promotion or claim; Magic DRC/LVS not run.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

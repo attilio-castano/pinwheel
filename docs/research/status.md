@@ -116,9 +116,16 @@ input-delay budget.
 
 Clock-gated storage on the calibrated control cuts cell area **18.5%** after
 clock-tree and hold repair (604,627 versus 742,324 µm²; utilization 67% versus
-82%), but neither attempt routes: `clock-gated-01` overflows Metal3 by 515 at the
-first global route, and the 62%-density retry `clock-gated-02` fails later with a
-total overflow of 3. Metal3 is the only horizontal signal layer under the
+82%). The first two attempts do not route: `clock-gated-01` overflows Metal3 by
+515 at the first global route, and the 62%-density retry `clock-gated-02` fails
+later with a total overflow of 3. With marginal overflow left to the detailed
+router, **`clock-gated-03` routes with zero violations: 608,454 µm² of functional
+cells (−18.7%), 67.4% utilization, 13% less wire**, slow setup −0.617 ns with 16
+violating endpoints (all launched from `incoming` ports) and hold met by only
+3.4 ps. The routed netlist passes the oracle regression, and with vectors
+extended to fill and execute every dictionary word in both banks, all 134
+stuck clock-gate-enable mutants are rejected (84 with the earlier vectors: a
+coverage gap in the shared regression, now closed). Metal3 is the only horizontal signal layer under the
 template's Metal4 ceiling, and even the calibrated control runs it at about 70%
 of derated capacity. Horizontal routability of the wide floorplan, not cell area,
 may be the binding fit constraint; that is a hypothesis, not a measurement.
@@ -157,8 +164,9 @@ remain, layout checks were not run, and the boundary is still the diagnostic
 0. The calibrated flow and the matched composed control are now the comparison
    baseline for physical work. Open flow-level questions, each needing its own
    allocation: repeatability of the sampled result (placement/seed variation or
-   a modest clock margin); a third clock-gating attempt that leaves marginal
-   global overflow to the detailed router; and a routability experiment on the
+   a modest clock margin); clock gating combined with the pin sampler, with
+   explicit hold margin; finer gating of the five-bit index registers (scratch
+   synthesis: 455,658 µm², 582 gates); and a routability experiment on the
    official 8×4 outline, where Metal3 capacity rather than area may bind.
    The `r_cached_word` successor loop is the path the architectural candidates
    should now be measured against, with the sampler and calibrated flow in place.

@@ -130,6 +130,12 @@ receipt. Completed run `build/sampled/cs-02/report.json` (157.967 s on this host
 | Same oracle, pins not shifted (sampled RTL) | rejected at edge 8,299 |
 | Same oracle, pins shifted (inner RTL) | rejected at edge 8,301 |
 
+A later re-run on final sources (`cs-04`) reproduces the same RTL, the same
+equivalence counts and both rejections after the shared oracle vectors were
+[extended](physical-correlation-study.md#third-attempt-clock-gated-03-routes) to
+fill and execute every dictionary word: 29,062 edges and 18,079,584 storage
+observations pass.
+
 The reference pipeline is six lines of hand-written SystemVerilog around the
 unmodified proved module; it is not emitted from Lean, which is what makes the
 comparison informative. State correspondence equates same-named registers; it

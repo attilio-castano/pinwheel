@@ -242,10 +242,68 @@ floorplan, not a measurement. A third attempt would need its own allocation and
 one stated change, such as allowing the detailed router to resolve marginal
 global overflow while keeping the final routing-DRC gate.
 
+### Third attempt: `clock-gated-03` routes
+
+Authorized 2026-09-17 with one change from `clock-gated-02`:
+`GRT_ALLOW_CONGESTION` (`physical/experiments/clock-gated-tolerant.json`) leaves
+remaining global overflow to the detailed router, while the detailed-routing DRC
+gate still fails the run on any violation. The run exits 0. Its global routes
+report total overflow of 0, 0, 0, 3 and finally 0; detailed routing and the
+antenna check finish with zero violations.
+
+| Extracted metric | Calibrated control (`rc-calibrated-01`) | Clock-gated (`clock-gated-03`) |
+| --- | ---: | ---: |
+| Functional cell area | 748,353 µm² | **608,454 µm² (−18.7%)** |
+| Utilization after detailed routing | 82.9% | **67.4%** |
+| Timing-repair buffers | 10,952 / 142,902 µm² | 6,112 / 73,175 µm² |
+| Multi-input combinational cells | 25,034 / 272,770 µm² | 17,678 / 200,388 µm² |
+| Clock buffers + inverters / clock gates | 1,098 / 0 | 1,171 / 67 |
+| Routed wirelength | 1.927 m | 1.670 m |
+| Slow setup worst slack / violating endpoints | −0.153 ns / 56 | −0.617 ns / 16 |
+| Slow setup total negative slack | −5.4 ns | −3.4 ns |
+| Typical / fast setup worst slack | +5.707 / +8.361 ns | +5.230 / +7.530 ns |
+| Worst hold slack (fast corner) | +0.086 ns | **+0.003 ns** |
+| Setup / hold violations outside the slow corner | 0 / 0 | 0 / 0 |
+| Slew / capacitance / fanout violations | 0 / 0 / 25 | 11 / 0 / 18 |
+
+The 67 gates cover the 64 dictionary words (55 flip-flops each), the two
+last-address registers and the cached word. The 512 five-bit index registers
+stay ungated at a minimum width of eight. As in the control, every violating
+slow-corner path launches from the `incoming` ports (worst −0.617 ns); the loader
+`data` family is at +0.997 ns. That is the family the
+[pin sampler](pin-sampler-study.md) removes, so the two changes are
+complementary, but their combination is unmeasured. Hold is met with only
+3.4 ps at the fast corner: gated clock branches add skew, and a submission flow
+would need explicit hold margin.
+
+**Functional evidence.** The routed gated netlist passes the implemented-netlist
+regression against the oracle vectors and the source RTL (28,165 edges,
+4,618,982 defined output-bit comparisons; output-corruption mutant rejected).
+`scripts/check-clock-gates.py` then ties each gate's enable to 0 and to 1 in turn.
+With the existing vectors only **84 of 134** such mutants are rejected: all 50
+survivors are the gates of bank-0 words 25–31 and bank-1 words 14–31, which no
+earlier trace ever executes. That is a coverage gap in the shared regression,
+not specific to gating. `scripts/measure-storage-variant.py` now also fills and
+executes all 32 dictionary words of each bank (29,062 edges). With those vectors
+the routed netlist still passes (4,766,090 comparisons) and **134 of 134**
+stuck-enable mutants are rejected. This is zero-delay gate simulation and trace
+sensitivity; it is not an equivalence proof. Equivalence across clock gating and
+technology mapping remains open.
+
+A further scratch synthesis-only screen gates registers down to five bits: mapped
+area 455,658 µm² with 582 gates, against 505,878 µm² (67 gates) and 578,449 µm²
+ungated. It has not been placed, routed or checked; 582 gated branches would
+stress clock-tree synthesis and hold.
+
+[Physical manifest](../physical/experiments/clock-gated-physical-results.json)
+pins the receipts for the control, both failed attempts and this run.
+
 ## Reproduction
 
 ```sh
 python3 -B -m unittest discover -s test -p 'test_fit_wire_rc.py'
+python3 scripts/check-physical-netlist.py NETLIST --design core --label NAME --vectors VECTORS
+python3 scripts/check-clock-gates.py NETLIST --label NAME
 python3 scripts/fit-wire-rc.py \
   --def  build/physical/core/runs/command-split-closure/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.def \
   --spef build/physical/core/runs/command-split-closure/56-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef
