@@ -507,6 +507,30 @@ external interface integration retain their separate contracts.
   dictionary word, so fresh regression counts differ from earlier receipts.
   No promotion or claim; Magic DRC/LVS not run.
 
+## 2026-09-17: combined sampler and clock-gating attempts `combined-01`/`-02`
+
+- **Scope:** user-authorized combined run: pin-sampled RTL
+  `3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1` with
+  `physical/experiments/combined.json` (calibrated estimates, width-8 clock gating,
+  62% density, tolerated global overflow, hold-repair margins 0.15/0.10 ns).
+- **`combined-01` (infrastructure failure):** exit 125; the Docker client lost its
+  connection (`error waiting for container: unexpected EOF`) during the 11th
+  detailed-routing iteration. No cause found; the daemon and image were intact
+  afterwards. This is not a flow result.
+- **`combined-02` (wall-time limit):** identical configuration; its first ten
+  detailed-routing iterations reproduce `combined-01` exactly. Exit 124 at the
+  one-hour cap in the 39th iteration with five Metal2/Metal3 spacing violations
+  left (21,548 initially). All five global routes finish with zero final
+  overflow (208 transiently). Pre-route: 607,329 µm², 67.3% utilization; hold
+  repair reaches its 0.10 ns target; the resizer's setup estimate ends at
+  −1.118 ns. Ungated designs need 17–19 detailed-routing iterations (22–24 min),
+  `clock-gated-03` 35 (28.5 min): gated designs are markedly harder to
+  detail-route despite lower utilization.
+- **Disposition:** `combined-03` resumes at `OpenROAD.DetailedRouting` from the
+  verified `combined-02` step-45 checkpoint
+  (`build/physical/combined-02-step45-checkpoint.json`) with a 90-minute cap for
+  this one run; detailed routing restarts from its first iteration.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,
