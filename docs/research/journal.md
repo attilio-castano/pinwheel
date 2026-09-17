@@ -568,6 +568,26 @@ external interface integration retain their separate contracts.
   repeated wire evaluation inside a launch function and did not finish in ten
   minutes; wire arrivals are now computed as values first.
 
+## 2026-09-17: certified register enables and Lean-chosen gating plans
+
+- **Scope:** Lean definitions and proofs, report extension, a Yosys gating step
+  with gate-level simulation and mapping. No placement or routing.
+- **Result:** `Hardware/Enable.lean` and `Storage/EnabledBackend.lean` build with
+  warnings as errors and standard axioms; `test/Enables.lean` passes. Shapes hold
+  by `rfl` for both bodies. Plans: dictionary 66 gates / 3,536 bits, storage
+  580 / 6,108, cached word never gated (SHA-256 `254d768dd0cadfc3…`,
+  `c4cccf8bf225e359…` in `build/structure/validation-03/`). On RTL
+  `318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764`:
+  `build/gated/none-02`, `dictionary-01`, `storage-01` match their plans, pass
+  29,062 oracle edges with 18,079,584 storage observations, reject 132/132 and
+  1,160/1,160 stuck-enable mutants, and map to 546,149 / 497,263 / 457,577 µm²
+  (typical) with slow ABC delay 9.964 / 9.974 / 9.970 ns.
+- **Disposition:** the [study](../register-enables.md) owns the construction,
+  boundary and open physical questions. A `clockgate` selection converted
+  nothing in the pinned Yosys; the step unmaps the enables of unplanned registers
+  instead. An empty-plan control first failed on an invalid `select -none`
+  combination and is retained as `build/gated/none-01`.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

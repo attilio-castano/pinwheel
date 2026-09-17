@@ -130,6 +130,9 @@ def main():
               "sampled_pin_reach": [r["endpoint"] for r in sampled_pins],
               "loop_stages_gate_levels": {v: lean[v]["loop_stages_gates"] for v in lean},
               "self_loops_gate_levels": lean["command-split"]["self_loops_gates"],
+              "update_cones_gate_levels": {v: lean[v]["update_cones_gates"] for v in lean},
+              "gating_policies": lean["command-split"]["policies"],
+              "gating_plan_sha256": {p.name: sha(p) for p in sorted(out.glob("plan-*.tsv"))},
               "artifact_sha256": {p.name: sha(p) for p in sorted(out.glob("*.json"))},
               "elapsed_seconds": round(time.monotonic() - started, 3),
               "boundary": "Lean levels are an ordinal structural model. Exact agreement is claimed only for operation "

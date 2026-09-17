@@ -34,6 +34,7 @@ import Pinwheel.Hardware.Storage.BankSelect
 import Pinwheel.Hardware.Storage.BankSelectReadback
 import Pinwheel.Hardware.Storage.CacheEnable
 import Pinwheel.Hardware.Storage.SampledBackend
+import Pinwheel.Hardware.Storage.EnabledBackend
 import Pinwheel.Hardware.Readback.Boolean
 import Pinwheel.Hardware.Reactive.FetchChoice
 import Pinwheel.Hardware.UARTRx

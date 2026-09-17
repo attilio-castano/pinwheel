@@ -141,10 +141,10 @@ Suggested order for a structural question: Lean levels (seconds), then the mappe
 screen (minutes), then one confirming routed run with a matched control and
 `check-targeted-timing.py --design`.
 
-The same experiments suggest three further abstractions, none implemented here:
-register enables as part of the circuit representation, so that recirculation,
-gating groups and enable cones are explicit and provable instead of left to a
-synthesis width threshold; registered boundaries with input latency as a
+The same experiments suggest three further abstractions. Register enables are
+now [certified in Lean](register-enables.md), so that recirculation, gating groups
+and enable cones are explicit and provable instead of left to a synthesis width
+threshold. Not yet built: registered boundaries with input latency as a
 parameter of the pin-level protocol contracts; and a memory primitive with
 interchangeable implementations. A fanout-aware cost is the natural refinement
 of this model.

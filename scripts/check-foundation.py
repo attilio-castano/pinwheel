@@ -24,7 +24,7 @@ SUITES = [
     ('I2CRead', []), ('Encoding', []), ('Hardware', []),
     ('TimedContracts', []), ('FetchChoice', []), ('Interfaces', []),
     ('StorageCapacity', []), ('StorageRepetition', []), ('PinSampler', []),
-    ('StructuralTiming', []),
+    ('StructuralTiming', []), ('Enables', []),
 ]
 
 

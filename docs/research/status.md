@@ -190,16 +190,35 @@ arrives at 99. 6,172 of 6,233 register bits recirculate through one multiplexer,
 against 6,192–6,208 hold-violating endpoints found by the ungated flows.
 Levels are ordinal; buffering, wire and placement stay outside the model.
 
+## Register enables (2026-09-17)
+
+[Register enables](../register-enables.md) makes the enable of a register a
+certified object. By definitional unfolding, all 581 storing registers of the
+proved bodies already have the shape `mux enable data hold` (index entries under
+a slice); Lean reads the enable and data off those expressions and proves each
+view describes the emitted next-state, so MLIR, RTL and read-back proofs are
+unchanged. Gating policies are Lean definitions with two theorems: only
+certified registers are gated, and the cached word never is. Storage enables
+arrive at level 23–29 against 99 for the cached word, so gating them is
+structurally timing-safe. `gate-clocks.py` applies a plan to the read-back-proved
+RTL, checks the netlist against the plan bit by bit, passes the oracle with every
+storage register observed, and rejects every stuck-enable mutant
+(1,160 of 1,160 for the 580-gate plan). Mapped typical area falls from 546,149 to
+497,263 µm² (dictionary) and **457,577 µm² (−16.2%)** (all storage) with mapped
+delay unchanged; only 64 bits then recirculate, against 6,172, which predicts a
+further large fall in hold-repair area that no routed run has yet measured.
+
 ## Next discriminators
 
 0. Screen structural questions with `check-structure.py` before any mapped or
    routed run. The calibrated flow and the matched composed control are the
    comparison baseline for physical work. Open flow-level questions, each needing its own
    allocation: repeatability of the sampled result (placement/seed variation or
-   a modest clock margin); clock gating that leaves the cached word ungated, or
-   the proved cache-enable variant behind the sampler, since the cache-update
-   decision is now the limiting endpoint; finer gating of the five-bit index
-   registers (scratch synthesis: 455,658 µm², 582 gates); and a routability
+   a modest clock margin); one routed confirmation of a Lean gating plan
+   (`dictionary` or `storage`, cached word ungated) behind the sampler, which
+   tests the predicted hold-repair saving and whether 580 gated branches route;
+   the proved cache-enable variant, since the cache-update decision is the
+   limiting endpoint; and a routability
    experiment on the official 8×4 outline, where Metal3 capacity rather than
    area may bind. Use `check-targeted-timing.py --design` for every comparison:
    the default report hides all but the worst launch point per endpoint.

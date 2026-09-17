@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.Storage.SampledBackend
+import Pinwheel.Hardware.Storage.EnabledBackend
 
 /-! Executable structural report for the composed backends: arrival levels per
 launch family and endpoint class, the cached-word enable cone, and the source
@@ -82,6 +83,44 @@ def familyRows (cost : Cost) (n : Netlist R Machine.Output Machine.Input)
     rows := rows.push ⟨f.label, "cached word enable", lateEnable, earlyEnable⟩
     rows := rows.push ⟨f.label, "outputs", lateOut, earlyOut⟩
   return rows
+
+/-- Latest arrival of the certified enable and data cones, per storing class. -/
+def updateRows (cost : Cost) (n : Netlist Backend.Register Machine.Output Machine.Input) : Array Row := Id.run do
+  let mut rows := #[]
+  for f in Family.all do
+    let cones : Array (String × Option Nat × Option Nat) :=
+      n.withArrivals max cost f.input f.register fun c leaves =>
+        Backend.registers.filterMap fun ⟨_, r⟩ =>
+          if Enabled.stores r then
+            (c.next r).updateShape.map fun u =>
+              (registerClass r, u.enable.arrival max cost leaves f.register,
+                u.data.arrival max cost leaves f.register)
+          else none
+    for name in classes do
+      if cones.any (·.1 == name) then
+        let enable := cones.foldl (fun acc (k, e, _) => if k == name then combine max acc e else acc) none
+        let data := cones.foldl (fun acc (k, _, d) => if k == name then combine max acc d else acc) none
+        rows := rows.push ⟨f.label, name, enable, data⟩
+  return rows
+
+def updateJson (rows : Array Row) : String :=
+  "[" ++ String.intercalate ",\n    " (rows.toList.map fun r =>
+    s!"\{\"family\":\"{r.family}\",\"endpoint\":\"{r.endpoint}\",\"enable\":{show? r.latest},\"data\":{show? r.earliest}}") ++ "]"
+
+def policies : List (String × Enabled.Policy) :=
+  [("none", .none), ("dictionary", .dictionary), ("storage", .storage)]
+
+/-- Bits that recirculate through a multiplexer under each gating policy. -/
+def policyJson : String :=
+  let storing := Backend.registers.foldl (fun n ⟨w, r⟩ => if Enabled.stores r then n + w else n) 0
+  "{" ++ String.intercalate ", " (policies.map fun (name, p) =>
+    let gated := Backend.registers.filter fun ⟨_, r⟩ => p.gates r
+    let bits := gated.foldl (fun n q => n + q.1) 0
+    s!"\"{name}\": \{\"clock_gates\": {gated.size}, \"gated_bits\": {bits}, \"recirculating_bits\": {storing - bits}}") ++ "}"
+
+def planText (p : Enabled.Policy) : String :=
+  String.intercalate "\n" ((Backend.registers.filter fun ⟨_, r⟩ => p.gates r).toList.map fun ⟨w, r⟩ =>
+    s!"r_{Backend.registerLabel r}\t{w}") ++ "\n"
 
 def rowsJson (rows : Array Row) : String :=
   "[" ++ String.intercalate ",\n    " (rows.toList.map fun r =>
@@ -185,6 +224,8 @@ def report (variant : String) (n : Netlist Backend.Register Machine.Output Machi
     ",\n  \"loop_stages_gates\": {" ++ String.intercalate ", " ([Family.registers, .pins, .command, .cursor].map fun f =>
       s!"\"{f.label}\": {depthsJson (stageArrivals Cost.gates f lateBank body)}") ++ "}" ++
     ",\n  \"self_loops_gates\": " ++ selfLoopJson (selfLoops Cost.gates lateBank body) ++
+    ",\n  \"update_cones_gates\": " ++ updateJson (updateRows Cost.gates n) ++
+    ",\n  \"policies\": " ++ policyJson ++
     ",\n  \"unit\": " ++ rowsJson (plain Cost.unit) ++
     ",\n  \"gates\": " ++ rowsJson (plain Cost.gates) ++
     ",\n  \"sampled_gates\": " ++ rowsJson (sampled Cost.gates) ++ "\n}\n"
@@ -198,3 +239,5 @@ def main (args : List String) : IO Unit := do
       ("enable-split", report "enable-split" CacheEnable.netlist false CacheEnable.body)] do
     IO.FS.writeFile (out ++ "/" ++ variant ++ ".json") text
     IO.println s!"Wrote structural report for {variant}."
+  for (name, p) in policies do
+    IO.FS.writeFile (out ++ "/plan-" ++ name ++ ".tsv") (planText p)
