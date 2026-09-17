@@ -66,7 +66,13 @@ A future SRAM experiment needs an explicit schedule and proof obligations:
    simulation model and measure the complete wrapper and physical implementation.
 
 No SRAM replacement is adopted here. The verified scheduling contract must come
-before memory inference or macro mapping.
+before memory inference or macro mapping. The
+[memory abstraction](memory-abstraction.md) (2026-09-17) now states that
+contract and proves obligations 1, 2, 4 and 5 at the functional level: a
+prefetch machine that reads both candidate successors from next-state values on
+two read ports refines the atomic reference edge for edge. Obligation 3 becomes a
+structural constraint: the composite read is latency one only if the address
+map or the dictionary stays combinational.
 
 ## Latches
 

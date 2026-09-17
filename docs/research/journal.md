@@ -641,6 +641,34 @@ external interface integration retain their separate contracts.
   repaired so the gate could run; the theorems were already covered by the
   library-wide audit.
 
+## 2026-09-17: memory abstraction
+
+- **Scope:** Lean definitions, theorems and one executable suite. No CAD tool,
+  no RTL change.
+- **Result:** `Hardware/Memory.lean` (contract, `registered_refines`,
+  `read_untouched`), `Memory/Flops.lean` and `Memory/Registered.lean`
+  (refinements of latency 0 and 1, certified enables), `Storage/MemoryView.lean`
+  (the loader image and the routed backend's words as instances) and
+  `Storage/Prefetch.lean` (the reference machine against latency one:
+  `refinement`, `trace_correct`, `initialize_valid`, `fetched_reads`). All build
+  with warnings as errors; library audit standard axioms only (three cursor
+  decode lemmas were first proved by `bv_decide`, whose native fallback adds an
+  axiom the audit rejects, and are now arithmetic). `test/Memory.lean`: 400
+  requests through both implementations against the specification; the prefetch
+  machine closed-loop against the atomic reference on 4,754 edges (I²C write with
+  ACK, address NACK and data NACK, register read for three bytes, UART, SPI, an
+  image staged around a run and committed after it, resets, rejected commands),
+  24 taken branches, no difference; a variant reading only the untaken candidate
+  agrees until the first taken branch and then diverges. About 96 s interpreted.
+  `check-foundation --tag memory-01`: 155 modules, 11,641 declarations,
+  6,085 theorems, 29 suites, untrusted axiom rejected, 1,140 s.
+- **Disposition:** the [study](../memory-abstraction.md) owns the contract, the
+  prefetch machine and the boundary. It discharges the scheduling gate of the
+  [primitive review](../storage-primitives.md) at the functional level: two read
+  ports, next-state addresses, the map or the dictionary combinational. Whether
+  to build the structural machine is a fit question for
+  [status](status.md#next-discriminators).
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

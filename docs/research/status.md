@@ -236,6 +236,27 @@ transaction. For `d = 0` one outcome changes: a line held low after
 STOP now ends in `timeout` after the wait budget instead of an immediate
 `busFault`.
 
+## Memory abstraction (2026-09-17)
+
+[Memory abstraction](../memory-abstraction.md) gives storage a contract:
+`Memory.spec a w p ℓ`, one write port, `p` read ports, read latency `ℓ`,
+read-first. Flip-flops refine latency zero and registered ports latency one,
+each proved once for every size, and an output register on latency `ℓ` is
+latency `ℓ + 1`. The atomic loader's image is two such memories written from the
+decoded cursor, its instruction fetch two read ports of their composition, and
+the routed backend's dense words per bank step as `Memory.Flops 5 55`; no
+expression changed. The **prefetch machine** answers the primitive review's
+scheduling gate in Lean: reading both candidate successors of the next edge from
+next-state values, on two read ports, into two registers, the reference machine
+runs against a latency-one memory with no added cycle — proved as an edge-for-edge
+refinement of the atomic reference for every request and input history, with
+commit refilling the fetch from the newly selected bank and initialization owing
+nothing. Closed-loop execution against the reference: 4,754 edges, 10
+transactions, 24 taken branches; a single-port variant diverges at the first taken
+branch. Nothing structural is built: the composite read is latency one only if the
+address map or the dictionary stays combinational, and the address path grows by
+the next-address decode.
+
 ## Next discriminators
 
 0. Screen structural questions with `check-structure.py` before any mapped or
@@ -261,7 +282,12 @@ STOP now ends in `timeout` after the wait budget instead of an immediate
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
+3. If whole-chip fit or capacity calls for it, implement `Memory.spec 8 64 2 1`
+   structurally (a registered dictionary behind a combinational address map, or
+   a macro) and the prefetch machine's circuit; the proofs against the reference
+   are already done at the functional level in the
+   [memory abstraction](../memory-abstraction.md).
+4. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
    [input latency](../input-latency.md) or the compiler captures `d` cycles later,
    and whether the compilers should reject a `Config` that violates a declared
    latency's conditions (I²C: `d ≤ phaseCycles`, `d < waitCycles`). Resolve the actual wrapper/I/O budget and loading transport, then compose the

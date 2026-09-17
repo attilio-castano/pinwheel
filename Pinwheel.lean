@@ -36,6 +36,11 @@ import Pinwheel.Hardware.Storage.CacheEnable
 import Pinwheel.Hardware.Storage.SampledBackend
 import Pinwheel.Hardware.Storage.EnabledBackend
 import Pinwheel.Hardware.InputLatency
+import Pinwheel.Hardware.Memory
+import Pinwheel.Hardware.Memory.Flops
+import Pinwheel.Hardware.Memory.Registered
+import Pinwheel.Hardware.Storage.MemoryView
+import Pinwheel.Hardware.Storage.Prefetch
 import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency
 import Pinwheel.Compile.SPILatency

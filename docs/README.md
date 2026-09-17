@@ -45,6 +45,7 @@ historical next-step statements are not the current work queue.
 39. [Structural timing](structural-timing.md) for Lean-level arrival levels, reach and non-interference theorems, and their agreement with retained MLIR, mapped and routed evidence.
 40. [Register enables](register-enables.md) for certified enable/data views of the proved registers, Lean-chosen gating plans, and the checked flow step that applies them to unchanged RTL.
 41. [Input latency](input-latency.md) for latency as a parameter of the pin-level contracts: the bridge from the pin sampler, the SPI rate condition, the three I²C echo hazards, and the qualified STOP hold now compiled into both I²C programs.
+42. [Memory abstraction](memory-abstraction.md) for the memory contract with latency, its flip-flop and registered implementations, the existing storage seen through it, and the prefetch machine that runs the reference against a latency-one memory.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 
