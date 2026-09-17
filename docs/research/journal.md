@@ -552,6 +552,22 @@ external interface integration retain their separate contracts.
   the [study](../pin-sampler-study.md#combined-with-clock-gating) owns
   interpretation. `check-targeted-timing.py` now takes `--design`.
 
+## 2026-09-17: structural timing model in Lean
+
+- **Scope:** Lean definitions, theorems, a compiled report and a comparison with
+  tracked manifests. No CAD tool, mapping or physical run.
+- **Result:** `Hardware/Structure.lean` and the pin-isolation theorems build with
+  warnings as errors; `test/StructuralTiming.lean` passes.
+  `build/structure/validation-02/report.json`: 13 exact source depths, mapped-cone
+  r = 0.954 over 12 points, 8 of 8 candidate directions, port-family ranking
+  equal to extracted slack, deepest endpoint the cached word. Loop stages from
+  registers (gate levels): address 22, successor 50, next address 91, enable 99,
+  cached word 101. Recirculating bits 6,172 of 6,233.
+- **Disposition:** the [study](../structural-timing.md) owns the model, its
+  boundary and the suggested abstractions. One early version of the report
+  repeated wire evaluation inside a launch function and did not finish in ten
+  minutes; wire arrivals are now computed as values first.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

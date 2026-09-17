@@ -42,6 +42,7 @@ historical next-step statements are not the current work queue.
 36. [Cache-update enable experiment](cache-enable-study.md) for factored update decisions, exact cache observations, and the matched mapping screen.
 37. [Physical correlation study](physical-correlation-study.md) for the estimate-versus-extraction capacitance gap, hold-repair area, and flow-level discriminators on unchanged RTL.
 38. [Pin-sampler study](pin-sampler-study.md) for the structural two-register input pipeline, its delayed-history refinement, emitted-RTL checks, UART age composition, and the matched physical comparison.
+39. [Structural timing](structural-timing.md) for Lean-level arrival levels, reach and non-interference theorems, and their agreement with retained MLIR, mapped and routed evidence.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 

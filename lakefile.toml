@@ -19,3 +19,7 @@ root = "test.BankSelect"
 [[lean_exe]]
 name = "sampled_emit"
 root = "test.Sampled"
+
+[[lean_exe]]
+name = "structure_report"
+root = "test.Structure"

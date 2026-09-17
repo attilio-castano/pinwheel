@@ -172,10 +172,29 @@ further 1.8 ns longer than in the sampled-only or gated-only runs, which is not
 attributed. Detailed routing needed 58 iterations and 71 minutes; gated designs
 are consistently harder to detail-route despite lower utilization.
 
+## Structural model (2026-09-17)
+
+[Structural timing](../structural-timing.md) moves the recurring structural
+questions into Lean. Arrival levels over expressions and netlists come with a
+composition law, a wrapper law, and the theorem that an endpoint no launch point
+reaches is semantically independent of it; for every inner netlist the pin
+sampler provably leaves no combinational path from a pin to any inner register or
+output. The compiled report takes seconds and needs no CAD tool. It reproduces
+all 13 operation depths earlier studies measured on emitted MLIR, correlates at
+r = 0.954 with twelve technology-mapped cone depths with every candidate change
+in the same direction, and ranks the routed control's port families exactly as
+extracted slack does. It shows that the successor loop spends 28 of 101 gate
+levels in the storage lookup and **41 decoding the fetched word into the next
+address**, and that the cached word's data arrives at level 50 while its enable
+arrives at 99. 6,172 of 6,233 register bits recirculate through one multiplexer,
+against 6,192–6,208 hold-violating endpoints found by the ungated flows.
+Levels are ordinal; buffering, wire and placement stay outside the model.
+
 ## Next discriminators
 
-0. The calibrated flow and the matched composed control are now the comparison
-   baseline for physical work. Open flow-level questions, each needing its own
+0. Screen structural questions with `check-structure.py` before any mapped or
+   routed run. The calibrated flow and the matched composed control are the
+   comparison baseline for physical work. Open flow-level questions, each needing its own
    allocation: repeatability of the sampled result (placement/seed variation or
    a modest clock margin); clock gating that leaves the cached word ungated, or
    the proved cache-enable variant behind the sampler, since the cache-update

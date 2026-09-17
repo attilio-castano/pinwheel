@@ -73,6 +73,7 @@ For a new checkout, the relevant dependency chain is:
 | Cache-enable variant | `check-backend-readback.py --variant enable-split`, followed by `check-bank-select.py` and exact-cache regression | [Cache-enable study](cache-enable-study.md) |
 | Pin-sampled backend | `check-sampled.py --tag NAME --variant command-split`: inner emission identical to the read-back-proved RTL, reference-pipeline equivalence, wrong-depth rejections, pin-shifted independent oracle and mapping | [Pin-sampler study](pin-sampler-study.md) |
 | Clock-gated routed netlist | `check-physical-netlist.py NETLIST --label NAME --vectors VECTORS`, then `check-clock-gates.py NETLIST --label NAME`: every integrated clock gate stuck open or shut must be rejected by the retained traces | [Physical correlation study](physical-correlation-study.md#third-attempt-clock-gated-03-routes) |
+| Structural levels | `check-structure.py --tag NAME`: Lean arrival levels against MLIR depths, mapped cone depths and routed launch-family ranking recorded in tracked manifests; needs Lean only | [Structural timing](structural-timing.md) |
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |

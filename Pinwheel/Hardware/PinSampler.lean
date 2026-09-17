@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.NetlistExtend
+import Pinwheel.Hardware.Structure
 import Pinwheel.Hardware.PinBoundary
 import Pinwheel.Hardware.Loader.Machine
 import Pinwheel.Hardware.TimedPairs
@@ -114,5 +114,41 @@ theorem delayed_host (p : PinBoundary.Samples 2) (i : Machine.Inputs) (rest : Li
     ((delayed p (i :: rest)).head?).map
         (fun e => ((e.1.init, e.1.reset, e.1.command, e.1.data), (e.2.init, e.2.reset, e.2.command, e.2.data))) =
       some ((i.init, i.reset, i.command, i.data), (i.init, i.reset, i.command, i.data)) := rfl
+
+/-- Transitions launched only at the pin port. -/
+def pinLaunch : Launch Machine.Input
+  | _, .incoming => some 0
+  | _, .init => none
+  | _, .reset => none
+  | _, .command => none
+  | _, .data => none
+
+theorem input_arrival_none (pick : Pick) (cost : Cost) {w : Nat} (q : Machine.Input w) :
+    (input (R := R) q).arrival pick cost pinLaunch (fun _ => none) = none := by
+  cases q <;> rfl
+
+/-- No combinational path leads from a pin to any inner register, whatever the
+inner netlist is: the pin port's external delay budget reaches one flip-flop. -/
+theorem no_path_from_pins (pick : Pick) (cost : Cost)
+    (n : Netlist R Machine.Output Machine.Input) (r : R w) :
+    (netlist n).arrivalNext pick cost pinLaunch (fun _ => none) (.inner r) = none := by
+  rw [netlist, Netlist.arrivalNext_extend]
+  exact Netlist.arrivalNext_none pick cost n _ _
+    (fun q => input_arrival_none pick cost q) (fun _ => rfl) r
+
+/-- Nor to any output. -/
+theorem no_output_path_from_pins (pick : Pick) (cost : Cost)
+    (n : Netlist R Machine.Output Machine.Input) (o : Machine.Output w) :
+    (netlist n).arrivalOutput pick cost pinLaunch (fun _ => none) o = none := by
+  rw [netlist, Netlist.arrivalOutput_extend]
+  exact Netlist.arrivalOutput_none pick cost n _ _
+    (fun q => input_arrival_none pick cost q) (fun _ => rfl) o
+
+/-- The pin reaches exactly the first stage, through no logic at all. -/
+theorem pins_reach_first_stage (pick : Pick) (cost : Cost)
+    (n : Netlist R Machine.Output Machine.Input) :
+    (netlist n).arrivalNext pick cost pinLaunch (fun _ => none) (.extra .first) = some 0 ∧
+    (netlist n).arrivalNext pick cost pinLaunch (fun _ => none) (.extra .second) = none := by
+  constructor <;> rw [netlist, Netlist.arrivalNext_extend_extra] <;> rfl
 
 end Pinwheel.Hardware.PinSampler
