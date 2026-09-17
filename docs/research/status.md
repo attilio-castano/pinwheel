@@ -106,6 +106,14 @@ synthesis-only screen with integrated clock gates cuts mapped area 12.5%.
 The earlier logic-depth candidates were therefore compared through a flow that
 could not see the dominant delay term. This is a diagnosis, not closure.
 
+The authorized `rc-calibrated-01` run (same RTL, constraints and floorplan; only
+calibrated `LAYERS_RC` and Metal2/Metal3 estimation layers added to F2) moves
+extracted slow setup from −5.049 ns to **−0.153 ns**, violating endpoints from
+1,426 to 56, and slew/capacitance violations from 49/3 to 0/0, for +0.6 points
+of utilization. Timing is still not closed and layout checks were not run. The
+remaining worst path launches from the `incoming[1]` input port, inside the 4 ns
+input-delay budget.
+
 ## Next discriminators
 
 0. Before another architectural candidate, run the two flow-level discriminators

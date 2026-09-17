@@ -407,6 +407,24 @@ external interface integration retain their separate contracts.
   `scripts/fit-wire-rc.py` and its unit test reproduce the fit. The screen has no
   retained receipt and supports only a recorded follow-up.
 
+## 2026-09-17: calibrated-estimate physical run `rc-calibrated-01`
+
+- **Scope:** one user-authorized bounded run (four CPUs, 6 GiB, one-hour cap,
+  stop after `OpenROAD.STAPostPNR`), command-split RTL
+  `1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42`, unchanged
+  constraints/floorplan, overlay `physical/experiments/rc-calibrated.json`.
+  Tools and PDK are symlinked from the foundation worktree; the PDK identity
+  check passed. Exit 0, about 35 minutes of step time.
+- **Result:** extracted slow setup −0.153 ns (was −5.049 ns), 56 violating
+  endpoints (was 1,426), no slew/capacitance violations, 25 fanout violations.
+  Magic DRC/LVS not run. Worst path now launches from the `incoming[1]` port.
+- **Disposition and identity:** config SHA-256
+  `7ffe348d4ecf9295d9f86ffdda6581a7ca74f14076b14dace3751cf99c2fc0cc`; final STA
+  summary `2d195b98c0ec085a3dbeb9ffef06f5a0ddddf96104398293884ed87983f2cd10`.
+  Adopt calibrated estimates as the control for further flow comparisons; no
+  default promotion or closure claim. The [study](../physical-correlation-study.md)
+  owns the table.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

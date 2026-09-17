@@ -152,6 +152,48 @@ existing read-back results carry over.
 Run 1 and 2 separately before combining them; otherwise an improvement cannot
 be attributed.
 
+## Result: calibrated estimates (`rc-calibrated-01`)
+
+Authorized 2026-09-17 as one bounded run: four CPUs, 6 GiB, one-hour cap, no
+network, pinned container/PDK, stop after `OpenROAD.STAPostPNR`. Inputs are the
+hash-verified command-split RTL (`1a1fd62b…04cc5a42`), the unchanged 20 ns clock,
+I/O constraints and 6×4 diagnostic floorplan, and
+`physical/experiments/rc-calibrated.json`. It exited 0 after about 35 minutes of
+step time. Magic DRC, LVS and later layout checks were deliberately not run, so
+this is extracted timing on a routed design, not a layout sign-off.
+
+| Extracted metric | Command split (F2) | Calibrated estimates |
+| --- | ---: | ---: |
+| Slow setup worst slack | −5.049 ns | **−0.153 ns** |
+| Slow setup total negative slack | −1,564.1 ns | −5.4 ns |
+| Slow setup-violating endpoints | 1,426 | 56 |
+| Typical / fast setup worst slack | +3.157 / +7.516 ns | +5.707 / +8.361 ns |
+| Worst hold slack, fast corner | +0.0029 ns | +0.0862 ns |
+| Slew / capacitance violations | 49 / 3 | 0 / 0 |
+| Fanout violations | 21 | 25 |
+| Resizer final view, post-CTS / post-GRT | +0.119 / +0.055 ns | +0.088 / +0.012 ns |
+| Timing-repair buffer area | 138,085 µm² | 142,902 µm² |
+| Utilization after detailed routing | 82.3% | 82.9% |
+| Routed wirelength | 1.914 m | 1.927 m |
+
+The estimate-to-extraction gap falls from about 5.1 ns to about 0.17 ns for 0.6
+points of utilization. This confirms Findings 1–2: the earlier miss was mostly
+an optimizer working from under-estimated wire load. It does not close timing:
+56 slow-corner endpoints still fail, fanout violations remain, and layout checks
+are outstanding.
+
+The remaining worst path starts at the `incoming[1]` **input port** and ends in
+the current-word cache, so it includes the 4 ns external input-delay budget. The
+proposed [two-register input pipeline](external-interface.md) would launch that
+path from a register instead; whether that closes the family must be measured on
+a design that contains the pipeline, with its latency composed into the protocol
+bounds.
+
+Receipts: `build/physical/rc-calibrated-01-invocation.json` (config SHA-256
+`7ffe348d…9c2fc0cc`), `build/physical/rc-calibrated-01.log`, and the run directory
+`build/physical/core/runs/rc-calibrated-01/`; final STA summary SHA-256
+`2d195b98…3f2cd10`. One run on one host; no repeat or seed variation was measured.
+
 ## Reproduction
 
 ```sh
