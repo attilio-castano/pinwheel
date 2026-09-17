@@ -425,6 +425,16 @@ external interface integration retain their separate contracts.
   default promotion or closure claim. The [study](../physical-correlation-study.md)
   owns the table.
 
+## 2026-09-17: clock-gated physical attempt `clock-gated-01` (failed)
+
+- **Scope:** second bounded run under the same authorization and limits;
+  calibrated control plus Yosys clock gating with `sg13cmos5l_lgcp_1`.
+- **Result:** exit 2 at `OpenROAD.GlobalRouting` (`GRT-0116`, overflow 526, 515 on
+  Metal3) after about 13 minutes. Post-CTS-repair cell area 604,627 µm² versus
+  742,324 µm²; utilization 67.0% versus 82.3%. No routed design or final timing.
+- **Disposition:** retain the failed evidence. A retry needs its own allocation
+  and one stated change; see the [study](../physical-correlation-study.md).
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

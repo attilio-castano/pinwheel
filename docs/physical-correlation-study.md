@@ -194,6 +194,33 @@ Receipts: `build/physical/rc-calibrated-01-invocation.json` (config SHA-256
 `build/physical/core/runs/rc-calibrated-01/`; final STA summary SHA-256
 `2d195b98…3f2cd10`. One run on one host; no repeat or seed variation was measured.
 
+## Result: clock-gated storage on the calibrated control (`clock-gated-01`, failed)
+
+Same authorization, limits, RTL, constraints and floorplan as `rc-calibrated-01`;
+`physical/experiments/clock-gated.json` adds only `SYNTH_CLOCKGATE_MIN_WIDTH = 8`
+and the `lgcp_1` gate. The run **failed at global routing** (exit 2, `GRT-0116`)
+after about 13 minutes. There is no routed design and no extracted timing.
+
+| Mid-flow measurement | Calibrated control | Clock-gated |
+| --- | ---: | ---: |
+| Instances / utilization after detailed placement | 35,888 / 67.7% | 27,319 / 58.9% |
+| Cell area after post-CTS timing repair | 742,324 µm² | 604,627 µm² (−18.5%) |
+| Utilization after post-CTS timing repair | 82.3% | 67.0% |
+| Clock roots / clock buffers | 1 / 1,033 | 69 / 1,127 |
+| Hold-violating endpoints before post-CTS repair | 6,208 | 4,581 |
+| Global-route wirelength | — (1.927 m detailed) | 2.312 m |
+| Global-route overflow | 0 | 526 (515 on Metal3) |
+
+The area hypothesis holds: gating removes about 138,000 µm² after clock-tree
+synthesis and hold repair. The routing result does not: with a quarter fewer
+cells the global route is about 20% longer and Metal3 overflows. One untested
+explanation is that the unchanged 70% placement-density target packs a 59%-utilized
+design into pin-dense clusters, where the control's hold-delay cells previously
+diluted pin density. Mid-flow timing numbers are estimates and are not compared.
+The failed run is retained under `build/physical/core/runs/clock-gated-01/` with
+`build/physical/clock-gated-01-invocation.json` and its log. The gated netlist has
+had no functional regression or gate equivalence; none is claimed.
+
 ## Reproduction
 
 ```sh
