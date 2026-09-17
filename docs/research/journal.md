@@ -471,6 +471,23 @@ external interface integration retain their separate contracts.
   trust boundary; the identity manifest is
   `physical/experiments/pin-sampled-results.json`. No default promotion.
 
+## 2026-09-17: sampled candidate routes and meets extracted timing (`pin-sampled-02`)
+
+- **Scope:** one further bounded run (same limits); only `GRT_ALLOW_CONGESTION`
+  added to the calibrated overlay (`physical/experiments/rc-calibrated-tolerant.json`),
+  inert for the zero-overflow control.
+- **Result:** exit 0. Slow setup +0.090 ns with no violating endpoints (control
+  −0.797 ns, 67, all launched from `incoming`); typical/fast +5.912/+8.204 ns;
+  worst hold +0.052 ns; 4 slew, 1 capacitance and 17 fanout violations; functional
+  area 732,103 µm² (control 743,469). Global routes tolerated overflow of
+  1, 1, 3, 75 and 41; detailed routing and the antenna check finish with zero
+  violations. Implemented-netlist regression: 28,165 edges, 4,618,982 defined
+  output-bit comparisons, mutant rejected. Magic DRC/LVS not run.
+- **Disposition and identity:**
+  [physical manifest](../../physical/experiments/pin-sampled-physical-results.json);
+  the [study](../pin-sampler-study.md) owns interpretation. One run, no margin
+  against the observed spread between equivalent RTLs; no promotion or claim.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

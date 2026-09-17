@@ -1,0 +1,219 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/pin-sampler-study.md",
+  "identity_manifest": {
+    "path": "physical/experiments/pin-sampled-results.json",
+    "sha256": "e46edb186c7274cd8972518a405588eeb3c84a0e1806065af02301c33e4133dc"
+  },
+  "disposition": "The sampled candidate meets extracted setup and hold at all three corners in one run with 0.090 ns slow-corner margin. Retain as an experimental variant; no default promotion, frequency qualification or fit claim.",
+  "fixed_contract": "Calibrated flow, 20 ns clock, unchanged I/O constraints, diagnostic 6x4 floorplan, four CPUs, 6 GiB, one-hour cap, stop after OpenROAD.STAPostPNR. Magic DRC, LVS and later layout checks not run.",
+  "control": {
+    "design": "composed-control",
+    "tag": "composed-control-01",
+    "exit_code": 0,
+    "stop_step": "OpenROAD.STAPostPNR",
+    "overrides": {
+      "MAX_FANOUT_CONSTRAINT": 8,
+      "CTS_SINK_CLUSTERING_SIZE": 8,
+      "RUN_POST_GRT_DESIGN_REPAIR": true,
+      "RUN_POST_GRT_RESIZER_TIMING": true,
+      "SIGNAL_WIRE_RC_LAYERS": [
+        "Metal2",
+        "Metal3"
+      ],
+      "LAYERS_RC": {
+        "*": {
+          "Metal2": {
+            "res": 0.0006955,
+            "cap": 0.0001611
+          },
+          "Metal3": {
+            "res": 0.0005799,
+            "cap": 0.0001924
+          },
+          "Metal4": {
+            "res": 0.0004835,
+            "cap": 0.0001393
+          }
+        }
+      }
+    },
+    "config_sha256": "7ffe348d4ecf9295d9f86ffdda6581a7ca74f14076b14dace3751cf99c2fc0cc",
+    "inputs_sha256": "f6ef70b1ac4e133ab47edf147a012ed438e15ff743bd88226991e0a8be2e664c",
+    "invocation_sha256": "80d203aa19bcbc92c226315fef7e5846cc0d7744be0dc4ffd5e3d9ca60c0c9b5",
+    "sta_summary_sha256": "8e4150e28854f2190396ca11fe47d924fd2eb96c1af9195bb24397d910f60801",
+    "report_sha256": "ba55e0c9ce31c7566c12f70218af3ab3d8e7cb5c04f23ab2fd61c8f26279cf57",
+    "slow": {
+      "setup_ws_ns": -0.797028,
+      "setup_tns_ns": -46.275,
+      "setup_violations": 67,
+      "hold_ws_ns": 0.386984,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.276761,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.144202,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.351771,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.035219,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 0,
+      "capacitance": 1,
+      "fanout": 19
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 743468.55,
+    "timing_repair_buffers": {
+      "count": 10924,
+      "area_um2": 140902.68
+    },
+    "utilization": 0.823863,
+    "routed_wirelength_um": 1772951
+  },
+  "candidate_failed_attempt": {
+    "design": "pin-sampled",
+    "tag": "pin-sampled-01",
+    "exit_code": 2,
+    "stop_step": "OpenROAD.STAPostPNR",
+    "overrides": {
+      "MAX_FANOUT_CONSTRAINT": 8,
+      "CTS_SINK_CLUSTERING_SIZE": 8,
+      "RUN_POST_GRT_DESIGN_REPAIR": true,
+      "RUN_POST_GRT_RESIZER_TIMING": true,
+      "SIGNAL_WIRE_RC_LAYERS": [
+        "Metal2",
+        "Metal3"
+      ],
+      "LAYERS_RC": {
+        "*": {
+          "Metal2": {
+            "res": 0.0006955,
+            "cap": 0.0001611
+          },
+          "Metal3": {
+            "res": 0.0005799,
+            "cap": 0.0001924
+          },
+          "Metal4": {
+            "res": 0.0004835,
+            "cap": 0.0001393
+          }
+        }
+      }
+    },
+    "config_sha256": "7ffe348d4ecf9295d9f86ffdda6581a7ca74f14076b14dace3751cf99c2fc0cc",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "c720731ec74da47e6c79a387f756cd1311df39ba023ec295b98d128908a4e70b",
+    "last_step": "39-openroad-globalrouting"
+  },
+  "candidate": {
+    "design": "pin-sampled",
+    "tag": "pin-sampled-02",
+    "exit_code": 0,
+    "stop_step": "OpenROAD.STAPostPNR",
+    "overrides": {
+      "MAX_FANOUT_CONSTRAINT": 8,
+      "CTS_SINK_CLUSTERING_SIZE": 8,
+      "RUN_POST_GRT_DESIGN_REPAIR": true,
+      "RUN_POST_GRT_RESIZER_TIMING": true,
+      "SIGNAL_WIRE_RC_LAYERS": [
+        "Metal2",
+        "Metal3"
+      ],
+      "LAYERS_RC": {
+        "*": {
+          "Metal2": {
+            "res": 0.0006955,
+            "cap": 0.0001611
+          },
+          "Metal3": {
+            "res": 0.0005799,
+            "cap": 0.0001924
+          },
+          "Metal4": {
+            "res": 0.0004835,
+            "cap": 0.0001393
+          }
+        }
+      },
+      "GRT_ALLOW_CONGESTION": true
+    },
+    "config_sha256": "fbf806f86e7d797498e822a568341c4a27aa8499cd92b9b88644fdf77a9c6841",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "1934a0b18087122855ad564041b6e983c6ecb441414ad0298b872863e897a9c8",
+    "sta_summary_sha256": "a7b089b6db4d0bed0dc484f4972458286326a2a7840e74aedd32ea17b908573f",
+    "report_sha256": "f01c38a5cefd4fea94efe2e0f8a12a49629f6f30b7f0055a64506eef2dfec896",
+    "slow": {
+      "setup_ws_ns": 0.08998,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.421847,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.911841,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.193965,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.203523,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.05211,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 4,
+      "capacitance": 1,
+      "fanout": 17
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 732103.15,
+    "timing_repair_buffers": {
+      "count": 10628,
+      "area_um2": 137916.17
+    },
+    "utilization": 0.811269,
+    "routed_wirelength_um": 1792141
+  },
+  "candidate_global_route_overflow": {
+    "note": "GRT_ALLOW_CONGESTION tolerated total overflow of 1, 1, 3, 75 and finally 41 across the flow's global routes; detailed routing finished with zero violations and the antenna check found none.",
+    "control_overflow": 0
+  },
+  "slow_launch_families": {
+    "control": {
+      "incoming_port_worst_ns": -0.797,
+      "data_port_worst_ns": 3.38,
+      "violating_paths_from_incoming": 67
+    },
+    "candidate": {
+      "register_worst_ns": 0.09,
+      "data_port_worst_ns": 1.996,
+      "worst_path": "r_cached_word[37] -> r_cached_word[51]",
+      "worst_path_breakdown_ns": {
+        "logic_cells": 12.634,
+        "buffers": 6.063,
+        "wire": 0.458,
+        "logic_cell_count": 38
+      }
+    }
+  },
+  "implemented_netlist_regression": {
+    "receipt": "build/physical/pin-sampled-02-netlist-check/report.json",
+    "sha256": "d30502f8915df332f07b04b5b55bfe881f75bc5f00bcf8447c4037e03fbe0c2c",
+    "result": "28,165 atomic edges and 4,618,982 defined output-bit comparisons against pin-shifted oracle vectors and the source RTL; output-corruption mutant rejected."
+  },
+  "boundary": "One run per design on one host; two sequentially equivalent RTLs differed by about 0.6 ns under this flow, so 0.090 ns is inside observed run-to-run variation. Electrical-limit violations remain. No wrapper, serial loader, official 8x4 floorplan, layout sign-off, metastability or board-timing claim."
+}

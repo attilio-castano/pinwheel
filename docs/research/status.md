@@ -1,7 +1,7 @@
 # Research status
 
 Updated 2026-09-17 with the hardware closure, [cache-enable follow-up](../cache-enable-study.md),
-and UART receive capability from main.
+UART receive capability from main, the flow-correlation diagnosis and the pin-sampler comparison.
 This is the current decision brief; [results](results.md) owns completed
 conclusions and [journal](journal.md) routes historical evidence.
 
@@ -114,13 +114,54 @@ of utilization. Timing is still not closed and layout checks were not run. The
 remaining worst path launches from the `incoming[1]` input port, inside the 4 ns
 input-delay budget.
 
+Clock-gated storage on the calibrated control cuts cell area **18.5%** after
+clock-tree and hold repair (604,627 versus 742,324 µm²; utilization 67% versus
+82%), but neither attempt routes: `clock-gated-01` overflows Metal3 by 515 at the
+first global route, and the 62%-density retry `clock-gated-02` fails later with a
+total overflow of 3. Metal3 is the only horizontal signal layer under the
+template's Metal4 ceiling, and even the calibrated control runs it at about 70%
+of derated capacity. Horizontal routability of the wide floorplan, not cell area,
+may be the binding fit constraint; that is a hypothesis, not a measurement.
+
+## Pin-sampler finding (2026-09-17)
+
+The [pin-sampler study](../pin-sampler-study.md) inserts the contract's
+two-register pipeline in front of `incoming` structurally, leaving every inner
+expression unchanged. Lean proves that every pre/post-edge observation of the
+wrapped netlist equals the reference machine's on the delayed pin history, for
+arbitrary pipeline contents, with pair traces expressing the post-edge view of
+the one combinational `incoming`-dependent output (`read_b`); registered outputs,
+including pin levels and enables, are proved unaffected. The UART single-frame
+and continuous `Safe` bounds survive the uniform two-RX-tick delay when both
+stages hold idle at receiver start. The inner emission is byte-identical to the
+read-back-proved command-split control; the sampled RTL is proved sequentially
+equivalent to that RTL behind a hand-written pipeline (6,319 points), wrong
+depths are rejected, and the independent oracle passes 28,165 edges with pins
+presented two edges early. The sampled RTL has no direct Lean read-back.
+
+Matched physical comparison on the calibrated flow: the composed control misses
+slow setup by **0.797 ns**, and **all 67** violating paths launch from `incoming`
+ports. The sampled candidate's first attempt fails global routing with an
+overflow of one; with marginal overflow left to the detailed router
+(`pin-sampled-02`) it routes with zero violations and **meets extracted setup and
+hold at all three corners: slow setup +0.090 ns, no violating endpoints**, 1.5%
+less functional area, and a passing implemented-netlist regression. The limiting
+path is now the register-to-register `r_cached_word` successor loop
+(12.6 ns logic, 6.1 ns buffers). This is one run with no margin against the
+observed 0.6 ns spread between equivalent RTLs; electrical-limit violations
+remain, layout checks were not run, and the boundary is still the diagnostic
+6×4 core. No frequency, fit or default claim follows.
+
 ## Next discriminators
 
-0. Before another architectural candidate, run the two flow-level discriminators
-   in the [correlation study](../physical-correlation-study.md#proposed-discriminators)
-   on byte-identical RTL: calibrated wire estimates
-   (`physical/experiments/rc-calibrated.json`), then a recorded clock-gating
-   screen. Each physical run still needs its own allocation.
+0. The calibrated flow and the matched composed control are now the comparison
+   baseline for physical work. Open flow-level questions, each needing its own
+   allocation: repeatability of the sampled result (placement/seed variation or
+   a modest clock margin); a third clock-gating attempt that leaves marginal
+   global overflow to the detailed router; and a routability experiment on the
+   official 8×4 outline, where Metal3 capacity rather than area may bind.
+   The `r_cached_word` successor loop is the path the architectural candidates
+   should now be measured against, with the sampler and calibrated flow in place.
 
 1. Extend sequential equivalence from generic gates to a selected technology
    mapping, explicitly accounting for initial-state correspondence and eliminated

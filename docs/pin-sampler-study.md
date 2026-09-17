@@ -203,9 +203,62 @@ passes.
 ### Candidate, second attempt: `pin-sampled-02`
 
 One change: `GRT_ALLOW_CONGESTION` (`physical/experiments/rc-calibrated-tolerant.json`)
-lets global routing hand marginal overflow to the detailed router, while the
+lets global routing hand remaining overflow to the detailed router, while the
 detailed-routing DRC gate still fails the run on any remaining violation. The flag
-is inert for the control, whose global routes never overflow. Result pending.
+is inert for the control, whose global routes never overflow. The run exits 0.
+
+| Extracted metric | Control | Sampled candidate |
+| --- | ---: | ---: |
+| Slow setup worst slack | −0.797 ns | **+0.090 ns** |
+| Slow setup total negative slack / violating endpoints | −46.3 ns / 67 | 0 / **0** |
+| Typical / fast setup worst slack | +5.277 / +8.352 ns | +5.912 / +8.204 ns |
+| Worst hold slack (fast corner) | +0.035 ns | +0.052 ns |
+| Hold violations, all corners | 0 | 0 |
+| Slew / capacitance / fanout violations | 0 / 1 / 19 | 4 / 1 / 17 |
+| Detailed-routing violations / antenna violations | 0 / 0 | 0 / 0 |
+| Functional cell area | 743,469 µm² | 732,103 µm² (−1.5%) |
+| Utilization after detailed routing | 82.4% | 81.1% |
+| Routed wirelength | 1.773 m | 1.792 m |
+| Resizer final view, post-CTS / post-GRT | +0.061 / −1.901 ns | +0.051 / +0.036 ns |
+
+In this run the candidate meets extracted setup and hold at all three corners
+under the unchanged 20 ns clock and I/O constraints. The `incoming` launch family
+is gone from the 1,000 worst slow-corner paths: 104 are now register-launched
+(worst +0.090 ns) and 896 launch from the loader `data` port (worst +1.996 ns).
+The limiting path is `r_cached_word[37]` → `r_cached_word[51]` — current word,
+successor selection and lookup, cache update — with 38 logic cells contributing
+12.634 ns, buffers 6.063 ns and wire 0.458 ns. That register-to-register loop is
+the architectural limit which the earlier
+[successor-fetch candidates](successor-fetch-study.md) address; it is now visible
+because the input-budget paths no longer mask it.
+
+The tolerated global-route overflow did not stay at one: the flow's five global
+routes report total overflow of 1, 1, 3, 75 and finally 41. Detailed routing still
+converged to zero violations and the antenna check finds none, but this confirms
+that the diagnostic floorplan is at the edge of Metal3 routability.
+
+The routed netlist passes the implemented-netlist regression against both the
+pin-shifted oracle vectors and the source RTL: 28,165 atomic edges and 4,618,982
+defined output-bit comparisons, with the output-corruption mutant rejected
+(`build/physical/pin-sampled-02-netlist-check/report.json`). This is zero-delay
+gate simulation with reference-X bits excluded.
+
+### What the comparison does and does not establish
+
+- Registering `incoming` removes every violating path of the matched control and
+  costs no area; the protocol-visible price is the two-edge latency proved above.
+- +0.090 ns is **not** a qualified 50 MHz result. It is one run on one host with
+  no seed or placement variation, and two sequentially equivalent RTLs differed
+  by about 0.6 ns under this same flow. Electrical-limit violations remain
+  (4 slew, 1 capacitance, 17 fanout), and Magic DRC, LVS and later layout checks
+  were not run.
+- The boundary is still the diagnostic 6×4 core with synchronous loader ports
+  and assumed 4 ns I/O budgets. No wrapper, serial loader, official 8×4 outline,
+  metastability or board-timing claim follows.
+
+[Physical manifest](../physical/experiments/pin-sampled-physical-results.json)
+pins the receipts; the [identity manifest](../physical/experiments/pin-sampled-results.json)
+is unchanged from the bytes used to prepare both designs.
 
 ## Reproduction
 
