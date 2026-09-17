@@ -5,6 +5,141 @@ Concise reconstruction index. [Results](results.md) owns interpretations and
 with the technical study and run artifacts. Append decisive receipts; do not
 replace a failed attempt with its successful retry.
 
+## 2026-09-15 — Continuous UART reception with unequal clocks
+
+Closed the [continuous clock milestone](../uart-stream-clocks.md), based on
+`c133af9` plus the previously validated receive/link/buffered-stream work.
+The strengthened sufficient bound reserves two additional RX ticks for rearm
+and an idle-high observation between adjacent frames. It preserves the entire
+ideal shared-period domain of 8–256.
+
+- **Proofs:** continuous-wire prefix and suffix agreement, preserved timing
+  conditions after rearm, and exact completion pulses for any finite payload
+  list under unequal constant clocks and varying bounded observation age.
+  The theorem composes through the existing compiled RX supervisor, leaving
+  consumer controls, initial buffer contents, and spare input history arbitrary.
+- **Validation:** `build/validation/uart-stream-clocks-01/report.json`, SHA-256
+  `4c37c8bfffb9b7664564f58bf024172de510c044680498d9424cb63c84de22e5`.
+  All 24 suites and both independent oracles passed in 1,012.316 seconds.
+  The default import reaches 125 modules; 10,058 declarations and 5,254
+  theorems pass the standard-axiom audit. The injected axiom is rejected;
+  all 179 source hashes stayed unchanged during validation and at closeout.
+- **Stream coverage:** 392 streams, 38,808 frames, 10,531,120 RX edges, and
+  13,056 candidate detection windows across three successive frames. The
+  independent timing/wire/queue checks retain four failing-assumption examples
+  and one successful excluded phase. The study owns the stream receipt and
+  exact delivery/drop/pending balance. Its concrete Lean example compiles.
+- **Decision:** adopt the sufficient continuous clock contract. The prior
+  single-frame-safe rearm failure is excluded by it. Receiver lifecycle during
+  atomic replacement is the next proposed Lean integration question. Physical
+  sampling, repeated TX launches, supervisor/buffer circuitry, and concurrent
+  TX/RX still need their own designs and evidence. No CAD run was added.
+
+The first focused attempt failed at the exploratory successful-excluded example:
+start time 301 left no idle-high observation after rearm. Moving it to 300
+produced the intended example. The failed command, output, and source hash remain
+in `build/uart-stream-clocks/focused-attempt-01.json`. A later test improvement
+held TX start fixed while varying RX phase; the final focused check passed.
+Neither correction changed the numerical proof.
+
+All 173 prior baseline source hashes matched before work. Only the library import
+and gate registration changed among those sources; five new library modules and
+one new regression suite implement this milestone. The receiver, buffer, engine,
+and earlier compilers retain their source identities. Source hashes identify the
+uncommitted work; ignored receipts are not a durable backup.
+
+## 2026-09-15 — Continuous UART receive and result ownership
+
+Closed the [continuous receive milestone](../uart-stream.md), based on `c133af9`
+plus the previously validated receive/link work. The one-entry buffer retains
+the oldest unread outcome, supports same-edge consumption and arrival, reports
+sticky overrun, and explicitly flushes on reset. Automatic rearm is independent
+of consumer readiness.
+
+- **Proofs:** occurrence ordering and complete loss accounting for arbitrary
+  buffer histories; receiver independence from consumer controls; exact finite
+  ideal back-to-back result pulses at every shared period 8–256; and complete
+  state/receipt correspondence through the existing compiled RX and Lean supervisor.
+- **Validation:** `build/validation/uart-stream-01/report.json`, SHA-256
+  `666fa5a60e9052c9d2b64322d7e5acce1d38e26c750fb6b533cc1d16fb441f66`.
+  All 23 suites and both independent oracles passed in 882.133 seconds.
+  The default import reaches 120 modules; the audit covers 10,015 declarations
+  and 5,221 theorems with standard axioms only. The injected axiom is rejected,
+  and all 173 source hashes stayed unchanged during validation and at closeout.
+- **Stream coverage:** all 65,536 ordered byte pairs, 11,844,449 RX edges, 128
+  buffer combinations, and 37 reset/error/rearm boundary cases. The study owns
+  the stream receipt and count balance. Its public Lean example also compiles.
+- **Decision:** adopt the receive ownership and rearm contract at the Lean level.
+  A retained counterexample satisfies single-frame clock bounds but misses the
+  next start during rearm, without buffer overrun. The next Lean discriminator
+  is continuous unequal-clock reception with an explicit rearm/idle-high bound.
+  Supervisor/buffer circuitry, physical sampling, loader composition, and
+  concurrent TX/RX remain separate. No CAD or physical-closure result was added.
+
+The prior 164 baseline source hashes were verified before work. Only the library
+import and gate registration changed among those sources; eight new library
+modules and the stream suite hold this implementation. Source hashes identify
+the uncommitted work; ignored receipts are not a durable backup.
+
+## 2026-09-15 — UART link timing and compiler roundtrip
+
+Closed the [one-frame UART link proof](../uart-link.md), based on `c133af9` plus
+the prior UART receive work. Numerical conditions on independent clocks and
+bounded digital observation age imply start detection, every sample value,
+and recovery of the transmitted byte. Both compiler paths compose with this
+result. The ideal theorem covers every byte and shared bit period 8–256.
+
+- **Validation:** `build/validation/uart-link-01/report.json`, SHA-256
+  `349f049c242dcfa3bee4bf00c858b6cabdcde2a2759f11d69e1cf3748771f138`.
+  All 22 suites and both independent oracles passed in 757.769 seconds.
+  The default import reaches 112 modules; 9,434 declarations and 4,949 theorems
+  pass the standard-axiom audit, and the injected custom axiom is rejected.
+- **Link coverage:** 3,872 frames, 5,614,752 RX edges, and 1,136 safe timing
+  combinations. Four failing-assumption cases and one successful excluded case
+  preserve the distinction between sufficient and necessary timing bounds.
+  The technical record owns the focused report digest and complete coverage.
+- **Decision:** adopt the digital link contract and compiler composition.
+  The next Lean question is successive frames, delivery ownership, buffering,
+  and overrun. A concrete physical sampler must justify its age contract;
+  simultaneous TX/RX remains separate. This run used local Lean/model checks
+  and added no RTL, mapping, routing, or physical-closure result.
+
+The gate retained source hashes and verified source stability during its run.
+The documented unequal-clock example compiles. Earlier RX receipts below remain
+historical evidence for their own source snapshot.
+
+## 2026-09-15 — One-byte UART receive
+
+Added the [digital receive contract and compiler](../uart-receive.md) in the
+working tree based on `c133af9`; validation identities are source hashes rather
+than an implementation commit. The receiver confirms start, samples eight bits
+and stop, and retains either a byte or a framing error. Existing reactive
+instructions, E64, the atomic loader, and dense cached storage provide execution.
+
+- **Proofs:** armed byte recovery, exact compiler state/step/run correspondence,
+  and decoded-store composition. The whole-library audit admits only the three
+  standard Lean axioms; the injected custom axiom is rejected.
+- **Portable gate:** `build/validation/uart-rx-01/report.json`, SHA-256
+  `e1604250db30252bb8ef22fe68dce5c058420c2a4857aaef593cb314b6dec1c8`;
+  21 suites and both independent Python oracles passed in 708.568 seconds.
+  All 13,298 supported period/input configurations fit, with maxima of 250
+  instructions and 16 dictionary records. Four corrupted receive programs fail.
+- **Hardware integration:** `build/uart-rx/hardware/uart-rx-01/report.json`, SHA-256
+  `66c7c37dc8d659939dc9666b94c11c7d4130cd34aeb1a0ab357270acf518a496`;
+  direct/indexed structural and RTL checks, atomic structural checks, and atomic
+  indexed/default dense cached RTL passed. Each backend includes nine new RX
+  scenarios within the existing protocol/loader suite. The cache mutation fails.
+  Runtime was 247.881 seconds; the portable gate ran concurrently.
+- **Decision:** the existing engine can express this receive capability without
+  a new opcode or circuit. The next receive obligation is the asynchronous-input
+  latency contract; buffering, overrun and concurrent TX/RX need separate design.
+  No synthesis, routing, operating-frequency qualification, or physical default
+  promotion was performed. Frozen timed-contract fixtures were not replaced.
+
+The detailed study owns exact coverage, commands, timing assumptions and remaining
+boundaries. Both tagged validation runs passed. Ignored local receipts are not a
+durable backup; the source runners regenerate new evidence.
+
 ## 2026-09-15 — Research records consolidated
 
 This is a retrospective index, reconstructed from existing documentation and Git

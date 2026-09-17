@@ -15,12 +15,14 @@ private def emit : IO Unit := do
     ("uart", Execution.widenProgram (Engine.Reactive.embedProgram (Compile.UART.program ⟨3⟩ 0x53))),
     ("spi", Execution.widenProgram (Engine.Reactive.embedProgram (Compile.SPI.program ⟨3⟩ 0xa6))),
     ("i2c-write", Execution.widenProgram (Compile.I2C.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩)),
-    ("i2c-read", Compile.I2CRead.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩)]
+    ("i2c-read", Compile.I2CRead.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩),
+    ("uart-rx", Compile.UARTRx.program ⟨16, by decide, by decide, 0⟩),
+    ("uart-rx-split", Compile.UARTRx.program ⟨257, by decide, by decide, 1⟩)]
   let lines := examples.map fun (name, p) =>
     name ++ " " ++ String.intercalate " " (([p.last.val, p.idle.levels.toNat, p.idle.enabled.toNat] ++
       (Execution.imageWords p).toList.map BitVec.toNat).map toString)
   IO.FS.writeFile "build/loader/images.txt" (String.intercalate "\n" lines ++ "\n")
-  IO.println "Emitted atomic indexed loader and four compiler-produced images."
+  IO.println "Emitted atomic indexed loader and six compiler-produced images."
 
 private def numbers (line : String) : IO (Array Nat) :=
   (line.splitOn " ").toArray.mapM fun s => match s.toNat? with

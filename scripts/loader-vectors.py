@@ -93,6 +93,7 @@ class ProtocolAdapter:
     def __init__(self, machine): self.m, self.count = machine, 0
     @property
     def s(self): return self.m.s
+    def load(self, *args): self.m.load(*args)
     def edge(self, incoming=0, start=0, write=0, **ignored):
         command = (self.count % 7)+1 if write else 5 if start else 0
         self.count += 1
@@ -187,6 +188,7 @@ def generate():
             reads.append(core['i2c'](ProtocolAdapter(m), True, byte, stretched=stretch))
     for bits in range(7):
         reads.append(core['i2c'](ProtocolAdapter(m), True, acks=tuple((bits >> k) & 1 for k in range(3)), stretched=True))
+    rx_frames = core['uart_rx']['exercise'](ProtocolAdapter(m), images)
     # A live replacement must clear captured status, without a preceding reset.
     assert m.s[6] != 0
     m.edge(command=1)
@@ -210,7 +212,8 @@ def generate():
     m.edge(command=5); assert m.s == [5, 0, 0, 0, 5, 6, 0]
     coverage = dict(edges=len(m.rows), interruptions=interruptions, counters=dict(m.counters),
                     malformed_records=len(malformed), overwide_values=invalid_widths,
-                    i2c_reads=len(reads), quiet_read_cycles=reads[0], stretched_read_cycles=reads[1], cases=m.cases)
+                    i2c_reads=len(reads), uart_rx_frames=rx_frames,
+                    quiet_read_cycles=reads[0], stretched_read_cycles=reads[1], cases=m.cases)
     (OUT/'vectors.txt').write_text(''.join(' '.join(map(str, row))+'\n' for row in m.rows))
     (OUT/'coverage.json').write_text(json.dumps(coverage, indent=2)+'\n')
     # Observe physical storage only; no writes/backdoor initialization in the testbench.

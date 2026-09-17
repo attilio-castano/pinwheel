@@ -1,17 +1,22 @@
 # Validation and review gates
 
-The foundation PR uses the portable gate below. Hardware experiments remain
+Run the local checks below before pushing a PR. Hardware experiments remain
 separately reproducible with the pinned Apple Silicon tools and explicit fixture
 prerequisites. Passing the portable gate does not establish emitted-RTL
 equivalence, physical fit, or an operating frequency.
 
-## Portable gate
+## Local pre-push checks
 
 Install the repository's `lean-toolchain` with Elan and use Python 3.12+:
 
 ```sh
+python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
+
+The first command checks physical input/checkpoint provenance, backend import
+boundaries, receipt binding, and bank-selection helpers using disposable files;
+it requires no CAD tools. The second runs the portable Lean/model gate.
 
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
 commands, source hashes and a success receipt under `build/validation/<tag>/`.
@@ -29,19 +34,26 @@ The gate:
    `propext`, `Classical.choice`, and `Quot.sound` are allowed. An injected custom
    axiom must fail for the expected diagnostic. Counts include generated
    theorems; they are not counts of manually written mathematical results.
-3. Runs UART/SPI, shared engine, reactive I²C, explicit/counted/binary execution,
+3. Runs UART TX/RX, link timing, continuous buffered reception with ideal and
+   unequal clocks, SPI, shared engine, reactive I²C, explicit/counted/binary execution,
    register reads, encoding, countdown, timed-interface/fetch, and storage
    certificate checks. Their existing negative cases remain included.
-4. Independently decodes and checks generated PWL images with the Python oracle.
+4. Independently decodes and checks generated PWL images and UART RX E64 execution
+   with Python oracles. RX includes every supported period/input storage configuration.
 
-`.github/workflows/lean.yml` first runs the disposable-file input/checkpoint provenance
-regressions (`python3 -B -m unittest discover -s test -p 'test_physical_*.py'`),
-which needs no CAD tools. It then runs the same Lean entry point on pull requests and pushes
-to `main`, on Ubuntu 24.04 with no Lake cache. It uses the repository Lean pin and
-commit-pinned checkout/Lean actions. It has read-only repository permissions and
-a 30-minute job limit. CI does not install the macOS CAD archives or start Docker
-physical runs. The action's own optional build/test steps are disabled so there
-is one owner for the gate's command sequence.
+The [continuous UART suite](uart-stream.md#validation-and-reproduction) checks
+all 65,536 ordered byte pairs, independent wire/queue oracles, consumer stalls,
+reset/error recovery, and exact correspondence with the compiled RX supervisor.
+The [unequal-clock stream suite](uart-stream-clocks.md#validation-and-reproduction)
+adds independent physical-time wire and detection schedules, varying observation
+age, relative phases, rearm boundaries, and cases outside the sufficient bounds.
+These are Lean/model checks; the supervisor's new buffer has no RTL validation yet.
+
+Validation runs locally; the repository has no automatic GitHub Actions workflow.
+Include the check results and source identity in the PR description. Before
+pushing, verify that the committed sources match the validated sources. If code,
+tests, or validation inputs change, run the affected checks again. Documentation
+edits require link and whitespace checks.
 
 ## Hardware prerequisite order
 
@@ -62,6 +74,7 @@ For a new checkout, the relevant dependency chain is:
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
+| UART RX integration | No prior fixtures; `check-uart-rx-hardware.py --tag <fresh-tag>` regenerates mixed-protocol traces and simulates four backends, including the default dense cached core | [UART receive](uart-receive.md) |
 | E64 frontends | Run `check-binary.py`, then `check-execution.py` | [E64 hardware](execution-hardware.md) |
 | Dense codec | Execution decoder vectors from the preceding frontend check; create `build/storage` with `test/Storage.lean`, then run `check-dense-codec.py` | [Storage study](storage-study.md) |
 | Cached/dense storage | Loader vectors and observation include from `check-loader.py`; emit with `test/Storage.lean`, then run the storage measurement commands below | [Storage study](storage-study.md) |
@@ -117,7 +130,7 @@ python3 -B -m unittest discover -s test -p 'test_bank_select.py'
 4. **Measurements and research records:** baseline identities, fixed constraints,
    default versus experimental backends, and remaining physical limitations.
 
-The foundation preserves the incremental milestone history because committed
-research records reference those commits. Prefer a merge commit when the PR is
-approved. The optional command-decoder candidate's physical run is a follow-up;
-no new timing closure or default promotion is a prerequisite for this merge.
+Preserve historical experiment identities when integrating new work. The hardware
+closure and optimization studies record their own artifact-specific evidence;
+new physical timing closure or default promotion is not a prerequisite for
+merging those functional proofs and experimental variants.

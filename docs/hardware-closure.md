@@ -152,9 +152,10 @@ The reference engine, compilers, protocol models, and atomic-loader definitions
 are unchanged by this batch. Physical preparation/timeout/provenance tests pass
 in disposable directories without running CAD tools.
 
-CI selects all 16 physical preparation/checkpoint/timeout tests; its exact command
-passes locally. That portable gate includes the strengthened startup theorem
-and its recorded CI configuration. Every source hash matched at that run. The earlier
+At the time of this experiment, CI selected all 16 physical preparation/checkpoint/timeout
+tests; that command passed locally. The portable gate included the strengthened
+startup theorem and its recorded CI configuration. Main subsequently removed the
+GitHub Actions workflow; current local pre-push commands are in [validation](validation.md). Every source hash matched at that run. The earlier
 successful gate remains separately under `build/validation/hardware-closure/`.
 
 | Receipt | SHA-256 |

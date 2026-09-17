@@ -33,6 +33,24 @@ observed-input waits, guarded timing, and conditional control needed by I²C.
 These have distinct capacity and encoding contracts; a later backend does not
 silently redefine the original baseline.
 
+The [UART link contract](uart-link.md) relates independently clocked TX and RX
+execution through a bounded digital observation age. Its numerical conditions
+discharge the receiver's start/data/stop premises and compose through both
+compilers. This environment relation belongs beside the protocol; it leaves a
+concrete physical sampler responsible for meeting the assumed observation bound.
+
+The [continuous UART receive model](uart-stream.md) separates reception from
+consumer ownership. A one-entry buffer preserves the oldest unread result,
+supports simultaneous consumption and arrival, and makes overrun and reset
+flushes explicit. A Lean supervisor composes automatic rearm with the existing
+compiled RX program. Its ideal finite-stream theorem includes time to rearm
+between frames. The [continuous clock contract](uart-stream-clocks.md) extends
+that result to unequal clocks and varying bounded observation age. It reserves
+two additional RX ticks beyond the one-frame bound, establishes agreement with
+the continuous wire, and preserves the timing conditions after each rearm.
+A circuit implementation of this supervisor remains a separate refinement
+obligation.
+
 The [timed component contract](timed-components.md) defines input-dependent
 observations before and after each edge and composable refinement between
 implementations. Checked signal interfaces give typed identities and complete

@@ -12,7 +12,7 @@ closure remain open. No editor extension is required for this terminal-based wor
 
 ## Merge validation
 
-Use the [validation guide](validation.md) for the portable CI entry point,
+Use the [validation guide](validation.md) for the local pre-push commands,
 whole-library axiom audit, independent model checks, and hardware fixture order.
 
 ## Toolchain

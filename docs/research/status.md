@@ -1,6 +1,7 @@
 # Research status
 
-Updated 2026-09-15 with the [cache-enable follow-up](../cache-enable-study.md).
+Updated 2026-09-17 with the hardware closure, [cache-enable follow-up](../cache-enable-study.md),
+and UART receive capability from main.
 This is the current decision brief; [results](results.md) owns completed
 conclusions and [journal](journal.md) routes historical evidence.
 
@@ -112,6 +113,28 @@ one-hour cap; its receipt records the end state. The bank-selection and
 cache-enable follow-ups consumed no additional physical run. Historical cumulative
 resource use remains unknown. This status record grants no additional run or
 external action.
+
+## UART receive capability
+
+The [one-byte UART receiver](../uart-receive.md) now compiles to the existing
+reactive engine and runs through E64, the atomic loader, and the default dense
+cached core. It adds a digital receive contract without changing core circuitry.
+All supported period/input configurations fit the current storage capacities.
+TX and RX remain separate loaded programs. The [link contract](../uart-link.md)
+now proves communication between independent program instances under clock and
+observation-age bounds, including successive frames under the strengthened
+continuous bound. Continuous buffering has a Lean supervisor contract;
+its structural circuit and loader composition, a concrete input wrapper, and
+concurrent execution still need their own designs and evidence. These capability
+results add no physical closure evidence to the comparison above.
+
+## Next proposed Lean question: receiver lifecycle and program replacement
+
+Continuous listening keeps the current RX program busy, so stopping, resetting,
+and reloading need an explicit supervisor contract that composes with
+[atomic program replacement](../atomic-loader.md). It must also define ownership
+of a pending result. The present theorem assumes one fixed RX program; this
+lifecycle contract is the proposed follow-on.
 
 ## Deferred questions
 
