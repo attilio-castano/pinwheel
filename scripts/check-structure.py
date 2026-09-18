@@ -6,6 +6,11 @@ expensive measurements recorded in tracked manifests: operation depth measured o
 emitted MLIR, logic depth of technology-mapped cache cones, and extracted
 slow-corner slack per launch family. Levels are ordinal: agreement means the same
 ranking and direction of change, never nanoseconds.
+
+For the fetch-policy backends it also states, before any run, what the model
+expects to limit each one: the deepest endpoint per launch family, and that the
+loader's data port reaches the loader's own registers and nothing on the fetch
+path (the command-split lift; `Storage/DataPort.lean` proves it).
 """
 import argparse
 import hashlib
@@ -20,6 +25,9 @@ EXPERIMENTS = ROOT / "physical/experiments"
 # Mapped-cone family names -> Lean launch families.
 FAMILIES = {"cursor": "loader cursor", "protocol": "incoming", "command": "command", "reset": "init/reset"}
 PORTS = {"protocol": "incoming", "loader_command": "command", "reset": "init/reset", "loader_data": "data"}
+POLICY_BACKENDS = ("prefetch", "twoport", "oneport")
+# Endpoint classes on the fetch path: the data port must not reach them.
+FETCH_PATH = ("core state", "cached word", "cached word enable", "fetched words", "pin stages")
 
 
 def sha(path):
@@ -122,6 +130,24 @@ def main():
                           and r["endpoint"] != "outputs"), key=lambda r: r["latest"])["endpoint"]
     if worst_endpoint != "cached word": raise RuntimeError("Deepest endpoint is not the cached word")
 
+    # 4. The fetch-policy backends: what the data port reaches, and what is deepest.
+    policy_backends = {}
+    for variant in POLICY_BACKENDS:
+        rows = json.loads((out / f"{variant}.json").read_text())
+        summary = {}
+        for table in ("gates", "sampled_gates"):
+            reached = [r["endpoint"] for r in rows[table] if r["family"] == "data" and r["latest"] is not None]
+            on_path = [e for e in reached if e in FETCH_PATH]
+            if on_path: raise RuntimeError(f"{variant} {table}: the data port reaches {on_path}")
+            deepest = {}
+            for r in rows[table]:
+                if r["latest"] is None or r["endpoint"] == "outputs": continue
+                if r["family"] not in deepest or r["latest"] > deepest[r["family"]]["levels"]:
+                    deepest[r["family"]] = {"endpoint": r["endpoint"], "levels": r["latest"]}
+            summary[table] = {"data_port_reaches": reached, "deepest_per_family": deepest}
+        summary["loop_stages_gates"] = rows["loop_stages_gates"]
+        policy_backends[variant] = summary
+
     if hashes != {str(p.relative_to(ROOT)): sha(p) for p in sources}:
         raise RuntimeError("Sources changed during the check")
     report = {"source_sha256": hashes, "exact_source_depths": exact, "mapped_cone_points": points,
@@ -131,6 +157,7 @@ def main():
               "loop_stages_gate_levels": {v: lean[v]["loop_stages_gates"] for v in lean},
               "self_loops_gate_levels": lean["command-split"]["self_loops_gates"],
               "update_cones_gate_levels": {v: lean[v]["update_cones_gates"] for v in lean},
+              "policy_backends": policy_backends,
               "gating_policies": lean["command-split"]["policies"],
               "gating_plan_sha256": {p.name: sha(p) for p in sorted(out.glob("plan-*.tsv"))},
               "artifact_sha256": {p.name: sha(p) for p in sorted(out.glob("*.json"))},
@@ -141,6 +168,11 @@ def main():
     (out / "report.json").write_text(json.dumps(report, indent=2) + "\n")
     print(f"{len(exact)} source depths match exactly; mapped-cone r = {correlation:.3f} over {len(points)} points, "
           f"{len(directions)} candidate changes in the same direction; port families rank {by_depth}.")
+    for variant, summary in policy_backends.items():
+        table = summary["sampled_gates"]
+        worst = max(table["deepest_per_family"].items(), key=lambda kv: kv[1]["levels"])
+        print(f"{variant} (sampled): data port reaches {table['data_port_reaches']}; deepest is {worst[0]} -> "
+              f"{worst[1]['endpoint']} at {worst[1]['levels']} levels.")
 
 
 if __name__ == "__main__":

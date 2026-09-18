@@ -1,5 +1,5 @@
 import Pinwheel.Hardware.Storage.FetchPolicy
-import Pinwheel.Hardware.Storage.BackendNetlist
+import Pinwheel.Hardware.Storage.BankSelect
 import Pinwheel.Hardware.Storage.FetchChoice
 import Pinwheel.Hardware.NetlistExtend
 
@@ -14,7 +14,13 @@ then small: an expression for the fed word, two shared wires below it, and the
 next-state expressions of its own registers (`Realization.twoWires`). From a
 realization and the policy's `Correct`, every register and output step, the
 projection onto the policy machine, the refinement of the atomic reference under
-the policy's rule and the trace theorems follow, once. -/
+the policy's rule and the trace theorems follow, once.
+
+Loader-level expressions enter in the command-split form (`BankSelect.lift`):
+the capacity check can only turn a push into a rejection, so every other
+command predicate — commit, start, the bank selection behind them — decodes the
+raw command and has no path from the data port. Only the loader's own push
+logic keeps one. Every policy backend inherits this from here. -/
 namespace Pinwheel.Hardware.Storage.Backend.Policy
 open Loader
 
@@ -25,7 +31,7 @@ abbrev WS := WithWire Machine.Input 64
 
 def feedW : {w : Nat} → Reactive.Input w → Expr WS Backend.Register w
   | _, .successor => .input .wire
-  | _, p => fresh (Backend.lift (Cache.baseInputs p))
+  | _, p => fresh (BankSelect.lift (Cache.baseInputs p))
 
 /-- A scheduler expression over the backend's registers, fed the successor wire. -/
 def schedW (e : Reactive.E w) : Expr WS Backend.Register w := e.bind feedW (fun r => .reg (.core r))
@@ -38,10 +44,10 @@ def core : Circuit WS Backend.Register Machine.Output where
   next := fun r => match r with
     | .core r => schedW (Reactive.circuit.next r)
     | .current => .mux enableW (.input .wire) (.reg .current)
-    | r => fresh (Backend.circuit.next r)
+    | r => fresh (BankSelect.circuit.next r)
   output := fun o => match o with
     | .core o => schedW (Reactive.circuit.output o)
-    | .control o => fresh (Backend.circuit.output (.control o))
+    | .control o => fresh (BankSelect.circuit.output (.control o))
 
 /-- What the scheduler sees when fed `x`. -/
 def fedInputs (x : BitVec 64) (i : Machine.Inputs) (b : Backend.State) : Reactive.Inputs :=
@@ -60,7 +66,7 @@ theorem feedW_correct (x : BitVec 64) (i : Machine.Inputs) (b : Backend.State) :
   funext w p
   cases p <;> first
     | rfl
-    | simp only [feedW, fresh_correct, Backend.lift_correct, Cache.base_correct, fedInputs,
+    | simp only [feedW, fresh_correct, BankSelect.lift_correct, Cache.base_correct, fedInputs,
         Reactive.Inputs.values]
 
 theorem schedW_correct (e : Reactive.E w) (x : BitVec 64) (i : Machine.Inputs) (b : Backend.State) :
@@ -95,19 +101,19 @@ theorem core_step (x : BitVec 64) (i : Machine.Inputs) (b : Backend.State) (r : 
     cases Dispatch.dispatching (fedInputs x i b) b.reference.machine.core <;>
       cases Reactive.runningValue b.reference.machine.core <;> simp <;> rfl
   | control p =>
-    simpa only [Circuit.step, core, fresh_correct, fedNext, Backend.State.values] using
+    simpa only [Circuit.step, core, fresh_correct, BankSelect.circuit_next_eq, fedNext, Backend.State.values] using
       Backend.next_correct i b (.control p)
   | word k j =>
-    simpa only [Circuit.step, core, fresh_correct, fedNext, Backend.State.values] using
+    simpa only [Circuit.step, core, fresh_correct, BankSelect.circuit_next_eq, fedNext, Backend.State.values] using
       Backend.next_correct i b (.word k j)
   | index k j =>
-    simpa only [Circuit.step, core, fresh_correct, fedNext, Backend.State.values] using
+    simpa only [Circuit.step, core, fresh_correct, BankSelect.circuit_next_eq, fedNext, Backend.State.values] using
       Backend.next_correct i b (.index k j)
   | idle k =>
-    simpa only [Circuit.step, core, fresh_correct, fedNext, Backend.State.values] using
+    simpa only [Circuit.step, core, fresh_correct, BankSelect.circuit_next_eq, fedNext, Backend.State.values] using
       Backend.next_correct i b (.idle k)
   | last k =>
-    simpa only [Circuit.step, core, fresh_correct, fedNext, Backend.State.values] using
+    simpa only [Circuit.step, core, fresh_correct, BankSelect.circuit_next_eq, fedNext, Backend.State.values] using
       Backend.next_correct i b (.last k)
 
 /-- No output reads the fed successor: every output is the general backend's. -/
@@ -115,7 +121,7 @@ theorem core_observe (x : BitVec 64) (i : Machine.Inputs) (b : Backend.State) (o
     core.observe (WithWire.values i.values x) b.values o = Backend.circuit.observe i.values b.values o := by
   cases o with
   | control o =>
-    simp only [Circuit.observe, core, fresh_correct]
+    simp only [Circuit.observe, core, fresh_correct, BankSelect.circuit_output_eq]
   | core o =>
     simp only [Circuit.observe, core, schedW_correct, Backend.circuit, Backend.lift_correct,
       Cache.circuit, Expr.eval_bind, Cache.feed_correct_circuit, Cache.coreReg, Cache.lift,
@@ -203,13 +209,13 @@ theorem inner_correct (val : σ → Values X) (e : Backend.E w) (i : Machine.Inp
     (inner (X := X) e).eval i.values (s.values val) = e.eval i.values s.backend.values := by
   simp only [inner, Expr.eval_bind, Expr.eval, State.values, Extended.values]
 
-def liftC (e : Expr Machine.Input Cache.Register w) : E X w := inner (Backend.lift e)
+def liftC (e : Expr Machine.Input Cache.Register w) : E X w := inner (BankSelect.lift e)
 
 theorem liftC_correct (val : σ → Values X) (e : Expr Machine.Input Cache.Register w)
     (i : Machine.Inputs) (s : State σ) :
     (liftC (X := X) e).eval i.values (s.values val) =
       e.eval (adapt i s.backend).values s.backend.reference.values := by
-  simp only [liftC, inner_correct, Backend.lift_correct]
+  simp only [liftC, inner_correct, BankSelect.lift_correct]
 
 def branch : E X 1 := liftC FetchChoice.branch
 

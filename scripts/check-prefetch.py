@@ -27,8 +27,12 @@ VARIANTS = {
                      fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6419), points=(6350, 6354), induction=2,
                      lean="Decoupled (FetchPolicy) refinement, Backend.Prefetch.netlist_next/netlist_output/"
                           "completeRefinement, Prefetch.sampled_trace_correct"),
+    # Mapped flip-flop counts are what synthesis keeps, not the register layout (`fields`): it
+    # deletes the constant top bit of each word register and any bit it can show unread. Since
+    # the command-split lift, the sampled two-port mapping keeps bits 3-8 of the cached word,
+    # which it had shown unread before; the other five mappings are unchanged.
     "twoport": dict(exe="twoport_emit", stem="twoport", test="test/TwoPort.lean", ready=False,
-                    fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6419), points=(6350, 6354), induction=2,
+                    fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6425), points=(6350, 6354), induction=2,
                     lean="TwoPort (FetchPolicy) refinement, Backend.Policy netlist_next/netlist_output/"
                          "completeRefinement via Backend.TwoPort.realization, TwoPort.sampled_trace_correct"),
     "oneport": dict(exe="oneport_emit", stem="oneport", test="test/OnePort.lean", ready=True,

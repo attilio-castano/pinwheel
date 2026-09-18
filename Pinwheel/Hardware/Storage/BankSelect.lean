@@ -21,6 +21,12 @@ theorem lift_eq (e : Expr Machine.Input Cache.Register w)
   bv_decide
   done
 
+/-- The split lift means what the plain one does: the expression on the
+capacity-checked inputs and the logical registers. -/
+theorem lift_correct (i : Machine.Inputs) (s : State) (e : Expr Machine.Input Cache.Register w) :
+    (lift e).eval i.values s.values = e.eval (adapt i s).values s.reference.values := by
+  rw [lift_eq, Backend.lift_correct]
+
 def selected : E 1 := lift (Cache.liftExpr Machine.selectedGate)
 def target : E 8 := lift Cache.target
 
@@ -74,6 +80,18 @@ def circuit : Circuit Machine.Input Register Machine.Output where
     | .last b => lift (Cache.circuit.next (.machine (.memory b .last)))
     | .current => lift (Cache.circuit.next .current)
   output := fun o => lift (Cache.circuit.output o)
+
+/-- Every next-state and output expression of the split circuit means the plain one's. -/
+theorem circuit_next_eq (i : Values Machine.Input) (s : Values Register) (r : Register w) :
+    (circuit.next r).eval i s = (Backend.circuit.next r).eval i s := by
+  cases r
+  all_goals simp only [circuit, Backend.circuit, wordNext, Backend.wordNext, memoryInputs,
+    Backend.memoryInputs, Expr.eval, lift_eq]
+  all_goals rfl
+
+theorem circuit_output_eq (i : Values Machine.Input) (s : Values Register) (o : Machine.Output w) :
+    (circuit.output o).eval i s = (Backend.circuit.output o).eval i s := by
+  simp only [circuit, Backend.circuit, lift_eq]
 
 def feed : {w : Nat} → Reactive.Input w → Expr SuccessorInput Register w
   | _, .successor => .input .wire
