@@ -852,6 +852,130 @@ external interface integration retain their separate contracts.
   is the next Lean step, and a routed repeat and a two-port run are separate
   allocations.
 
+## 2026-09-18: command split in the generic backend; the data port as a theorem; two routed runs
+
+- **Scope:** one Lean change in the generic policy backend with its proofs, a
+  structural theorem file, an extension of the structure check, re-validation
+  of the three emitted backends, and two routed runs approved as such: a repeat
+  of the one-port backend and a first run of the two-port backend, both under
+  the contract of `oneport-sampled-01` (`combined.json`, 150-minute cap, whole
+  flow), stated before the runs.
+- **Result:** `Backend.Policy` lifts with `BankSelect.lift` (`feedW`,
+  `BankSelect.circuit` for the loader's registers and outputs, `liftC`); new
+  lemmas `BankSelect.lift_correct`, `circuit_next_eq`, `circuit_output_eq`; no
+  policy file changed. Level report `build/structure/split-01`, then
+  `check-structure --tag split-02` with the new policy-backend section: data
+  port into fetched words 71 → no path, into core state 61 → no path, loader
+  control 42 → 41; cursor into fetched words 65 → 50; registers into the
+  dispatch decision 33 → 20, cached word 38 → 25, fetched words 65 → 64
+  (two-port 64, decoupled 62). The earlier report (`policy-02`) already ranked
+  the data port deepest; I had not read that row before `oneport-sampled-01`.
+  `Storage/DataPort.lean`: `dataPort`, leaf facts by `rfl`
+  (`base_data_free`, `commit_lift_data_free`, `branch_lift_data_free`,
+  `chosen_data_free`, and `plain_commit_sees_data` by `decide`), generic
+  `sched_data_free`, `sched0_data_free`, `readAt_data_free`, `core_data_free`,
+  `core_output_data_free`, `DataFree`, `DataFree.next`, `DataFree.output`,
+  `DataFree.step_independent`, instances `Prefetch.dataFree`,
+  `TwoPort.dataFree`, `OnePort.dataFree`. A section variable mentioning `next`
+  resolved to `DataFree.next` once that existed and elaborated to `sorry`
+  without an error; written `Policy.next`.
+  `check-prefetch`: `oneport-04` (6,508 and 6,506 points, three-step induction,
+  29,898 ready-mode edges on both emissions, both rejections), `prefetch-06`
+  (6,501 and 6,511, 35,824 edges), `twoport-03` stopped on the mapped
+  flip-flop assertion of the sampled emission with everything before it passed
+  — 6,425 where 6,419 was expected: bits 3–8 of the cached word, deleted as
+  unread in `twoport-02`, are kept — and `twoport-04` passed with the count
+  recorded (6,507 and 6,505 points, 35,824 edges). Mapped typical, sampled:
+  one port 557,736 µm² (+1.8% over the sampled candidate; was 576,805), ABC
+  5,167 ps; two ports 628,939 µm² (+14.8%; was 618,244), 5,431 ps; decoupled
+  637,827 µm² (+16.4%; was 654,086), 5,601 ps. Manifests
+  `physical/experiments/{oneport,twoport,prefetch}-split-results.json`.
+  `check-foundation --tag command-split-policy-01`: 173 modules, 12,519
+  declarations, 6,528 theorems, 29 suites, untrusted axiom rejected, 1,494 s.
+  `oneport-split-01`: exit 0, the whole flow in 55 minutes; 17 detailed-routing
+  passes to zero violations (13, then 4 after antenna repair); slow setup
+  +0.602 ns with no violation, typical +6.325, fast +8.815; hold +0.379 /
+  +0.152 / +0.060; 625,727 µm² of functional cells, 69.3% utilization,
+  1,617,478 µm of wire, 6,026 repair buffers (70,119 µm²); 5 slew and 15 fanout
+  violations; Magic DRC 0, LVS 0, antenna 0. Families
+  (`oneport-split-01-families`): registers +1.100 (`cached_word[39]` →
+  `start_word[1]`), loader command +0.602 (`command[0]` → `start_word[1]`),
+  loader data +4.383 (`data[2]` → `loader_rejected`), protocol +14.459, reset
+  +0.874. Implemented-netlist regression on the ready-mode vectors: 29,898
+  edges, 4,903,194 comparisons, mutant rejected. Manifest
+  `physical/experiments/oneport-split-physical-results.json`.
+  `twoport-split-01`: exit 124 at the 150-minute limit. Utilization 75.2%
+  (678,368 µm²) entering global routing, which ran from 17:45:52 to 19:49:17
+  container time — 71 `GRT-0273` rounds, each disabling the non-default rule of
+  one clock net and re-running 50 overflow iterations — and completed with
+  3,386,282 µm of estimated wire and 66 antenna violations (one port at the same
+  step: 2,156,400 µm); `RepairDesignPostGRT` re-entered the loop (8 more rounds)
+  until the limit. Last completed step `40-openroad-checkantennas`; no detailed
+  routing, no extracted timing; mid-flow estimates are omitted from the manifest
+  `physical/experiments/twoport-split-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  change, the theorem and both routed results.
+  The one-port organization with the command split is the first design here
+  to meet setup at all corners with clock gating, in one run; the two-port
+  organization does not route on the test rectangle under this overlay. Both
+  conclusions are about the test boundary — a core rectangle with stand-in
+  pins — and the [whole chip](../whole-chip.md) is now a Lean object whose
+  routed run has not been made.
+
+## 2026-09-18: the whole chip in Lean — feeders, serial loader, upload theorem
+
+- **Scope:** Lean only, plus emission and one mapped screen. No simulation of the
+  emitted chip and no physical run. Direction set by the user the same day: the
+  Lean specification should cover the whole stack, the serial loader first.
+- **Result:** `Hardware/Feeder.lean`: `Feeder` (expressions for the inner inputs
+  and for the layer's own registers), `wrap`, `wrap_step`, `wrap_observe`,
+  `wrap_pairTrace` (any netlist behind any feeder takes the edges of the fed
+  history), `Model` with `pairTrace_eq`, `history_fst`, `history_append`,
+  timing laws `wrap_arrivalNext`, `wrap_shields`, the generic two-register
+  `sampler` with `samplerModel` and `sampler_consumed`, `Netlist.mapOutputs`.
+  A component built from unapplied `n.step` left goals in an eta form that
+  `rw` could not match; `Netlist.component` uses explicit lambdas.
+  `Hardware/Serial/Receiver.lean`: five registers (76 bits), `receiver` as a
+  feeder, `model` (circuit = functions, through three Bool/BitVec bridge
+  lemmas and `rfl`; `simp` with a Bool hypothesis on a BitVec literal did not
+  rewrite, as before), `no_path_from_host`. `Serial/Frame.lean`: `IsBit` (clock
+  low at least once, high at least twice, data at the first high sample),
+  `run_bit`, the shift invariant `Partial` on `c ++ d`, `frame_delivers`,
+  `Session`, `session_delivers`. `Loader/Delivery.lean`: `Quiet`, `Carries`,
+  `Delivers`. `Hardware/Chip.lean`: `pinMap`, `outputs`, `netlist`, `trace_eq`,
+  `consumed_delayed`, `session_delivers`, `advance`, `history_append`,
+  `pins_shielded`. `Storage/ChipBackend.lean`: `Policy.chip_trace`,
+  `OnePort.chip_trace`, `TwoPort.chip_trace`, `chipText` (module
+  `tt_um_pinwheel` with the template's ports). `Loader/Upload.lean`: `admitted`,
+  `stepWith`, `runWith`, `imageOf`, `idle_next`, `quiet_next`, `begin_next`,
+  `pushed_next`, `complete_commits`, `Staging`, `Loaded`, `staged_run`,
+  `upload_loads`, `Delivers.pushes`. `Loader/Program.lean`: `Holds`,
+  `scheduler_holds`, `core_next_holds` (through `Reactive.step_refines`),
+  `Running`, `runs_program`, `runs_program_with`, `Loaded.running`.
+  `Storage/ProgramUpload.lean`: `upload_holds`, `upload_good`, `Fits`,
+  `upload_fits`, `program_loads`. `Storage/ChipUpload.lean`:
+  `chip_program_loads`, `chip_upload_ready`, `TwoPort.chip_runs_upload`,
+  `OnePort.chip_runs_upload`. Inside `theorem DataFree.next`-style names a
+  section variable mentioning `next` had elaborated to `sorry` earlier in the
+  day; the same trap was avoided here by qualifying names.
+  `test/SerialUpload.lean` (suite 30): the compiled I²C write's upload and a
+  start as 325 frames, 70,855 Tiny Tapeout pin samples through `Chip.consumed`,
+  delivered in order; longer and uneven phases; garbage on the data pin except
+  at the first high sample; command 7 as reset; inverted and
+  least-significant-first drivers, a frame cut by the select line and a missing
+  two-sample tail rejected; 322 words, at most 32 distinct records, all ready
+  and within capacity; the UART receiver's stream not ready. Under one second.
+  `chip_emit` → `build/chip/chip-01`; CIRCT export; mapped typical: one-port
+  chip 562,152 µm², ABC 5,364 ps (test-boundary core behind the sampler
+  557,736); two-port chip 614,555 µm², 5,391 ps (628,939).
+  `check-foundation --tag whole-chip-01`: 183 modules, 13,322 declarations, 6,873 theorems, 30 suites, untrusted axiom rejected, 1,423 s.
+- **Disposition:** [the whole chip](../whole-chip.md) owns the stack, the
+  theorems and the boundary. The proved object is now the chip's netlist, from
+  a host's serial session to the instruction-level engine running the uploaded
+  program. The emitted RTL of that netlist has no independent check yet and no
+  physical run; both are separate steps, the second needing an allocation and
+  an outline decision.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

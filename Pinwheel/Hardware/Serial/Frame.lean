@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.Serial.Receiver
+import Pinwheel.Hardware.Loader.Delivery
 
 /-! What the serial loader delivers.
 
@@ -42,27 +43,14 @@ theorem fed_history (s : State) (samples : List Inputs) :
   | nil => rfl
   | cons i rest ih => simp only [List.map, Feeder.Model.history, fed, ih]; rfl
 
-/-! ### What the core can be shown -/
+/-! ### What the core can be shown
 
-/-- An edge on which the core is told nothing. -/
-def Quiet (m : Machine.Inputs) : Prop := m.init = false ∧ m.reset = false ∧ m.command = 0
+`Quiet`, `Carries` and `Delivers` are the loader machine's
+(`Loader/Delivery.lean`): an edge that tells the core nothing, an edge that
+carries one command and its word, and a history that is a list of commands among
+quiet edges. -/
 
-/-- An edge that carries one command and its word. Command 7 is the `reset` input. -/
-def Carries (m : Machine.Inputs) (c : BitVec 3) (d : BitVec 64) : Prop :=
-  m.init = false ∧ m.reset = (c == 7) ∧ m.command = (if c != 7 then c else 0) ∧ m.data = d
-
-/-- The consumed history is the given commands, in order, among quiet edges. -/
-inductive Delivers : List Machine.Inputs → List (BitVec 3 × BitVec 64) → Prop where
-  | nil : Delivers [] []
-  | quiet {m h cs} : Quiet m → Delivers h cs → Delivers (m :: h) cs
-  | command {m h c d cs} : Carries m c d → Delivers h cs → Delivers (m :: h) ((c, d) :: cs)
-
-theorem Delivers.append {h₁ h₂ : List Machine.Inputs} {c₁ c₂ : List (BitVec 3 × BitVec 64)}
-    (a : Delivers h₁ c₁) (b : Delivers h₂ c₂) : Delivers (h₁ ++ h₂) (c₁ ++ c₂) := by
-  induction a with
-  | nil => exact b
-  | quiet hq _ ih => exact .quiet hq ih
-  | command hc _ ih => exact .command hc ih
+open Machine (Quiet Carries Delivers)
 
 theorem feed_quiet (i : Inputs) (s : State) (hi : i.init = false) (hf : s.fire = false) :
     Quiet (feed i s) := by

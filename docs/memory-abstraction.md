@@ -640,6 +640,71 @@ emissions — the one-port area falls 3.3%, the two-port area rises 1.7% — whi
 is the recipe's noise more than the change: the split removes a 64-bit compare
 from a handful of cones and adds nothing.
 
+### The command-split backends, routed
+
+Same contract as `oneport-sampled-01`, stated before the runs: behind the
+sampler, `physical/experiments/combined.json` (calibrated RC, width-8 clock
+gating), 20 ns clock, unchanged I/O constraints, diagnostic 6×4 floorplan, four
+CPUs, 150-minute cap, the whole flow including layout checks. The model's
+prediction was written into the identity manifest before the first run: the
+data-launched violations disappear; the register family, one level shallower,
+stays where it was. Identities and numbers in
+`physical/experiments/oneport-split-physical-results.json` and
+`twoport-split-physical-results.json`.
+
+| Slow corner, extracted | `combined-03` (control) | `oneport-sampled-01` (before) | `oneport-split-01` | `twoport-split-01` |
+| --- | ---: | ---: | ---: | ---: |
+| Worst setup slack | −2.251 ns, 40 endpoints | −0.187 ns, 9 endpoints | **+0.602 ns**, none | did not finish |
+| Register-launched family | −2.054 ns | −0.053 ns | **+1.100 ns** | — |
+| Loader command family | −2.251 ns | +0.473 ns | +0.602 ns | — |
+| Loader data family | +0.116 ns | −0.187 ns | **+4.383 ns** | — |
+| Reset family | | +0.228 ns | +0.874 ns | — |
+| Protocol pins | +14.496 ns | +14.506 ns | +14.459 ns | — |
+| Typical / fast setup | | +5.730 / +8.602 | +6.325 / +8.815 | — |
+| Hold, slow / typical / fast | +0.539 / +0.232 / +0.059 | +0.361 / +0.168 / +0.054 | +0.379 / +0.152 / +0.060 | — |
+| Functional cell area, utilization | 608,058 µm², 67.4% | 624,825 µm², 69.2% | 625,727 µm², 69.3% | 678,368 µm², **75.2%** at global routing |
+| Routed wire | 1,753,794 µm | 1,663,828 µm | 1,617,478 µm | 3,386,282 µm estimated at global routing (one port: 2,156,400) |
+| Detailed-routing passes to zero violations | | 51 | 17 | not reached |
+| Magic DRC / LVS / antenna | not run | 0 / 0 / 0 | 0 / 0 / 0 | not reached |
+| Flow exit | 0 (stopped after timing) | 2 (slow setup) | **0** | 124, wall-time limit |
+
+**One port.** `oneport-split-01` meets setup at all three extracted corners
+with clock gating — the first run of this design to do so — and finishes the
+whole flow with no deferred error in 55 minutes instead of about 100. The data
+port behaves as the theorem says: its worst path now ends at the loader's
+`rejected` output, 4.4 ns clear, and nothing data-launched reaches the word
+registers. Every other family's worst path ends in the port's word registers
+(`command[0]`, `init` and `cached_word[39]` into `start_word[1]`), the endpoint
+class the level model ranks deepest. 5 slew and 15 fanout limit violations
+remain. The routed netlist passes the implemented-netlist regression on the
+ready-mode vectors (29,898 edges, 4,903,194 output-bit comparisons, mutant
+rejected).
+
+What is not explained: the register family moved from −0.053 to +1.100 ns while
+its depth in the model changed by one level of 65. That is more than the 0.6 ns
+seen between equivalent RTLs under this flow. The repair steps no longer had
+data-launched violations to work on, routing converged in a third of the
+passes, and wire fell 3%; which of these carried the register paths was not
+isolated. Two samples of this organization now exist, −0.187 and +0.602 ns, and
+they differ by a change the model ranks as decisive for one family only.
+
+**Two ports.** `twoport-split-01` did not finish. It entered global routing at
+75.2% utilization — the one-port design at 69.1%, the decoupled backend that
+failed earlier at 80.7% — and global routing could not remove its overflow in the
+first pass: it spent 2 h 3 min disabling the wide-spacing rule of one clock net
+per round, 71 rounds, where neither one-port run needed any. It did complete,
+with 57% more estimated wire than the one-port design at the same step; the
+repair step after it re-entered the same loop, and the 150-minute limit ended
+the run before detailed routing. No extracted timing exists for this design.
+
+What the pair says. On this test rectangle and overlay, routability ends
+somewhere between 69% and 75% utilization at global routing, which is between
+about +5% and +15% of mapped area over the sampled candidate. The organization
+without a rule on programs is on the wrong side of it here; the one with the
+rule closes timing. The rectangle is not the chip: the announced outline is
+about a third larger (see [the whole chip](whole-chip.md)), where the two-port
+design would sit near 56%, and that run has not been made.
+
 ## What the abstraction buys
 
 A fetch organization is now a `Policy` with three obligations, proved against

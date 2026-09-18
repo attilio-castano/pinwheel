@@ -1,7 +1,7 @@
 # The whole chip in Lean
 
-Status: **experimental top level, proved in Lean down to its netlist and emitted;
-the emitted RTL has not been simulated or routed yet.**
+Status: **experimental top level, proved in Lean from a host's serial session to
+a running program; emitted; the emitted RTL has not been simulated or routed yet.**
 
 ## Question
 
@@ -24,7 +24,7 @@ route is the object the theorems are about?
 | **Serial loader** | three pins in place of the 67-wire port | `Hardware/Serial/` | **new: proved** |
 | **Pin samplers** | two registers on every input | `Hardware/Feeder.lean` | **new: generic, proved** |
 | **Pin map and output map** | Tiny Tapeout's ports | `Hardware/Chip.lean` | **new: proved** |
-| Upload theorem | "these frames leave this image running" | — | missing: the pieces exist, the statement does not |
+| **Upload theorem** | "this session leaves this program running" | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | **new: proved** |
 | Emitted RTL of the chip | `tt_um_pinwheel` | `test/ChipEmit.lean` | emitted and mapped; not simulated |
 | Routed chip | official 8×4 outline | — | not started; the outline is not in the pinned Tiny Tapeout files |
 
@@ -101,6 +101,51 @@ The emitted module is the Tiny Tapeout template's `tt_um_*` interface
 (`clk`, `rst_n`, `ena`, `ui_in`, `uo_out`, `uio_in`, `uio_out`, `uio_oe`), so
 no hand-written wrapper stands between Lean and the flow.
 
+## From the pins to a running program
+
+Four statements, each usable alone, and one that chains them.
+
+- **What an upload does** (`Machine.upload_loads`). With the engine stopped, any
+  consumed history that delivers begin, 322 words and commit — however spaced —
+  leaves the other bank selected and valid, holding exactly those words register
+  by register (`imageOf`), the bank that was active untouched, and the engine
+  stopped with the new image's idle pins. Pushes pass an admission predicate, so
+  the one theorem covers the machine itself and the capacity-checked reference
+  that the dense backends refine, which is what a chip runs.
+- **The stream is the program** (`Storage/ProgramUpload.lean`). For the 322 words
+  a host builds from a program `p` (`Readiness.upload`): the bank they leave
+  reads as `p` at every address, with `p`'s idle pins and last address
+  (`upload_holds`); every word passes the loader's validation at its position
+  (`upload_good`); and, for images with at most 32 distinct records, the small
+  store's capacity check (`upload_fits`).
+- **A held program is the one that runs** (`Machine.runs_program`). While the
+  selected bank holds `p`, the scheduler is fed as by the fixed program `p`, so
+  each machine edge is one edge of the instruction-level engine on `p` — for any
+  history without an `init` or a commit, uploads to the other bank and starts
+  included, and equally behind the capacity check (`runs_program_with`). This is
+  the link to the compilers' and protocols' theorems.
+- **Sessions reach the core through the samplers** (`Chip.session_delivers`):
+  with idle samples in the samplers and the receiver between frames, a session
+  on the pins followed by two more samples of anything delivers exactly its
+  commands.
+- **In one statement** (`TwoPort.chip_runs_upload`, `OnePort.chip_runs_upload`).
+  Upload `p` over the serial pins, then let the pins do anything: the chip's
+  pins show the atomic reference machine throughout, and after the upload that
+  machine has `p` committed and its engine reset on `p`. Two ports: any fitting
+  program. One port: fitting programs that are ready (`Readiness.Image`), and
+  the pushes that follow must keep the rule; `chip_upload_ready` shows the
+  upload itself does.
+
+`test/SerialUpload.lean` is an executable host for the same frame format: it
+serializes the compiled I²C write's upload and a start into 70,855 Tiny Tapeout
+pin samples, runs them through the sampler and receiver models, and checks that
+the core consumes exactly the 325 commands — with uneven phases, with garbage on
+the data pin everywhere but the sample the theorem names, with command 7 as
+reset — and that an inverted or least-significant-first driver, a frame cut by
+the select line and a missing two-sample tail are all visible. It also checks
+the theorem's hypotheses on that program: 322 words, at most 32 distinct
+records, every word ready and within capacity; the UART receiver is not ready.
+
 ## First measurements
 
 Mapped screen, same recipe as the backends (typical corner, no placement):
@@ -117,10 +162,11 @@ logic that disappears with the stand-in pins. Against the sampled candidate
 ## Boundary
 
 Proved: the netlist of the whole chip against the reference machine on the fed
-history, and what a host session delivers. Not proved: that a session carrying
-an image's 322 words, a commit and a start leaves that image running — the
-loader's lemmas (`Loader/Contract.lean`, `ImageRule`) are the pieces, the
-theorem is not written. Not done: simulation of the emitted `tt_um_pinwheel`
+history; what a host session delivers; what an upload leaves; that the loaded
+program is the one the engine runs. The statements are about two-valued
+registers and digital samples, with the receiver between frames and idle
+samples in the samplers at the start of a session — the state any host reaches
+by holding the select line high for two clocks. Not done: simulation of the emitted `tt_um_pinwheel`
 against an independent serial driver, gate equivalence, any placed or routed
 run, the official 8×4 outline (absent from the pinned Tiny Tapeout files), read
 back of status over the serial pins, and any electrical or metastability claim.
@@ -130,5 +176,6 @@ back of status over the serial pins, and any electrical or metastability claim.
 ```sh
 lake build Pinwheel chip_emit
 lake env lean -DwarningAsError=true test/ProofAudit.lean
+lake env lean -DwarningAsError=true --run test/SerialUpload.lean
 .lake/build/bin/chip_emit build/chip/NAME
 ```

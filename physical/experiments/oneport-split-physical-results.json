@@ -1,0 +1,322 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-command-split-in-the-generic-backend",
+  "identity_manifest": {
+    "path": "physical/experiments/oneport-split-results.json",
+    "sha256": "e20b0e9a8f9a0cc1552377e451d225a781574f3001347137aeeb3ddcc8f1afa3"
+  },
+  "fixed_contract": "oneport backend with the command-split lift, behind the pin sampler; physical/experiments/combined.json (calibrated RC, sampler, width-8 clock gating), 20 ns clock, unchanged I/O constraints and diagnostic 6x4 floorplan, four CPUs, 6 GiB, 150-minute cap, no stop after OpenROAD.STAPostPNR (layout checks included), as oneport-sampled-01.",
+  "candidate": {
+    "design": "oneport-split-sampled",
+    "tag": "oneport-split-01",
+    "exit_code": 0,
+    "stop_reason": null,
+    "timeout_seconds": 9000,
+    "requested_stop": null,
+    "last_completed_step": "74-misc-reportmanufacturability",
+    "detailed_routing_completed": true,
+    "extracted_timing_completed": true,
+    "overrides_file": "physical/experiments/combined.json",
+    "resolved_config_sha256": "a6b57471c5bd5f4131f6b29d81a1d51cc2f714417a3d88ef45b46ab6c3854ee4",
+    "invocation_sha256": "8ead48fb2a8b966b061083cec00148c7f15869b08449aee81e6ded4fe99a7751",
+    "rtl_sha256": "4c39522daca062e19c40f3fc685245c57ed771fd8c909d431fe420bd41db3fd0",
+    "report": "build/physical/oneport-split-01-report.json",
+    "report_sha256": "21ccff745445bd369c84a81ae7fe0fa6fe86b906144aa786571f76e338c806a1",
+    "slow": {
+      "setup_ws_ns": 0.601505,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.379272,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 6.32488,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.152123,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.81533,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.059563,
+      "hold_violations": 0
+    },
+    "timing_note": null,
+    "electrical": {
+      "slew": 5,
+      "capacitance": 0,
+      "fanout": 15
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 625727,
+    "sequential_cell_area_um2": 314804,
+    "combinational_cell_area_um2": 208451,
+    "timing_repair_buffers": {
+      "count": 6026,
+      "area_um2": 70119.3
+    },
+    "utilization": 0.69339,
+    "routed_wirelength_um": 1617478,
+    "layout_checks": {
+      "magic__drc_error__count": 0,
+      "magic__illegal_overlap__count": 0,
+      "design__lvs_error__count": 0
+    }
+  },
+  "before_the_split": {
+    "note": "oneport-sampled-01: the one-port backend without the command-split lift, same contract",
+    "tag": "oneport-sampled-01",
+    "slow": {
+      "setup_ws_ns": -0.186601,
+      "setup_tns_ns": -1.168,
+      "setup_violations": 9,
+      "hold_ws_ns": 0.360489,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.729897,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.16768,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.601772,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.053838,
+      "hold_violations": 0
+    },
+    "functional_cell_area_um2": 624825,
+    "utilization": 0.69239,
+    "routed_wirelength_um": 1663828,
+    "slow_launch_families": {
+      "receipt": "build/physical/oneport-sampled/targeted-sta/oneport-sampled-01-families/report.json",
+      "sha256": "5511c0c390fedfe002424ca8d9b559fe3414115a17eb22011c9c0d2213e8be4c",
+      "all": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "loader_command": {
+        "worst_ns": 0.473,
+        "negative_reported": 0,
+        "worst_path": "command[0] -> _31916_"
+      },
+      "loader_data": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "protocol": {
+        "worst_ns": 14.506,
+        "negative_reported": 0,
+        "worst_path": "incoming[0] -> _31653_"
+      },
+      "registers": {
+        "worst_ns": -0.053,
+        "negative_reported": 3,
+        "worst_path": "_31641_ -> _31916_"
+      },
+      "reset": {
+        "worst_ns": 0.228,
+        "negative_reported": 0,
+        "worst_path": "init -> _31916_"
+      }
+    }
+  },
+  "control": {
+    "note": "combined-03: the pin-sampled candidate under the same overlay",
+    "design": "pin-sampled",
+    "tag": "combined-03",
+    "exit_code": 0,
+    "stop_reason": null,
+    "timeout_seconds": 5400,
+    "resume_step": "OpenROAD.DetailedRouting",
+    "checkpoint_sha256": "f7944d8df4d10290f98384bd8391bfd07ccebf0bf7d10ca4a376dace52ba2a65",
+    "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "83cb6b3000298bde42f578fde1a633615617a2bd585b1bba8d5479eed09a8dcf",
+    "sta_summary_sha256": "4ce496c3f8ad922d6573bfd95d339badbd93bd4e4bf06c061664810ae4d52bf0",
+    "slow": {
+      "setup_ws_ns": -2.251342,
+      "setup_tns_ns": -30.043,
+      "setup_violations": 40,
+      "hold_ws_ns": 0.53863,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 4.454734,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.232117,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 7.730172,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.059152,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 30,
+      "capacitance": 0,
+      "fanout": 29
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 608058.05,
+    "utilization": 0.67381,
+    "routed_wirelength_um": 1753794,
+    "detailed_routing": {
+      "iterations": 58,
+      "runtime": "01:11:20.990"
+    }
+  },
+  "ungated_reference": {
+    "note": "pin-sampled-02: the pin-sampled candidate under the calibrated overlay without clock gating",
+    "tag": "pin-sampled-02",
+    "slow": {
+      "setup_ws_ns": 0.08998,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.421847,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.911841,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.193965,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.203523,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.05211,
+      "hold_violations": 0
+    },
+    "functional_cell_area_um2": 732103.15,
+    "utilization": 0.811269,
+    "routed_wirelength_um": 1792141
+  },
+  "slow_launch_families": {
+    "candidate": {
+      "receipt": "build/physical/oneport-split-sampled/targeted-sta/oneport-split-01-families/report.json",
+      "sha256": "f1373c69d31493d3e344c80c1fde13efcd7f994677ebbf6104db630d5b71d885",
+      "all": {
+        "worst_ns": 0.602,
+        "negative_reported": 0,
+        "worst_path": "command[0] -> _32339_"
+      },
+      "loader_command": {
+        "worst_ns": 0.602,
+        "negative_reported": 0,
+        "worst_path": "command[0] -> _32339_"
+      },
+      "loader_data": {
+        "worst_ns": 4.383,
+        "negative_reported": 0,
+        "worst_path": "data[2] -> loader_rejected"
+      },
+      "protocol": {
+        "worst_ns": 14.459,
+        "negative_reported": 0,
+        "worst_path": "incoming[0] -> _32253_"
+      },
+      "registers": {
+        "worst_ns": 1.1,
+        "negative_reported": 0,
+        "worst_path": "_32314_ -> _32339_"
+      },
+      "reset": {
+        "worst_ns": 0.874,
+        "negative_reported": 0,
+        "worst_path": "init -> _32339_"
+      }
+    },
+    "control": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/combined-03-families/report.json",
+      "sha256": "ffdb97c36d7c117fb8a3fccd62b86d247dbb598498be631c968e7402539d8d52",
+      "all": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_command": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_data": {
+        "worst_ns": 0.116,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.496,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": -2.054,
+        "negative_reported": 38
+      },
+      "reset": {
+        "worst_ns": -2.053,
+        "negative_reported": 38
+      }
+    },
+    "ungated_reference": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/pin-sampled-02-families/report.json",
+      "sha256": "43d391d7b687eedd3b0bb5332ef30dad9d8263f904e35f8b8a2cca3fddc18483",
+      "all": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "loader_command": {
+        "worst_ns": 0.175,
+        "negative_reported": 0
+      },
+      "loader_data": {
+        "worst_ns": 1.996,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.354,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "reset": {
+        "worst_ns": 0.255,
+        "negative_reported": 0
+      }
+    }
+  },
+  "implemented_netlist_regression": {
+    "receipt": "build/physical/oneport-split-01-netlist-check/report.json",
+    "sha256": "9cf8958d58132ddda555a43e804b6ee7be005b43ac7a00dd2e94a8404a0c371a",
+    "result": "Passed 29898 atomic edges and 4903194 defined output-bit comparisons; mutants rejected: 1",
+    "inputs_sha256": {
+      "build/physical/oneport-split-sampled/runs/oneport-split-01/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "558dd66edef2abcb1da5424b1aceced626fb8c77a776ac08171e287576424686",
+      "/Users/attiliocastano/Developer/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_stdcell.v": "b0adbc84c8f78feb01c3d8d9d55e9818ee6502347d336f3a1f846e6a5d64e0a2",
+      "/Users/attiliocastano/Developer/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_udp.v": "5491a3edf7468792b5222e7abe057e0583a407c01b2086d4fd44a55b6cf88055",
+      "/Users/attiliocastano/Developer/pinwheel/build/physical/oneport-split-sampled/design.sv": "4c39522daca062e19c40f3fc685245c57ed771fd8c909d431fe420bd41db3fd0",
+      "/Users/attiliocastano/Developer/pinwheel/test/loader_tb.sv": "494a61a24c1f7dda40ab1b48e585a68416824736388820d696f7b690b5513559",
+      "build/oneport/oneport-04/measured-sampled/vectors.txt": "da1adbe40768c14ee34460725e8f6316c6e75b4090239c20dd42ff049354a8fc",
+      "/Users/attiliocastano/Developer/pinwheel/scripts/check-physical-netlist.py": "c3e9f92f0fd9e37b7850af26014c8ef45f59c2b146b34684d69b3bfce01c4398"
+    }
+  },
+  "disposition": "With the command-split lift the one-port backend meets setup at all three extracted corners under the clock-gating overlay: slow +0.602 ns with no violating endpoint (oneport-sampled-01, same contract without the split: -0.187 ns, 9 endpoints; combined-03, the same-overlay control: -2.251 ns, 40). Hold met, zero routing violations after 13 passes (51 before), Magic DRC, LVS and antenna clean, flow exit 0. As the structural model and Storage/DataPort.lean state, the data port now reaches only loader logic (+4.383 ns, to the loader_rejected output). The register family moved from -0.053 to +1.100 ns although its structural depth changed by one level; that is more than the 0.6 ns spread seen between equivalent RTLs, and its cause is not isolated. Retain as the leading experimental variant; one run, no promotion, frequency or fit claim.",
+  "worst_paths": {
+    "all": "command[0] -> commit decode -> port address -> read -> r_start_word[1], +0.602 ns",
+    "registers": "r_cached_word[39] -> r_start_word[1], +1.100 ns: the port's word registers, the endpoint class the level model ranks deepest (64)",
+    "reset": "init -> r_start_word[1], +0.874 ns",
+    "loader_data": "data[2] -> loader_rejected output, +4.383 ns: loader logic only"
+  },
+  "boundary": "One run on one host per design; equivalent RTLs have differed by about 0.6 ns under this flow. Electrical-limit violations remain. Diagnostic 6x4 core rectangle: no wrapper, serial loader, official 8x4 floorplan, sign-off, metastability or board-timing claim. The design's refinement holds on programs satisfying the readiness rule."
+}

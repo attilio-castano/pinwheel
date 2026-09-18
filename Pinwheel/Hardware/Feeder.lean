@@ -184,6 +184,34 @@ def history (M : Model F PJ PX PI) : PX → List (PJ × PJ) → List (PI × PI)
   | _, [] => []
   | x, (j, after) :: rest => (M.feed j x, M.feed after (M.step j x)) :: M.history (M.step j x) rest
 
+/-- What the inner netlist consumes, edge by edge: the post-edge inputs play no part. -/
+def consumed (M : Model F PJ PX PI) : PX → List PJ → List PI
+  | _, [] => []
+  | x, j :: rest => M.feed j x :: M.consumed (M.step j x) rest
+
+/-- The feeder's state after a history. -/
+def run (M : Model F PJ PX PI) : PX → List PJ → PX
+  | x, [] => x
+  | x, j :: rest => M.run (M.step j x) rest
+
+theorem history_fst (M : Model F PJ PX PI) (x : PX) (inputs : List (PJ × PJ)) :
+    (M.history x inputs).map Prod.fst = M.consumed x (inputs.map Prod.fst) := by
+  induction inputs generalizing x with
+  | nil => rfl
+  | cons pair rest ih =>
+    obtain ⟨j, after⟩ := pair
+    simp only [history, List.map, consumed, ih]
+
+/-- A fed history splits where the outer history does; the second part starts
+from the feeder state the first part leaves. -/
+theorem history_append (M : Model F PJ PX PI) (x : PX) (a b : List (PJ × PJ)) :
+    M.history x (a ++ b) = M.history x a ++ M.history (M.run x (a.map Prod.fst)) b := by
+  induction a generalizing x with
+  | nil => rfl
+  | cons pair rest ih =>
+    obtain ⟨j, after⟩ := pair
+    simp only [List.cons_append, history, List.map, run, ih]
+
 theorem feed_eq (M : Model F PJ PX PI) (j : PJ) (x : PX) :
     (F.feed (M.outer j) (M.state x) : Values I) = (fun {_} p => M.inner (M.feed j x) p) :=
   funext fun _ => funext fun p => M.feed_correct j x p
@@ -267,6 +295,16 @@ def samplerModel {J : Nat → Type} {P : Type} (values : P → Values J) :
   step := fun j x => (j, x.1)
   feed_correct := fun _ _ _ _ => rfl
   step_correct := fun _ _ _ r => by cases r <;> rfl
+
+/-- The sampler hands on its two stages, then the inputs, two edges late. -/
+theorem sampler_consumed {J : Nat → Type} {P : Type} (values : P → Values J) (first second : P)
+    (inputs : List P) (a b : P) :
+    (samplerModel values).consumed (first, second) (inputs ++ [a, b]) = second :: first :: inputs := by
+  induction inputs generalizing first second with
+  | nil => rfl
+  | cons j rest ih =>
+    show second :: (samplerModel values).consumed (j, first) (rest ++ [a, b]) = _
+    rw [ih]
 
 end Feeder
 

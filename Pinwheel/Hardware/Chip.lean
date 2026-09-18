@@ -161,6 +161,60 @@ theorem trace_eq (n : Netlist R Machine.Output Machine.Input) (s : Values R) (x 
     ((Feeder.Model.pairTrace_eq sampling _ _ (x.first, x.second) _).trans
       (Feeder.Model.pairTrace_eq Serial.model n s x.receiver _))
 
+/-! ### What the core consumes -/
+
+/-- The inputs the core consumes, edge by edge. -/
+def consumed (x : State) (pins : List Pins) : List Machine.Inputs := (history x pins).map Prod.fst
+
+theorem pin_consumed (pins : List Pins) : pinModel.consumed () pins = pins.map wired := by
+  induction pins with
+  | nil => rfl
+  | cons p rest ih => simp only [Feeder.Model.consumed, List.map, ih]; rfl
+
+theorem serial_consumed (s : Serial.State) (samples : List Serial.Inputs) :
+    Serial.model.consumed s samples = Serial.fed s samples := by
+  induction samples generalizing s with
+  | nil => rfl
+  | cons i rest ih => simp only [Feeder.Model.consumed, Serial.fed, ih]; rfl
+
+/-- The receiver sees the pins two samples late, after what the samplers held. -/
+theorem consumed_delayed (x : State) (pins : List Pins) (a b : Pins) :
+    consumed x (pins ++ [a, b]) =
+      Serial.fed x.receiver (x.second :: x.first :: pins.map wired) := by
+  unfold consumed history sampled
+  rw [Feeder.Model.history_fst, Feeder.Model.history_fst, Feeder.Model.history_fst, serial_consumed]
+  congr 1
+  have hpins : ((pins ++ [a, b]).map fun p => (p, p)).map Prod.fst = pins ++ [a, b] := by
+    simp [List.map_map, Function.comp_def]
+  rw [hpins, pin_consumed, List.map_append]
+  exact Feeder.sampler_consumed Serial.Inputs.values x.first x.second (pins.map wired) (wired a) (wired b)
+
+/-- **From a host session on the pins to commands at the core.** If the samplers
+hold idle samples and the receiver is between frames, any session on the pins —
+followed by two more samples of anything — delivers exactly its commands to the
+core, in order, among quiet edges. -/
+theorem session_delivers (x : State) (hcount : x.receiver.count = 0) (hfire : x.receiver.fire = false)
+    (hfirst : Serial.Idle x.first) (hsecond : Serial.Idle x.second) (pins : List Pins) (a b : Pins)
+    (cs : List (BitVec 3 × BitVec 64)) (hs : Serial.Session (pins.map wired) cs) :
+    Machine.Delivers (consumed x (pins ++ [a, b])) cs := by
+  rw [consumed_delayed]
+  exact (Serial.session_delivers (.idle hsecond (.idle hfirst hs)) x.receiver hcount hfire).1
+
+/-- The chip's own state after a pin history. -/
+def advance (x : State) (pins : List Pins) : State :=
+  let stages := sampling.run (x.first, x.second) (pins.map wired)
+  ⟨stages.1, stages.2, Serial.model.run x.receiver (sampling.consumed (x.first, x.second) (pins.map wired))⟩
+
+/-- The fed history splits where the pin history does. -/
+theorem history_append (x : State) (a b : List Pins) :
+    history x (a ++ b) = history x a ++ history (advance x a) b := by
+  unfold history sampled advance
+  rw [List.map_append, Feeder.Model.history_append, Feeder.Model.history_append,
+    Feeder.Model.history_append, Feeder.Model.history_fst, Feeder.Model.history_fst]
+  have hpins : (a.map fun p => (p, p)).map Prod.fst = a := by
+    simp [List.map_map, Function.comp_def]
+  rw [hpins, pin_consumed]
+
 /-! ### What the pins can reach -/
 
 /-- Every pin launches. -/

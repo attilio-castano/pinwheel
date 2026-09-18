@@ -1,0 +1,251 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-command-split-in-the-generic-backend",
+  "identity_manifest": {
+    "path": "physical/experiments/twoport-split-results.json",
+    "sha256": "662af7d4ed871f4773a6414210efe7d7206dff226b31be8d7d8992cc16ee557a"
+  },
+  "fixed_contract": "twoport backend with the command-split lift, behind the pin sampler; physical/experiments/combined.json (calibrated RC, sampler, width-8 clock gating), 20 ns clock, unchanged I/O constraints and diagnostic 6x4 floorplan, four CPUs, 6 GiB, 150-minute cap, no stop after OpenROAD.STAPostPNR (layout checks included), as oneport-sampled-01.",
+  "candidate": {
+    "design": "twoport-split-sampled",
+    "tag": "twoport-split-01",
+    "exit_code": 124,
+    "stop_reason": "wall_time_limit",
+    "timeout_seconds": 9000,
+    "requested_stop": null,
+    "last_completed_step": "40-openroad-checkantennas",
+    "detailed_routing_completed": false,
+    "extracted_timing_completed": false,
+    "overrides_file": "physical/experiments/combined.json",
+    "resolved_config_sha256": "e29eb7621c3db8a128b222293c235e974209abdc8482300edc9e2bb3cfe8e3ea",
+    "invocation_sha256": "5bbb8e86f4eb8c600b73b638cf3dd0ed19d1768e98e7e9a62715eb768637687d",
+    "rtl_sha256": "c5943b765a425b1c4bffd1bedc4395673a9790f3c4e92fad72c0e3fb768d541e",
+    "report": "build/physical/twoport-split-01-report.json",
+    "report_sha256": "27098b7eb3491c9d5999b67d1d7e07872c904bfa5dd1358a5c36d958492c7e65",
+    "slow": null,
+    "typical": null,
+    "fast": null,
+    "timing_note": "no extracted timing: the flow ended before detailed routing; mid-flow estimates omitted",
+    "electrical": {
+      "slew": 0,
+      "capacitance": 0,
+      "fanout": 1
+    },
+    "route_drc_errors": null,
+    "antenna_violating_nets": 66,
+    "functional_cell_area_um2": 678368,
+    "sequential_cell_area_um2": 314753,
+    "combinational_cell_area_um2": 257961,
+    "timing_repair_buffers": {
+      "count": 6772,
+      "area_um2": 74590
+    },
+    "utilization": 0.751723,
+    "routed_wirelength_um": null,
+    "layout_checks": {}
+  },
+  "before_the_split": {
+    "note": "oneport-sampled-01: the one-port backend without the command-split lift, same contract",
+    "tag": "oneport-sampled-01",
+    "slow": {
+      "setup_ws_ns": -0.186601,
+      "setup_tns_ns": -1.168,
+      "setup_violations": 9,
+      "hold_ws_ns": 0.360489,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.729897,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.16768,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.601772,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.053838,
+      "hold_violations": 0
+    },
+    "functional_cell_area_um2": 624825,
+    "utilization": 0.69239,
+    "routed_wirelength_um": 1663828,
+    "slow_launch_families": {
+      "receipt": "build/physical/oneport-sampled/targeted-sta/oneport-sampled-01-families/report.json",
+      "sha256": "5511c0c390fedfe002424ca8d9b559fe3414115a17eb22011c9c0d2213e8be4c",
+      "all": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "loader_command": {
+        "worst_ns": 0.473,
+        "negative_reported": 0,
+        "worst_path": "command[0] -> _31916_"
+      },
+      "loader_data": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "protocol": {
+        "worst_ns": 14.506,
+        "negative_reported": 0,
+        "worst_path": "incoming[0] -> _31653_"
+      },
+      "registers": {
+        "worst_ns": -0.053,
+        "negative_reported": 3,
+        "worst_path": "_31641_ -> _31916_"
+      },
+      "reset": {
+        "worst_ns": 0.228,
+        "negative_reported": 0,
+        "worst_path": "init -> _31916_"
+      }
+    }
+  },
+  "control": {
+    "note": "combined-03: the pin-sampled candidate under the same overlay",
+    "design": "pin-sampled",
+    "tag": "combined-03",
+    "exit_code": 0,
+    "stop_reason": null,
+    "timeout_seconds": 5400,
+    "resume_step": "OpenROAD.DetailedRouting",
+    "checkpoint_sha256": "f7944d8df4d10290f98384bd8391bfd07ccebf0bf7d10ca4a376dace52ba2a65",
+    "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "83cb6b3000298bde42f578fde1a633615617a2bd585b1bba8d5479eed09a8dcf",
+    "sta_summary_sha256": "4ce496c3f8ad922d6573bfd95d339badbd93bd4e4bf06c061664810ae4d52bf0",
+    "slow": {
+      "setup_ws_ns": -2.251342,
+      "setup_tns_ns": -30.043,
+      "setup_violations": 40,
+      "hold_ws_ns": 0.53863,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 4.454734,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.232117,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 7.730172,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.059152,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 30,
+      "capacitance": 0,
+      "fanout": 29
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 608058.05,
+    "utilization": 0.67381,
+    "routed_wirelength_um": 1753794,
+    "detailed_routing": {
+      "iterations": 58,
+      "runtime": "01:11:20.990"
+    }
+  },
+  "ungated_reference": {
+    "note": "pin-sampled-02: the pin-sampled candidate under the calibrated overlay without clock gating",
+    "tag": "pin-sampled-02",
+    "slow": {
+      "setup_ws_ns": 0.08998,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.421847,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.911841,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.193965,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.203523,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.05211,
+      "hold_violations": 0
+    },
+    "functional_cell_area_um2": 732103.15,
+    "utilization": 0.811269,
+    "routed_wirelength_um": 1792141
+  },
+  "slow_launch_families": {
+    "candidate": null,
+    "control": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/combined-03-families/report.json",
+      "sha256": "ffdb97c36d7c117fb8a3fccd62b86d247dbb598498be631c968e7402539d8d52",
+      "all": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_command": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_data": {
+        "worst_ns": 0.116,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.496,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": -2.054,
+        "negative_reported": 38
+      },
+      "reset": {
+        "worst_ns": -2.053,
+        "negative_reported": 38
+      }
+    },
+    "ungated_reference": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/pin-sampled-02-families/report.json",
+      "sha256": "43d391d7b687eedd3b0bb5332ef30dad9d8263f904e35f8b8a2cca3fddc18483",
+      "all": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "loader_command": {
+        "worst_ns": 0.175,
+        "negative_reported": 0
+      },
+      "loader_data": {
+        "worst_ns": 1.996,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.354,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "reset": {
+        "worst_ns": 0.255,
+        "negative_reported": 0
+      }
+    }
+  },
+  "implemented_netlist_regression": null,
+  "disposition": "Did not finish. The two-port backend (no rule on programs) entered global routing at 75.2% utilization (one port 69.1%; the decoupled backend that failed earlier 80.7%). Global routing could not remove its overflow in the first pass and spent 2 h 3 min disabling the non-default routing rule of one clock net per round (71 rounds) before completing with 3,386,282 um of estimated wire, 57% more than the one-port design at the same step; the post-routing repair step re-entered the same loop and the 150-minute wall-time limit ended the run (exit 124) before detailed routing. No extracted timing, no layout checks. On this test rectangle and overlay the routability boundary lies between 69% and 75% utilization at global routing.",
+  "worst_paths": {
+    "note": "no extracted timing: the run ended before detailed routing"
+  },
+  "boundary": "One run on one host per design; equivalent RTLs have differed by about 0.6 ns under this flow. Electrical-limit violations remain. Diagnostic 6x4 core rectangle: no wrapper, serial loader, official 8x4 floorplan, sign-off, metastability or board-timing claim."
+}

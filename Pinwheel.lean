@@ -63,6 +63,11 @@ import Pinwheel.Hardware.Serial.Receiver
 import Pinwheel.Hardware.Serial.Frame
 import Pinwheel.Hardware.Chip
 import Pinwheel.Hardware.Storage.ChipBackend
+import Pinwheel.Hardware.Loader.Delivery
+import Pinwheel.Hardware.Loader.Upload
+import Pinwheel.Hardware.Loader.Program
+import Pinwheel.Hardware.Storage.ProgramUpload
+import Pinwheel.Hardware.Storage.ChipUpload
 import Pinwheel.Hardware.Storage.Readiness
 import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency

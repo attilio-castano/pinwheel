@@ -17,6 +17,21 @@ theorem Component.pairTrace_same (c : Component I S O) (s : S) (inputs : List I)
   | nil => rfl
   | cons i rest ih => simp only [List.map, pairTrace, trace, edge, ih]
 
+/-- The state after a history of consumed inputs. -/
+def Component.run (c : Component I S O) (s : S) : List I → S
+  | [] => s
+  | i :: rest => c.run (c.step i s) rest
+
+/-- A pair trace splits at any point; the second part starts from the state the
+first part's consumed inputs leave. -/
+theorem Component.pairTrace_append (c : Component I S O) (s : S) (a b : List (I × I)) :
+    c.pairTrace s (a ++ b) = c.pairTrace s a ++ c.pairTrace (c.run s (a.map Prod.fst)) b := by
+  induction a generalizing s with
+  | nil => rfl
+  | cons pair rest ih =>
+    obtain ⟨i, after⟩ := pair
+    simp only [List.cons_append, pairTrace, List.map, run, ih]
+
 variable {I S T O : Type} {impl : Component I S O} {spec : Component I T O}
 
 /-- A refinement preserves both observations for every choice of post-edge input. -/

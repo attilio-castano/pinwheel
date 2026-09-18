@@ -325,6 +325,74 @@ yet apply. Against the ungated sampled candidate (+0.090 ns at 81% utilization)
 this design is 0.28 ns short with 14.7% less cell area. One run; 0.6 ns
 run-to-run variation has been observed under this flow.
 
+**The command split in the generic backend (2026-09-18).** `Backend.Policy`
+now lifts loader-level expressions in the command-split form
+(`BankSelect.lift`), so commit, start and bank selection decode the raw command
+and all three policy backends inherit it with no change to their own files.
+The level model had ranked the data port into the fetched words at 71 levels,
+above the register family at 65, before the first routed run; that row was not
+read. It now reports no path, `check-structure.py` asserts it for every policy
+backend and prints the deepest family of each, and `Storage/DataPort.lean`
+proves it: for every two-wire realization with data-free pieces, no register of
+the fetch path has a structural path from the data port
+(`DataFree.next`), hence its next value does not depend on the presented word
+(`DataFree.step_independent`); the three organizations are instances. All three
+re-emitted RTLs pass gate equivalence, the independent oracle and the required
+rejections (`oneport-04`, `twoport-04`, `prefetch-06`); mapped area of the
+sampled one-port emission is +1.8% over the sampled candidate (was +5.3%), of
+the two-port +14.8% (was +12.8%) — the recipe's noise is a few percent.
+Foundation gate `command-split-policy-01`: 173 modules, 6,528 theorems,
+standard axioms only, 29 suites.
+
+**Routed repeat, one port** (`oneport-split-01`, same contract as the first
+run): setup is met at all three extracted corners with clock gating — slow
+**+0.602 ns**, no violating endpoint — hold met, zero routing violations after
+17 passes instead of 51, Magic DRC, LVS and antenna clean, flow exit 0 in 55
+minutes. The data port's worst path now ends at the loader's `rejected` output
+(+4.383 ns); every other family's worst path ends in the port's word
+registers, the endpoint class the model ranks deepest. The register family
+moved from −0.053 to +1.100 ns although its depth changed by one level of 65:
+more than the 0.6 ns spread between equivalent RTLs, cause not isolated.
+
+**First routed run, two ports** (`twoport-split-01`, same contract): did not
+finish. At 75.2% utilization global routing spent 2 h 3 min in 71
+one-clock-net-per-round congestion rounds (the one-port runs needed none),
+completed with 57% more estimated wire than the one-port design, and the
+150-minute limit ended the run in the repair step after it: no detailed routing,
+no extracted timing. On this test rectangle and overlay routability ends between
+69% and 75% utilization. The rectangle is not the chip: see
+[the whole chip](../whole-chip.md).
+
+## The whole chip in Lean (2026-09-18)
+
+Every routed result above is the core alone on a 6×4 test rectangle, with its
+67-wire loader port and about 130 observation wires as stand-in pins and an
+assumed 4 ns arrival at them. The [whole chip](../whole-chip.md) is now one Lean
+netlist with Tiny Tapeout's ports: pin map, two-register samplers on every
+input, a three-pin serial loader (72-bit frames: command byte, 64-bit word),
+any proved core, an output map. A layer in front of a netlist is a `Feeder`,
+with one theorem for what the inner netlist then does; the receiver is proved
+equal to its functions; any host session delivers exactly its commands to the
+core among quiet edges; no pin has a combinational path past one flip-flop; with
+a fetch-policy backend as the core the pins show the atomic reference machine on
+the fed history. The upload theorem closes the chain: begin, 322 words and
+commit, however spaced, leave exactly those words as the active image with the
+engine stopped; the words a host builds from a program make the bank read as
+that program and pass validation and, with at most 32 distinct records, the
+capacity check; a held program is the one the engine runs, edge for edge; and
+`chip_runs_upload` states all of it from the serial pins, for the two-port chip
+(any fitting program) and the one-port chip (fitting, ready programs). An
+executable host in Lean (`test/SerialUpload.lean`) delivers the compiled I²C
+write's 325 frames through the sampler and receiver models and rejects driver
+mistakes. Mapped, the whole one-port chip is 562,152 µm² (+0.8% over the
+test-boundary core, +2.6% over the sampled candidate) and the two-port chip
+614,555 µm²: the loader, samplers and pin map cost about what the observation
+logic did. Not done: simulation and gate equivalence of the emitted
+`tt_um_pinwheel` against an independent serial driver, and any placed or routed
+run of it; the announced 8×4 outline is absent from the pinned Tiny Tapeout
+files. Foundation gate `whole-chip-01`: 183 modules,
+6,873 theorems, standard axioms only, 30 suites.
+
 
 ## Next discriminators
 
@@ -351,19 +419,23 @@ run-to-run variation has been observed under this flow.
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. The one-port backend routed at the diagnostic floorplan and moved the
-   register-launched family from −2.054 ns to −0.053 ns under the clock-gating
-   overlay ([memory abstraction](../memory-abstraction.md#the-one-port-backend-routed));
-   the slow corner is limited by the loader's data port at −0.187 ns. Next in
-   Lean: apply the command-split form inside `Backend.Policy.core`, so that
-   predicates the capacity check cannot change decode the raw command and the
-   data port leaves the port-address path; it is proved equal by
-   `Small.adapt_command_predicate`, and all three policy backends inherit it.
-   Then, each needing its own allocation: one routed repeat of the one-port
-   backend with that change, and one routed run of the two-port backend
-   (+12.8% mapped area, no program rule, which keeps the UART receiver). If the
-   one-port organization is adopted, the receiver needs a two-cycle poll or the
-   readiness filter beside the capacity gate.
+3. The test-boundary question is answered for now
+   ([memory abstraction](../memory-abstraction.md#the-command-split-backends-routed)):
+   with the command split the one-port backend meets setup at all corners with
+   clock gating (+0.602 ns slow, one run), and the two-port backend does not
+   route on the 6×4 rectangle (75.2% utilization). The open questions moved to
+   the [whole chip](../whole-chip.md): (a) an independent check of the emitted
+   `tt_um_pinwheel` — a serial driver outside Lean, RTL simulation against the
+   direct-port oracle, gate equivalence; needs the hardware tools, no physical
+   run; (b) one routed run of the whole one-port chip, which needs an allocation
+   and an outline decision, since the announced 8×4 tile is not in the pinned
+   Tiny Tapeout files — on it the two-port chip would sit near 56% utilization
+   and may route, which would remove the program rule; (c) if the one-port
+   organization is adopted, the UART receiver needs a two-cycle poll or the
+   readiness filter beside the capacity gate; (d) a level-model candidate for
+   the remaining register path: taking the target's increment at the leaves of
+   its choice moves the port address from 34 to 29 gate levels (proved-equal
+   rewrite, not built).
 4. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
    [input latency](../input-latency.md) or the compiler captures `d` cycles later,
    and whether the compilers should reject a `Config` that violates a declared
