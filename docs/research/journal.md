@@ -976,6 +976,33 @@ external interface integration retain their separate contracts.
   physical run; both are separate steps, the second needing an allocation and
   an outline decision.
 
+## 2026-09-18: the competition's outline is now 6×4
+
+- **Source:** the [announcement](https://blog.janestreet.com/protocol-emulator-asic-competition/),
+  reread 2026-09-18 after a note from the project owner. It now says: set the
+  tile size to `6x4`; the current maximum is 6×4 tiles (24 tiles, about 0.7 mm²
+  of nominal tile area, about 1,000 logic cells per tile as a budget); 8×4
+  (about 30% more) is being worked on, with updates by page and email. Deadline
+  (2027-01-18) and shuttle target (March 2027) unchanged. First read
+  (2026-09-12): `8x4`.
+- **Pinned files:** support commit `da63c99` has the 6×4 tile entry
+  (1,289.28 × 710.64 µm) and the official template
+  `tech/ihp-sg13cmos5l/def/tt_block_6x4_pgvdd.def`
+  (SHA-256 `b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4`):
+  186 rows × 2,674 sites = 902,417 µm² of core, the `design__instance__area` of
+  the routed runs; 43 pins, all Metal4, top edge, x from 29.76 to 191.04 µm.
+  No 8×4 entry, consistent with the announcement. The flow already has an
+  `Odb.ApplyDEFTemplate` step (step 27 of the routed runs), unused so far.
+- **Disposition:** no run. The "diagnostic" rectangle was the official die area;
+  the outline decision recorded as blocking a whole-chip run is resolved. On
+  this outline the one-port organization is the candidate (69.3%, met) and the
+  two-port one is not (75.2%, did not route), so a UART receiver inside the
+  one-port rule is required, not optional. [Competition brief](../competition.md#the-outline-and-the-pinned-files),
+  [status](status.md#the-official-outline-2026-09-18) and
+  [the whole chip](../whole-chip.md#the-outline) updated;
+  `tools/physical-toolchain.json` records the allocation. Older studies keep
+  their wording about an 8×4 outline as written at the time.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

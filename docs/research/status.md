@@ -1,6 +1,7 @@
 # Research status
 
-Updated 2026-09-17 with the hardware closure, [cache-enable follow-up](../cache-enable-study.md),
+Updated 2026-09-18: the competition's outline is now 6×4
+([below](#the-official-outline-2026-09-18)). Updated 2026-09-17 with the hardware closure, [cache-enable follow-up](../cache-enable-study.md),
 UART receive capability from main, the flow-correlation diagnosis and the pin-sampler comparison.
 This is the current decision brief; [results](results.md) owns completed
 conclusions and [journal](journal.md) routes historical evidence.
@@ -389,9 +390,43 @@ test-boundary core, +2.6% over the sampled candidate) and the two-port chip
 614,555 µm²: the loader, samplers and pin map cost about what the observation
 logic did. Not done: simulation and gate equivalence of the emitted
 `tt_um_pinwheel` against an independent serial driver, and any placed or routed
-run of it; the announced 8×4 outline is absent from the pinned Tiny Tapeout
-files. Foundation gate `whole-chip-01`: 183 modules,
+run of it. Foundation gate `whole-chip-01`: 183 modules,
 6,873 theorems, standard axioms only, 30 suites.
+
+## The official outline (2026-09-18)
+
+The announcement changed: the maximum is now **6×4 tiles**, and 8×4 (about 30%
+more area) is a possibility the organizers are working on, not an allocation
+([brief](../competition.md#the-outline-and-the-pinned-files)). What follows:
+
+- **The routed runs were on the official die area all along.** The 6×4 die is
+  1,289.28 × 710.64 µm, the rectangle of every run here, and the official
+  template (`tt_block_6x4_pgvdd.def`) is in the pinned files with the same
+  902,417 µm² core. The outline decision that blocked a whole-chip run is gone:
+  the run applies that template. Not yet exercised: its 43 Metal4 pins sit in
+  the top-left 191 µm of the top edge, where the core runs had 200-odd ports
+  spread by the tool.
+- **The one-port organization is the candidate; the two-port one does not fit.**
+  One-port core: routed, setup met at every corner, 69.3% utilization (one run,
+  +0.602 ns slow). Two-port core: 75.2%, did not route within the limit. The
+  whole one-port chip maps 0.8% above its core. The hope that the two-port chip
+  would route near 56% rested on 8×4.
+- **The UART receiver moves onto the critical path.** The competition starts
+  from UART, SPI and I²C. The two-port backend carried the compiled receiver
+  without a program rule; the one-port theorem needs ready programs, and the
+  receiver as compiled is not ready. A receiver that keeps the rule (a two-cycle
+  poll, with its own timing theorem), or a proved readiness filter beside the
+  capacity gate plus a receiver that passes it, is now required rather than
+  optional. Lean only.
+- **Area is the binding resource.** Of the routed one-port core's 625,727 µm²,
+  flip-flops are 314,804 µm² (6,426 of them), timing-repair buffers 70,119 µm²
+  and the clock tree 27,880 µm². The organizers' hint that SRAM can beat
+  flip-flops for instruction memory points at the largest item; the
+  [primitive review](../storage-primitives.md) records why a synchronous read
+  needs a proved fetch schedule first. The one-port rule — one read per cycle,
+  the result registered — is a schedule of that kind and is new since that
+  review; whether it matches a macro's registered read through the index map
+  and the dictionary has not been evaluated.
 
 
 ## Next discriminators
@@ -404,9 +439,8 @@ files. Foundation gate `whole-chip-01`: 183 modules,
    (`dictionary` or `storage`, cached word ungated) behind the sampler, which
    tests the predicted hold-repair saving and whether 580 gated branches route;
    the proved cache-enable variant, since the cache-update decision is the
-   limiting endpoint; and a routability
-   experiment on the official 8×4 outline, where Metal3 capacity rather than
-   area may bind. Use `check-targeted-timing.py --design` for every comparison:
+   limiting endpoint; and the official 6×4 pin template, whose 43 pins in one
+   corner replace the spread ports of the runs so far. Use `check-targeted-timing.py --design` for every comparison:
    the default report hides all but the worst launch point per endpoint.
    The `r_cached_word` successor loop is the path the architectural candidates
    should now be measured against, with the sampler and calibrated flow in place.
@@ -427,12 +461,12 @@ files. Foundation gate `whole-chip-01`: 183 modules,
    the [whole chip](../whole-chip.md): (a) an independent check of the emitted
    `tt_um_pinwheel` — a serial driver outside Lean, RTL simulation against the
    direct-port oracle, gate equivalence; needs the hardware tools, no physical
-   run; (b) one routed run of the whole one-port chip, which needs an allocation
-   and an outline decision, since the announced 8×4 tile is not in the pinned
-   Tiny Tapeout files — on it the two-port chip would sit near 56% utilization
-   and may route, which would remove the program rule; (c) if the one-port
-   organization is adopted, the UART receiver needs a two-cycle poll or the
-   readiness filter beside the capacity gate; (d) a level-model candidate for
+   run; (b) one routed run of the whole one-port chip on the official 6×4 template
+   (`tt_block_6x4_pgvdd.def`, in the pinned files), which needs an allocation;
+   the two-port chip is outside this outline unless 8×4 arrives; (c) with the
+   one-port organization now the candidate, the UART receiver needs a two-cycle
+   poll or the readiness filter beside the capacity gate — required, not
+   optional, and Lean only, so it comes first; (d) a level-model candidate for
    the remaining register path: taking the target's increment at the leaves of
    its choice moves the port address from 34 to 29 gate levels (proved-equal
    rewrite, not built).
@@ -477,8 +511,8 @@ lifecycle contract is the proposed follow-on.
 - Synchronous SRAM/latches need a proved availability/write schedule for arbitrary
   accepted programs; average protocol idle time is insufficient.
 - The bounded I²C repetition prototype has narrower scope than the general engine.
-- The official 8×4 wrapper, package pins, electrical limits and physical timing
-  closure remain separate obligations.
+- The official 6×4 pin template, package pins, electrical limits and physical
+  timing closure of the whole chip remain separate obligations.
 
 Reopen these when evidence changes the allocation, using the conditions in
 [results](results.md). Preserve detailed limitations and frozen comparison contracts.

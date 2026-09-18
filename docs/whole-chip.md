@@ -26,7 +26,7 @@ route is the object the theorems are about?
 | **Pin map and output map** | Tiny Tapeout's ports | `Hardware/Chip.lean` | **new: proved** |
 | **Upload theorem** | "this session leaves this program running" | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | **new: proved** |
 | Emitted RTL of the chip | `tt_um_pinwheel` | `test/ChipEmit.lean` | emitted and mapped; not simulated |
-| Routed chip | official 8×4 outline | — | not started; the outline is not in the pinned Tiny Tapeout files |
+| Routed chip | official 6×4 outline, `tt_block_6x4_pgvdd.def` | — | not started; the template is in the pinned Tiny Tapeout files, with the die area of every routed run so far |
 
 ## Feeders
 
@@ -168,8 +168,27 @@ registers and digital samples, with the receiver between frames and idle
 samples in the samplers at the start of a session — the state any host reaches
 by holding the select line high for two clocks. Not done: simulation of the emitted `tt_um_pinwheel`
 against an independent serial driver, gate equivalence, any placed or routed
-run, the official 8×4 outline (absent from the pinned Tiny Tapeout files), read
-back of status over the serial pins, and any electrical or metastability claim.
+run, read back of status over the serial pins, and any electrical or
+metastability claim.
+
+## The outline
+
+Since 2026-09-18 the competition's maximum is 6×4 tiles
+([brief](competition.md#the-outline-and-the-pinned-files)); 8×4 is a possibility
+the organizers are working on. The 6×4 die is 1,289.28 × 710.64 µm — the
+rectangle of every routed run in this repository — and its official template is
+in the pinned files: a 902,417 µm² core and 43 Metal4 pins on the top edge, all
+within the leftmost 191 µm. On that area the one-port core has routed and met
+setup at every corner at 69.3% utilization; the two-port core, at 75.2%, did not
+route within the time limit
+([routed results](memory-abstraction.md#the-command-split-backends-routed)).
+Mapped, the whole one-port chip is 0.8% larger than that core, so it is the
+candidate for this outline; the two-port chip is not, unless 8×4 arrives or it
+shrinks to about the one-port's utilization (the routability boundary here lies
+somewhere between 69% and 75%). What a routed run of the chip adds to the core runs:
+the real pin template (43 pins in one corner in place of 200-odd spread ports),
+the loader and samplers, and register-launched core inputs in place of assumed
+4 ns arrivals.
 
 ## Reproduction
 
