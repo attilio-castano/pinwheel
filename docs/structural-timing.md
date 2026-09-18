@@ -131,6 +131,10 @@ Stages of the successor loop, gate levels from register outputs, command split:
   at 50–52: it optimizes families that were never limiting.
 - Core state registers sit at 91, ten levels behind the cached word. An early
   cache enable would make them, and the 41-level decode, the next limit.
+- The [decoupled prefetch machine](memory-abstraction.md#structural-levels)
+  reorders this loop: the fetched words become registers, the branch selection
+  moves after them, and the next addresses come from the dispatch decision. Its
+  deepest register endpoint is 63 levels, the cached word 38.
 
 ## Boundary and use
 

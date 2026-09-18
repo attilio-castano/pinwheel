@@ -213,15 +213,19 @@ theorem trace_correct (s : State) (h : Valid s) (inputs : List Machine.Inputs) :
     component.trace s inputs = Cache.referenceComponent.trace s.machine inputs :=
   refinement.trace_eq s s.machine ⟨h, rfl⟩ inputs
 
+/-- On an initializing edge the machine part follows the reference without any
+invariant: the core stops whatever the fetched words hold. -/
+theorem initialize_machine_next (i : Machine.Inputs) (s : State) (hi : i.init = true) :
+    (next i s).machine = Machine.next i s.machine := by
+  simp only [next, Machine.next, Reactive.stepValue, feed, base_reset, hi, Machine.schedulerInput,
+    Machine.baseInput, Reactive.Fetch.resolve, Bool.true_or, if_true, Reactive.stopValue,
+    Machine.State.mk.injEq, and_true, true_and]
+  rfl
+
 theorem initialized_trace (s : State) (i : Machine.Inputs) (hi : i.init = true)
     (inputs : List Machine.Inputs) :
     component.trace (next i s) inputs = Cache.referenceComponent.trace (Machine.next i s.machine) inputs := by
-  have hm : (next i s).machine = Machine.next i s.machine := by
-    simp only [next, Machine.next, Reactive.stepValue, feed, base_reset, hi, Machine.schedulerInput,
-      Machine.baseInput, Reactive.Fetch.resolve, Bool.true_or, if_true, Reactive.stopValue,
-      Machine.State.mk.injEq, and_true, true_and]
-    rfl
-  rw [← hm]
+  rw [← initialize_machine_next i s hi]
   exact trace_correct (next i s) (initialize_valid i s hi) inputs
 
 end Pinwheel.Hardware.Storage.Prefetch

@@ -1,5 +1,6 @@
 import Pinwheel.Hardware.Storage.SampledBackend
 import Pinwheel.Hardware.Storage.EnabledBackend
+import Pinwheel.Hardware.Storage.PrefetchEmit
 
 /-! Executable structural report for the composed backends: arrival levels per
 launch family and endpoint class, the cached-word enable cone, and the source
@@ -43,7 +44,25 @@ def sampledClass : {w : Nat} → Sampled.Register w → String
   | _, .extra _ => "pin stages"
 
 def classes : Array String := #["loader control", "core state", "dictionary words", "index maps",
-  "idle and last", "cached word", "pin stages"]
+  "idle and last", "cached word", "fetched words", "pin stages"]
+
+def prefetchClass : {w : Nat} → Backend.Prefetch.Register w → String
+  | _, .inner r => registerClass r
+  | _, .fetched _ => "fetched words"
+  | _, .startWord => "fetched words"
+
+def prefetchSampledClass : {w : Nat} → Extended Backend.Prefetch.Register PinSampler.Stage w → String
+  | _, .inner r => prefetchClass r
+  | _, .extra _ => "pin stages"
+
+def Family.prefetchRegister (f : Family) : Launch Backend.Prefetch.Register
+  | _, .inner r => f.register r
+  | _, .fetched _ => if f == .registers then some 0 else none
+  | _, .startWord => if f == .registers then some 0 else none
+
+def Family.prefetchSampled (f : Family) : Launch (Extended Backend.Prefetch.Register PinSampler.Stage)
+  | _, .inner r => f.prefetchRegister r
+  | _, .extra _ => if f == .registers then some 0 else none
 
 def show? : Option Nat → String
   | none => "null" | some n => toString n
@@ -230,13 +249,51 @@ def report (variant : String) (n : Netlist Backend.Register Machine.Output Machi
     ",\n  \"gates\": " ++ rowsJson (plain Cost.gates) ++
     ",\n  \"sampled_gates\": " ++ rowsJson (sampled Cost.gates) ++ "\n}\n"
 
+/-- Arrival at each stage of the decoupled prefetch machine's loop, for one launch
+family: the fed successor, the dispatch decision and target, the cached word,
+both candidate addresses, the fetched registers and the start word. -/
+def prefetchStages (cost : Cost) (f : Family) : List (String × Option Nat) :=
+  let input : Launch Machine.Input := f.input
+  let register : Launch Backend.Prefetch.Register := f.prefetchRegister
+  let successor := Backend.Prefetch.successor.arrival max cost input register
+  let l1 : Launch Backend.Prefetch.W1 := WithWire.arrivals input successor
+  let dispatch := (Backend.Prefetch.sched Decoupled.dispatchingExpr).arrival max cost l1 register
+  let target := (Backend.Prefetch.sched Reactive.target).arrival max cost l1 register
+  let taken := (Backend.Prefetch.sched (Decoupled.candidateExpr true)).arrival max cost l1 register
+  let untaken := (Backend.Prefetch.sched (Decoupled.candidateExpr false)).arrival max cost l1 register
+  let l2 : Launch Backend.Prefetch.W2 := WithWire.arrivals l1 taken
+  let l3 : Launch Backend.Prefetch.W3 := WithWire.arrivals l2 untaken
+  let at3 {w : Nat} (r : Backend.Prefetch.Register w) :=
+    (Backend.Prefetch.body.next r).arrival max cost l3 register
+  let core := Reactive.registers.foldl (fun acc ⟨_, r⟩ => combine max acc (at3 (.inner (.core r)))) none
+  [("fed successor", successor), ("dispatch decision", dispatch), ("target", target),
+   ("cached word enable", Backend.Prefetch.enable3.arrival max cost l3 register),
+   ("cached word", at3 (.inner .current)), ("candidate taken", taken), ("candidate untaken", untaken),
+   ("fetched taken", at3 (.fetched true)), ("fetched untaken", at3 (.fetched false)),
+   ("start word", at3 .startWord), ("core state", core)]
+
+def prefetchReport : String :=
+  let plain (cost : Cost) := familyRows cost Backend.Prefetch.netlist Backend.Prefetch.registers prefetchClass
+    Family.prefetchRegister (.inner .current)
+  let sampled (cost : Cost) := familyRows cost (PinSampler.netlist Backend.Prefetch.netlist)
+    Backend.Prefetch.sampledRegisters prefetchSampledClass Family.prefetchSampled (.inner (.inner .current))
+  "{\n  \"variant\": \"prefetch\"" ++
+    ",\n  \"loop_stages_gates\": {" ++ String.intercalate ", " ([Family.registers, .pins, .command, .cursor].map fun f =>
+      s!"\"{f.label}\": {depthsJson (prefetchStages Cost.gates f)}") ++ "}" ++
+    ",\n  \"loop_stages_unit\": {" ++ String.intercalate ", " ([Family.registers, .pins].map fun f =>
+      s!"\"{f.label}\": {depthsJson (prefetchStages Cost.unit f)}") ++ "}" ++
+    ",\n  \"unit\": " ++ rowsJson (plain Cost.unit) ++
+    ",\n  \"gates\": " ++ rowsJson (plain Cost.gates) ++
+    ",\n  \"sampled_gates\": " ++ rowsJson (sampled Cost.gates) ++ "\n}\n"
+
 def main (args : List String) : IO Unit := do
   let out := args.headD "build/structure"
   IO.FS.createDirAll out
   for (variant, text) in [
       ("command-split", report "command-split" (BankSelect.netlist false) false BankSelect.body),
       ("late-bank", report "late-bank" (BankSelect.netlist true) true BankSelect.body),
-      ("enable-split", report "enable-split" CacheEnable.netlist false CacheEnable.body)] do
+      ("enable-split", report "enable-split" CacheEnable.netlist false CacheEnable.body),
+      ("prefetch", prefetchReport)] do
     IO.FS.writeFile (out ++ "/" ++ variant ++ ".json") text
     IO.println s!"Wrote structural report for {variant}."
   for (name, p) in policies do

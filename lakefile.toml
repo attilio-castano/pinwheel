@@ -23,3 +23,7 @@ root = "test.Sampled"
 [[lean_exe]]
 name = "structure_report"
 root = "test.Structure"
+
+[[lean_exe]]
+name = "prefetch_emit"
+root = "test.Prefetch"

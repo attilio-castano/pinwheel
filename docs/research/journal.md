@@ -669,6 +669,76 @@ external interface integration retain their separate contracts.
   to build the structural machine is a fit question for
   [status](status.md#next-discriminators).
 
+## 2026-09-17: decoupled prefetch machine, structural backend, levels
+
+- **Scope:** Lean machine and proofs, structural netlist and emission, the
+  structural report, the independent RTL regression and generic mapping. Then
+  one routed comparison against the pin-sampled candidate (below).
+- **Result:** the prefetch machine's first structural form put the fetched
+  registers at 103 gate levels (`build/structure/prefetch-01`): its addresses
+  wait for the next-state decode. `Storage/Decoupled.lean` computes them from
+  the dispatch decision (`advancing`, `dispatching`) and the target, with a
+  start word loaded on commit; `step_structure` and `candidate_correct` carry
+  the invariant, `refinement`/`trace_correct` reach the reference.
+  `Storage/PrefetchBackend.lean` is its netlist on the general backend (three
+  wires, 610 fields, 6,425 bits) with `netlist_next`, `netlist_output`,
+  `reference_next` and `completeRefinement`; `PrefetchEmit.lean` emits it alone
+  and behind the pin sampler. `build/structure/prefetch-02`: deepest register
+  endpoint 63 levels (composed 101), cached word 38 (101), core state 59 (91),
+  fetched words 63; from `incoming` 60 (99). `test/Memory.lean`: both machines
+  match the reference on 5,161 edges, 12 transactions, 24 taken branches.
+  Library audit standard axioms only (6,235 theorems).
+  `check-prefetch --tag prefetch-03`: RTL/gate equivalence 6,373 (inner) and
+  6,377 (sampled) points, oracle 35,824 edges on both, unshifted sampled trace
+  rejected; mapped typical 636,986 µm² inner and 654,086 µm² sampled (sampled
+  candidate 547,995), ABC delay 5,815 ps (6,803), 233 s. Identity manifest
+  `physical/experiments/prefetch-results.json`.
+  `prefetch-sampled-01` (calibrated tolerant overlay, 90-minute cap): exit 2 at
+  `OpenROAD.ResizerTimingPostCTS`, detailed placement failed on 157 instances
+  after clock-tree synthesis; 732,201 µm² of instances at 81.1% utilization before
+  timing repair, so the 6×4 core has no room for the repair buffers. No routing,
+  no extracted timing. `prefetch-sampled-02` (`combined.json`: calibrated RC,
+  sampler, width-8 clock gating; 90-minute cap): placement and clock tree
+  complete, 40,878 instances and 728,416 µm² at 80.7% utilization after
+  post-CTS repair (the same-overlay control `combined-02`: 31,482, 604,090 µm²,
+  66.9%); `OpenROAD.GlobalRouting` logged 858 congestion-removal iterations in
+  84 minutes without clearing overflow (control: 29) and hit the wall-time limit
+  (exit 124). Synthesis 32,182 instances, 618,435 µm² against 24,346 and
+  507,042. No routing, no extracted timing. Manifest
+  `physical/experiments/prefetch-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  machine, the levels and the boundary. Gate equivalence needs two-step
+  induction because synthesis drops the constant top bit of each fetched word;
+  no Yosys sequential equivalence to the composed RTL is claimed, the register
+  sets differ. The routed comparison is negative by capacity, not a timing
+  result: the decoupled backend does not fit the diagnostic floorplan with this
+  flow's time budget, so the levels gain is unconfirmed after routing and the
+  next physical question is area, not depth.
+
+## 2026-09-17: one read port under a per-program rule
+
+- **Scope:** Lean machine and proof, executable checks; no netlist, no mapping.
+- **Result:** `Storage/SinglePort.lean` reads the untaken candidate on the entry
+  edge and the taken one on the following edge (`readTaken`, `second`). The
+  rule `Ready` (no branching `checked` record with a zero duration) is carried
+  as an invariant on every pushed word (`ReadyImages`, `read_ready`); the taken
+  word is owed only once `second` is false, and a branching word one edge after
+  entry has not counted down (`branching_dispatch`). `trace_correct` gives trace
+  equality with the atomic reference on every input history whose data words
+  are ready, stated on traces (`trace_cons`) since the refinement is conditional
+  on inputs. `test/Memory.lean`: the one-port machine matches the reference on
+  the full scenario, 5,161 edges, 12 transactions, 24 taken branches; the four
+  fixture programs have no unready word, the one-cycle-phase I²C write one and
+  read three, the UART receiver two at any bit period; on the one-cycle-phase
+  write the machine agrees under an address ACK and diverges on the address
+  NACK's unready taken branch. 271 s interpreted. Library audit standard axioms
+  only (6,281 theorems).
+  `check-foundation --tag prefetch-single-01`: 159 modules, 11,990 declarations, 6,281 theorems, 29 suites, untrusted axiom rejected, 1,286 s.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  rule and the boundary. A one-port structural backend (one read tree instead of
+  two) is a fit question; the receiver's zero-duration branching records are a
+  compiler question.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

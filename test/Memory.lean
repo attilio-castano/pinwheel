@@ -1,6 +1,7 @@
 import Pinwheel
 import Pinwheel.Hardware.Memory.Registered
-import Pinwheel.Hardware.Storage.Prefetch
+import Pinwheel.Hardware.Storage.Decoupled
+import Pinwheel.Hardware.Storage.SinglePort
 
 /-! Executable evidence for the memory contract: the two structural
 implementations against the specification, and the prefetch machine (the
@@ -59,9 +60,17 @@ private def upload (p : Execution.Image) : IO (List (BitVec 64)) := do
   pure (image.val.dictionary.toList ++ image.val.addresses.toList.map (·.zeroExtend 64) ++
     [idle.zeroExtend 64, BitVec.ofNat 64 p.last.val])
 
-private structure Pair where
+/-- A machine under test: how to step it, what it shows, and which of its fields
+mirror the reference. -/
+private structure Driver (σ : Type) where
+  next : Loader.Machine.Inputs → σ → σ
+  observe : Loader.Machine.Inputs → σ → Values Loader.Machine.Output
+  machine : σ → Loader.Machine.State
+  branch : Loader.Machine.Inputs → σ → Bool
+
+private structure Pair (σ : Type) where
   reference : Loader.Machine.State
-  prefetch : Storage.Prefetch.State
+  candidate : σ
   edges : Nat := 0
   branches : Nat := 0
   rejected : Nat := 0
@@ -69,7 +78,11 @@ private structure Pair where
 private def initialMachine : Loader.Machine.State :=
   ⟨{}, ⟨0, 0, 0, 0, {}, Vector.replicate 16 false⟩, fun _ {_} _ => 0⟩
 
-private def initialPair : Pair := ⟨initialMachine, ⟨initialMachine, 0, fun _ => 0⟩, 0, 0, 0⟩
+private def prefetchDriver : Driver Storage.Prefetch.State :=
+  ⟨Storage.Prefetch.next, Storage.Prefetch.component.observe, (·.machine), Storage.Prefetch.branch⟩
+
+private def decoupledDriver : Driver Storage.Decoupled.State :=
+  ⟨Storage.Decoupled.next, Storage.Decoupled.component.observe, (·.machine), Storage.Decoupled.branch⟩
 
 private def probes : List ((w : Nat) × Loader.Machine.Output w) :=
   [⟨1, .core .busy⟩, ⟨8, .core .readB⟩, ⟨8, .core .readA⟩, ⟨3, .core (.state .mode)⟩,
@@ -79,33 +92,32 @@ private def probes : List ((w : Nat) × Loader.Machine.Output w) :=
 private def observe (v : Values Loader.Machine.Output) : List Nat :=
   probes.map fun ⟨_, o⟩ => (v o).toNat
 
-/-- One edge of both machines under the same input; the prefetch machine's
-control, core and every probed output must agree with the reference. -/
-private def step (pair : Pair) (i : Loader.Machine.Inputs) (variant : Option (Loader.Machine.Inputs →
-    Storage.Prefetch.State → Storage.Prefetch.State) := none) : IO (Pair × Bool) := do
-  let outputs := observe (Storage.Prefetch.component.observe i pair.prefetch)
+/-- One edge of both machines under the same input; the candidate's control, core
+and every probed output must agree with the reference. -/
+private def step (d : Driver σ) (pair : Pair σ) (i : Loader.Machine.Inputs) : IO (Pair σ × Bool) := do
+  let outputs := observe (d.observe i pair.candidate)
   let expected := observe (Storage.Cache.referenceComponent.observe i pair.reference)
   let reference := Loader.Machine.next i pair.reference
-  let prefetch := (variant.getD Storage.Prefetch.next) i pair.prefetch
-  let taken := Storage.Prefetch.branch i pair.prefetch && pair.prefetch.machine.core.mode == 3 &&
+  let candidate := d.next i pair.candidate
+  let taken := d.branch i pair.candidate && (d.machine pair.candidate).core.mode == 3 &&
     reference.core.pc != pair.reference.core.pc
-  let agree := outputs == expected && prefetch.machine.control == reference.control &&
-    prefetch.machine.core == reference.core
+  let agree := outputs == expected && (d.machine candidate).control == reference.control &&
+    (d.machine candidate).core == reference.core
   let rejected := if (Storage.Cache.referenceComponent.observe i pair.reference (.control .rejected)) == 1 then 1 else 0
-  pure (⟨reference, prefetch, pair.edges + 1, pair.branches + (if taken then 1 else 0), pair.rejected + rejected⟩, agree)
+  pure (⟨reference, candidate, pair.edges + 1, pair.branches + (if taken then 1 else 0), pair.rejected + rejected⟩, agree)
 
-private def stepEnsure (pair : Pair) (i : Loader.Machine.Inputs) (what : String) : IO Pair := do
-  let (pair, agree) ← step pair i
-  ensure agree s!"prefetch machine diverged from the reference at edge {pair.edges} ({what})"
+private def stepEnsure (d : Driver σ) (pair : Pair σ) (i : Loader.Machine.Inputs) (what : String) : IO (Pair σ) := do
+  let (pair, agree) ← step d pair i
+  ensure agree s!"candidate diverged from the reference at edge {pair.edges} ({what})"
   pure pair
 
-private def load (pair : Pair) (words : List (BitVec 64)) : IO Pair := do
-  let mut pair ← stepEnsure pair {command := 1} "begin"
+private def load (d : Driver σ) (pair : Pair σ) (words : List (BitVec 64)) : IO (Pair σ) := do
+  let mut pair ← stepEnsure d pair {command := 1} "begin"
   for word in words do
-    pair ← stepEnsure pair {command := 2, data := word} "push"
+    pair ← stepEnsure d pair {command := 2, data := word} "push"
   -- A busy or malformed command is rejected without touching the staged image.
-  pair ← stepEnsure pair {command := 6} "reject"
-  stepEnsure pair {command := 3} "commit"
+  pair ← stepEnsure d pair {command := 6} "reject"
+  stepEnsure d pair {command := 3} "commit"
 
 /-- The pins the core drives, from its probed outputs: open-drain, enabled bits pull low. -/
 private def commandOf (v : Values Loader.Machine.Output) : I2C.Pins :=
@@ -115,10 +127,10 @@ private def commandOf (v : Values Loader.Machine.Output) : I2C.Pins :=
 
 /-- Run the started program closed-loop with an acknowledging or not acknowledging
 target that changes SDA only while SCL is low. Ordinary protocols see a patterned
-input. Returns the pair and the number of completed clock pulses. -/
-private def run (pair : Pair) (targetLow : Nat → Bool) (limit : Nat)
-    (variant : Option (Loader.Machine.Inputs → Storage.Prefetch.State → Storage.Prefetch.State) := none) :
-    IO (Pair × Nat × Bool) := do
+input. Returns the pair, the number of completed clock pulses and whether every
+edge agreed. -/
+private def run (d : Driver σ) (pair : Pair σ) (targetLow : Nat → Bool) (limit : Nat) :
+    IO (Pair σ × Nat × Bool) := do
   let mut pair := pair
   let mut target : I2C.Pins := {}
   let mut previous : I2C.Bus := {}
@@ -138,7 +150,7 @@ private def run (pair : Pair) (targetLow : Nat → Bool) (limit : Nat)
     let incoming := BitVec.ofNat 2 ((if observed.scl then 1 else 0) + (if observed.sda then 2 else 0))
     -- Loader commands during execution are rejected while busy.
     let i : Loader.Machine.Inputs := {incoming, command := if t % 7 == 3 then 2 else 0, data := 4}
-    let (next, agree) ← step pair i variant
+    let (next, agree) ← step d pair i
     pair := next
     agreed := agreed && agree
     previous := observed
@@ -151,46 +163,59 @@ private def readTarget (byte : BitVec 8) (pulses : Nat) : Bool :=
   if pulses == 8 || pulses == 17 || pulses == 26 then true
   else if 27 ≤ pulses && pulses < 35 then !byte.toNat.testBit (34 - pulses) else false
 
-private def machines : IO (Nat × Nat × Nat) := do
+/-- The full scenario against the reference: every fixture program, ACK and NACK
+targets, an image staged around a run, resets and rejected commands. -/
+private def machines (d : Driver σ) (initial : σ) : IO (Nat × Nat × Nat) := do
   let cfg : I2C.Config := ⟨3, 7⟩
   let write := Execution.widenProgram (Compile.I2C.program cfg ⟨0x53, 0xa6⟩)
   let read := Compile.I2CRead.program cfg ⟨0x53, 0xa6⟩
   let uart := Execution.widenProgram (Engine.Reactive.embedProgram (Compile.UART.program ⟨3⟩ 0x53))
   let spi := Execution.widenProgram (Engine.Reactive.embedProgram (Compile.SPI.program ⟨3⟩ 0xa6))
-  let mut pair := initialPair
-  pair ← stepEnsure pair {init := true} "initialize"
+  let mut pair : Pair σ := ⟨initialMachine, initial, 0, 0, 0⟩
+  pair ← stepEnsure d pair {init := true} "initialize"
   -- A start before any commit is rejected; the fetched words are owed nothing.
-  pair ← stepEnsure pair {command := 5} "start-before-commit"
+  pair ← stepEnsure d pair {command := 5} "start-before-commit"
   let mut transactions := 0
   for (p, targets) in [(write, [writeTarget true true, writeTarget false true, writeTarget true false]),
       (read, [readTarget 0x96, readTarget 0x00, readTarget 0xff]),
       (uart, [fun _ => false]), (spi, [fun p => p % 2 == 0])] do
-    pair ← load pair (← upload p)
+    pair ← load d pair (← upload p)
     for target in targets do
-      pair ← stepEnsure pair {command := 5} "start"
-      let (next, _, agreed) ← run pair target 4000
-      ensure agreed "prefetch machine diverged from the reference during a run"
+      pair ← stepEnsure d pair {command := 5} "start"
+      let (next, _, agreed) ← run d pair target 4000
+      ensure agreed "candidate diverged from the reference during a run"
       ensure (next.reference.core.mode.toNat ≥ 5) "program did not finish"
       pair := next
       transactions := transactions + 1
     -- Reset between programs, then a second image is staged while the core is stopped.
-    pair ← stepEnsure pair {reset := true} "reset"
-  -- Interleave: stage the write program, start the read program that is committed,
+    pair ← stepEnsure d pair {reset := true} "reset"
+  -- A start on the edge right after a halt: no idle edge in between.
+  pair ← load d pair (← upload uart)
+  pair ← stepEnsure d pair {command := 5} "start"
+  let (next, _, agreed) ← run d pair (fun _ => false) 4000
+  ensure agreed "candidate diverged in the immediate-restart run"
+  pair := next
+  pair ← stepEnsure d pair {command := 5} "restart-immediately"
+  let (next, _, agreed) ← run d pair (fun _ => false) 4000
+  ensure agreed "candidate diverged after an immediate restart"
+  pair := next
+  transactions := transactions + 2
+  -- Interleave: stage the write program around a run of the committed read program,
   -- and commit the staged image only after the run: the switch must refill the fetch.
-  pair ← load pair (← upload read)
-  pair ← stepEnsure pair {command := 1} "begin-while-stopped"
+  pair ← load d pair (← upload read)
+  pair ← stepEnsure d pair {command := 1} "begin-while-stopped"
   for word in (← upload write).take 100 do
-    pair ← stepEnsure pair {command := 2, data := word} "stage"
-  pair ← stepEnsure pair {command := 5} "start-read"
-  let (next, _, agreed) ← run pair (readTarget 0x5a) 4000
-  ensure agreed "prefetch machine diverged during the interleaved run"
+    pair ← stepEnsure d pair {command := 2, data := word} "stage"
+  pair ← stepEnsure d pair {command := 5} "start-read"
+  let (next, _, agreed) ← run d pair (readTarget 0x5a) 4000
+  ensure agreed "candidate diverged during the interleaved run"
   pair := next
   for word in (← upload write).drop 100 do
-    pair ← stepEnsure pair {command := 2, data := word} "stage-rest"
-  pair ← stepEnsure pair {command := 3} "commit-staged"
-  pair ← stepEnsure pair {command := 5} "start-write"
-  let (next, _, agreed) ← run pair (writeTarget true true) 4000
-  ensure agreed "prefetch machine diverged after the bank switch"
+    pair ← stepEnsure d pair {command := 2, data := word} "stage-rest"
+  pair ← stepEnsure d pair {command := 3} "commit-staged"
+  pair ← stepEnsure d pair {command := 5} "start-write"
+  let (next, _, agreed) ← run d pair (writeTarget true true) 4000
+  ensure agreed "candidate diverged after the bank switch"
   ensure (next.reference.core.mode.toNat = 5) "the switched-in write did not complete"
   pair := next
   transactions := transactions + 2
@@ -198,28 +223,57 @@ private def machines : IO (Nat × Nat × Nat) := do
   ensure (pair.rejected > 0) "no command was rejected"
   pure (pair.edges, transactions, pair.branches)
 
-/-- Fetching only the untaken candidate — one read port — diverges on a taken
-branch: the address NACK of the write program branches to STOP. -/
-private def singlePort : IO Nat := do
-  let naive (i : Loader.Machine.Inputs) (s : Storage.Prefetch.State) : Storage.Prefetch.State :=
-    let n := Storage.Prefetch.next i s
-    {n with fetched := fun _ => n.fetched false}
+/-! ## One read port: the per-program rule -/
+
+private def singlePortDriver : Driver Storage.SinglePort.State :=
+  ⟨Storage.SinglePort.next, Storage.SinglePort.component.observe, (·.machine), Storage.SinglePort.branch⟩
+
+/-- Words of a program's upload that the one-port machine's rule rejects: branching
+`checked` records with a zero duration field. -/
+private def unready (p : Execution.Image) : IO Nat := do
+  pure ((← upload p).filter (fun w => !Storage.SinglePort.Ready w)).length
+
+/-- The rule is checkable per program: the fixture programs are ready, an I²C
+configuration whose phases last one cycle and the UART receiver are not. -/
+private def readiness : IO (Nat × Nat) := do
   let cfg : I2C.Config := ⟨3, 7⟩
-  let write := Execution.widenProgram (Compile.I2C.program cfg ⟨0x53, 0xa6⟩)
-  let mut pair := initialPair
-  pair ← stepEnsure pair {init := true} "initialize"
-  pair ← load pair (← upload write)
-  pair ← stepEnsure pair {command := 5} "start"
-  let (acked, _, agreedAck) ← run pair (writeTarget true true) 4000 (some naive)
-  ensure agreedAck "single-port variant should agree while no branch is taken"
-  ensure (acked.reference.core.mode.toNat = 5) "acknowledged write did not complete"
-  pair ← stepEnsure acked {command := 5} "start"
-  let (_, _, agreedNack) ← run pair (writeTarget false true) 4000 (some naive)
-  ensure (!agreedNack) "single-port variant did not diverge on the taken branch"
-  pure 2
+  let fixtures : List (String × Execution.Image) :=
+    [("I2C write", Execution.widenProgram (Compile.I2C.program cfg ⟨0x53, 0xa6⟩)),
+     ("I2C read", Compile.I2CRead.program cfg ⟨0x53, 0xa6⟩),
+     ("UART", Execution.widenProgram (Engine.Reactive.embedProgram (Compile.UART.program ⟨3⟩ 0x53))),
+     ("SPI", Execution.widenProgram (Engine.Reactive.embedProgram (Compile.SPI.program ⟨3⟩ 0xa6)))]
+  for (name, p) in fixtures do
+    ensure ((← unready p) = 0) s!"{name} program has a word the one-port rule rejects"
+  let short ← unready (Execution.widenProgram (Compile.I2C.program ⟨0, 7⟩ ⟨0x53, 0xa6⟩))
+  ensure (short = 1) "the one-cycle-phase I2C write should have exactly one unready word"
+  ensure ((← unready (Compile.I2CRead.program ⟨0, 7⟩ ⟨0x53, 0xa6⟩)) = 3)
+    "the one-cycle-phase I2C read should have three unready words"
+  let receiver ← unready (Compile.UARTRx.program ⟨16, by decide, by decide, 0⟩)
+  ensure (receiver = 2) "the UART receiver should have two unready words"
+  pure (fixtures.length, receiver)
+
+/-- The one-port machine on a program the rule rejects: it agrees while the
+zero-duration branch is not taken and diverges on the edge it is. -/
+private def unreadyDiverges : IO Unit := do
+  let write := Execution.widenProgram (Compile.I2C.program ⟨0, 7⟩ ⟨0x53, 0xa6⟩)
+  let mut pair : Pair Storage.SinglePort.State :=
+    ⟨initialMachine, ⟨initialMachine, 0, fun _ => 0, 0, false⟩, 0, 0, 0⟩
+  pair ← stepEnsure singlePortDriver pair {init := true} "initialize"
+  pair ← load singlePortDriver pair (← upload write)
+  pair ← stepEnsure singlePortDriver pair {command := 5} "start"
+  let (acked, _, agreedAck) ← run singlePortDriver pair (writeTarget true true) 4000
+  ensure agreedAck "one-port machine should agree while the unready branch is not taken"
+  ensure (acked.reference.core.mode.toNat = 5) "acknowledged one-cycle write did not complete"
+  pair ← stepEnsure singlePortDriver acked {command := 5} "start"
+  let (_, _, agreedNack) ← run singlePortDriver pair (writeTarget false true) 4000
+  ensure (!agreedNack) "one-port machine did not diverge on the unready taken branch"
 
 def main : IO Unit := do
   let n ← contract
-  let (edges, transactions, branches) ← machines
-  let variants ← singlePort
-  IO.println s!"Memory: {n} requests match latency 0 and 1; prefetch machine matched the reference on {edges} edges, {transactions} closed-loop transactions, {branches} taken branches; {variants} single-port runs, the second diverged."
+  let (edges, transactions, branches) ← machines prefetchDriver ⟨initialMachine, 0, fun _ => 0⟩
+  let (edges', transactions', branches') ← machines decoupledDriver ⟨initialMachine, 0, fun _ => 0, 0⟩
+  let (edges'', transactions'', branches'') ←
+    machines singlePortDriver ⟨initialMachine, 0, fun _ => 0, 0, false⟩
+  let (ready, receiver) ← readiness
+  unreadyDiverges
+  IO.println s!"Memory: {n} requests match latency 0 and 1; prefetch machine matched the reference on {edges} edges, {transactions} closed-loop transactions, {branches} taken branches; decoupled machine on {edges'} edges, {transactions'} transactions, {branches'} taken branches; one-port machine on {edges''} edges, {transactions''} transactions, {branches''} taken branches; {ready} fixture programs ready, the UART receiver has {receiver} unready words, and the one-port machine diverges on an unready taken branch."

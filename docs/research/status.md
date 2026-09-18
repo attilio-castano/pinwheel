@@ -251,11 +251,35 @@ next-state values, on two read ports, into two registers, the reference machine
 runs against a latency-one memory with no added cycle — proved as an edge-for-edge
 refinement of the atomic reference for every request and input history, with
 commit refilling the fetch from the newly selected bank and initialization owing
-nothing. Closed-loop execution against the reference: 4,754 edges, 10
-transactions, 24 taken branches; a single-port variant diverges at the first taken
-branch. Nothing structural is built: the composite read is latency one only if the
-address map or the dictionary stays combinational, and the address path grows by
-the next-address decode.
+nothing. Built structurally on the general backend, the prefetch machine's
+addresses waited for the next-state decode (fetched registers at 103 gate
+levels). The **decoupled machine** (`Storage/Decoupled.lean`) takes them from
+the dispatch decision and the target instead, with a start-word register loaded
+on commit; it refines the reference edge for edge and its structural netlist
+(`Storage/PrefetchBackend.lean`, 610 fields, 6,425 bits, emitted alone and
+behind the pin sampler) brings the deepest register endpoint from 101 gate
+levels to **63**, the cached word from 101 to 38 and the core state from 91 to
+59. Closed-loop execution against the reference: 5,161 edges, 12 transactions,
+24 taken branches, for both machines. The emitted netlist passes RTL/gate
+equivalence and the independent oracle (35,824 edges, alone and behind the
+sampler); mapped, it is 19% larger than the sampled candidate (a second read
+tree and three registers) with 15% less combinational delay at the typical
+corner. Routed under the sampled candidate's contract, two attempts reached no
+extracted timing: the calibrated overlay failed detailed placement at 81%
+utilization, and the sampler-plus-clock-gating overlay placed at 80.7% but
+global routing ran 858 congestion iterations without converging inside the
+90-minute cap (the same-overlay control: 66.9%, 29 iterations). The structural
+gain is unconfirmed after routing; at the diagnostic floorplan area binds
+before depth, and the physical question that follows is area (a one-port
+backend, or a floorplan with room). The **one-port machine** (`Storage/SinglePort.lean`)
+reads the untaken candidate on the entry edge and the taken one on the next, and
+refines the reference edge for edge on every input history whose words satisfy a
+per-program rule (`Ready`: no branching `checked` record with a zero duration).
+The I²C write and read at four-cycle phases, UART and SPI satisfy it; one-cycle-
+phase I²C and the UART receiver do not. Closed-loop it matches the reference on
+the full scenario (5,161 edges) and diverges exactly on an unready taken branch.
+It has no structural backend yet; one read tree instead of two is what it would
+return.
 
 ## Next discriminators
 
@@ -282,11 +306,11 @@ the next-address decode.
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. If whole-chip fit or capacity calls for it, implement `Memory.spec 8 64 2 1`
-   structurally (a registered dictionary behind a combinational address map, or
-   a macro) and the prefetch machine's circuit; the proofs against the reference
-   are already done at the functional level in the
-   [memory abstraction](../memory-abstraction.md).
+3. Decide the decoupled prefetch backend's place from its routed comparison in
+   the [memory abstraction](../memory-abstraction.md): if it confirms the
+   shorter recurrence, it becomes the base for the gating plan and the
+   whole-chip fit; a macro-backed dictionary (`Memory.spec 8 64 2 1`) is then a
+   local change to it.
 4. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
    [input latency](../input-latency.md) or the compiler captures `d` cycles later,
    and whether the compilers should reject a `Config` that violates a declared
