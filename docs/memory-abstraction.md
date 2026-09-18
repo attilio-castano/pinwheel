@@ -547,6 +547,99 @@ two fetched registers had been left out the same way (6,373 points are 6,501
 less their 128 bits); they reload every edge, so that comparison was sound, and
 `prefetch-05` repeats it with every register matched.
 
+### The command split in the generic backend
+
+The routed one-port run named its own next step: every violating endpoint
+launched from the loader's data port. The capacity check reads the pushed word
+and turns an oversized push into a rejection, and `Backend.lift` puts that
+rewritten command at every command leaf — so the commit decode, the start
+decode and the bank selection behind them all wait for a 64-bit comparison on
+the data port, although the check cannot change any of them
+(`Small.adapt_command_predicate`). The
+[command-split](successor-fetch-study.md#command-decoder-experiment) form
+decodes those predicates from the raw command. The composed control has had it
+since that study (`BankSelect.lift`, proved equal to the plain lift at every
+valuation); the policy backends had not.
+
+`Backend.Policy` now lifts with `BankSelect.lift`: in the scheduler's inputs
+(`feedW`), in the loader's own registers and outputs (`BankSelect.circuit`),
+and in everything a policy builds its wires from (`liftC`: the commit decode,
+the branch bit, the selected bank's registers). Three lemmas carry the proofs
+over — `BankSelect.lift_correct`, `circuit_next_eq`, `circuit_output_eq` — and
+none of the three policy files changed: all three backends inherit the form,
+with their register layouts, ports and contracts as they were.
+
+**The level model had said so.** The report for the backend that was routed
+(`build/structure/policy-02`) ranked the data port into the fetched words at 71
+gate levels, above the register-launched family at 65. That row was not read
+before the run; the run then measured −0.187 ns from the data port and
+−0.053 ns from registers. `check-structure.py` now prints, for every policy
+backend, what the data port reaches and the deepest family and endpoint, and
+fails if the data port reaches the fetch path (`build/structure/split-02`).
+
+| One-port backend behind the sampler, latest arrival in gate levels | before | after |
+| --- | ---: | ---: |
+| data port → fetched words | 71 | no path |
+| data port → core state, cached word | 61, 44 | no path |
+| data port → loader control, dictionaries and index maps | 42, 32 | 41, 31 |
+| loader cursor → fetched words | 65 | 50 |
+| command → fetched words | 52 | 47 |
+| registers → dispatch decision | 33 | 20 |
+| registers → cached word, its enable | 38, 36 | 25, 23 |
+| registers → fetched words | 65 | 64 |
+
+The dispatch decision, and with it the cached word and its clock-gate enable,
+lose thirteen levels: their deepest path had been the loader cursor through the
+capacity check. The register family's deepest path into the fetched words —
+branch bit, fed word, the entered word's candidate, the read — loses one. The
+two-port and decoupled backends move the same way (fetched words 64 and 62).
+
+**As a theorem** (`Storage/DataPort.lean`). With only the data port launching,
+`Expr.arrival … = none` says an expression has no structural path from it. The
+leaves hold by computation: each scheduler input of the loader in the split
+form, the commit decode, the branch bit and the selected bank's registers
+(`base_data_free`, `commit_lift_data_free`, `branch_lift_data_free`,
+`chosen_data_free`); `plain_commit_sees_data` records that the plain lift does
+not have the property. The rest is generic: any scheduler expression fed a
+data-free successor (`sched_data_free`), the composite read at a data-free
+address (`readAt_data_free`), and the generic backend's scheduler registers,
+cached word and scheduler outputs (`core_data_free`, `core_output_data_free`).
+For a two-wire realization whose four pieces are data-free (`DataFree`), no
+register of the fetch path — scheduler, cached word, policy registers — has a
+path from the data port (`DataFree.next`), so its next value is the same
+whatever word the host presents (`DataFree.step_independent`, through
+`Netlist.step_congr_of_arrival_none`). Each organization is an instance in a
+few lines (`Prefetch.dataFree`, `TwoPort.dataFree`, `OnePort.dataFree`). A port
+with its own arrival budget can no longer reach the loop by accident: a policy
+that routed the data port into its wires would fail to prove `DataFree`.
+
+Validation, `check-prefetch.py`, receipts `build/oneport/oneport-04`,
+`build/twoport/twoport-04`, `build/prefetch/prefetch-06`; identities in
+`physical/experiments/{oneport,twoport,prefetch}-split-results.json`. RTL/
+generic-gate equivalence at the same induction depths as before (6,508 and
+6,506 points for one port, 6,507 and 6,505 for two, 6,501 and 6,511 for the
+decoupled backend; the counts move with the bits synthesis removes), the independent oracle on
+both emissions of each (29,898 edges in ready mode for one port, 35,824
+unrestricted for the others), and the same required rejections. One mapped
+flip-flop count changed: the sampled two-port mapping keeps bits 3–8 of the
+cached word, which synthesis had deleted as unread before (6,425 instead of
+6,419; `twoport-03` stopped on that assertion with everything else passed, and
+`twoport-04` records the new count). The register layout is unchanged; what
+synthesis can show unread depends on the shape of the logic around it.
+
+| Typical corner, sampled emission | Sampled candidate | Decoupled, 3 ports | Two ports | One port |
+| --- | ---: | ---: | ---: | ---: |
+| Standard-cell area, before | 547,995 µm² | 654,086 (+19.4%) | 618,244 (+12.8%) | 576,805 (+5.3%) |
+| Standard-cell area, split | | 637,827 (+16.4%) | 628,939 (+14.8%) | 557,736 (**+1.8%**) |
+| ABC combinational delay, before | 6,803 ps | 5,815 (−14.5%) | 5,027 (−26.1%) | 5,272 (−22.5%) |
+| ABC combinational delay, split | | 5,601 (−17.7%) | 5,431 (−20.2%) | 5,167 (−24.0%) |
+| Slow-corner delay, split | 9,945 ps | 8,609 (−13.4%) | 8,526 (−14.3%) | 8,381 (−15.7%) |
+
+The mapped screen moves by a few percent in either direction between these
+emissions — the one-port area falls 3.3%, the two-port area rises 1.7% — which
+is the recipe's noise more than the change: the split removes a 64-bit compare
+from a handful of cones and adds nothing.
+
 ## What the abstraction buys
 
 A fetch organization is now a `Policy` with three obligations, proved against

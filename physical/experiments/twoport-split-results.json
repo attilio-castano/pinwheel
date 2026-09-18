@@ -1,0 +1,177 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-command-split-in-the-generic-backend",
+  "disposition": "Experimental variant. The same organization as twoport-results.json, emitted with the command-split lift in the generic backend: commit, start and bank selection decode the raw command, so the loader's data port has no path to the scheduler, the cached word or the policy's registers. Validation and mapped screen below; routed results, if any, are in the matching physical manifest.",
+  "control": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "mapping": {
+      "typical": {
+        "standard_cell_area_um2": 547995.1806,
+        "abc_combinational_delay_ps": 6802.53,
+        "flip_flops": 6236,
+        "cells": 27306
+      },
+      "slow": {
+        "standard_cell_area_um2": 548114.931,
+        "abc_combinational_delay_ps": 9944.97,
+        "flip_flops": 6236,
+        "cells": 27306
+      }
+    },
+    "identity": "Byte-identical to the routed pin-sampled candidate in pin-sampled-results.json (pin-sampled-02)"
+  },
+  "predecessor": {
+    "manifest": "physical/experiments/twoport-results.json",
+    "sha256": "7a421bb19408c4412a319aed2508b4a08a37df9ab996eb40a9221201671b8220",
+    "sampled_rtl_sha256": "b4ad2f390b3b7ed8e0601b342b1527c26176636ae5dc53ca5673f5c4aabe1539",
+    "sampled_mapping": {
+      "typical": {
+        "standard_cell_area_um2": 618244.2126,
+        "abc_combinational_delay_ps": 5027.26,
+        "flip_flops": 6419,
+        "cells": 32705
+      },
+      "slow": {
+        "standard_cell_area_um2": 618215.1822,
+        "abc_combinational_delay_ps": 8149.5,
+        "flip_flops": 6419,
+        "cells": 32701
+      }
+    },
+    "difference": "Backend.lift replaced by BankSelect.lift in Backend.Policy (feedW, core, liftC); register layout, ports and every proved contract unchanged"
+  },
+  "inner": {
+    "variant": "twoport-split",
+    "rtl_sha256": "f879131ba4dbddf1a28d90aa12bd393980c651a5b3ef02e6417a74676b11e81c",
+    "mlir_sha256": "e6869675a2c91ae373f488a5f9e3cd203f92500e413eec198d47e85b8f3f1825",
+    "register_fields": 610,
+    "register_bits": 6425
+  },
+  "sampled": {
+    "variant": "twoport-split-sampled",
+    "rtl_sha256": "c5943b765a425b1c4bffd1bedc4395673a9790f3c4e92fad72c0e3fb768d541e",
+    "mlir_sha256": "f0e58b996c373543a3c43472c6455b82300e52b563526aeee22bb1bbb2ae4f7b",
+    "register_fields": 612,
+    "register_bits": 6429
+  },
+  "fixed_contract": "Ports, module name, register layout and host-port timing are the predecessor's. Only combinational logic differs: command predicates other than push decode the raw command.",
+  "proofs_and_checks": {
+    "lean": "TwoPort (FetchPolicy) refinement, Backend.Policy netlist_next/netlist_output/completeRefinement via Backend.TwoPort.realization, TwoPort.sampled_trace_correct; BankSelect.lift_correct, circuit_next_eq, circuit_output_eq; Storage/DataPort.lean: no path from the data port to the fetch path (DataFree.next, fetch_path_data_free)",
+    "generic_gate_equivalence_points": {
+      "inner": 6507,
+      "sampled": 6505
+    },
+    "registers_rewidened_for_matching": {
+      "twoport": [
+        "r_fetched_taken",
+        "r_fetched_untaken",
+        "r_start_word"
+      ],
+      "twoport-sampled": [
+        "r_fetched_taken",
+        "r_fetched_untaken",
+        "r_start_word"
+      ]
+    },
+    "independent_regression": {
+      "inner": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "sampled": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "vectors": "the unrestricted oracle vectors, UART receiver included"
+    },
+    "rejected_traces": [
+      "sampled RTL with unshifted pins"
+    ]
+  },
+  "structural_levels": {
+    "receipt": "build/structure/split-02/twoport.json",
+    "sha256": "bcd1ff1421ab5c975645a474dd6aa3b7e734992dcc7325cc9c91ab95d6461c62",
+    "registers_family_gates": {
+      "fed successor": 18,
+      "dispatch decision": 20,
+      "cached word enable": 23,
+      "cached word": 25,
+      "port 0 address": 34,
+      "port 0 word": 62,
+      "candidate taken": 34,
+      "fetched taken": 62,
+      "fetched untaken": 62,
+      "start word": 64,
+      "core state": 59
+    },
+    "sampled_data_port_latest_levels": {
+      "loader control": 41,
+      "core state": null,
+      "dictionary words": 31,
+      "index maps": 31,
+      "idle and last": 31,
+      "cached word": null,
+      "fetched words": null,
+      "pin stages": null,
+      "cached word enable": null,
+      "outputs": 44
+    },
+    "sampled_deepest_per_family": {
+      "incoming": {
+        "endpoint": "pin stages",
+        "levels": 0
+      },
+      "command": {
+        "endpoint": "fetched words",
+        "levels": 47
+      },
+      "data": {
+        "endpoint": "loader control",
+        "levels": 41
+      },
+      "init/reset": {
+        "endpoint": "fetched words",
+        "levels": 47
+      },
+      "loader cursor": {
+        "endpoint": "fetched words",
+        "levels": 50
+      },
+      "registers": {
+        "endpoint": "fetched words",
+        "levels": 64
+      }
+    },
+    "prediction": "The data port reaches only the loader's registers; the register-launched family into the fetched words is the deepest path and is one level shallower than the predecessor's, so the model expects the data-launched violations to disappear and the register family to stay where it was."
+  },
+  "mapping": {
+    "inner": {
+      "typical": {
+        "standard_cell_area_um2": 626177.223,
+        "abc_combinational_delay_ps": 5357.21,
+        "flip_flops": 6415,
+        "cells": 33988
+      },
+      "slow": {
+        "standard_cell_area_um2": 626184.4806,
+        "abc_combinational_delay_ps": 8566.36,
+        "flip_flops": 6415,
+        "cells": 33989
+      }
+    },
+    "sampled": {
+      "typical": {
+        "standard_cell_area_um2": 628938.7398,
+        "abc_combinational_delay_ps": 5430.87,
+        "flip_flops": 6425,
+        "cells": 33097
+      },
+      "slow": {
+        "standard_cell_area_um2": 628975.0278,
+        "abc_combinational_delay_ps": 8525.84,
+        "flip_flops": 6425,
+        "cells": 33102
+      }
+    }
+  },
+  "receipts": {
+    "check": "build/twoport/twoport-04/report.json",
+    "check_sha256": "d9e1ab76de31f640da2427abe50929ac19daeb952cddc600e798b0cf108a80f9"
+  },
+  "boundary": "Mapped screen only in this manifest: no routed or extracted timing claim. No Yosys sequential equivalence to the composed RTL (different register sets), no Lean read-back of this RTL, technology-mapped equivalence, metastability or electrical claim."
+}

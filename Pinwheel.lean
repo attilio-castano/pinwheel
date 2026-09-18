@@ -57,6 +57,7 @@ import Pinwheel.Hardware.Storage.OnePortBackend
 import Pinwheel.Hardware.Storage.OnePortEmit
 import Pinwheel.Hardware.Storage.TwoPortBackend
 import Pinwheel.Hardware.Storage.TwoPortEmit
+import Pinwheel.Hardware.Storage.DataPort
 import Pinwheel.Hardware.Storage.Readiness
 import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency

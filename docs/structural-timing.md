@@ -139,6 +139,19 @@ Stages of the successor loop, gate levels from register outputs, command split:
   shape with a single read: 65 levels, the port's address at 35. Levels did not
   see what decided between them — area: the three-port backend did not fit the
   floorplan, and the mapped screen, not the level model, is the area oracle.
+- The routed one-port run was limited by the loader's **data port**, and the
+  report had ranked it: data port into the fetched words at 71 levels, above
+  the register family at 65, through the capacity check on the command, the
+  commit select and the port's address. That row was not read before the run.
+  `check-structure.py` now prints, for every fetch-policy backend, what the
+  data port reaches and the deepest family and endpoint, and fails if the data
+  port reaches the fetch path. With the
+  [command split in the generic backend](memory-abstraction.md#the-command-split-in-the-generic-backend)
+  it reaches the loader's registers only (41 levels), which is also a theorem:
+  `Storage/DataPort.lean` proves `arrival = none` from the data port into the
+  scheduler, the cached word and a policy's registers for every two-wire
+  realization with data-free pieces, and `Netlist.step_congr_of_arrival_none`
+  turns that into independence of the presented word.
 
 ## Boundary and use
 
@@ -147,7 +160,10 @@ wire; equivalent RTLs differ by 0.6–2 ns after place-and-route; neither fanout
 nor placement is modeled. The model ranks and explains; it does not sign off.
 Suggested order for a structural question: Lean levels (seconds), then the mapped
 screen (minutes), then one confirming routed run with a matched control and
-`check-targeted-timing.py --design`.
+`check-targeted-timing.py --design`. Before a routed run, read the deepest
+endpoint of **every** launch family, ports included, not only the family the
+change was aimed at: a port's budget differs from a register's, but a port that
+is deeper than the loop will limit the run.
 
 The same experiments suggested three further abstractions, all now built:
 register enables are [certified in Lean](register-enables.md), so that
