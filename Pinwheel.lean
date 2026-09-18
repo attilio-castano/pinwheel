@@ -58,6 +58,11 @@ import Pinwheel.Hardware.Storage.OnePortEmit
 import Pinwheel.Hardware.Storage.TwoPortBackend
 import Pinwheel.Hardware.Storage.TwoPortEmit
 import Pinwheel.Hardware.Storage.DataPort
+import Pinwheel.Hardware.Feeder
+import Pinwheel.Hardware.Serial.Receiver
+import Pinwheel.Hardware.Serial.Frame
+import Pinwheel.Hardware.Chip
+import Pinwheel.Hardware.Storage.ChipBackend
 import Pinwheel.Hardware.Storage.Readiness
 import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency

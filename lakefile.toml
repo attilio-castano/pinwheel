@@ -35,3 +35,7 @@ root = "test.OnePort"
 [[lean_exe]]
 name = "twoport_emit"
 root = "test.TwoPort"
+
+[[lean_exe]]
+name = "chip_emit"
+root = "test.ChipEmit"
