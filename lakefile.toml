@@ -27,3 +27,7 @@ root = "test.Structure"
 [[lean_exe]]
 name = "prefetch_emit"
 root = "test.Prefetch"
+
+[[lean_exe]]
+name = "oneport_emit"
+root = "test.OnePort"

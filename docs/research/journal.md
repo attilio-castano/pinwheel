@@ -739,6 +739,54 @@ external interface integration retain their separate contracts.
   two) is a fit question; the receiver's zero-duration branching records are a
   compiler question.
 
+## 2026-09-18: fetch organizations as a parameter; the one-port backend
+
+- **Scope:** Lean theory and instances, one new structural backend with emission,
+  the structural report, the independent RTL regression and generic mapping. No
+  physical run.
+- **Result:** `Storage/FetchPolicy.lean`: a `Policy p σ` (registers, `p` read
+  ports, fed from registers only) and `Correct` (invariant, rule, `covers`,
+  `preserved`, `initial`), from which `step_eq`, `machine_next`,
+  `cache_valid_next`, `ruleRefinement` and `trace_correct` are proved once;
+  `Hardware/TimedRule.lean` is refinement under a rule on inputs, with trace and
+  pair-trace equality and composition below an unconditional refinement.
+  `Storage/Dispatch.lean` collects the scheduler-decision facts and expressions,
+  `Storage/ImageRule.lean` a rule on program words carried by the loader.
+  Instances: `Decoupled` (three ports — its start word is a third read tree;
+  obligations about 40 lines, the hand-written proof was about 190; the flat
+  machine is identified with the generic one by `next_toPolicy`, and the emitted
+  backend is byte-identical to `prefetch-03`), `TwoPort` (63 lines, start word on
+  port 0 on commit edges, `covers` reused), `SinglePort` (one port, `Ready`).
+  `test/Memory.lean`: all four machines match the reference on 5,161 edges, 12
+  transactions, 24 taken branches; readiness and divergence checks as before;
+  363 s (the generic step shares its feed, and the driver forces the fetched
+  words each edge — as first written the interpreter re-derived the feed inside
+  the words' closures and did not finish).
+  `Storage/OnePortBackend.lean`: 611 fields, 6,426 bits, wires for the fed
+  successor, the port address and the port word; `netlist_next`,
+  `netlist_output`, `reference_next`, `completeRefinement` (a rule refinement),
+  `trace_correct`; `OnePortEmit.lean` with `sampled_trace_correct`
+  (`PinSampler.delayed_data`). `build/structure/oneport-01`: fetched words 65
+  gate levels (decoupled 63, composed 101), port address 35, core state 60.
+  `check-prefetch --variant oneport --tag oneport-03`: RTL/gate equivalence
+  6,508 and 6,506 points with three-step induction (`oneport-01`: two steps
+  leave 107 points unproven; the untaken-word register can skip a load for one
+  edge, never two in a row); oracle in ready mode 29,898 edges on both
+  emissions (`oneport-02` failed in the generator: with the UART receiver
+  exercise merely skipped its live-replacement check found no captured samples,
+  so a register read now stands in); unshifted sampled trace rejected; the inner
+  RTL on the unrestricted vectors rejected, as the rule predicts. Mapped typical
+  566,746 µm² inner and 576,805 µm² sampled (sampled candidate 547,995,
+  decoupled 654,086), ABC delay 5,272 ps sampled (6,803; 5,815), slow 8,343 ps
+  (9,945; 9,269). 343 s. Identity manifest
+  `physical/experiments/oneport-results.json`.
+  `check-foundation --tag fetch-policy-01`: 166 modules, 12,365 declarations, 6,456 theorems, 29 suites, untrusted axiom rejected, 1,409 s.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  theory, the instances, the backend and the boundary. The one-port backend
+  passes the mapped gate; one routed comparison under the clock-gating overlay
+  is the next physical discriminator and is not allocated. A policy-parametric
+  backend is the next Lean step; `TwoPort`'s backend would follow from it.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

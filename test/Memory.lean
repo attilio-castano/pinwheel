@@ -2,6 +2,7 @@ import Pinwheel
 import Pinwheel.Hardware.Memory.Registered
 import Pinwheel.Hardware.Storage.Decoupled
 import Pinwheel.Hardware.Storage.SinglePort
+import Pinwheel.Hardware.Storage.TwoPort
 
 /-! Executable evidence for the memory contract: the two structural
 implementations against the specification, and the prefetch machine (the
@@ -67,6 +68,8 @@ private structure Driver (σ : Type) where
   observe : Loader.Machine.Inputs → σ → Values Loader.Machine.Output
   machine : σ → Loader.Machine.State
   branch : Loader.Machine.Inputs → σ → Bool
+  /-- Force lazily held register values after an edge; the state it denotes is unchanged. -/
+  normalize : σ → σ := id
 
 private structure Pair (σ : Type) where
   reference : Loader.Machine.State
@@ -79,10 +82,12 @@ private def initialMachine : Loader.Machine.State :=
   ⟨{}, ⟨0, 0, 0, 0, {}, Vector.replicate 16 false⟩, fun _ {_} _ => 0⟩
 
 private def prefetchDriver : Driver Storage.Prefetch.State :=
-  ⟨Storage.Prefetch.next, Storage.Prefetch.component.observe, (·.machine), Storage.Prefetch.branch⟩
+  { next := Storage.Prefetch.next, observe := Storage.Prefetch.component.observe, machine := (·.machine),
+    branch := Storage.Prefetch.branch }
 
 private def decoupledDriver : Driver Storage.Decoupled.State :=
-  ⟨Storage.Decoupled.next, Storage.Decoupled.component.observe, (·.machine), Storage.Decoupled.branch⟩
+  { next := Storage.Decoupled.next, observe := Storage.Decoupled.component.observe, machine := (·.machine),
+    branch := Storage.Decoupled.branch }
 
 private def probes : List ((w : Nat) × Loader.Machine.Output w) :=
   [⟨1, .core .busy⟩, ⟨8, .core .readB⟩, ⟨8, .core .readA⟩, ⟨3, .core (.state .mode)⟩,
@@ -98,7 +103,7 @@ private def step (d : Driver σ) (pair : Pair σ) (i : Loader.Machine.Inputs) : 
   let outputs := observe (d.observe i pair.candidate)
   let expected := observe (Storage.Cache.referenceComponent.observe i pair.reference)
   let reference := Loader.Machine.next i pair.reference
-  let candidate := d.next i pair.candidate
+  let candidate := d.normalize (d.next i pair.candidate)
   let taken := d.branch i pair.candidate && (d.machine pair.candidate).core.mode == 3 &&
     reference.core.pc != pair.reference.core.pc
   let agree := outputs == expected && (d.machine candidate).control == reference.control &&
@@ -226,7 +231,22 @@ private def machines (d : Driver σ) (initial : σ) : IO (Nat × Nat × Nat) := 
 /-! ## One read port: the per-program rule -/
 
 private def singlePortDriver : Driver Storage.SinglePort.State :=
-  ⟨Storage.SinglePort.next, Storage.SinglePort.component.observe, (·.machine), Storage.SinglePort.branch⟩
+  { next := Storage.SinglePort.next, observe := Storage.SinglePort.component.observe, machine := (·.machine),
+    branch := Storage.FetchPolicy.branch
+    normalize := fun s =>
+      let taken := s.policy.fetched true
+      let untaken := s.policy.fetched false
+      {s with policy := {s.policy with fetched := fun b => if b then taken else untaken}} }
+
+/-- The decoupled organization with the start word sharing port 0 on commit edges. -/
+private def twoPortDriver : Driver (Storage.FetchPolicy.State Storage.Decoupled.Registers) :=
+  { next := Storage.FetchPolicy.next Storage.TwoPort.policy
+    observe := (Storage.FetchPolicy.component Storage.TwoPort.policy).observe
+    machine := (·.machine), branch := Storage.FetchPolicy.branch
+    normalize := fun s =>
+      let taken := s.policy.fetched true
+      let untaken := s.policy.fetched false
+      {s with policy := {s.policy with fetched := fun b => if b then taken else untaken}} }
 
 /-- Words of a program's upload that the one-port machine's rule rejects: branching
 `checked` records with a zero duration field. -/
@@ -257,7 +277,7 @@ zero-duration branch is not taken and diverges on the edge it is. -/
 private def unreadyDiverges : IO Unit := do
   let write := Execution.widenProgram (Compile.I2C.program ⟨0, 7⟩ ⟨0x53, 0xa6⟩)
   let mut pair : Pair Storage.SinglePort.State :=
-    ⟨initialMachine, ⟨initialMachine, 0, fun _ => 0, 0, false⟩, 0, 0, 0⟩
+    ⟨initialMachine, ⟨initialMachine, 0, ⟨fun _ => 0, 0, false⟩⟩, 0, 0, 0⟩
   pair ← stepEnsure singlePortDriver pair {init := true} "initialize"
   pair ← load singlePortDriver pair (← upload write)
   pair ← stepEnsure singlePortDriver pair {command := 5} "start"
@@ -273,7 +293,8 @@ def main : IO Unit := do
   let (edges, transactions, branches) ← machines prefetchDriver ⟨initialMachine, 0, fun _ => 0⟩
   let (edges', transactions', branches') ← machines decoupledDriver ⟨initialMachine, 0, fun _ => 0, 0⟩
   let (edges'', transactions'', branches'') ←
-    machines singlePortDriver ⟨initialMachine, 0, fun _ => 0, 0, false⟩
+    machines singlePortDriver ⟨initialMachine, 0, ⟨fun _ => 0, 0, false⟩⟩
+  let (edges2, transactions2, branches2) ← machines twoPortDriver ⟨initialMachine, 0, ⟨fun _ => 0, 0⟩⟩
   let (ready, receiver) ← readiness
   unreadyDiverges
-  IO.println s!"Memory: {n} requests match latency 0 and 1; prefetch machine matched the reference on {edges} edges, {transactions} closed-loop transactions, {branches} taken branches; decoupled machine on {edges'} edges, {transactions'} transactions, {branches'} taken branches; one-port machine on {edges''} edges, {transactions''} transactions, {branches''} taken branches; {ready} fixture programs ready, the UART receiver has {receiver} unready words, and the one-port machine diverges on an unready taken branch."
+  IO.println s!"Memory: {n} requests match latency 0 and 1; prefetch machine matched the reference on {edges} edges, {transactions} closed-loop transactions, {branches} taken branches; decoupled machine on {edges'} edges, {transactions'} transactions, {branches'} taken branches; one-port machine on {edges''} edges, {transactions''} transactions, {branches''} taken branches; two-port machine on {edges2} edges, {transactions2} transactions, {branches2} taken branches; {ready} fixture programs ready, the UART receiver has {receiver} unready words, and the one-port machine diverges on an unready taken branch."

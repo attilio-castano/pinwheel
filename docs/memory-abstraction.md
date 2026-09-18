@@ -2,11 +2,13 @@
 
 This record owns the memory contract, its two structural implementations, the
 view of the existing storage through it, the prefetch machine — the reference
-machine written against a memory of latency one — the decoupled machine with
-its structural backend and evidence, and the one-port machine with its
-per-program rule. The contract and the machines are Lean proofs and one
-executable suite; the decoupled backend is emitted and checked with the pinned
-tools (`check-prefetch.py`) and compared once after routing. The
+machine written against a memory of latency one — and the theory of **fetch
+organizations** that grew out of it: a policy with a number of read ports as a
+parameter, its correctness proved once, and the decoupled (three-port), two-port
+and one-port organizations as instances, two of them with structural backends.
+The contract, the theory and the machines are Lean proofs and one executable
+suite; the backends are emitted and checked with the pinned tools
+(`check-prefetch.py`), and the decoupled one was compared once after routing. The
 [storage study](storage-study.md) owns the implementation candidates, the
 [primitive review](storage-primitives.md) the macro and latch facts, and
 [research status](research/status.md) allocation.
@@ -144,16 +146,19 @@ are irrelevant and may be anything. The `start` edge, on which nothing has been
 fetched, is served by a **start-word register** loaded on commit with word 0 of
 the newly selected bank.
 
-`Storage/Decoupled.lean` is that machine. Its invariant asks the fetched words
-to be the canonical candidates only while running, and the start word to be
-word 0 while an image is committed. The crux is `step_structure`: on an edge
+`Storage/Dispatch.lean` holds what the scheduler decides on an edge, separated
+from the decode of the word it enters. The crux is `step_structure`: on an edge
 that keeps the machine running, a dispatch enters the successor at the target
 with a mode of 3 exactly for a `checked` word, and no dispatch keeps the address
-and the mode; `candidate_correct` then says the decoupled candidates equal the
-canonical ones of the next state whenever the machine keeps running.
-`refinement`, `trace_correct` and `initialize_valid` are as for the prefetch
-machine. The decision and the candidates also exist as scheduler expressions
-(`dispatchingExpr`, `candidateExpr`, with `_correct` lemmas) for the netlist.
+and the mode; `candidate_correct` then says the decision-based candidates equal
+the canonical ones of the next state whenever the machine keeps running. The
+decision and the candidates also exist as scheduler expressions
+(`dispatchingExpr`, `candidateExpr` — an entered and a held half — with
+`_correct` lemmas) for netlists. `Storage/Decoupled.lean` is the organization
+itself: its invariant asks the fetched words to be the canonical candidates only
+while running, and the start word to be word 0 while an image is committed. Its
+refinement of the reference is an instance of the
+[generic theory](#fetch-organizations-as-a-parameter) below.
 
 `Storage/PrefetchBackend.lean` is its netlist on the selected general backend:
 the same dense dictionaries, index maps, loader and scheduler, plus two
@@ -242,18 +247,87 @@ tree, a larger floorplan returns room — not the RTL's depth. The mid-PnR
 typical setup slack of attempt 2 after repair (+5.92 ns) is a placement
 estimate at one corner and is not used.
 
-## One read port: the per-program rule
+## Fetch organizations as a parameter
+
+Three machines had been proved against the same reference by the same chain of
+lemmas, differing in three places: where the read addresses come from, what is
+read on which edge, and why what the scheduler consumes is something already
+read. `Storage/FetchPolicy.lean` makes that the definition.
+
+A `Policy p σ` has registers `σ` and `p` read ports. It supplies the word fed to
+the scheduler (`fed`, from the scheduler's inputs, its state and the policy's
+registers — never the memory: that is latency one), the `p` addresses of an edge
+(`address`) and its register update given the `p` words behind them (`step`).
+The generic machine keeps the reference's control, core, memory and cached word,
+and issues `request` — no write, the policy's addresses — to the selected bank's
+composite memory; `reads` are its read ports (`Memory.Contents.reads`). The
+number of read trees is `p` by construction: a policy cannot read what it has
+not put on a port.
+
+A policy is correct (`Correct`) when it supplies an invariant, possibly a rule on
+inputs, and three facts:
+
+| Obligation | Statement |
+| --- | --- |
+| `covers` | on a dispatching edge, with an image committed and no commit, the fed word is the word the reference reads |
+| `preserved` | the invariant survives an edge whose input satisfies the rule |
+| `initial` | initialization establishes the invariant |
+
+From these, once: the scheduler steps as the reference's (`step_eq` — a dispatch
+is covered, and without one the successor is not consulted,
+`Dispatch.step_successor_irrelevant`), control, core and memory follow the
+reference (`machine_next`), the cached word stays valid (`cache_valid_next`),
+and the machine refines the atomic reference edge for edge on every history
+satisfying the rule (`ruleRefinement`, `trace_correct`; `refinement` when there
+is no rule). `Hardware/TimedRule.lean` is the general notion: a
+`RuleRefinement` asks the rule of the step only — observations agree whenever
+states are related — composes below an unconditional refinement (`transRule`),
+and gives trace and pair-trace equality on histories whose consumed inputs
+satisfy the rule.
+
+Two-candidate policies share more. `canonical m current b` is the word consumed
+at the next dispatch if the branch bit is `b` (word 0 at rest), and
+`reference_word` says the reference reads `canonical … (branch bit)`; `read_next`
+says a read at a decision-based candidate is the next state's canonical word,
+`stay` that the canonical words do not move without a dispatch, and
+`start_word_next` carries a start word loaded on commit. A rule on program
+words is carried by the loader, generically in the rule (`Storage/ImageRule.lean`:
+every word of a committed image, and every word pushed so far, satisfies it).
+
+| Organization | Ports | Rule | Obligations | Backend |
+| --- | ---: | --- | --- | --- |
+| `Decoupled` | 3: both candidates, word 0 | none | about 40 lines (the hand-written proof was about 190) | `PrefetchBackend`, routed attempts above |
+| `TwoPort` | 2: word 0 shares port 0 on commit edges | none | 63-line file; `covers` is `Decoupled`'s | none yet |
+| `SinglePort` | 1: untaken on entry, taken on the next edge, word 0 on commit | `Ready` | below | `OnePortBackend`, below |
+
+Making the ports a parameter showed what the routed backend spends: its start
+word is a *third* read tree. A commit edge resets the scheduler, so nothing read
+on it is consumed as a candidate, and the start word can use a candidate's port
+then; `TwoPort` is that organization, written as the test of the abstraction — a
+new organization should be an instantiation, not a rewrite. `Decoupled` keeps
+its flat `State` and `next`, the form its backend is proved against;
+`next_toPolicy` identifies them with the generic machine, and the emitted
+backend is byte-identical to the validated one. `test/Memory.lean` runs all four
+machines on the closed-loop scenario: 5,161 edges, 12 transactions, 24 taken
+branches each, no difference.
+
+The theory's edge: it is edge-for-edge. An organization that adds a cycle — a
+stall on a taken branch — is not an instance; `Timed.Refinement` has no
+stuttering. A memory of latency two is a different `fed` discipline, not
+attempted.
+
+### One read port: the per-program rule
 
 The two candidates of a word differ only for a branching `checked` record — a
 record with mode 3 whose finish field is neither "continue" nor "always yes"
-(`candidate_nonbranching`). So one port can serve both, on two edges:
+(`Dispatch.candidate_nonbranching`). So one port can serve both, on two edges:
 `Storage/SinglePort.lean` reads the untaken candidate on the edge that enters a
 word and the taken one on the following edge, unless that edge dispatches
-again (`readTaken`, the `second` flag). The fed successor is the taken word only
-for a branching current word with the branch bit set (`choose`); commit, start
-word and the rest are the decoupled machine's.
+again (`readTaken`, the `second` flag), and word 0 on a commit edge. The fed
+successor is the taken word only for a branching current word with the branch
+bit set (`choose`).
 
-What the machine cannot do is serve a branch on the edge right after entry:
+What the organization cannot do is serve a branch on the edge right after entry:
 the taken word is being read on that edge. A branching `checked` record with a
 zero duration field could dispatch exactly then. The rule is on programs, not on
 the machine:
@@ -262,40 +336,100 @@ the machine:
 Ready word := ¬(kind = 2 ∧ finish = 2 ∧ duration = 0)
 ```
 
-checkable per word. `ReadyImages` says every word pushed so far is ready
-(`PrefixReady`, kept by `ready_push`, `ready_commit`, `ready_next`), and
-`read_ready` that every read of a committed image returns a ready word. The
-invariant `Prefetched` holds the untaken word always, the taken word once
-`second` is false, and when `second` is true and the current word is branching,
-its duration has not been counted down, so it does not dispatch
-(`branching_dispatch`). `valid_next` needs `Ready i.data` for the edge, and
-`trace_correct` gives the edge-for-edge trace equality of the reference on every
-input history whose data words are all ready — a refinement conditional on the
-inputs, so it is stated on the traces (`trace_cons`) rather than as a
-`Timed.Refinement`. The hypothesis is on every input word, addresses included;
-that is stronger than the machine needs and the simplest thing to check, and
+checkable per word, the policy's `Rule`, carried as `ImageRule.Images Ready`.
+The invariant holds the untaken word always, the taken word once `second` is
+false, and when `second` is true and the current word is branching, its duration
+has not been counted down, so it does not dispatch (`Dispatch.branching_dispatch`,
+`dispatch_entered`). `covers` is where the rule is used, and nowhere else: a
+dispatch out of a branching word happens with its taken word fetched. The
+hypothesis of `trace_correct` is on every input word, addresses included; that
+is stronger than the machine needs and the simplest thing to check, and
 addresses, the idle word and the last-address word zero-extend below the finish
 field, so only records can fail it.
 
 Per program (`test/Memory.lean`, `readiness`): the I²C write and register read
 at four-cycle phases, UART and SPI have no unready word; the I²C write at
 one-cycle phases (`⟨0, 7⟩`) has one, the read three, the UART receiver
-(`Compile.UARTRx.program`, any bit period) two. The one-port machine runs the
-full closed-loop scenario with no difference — 5,161 edges, 12 transactions, 24
-taken branches — and on the one-cycle-phase write it agrees while the address is
-acknowledged and diverges on the edge the address NACK takes the unready branch
-(`unreadyDiverges`).
+(`Compile.UARTRx.program`, any bit period) two. On the one-cycle-phase write the
+machine agrees while the address is acknowledged and diverges on the edge the
+address NACK takes the unready branch (`unreadyDiverges`). The rule is a
+compile-time obligation: the compiled I²C programs satisfy it whenever a phase
+lasts at least two cycles, and the receiver's two zero-duration branching
+records are a compiler question, not a machine one — or the loader could reject
+unready words at push, which would make the refinement unconditional again.
 
-What it buys: one read tree instead of two. The decoupled backend's extra area
-is mostly the second read tree (the mapped table above); a one-port structural
-backend has not been built, so no level or area figure is claimed for it — the
-port's address would be a choice between the two candidates by `second`, one
-more level on the candidate path. The rule is a compile-time obligation: the
-compiled I²C programs satisfy it whenever a phase lasts at least two cycles, and
-the receiver's two zero-duration branching records are a compiler question, not
-a machine one.
+### The one-port backend
+
+`Storage/OnePortBackend.lean` is the netlist on the selected general backend:
+two fetched-word registers, the start word and the `second` flag (611 fields,
+6,426 bits) behind **one** composite read of the selected bank. Three shared
+wires: the fed successor, the port's address, and the word behind it, which
+three registers load under their enables. The address is the entered word's
+untaken candidate on a dispatch; else word 0 on a commit; else the current
+word's taken candidate on the edge after an entry and its untaken one otherwise
+— a commit edge does not dispatch (`FetchPolicy.dispatch_no_commit`), so the
+dispatch decision, the deepest select, comes last and the address is no deeper
+than the decoupled candidates. `netlist_next`, `netlist_output` and
+`reference_next` are as for the decoupled backend; `completeRefinement` is a
+`RuleRefinement`, and `trace_correct` reaches the atomic reference with the
+capacity contract on ready programs. `OnePortEmit.lean` emits it alone and
+behind the pin sampler; `sampled_trace_correct` uses `PinSampler.delayed_data` —
+the pipeline never touches host ports, so the delayed history is as ready as the
+original.
+
+`structure_report`, variant `oneport` (`build/structure/oneport-01`),
+`Cost.gates`, register launch family:
+
+| Endpoint | Composed control | Decoupled, 3 ports | One port |
+| --- | ---: | ---: | ---: |
+| Core state | 91 | 59 | 60 |
+| Cached word | 101 | 38 | 38 |
+| Candidate / port address | — | 35 | 35 |
+| Fetched words | — | 63 | 65 |
+| Start word | — | 56 | 65 |
+| Deepest register endpoint | **101** | **63** | **65** |
+
+The two levels are the enable muxes of the word registers. The start word moves
+to the port's depth, where nothing waits for it.
+
+`check-prefetch.py --variant oneport`, receipt `build/oneport/oneport-03/report.json`,
+identities in `physical/experiments/oneport-results.json`: RTL/generic-gate
+equivalence of both emissions, 6,508 and 6,506 points, with three-step induction
+— the untaken-word register can skip a load for one edge, never two in a row,
+and two steps leave 107 points unproven; the independent oracle on both
+emissions, 29,898 edges each, in *ready mode* — the same generator with the UART
+receiver exercise replaced by a register read and the terminal-capture branch
+record given one cycle, and a check that no pushed word violates the rule. Two
+rejections are required: the sampled RTL with unshifted pins, and the inner RTL
+on the **unrestricted** vectors, whose programs include zero-duration branching
+records — the rule is not vacuous at the RTL level.
+
+Mapped screen, same recipe:
+
+| Typical corner | Sampled candidate | Decoupled, 3 ports, sampled | One port, sampled |
+| --- | ---: | ---: | ---: |
+| Standard-cell area | 547,995 µm² | 654,086 µm² (+19.4%) | 576,805 µm² (**+5.3%**) |
+| ABC combinational delay | 6,803 ps | 5,815 ps (−14.5%) | 5,272 ps (**−22.5%**) |
+| Flip-flops / cells | 6,236 / 27,306 | 6,419 / 33,684 | 6,420 / 30,690 |
+
+Slow corner: 9,945 → 8,343 ps (−16.1%). Two read trees are about 77,000 µm²; what
+remains over the candidate is the three word registers, the address select and
+the enables. Mapped figures are a screen: no placement, no wires. Under the
+clock-gating overlay the sampled candidate stood at 67% utilization after
+repair; five percent more cells would put this backend near 71%, inside the
+range this flow has placed and routed (67–81%), where the decoupled backend's
+81% before repair was not. No routed run of this backend exists yet.
 
 ## What the abstraction buys
+
+A fetch organization is now a `Policy` with three obligations, proved against
+a machine that is proved once: the decoupled organization's obligations are
+about forty lines where the hand-written refinement was about a hundred and
+ninety, and a new organization was a sixty-line file. The read ports are a
+parameter the policy cannot cheat, so area accounting starts in Lean — which is
+how the third read tree of the routed backend was found — and a condition on
+programs has one place where it is used (`covers`) and one generic carrier
+(`ImageRule`).
 
 A storage implementation is now a refinement of `spec`, proved once, generic in
 size, and the machine's correctness against the reference is proved once against
@@ -317,11 +451,12 @@ the next-address decode, and the dictionary needs two read ports.
   limit at 81% — so the levels result has no routed confirmation; the
   comparison is negative by capacity at the diagnostic floorplan, not a timing
   result.
-- The one-port machine is a Lean machine and proof; it has no structural backend
-  or netlist yet. Its refinement is conditional on the `Ready` rule for every
+- The one-port backend is proved, emitted, checked at RTL level and mapped; it
+  has no routed run. Its refinement is conditional on the `Ready` rule for every
   pushed word: programs that violate it — the UART receiver as compiled — are
-  outside the claim, and the rule is checked per program, not enforced by the
-  loader.
+  outside the claim, the rule is checked per program, not enforced by the
+  loader, and its RTL regression runs on ready-mode vectors. `TwoPort` has no
+  backend. The fetch-policy theory is edge-for-edge and latency one.
 - The contract has no reset, no read enable and no write-first option. Each
   would be an addition, not a change.
 - The composite read is latency one only if the address map or the dictionary
@@ -332,8 +467,9 @@ the next-address decode, and the dictionary needs two read ports.
 ## Reproduction
 
 ```sh
-lake build Pinwheel prefetch_emit structure_report
+lake build Pinwheel prefetch_emit oneport_emit structure_report
 lake env lean -DwarningAsError=true --run test/Memory.lean
-.lake/build/bin/structure_report build/structure/NAME      # prefetch.json
-python3 scripts/check-prefetch.py --tag NAME               # needs the pinned hardware tools
+.lake/build/bin/structure_report build/structure/NAME          # prefetch.json, oneport.json
+python3 scripts/check-prefetch.py --tag NAME                    # decoupled backend; needs the pinned hardware tools
+python3 scripts/check-prefetch.py --variant oneport --tag NAME  # one-port backend, ready-mode vectors
 ```

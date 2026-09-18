@@ -125,9 +125,9 @@ theorem sched_correct (e : Reactive.E w) (i : Machine.Inputs) (s : State) :
   simp only [sched, Expr.eval_bind, feed1_correct, coreReg1_correct]
 
 theorem candidate1_correct (i : Machine.Inputs) (s : State) (b : Bool) :
-    (sched (Storage.Decoupled.candidateExpr b)).eval (values1 i s) s.values =
-      Storage.Decoupled.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core b := by
-  simp only [sched_correct, Storage.Decoupled.candidateExpr_correct]
+    (sched (Storage.Dispatch.candidateExpr b)).eval (values1 i s) s.values =
+      Storage.Dispatch.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core b := by
+  simp only [sched_correct, Storage.Dispatch.candidateExpr_correct]
 
 /-! ### Levels 2 and 3: the candidate wires, then the body -/
 
@@ -140,7 +140,7 @@ def leaf (e : E w) : Expr W3 Register w := fresh (fresh (fresh e))
 
 /-- The cached word loads the fed successor on a dispatch or at rest. -/
 def enable3 : Expr W3 Register 1 :=
-  Execution.bor (fresh (fresh (sched Storage.Decoupled.dispatchingExpr))) (.inv (leaf running))
+  Execution.bor (fresh (fresh (sched Storage.Dispatch.dispatchingExpr))) (.inv (leaf running))
 
 /-- The selected bank's composite read, at a wire-supplied or literal address. -/
 def read3 (address : Expr W3 Register 8) : Expr W3 Register 64 :=
@@ -160,13 +160,13 @@ def body : Circuit W3 Register Machine.Output where
     | .control o => leaf (inner (Backend.circuit.output (.control o)))
 
 def netlist : Netlist Register Machine.Output Machine.Input :=
-  .letWire successor (.letWire (sched (Storage.Decoupled.candidateExpr true))
-    (.letWire (fresh (sched (Storage.Decoupled.candidateExpr false))) (.finish body)))
+  .letWire successor (.letWire (sched (Storage.Dispatch.candidateExpr true))
+    (.letWire (fresh (sched (Storage.Dispatch.candidateExpr false))) (.finish body)))
 
 def values3 (i : Machine.Inputs) (s : State) : Values W3 :=
   WithWire.values (WithWire.values (values1 i s)
-      ((sched (Storage.Decoupled.candidateExpr true)).eval (values1 i s) s.values))
-    ((sched (Storage.Decoupled.candidateExpr false)).eval (values1 i s) s.values)
+      ((sched (Storage.Dispatch.candidateExpr true)).eval (values1 i s) s.values))
+    ((sched (Storage.Dispatch.candidateExpr false)).eval (values1 i s) s.values)
 
 theorem leaf_correct (e : E w) (i : Machine.Inputs) (s : State) :
     (leaf e).eval (values3 i s) s.values = e.eval i.values s.values := by
@@ -198,12 +198,12 @@ theorem wire3_successor (i : Machine.Inputs) (s : State) :
 
 theorem wire3_taken (i : Machine.Inputs) (s : State) :
     values3 i s (.input .wire) =
-      Storage.Decoupled.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core true := by
+      Storage.Dispatch.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core true := by
   simp only [values3, WithWire.values, candidate1_correct]
 
 theorem wire3_untaken (i : Machine.Inputs) (s : State) :
     values3 i s .wire =
-      Storage.Decoupled.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core false := by
+      Storage.Dispatch.candidate (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core false := by
   simp only [values3, WithWire.values, candidate1_correct]
 
 theorem running3 (i : Machine.Inputs) (s : State) :
@@ -211,17 +211,17 @@ theorem running3 (i : Machine.Inputs) (s : State) :
   rw [leaf_correct, running_correct]
 
 theorem dispatch3 (i : Machine.Inputs) (s : State) :
-    (fresh (fresh (sched Storage.Decoupled.dispatchingExpr))).eval (values3 i s) s.values =
-      BitVec.ofBool (Storage.Decoupled.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
+    (fresh (fresh (sched Storage.Dispatch.dispatchingExpr))).eval (values3 i s) s.values =
+      BitVec.ofBool (Storage.Dispatch.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
         s.reference.machine.core) := by
-  simp only [values3, fresh_correct, sched_correct, Storage.Decoupled.dispatching_correct]
+  simp only [values3, fresh_correct, sched_correct, Storage.Dispatch.dispatching_correct]
 
 theorem enable3_correct (i : Machine.Inputs) (s : State) :
     enable3.eval (values3 i s) s.values =
-      BitVec.ofBool (Storage.Decoupled.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
+      BitVec.ofBool (Storage.Dispatch.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
         s.reference.machine.core || !Reactive.runningValue s.reference.machine.core) := by
   simp only [enable3, Execution.bor, Expr.eval, running3, dispatch3]
-  cases Storage.Decoupled.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core <;>
+  cases Storage.Dispatch.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference) s.reference.machine.core <;>
     cases Reactive.runningValue s.reference.machine.core <;> decide
 
 theorem netlist_step (i : Machine.Inputs) (s : State) (r : Register w) :
@@ -251,7 +251,7 @@ theorem netlist_next (i : Machine.Inputs) (s : State) (r : Register w) :
     | current =>
       simp only [Circuit.step, body, Expr.eval, enable3_correct, wire3_successor, State.values, next,
         Backend.State.values, Storage.Decoupled.next]
-      cases Storage.Decoupled.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
+      cases Storage.Dispatch.dispatching (Storage.Decoupled.feed (adapt i s.backend) s.reference)
           s.reference.machine.core <;>
         cases Reactive.runningValue s.reference.machine.core <;> simp <;> rfl
     | control p =>

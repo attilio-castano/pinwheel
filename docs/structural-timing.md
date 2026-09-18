@@ -134,7 +134,11 @@ Stages of the successor loop, gate levels from register outputs, command split:
 - The [decoupled prefetch machine](memory-abstraction.md#structural-levels)
   reorders this loop: the fetched words become registers, the branch selection
   moves after them, and the next addresses come from the dispatch decision. Its
-  deepest register endpoint is 63 levels, the cached word 38.
+  deepest register endpoint is 63 levels, the cached word 38. The
+  [one-port backend](memory-abstraction.md#the-one-port-backend) keeps that
+  shape with a single read: 65 levels, the port's address at 35. Levels did not
+  see what decided between them — area: the three-port backend did not fit the
+  floorplan, and the mapped screen, not the level model, is the area oracle.
 
 ## Boundary and use
 

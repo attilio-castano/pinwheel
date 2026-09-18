@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import runpy
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -19,6 +20,10 @@ def main():
     p.add_argument('--output', type=Path, help='Separate result directory for an explicit candidate')
     p.add_argument('--pin-delay', type=int, default=0,
                    help='Input-pipeline depth: present each incoming value this many edges before the oracle consumes it')
+    p.add_argument('--ready', action='store_true',
+                   help='One-port rule (no branching checked record with a zero duration): regenerate the loader '
+                        'vectors without the UART receiver exercise, whose compiled program violates it, and give '
+                        'the terminal-capture branch record one cycle')
     a = p.parse_args()
     out = (a.output or BASE/a.name).resolve()
     out.mkdir(parents=True, exist_ok=True)
@@ -40,6 +45,23 @@ def main():
         vectors=(out/'vectors.txt').read_text()
     else:
         ns = runpy.run_path(str(ROOT/'scripts/loader-vectors.py'))
+        base_vectors = ROOT/'build/loader/vectors.txt'
+        if a.ready:
+            # Same generator and oracle; only the receiver exercise is left out.
+            g = ns['generate'].__globals__
+            ready_dir = out/'loader-ready'
+            ready_dir.mkdir(exist_ok=True)
+            shutil.copy(ROOT/'build/loader/images.txt', ready_dir/'images.txt')
+            g['OUT'] = ready_dir
+            def in_place_of_receiver(adapter, images):
+                # The generator expects captured samples afterwards; a register read leaves them.
+                adapter.load('i2c-read-in-place-of-uart-rx', *images['i2c-read'])
+                g['core']['i2c'](adapter, True, 0x96)
+                return 0
+            g['core']['uart_rx']['exercise'] = in_place_of_receiver
+            ns['generate']()
+            base_vectors = ready_dir/'vectors.txt'
+        branch_cycles = 1 if a.ready else 0
         class Small(ns['Atomic']):
             def __init__(self):
                 super().__init__()
@@ -59,10 +81,11 @@ def main():
             m.edge(incoming=3)
             assert m.s[0] == 3 and m.s[1] == 0
         m.edge(reset=1)
-        words = [pack(dict(kind=2,terminal=63,finish=2,sample=15,yes=1,no=2)), pack(dict(kind=0,levels=5,enabled=7,entry=61)), 4]
+        words = [pack(dict(kind=2,terminal=63,finish=2,sample=15,yes=1,no=2,duration=branch_cycles)), pack(dict(kind=0,levels=5,enabled=7,entry=61)), 4]
         m.load('terminal-capture-branch-overwrite', words, 2)
         for incoming in [0,2]:
-            m.edge(command=5); m.edge(incoming=incoming)
+            m.edge(command=5)
+            for _ in range(1+branch_cycles): m.edge(incoming=incoming)
             if incoming: assert m.s[1] == 1 and m.s[6] == 0 and m.s[4] == 5
             else: assert m.s[0] == 5
             m.edge(); m.edge(reset=1)
@@ -87,7 +110,12 @@ def main():
                 else: raise AssertionError('full-dictionary program did not finish')
         else:
             m.load('full-capacity-retained', [pack(dict(kind=0,duration=k)) for k in range(33)]+[4], 33)
-        vectors = (ROOT/'build/loader/vectors.txt').read_text()+''.join(' '.join(map(str,row))+'\n' for row in m.rows)
+        vectors = base_vectors.read_text()+''.join(' '.join(map(str,row))+'\n' for row in m.rows)
+        if a.ready:
+            unready = [row for row in (line.split() for line in vectors.splitlines())
+                       if int(row[2]) == 2 and int(row[3]) & 7 == 2 and (int(row[3]) >> 41) & 3 == 2
+                       and (int(row[3]) >> 9) & 255 == 0]
+            if unready: raise RuntimeError(f'{len(unready)} pushed words violate the one-port rule')
         if a.pin_delay:
             # The oracle keeps the engine-side history; only the pin column moves earlier.
             rows = [line.split() for line in vectors.splitlines()]

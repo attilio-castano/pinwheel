@@ -41,10 +41,17 @@ import Pinwheel.Hardware.Memory.Flops
 import Pinwheel.Hardware.Memory.Registered
 import Pinwheel.Hardware.Storage.MemoryView
 import Pinwheel.Hardware.Storage.Prefetch
+import Pinwheel.Hardware.TimedRule
+import Pinwheel.Hardware.Storage.Dispatch
+import Pinwheel.Hardware.Storage.ImageRule
+import Pinwheel.Hardware.Storage.FetchPolicy
 import Pinwheel.Hardware.Storage.Decoupled
 import Pinwheel.Hardware.Storage.PrefetchBackend
 import Pinwheel.Hardware.Storage.PrefetchEmit
 import Pinwheel.Hardware.Storage.SinglePort
+import Pinwheel.Hardware.Storage.TwoPort
+import Pinwheel.Hardware.Storage.OnePortBackend
+import Pinwheel.Hardware.Storage.OnePortEmit
 import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency
 import Pinwheel.Compile.SPILatency
