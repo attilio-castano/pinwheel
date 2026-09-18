@@ -277,25 +277,54 @@ backend, or a floorplan with room).
 policy with `p` read ports and its own registers, fed from registers only, with
 three obligations (`covers`, `preserved`, `initial`) from which the refinement
 of the atomic reference is proved once, under an optional rule on inputs
-(`Timed.RuleRefinement`). The decoupled organization is the three-port instance
-(its start word is a third read tree, which the port parameter made visible),
-`TwoPort` shares the start word with a candidate port on commit edges, and the
-**one-port organization** (`Storage/SinglePort.lean`) reads the untaken
-candidate on the entry edge, the taken one on the next and word 0 on a commit,
-under a per-program rule (`Ready`: no branching `checked` record with a zero
-duration). The I²C write and read at four-cycle phases, UART and SPI satisfy it;
-one-cycle-phase I²C and the UART receiver do not. All four machines match the
-reference closed-loop on 5,161 edges, and the one-port machine diverges exactly
-on an unready taken branch. The **one-port backend**
-(`Storage/OnePortBackend.lean`, 611 fields, 6,426 bits, one composite read) is
-proved against the reference on ready programs, alone and behind the pin
-sampler; its deepest register endpoint is 65 gate levels (composed 101,
-decoupled 63). The emitted RTL passes gate equivalence (three-step induction)
-and the independent oracle in ready mode (29,898 edges), and is rejected on the
-unrestricted vectors as the rule predicts. Mapped behind the sampler it is
-576,805 µm², **+5.3%** over the sampled candidate (decoupled: +19.4%), with
-**22.5%** less combinational delay at the typical corner and 16.1% less at the
-slow one. No routed run yet.
+(`Timed.RuleRefinement`). The backend is parametric in the policy too
+(`Storage/PolicyBackend.lean`): the general backend with the successor as a
+wire input is proved once, and a policy contributes its fed word, two wires and
+its registers' updates (`Realization`). Three organizations are instances, each
+with a proved, emitted and mapped backend; re-basing the two existing backends
+halved them and left their emitted RTL byte-identical:
+
+| Behind the sampler | Ports | Rule | Deepest endpoint | Mapped area | Typical ABC delay |
+| --- | ---: | --- | ---: | ---: | ---: |
+| Sampled candidate (same-edge lookup) | 1, combinational | none | 101 levels | 547,995 µm² | 6,803 ps |
+| Decoupled | 3 | none | 63 | +19.4% | −14.5% |
+| Two ports | 2 | none | 63 | +12.8% | −26.1% |
+| One port | 1 | `Ready` | 65 | **+5.3%** | −22.5% |
+
+The port parameter made the decoupled backend's third read tree (its start
+word) visible; the other two share a candidate port on commit edges. The
+one-port rule — no branching `checked` record with a zero duration — is asked of
+push commands only, can be **enforced** by a push filter exactly like the
+capacity check (`Storage/Admission.lean`: the refinement is then unconditional
+against the reference behind the same filter; the capacity check is such a
+filter by definition), and is **proved of the compilers**
+(`Storage/Readiness.lean`): the I²C write and register read are ready for every
+request whenever a phase lasts at least two cycles, UART and SPI transmission
+always, and the UART receiver never — it polls with one-cycle branching records.
+All four machines match the reference closed-loop on 5,161 edges; the one-port
+RTL passes the independent oracle in ready mode and is rejected on the
+unrestricted vectors, the two-port RTL passes the unrestricted ones. The
+gate-equivalence harness now re-exposes registers that synthesis narrows, which
+name matching had been leaving out; `prefetch-05` repeats the decoupled check
+with every register matched.
+
+**Routed, one run** (`oneport-sampled-01`, sampler plus clock-gating overlay):
+the one-port backend places and routes at 69.2% utilization with zero routing
+violations, hold met at all corners, and Magic DRC, LVS and the antenna check
+passing — the first run of this design to finish its layout checks. Slow setup is **−0.187 ns** (9
+endpoints) against **−2.251 ns** (40) for the same-overlay control
+`combined-03`; the register-launched family — the recurrence this work attacks —
+goes from −2.054 ns to **−0.053 ns**, and the command-launched clock-gate enable
+path that limited `combined-03` is met at +0.473 ns, as its fall from 99 gate
+levels to 36 predicted. The worst register path ends in the port's word
+registers, the endpoint the level model ranks deepest. The slow corner is not
+closed: all nine violating endpoints launch from the loader's data port, which
+reaches the port's address through the capacity check on the command — the
+dependency the command-split form removes and `Backend.Policy.core` does not
+yet apply. Against the ungated sampled candidate (+0.090 ns at 81% utilization)
+this design is 0.28 ns short with 14.7% less cell area. One run; 0.6 ns
+run-to-run variation has been observed under this flow.
+
 
 ## Next discriminators
 
@@ -322,21 +351,19 @@ slow one. No routed run yet.
    unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
    dependency visible when interpreting the worst path. The current completed
    batch ends at mapping; the next physical allocation remains a separate step.
-3. The decoupled prefetch backend did not fit the diagnostic floorplan
-   ([memory abstraction](../memory-abstraction.md#routed-comparison)). The
-   one-port backend passes the mapped gate (+5.3% area, −22.5% typical ABC
-   delay): one routed comparison behind the sampler under the clock-gating
-   overlay, against `combined-03`, is the next physical discriminator and needs
-   its own allocation. It tests two predictions at once: that the shorter
-   recurrence survives routing, and that the cached-word clock-gate enable — the
-   path that missed by 2.054 ns in `combined-03` — is no longer limiting, since
-   that enable falls from 99 gate levels to 36. In Lean, the repetition between
-   `PrefetchBackend` and `OnePortBackend` is now clear enough to factor a
-   policy-parametric backend; a `TwoPort` backend (no program rule, one read
-   tree more) would then be a measurement rather than an estimate. If the
-   one-port organization is adopted, the UART receiver's two zero-duration
-   branching records need a compiler change or loader-side rejection of unready
-   words.
+3. The one-port backend routed at the diagnostic floorplan and moved the
+   register-launched family from −2.054 ns to −0.053 ns under the clock-gating
+   overlay ([memory abstraction](../memory-abstraction.md#the-one-port-backend-routed));
+   the slow corner is limited by the loader's data port at −0.187 ns. Next in
+   Lean: apply the command-split form inside `Backend.Policy.core`, so that
+   predicates the capacity check cannot change decode the raw command and the
+   data port leaves the port-address path; it is proved equal by
+   `Small.adapt_command_predicate`, and all three policy backends inherit it.
+   Then, each needing its own allocation: one routed repeat of the one-port
+   backend with that change, and one routed run of the two-port backend
+   (+12.8% mapped area, no program rule, which keeps the UART receiver). If the
+   one-port organization is adopted, the receiver needs a two-cycle poll or the
+   readiness filter beside the capacity gate.
 4. Decide whether SPI keeps the `d + tco ≤ halfCycles` rate condition of
    [input latency](../input-latency.md) or the compiler captures `d` cycles later,
    and whether the compilers should reject a `Config` that violates a declared

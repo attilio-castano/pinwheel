@@ -5,7 +5,8 @@ Lean proves the netlist refines the atomic reference. This runner emits it,
 exports RTL, proves RTL/generic-gate equivalence, runs the independent
 atomic-loader oracle against both emissions (pins presented two edges early for
 the sampled one), maps both corners, and records a receipt with the RTL
-identities. Variants: `prefetch` (decoupled, three read ports) and `oneport`
+identities. Variants: `prefetch` (decoupled, three read ports), `twoport` (the start word
+shares a candidate port on commit edges) and `oneport`
 (one read port, under the per-program readiness rule: the oracle's vectors are
 then generated without the UART receiver exercise, and the unrestricted vectors
 must be rejected).
@@ -26,6 +27,10 @@ VARIANTS = {
                      fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6419), points=(6350, 6354), induction=2,
                      lean="Decoupled (FetchPolicy) refinement, Backend.Prefetch.netlist_next/netlist_output/"
                           "completeRefinement, Prefetch.sampled_trace_correct"),
+    "twoport": dict(exe="twoport_emit", stem="twoport", test="test/TwoPort.lean", ready=False,
+                    fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6419), points=(6350, 6354), induction=2,
+                    lean="TwoPort (FetchPolicy) refinement, Backend.Policy netlist_next/netlist_output/"
+                         "completeRefinement via Backend.TwoPort.realization, TwoPort.sampled_trace_correct"),
     "oneport": dict(exe="oneport_emit", stem="oneport", test="test/OnePort.lean", ready=True,
                     fields=(611, 6426), sampled_fields=(613, 6430), ff=(6416, 6420), points=(6350, 6354), induction=3,
                     lean="SinglePort (FetchPolicy) rule refinement, Backend.OnePort.netlist_next/netlist_output/"
@@ -90,19 +95,34 @@ def main():
                    "--hw-legalize-modules", "--export-verilog", "-o", "/dev/null"], name + "-export")
         (out / f"{name}.sv").write_text(rtl)
 
+    matched = {}
+
     def gates(name, minimum):
         script = out / f"{name}-synthesis.ys"
         script.write_text("\n".join([f"read_verilog -sv {out}/{name}.sv", f"synth -top {TOP}", "check -assert",
             f"write_verilog -noattr {out}/{name}-gates.v", ""]))
         run([yosys, "-Q", "-T", "-s", script], name + "-synthesis")
+        # Synthesis narrows a word register whose top bit is constant to 63 bits, and
+        # name matching then leaves the whole register out of the comparison. Re-expose
+        # each narrowed register at full width, constant zero on top, in a copy used only
+        # here: a register that loads on commits alone can never be recovered by induction.
+        gates_text = (out / f"{name}-gates.v").read_text()
+        narrowed = re.findall(r"^\s*reg \[62:0\] (r_\w+);", gates_text, flags=re.M)
+        for register in narrowed:
+            gates_text = re.sub(rf"\b{register}\b", register + "_narrow", gates_text)
+            gates_text = gates_text.replace(f"reg [62:0] {register}_narrow;",
+                f"reg [62:0] {register}_narrow;\n  wire [63:0] {register};\n"
+                f"  assign {register} = {{1'h0, {register}_narrow}};", 1)
+        (out / f"{name}-gates-matched.v").write_text(gates_text)
+        matched[name] = narrowed
         path = out / f"{name}-gate-equivalence.ys"
         path.write_text("\n".join([f"read_verilog -sv {out}/{name}.sv", "proc", "rename -hide w:_GEN*",
-            f"rename {TOP} gold", f"read_verilog -sv {out}/{name}-gates.v", "proc", "rename -hide w:_GEN*",
+            f"rename {TOP} gold", f"read_verilog -sv {out}/{name}-gates-matched.v", "proc", "rename -hide w:_GEN*",
             f"rename {TOP} gate", "equiv_make gold gate equiv", "hierarchy -check -top equiv",
             # Synthesis drops the constant top bit of each fetched word (dense words expand
             # with a zero bit 63), so the induction must see one edge of the D inputs. The
-            # one-port backend's untaken-word register can skip a load for one edge (never
-            # two in a row), so it needs one step more; two steps leave 107 points unproven.
+            # one-port backend needs one step more: two leave 107 points unproven, three and
+            # five prove all. The cause was not isolated.
             f"equiv_simple -seq {v['induction']}", f"equiv_induct -seq {v['induction']}",
             "equiv_status -assert", ""]))
         log = run([yosys, "-Q", "-T", "-s", path], name + "-gate-equivalence")
@@ -159,6 +179,7 @@ def main():
                           "gate_equivalence_points": points[stem + "-sampled"],
                           "simulation": sampled["simulation"], "mapping": sampled["metrics"]},
               "rejected_traces": rejected,
+              "registers_rewidened_for_matching": matched,
               "artifact_sha256": {str(p.relative_to(out)): sha(p) for p in sorted(out.rglob("*"))
                                   if p.is_file() and p.suffix in (".json", ".log", ".sv", ".v", ".ys", ".mlir", ".txt")},
               "elapsed_seconds": round(time.monotonic() - started, 3),

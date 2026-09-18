@@ -115,10 +115,12 @@ theorem delayed_host (p : PinBoundary.Samples 2) (i : Machine.Inputs) (rest : Li
         (fun e => ((e.1.init, e.1.reset, e.1.command, e.1.data), (e.2.init, e.2.reset, e.2.command, e.2.data))) =
       some ((i.init, i.reset, i.command, i.data), (i.init, i.reset, i.command, i.data)) := rfl
 
-/-- A condition on the data port of every input holds of every input the delayed
-history lets an edge consume: the pipeline never touches host ports. -/
-theorem delayed_data (Q : BitVec 64 → Prop) (p : PinBoundary.Samples 2) (inputs : List Machine.Inputs)
-    (h : ∀ i ∈ inputs, Q i.data) : ∀ e ∈ delayed p inputs, Q e.1.data := by
+/-- A condition the pipeline's rewiring of `incoming` cannot disturb — one on host
+ports — holds of every input the delayed history lets an edge consume. -/
+theorem delayed_rule (Q : Machine.Inputs → Prop)
+    (host : ∀ (i : Machine.Inputs) (p : PinBoundary.Samples 2), Q i → Q (engineInputs i p))
+    (p : PinBoundary.Samples 2) (inputs : List Machine.Inputs)
+    (h : ∀ i ∈ inputs, Q i) : ∀ e ∈ delayed p inputs, Q e.1 := by
   induction inputs generalizing p with
   | nil =>
     intro e he
@@ -127,7 +129,7 @@ theorem delayed_data (Q : BitVec 64 → Prop) (p : PinBoundary.Samples 2) (input
     intro e he
     simp only [delayed, List.mem_cons] at he
     rcases he with rfl | he
-    · exact h i (List.mem_cons_self ..)
+    · exact host i p (h i (List.mem_cons_self ..))
     · exact ih (advance i p) (fun j hj => h j (List.mem_cons_of_mem i hj)) e he
 
 /-- Transitions launched only at the pin port. -/

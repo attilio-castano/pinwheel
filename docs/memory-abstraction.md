@@ -4,11 +4,13 @@ This record owns the memory contract, its two structural implementations, the
 view of the existing storage through it, the prefetch machine — the reference
 machine written against a memory of latency one — and the theory of **fetch
 organizations** that grew out of it: a policy with a number of read ports as a
-parameter, its correctness proved once, and the decoupled (three-port), two-port
-and one-port organizations as instances, two of them with structural backends.
-The contract, the theory and the machines are Lean proofs and one executable
-suite; the backends are emitted and checked with the pinned tools
-(`check-prefetch.py`), and the decoupled one was compared once after routing. The
+parameter, its correctness proved once; a backend parametric in the policy; the
+decoupled (three-port), two-port and one-port organizations as instances, each
+with a structural backend; and a rule on programs that can be assumed, enforced
+by the loader, or proved of a compiler. The contract, the theory and the
+machines are Lean proofs and one executable suite; the backends are emitted and
+checked with the pinned tools (`check-prefetch.py`), and the decoupled one was
+compared once after routing. The
 [storage study](storage-study.md) owns the implementation candidates, the
 [primitive review](storage-primitives.md) the macro and latch facts, and
 [research status](research/status.md) allocation.
@@ -165,12 +167,13 @@ the same dense dictionaries, index maps, loader and scheduler, plus two
 fetched-word registers and the start word (610 fields, 6,425 bits). Three
 shared wires — the fed successor (a fetched word chosen by the branch bit while
 running, the start word at rest), and the two candidates — and each dictionary
-read addressed by a wire. `netlist_next` and `netlist_output` prove every
-register and output step equals the functional dense machine; `reference_next`
-projects it onto the decoupled machine; `completeRefinement` and `trace_correct`
-reach the atomic reference with the capacity contract. `PrefetchEmit.lean`
-emits it alone and behind the [pin sampler](pin-sampler-study.md)
-(`sampled_trace_correct`).
+read addressed by a wire. It is an instance of the
+[policy-parametric backend](#the-policy-parametric-backend) below: the file
+holds the fed word, the two wires and the three register updates, each proved
+to mean the policy's, and every register and output step, the projection onto
+the policy machine and the refinement of the atomic reference with the capacity
+contract are the generic backend's. `PrefetchEmit.lean` emits it alone and
+behind the [pin sampler](pin-sampler-study.md) (`sampled_trace_correct`).
 
 ### Structural levels
 
@@ -297,24 +300,55 @@ every word of a committed image, and every word pushed so far, satisfies it).
 | Organization | Ports | Rule | Obligations | Backend |
 | --- | ---: | --- | --- | --- |
 | `Decoupled` | 3: both candidates, word 0 | none | about 40 lines (the hand-written proof was about 190) | `PrefetchBackend`, routed attempts above |
-| `TwoPort` | 2: word 0 shares port 0 on commit edges | none | 63-line file; `covers` is `Decoupled`'s | none yet |
+| `TwoPort` | 2: word 0 shares port 0 on commit edges | none | 63 lines; `covers` is `Decoupled`'s | `TwoPortBackend`, below |
 | `SinglePort` | 1: untaken on entry, taken on the next edge, word 0 on commit | `Ready` | below | `OnePortBackend`, below |
 
 Making the ports a parameter showed what the routed backend spends: its start
 word is a *third* read tree. A commit edge resets the scheduler, so nothing read
 on it is consumed as a candidate, and the start word can use a candidate's port
 then; `TwoPort` is that organization, written as the test of the abstraction — a
-new organization should be an instantiation, not a rewrite. `Decoupled` keeps
-its flat `State` and `next`, the form its backend is proved against;
-`next_toPolicy` identifies them with the generic machine, and the emitted
-backend is byte-identical to the validated one. `test/Memory.lean` runs all four
-machines on the closed-loop scenario: 5,161 edges, 12 transactions, 24 taken
-branches each, no difference.
+new organization should be an instantiation, not a rewrite. `test/Memory.lean`
+runs all four machines on the closed-loop scenario: 5,161 edges, 12
+transactions, 24 taken branches each, no difference.
 
 The theory's edge: it is edge-for-edge. An organization that adds a cycle — a
 stall on a taken branch — is not an instance; `Timed.Refinement` has no
 stuttering. A memory of latency two is a different `fed` discipline, not
 attempted.
+
+### The policy-parametric backend
+
+A fetch policy changes one thing about the backend: where the scheduler's
+successor word comes from. `Storage/PolicyBackend.lean` makes that an input.
+`core` is the selected general backend with the successor as a wire — dense
+dictionaries, index maps, loader, scheduler, and the cached word, which loads
+the fed word on a dispatch or at rest — proved once against the functional step
+(`core_step`, `core_observe`: no output reads the fed word). A policy's
+structural part is then a `Realization`: a netlist over the backend's registers
+and the policy's that steps the backend as `core` fed the policy's word, steps
+the policy's registers as the policy does, and shows `core`'s outputs.
+`Realization.twoWires` builds one from the expression for the fed word, two
+shared wires below it and the policy registers' next-state expressions, given
+that the fed expression means the policy's `fed` and each register expression
+means the policy's `step`. From a realization and the policy's `Correct`, once:
+every register and output step (`netlist_next`, `netlist_output`), the
+projection onto the policy machine (`reference_next`), the refinement of the
+atomic reference with the capacity contract under the policy's rule
+(`completeRefinement`, a `RuleRefinement`; the rule has to survive the capacity
+check, `Rules.adapted`), the trace theorems, and — `Storage/PolicyEmit.lean` —
+emission and the pin-sampler theorem for any rule the pipeline cannot disturb
+(`sampled_trace_correct`, `PinSampler.delayed_rule`).
+
+| Backend | Before | On the generic backend |
+| --- | ---: | ---: |
+| `PrefetchBackend` + emit | 379 + 48 lines | 135 + 38 |
+| `OnePortBackend` + emit | 473 + 51 lines | 226 + 42 |
+| `TwoPortBackend` + emit | — | 148 + 39, compiled at the first attempt |
+| `PolicyBackend` + `PolicyEmit` | — | 515 + 62, once |
+
+The re-based decoupled and one-port backends emit byte-identical MLIR to the
+validated `prefetch-03` and `oneport-03`, alone and sampled, and their level
+reports are unchanged (`build/structure/policy-01`).
 
 ### One read port: the per-program rule
 
@@ -336,31 +370,48 @@ the machine:
 Ready word := ¬(kind = 2 ∧ finish = 2 ∧ duration = 0)
 ```
 
-checkable per word, the policy's `Rule`, carried as `ImageRule.Images Ready`.
-The invariant holds the untaken word always, the taken word once `second` is
-false, and when `second` is true and the current word is branching, its duration
-has not been counted down, so it does not dispatch (`Dispatch.branching_dispatch`,
-`dispatch_entered`). `covers` is where the rule is used, and nowhere else: a
-dispatch out of a branching word happens with its taken word fetched. The
-hypothesis of `trace_correct` is on every input word, addresses included; that
-is stronger than the machine needs and the simplest thing to check, and
-addresses, the idle word and the last-address word zero-extend below the finish
-field, so only records can fail it.
+checkable per word, carried as `ImageRule.Images Ready`. The policy's `Rule`
+asks it of push commands only (`i.command = 2 → Ready i.data`), which is what
+the loader's invariant needs (`ImageRule.push_command`). The invariant holds the
+untaken word always, the taken word once `second` is false, and when `second` is
+true and the current word is branching, its duration has not been counted down,
+so it does not dispatch (`Dispatch.branching_dispatch`, `dispatch_entered`).
+`covers` is where the rule is used, and nowhere else: a dispatch out of a
+branching word happens with its taken word fetched.
 
-Per program (`test/Memory.lean`, `readiness`): the I²C write and register read
-at four-cycle phases, UART and SPI have no unready word; the I²C write at
-one-cycle phases (`⟨0, 7⟩`) has one, the read three, the UART receiver
-(`Compile.UARTRx.program`, any bit period) two. On the one-cycle-phase write the
-machine agrees while the address is acknowledged and diverges on the edge the
-address NACK takes the unready branch (`unreadyDiverges`). The rule is a
-compile-time obligation: the compiled I²C programs satisfy it whenever a phase
-lasts at least two cycles, and the receiver's two zero-duration branching
-records are a compiler question, not a machine one — or the loader could reject
-unready words at push, which would make the refinement unconditional again.
+**Assumed or enforced.** A rule on pushed words can be discharged the way the
+small backend already discharges its capacity: by turning an inadmissible push
+into a rejection. `Storage/Admission.lean`: `admit A` is that filter on the
+command port, `admit_rule` says what survives it as a push is admissible, and
+`discharge` turns any refinement conditional on "every push carries an
+admissible word" into an unconditional one behind the filter
+(`Timed.RuleRefinement.precompose`), against the reference behind the same
+filter; on inputs that satisfy the rule the filter is the identity
+(`admit_of_rule`). `SinglePort.admitted` and `Backend.OnePort.admitted` are the
+instances. The backend's capacity check *is* such a filter, by definition
+(`adapt i b = admit (Small.capacity cursor) i`, by `rfl`), which is how the
+rule is shown to survive it. No emitted netlist includes the readiness filter
+yet; it is a few gates beside the capacity gate.
+
+**Proved for the compilers.** `Storage/Readiness.lean` restates the rule on
+instructions (`ready`), shows it is the word-level rule through the record
+encoding (`ready_encode`, `ready_widen`), and carries it to every word the host
+pushes for an image — dictionary, addresses, idle pins, last address
+(`upload_ready`; `test/Memory.lean` loads exactly that stream). Then, for every
+request and configuration: the compiled I²C write and register read are ready
+whenever a phase lasts at least two cycles (`i2c_write`, `i2c_read`); programs
+of the original engine — UART and SPI transmission — always (`embedded`); the
+UART receiver never (`uart_receiver`): it polls for the start bit with
+one-cycle branching records, so under this organization it needs a two-cycle
+poll, a different organization, or the filter's rejection. `readiness` in the
+suite keeps the counts as a cross-check — no unready word in the four fixtures,
+one and three in the one-cycle-phase I²C programs, two in the receiver — and
+`unreadyDiverges` shows the machine leaving the reference exactly on an unready
+taken branch.
 
 ### The one-port backend
 
-`Storage/OnePortBackend.lean` is the netlist on the selected general backend:
+`Storage/OnePortBackend.lean` is the realization on the selected general backend:
 two fetched-word registers, the start word and the `second` flag (611 fields,
 6,426 bits) behind **one** composite read of the selected bank. Three shared
 wires: the fed successor, the port's address, and the word behind it, which
@@ -369,13 +420,10 @@ untaken candidate on a dispatch; else word 0 on a commit; else the current
 word's taken candidate on the edge after an entry and its untaken one otherwise
 — a commit edge does not dispatch (`FetchPolicy.dispatch_no_commit`), so the
 dispatch decision, the deepest select, comes last and the address is no deeper
-than the decoupled candidates. `netlist_next`, `netlist_output` and
-`reference_next` are as for the decoupled backend; `completeRefinement` is a
-`RuleRefinement`, and `trace_correct` reaches the atomic reference with the
-capacity contract on ready programs. `OnePortEmit.lean` emits it alone and
-behind the pin sampler; `sampled_trace_correct` uses `PinSampler.delayed_data` —
-the pipeline never touches host ports, so the delayed history is as ready as the
-original.
+than the decoupled candidates. The file proves the fed word, the address, the
+word and the four register updates mean the policy's; the rest is the generic
+backend's, with the rule `i.command = 2 → Ready i.data`. `OnePortEmit.lean`
+emits it alone and behind the pin sampler.
 
 `structure_report`, variant `oneport` (`build/structure/oneport-01`),
 `Cost.gates`, register launch family:
@@ -395,8 +443,8 @@ to the port's depth, where nothing waits for it.
 `check-prefetch.py --variant oneport`, receipt `build/oneport/oneport-03/report.json`,
 identities in `physical/experiments/oneport-results.json`: RTL/generic-gate
 equivalence of both emissions, 6,508 and 6,506 points, with three-step induction
-— the untaken-word register can skip a load for one edge, never two in a row,
-and two steps leave 107 points unproven; the independent oracle on both
+— two steps leave 107 points unproven, three and five prove all, and the cause
+was not isolated; the independent oracle on both
 emissions, 29,898 edges each, in *ready mode* — the same generator with the UART
 receiver exercise replaced by a register read and the terminal-capture branch
 record given one cycle, and a check that no pushed word violates the rule. Two
@@ -404,32 +452,116 @@ rejections are required: the sampled RTL with unshifted pins, and the inner RTL
 on the **unrestricted** vectors, whose programs include zero-duration branching
 records — the rule is not vacuous at the RTL level.
 
-Mapped screen, same recipe:
+Mapped screen, same recipe, all three organizations:
 
-| Typical corner | Sampled candidate | Decoupled, 3 ports, sampled | One port, sampled |
+| Typical corner | Sampled candidate | Decoupled, 3 ports | Two ports | One port |
+| --- | ---: | ---: | ---: | ---: |
+| Standard-cell area | 547,995 µm² | 654,086 (+19.4%) | 618,244 (+12.8%) | 576,805 (**+5.3%**) |
+| ABC combinational delay | 6,803 ps | 5,815 (−14.5%) | 5,027 (**−26.1%**) | 5,272 (−22.5%) |
+| Slow-corner delay | 9,945 ps | 9,269 (−6.8%) | 8,150 (−18.1%) | 8,343 (−16.1%) |
+| Flip-flops / cells | 6,236 / 27,306 | 6,419 / 33,684 | 6,419 / 32,705 | 6,420 / 30,690 |
+| Rule on programs | none | none | none | `Ready` |
+
+A read tree is about 36,000–41,000 µm²; what remains over the candidate for one
+port is the three word registers, the address select and the enables. Mapped
+figures are a screen: no placement, no wires. Under the clock-gating overlay the
+sampled candidate stood at 67% utilization after repair; five percent more cells
+would put the one-port backend near 71% and thirteen percent the two-port one
+near 75%, both inside the range this flow has placed and routed (67–81%), where
+the decoupled backend's 81% before repair was not. The one-port backend then
+routed at 69.2%.
+
+### The one-port backend, routed
+
+One run, `oneport-sampled-01`: the one-port backend behind the sampler under
+`physical/experiments/combined.json` (calibrated RC, width-8 clock gating), the
+overlay of the same-overlay control `combined-03`; 20 ns clock, unchanged I/O
+constraints, diagnostic 6×4 floorplan, four CPUs. Two departures from the
+earlier contract, neither touching the result: a 150-minute cap instead of 90
+(the control needed about 105 minutes of flow in two runs), and no stop after
+`OpenROAD.STAPostPNR`, so the flow went on into layout checks. Identities and
+numbers in `physical/experiments/oneport-physical-results.json`.
+
+| Slow corner, extracted | `combined-03` (control, same overlay) | `pin-sampled-02` (no gating) | `oneport-sampled-01` |
 | --- | ---: | ---: | ---: |
-| Standard-cell area | 547,995 µm² | 654,086 µm² (+19.4%) | 576,805 µm² (**+5.3%**) |
-| ABC combinational delay | 6,803 ps | 5,815 ps (−14.5%) | 5,272 ps (**−22.5%**) |
-| Flip-flops / cells | 6,236 / 27,306 | 6,419 / 33,684 | 6,420 / 30,690 |
+| Worst setup slack | −2.251 ns, 40 endpoints | +0.090 ns | **−0.187 ns**, 9 endpoints |
+| Register-launched family | −2.054 ns | +0.090 ns | **−0.053 ns**, 3 paths |
+| Loader command family | −2.251 ns | +0.175 ns | +0.473 ns |
+| Loader data family | +0.116 ns | +1.996 ns | −0.187 ns |
+| Protocol pins | +14.496 ns | +14.354 ns | +14.506 ns |
+| Hold, slow / typical / fast | +0.539 / +0.232 / +0.059 | +0.422 / +0.194 / +0.052 | +0.361 / +0.168 / +0.054 |
+| Functional cell area, utilization | 608,058 µm², 67.4% | 732,103 µm², 81.1% | 624,825 µm², 69.2% |
+| Routed wire | 1,753,794 µm | 1,792,141 µm | 1,663,828 µm |
 
-Slow corner: 9,945 → 8,343 ps (−16.1%). Two read trees are about 77,000 µm²; what
-remains over the candidate is the three word registers, the address select and
-the enables. Mapped figures are a screen: no placement, no wires. Under the
-clock-gating overlay the sampled candidate stood at 67% utilization after
-repair; five percent more cells would put this backend near 71%, inside the
-range this flow has placed and routed (67–81%), where the decoupled backend's
-81% before repair was not. No routed run of this backend exists yet.
+Routing finished with zero violations after 51 passes, and the flow ran to
+its end: Magic DRC, LVS and the antenna check pass with no error — the first run
+of this design to finish them — and its only deferred error is the slow-corner
+setup miss. Typical and fast setup are met (+5.730, +8.602 ns); 10 slew and 20
+fanout limit violations remain. The routed netlist passes the implemented-netlist regression on the
+ready-mode vectors (29,898 edges, 4,903,194 output-bit comparisons, mutant
+rejected).
+
+What it says. Against the control under the same overlay, the shorter
+recurrence survives routing: the register-launched family gains 2.0 ns and the
+worst slack 2.06 ns for 2.8% more cell area and 5% less wire, and the path that
+limited `combined-03` — the cached word's clock-gate enable, launched from the
+command decode — is no longer limiting (+0.473 ns), as its fall from 99 gate
+levels to 36 predicted. The worst register-launched path runs from `mode[2]`
+through the dispatch decision, the port's address and the read tree into
+`fetched_taken[52]` and `start_word[52]`: the endpoint the level model ranks
+deepest (65). Against the ungated sampled candidate, this design is 0.28 ns
+short of its slack with 14.7% less cell area at 69% utilization instead of 81%.
+
+What it does not say. The slow corner is not closed: −0.187 ns. All nine
+violating endpoints launch from `data[35]`, the loader's data port: the capacity
+check rewrites the command from the data word, the commit decode reads that
+command, and the commit select sits in the port's address. The
+[command-split](successor-fetch-study.md#command-decoder-experiment) form —
+decode predicates the capacity check cannot change from the raw command —
+removes that dependency and is not applied in `Backend.Policy.core` yet. One
+run: equivalent RTLs have differed by 0.6 ns under this flow, so −0.053 ns and
++0.090 ns on the register family are not distinguishable, and no repeat was made.
+
+### The two-port backend
+
+`Storage/TwoPortBackend.lean`: the decoupled organization's registers and fed
+word behind **two** composite reads. Port 0 reads word 0 on a commit and the
+untaken candidate otherwise — the commit select sits beside the held candidate,
+so the dispatch decision still comes last — and its word is a shared wire,
+loaded by the untaken register on every edge and by the start word on a commit;
+port 1 reads the taken candidate. No rule on programs: the refinement holds for
+every input history. Levels (`build/structure/policy-02`): fetched words 63,
+start word 65, core state 59 — the decoupled backend's.
+
+`check-prefetch.py --variant twoport`, receipt `build/twoport/twoport-02/report.json`,
+identities in `physical/experiments/twoport-results.json`: RTL/generic-gate
+equivalence 6,501 and 6,511 points with two-step induction, and the independent
+oracle on the **unrestricted** vectors, 35,824 edges on both emissions, the UART
+receiver included. The first attempt (`twoport-01`) left 148 points unproven at
+any depth, and showed a gap in the harness: synthesis narrows a word register
+whose top bit is constant to 63 bits, Yosys then matches it to nothing, and a
+start word that loads on commits alone cannot be recovered by induction. The
+check now re-exposes narrowed registers at full width, constant zero on top, in
+a copy of the gate netlist used only for the comparison. In `prefetch-03` the
+two fetched registers had been left out the same way (6,373 points are 6,501
+less their 128 bits); they reload every edge, so that comparison was sound, and
+`prefetch-05` repeats it with every register matched.
 
 ## What the abstraction buys
 
 A fetch organization is now a `Policy` with three obligations, proved against
 a machine that is proved once: the decoupled organization's obligations are
 about forty lines where the hand-written refinement was about a hundred and
-ninety, and a new organization was a sixty-line file. The read ports are a
-parameter the policy cannot cheat, so area accounting starts in Lean — which is
-how the third read tree of the routed backend was found — and a condition on
-programs has one place where it is used (`covers`) and one generic carrier
-(`ImageRule`).
+ninety, and a new organization was a sixty-line file. Its structural backend is
+a `Realization` on a backend proved once: a new one was a hundred and fifty
+lines and compiled at the first attempt, and the two existing ones shrank by
+more than half with byte-identical output. The read ports are a parameter the
+policy cannot cheat, so area accounting starts in Lean — which is how the third
+read tree of the routed backend was found — and the two- and one-port
+organizations were then *measured* rather than estimated. A condition on
+programs has one place where it is used (`covers`), one generic carrier
+(`ImageRule`), a filter that discharges it (`Admission`) and a statement at the
+level of instructions that compilers prove (`Readiness`).
 
 A storage implementation is now a refinement of `spec`, proved once, generic in
 size, and the machine's correctness against the reference is proved once against
@@ -451,12 +583,19 @@ the next-address decode, and the dictionary needs two read ports.
   limit at 81% — so the levels result has no routed confirmation; the
   comparison is negative by capacity at the diagnostic floorplan, not a timing
   result.
-- The one-port backend is proved, emitted, checked at RTL level and mapped; it
-  has no routed run. Its refinement is conditional on the `Ready` rule for every
-  pushed word: programs that violate it — the UART receiver as compiled — are
-  outside the claim, the rule is checked per program, not enforced by the
-  loader, and its RTL regression runs on ready-mode vectors. `TwoPort` has no
-  backend. The fetch-policy theory is edge-for-edge and latency one.
+- The one-port and two-port backends are proved, emitted, checked at RTL level
+  and mapped; the one-port backend has one routed run, not closed at the slow
+  corner (−0.187 ns, from the loader's data port), and the two-port backend
+  none. The one-port refinement is conditional on the
+  `Ready` rule for every pushed word: programs that violate it — the UART
+  receiver, proved never ready — are outside the claim, and its RTL regression
+  runs on ready-mode vectors. The admission filter that would make it
+  unconditional is a Lean construction; no emitted netlist includes it. The
+  fetch-policy theory is edge-for-edge and latency one, and
+  `Realization.twoWires` fixes the shape to two policy wires.
+- Gate equivalence matches registers by name. Registers that synthesis narrows
+  are re-exposed at full width for the comparison only; the one-port backend's
+  need for three induction steps is unexplained.
 - The contract has no reset, no read enable and no write-first option. Each
   would be an addition, not a change.
 - The composite read is latency one only if the address map or the dictionary
@@ -467,9 +606,10 @@ the next-address decode, and the dictionary needs two read ports.
 ## Reproduction
 
 ```sh
-lake build Pinwheel prefetch_emit oneport_emit structure_report
+lake build Pinwheel prefetch_emit twoport_emit oneport_emit structure_report
 lake env lean -DwarningAsError=true --run test/Memory.lean
-.lake/build/bin/structure_report build/structure/NAME          # prefetch.json, oneport.json
+.lake/build/bin/structure_report build/structure/NAME          # prefetch.json, twoport.json, oneport.json
 python3 scripts/check-prefetch.py --tag NAME                    # decoupled backend; needs the pinned hardware tools
+python3 scripts/check-prefetch.py --variant twoport --tag NAME  # two-port backend, unrestricted vectors
 python3 scripts/check-prefetch.py --variant oneport --tag NAME  # one-port backend, ready-mode vectors
 ```

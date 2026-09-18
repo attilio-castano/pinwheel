@@ -3,6 +3,7 @@ import Pinwheel.Hardware.Memory.Registered
 import Pinwheel.Hardware.Storage.Decoupled
 import Pinwheel.Hardware.Storage.SinglePort
 import Pinwheel.Hardware.Storage.TwoPort
+import Pinwheel.Hardware.Storage.Readiness
 
 /-! Executable evidence for the memory contract: the two structural
 implementations against the specification, and the prefetch machine (the
@@ -54,12 +55,12 @@ private def contract : IO Nat := do
 
 /-! ## The prefetch machine, closed-loop, against the atomic reference -/
 
+/-- The words the host pushes for an image: the library's definition, the one
+`Readiness.upload_ready` speaks about. -/
 private def upload (p : Execution.Image) : IO (List (BitVec 64)) := do
-  let some image := Execution.lowerIndexed (Execution.imageWords p)
+  let some words := Storage.Readiness.upload p
     | throw (IO.userError "program does not fit the 64-entry dictionary")
-  let idle : BitVec 6 := p.idle.enabled ++ p.idle.levels
-  pure (image.val.dictionary.toList ++ image.val.addresses.toList.map (·.zeroExtend 64) ++
-    [idle.zeroExtend 64, BitVec.ofNat 64 p.last.val])
+  pure words
 
 /-- A machine under test: how to step it, what it shows, and which of its fields
 mirror the reference. -/
@@ -85,9 +86,16 @@ private def prefetchDriver : Driver Storage.Prefetch.State :=
   { next := Storage.Prefetch.next, observe := Storage.Prefetch.component.observe, machine := (·.machine),
     branch := Storage.Prefetch.branch }
 
+/-- Force a two-word policy's fetched registers, so closures do not chain across edges. -/
+private def forceFetched (s : Storage.FetchPolicy.State Storage.Decoupled.Registers) :
+    Storage.FetchPolicy.State Storage.Decoupled.Registers :=
+  let taken := s.policy.fetched true
+  let untaken := s.policy.fetched false
+  {s with policy := {s.policy with fetched := fun b => if b then taken else untaken}}
+
 private def decoupledDriver : Driver Storage.Decoupled.State :=
   { next := Storage.Decoupled.next, observe := Storage.Decoupled.component.observe, machine := (·.machine),
-    branch := Storage.Decoupled.branch }
+    branch := Storage.FetchPolicy.branch, normalize := forceFetched }
 
 private def probes : List ((w : Nat) × Loader.Machine.Output w) :=
   [⟨1, .core .busy⟩, ⟨8, .core .readB⟩, ⟨8, .core .readA⟩, ⟨3, .core (.state .mode)⟩,
@@ -242,11 +250,7 @@ private def singlePortDriver : Driver Storage.SinglePort.State :=
 private def twoPortDriver : Driver (Storage.FetchPolicy.State Storage.Decoupled.Registers) :=
   { next := Storage.FetchPolicy.next Storage.TwoPort.policy
     observe := (Storage.FetchPolicy.component Storage.TwoPort.policy).observe
-    machine := (·.machine), branch := Storage.FetchPolicy.branch
-    normalize := fun s =>
-      let taken := s.policy.fetched true
-      let untaken := s.policy.fetched false
-      {s with policy := {s.policy with fetched := fun b => if b then taken else untaken}} }
+    machine := (·.machine), branch := Storage.FetchPolicy.branch, normalize := forceFetched }
 
 /-- Words of a program's upload that the one-port machine's rule rejects: branching
 `checked` records with a zero duration field. -/
@@ -291,7 +295,7 @@ private def unreadyDiverges : IO Unit := do
 def main : IO Unit := do
   let n ← contract
   let (edges, transactions, branches) ← machines prefetchDriver ⟨initialMachine, 0, fun _ => 0⟩
-  let (edges', transactions', branches') ← machines decoupledDriver ⟨initialMachine, 0, fun _ => 0, 0⟩
+  let (edges', transactions', branches') ← machines decoupledDriver ⟨initialMachine, 0, ⟨fun _ => 0, 0⟩⟩
   let (edges'', transactions'', branches'') ←
     machines singlePortDriver ⟨initialMachine, 0, ⟨fun _ => 0, 0, false⟩⟩
   let (edges2, transactions2, branches2) ← machines twoPortDriver ⟨initialMachine, 0, ⟨fun _ => 0, 0⟩⟩

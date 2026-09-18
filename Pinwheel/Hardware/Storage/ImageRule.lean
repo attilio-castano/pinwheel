@@ -57,11 +57,18 @@ theorem committed (i : Machine.Inputs) (s : Machine.State) (h : Images R s)
   rw [Machine.commit_does_not_write i s hc]
   exact h.2 ho k (by simpa [he] using Nat.lt_trans hk (by decide : 64 < 322))
 
-/-- The rule survives every edge on which the pushed word, if any, satisfies it. -/
-theorem preserved (i : Machine.Inputs) (s : Machine.State) (h : Images R s) (hr : R i.data = true) :
-    Images R (Machine.next i s) := by
+/-- A push carries the push command. -/
+theorem push_command (i : Machine.Inputs) (s : Machine.State)
+    (hp : Loader.push (Machine.controlInput i s) s.control = true) : i.command = 2 := by
+  have h := hp
+  simp only [Loader.push, Bool.and_eq_true, beq_iff_eq] at h
+  exact h.1.1.1.2
+
+/-- The rule survives every edge whose push command, if any, carries a word satisfying it. -/
+theorem preserved (i : Machine.Inputs) (s : Machine.State) (h : Images R s)
+    (hr : i.command = 2 → R i.data = true) : Images R (Machine.next i s) := by
   by_cases hp : Loader.push (Machine.controlInput i s) s.control = true
-  · exact pushed R i s h hr hp
+  · exact pushed R i s h (hr (push_command i s hp)) hp
   by_cases hc : Machine.committing i s = true
   · exact committed R i s h hc
   simp only [Images, Machine.next, Loader.next, hp,

@@ -787,6 +787,71 @@ external interface integration retain their separate contracts.
   is the next physical discriminator and is not allocated. A policy-parametric
   backend is the next Lean step; `TwoPort`'s backend would follow from it.
 
+## 2026-09-18: policy-parametric backend, two-port backend, rules enforced and proved
+
+- **Scope:** Lean factoring of the backends, one new backend with emission, the
+  structural report, RTL regressions and generic mapping; a correction to the
+  gate-equivalence harness; the program rule as a filter and as compiler
+  theorems. One routed run of the one-port backend (below).
+- **Result:** `Storage/PolicyBackend.lean`: `core`, the general backend with the
+  successor as a wire input, proved against the functional step (`core_step`,
+  `core_observe`); `Realization` and `Realization.twoWires`; from a realization
+  and `Correct`, `netlist_next`, `netlist_output`, `reference_next`, the rule
+  refinement of the reference with the capacity contract and the trace
+  theorems, once; `PolicyEmit.lean`: emission and `sampled_trace_correct` once
+  (`PinSampler.delayed_rule`). `PrefetchBackend` 379 → 135 lines,
+  `OnePortBackend` 473 → 226, `Decoupled`'s flat machine and bridge removed;
+  both re-based backends emit byte-identical MLIR to `prefetch-03` and
+  `oneport-03`, alone and sampled, with unchanged level reports
+  (`build/structure/policy-01`). `TwoPortBackend.lean` (148 lines, compiled at
+  the first attempt): port 0's word is a shared wire; fetched words 63 levels,
+  start word 65 (`build/structure/policy-02`).
+  `check-prefetch --variant twoport`: `twoport-01` left 148 points unproven at
+  two and at three steps — synthesis had narrowed the three word registers to
+  63 bits, name matching dropped them, and the start word loads on commits only.
+  The harness now re-exposes narrowed registers at full width in a copy used
+  for the comparison. `twoport-02`: 6,501 and 6,511 points with two-step
+  induction, unrestricted oracle 35,824 edges on both emissions, unshifted
+  sampled trace rejected; mapped typical 618,244 µm² sampled (+12.8% over the
+  sampled candidate), ABC delay 5,027 ps (−26.1%), slow 8,150 ps (−18.1%).
+  `prefetch-05`: the decoupled RTL, identical to `prefetch-03`, now compared at
+  6,501 and 6,505 points (the two fetched registers had been left out of the
+  6,373; they reload every edge, so that result stood). `prefetch-04` was
+  invalidated by my editing sources during the run. The explanation given on
+  2026-09-18 for the one-port backend's three-step induction ("the untaken-word
+  register can skip a load for one edge") is withdrawn: every register is
+  matched there and the cause was not isolated.
+  `Storage/Admission.lean`: `admit`, `admit_rule`, `admit_of_rule`, `discharge`
+  (`Timed.RuleRefinement.precompose`); the one-port rule now reads
+  `command = 2 → Ready data`; `SinglePort.admitted`, `Backend.OnePort.admitted`;
+  the capacity check is `admit (Small.capacity cursor)` by `rfl`.
+  `Storage/Readiness.lean`: `ready_encode`, `upload_ready`, `i2c_write`,
+  `i2c_read` (every request, `phaseMinusOne ≠ 0`), `embedded` (UART and SPI
+  transmission), `uart_receiver` (never). Library audit standard axioms only
+  (6,480 theorems). `check-foundation --tag policy-backend-01`: 172 modules, 12,450 declarations, 6,480 theorems, 29 suites, untrusted axiom rejected, 1,483 s.
+  `oneport-sampled-01` (`combined.json`, 150-minute cap, no stop after
+  `STAPostPNR`): the flow ran to its end in about 100 minutes, 51 detailed-routing
+  passes to zero violations, Magic DRC 0, LVS 0, antenna 0; exit 2 for the one
+  deferred error, slow-corner setup. Slow setup −0.187 ns (9 endpoints, TNS
+  −1.168 ns), typical +5.730, fast +8.602; hold +0.361 / +0.168 / +0.054;
+  624,825 µm² of functional cells, 69.2% utilization, 1,663,828 µm of wire,
+  6,116 repair buffers (73,235 µm²); 10 slew and 20 fanout violations.
+  Per-family query `oneport-sampled-01-families`: registers −0.053 ns (3 paths;
+  `combined-03` −2.054, `pin-sampled-02` +0.090), loader command +0.473 (−2.251,
+  +0.175), loader data −0.187 (+0.116, +1.996), protocol +14.506, reset +0.228.
+  The worst register path ends in `r_fetched_taken[52]` and `r_start_word[52]`
+  through the port's read — the level model's deepest endpoint; all nine
+  violating endpoints launch from `data[35]` through the capacity check on the
+  command, the commit select and the port's address. Implemented-netlist
+  regression on the ready-mode vectors: 29,898 edges, 4,903,194 comparisons,
+  mutant rejected. Manifest `physical/experiments/oneport-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  backends, the rule, the routed comparison and the boundary. The one-port
+  organization is the first variant to fit with clock gating and come within
+  0.2 ns of the slow corner; the command-split form inside `Backend.Policy.core`
+  is the next Lean step, and a routed repeat and a two-port run are separate
+  allocations.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

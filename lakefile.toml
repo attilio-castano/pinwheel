@@ -31,3 +31,7 @@ root = "test.Prefetch"
 [[lean_exe]]
 name = "oneport_emit"
 root = "test.OnePort"
+
+[[lean_exe]]
+name = "twoport_emit"
+root = "test.TwoPort"

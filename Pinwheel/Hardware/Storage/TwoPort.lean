@@ -60,4 +60,30 @@ def correct : FetchPolicy.Correct policy where
 def refinement : Timed.Refinement (FetchPolicy.component policy) Cache.referenceComponent :=
   FetchPolicy.refinement correct (fun _ => trivial)
 
+/-! ### The machine by name, and its register updates for a netlist -/
+
+abbrev State := FetchPolicy.State Decoupled.Registers
+
+def next : Machine.Inputs → State → State := FetchPolicy.next policy
+
+/-- Port 0: word 0 on a commit, the untaken candidate otherwise. -/
+def address0 (i : Machine.Inputs) (s : State) : BitVec 8 :=
+  if Machine.committing i s.machine then 0
+  else Dispatch.candidate (FetchPolicy.feed policy i s) s.machine.core false
+
+theorem reads0 (i : Machine.Inputs) (s : State) :
+    FetchPolicy.reads policy i s 0 =
+      Loader.Store.read (s.machine.memory (Machine.selected i s.machine)) (address0 i s) := rfl
+
+theorem next_fetched (i : Machine.Inputs) (s : State) (b : Bool) :
+    (next i s).policy.fetched b =
+      if b then Loader.Store.read (s.machine.memory (Machine.selected i s.machine))
+        (Dispatch.candidate (FetchPolicy.feed policy i s) s.machine.core true)
+      else FetchPolicy.reads policy i s 0 := by
+  cases b <;> rfl
+
+theorem next_startWord (i : Machine.Inputs) (s : State) :
+    (next i s).policy.startWord =
+      if Machine.committing i s.machine then FetchPolicy.reads policy i s 0 else s.policy.startWord := rfl
+
 end Pinwheel.Hardware.Storage.TwoPort

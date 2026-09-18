@@ -1,48 +1,38 @@
 import Pinwheel.Hardware.Storage.PrefetchBackend
-import Pinwheel.Hardware.Storage.SampledBackend
+import Pinwheel.Hardware.Storage.PolicyEmit
 
 /-! Emission of the decoupled prefetch backend, alone and behind the two-register
-pin pipeline. Ports and the module name are the general backend's; three
-registers are new and the same-edge successor lookup is gone. -/
+pin pipeline: three word registers are the policy's. -/
 namespace Pinwheel.Hardware.Storage.Backend.Prefetch
 open Loader
 
-def registers : Array (Sigma Register) :=
-  Backend.registers.map (fun ⟨w, r⟩ => ⟨w, .inner r⟩) ++
-    #[⟨64, .fetched true⟩, ⟨64, .fetched false⟩, ⟨64, .startWord⟩]
+def extra : Array (Sigma Reg) := #[⟨64, .fetched true⟩, ⟨64, .fetched false⟩, ⟨64, .startWord⟩]
 
-def registerLabel : {w : Nat} → Register w → String
-  | _, .inner r => Backend.registerLabel r
+def label : {w : Nat} → Reg w → String
   | _, .fetched true => "fetched_taken"
   | _, .fetched false => "fetched_untaken"
   | _, .startWord => "start_word"
 
-def moduleText : Except String String :=
-  Hardware.Netlist.moduleText "pinwheel_atomic_small_dense_cached" netlist
-    Machine.inputs registers Machine.outputs Machine.inputLabel registerLabel Machine.outputLabel
+def registers : Array (Sigma Register) := Policy.registers extra
 
-abbrev SampledRegister := Extended Register PinSampler.Stage
+def registerLabel : {w : Nat} → Register w → String := Policy.registerLabel label
 
-def sampledRegisters : Array (Sigma SampledRegister) :=
-  registers.map (fun ⟨w, r⟩ => ⟨w, .inner r⟩) ++ #[⟨2, .extra .first⟩, ⟨2, .extra .second⟩]
+def moduleText : Except String String := Policy.moduleText netlist extra label
 
-def sampledLabel : {w : Nat} → SampledRegister w → String
-  | _, .inner r => registerLabel r
-  | _, .extra .first => "pin_first"
-  | _, .extra .second => "pin_second"
+abbrev SampledRegister := Policy.SampledRegister Reg
 
-def sampledText : Except String String :=
-  Hardware.Netlist.moduleText "pinwheel_atomic_small_dense_cached" (PinSampler.netlist netlist)
-    Machine.inputs sampledRegisters Machine.outputs Machine.inputLabel sampledLabel Machine.outputLabel
+def sampledRegisters : Array (Sigma SampledRegister) := Policy.sampledRegisters extra
+
+def sampledText : Except String String := Policy.sampledText netlist extra label
 
 /-- Behind the pipeline, every pre/post-edge observation is the reference
 machine's on the delayed pin history, for any power-up pipeline contents. -/
 theorem sampled_trace_correct (s : State) (h : Valid s) (p : PinBoundary.Samples 2)
     (inputs : List Machine.Inputs) :
     (PinSampler.component (PinSampler.netlist netlist)).trace
-        (Extended.values s.values (PinSampler.stageValues p)) inputs =
+        (Extended.values (s.values values) (PinSampler.stageValues p)) inputs =
       referenceComponent.pairTrace s.reference.machine (PinSampler.delayed p inputs) :=
-  (PinSampler.trace_eq netlist s.values p inputs).trans
-    (completeRefinement.pairTrace_eq s.values s.reference.machine ⟨s, rfl, h, rfl⟩ _)
+  Policy.sampled_trace_correct realization Decoupled.correct rules
+    (Policy.Rules.none_preserved Decoupled.correct (fun _ => trivial)) s h p inputs (fun _ _ => trivial)
 
 end Pinwheel.Hardware.Storage.Backend.Prefetch

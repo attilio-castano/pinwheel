@@ -1,5 +1,6 @@
 import Pinwheel.Hardware.Storage.FetchPolicy
 import Pinwheel.Hardware.Storage.ImageRule
+import Pinwheel.Hardware.Storage.Admission
 
 /-! The decoupled prefetch organization with one read port.
 
@@ -103,7 +104,7 @@ theorem covers (i : Machine.Inputs) (s : FetchPolicy.State Registers) (h : Inv s
     exact (FetchPolicy.canonical_rest _ _ _ hr').symm
 
 theorem preserved (i : Machine.Inputs) (s : FetchPolicy.State Registers)
-    (h : Inv s) (hrule : Ready i.data = true)
+    (h : Inv s) (hrule : i.command = 2 → Ready i.data = true)
     (hm : (FetchPolicy.next policy i s).machine = Machine.next i s.machine) :
     Inv (FetchPolicy.next policy i s) := by
   refine ⟨by rw [hm]; exact ImageRule.preserved Ready i s.machine h.1 hrule, ?_⟩
@@ -215,7 +216,7 @@ theorem initial (i : Machine.Inputs) (s : FetchPolicy.State Registers) (hi : i.i
 
 def correct : FetchPolicy.Correct policy where
   Inv := Inv
-  Rule := fun i => Ready i.data = true
+  Rule := fun i => i.command = 2 → Ready i.data = true
   covers := fun i s _ h hv hc hd => covers i s h hv hc hd
   preserved := fun i s _ h hr hm => preserved i s h hr hm
   initial := initial
@@ -248,13 +249,20 @@ theorem next_second (i : Machine.Inputs) (s : State) :
 /-- Every pre/post-edge observation is the reference machine's, on any history
 whose pushed words are ready. -/
 theorem trace_correct (s : State) (h : Valid s) (inputs : List Machine.Inputs)
-    (hr : ∀ i ∈ inputs, Ready i.data = true) :
+    (hr : ∀ i ∈ inputs, i.command = 2 → Ready i.data = true) :
     component.trace s inputs = Cache.referenceComponent.trace s.machine inputs :=
   FetchPolicy.trace_correct correct s h inputs hr
 
 theorem initialized_trace (s : State) (i : Machine.Inputs) (hi : i.init = true)
-    (inputs : List Machine.Inputs) (hr : ∀ j ∈ inputs, Ready j.data = true) :
+    (inputs : List Machine.Inputs) (hr : ∀ j ∈ inputs, j.command = 2 → Ready j.data = true) :
     component.trace (next i s) inputs = Cache.referenceComponent.trace (Machine.next i s.machine) inputs :=
   FetchPolicy.initialized_trace correct s i hi inputs hr
+
+/-- Behind a push filter that rejects unready words — as the capacity check rejects
+words that do not fit — the machine refines the reference behind the same filter
+for every input history. -/
+def admitted : Timed.Refinement (component.precompose (Admission.admit Ready))
+    (Cache.referenceComponent.precompose (Admission.admit Ready)) :=
+  Admission.discharge Ready (FetchPolicy.ruleRefinement correct)
 
 end Pinwheel.Hardware.Storage.SinglePort

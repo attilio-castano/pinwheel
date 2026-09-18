@@ -49,4 +49,16 @@ theorem RuleRefinement.pairTrace_eq (r : RuleRefinement impl spec Rule) (s : S) 
     simp only [Component.pairTrace, r.observe i s t h, r.observe after _ _ hs,
       ih _ _ hs (fun e he => hr e (List.mem_cons_of_mem _ he))]
 
+/-- The same component behind a combinational filter on its inputs. -/
+def Component.precompose (c : Component I S O) (f : I → I) : Component I S O :=
+  ⟨fun i s => c.step (f i) s, fun i s => c.observe (f i) s⟩
+
+/-- A filter that establishes the rule discharges it: behind the filter, the
+implementation refines the specification behind the same filter, unconditionally. -/
+def RuleRefinement.precompose (r : RuleRefinement impl spec Rule) (f : I → I) (h : ∀ i, Rule (f i)) :
+    Refinement (impl.precompose f) (spec.precompose f) where
+  Rel := r.Rel
+  step := fun i s t hrel => r.step (f i) s t (h i) hrel
+  observe := fun i s t hrel => r.observe (f i) s t hrel
+
 end Pinwheel.Hardware.Timed

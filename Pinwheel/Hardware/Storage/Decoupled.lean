@@ -13,9 +13,7 @@ register, loaded on commit with word 0 of the newly selected bank, serves the
 the policy is `Policy 3`, two candidates and word 0.
 
 The refinement of the atomic reference is the generic one (`FetchPolicy`); this
-file supplies the policy, its invariant and the three obligations. The flat
-`State` and `next` are the form the structural backend is proved against, and
-`next_toPolicy` identifies them with the generic machine. -/
+file supplies the policy, its invariant and the three obligations. -/
 namespace Pinwheel.Hardware.Storage.Decoupled
 open Loader
 
@@ -89,81 +87,20 @@ def correct : FetchPolicy.Correct policy where
   preserved := fun i s _ h _ hm => preserved i s h hm
   initial := initial
 
-/-! ### The flat machine the structural backend is proved against -/
+/-! ### The machine and its contract, by name -/
 
-structure State where
-  machine : Machine.State
-  current : BitVec 64
-  fetched : Bool → BitVec 64
-  startWord : BitVec 64
+abbrev State := FetchPolicy.State Registers
 
-def State.cache (s : State) : Cache.State := ⟨s.machine, s.current⟩
-
-def State.toPolicy (s : State) : FetchPolicy.State Registers :=
-  ⟨s.machine, s.current, ⟨s.fetched, s.startWord⟩⟩
-
-def branch (i : Machine.Inputs) (s : State) : Bool :=
-  Reactive.Fetch.branchBit ⟨Cache.base i s.cache, s.machine.core⟩
-
-def feed (i : Machine.Inputs) (s : State) : Reactive.Inputs :=
-  {Cache.base i s.cache with
-    successor := if Reactive.runningValue s.machine.core then s.fetched (branch i s) else s.startWord}
-
-def next (i : Machine.Inputs) (s : State) : State :=
-  let f := feed i s
-  let core := Reactive.stepValue f s.machine.core
-  let read := Loader.Store.read (s.machine.memory (Machine.selected i s.machine))
-  { machine := {Machine.next i s.machine with core := core}
-    current := if Dispatch.dispatching f s.machine.core || !Reactive.runningValue s.machine.core
-      then f.successor else s.current
-    fetched := fun b => read (Dispatch.candidate f s.machine.core b)
-    startWord := if Machine.committing i s.machine then read 0 else s.startWord }
-
-/-- The flat machine is the generic machine of the three-port policy. -/
-theorem next_toPolicy (i : Machine.Inputs) (s : State) :
-    (next i s).toPolicy = FetchPolicy.next policy i s.toPolicy := by
-  have hf : (next i s).fetched = (FetchPolicy.next policy i s.toPolicy).policy.fetched := by
-    funext b
-    cases b <;> rfl
-  show (⟨(next i s).machine, (next i s).current, ⟨(next i s).fetched, (next i s).startWord⟩⟩ :
-    FetchPolicy.State Registers) = _
-  rw [hf]
-  rfl
-
-def Valid (s : State) : Prop := FetchPolicy.Valid correct s.toPolicy
-
-theorem valid_next (i : Machine.Inputs) (s : State) (h : Valid s) : Valid (next i s) := by
-  unfold Valid
-  rw [next_toPolicy]
-  exact FetchPolicy.valid_next correct i s.toPolicy h trivial
-
-theorem machine_next (i : Machine.Inputs) (s : State) (h : Valid s) :
-    (next i s).machine = Machine.next i s.machine := by
-  have hm := FetchPolicy.machine_next correct i s.toPolicy h
-  rw [← next_toPolicy] at hm
-  exact hm
-
-theorem initialize_machine_next (i : Machine.Inputs) (s : State) (hi : i.init = true) :
-    (next i s).machine = Machine.next i s.machine := by
-  have hm := FetchPolicy.initialize_machine_next (P := policy) i s.toPolicy hi
-  rw [← next_toPolicy] at hm
-  exact hm
-
-theorem initialize_valid (i : Machine.Inputs) (s : State) (hi : i.init = true) : Valid (next i s) := by
-  unfold Valid
-  rw [next_toPolicy]
-  exact FetchPolicy.initialize_valid correct i s.toPolicy hi
+def next : Machine.Inputs → State → State := FetchPolicy.next policy
 
 def component : Timed.Component Machine.Inputs State (Values Machine.Output) :=
-  ⟨next, fun i s => Cache.circuit.observe i.values s.cache.values⟩
+  FetchPolicy.component policy
 
-def refinement : Timed.Refinement component Cache.referenceComponent where
-  Rel := fun s t => Valid s ∧ s.machine = t
-  step := fun i s t h => ⟨valid_next i s h.1,
-    (machine_next i s h.1).trans (congrArg (Machine.next i) h.2)⟩
-  observe := fun i s t h => by
-    rcases h with ⟨hv, rfl⟩
-    exact funext fun w => funext fun o => Cache.output_correct i s.cache hv.1 o
+def Valid (s : State) : Prop := FetchPolicy.Valid correct s
+
+/-- It refines the atomic reference edge for edge, for every input history. -/
+def refinement : Timed.Refinement component Cache.referenceComponent :=
+  FetchPolicy.refinement correct (fun _ => trivial)
 
 theorem trace_correct (s : State) (h : Valid s) (inputs : List Machine.Inputs) :
     component.trace s inputs = Cache.referenceComponent.trace s.machine inputs :=
@@ -171,8 +108,21 @@ theorem trace_correct (s : State) (h : Valid s) (inputs : List Machine.Inputs) :
 
 theorem initialized_trace (s : State) (i : Machine.Inputs) (hi : i.init = true)
     (inputs : List Machine.Inputs) :
-    component.trace (next i s) inputs = Cache.referenceComponent.trace (Machine.next i s.machine) inputs := by
-  rw [← initialize_machine_next i s hi]
-  exact trace_correct (next i s) (initialize_valid i s hi) inputs
+    component.trace (next i s) inputs = Cache.referenceComponent.trace (Machine.next i s.machine) inputs :=
+  FetchPolicy.initialized_trace correct s i hi inputs (fun _ _ => trivial)
+
+/-! The register updates, for a netlist to be compared against. -/
+
+theorem next_fetched (i : Machine.Inputs) (s : State) (b : Bool) :
+    (next i s).policy.fetched b =
+      Loader.Store.read (s.machine.memory (Machine.selected i s.machine))
+        (Dispatch.candidate (FetchPolicy.feed policy i s) s.machine.core b) := by
+  cases b <;> rfl
+
+theorem next_startWord (i : Machine.Inputs) (s : State) :
+    (next i s).policy.startWord =
+      if Machine.committing i s.machine then
+        Loader.Store.read (s.machine.memory (Machine.selected i s.machine)) 0
+      else s.policy.startWord := rfl
 
 end Pinwheel.Hardware.Storage.Decoupled

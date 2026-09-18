@@ -2,6 +2,7 @@ import Pinwheel.Hardware.Storage.SampledBackend
 import Pinwheel.Hardware.Storage.EnabledBackend
 import Pinwheel.Hardware.Storage.PrefetchEmit
 import Pinwheel.Hardware.Storage.OnePortEmit
+import Pinwheel.Hardware.Storage.TwoPortEmit
 
 /-! Executable structural report for the composed backends: arrival levels per
 launch family and endpoint class, the cached-word enable cone, and the source
@@ -49,8 +50,7 @@ def classes : Array String := #["loader control", "core state", "dictionary word
 
 def prefetchClass : {w : Nat} → Backend.Prefetch.Register w → String
   | _, .inner r => registerClass r
-  | _, .fetched _ => "fetched words"
-  | _, .startWord => "fetched words"
+  | _, .extra _ => "fetched words"
 
 def prefetchSampledClass : {w : Nat} → Extended Backend.Prefetch.Register PinSampler.Stage w → String
   | _, .inner r => prefetchClass r
@@ -58,8 +58,7 @@ def prefetchSampledClass : {w : Nat} → Extended Backend.Prefetch.Register PinS
 
 def Family.prefetchRegister (f : Family) : Launch Backend.Prefetch.Register
   | _, .inner r => f.register r
-  | _, .fetched _ => if f == .registers then some 0 else none
-  | _, .startWord => if f == .registers then some 0 else none
+  | _, .extra _ => if f == .registers then some 0 else none
 
 def Family.prefetchSampled (f : Family) : Launch (Extended Backend.Prefetch.Register PinSampler.Stage)
   | _, .inner r => f.prefetchRegister r
@@ -67,9 +66,7 @@ def Family.prefetchSampled (f : Family) : Launch (Extended Backend.Prefetch.Regi
 
 def onePortClass : {w : Nat} → Backend.OnePort.Register w → String
   | _, .inner r => registerClass r
-  | _, .fetched _ => "fetched words"
-  | _, .startWord => "fetched words"
-  | _, .second => "fetched words"
+  | _, .extra _ => "fetched words"
 
 def onePortSampledClass : {w : Nat} → Extended Backend.OnePort.Register PinSampler.Stage w → String
   | _, .inner r => onePortClass r
@@ -77,12 +74,26 @@ def onePortSampledClass : {w : Nat} → Extended Backend.OnePort.Register PinSam
 
 def Family.onePortRegister (f : Family) : Launch Backend.OnePort.Register
   | _, .inner r => f.register r
-  | _, .fetched _ => if f == .registers then some 0 else none
-  | _, .startWord => if f == .registers then some 0 else none
-  | _, .second => if f == .registers then some 0 else none
+  | _, .extra _ => if f == .registers then some 0 else none
 
 def Family.onePortSampled (f : Family) : Launch (Extended Backend.OnePort.Register PinSampler.Stage)
   | _, .inner r => f.onePortRegister r
+  | _, .extra _ => if f == .registers then some 0 else none
+
+def twoPortClass : {w : Nat} → Backend.TwoPort.Register w → String
+  | _, .inner r => registerClass r
+  | _, .extra _ => "fetched words"
+
+def twoPortSampledClass : {w : Nat} → Extended Backend.TwoPort.Register PinSampler.Stage w → String
+  | _, .inner r => twoPortClass r
+  | _, .extra _ => "pin stages"
+
+def Family.twoPortRegister (f : Family) : Launch Backend.TwoPort.Register
+  | _, .inner r => f.register r
+  | _, .extra _ => if f == .registers then some 0 else none
+
+def Family.twoPortSampled (f : Family) : Launch (Extended Backend.TwoPort.Register PinSampler.Stage)
+  | _, .inner r => f.twoPortRegister r
   | _, .extra _ => if f == .registers then some 0 else none
 
 def show? : Option Nat → String
@@ -278,20 +289,23 @@ def prefetchStages (cost : Cost) (f : Family) : List (String × Option Nat) :=
   let register : Launch Backend.Prefetch.Register := f.prefetchRegister
   let successor := Backend.Prefetch.successor.arrival max cost input register
   let l1 : Launch Backend.Prefetch.W1 := WithWire.arrivals input successor
-  let dispatch := (Backend.Prefetch.sched Dispatch.dispatchingExpr).arrival max cost l1 register
-  let target := (Backend.Prefetch.sched Reactive.target).arrival max cost l1 register
-  let taken := (Backend.Prefetch.sched (Dispatch.candidateExpr true)).arrival max cost l1 register
-  let untaken := (Backend.Prefetch.sched (Dispatch.candidateExpr false)).arrival max cost l1 register
+  let dispatch := (Backend.Policy.sched Dispatch.dispatchingExpr : Expr Backend.Prefetch.W1 Backend.Prefetch.Register 1).arrival
+    max cost l1 register
+  let target := (Backend.Policy.sched Reactive.target : Expr Backend.Prefetch.W1 Backend.Prefetch.Register 8).arrival
+    max cost l1 register
+  let taken := Backend.Prefetch.taken.arrival max cost l1 register
   let l2 : Launch Backend.Prefetch.W2 := WithWire.arrivals l1 taken
+  let untaken := Backend.Prefetch.untaken.arrival max cost l2 register
   let l3 : Launch Backend.Prefetch.W3 := WithWire.arrivals l2 untaken
-  let at3 {w : Nat} (r : Backend.Prefetch.Register w) :=
-    (Backend.Prefetch.body.next r).arrival max cost l3 register
+  let body := Backend.Policy.body Backend.Prefetch.regNext
+  let at3 {w : Nat} (r : Backend.Prefetch.Register w) := (body.next r).arrival max cost l3 register
   let core := Reactive.registers.foldl (fun acc ⟨_, r⟩ => combine max acc (at3 (.inner (.core r)))) none
+  let enable : Expr Backend.Prefetch.W3 Backend.Prefetch.Register 1 := Backend.Policy.enableW.inner Backend.Policy.input3
   [("fed successor", successor), ("dispatch decision", dispatch), ("target", target),
-   ("cached word enable", Backend.Prefetch.enable3.arrival max cost l3 register),
+   ("cached word enable", enable.arrival max cost l3 register),
    ("cached word", at3 (.inner .current)), ("candidate taken", taken), ("candidate untaken", untaken),
-   ("fetched taken", at3 (.fetched true)), ("fetched untaken", at3 (.fetched false)),
-   ("start word", at3 .startWord), ("core state", core)]
+   ("fetched taken", at3 (.extra (.fetched true))), ("fetched untaken", at3 (.extra (.fetched false))),
+   ("start word", at3 (.extra .startWord)), ("core state", core)]
 
 def prefetchReport : String :=
   let plain (cost : Cost) := familyRows cost Backend.Prefetch.netlist Backend.Prefetch.registers prefetchClass
@@ -315,20 +329,23 @@ def onePortStages (cost : Cost) (f : Family) : List (String × Option Nat) :=
   let register : Launch Backend.OnePort.Register := f.onePortRegister
   let successor := Backend.OnePort.successor.arrival max cost input register
   let l1 : Launch Backend.OnePort.W1 := WithWire.arrivals input successor
-  let dispatch := (Backend.OnePort.sched Dispatch.dispatchingExpr).arrival max cost l1 register
-  let target := (Backend.OnePort.sched Reactive.target).arrival max cost l1 register
+  let dispatch := (Backend.Policy.sched Dispatch.dispatchingExpr : Expr Backend.OnePort.W1 Backend.OnePort.Register 1).arrival
+    max cost l1 register
+  let target := (Backend.Policy.sched Reactive.target : Expr Backend.OnePort.W1 Backend.OnePort.Register 8).arrival
+    max cost l1 register
   let address := Backend.OnePort.address.arrival max cost l1 register
   let l2 : Launch Backend.OnePort.W2 := WithWire.arrivals l1 address
   let word := Backend.OnePort.word.arrival max cost l2 register
   let l3 : Launch Backend.OnePort.W3 := WithWire.arrivals l2 word
-  let at3 {w : Nat} (r : Backend.OnePort.Register w) :=
-    (Backend.OnePort.body.next r).arrival max cost l3 register
+  let body := Backend.Policy.body Backend.OnePort.regNext
+  let at3 {w : Nat} (r : Backend.OnePort.Register w) := (body.next r).arrival max cost l3 register
   let core := Reactive.registers.foldl (fun acc ⟨_, r⟩ => combine max acc (at3 (.inner (.core r)))) none
+  let enable : Expr Backend.OnePort.W3 Backend.OnePort.Register 1 := Backend.Policy.enableW.inner Backend.Policy.input3
   [("fed successor", successor), ("dispatch decision", dispatch), ("target", target),
-   ("cached word enable", Backend.OnePort.enable3.arrival max cost l3 register),
+   ("cached word enable", enable.arrival max cost l3 register),
    ("cached word", at3 (.inner .current)), ("port address", address), ("port word", word),
-   ("fetched taken", at3 (.fetched true)), ("fetched untaken", at3 (.fetched false)),
-   ("start word", at3 .startWord), ("entered flag", at3 .second), ("core state", core)]
+   ("fetched taken", at3 (.extra (.fetched true))), ("fetched untaken", at3 (.extra (.fetched false))),
+   ("start word", at3 (.extra .startWord)), ("entered flag", at3 (.extra .second)), ("core state", core)]
 
 def onePortReport : String :=
   let plain (cost : Cost) := familyRows cost Backend.OnePort.netlist Backend.OnePort.registers onePortClass
@@ -344,6 +361,44 @@ def onePortReport : String :=
     ",\n  \"gates\": " ++ rowsJson (plain Cost.gates) ++
     ",\n  \"sampled_gates\": " ++ rowsJson (sampled Cost.gates) ++ "\n}\n"
 
+/-- Arrival at each stage of the two-port machine's loop, for one launch family. -/
+def twoPortStages (cost : Cost) (f : Family) : List (String × Option Nat) :=
+  let input : Launch Machine.Input := f.input
+  let register : Launch Backend.TwoPort.Register := f.twoPortRegister
+  let successor := Backend.TwoPort.successor.arrival max cost input register
+  let l1 : Launch Backend.TwoPort.W1 := WithWire.arrivals input successor
+  let dispatch := (Backend.Policy.sched Dispatch.dispatchingExpr : Expr Backend.TwoPort.W1 Backend.TwoPort.Register 1).arrival
+    max cost l1 register
+  let address0 := Backend.TwoPort.address0.arrival max cost l1 register
+  let word0 := Backend.TwoPort.word0.arrival max cost l1 register
+  let l2 : Launch Backend.TwoPort.W2 := WithWire.arrivals l1 word0
+  let taken := Backend.TwoPort.taken.arrival max cost l2 register
+  let l3 : Launch Backend.TwoPort.W3 := WithWire.arrivals l2 taken
+  let body := Backend.Policy.body Backend.TwoPort.regNext
+  let at3 {w : Nat} (r : Backend.TwoPort.Register w) := (body.next r).arrival max cost l3 register
+  let core := Reactive.registers.foldl (fun acc ⟨_, r⟩ => combine max acc (at3 (.inner (.core r)))) none
+  let enable : Expr Backend.TwoPort.W3 Backend.TwoPort.Register 1 := Backend.Policy.enableW.inner Backend.Policy.input3
+  [("fed successor", successor), ("dispatch decision", dispatch),
+   ("cached word enable", enable.arrival max cost l3 register),
+   ("cached word", at3 (.inner .current)), ("port 0 address", address0), ("port 0 word", word0),
+   ("candidate taken", taken),
+   ("fetched taken", at3 (.extra (.fetched true))), ("fetched untaken", at3 (.extra (.fetched false))),
+   ("start word", at3 (.extra .startWord)), ("core state", core)]
+
+def twoPortReport : String :=
+  let plain (cost : Cost) := familyRows cost Backend.TwoPort.netlist Backend.TwoPort.registers twoPortClass
+    Family.twoPortRegister (.inner .current)
+  let sampled (cost : Cost) := familyRows cost (PinSampler.netlist Backend.TwoPort.netlist)
+    Backend.TwoPort.sampledRegisters twoPortSampledClass Family.twoPortSampled (.inner (.inner .current))
+  "{\n  \"variant\": \"twoport\"" ++
+    ",\n  \"loop_stages_gates\": {" ++ String.intercalate ", " ([Family.registers, .pins, .command, .cursor].map fun f =>
+      s!"\"{f.label}\": {depthsJson (twoPortStages Cost.gates f)}") ++ "}" ++
+    ",\n  \"loop_stages_unit\": {" ++ String.intercalate ", " ([Family.registers, .pins].map fun f =>
+      s!"\"{f.label}\": {depthsJson (twoPortStages Cost.unit f)}") ++ "}" ++
+    ",\n  \"unit\": " ++ rowsJson (plain Cost.unit) ++
+    ",\n  \"gates\": " ++ rowsJson (plain Cost.gates) ++
+    ",\n  \"sampled_gates\": " ++ rowsJson (sampled Cost.gates) ++ "\n}\n"
+
 def main (args : List String) : IO Unit := do
   let out := args.headD "build/structure"
   IO.FS.createDirAll out
@@ -351,7 +406,8 @@ def main (args : List String) : IO Unit := do
       ("command-split", report "command-split" (BankSelect.netlist false) false BankSelect.body),
       ("late-bank", report "late-bank" (BankSelect.netlist true) true BankSelect.body),
       ("enable-split", report "enable-split" CacheEnable.netlist false CacheEnable.body),
-      ("prefetch", prefetchReport), ("oneport", onePortReport)] do
+      ("prefetch", prefetchReport), ("oneport", onePortReport),
+      ("twoport", twoPortReport)] do
     IO.FS.writeFile (out ++ "/" ++ variant ++ ".json") text
     IO.println s!"Wrote structural report for {variant}."
   for (name, p) in policies do
