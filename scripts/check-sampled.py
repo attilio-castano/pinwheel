@@ -10,13 +10,13 @@ import argparse
 import json
 from pathlib import Path
 import re
-import subprocess
 import sys
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import backend_readback as rb
+import process_group
 
 TOP = rb.TOP
 PROVED = {
@@ -80,7 +80,10 @@ def main():
     sources = [*sorted((ROOT / "Pinwheel").rglob("*.lean")), ROOT / "Pinwheel.lean", ROOT / "lakefile.toml",
                ROOT / "lean-toolchain", ROOT / "test/Sampled.lean", ROOT / "test/Loader.lean",
                ROOT / "test/loader_tb.sv", Path(__file__).resolve(), ROOT / "scripts/backend_readback.py",
+               ROOT / "scripts/process_group.py",
                ROOT / "scripts/measure-storage-variant.py", ROOT / "scripts/loader-vectors.py",
+               ROOT / "scripts/reactive-core-vectors.py", ROOT / "scripts/execution-vectors.py",
+               ROOT / "scripts/uart_rx_oracle.py",
                ROOT / "tools/hardware-toolchain.json", ROOT / "tools/technology-library.json", ROOT / manifest]
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     commands, started = [], time.monotonic()
@@ -88,9 +91,8 @@ def main():
     def run(command, label, timeout=900, reject=None):
         command = list(map(str, command))
         then = time.monotonic()
-        result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+        result = process_group.run_captured(command, cwd=ROOT, timeout=timeout, log_path=out / f"{label}.log")
         text = result.stdout + result.stderr
-        (out / f"{label}.log").write_text(text)
         commands.append({"argv": command, "exit_code": result.returncode, "expected_failure": bool(reject),
                          "seconds": round(time.monotonic() - then, 3)})
         if reject:

@@ -1003,6 +1003,38 @@ external interface integration retain their separate contracts.
   `tools/physical-toolchain.json` records the allocation. Older studies keep
   their wording about an 8×4 outline as written at the time.
 
+## 2026-09-19: local branch review and submission plan
+
+- **Scope:** review of `claude/physical-fit`, starting at `4d5de85`, followed by
+  bounded script, test and documentation fixes. No Lean definitions or proofs
+  changed; no new mapping, physical run or default-backend promotion.
+- **Fixes:** physical preparation now requires the manifest's HEAD, index and
+  working-tree bytes to agree. Netlist receipts use portable logical paths;
+  clock-gate mutation checks bind retained inputs and require the unmodified
+  baseline to pass. Sampled/prefetch checks bind their full oracle dependency
+  chain and terminate timed-out process groups with retained diagnostics.
+  DEF parsing follows logical route segments and excludes patch rectangles
+  from via counts; the [dated correction](../physical-correlation-study.md#parser-correction-2026-09-19)
+  preserves the original physical results and records the changed resistance
+  fits on two retained input pairs. The original calibration pair is absent.
+- **Validation:** the clean-source foundation gate passed all 30 suites and
+  audited 183 modules, 13,322 declarations and 6,873 theorems with standard axioms
+  only; the injected untrusted axiom was rejected. It took 1,521.681 s, and all
+  250 recorded inputs match the working tree. Receipt:
+  `build/pr-review-20260919/source/build/validation/pr-review-20260919/report.json`
+  (SHA-256 `707af9088f0e50abb3628a539c5904740fcaa4858a9c7c3113f85139b997fd0a`).
+  All 56 Python tests passed, with all script/test source hashes unchanged
+  during the run. Fresh emission of one-/two-/three-port cores, their
+  sampled variants and both chip variants matched all eight retained MLIR/RTL
+  pairs. This is emission identity, not new simulation, equivalence or physical
+  evidence. Local receipts are under `build/pr-review-20260919/`.
+- **Disposition:** the [submission plan](../submission-plan.md) names the next
+  implementation gates: a ready UART receiver and emitted admission rule, host
+  result transfer, independent chip RTL validation and the actual chip physical
+  boundary. Current status no longer treats a two-port timeout as an absolute
+  utilization cutoff. Host documentation now states the three-edge idle
+  preparation and separates upload commitment from a later start.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

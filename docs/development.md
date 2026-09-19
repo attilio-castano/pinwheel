@@ -6,9 +6,11 @@ The package includes protocol specifications, compilers, and structural hardware
 The [technical catalog](README.md) routes the milestone-specific checks below;
 [research status](research/status.md) owns the current evidence and next decision.
 For research work, follow the [bounded workflow](research/README.md) and complete
-its evidence writeback. The later core has synchronous atomic loading and a
-[physical diagnostic](physical-validation.md); external serial loading and physical
-closure remain open. No editor extension is required for this terminal-based workflow.
+its evidence writeback. The later core has synchronous atomic loading and routed
+experiments. The [whole chip](whole-chip.md) adds serial loading in Lean and
+emitted RTL; independent validation of that RTL, host result readback, and
+whole-chip physical closure remain open. The [submission plan](submission-plan.md)
+records the remaining gates. No editor extension is required for this workflow.
 
 ## Merge validation
 

@@ -15,10 +15,11 @@ import argparse
 import hashlib
 import json
 import re
-import subprocess
 import sys
 import time
 from pathlib import Path
+
+import process_group
 
 ROOT = Path(__file__).resolve().parents[1]
 TOP = "pinwheel_atomic_small_dense_cached"
@@ -62,9 +63,10 @@ def main():
     out.mkdir(parents=True)
     sources = [*sorted((ROOT / "Pinwheel").rglob("*.lean")), ROOT / "Pinwheel.lean", ROOT / "lakefile.toml",
                ROOT / "lean-toolchain", ROOT / v["test"], ROOT / "test/Loader.lean",
-               ROOT / "test/loader_tb.sv", Path(__file__).resolve(),
+               ROOT / "test/loader_tb.sv", Path(__file__).resolve(), ROOT / "scripts/process_group.py",
                ROOT / "scripts/measure-storage-variant.py", ROOT / "scripts/loader-vectors.py",
-               ROOT / "scripts/reactive-core-vectors.py", ROOT / "tools/hardware-toolchain.json",
+               ROOT / "scripts/reactive-core-vectors.py", ROOT / "scripts/execution-vectors.py",
+               ROOT / "scripts/uart_rx_oracle.py", ROOT / "tools/hardware-toolchain.json",
                ROOT / "tools/technology-library.json"]
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     commands, started = [], time.monotonic()
@@ -72,9 +74,8 @@ def main():
     def run(command, label, timeout=900, reject=None):
         command = list(map(str, command))
         then = time.monotonic()
-        result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
+        result = process_group.run_captured(command, cwd=ROOT, timeout=timeout, log_path=out / f"{label}.log")
         text = result.stdout + result.stderr
-        (out / f"{label}.log").write_text(text)
         commands.append({"argv": command, "exit_code": result.returncode, "expected_failure": bool(reject),
                          "seconds": round(time.monotonic() - then, 3)})
         if reject:

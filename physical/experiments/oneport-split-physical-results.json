@@ -301,14 +301,15 @@
     "receipt": "build/physical/oneport-split-01-netlist-check/report.json",
     "sha256": "9cf8958d58132ddda555a43e804b6ee7be005b43ac7a00dd2e94a8404a0c371a",
     "result": "Passed 29898 atomic edges and 4903194 defined output-bit comparisons; mutants rejected: 1",
+    "inputs_path_note": "Repository-contained path labels below are normalized relative to the repository root. These labels copy the historical receipt's input hashes; the original receipt bytes and its SHA-256 above are unchanged.",
     "inputs_sha256": {
       "build/physical/oneport-split-sampled/runs/oneport-split-01/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.nl.v": "558dd66edef2abcb1da5424b1aceced626fb8c77a776ac08171e287576424686",
-      "/Users/attiliocastano/Developer/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_stdcell.v": "b0adbc84c8f78feb01c3d8d9d55e9818ee6502347d336f3a1f846e6a5d64e0a2",
-      "/Users/attiliocastano/Developer/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_udp.v": "5491a3edf7468792b5222e7abe057e0583a407c01b2086d4fd44a55b6cf88055",
-      "/Users/attiliocastano/Developer/pinwheel/build/physical/oneport-split-sampled/design.sv": "4c39522daca062e19c40f3fc685245c57ed771fd8c909d431fe420bd41db3fd0",
-      "/Users/attiliocastano/Developer/pinwheel/test/loader_tb.sv": "494a61a24c1f7dda40ab1b48e585a68416824736388820d696f7b690b5513559",
+      "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_stdcell.v": "b0adbc84c8f78feb01c3d8d9d55e9818ee6502347d336f3a1f846e6a5d64e0a2",
+      "build/physical/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/verilog/sg13cmos5l_udp.v": "5491a3edf7468792b5222e7abe057e0583a407c01b2086d4fd44a55b6cf88055",
+      "build/physical/oneport-split-sampled/design.sv": "4c39522daca062e19c40f3fc685245c57ed771fd8c909d431fe420bd41db3fd0",
+      "test/loader_tb.sv": "494a61a24c1f7dda40ab1b48e585a68416824736388820d696f7b690b5513559",
       "build/oneport/oneport-04/measured-sampled/vectors.txt": "da1adbe40768c14ee34460725e8f6316c6e75b4090239c20dd42ff049354a8fc",
-      "/Users/attiliocastano/Developer/pinwheel/scripts/check-physical-netlist.py": "c3e9f92f0fd9e37b7850af26014c8ef45f59c2b146b34684d69b3bfce01c4398"
+      "scripts/check-physical-netlist.py": "c3e9f92f0fd9e37b7850af26014c8ef45f59c2b146b34684d69b3bfce01c4398"
     }
   },
   "disposition": "With the command-split lift the one-port backend meets setup at all three extracted corners under the clock-gating overlay: slow +0.602 ns with no violating endpoint (oneport-sampled-01, same contract without the split: -0.187 ns, 9 endpoints; combined-03, the same-overlay control: -2.251 ns, 40). Hold met, zero routing violations after 13 passes (51 before), Magic DRC, LVS and antenna clean, flow exit 0. As the structural model and Storage/DataPort.lean state, the data port now reaches only loader logic (+4.383 ns, to the loader_rejected output). The register family moved from -0.053 to +1.100 ns although its structural depth changed by one level; that is more than the 0.6 ns spread seen between equivalent RTLs, and its cause is not isolated. Retain as the leading experimental variant; one run, no promotion, frequency or fit claim.",

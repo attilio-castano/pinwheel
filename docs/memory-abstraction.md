@@ -697,13 +697,13 @@ with 57% more estimated wire than the one-port design at the same step; the
 repair step after it re-entered the same loop, and the 150-minute limit ended
 the run before detailed routing. No extracted timing exists for this design.
 
-What the pair says. On this test rectangle and overlay, routability ends
-somewhere between 69% and 75% utilization at global routing, which is between
-about +5% and +15% of mapped area over the sampled candidate. The organization
-without a rule on programs is on the wrong side of it here; the one with the
-rule closes timing. The rectangle is not the chip: the announced outline is
-about a third larger (see [the whole chip](whole-chip.md)), where the two-port
-design would sit near 56%, and that run has not been made.
+What the pair says. Under this overlay and time budget the one-port core
+completed routing and met setup/hold, while the two-port core did not complete.
+The result supports advancing one port; it does not establish a universal
+utilization cutoff or impossibility of routing two ports. Since 2026-09-18 the
+official outline is the same 6×4 die area used here. The old 8×4/56% estimate is
+inapplicable. A [whole-chip run](whole-chip.md#the-outline) must still use the
+official pin template and include the serial interface.
 
 ## What the abstraction buys
 
@@ -742,9 +742,11 @@ the next-address decode, and the dictionary needs two read ports.
   comparison is negative by capacity at the diagnostic floorplan, not a timing
   result.
 - The one-port and two-port backends are proved, emitted, checked at RTL level
-  and mapped; the one-port backend has one routed run, not closed at the slow
-  corner (−0.187 ns, from the loader's data port), and the two-port backend
-  none. The one-port refinement is conditional on the
+  and mapped. The one-port core has two routed results: −0.187 ns slow setup
+  before the command split and +0.602 ns afterward, one run of each version;
+  the latter meets setup/hold but retains electrical-limit violations. The
+  two-port attempt timed out before detailed routing and has no extracted
+  timing. The one-port refinement is conditional on the
   `Ready` rule for every pushed word: programs that violate it — the UART
   receiver, proved never ready — are outside the claim, and its RTL regression
   runs on ready-mode vectors. The admission filter that would make it

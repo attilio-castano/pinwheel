@@ -243,7 +243,7 @@
     }
   },
   "implemented_netlist_regression": null,
-  "disposition": "Did not finish. The two-port backend (no rule on programs) entered global routing at 75.2% utilization (one port 69.1%; the decoupled backend that failed earlier 80.7%). Global routing could not remove its overflow in the first pass and spent 2 h 3 min disabling the non-default routing rule of one clock net per round (71 rounds) before completing with 3,386,282 um of estimated wire, 57% more than the one-port design at the same step; the post-routing repair step re-entered the same loop and the 150-minute wall-time limit ended the run (exit 124) before detailed routing. No extracted timing, no layout checks. On this test rectangle and overlay the routability boundary lies between 69% and 75% utilization at global routing.",
+  "disposition": "Did not finish. The two-port backend (no rule on programs) entered global routing at 75.2% utilization (one port 69.1%; the decoupled backend that failed earlier 80.7%). Global routing could not remove its overflow in the first pass and spent 2 h 3 min disabling the non-default routing rule of one clock net per round (71 rounds) before completing with 3,386,282 um of estimated wire, 57% more than the one-port design at the same step; the post-routing repair step re-entered the same loop and the 150-minute wall-time limit ended the run (exit 124) before detailed routing. No extracted timing, no layout checks. Under this configuration and 150-minute budget the one-port candidate completed routing and the two-port candidate did not; these runs do not establish a universal utilization cutoff or impossibility of fitting two ports.",
   "worst_paths": {
     "note": "no extracted timing: the run ended before detailed routing"
   },

@@ -15,8 +15,9 @@ python3 scripts/check-foundation.py --tag first-check
 ```
 
 The first command checks physical input/checkpoint provenance, backend import
-boundaries, receipt binding, and bank-selection helpers using disposable files;
-it requires no CAD tools. The second runs the portable Lean/model gate.
+boundaries, receipt binding, bank-selection helpers, DEF route parsing and
+process-group timeout cleanup using disposable files and Python children; it
+requires no CAD tools. The second runs the portable Lean/model gate.
 
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
 commands, source hashes and a success receipt under `build/validation/<tag>/`.
@@ -123,6 +124,24 @@ python3 -B -m unittest discover -s test -p 'test_physical_*.py'
 python3 -B -m unittest discover -s test -p 'test_backend_readback.py'
 python3 -B -m unittest discover -s test -p 'test_bank_select.py'
 ```
+
+Physical candidate preparation requires its manifest to be present and
+byte-identical in HEAD, the Git index and the working tree before any output is
+written. The current portable receipt format uses repository-relative paths
+without dereferencing logical PDK symlinks; historical absolute-key receipts
+remain readable in their original checkout. Clock-gate mutation checks verify
+the retained model/vector inputs and generated artifacts, rerun the unmodified
+netlist, and reject input changes during the check. A failing baseline cannot
+count as detection of its mutants. The full `test_*.py` command above includes
+these regressions in `test_physical_prepare.py` and `test_physical_receipt.py`.
+
+The sampled and prefetch runners terminate the command's process group on
+timeout, escalate to SIGKILL, wait for exit and retain diagnostics. Cleanup
+that cannot be confirmed is reported explicitly. `test_process_group.py` checks
+normal failures, graceful cleanup and TERM-ignoring descendants, including
+children whose parent exits first. `test_fit_wire_rc.py` checks route parsing
+across line breaks and multiple `NEW` segments, and excludes patch rectangles
+from via counts; see the [dated correction](physical-correlation-study.md#parser-correction-2026-09-19).
 
 ## Foundation review order
 

@@ -128,8 +128,10 @@ the emitted RTL is byte-identical, because programs are loaded, not synthesized.
 the bus-free hold was an immediate `busFault`. Now a target that holds SDA low
 after STOP ends in `timeout` after the wait budget, and a disturbance shorter than
 the budget is waited out. A second controller that takes the bus after our STOP
-therefore produces `timeout`, not `busFault`; either way the transaction's ACK
-outcome is replaced. Bounded waiting remains a project policy, not an I²C rule.
+produces `timeout` if the blocking exhausts the wait budget, replacing the
+transaction's ACK outcome. If the bus becomes free in time to complete the
+qualified interval, the original outcome is retained. Bounded waiting remains
+a project policy, not an I²C rule.
 
 A narrower revision was modelled first: wait out only the low observations that
 precede the first free one, and keep any later low observation a fault. On the

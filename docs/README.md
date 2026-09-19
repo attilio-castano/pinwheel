@@ -3,6 +3,8 @@
 Start at [research status](research/status.md) for the active question and next
 decision. These records describe individual milestones and their evidence;
 historical next-step statements are not the current work queue.
+The [submission plan](submission-plan.md) records the remaining chip work and
+the acceptance gate for each step.
 
 1. [The competition brief](competition.md) for official constraints and primary sources.
 2. [The architecture plan](architecture.md) for Lean's role, proof boundaries, and the proposed repository structure.

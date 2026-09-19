@@ -45,11 +45,12 @@ resistance on routed per-layer length (and via count for resistance) over the
 | Metal4 | 223 mm | 0.0918 fF/µm | 0.1393 fF/µm | 1.52 |
 
 The capacitance fit has R² = 0.986; overall extracted capacitance is
-0.178 fF/µm. Fitted resistance (0.70 / 0.58 / 0.48 Ω/µm, 15.9 Ω per via,
-R² = 0.993) is close to the technology-LEF values (0.515 Ω/µm, 20 Ω per cut).
-Resistance is not the discrepancy; capacitance is. With no `LAYERS_RC` or
-`SIGNAL_WIRE_RC_LAYERS` set, placement-stage estimates also average in Metal1's
-lower 0.069 fF/µm.
+0.178 fF/µm. The original resistance fit reported 0.70 / 0.58 / 0.48 Ω/µm,
+15.9 Ω per via and R² = 0.993; those coefficients are affected by the parser
+defect documented below and should not be reused as calibration. The
+technology-LEF values are 0.515 Ω/µm and 20 Ω per cut. With no `LAYERS_RC` or
+`SIGNAL_WIRE_RC_LAYERS` set, placement-stage capacitance estimates also average
+in Metal1's lower 0.069 fF/µm.
 
 The worst path shows the consequence. Net `_07298_` has two pins placed 581 µm
 apart, 946 µm of routing and 0.179 pF of extracted wire load, driven by a
@@ -62,6 +63,28 @@ Inputs: routed DEF `e668da67…5db6a04` and nominal SPEF `6d4df224…2b2b536` fr
 `build/physical/core/runs/command-split-closure/` in the hardware-closure
 worktree. Extraction used the PDK's nominal ruleset only; separate best/worst
 RC corners remain unmeasured.
+
+### Parser correction (2026-09-19)
+
+Review found that the DEF parser treated physical lines as route segments and
+counted patch `RECT` records as vias. It now follows logical `ROUTED`/`NEW`
+segments across whitespace, with tests for known lengths, independent point
+chains, wildcard coordinates, extensions and formatting-invariant fits.
+
+The original `command-split-closure` DEF/SPEF pair is absent from this checkout,
+so its historical coefficients above have not been recomputed. Reanalysis of
+the retained `rc-calibrated-01` and `clock-gated-03` pairs found no change to any
+net's layer lengths or to either capacitance fit. Correcting the patch counts
+changed total vias from 338,188 to 282,102 and from 238,554 to 201,197,
+respectively. For `rc-calibrated-01`, the fitted resistance becomes
+0.5190 / 0.5174 / 0.5097 Ω/µm and 20.0928 Ω per via, with R² = 0.999980.
+These are coefficients for that retained run, not replacements for the missing
+original input pair.
+
+The [comparison receipt](../physical/experiments/wire-rc-parser-review-results.json)
+records the parser and input hashes. The original physical
+configurations, receipts and extracted timing results are unchanged; this
+correction involved parsing retained files, with no CAD execution.
 
 ## Finding 3: hold repair is a fifth of functional cell area
 

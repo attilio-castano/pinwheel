@@ -11,8 +11,9 @@ import json
 import re
 from pathlib import Path
 
-POINT = re.compile(r"\( (-?\d+|\*) (-?\d+|\*)(?: -?\d+)? \)")
-SEGMENT = re.compile(r"(?:ROUTED|NEW) (\S+)")
+POINT = re.compile(r"\(\s*(-?\d+|\*)\s+(-?\d+|\*)(?:\s+-?\d+)?\s*\)")
+SEGMENT = re.compile(r"\b(?:ROUTED|NEW)\s+(\S+)")
+VIA = re.compile(r"\)\s+(?:MASK\s+\d+\s+)?([^\s();+]+)")
 
 
 def sha(path):
@@ -34,13 +35,19 @@ def routed_lengths(def_text):
             continue
         name = block.split()[0].replace("\\", "")
         lengths, vias = {}, 0
-        for line in block[block.index("ROUTED"):].split("\n"):
-            layer = SEGMENT.search(line)
-            if not layer:
-                continue
-            vias += len(re.findall(r"\) [A-Za-z]\w*", line))
+        routes = block[block.index("ROUTED"):]
+        segments = list(SEGMENT.finditer(routes))
+        for index, layer in enumerate(segments):
+            end = segments[index + 1].start() if index + 1 < len(segments) else len(routes)
+            segment = routes[layer.end():end]
+            # A route can wrap anywhere, and several NEW segments can share a
+            # line. Only a logical segment carries one layer and point chain.
+            # RECT/VIRTUAL describe geometry after a point, not a via instance.
+            vias += sum(name not in {"RECT", "VIRTUAL"} for name in VIA.findall(segment))
             previous = None
-            for x, y in POINT.findall(line):
+            for x, y in POINT.findall(segment):
+                if previous is None and (x == "*" or y == "*"):
+                    raise ValueError(f"DEF net {name}: segment starts with a wildcard coordinate")
                 x = previous[0] if x == "*" else int(x)
                 y = previous[1] if y == "*" else int(y)
                 if previous is not None:

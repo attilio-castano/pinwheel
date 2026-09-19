@@ -1,7 +1,13 @@
 # The whole chip in Lean
 
 Status: **experimental top level, proved in Lean from a host's serial session to
-a running program; emitted; the emitted RTL has not been simulated or routed yet.**
+a committed program and its subsequent execution; emitted and mapped; the
+emitted RTL has not been independently simulated or routed.**
+
+The host interface has no readback transaction for captured data. The one-port
+chip assumes ready uploads: its admission filter is not in the emitted circuit and the
+compiled UART receiver violates that rule. These are explicit gates in the
+[submission plan](submission-plan.md).
 
 ## Question
 
@@ -22,9 +28,9 @@ route is the object the theorems are about?
 | Reference machine | atomic loader, scheduler, two program banks | `Hardware/Loader/` | proved |
 | Core backends | dense storage, cached word, fetch policies | `Hardware/Storage/` | proved to refine the reference, edge for edge |
 | **Serial loader** | three pins in place of the 67-wire port | `Hardware/Serial/` | **new: proved** |
-| **Pin samplers** | two registers on every input | `Hardware/Feeder.lean` | **new: generic, proved** |
+| **Pin samplers** | two registers on each consumed serial/protocol/reset input | `Hardware/Feeder.lean` | **new: generic, proved** |
 | **Pin map and output map** | Tiny Tapeout's ports | `Hardware/Chip.lean` | **new: proved** |
-| **Upload theorem** | "this session leaves this program running" | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | **new: proved** |
+| **Upload theorem** | this session commits the program, ready for a later start | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | **new: proved** |
 | Emitted RTL of the chip | `tt_um_pinwheel` | `test/ChipEmit.lean` | emitted and mapped; not simulated |
 | Routed chip | official 6×4 outline, `tt_block_6x4_pgvdd.def` | — | not started; the template is in the pinned Tiny Tapeout files, with the die area of every routed run so far |
 
@@ -83,8 +89,8 @@ and board timing are outside it, as for the pin sampler.
 Pins: `ui_in[0]` `sck`, `ui_in[1]` `mosi`, `ui_in[2]` `csn`; `uio[2:0]` the
 three protocol pins, driven through their enables, `uio_in[1:0]` sampled as the
 engine's inputs; `uo_out` = mode (3 bits), rejected, active, pending, valid,
-busy; `rst_n` low is `init`; `ena` is unused. Every input is sampled twice, the
-reset included.
+busy; `rst_n` low is `init`; `ena` is unused. Every consumed input is sampled
+twice, the reset included.
 
 - `Chip.trace_eq`: for every pin history and every core, the core takes the
   edges of the fed history (`Chip.history`) and the pins show the output map of
@@ -95,7 +101,7 @@ reset included.
   and the receiver — for every pin history with two ports, and on histories
   whose fed pushes satisfy the readiness rule with one.
 - `Chip.pins_shielded`: no pin has a combinational path to the core, the
-  receiver or an output; each ends at one flip-flop.
+  receiver or an output; consumed pins first enter the sampling registers.
 
 The emitted module is the Tiny Tapeout template's `tt_um_*` interface
 (`clk`, `rst_n`, `ena`, `ui_in`, `uo_out`, `uio_in`, `uio_out`, `uio_oe`), so
@@ -165,11 +171,29 @@ Proved: the netlist of the whole chip against the reference machine on the fed
 history; what a host session delivers; what an upload leaves; that the loaded
 program is the one the engine runs. The statements are about two-valued
 registers and digital samples, with the receiver between frames and idle
-samples in the samplers at the start of a session — the state any host reaches
-by holding the select line high for two clocks. Not done: simulation of the emitted `tt_um_pinwheel`
-against an independent serial driver, gate equivalence, any placed or routed
-run, read back of status over the serial pins, and any electrical or
-metastability claim.
+samples in the samplers at the start of a session. Hold select high and `rst_n`
+high for at least three chip-clock sampling edges: two fill the sampler stages,
+and the third lets the receiver consume idle and clear its count/fire state.
+This prepares the serial session; initializing the core through `rst_n` is a
+separate obligation.
+
+`Chip.outputs` shows loader status and protocol levels/enables, but does not
+expose the 16 capture bits or implement a host readback command. The supplied
+UART receive, SPI read, and I²C register-read programs leave their captured data
+inside the engine. A useful receive/read interface needs a result-transfer
+contract, including ownership across consume, reset, and program replacement.
+Status readback over the serial pins is also absent.
+
+The one-port theorem requires ready words on every later push. `Admission.admit`
+proves how to reject a non-ready push, but no emitted netlist contains that
+filter. Adding it and compiling a receiver that passes it are separate
+obligations; rejection alone does not add UART receive support.
+
+Independent serial-driver simulation of the emitted `tt_um_pinwheel`, gate
+equivalence, a placed/routed chip, and electrical/metastability evidence remain
+open. The existing physical scripts target the core's module and ports; the
+[submission plan](submission-plan.md#prepare-and-validate-the-physical-chip)
+lists the required chip-specific tooling changes.
 
 ## The outline
 
@@ -183,9 +207,9 @@ setup at every corner at 69.3% utilization; the two-port core, at 75.2%, did not
 route within the time limit
 ([routed results](memory-abstraction.md#the-command-split-backends-routed)).
 Mapped, the whole one-port chip is 0.8% larger than that core, so it is the
-candidate for this outline; the two-port chip is not, unless 8×4 arrives or it
-shrinks to about the one-port's utilization (the routability boundary here lies
-somewhere between 69% and 75%). What a routed run of the chip adds to the core runs:
+candidate to advance on this outline. The two-port candidate is deferred after
+the timed-out run; these two designs and one flow budget do not establish a
+universal utilization cutoff. What a routed run of the chip adds to the core runs:
 the real pin template (43 pins in one corner in place of 200-odd spread ports),
 the loader and samplers, and register-launched core inputs in place of assumed
 4 ns arrivals.

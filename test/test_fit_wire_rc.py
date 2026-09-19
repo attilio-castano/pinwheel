@@ -32,6 +32,44 @@ def design(count):
 
 
 class FitWireRC(unittest.TestCase):
+    def test_route_formatting_does_not_change_lengths_or_fit(self):
+        text, spef = design(60)
+        expected = rc.routed_lengths(text)
+        cap, res, _ = rc.extracted(spef)
+        expected_fit = rc.fit(expected, cap, res, 20.0)
+        formats = {
+            "continued points and vias": text.replace(" ) ( ", " )\n\t( ").replace(
+                " ) Via", " )\n\tVia"),
+            "several segments on one line": text.replace("\n  NEW", "\tNEW"),
+            "split layer and point tokens": text.replace("ROUTED Metal2", "ROUTED\n\tMetal2")
+                .replace("NEW Metal3", "NEW\n\tMetal3").replace("( ", "(\n\t")
+                .replace(" )", "\n\t)"),
+        }
+        for label, formatted in formats.items():
+            with self.subTest(label=label):
+                lengths = rc.routed_lengths(formatted)
+                self.assertEqual(lengths["n0"], ({"Metal2": 30.0, "Metal3": 40.0}, 1))
+                self.assertEqual(lengths, expected)
+                self.assertEqual(rc.fit(lengths, cap, res, 20.0), expected_fit)
+
+    def test_segments_restart_point_chains_and_patch_rectangles_are_not_vias(self):
+        text = """UNITS DISTANCE MICRONS 1000 ;
+NETS 1 ;
+- n0 ( a Y ) ( b A )
+  + ROUTED Metal2 ( -1000 -1000 50 )
+      ( * 29000 75 ) Via2_XY NEW Metal3 ( -1000 29000 ) ( 39000 * )
+  NEW Metal2 ( 100000 100000 ) ( 101000 * )
+  NEW Metal2 ( 101000 100000 ) RECT ( -100 -150 100 0 ) ;
+END NETS
+"""
+        self.assertEqual(rc.routed_lengths(text), {"n0": ({"Metal2": 31.0, "Metal3": 40.0}, 1)})
+
+    def test_a_new_segment_cannot_reuse_another_segments_coordinates(self):
+        text, _ = design(1)
+        text = text.replace("NEW Metal3 ( 1000 31000 )", "NEW Metal3 ( * 31000 )")
+        with self.assertRaisesRegex(ValueError, "segment starts with a wildcard coordinate"):
+            rc.routed_lengths(text)
+
     def test_recovers_layer_and_via_values(self):
         text, spef = design(60)
         lengths = rc.routed_lengths(text)

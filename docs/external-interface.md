@@ -1,7 +1,9 @@
 # External timing and interface contract
 
-This is the digital boundary for future integration. It does not insert new
-latency into the existing core or claim a completed package wrapper.
+This is the digital integration contract. The default core has no input
+pipeline; sampled variants and the experimental [whole chip](whole-chip.md)
+implement the two-register delay. Independent validation of the chip's emitted
+RTL and its physical/electrical boundary remains open.
 
 ## Clock-edge meaning
 
@@ -71,10 +73,14 @@ an atomic 64-bit transfer. Specify backpressure/acknowledgement and how the host
 distinguishes transport acceptance from loader rejection. A protocol must not
 start until upload and commit acceptance are known.
 
-The serialized protocol, package-pin allocation, lane mapping, reset-sample
-profile, and board electrical limits remain integration decisions. Resolve them
-against the actual supported Tiny Tapeout wrapper/I/O budget before implementing
-the transport. The current diagnostic 6x4 routed core is not that wrapper.
+The experimental [whole chip](whole-chip.md) now defines a three-pin, 72-bit
+serial frame, the Tiny Tapeout pin allocation, and two-register sampling in
+Lean. Its emitted RTL has no independent serial-driver check yet. The interface
+also lacks captured-result readback and a retained command acknowledgement;
+`rejected` is an indication on the command edge. Startup, result ownership,
+board electrical limits and the actual physical boundary remain acceptance
+gates in the [submission plan](submission-plan.md). The routed 6×4 core uses
+stand-in ports and does not validate that wrapper.
 
 See [atomic loading](atomic-loader.md), [hardware closure](hardware-closure.md),
 and [processor obligations](processor-verification.md#milestone-5-implement-real-loading-and-external-interfaces).

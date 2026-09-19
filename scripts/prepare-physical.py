@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -13,6 +14,22 @@ BASE = ROOT / "build/physical"
 
 def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def committed_manifest(path):
+    """Read only an unchanged manifest present in both HEAD and the Git index."""
+    if not path.is_relative_to(ROOT / "physical/experiments"):
+        raise RuntimeError("The manifest must be a tracked result under physical/experiments")
+    relative = str(path.relative_to(ROOT))
+    try:
+        committed = subprocess.check_output(["git", "show", f"HEAD:{relative}"], cwd=ROOT, stderr=subprocess.PIPE)
+        indexed = subprocess.check_output(["git", "show", f":{relative}"], cwd=ROOT, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as error:
+        raise RuntimeError("The manifest must be tracked and committed in HEAD") from error
+    current = path.read_bytes()
+    if current != committed or indexed != committed:
+        raise RuntimeError("The manifest differs from committed HEAD; preserve committed validation evidence")
+    return json.loads(current), hashlib.sha256(current).hexdigest()
 
 
 def main():
@@ -30,18 +47,30 @@ def main():
         parser.error("design must contain only letters, numbers, hyphens, or underscores")
     if bool(args.validated_rtl) != bool(args.manifest) or (args.validated_rtl and args.validated_command_split):
         parser.error("Use --validated-rtl with --manifest, or --validated-command-split alone")
+    if args.role is not None and (not args.validated_rtl or not args.role):
+        parser.error("Use --role only with --validated-rtl and --manifest, naming a nonempty entry")
     OUT = BASE / args.design
     manifest = (args.manifest.resolve() if args.manifest
                 else ROOT / "physical/experiments/command-split-results.json")
-    if not manifest.is_relative_to(ROOT / "physical/experiments"):
-        raise RuntimeError("The manifest must be a tracked result under physical/experiments")
     args.validated_command_split = args.validated_rtl or args.validated_command_split
-    candidate = json.loads(manifest.read_text()) if args.validated_command_split else None
-    if candidate and args.role: candidate = candidate[args.role]
-    if candidate and sha(args.validated_command_split) != candidate["rtl_sha256"]:
-        raise RuntimeError("Candidate RTL differs from the committed validated artifact")
-    if candidate and (OUT / "inputs.json").exists():
-        raise RuntimeError("Preserve the existing prepared design; use a separate checkout for this candidate")
+    candidate = None
+    manifest_digest = None
+    if args.validated_command_split:
+        candidate, manifest_digest = committed_manifest(manifest)
+        if args.role:
+            if not isinstance(candidate, dict) or args.role not in candidate:
+                raise RuntimeError(f"Manifest has no role {args.role!r}")
+            candidate = candidate[args.role]
+        if (not isinstance(candidate, dict)
+                or not isinstance(candidate.get("rtl_sha256"), str)
+                or not re.fullmatch(r"[0-9a-f]{64}", candidate["rtl_sha256"])
+                or not isinstance(candidate.get("variant", "command-split" if not args.validated_rtl else None), str)
+                or not candidate.get("variant", "command-split" if not args.validated_rtl else None)):
+            raise RuntimeError("Manifest entry must name an RTL SHA-256 and a nonempty variant")
+        if sha(args.validated_command_split) != candidate["rtl_sha256"]:
+            raise RuntimeError("Candidate RTL differs from the committed validated artifact")
+        if (OUT / "inputs.json").exists():
+            raise RuntimeError("Preserve the existing prepared design; choose a separate --design for this candidate")
     OUT.mkdir(parents=True, exist_ok=True)
     if candidate:
         shutil.copyfile(args.validated_command_split, OUT / "design.sv")
@@ -61,6 +90,8 @@ def main():
         receipt = json.loads(receipt_path.read_text())
     if sha(OUT / "design.sv") != receipt["rtl_sha256"]:
         raise RuntimeError("Prepared RTL differs from the validated artifact")
+    if candidate and sha(manifest) != manifest_digest:
+        raise RuntimeError("Manifest changed during preparation")
     for name in ["core.json", "core.sdc"]:
         shutil.copyfile(ROOT / "physical" / name, OUT / name)
     sources = list((ROOT / "Pinwheel").rglob("*.lean")) + [ROOT / "test/Storage.lean", Path(__file__).resolve(), ROOT / "physical/core.json", ROOT / "physical/core.sdc"]
