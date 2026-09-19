@@ -136,10 +136,17 @@ count as detection of its mutants. The full `test_*.py` command above includes
 these regressions in `test_physical_prepare.py` and `test_physical_receipt.py`.
 
 The sampled and prefetch runners terminate the command's process group on
-timeout, escalate to SIGKILL, wait for exit and retain diagnostics. Cleanup
-that cannot be confirmed is reported explicitly. `test_process_group.py` checks
-normal failures, graceful cleanup and TERM-ignoring descendants, including
-children whose parent exits first. `test_fit_wire_rc.py` checks route parsing
+timeout, escalate to SIGKILL, reap the direct child and retain diagnostics.
+Termination means no live group members remain: Linux zombies have already
+terminated even while their process-table entries await reaping.
+Linux checks group membership, state and thread count through `/proc`; other
+hosts require group disappearance. Restricted or incompatible `/proc` views,
+incomplete reads and uncertain thread state stay unconfirmed.
+The runner does not adopt orphaned descendants. `test_process_group.py` checks
+normal failures, graceful cleanup, TERM-ignoring descendants, zombie-only
+groups and uncertain observations. Linux fixtures retain zombie descendants
+until assertions finish, then reap them without relying on the container's
+PID 1. `test_fit_wire_rc.py` checks route parsing
 across line breaks and multiple `NEW` segments, and excludes patch rectangles
 from via counts; see the [dated correction](physical-correlation-study.md#parser-correction-2026-09-19).
 
