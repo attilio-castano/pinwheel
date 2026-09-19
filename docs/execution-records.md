@@ -61,13 +61,13 @@ before preserving the existing terminal-capture/branch/pin-update edge.
 The indexed store deduplicates complete records. It is distinct from executing
 the counted byte-loop syntax directly. Counted operands are resolved during
 loading; the hardware does not traverse a syntax tree or calculate loop operands
-on each protocol edge. The 715-byte explicit and 205-byte counted V0 write files
+on each protocol edge. The 713-byte explicit and 203-byte counted V0 write files
 lower to identical E64 words and therefore the same deduplicated contents.
 
 The indexed capacity is **at most 64 distinct records**, including padding.
 Programs exceeding it are rejected. This is a capacity tradeoff: the direct
 store can represent 256 distinct records. UART, SPI, I²C write, and the register
-read examples use respectively **3, 11, 14, and 25 distinct records**, with
+read examples use respectively **3, 11, 13, and 25 distinct records** (the write used 14 until its bus-free hold became the same record as address 0), with
 canonical halt padding through address 255. Those are example counts, not a
 proof that every future protocol program fits the dictionary.
 

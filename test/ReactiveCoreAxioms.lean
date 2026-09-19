@@ -1,4 +1,6 @@
 import Pinwheel.Hardware.Reactive.CoreProofs
+import Pinwheel.Hardware.Reactive.FetchChoice
+import Pinwheel.Hardware.Reactive.Interface
 
 #print axioms Pinwheel.Hardware.Reactive.Core.address_correct
 #print axioms Pinwheel.Hardware.Reactive.Core.base_correct
@@ -16,6 +18,17 @@ import Pinwheel.Hardware.Reactive.CoreProofs
 #print axioms Pinwheel.Hardware.Reactive.Core.machine_run
 #print axioms Pinwheel.Hardware.Reactive.Core.memory_write_hold
 #print axioms Pinwheel.Hardware.Reactive.Core.metadata_hold
+#print axioms Pinwheel.Hardware.Reactive.Fetch.address_choice
+#print axioms Pinwheel.Hardware.Reactive.Fetch.address_resolved
+#print axioms Pinwheel.Hardware.Reactive.Fetch.branchExpr_correct
+#print axioms Pinwheel.Hardware.Reactive.Fetch.branch_uses_terminal_capture
+#print axioms Pinwheel.Hardware.Reactive.Fetch.candidateAddress_input_independent
+#print axioms Pinwheel.Hardware.Reactive.Fetch.candidateExpr_correct
+#print axioms Pinwheel.Hardware.Reactive.Fetch.readCandidates_eq
+#print axioms Pinwheel.Hardware.Reactive.Fetch.resolveCandidates_eq
+#print axioms Pinwheel.Hardware.Reactive.Fetch.resolveIndexedCandidates_eq
+#print axioms Pinwheel.Hardware.Reactive.Fetch.resolve_congr
+#print axioms Pinwheel.Hardware.Reactive.Fetch.selectionExpr_correct
 #print axioms Pinwheel.Hardware.Reactive.advance_active
 #print axioms Pinwheel.Hardware.Reactive.advance_checked
 #print axioms Pinwheel.Hardware.Reactive.advance_correct
@@ -35,12 +48,15 @@ import Pinwheel.Hardware.Reactive.CoreProofs
 #print axioms Pinwheel.Hardware.Reactive.from_values
 #print axioms Pinwheel.Hardware.Reactive.guard_correct
 #print axioms Pinwheel.Hardware.Reactive.inputBit_correct
+#print axioms Pinwheel.Hardware.Reactive.input_at_position
 #print axioms Pinwheel.Hardware.Reactive.kind_correct
 #print axioms Pinwheel.Hardware.Reactive.next_correct
+#print axioms Pinwheel.Hardware.Reactive.output_at_position
 #print axioms Pinwheel.Hardware.Reactive.predecessor_counter
 #print axioms Pinwheel.Hardware.Reactive.progress_correct
 #print axioms Pinwheel.Hardware.Reactive.range_correct
 #print axioms Pinwheel.Hardware.Reactive.ready_correct
+#print axioms Pinwheel.Hardware.Reactive.register_at_position
 #print axioms Pinwheel.Hardware.Reactive.retry_correct
 #print axioms Pinwheel.Hardware.Reactive.run_refines
 #print axioms Pinwheel.Hardware.Reactive.running_correct

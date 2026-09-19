@@ -8,16 +8,21 @@
   "action_revision": "3412659307918422f3f0727917cf9b499aaca588",
   "support_revision": "da63c9927411e3aca350977d653d24bbf5bca972",
   "allocation": {
-    "competition_tiles": "8x4",
-    "supported_in_pinned_cmos5l_flow": false,
-    "diagnostic_rectangle_tiles": "6x4",
+    "competition_tiles": "6x4",
+    "competition_checked": "2026-09-18",
+    "competition_note": "The announcement first said 8x4; it now sets the maximum at 6x4 and names 8x4 (about 30% more area) as a possibility the organizers are working on.",
+    "supported_in_pinned_cmos5l_flow": true,
     "die_um": [
       0,
       0,
       1289.28,
       710.64
     ],
-    "tt_def_template_used": false
+    "tt_def_template": "tech/ihp-sg13cmos5l/def/tt_block_6x4_pgvdd.def",
+    "tt_def_template_sha256": "b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4",
+    "tt_def_template_used": false,
+    "tt_def_template_note": "Routed runs so far use this die area as a core rectangle with tool-placed stand-in ports; none applies the template's 43 Metal4 pins on the top edge.",
+    "larger_tiles_in_pinned_flow": false
   },
   "upstream_sha256": {
     "action.yml": "22ffe0ce5625475d00f426c1f7c95a695d1dc56e363f00401413a0c129a3960d",

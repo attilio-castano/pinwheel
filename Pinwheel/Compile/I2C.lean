@@ -42,7 +42,7 @@ def instruction (cfg : Pinwheel.I2C.Config) (r : Pinwheel.I2C.Request) (pc : Fin
   else if pc.val == 74 then .action ⟨.openDrain 3, cfg.phaseMinusOne, none⟩
   else if pc.val == 75 then .wait ⟨.openDrain 2, ⟨0, true⟩, cfg.waitMinusOne⟩
   else if pc.val == 76 then .checked ⟨⟨.openDrain 2, cfg.phaseMinusOne, none⟩, clockHigh, none, .sequential⟩
-  else if pc.val == 77 then .checked ⟨⟨{}, cfg.phaseMinusOne, none⟩, bothHigh, none, .sequential⟩
+  else if pc.val == 77 then .qualify ⟨{}, bothHigh, cfg.phaseMinusOne, cfg.waitMinusOne⟩
   else .halt
 
 def program (cfg : Pinwheel.I2C.Config) (r : Pinwheel.I2C.Request) : Program :=

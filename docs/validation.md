@@ -15,8 +15,9 @@ python3 scripts/check-foundation.py --tag first-check
 ```
 
 The first command checks physical input/checkpoint provenance, backend import
-boundaries, receipt binding, and bank-selection helpers using disposable files;
-it requires no CAD tools. The second runs the portable Lean/model gate.
+boundaries, receipt binding, bank-selection helpers, DEF route parsing and
+process-group timeout cleanup using disposable files and Python children; it
+requires no CAD tools. The second runs the portable Lean/model gate.
 
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
 commands, source hashes and a success receipt under `build/validation/<tag>/`.
@@ -71,6 +72,11 @@ For a new checkout, the relevant dependency chain is:
 | Composed dense cached backend | `check-backend.py --tag NAME` builds the native emitter and loader fixtures; pinned hardware tools and technology libraries required | [Composed backend](hardware-closure.md#composed-backend) |
 | Program-bank selection variants | `check-backend-readback.py --variant command-split` or `--variant late-bank`, followed by `check-bank-select.py` with the exact proof receipt | [Bank-selection study](bank-selection-study.md) |
 | Cache-enable variant | `check-backend-readback.py --variant enable-split`, followed by `check-bank-select.py` and exact-cache regression | [Cache-enable study](cache-enable-study.md) |
+| Pin-sampled backend | `check-sampled.py --tag NAME --variant command-split`: inner emission identical to the read-back-proved RTL, reference-pipeline equivalence, wrong-depth rejections, pin-shifted independent oracle and mapping | [Pin-sampler study](pin-sampler-study.md) |
+| Fetch-policy backends | `check-prefetch.py --tag NAME` (decoupled, three ports), `--variant twoport`, `--variant oneport`: emission alone and behind the pin pipeline, RTL/generic-gate equivalence of both (two-step induction; three for one port) with registers that synthesis narrows re-exposed at full width so that name matching compares them, the independent oracle on both with pins shifted for the sampled one and rejected unshifted, and mapping. The one-port variant runs the oracle in ready mode — the UART receiver exercise replaced by a register read, the terminal-capture branch record given one cycle, no pushed word outside the readiness rule — and must be rejected on the unrestricted vectors | [Memory abstraction](memory-abstraction.md#fetch-organizations-as-a-parameter) |
+| Clock-gated routed netlist | `check-physical-netlist.py NETLIST --label NAME --vectors VECTORS`, then `check-clock-gates.py NETLIST --label NAME`: every integrated clock gate stuck open or shut must be rejected by the retained traces | [Physical correlation study](physical-correlation-study.md#third-attempt-clock-gated-03-routes) |
+| Structural levels | `check-structure.py --tag NAME`: Lean arrival levels against MLIR depths, mapped cone depths and routed launch-family ranking recorded in tracked manifests; for each fetch-policy backend, the deepest endpoint per launch family and the requirement that the loader's data port reaches no register of the fetch path (also a theorem, `Storage/DataPort.lean`); needs Lean only | [Structural timing](structural-timing.md) |
+| Lean gating plan on unchanged RTL | `gate-clocks.py --rtl RTL --plan PLAN --testbench DIR --tag NAME`: netlist versus plan bit by bit, oracle with every storage register observed, every stuck clock-gate enable rejected, two mapped corners | [Register enables](register-enables.md) |
 | Original UART/SPI core | No prior protocol fixtures; `check-core.py` generates its own | [Original core](core-hardware.md) |
 | Reactive core | No prior binary fixtures; `check-reactive-core.py` generates its own | [Reactive core](reactive-core-hardware.md) |
 | Atomic loader | No prior binary fixtures; `check-loader.py` generates its own | [Atomic loader](atomic-loader.md) |
@@ -118,6 +124,31 @@ python3 -B -m unittest discover -s test -p 'test_physical_*.py'
 python3 -B -m unittest discover -s test -p 'test_backend_readback.py'
 python3 -B -m unittest discover -s test -p 'test_bank_select.py'
 ```
+
+Physical candidate preparation requires its manifest to be present and
+byte-identical in HEAD, the Git index and the working tree before any output is
+written. The current portable receipt format uses repository-relative paths
+without dereferencing logical PDK symlinks; historical absolute-key receipts
+remain readable in their original checkout. Clock-gate mutation checks verify
+the retained model/vector inputs and generated artifacts, rerun the unmodified
+netlist, and reject input changes during the check. A failing baseline cannot
+count as detection of its mutants. The full `test_*.py` command above includes
+these regressions in `test_physical_prepare.py` and `test_physical_receipt.py`.
+
+The sampled and prefetch runners terminate the command's process group on
+timeout, escalate to SIGKILL, reap the direct child and retain diagnostics.
+Termination means no live group members remain: Linux zombies have already
+terminated even while their process-table entries await reaping.
+Linux checks group membership, state and thread count through `/proc`; other
+hosts require group disappearance. Restricted or incompatible `/proc` views,
+incomplete reads and uncertain thread state stay unconfirmed.
+The runner does not adopt orphaned descendants. `test_process_group.py` checks
+normal failures, graceful cleanup, TERM-ignoring descendants, zombie-only
+groups and uncertain observations. Linux fixtures retain zombie descendants
+until assertions finish, then reap them without relying on the container's
+PID 1. `test_fit_wire_rc.py` checks route parsing
+across line breaks and multiple `NEW` segments, and excludes patch rectangles
+from via counts; see the [dated correction](physical-correlation-study.md#parser-correction-2026-09-19).
 
 ## Foundation review order
 

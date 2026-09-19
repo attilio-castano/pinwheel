@@ -1,0 +1,175 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-command-split-in-the-generic-backend",
+  "disposition": "Experimental variant. The same organization as prefetch-results.json, emitted with the command-split lift in the generic backend: commit, start and bank selection decode the raw command, so the loader's data port has no path to the scheduler, the cached word or the policy's registers. Validation and mapped screen below; routed results, if any, are in the matching physical manifest.",
+  "control": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "mapping": {
+      "typical": {
+        "standard_cell_area_um2": 547995.1806,
+        "abc_combinational_delay_ps": 6802.53,
+        "flip_flops": 6236,
+        "cells": 27306
+      },
+      "slow": {
+        "standard_cell_area_um2": 548114.931,
+        "abc_combinational_delay_ps": 9944.97,
+        "flip_flops": 6236,
+        "cells": 27306
+      }
+    },
+    "identity": "Byte-identical to the routed pin-sampled candidate in pin-sampled-results.json (pin-sampled-02)"
+  },
+  "predecessor": {
+    "manifest": "physical/experiments/prefetch-results.json",
+    "sha256": "26b4c979ff001e69ca69bc5e8072d61db83057d8bc5a4713b3a205a9265e04d8",
+    "sampled_rtl_sha256": "e90db3002df588de5133df41d548b533ca5fff1628bceda5dd1cb4153375bb16",
+    "sampled_mapping": {
+      "typical": {
+        "standard_cell_area_um2": 654086.097,
+        "abc_combinational_delay_ps": 5814.69,
+        "flip_flops": 6419,
+        "cells": 33684
+      },
+      "slow": {
+        "standard_cell_area_um2": 654093.3546,
+        "abc_combinational_delay_ps": 9269.33,
+        "flip_flops": 6419,
+        "cells": 33685
+      }
+    },
+    "difference": "Backend.lift replaced by BankSelect.lift in Backend.Policy (feedW, core, liftC); register layout, ports and every proved contract unchanged"
+  },
+  "inner": {
+    "variant": "prefetch-split",
+    "rtl_sha256": "7e088765804d7cdc9511866fca085b118b4fe607e6b478efa259824332ff6fcd",
+    "mlir_sha256": "e437f9eafdb49f3b4748c1115fbe0fee3df415fc655963b53e15a1ff12170260",
+    "register_fields": 610,
+    "register_bits": 6425
+  },
+  "sampled": {
+    "variant": "prefetch-split-sampled",
+    "rtl_sha256": "3d28c0f4552ad49dca49e9c37c90afbb32ae0952449bcd06cdda772bc63f3e79",
+    "mlir_sha256": "d9052f339ce271fd61b40901b411e93d144cc9814185050b41f495fd412c1ce5",
+    "register_fields": 612,
+    "register_bits": 6429
+  },
+  "fixed_contract": "Ports, module name, register layout and host-port timing are the predecessor's. Only combinational logic differs: command predicates other than push decode the raw command.",
+  "proofs_and_checks": {
+    "lean": "Decoupled (FetchPolicy) refinement, Backend.Prefetch.netlist_next/netlist_output/completeRefinement, Prefetch.sampled_trace_correct; BankSelect.lift_correct, circuit_next_eq, circuit_output_eq; Storage/DataPort.lean: no path from the data port to the fetch path (DataFree.next, fetch_path_data_free)",
+    "generic_gate_equivalence_points": {
+      "inner": 6501,
+      "sampled": 6511
+    },
+    "registers_rewidened_for_matching": {
+      "prefetch": [
+        "r_fetched_taken",
+        "r_fetched_untaken"
+      ],
+      "prefetch-sampled": [
+        "r_fetched_taken",
+        "r_fetched_untaken"
+      ]
+    },
+    "independent_regression": {
+      "inner": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "sampled": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "vectors": "the unrestricted oracle vectors, UART receiver included"
+    },
+    "rejected_traces": [
+      "sampled RTL with unshifted pins"
+    ]
+  },
+  "structural_levels": {
+    "receipt": "build/structure/split-02/prefetch.json",
+    "sha256": "ea7fdeb7cb8615864d9c75bcef24189f0a59e3f0d1dcea84f7c3009294bd6d8d",
+    "registers_family_gates": {
+      "fed successor": 18,
+      "dispatch decision": 20,
+      "target": 22,
+      "cached word enable": 23,
+      "cached word": 25,
+      "candidate taken": 34,
+      "candidate untaken": 34,
+      "fetched taken": 62,
+      "fetched untaken": 62,
+      "start word": 43,
+      "core state": 59
+    },
+    "sampled_data_port_latest_levels": {
+      "loader control": 41,
+      "core state": null,
+      "dictionary words": 31,
+      "index maps": 31,
+      "idle and last": 31,
+      "cached word": null,
+      "fetched words": null,
+      "pin stages": null,
+      "cached word enable": null,
+      "outputs": 44
+    },
+    "sampled_deepest_per_family": {
+      "incoming": {
+        "endpoint": "pin stages",
+        "levels": 0
+      },
+      "command": {
+        "endpoint": "fetched words",
+        "levels": 45
+      },
+      "data": {
+        "endpoint": "loader control",
+        "levels": 41
+      },
+      "init/reset": {
+        "endpoint": "fetched words",
+        "levels": 45
+      },
+      "loader cursor": {
+        "endpoint": "fetched words",
+        "levels": 48
+      },
+      "registers": {
+        "endpoint": "fetched words",
+        "levels": 62
+      }
+    },
+    "prediction": "The data port reaches only the loader's registers; the register-launched family into the fetched words is the deepest path and is one level shallower than the predecessor's, so the model expects the data-launched violations to disappear and the register family to stay where it was."
+  },
+  "mapping": {
+    "inner": {
+      "typical": {
+        "standard_cell_area_um2": 653130.2484,
+        "abc_combinational_delay_ps": 5097.37,
+        "flip_flops": 6415,
+        "cells": 34522
+      },
+      "slow": {
+        "standard_cell_area_um2": 653130.2484,
+        "abc_combinational_delay_ps": 7944.24,
+        "flip_flops": 6415,
+        "cells": 34522
+      }
+    },
+    "sampled": {
+      "typical": {
+        "standard_cell_area_um2": 637826.5026,
+        "abc_combinational_delay_ps": 5600.73,
+        "flip_flops": 6419,
+        "cells": 32304
+      },
+      "slow": {
+        "standard_cell_area_um2": 637913.5938,
+        "abc_combinational_delay_ps": 8608.53,
+        "flip_flops": 6419,
+        "cells": 32316
+      }
+    }
+  },
+  "receipts": {
+    "check": "build/prefetch/prefetch-06/report.json",
+    "check_sha256": "4eacbf096921ba8e7021b884e898a2927fb9e9912c057c860e8e4025bcfa50b7"
+  },
+  "boundary": "Mapped screen only in this manifest: no routed or extracted timing claim. No Yosys sequential equivalence to the composed RTL (different register sets), no Lean read-back of this RTL, technology-mapped equivalence, metastability or electrical claim."
+}

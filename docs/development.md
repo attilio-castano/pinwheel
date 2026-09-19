@@ -6,9 +6,11 @@ The package includes protocol specifications, compilers, and structural hardware
 The [technical catalog](README.md) routes the milestone-specific checks below;
 [research status](research/status.md) owns the current evidence and next decision.
 For research work, follow the [bounded workflow](research/README.md) and complete
-its evidence writeback. The later core has synchronous atomic loading and a
-[physical diagnostic](physical-validation.md); external serial loading and physical
-closure remain open. No editor extension is required for this terminal-based workflow.
+its evidence writeback. The later core has synchronous atomic loading and routed
+experiments. The [whole chip](whole-chip.md) adds serial loading in Lean and
+emitted RTL; independent validation of that RTL, host result readback, and
+whole-chip physical closure remain open. The [submission plan](submission-plan.md)
+records the remaining gates. No editor extension is required for this workflow.
 
 ## Merge validation
 
@@ -308,7 +310,7 @@ python3 scripts/check-reactive.py
 
 The 53-job build and all 37 binary theorem audits pass. Validation includes 1,280 image round trips with every fetched address checked, 920 rejected truncations, malformed fields/bounds/trailing data, independent golden bytes, file-backed mixed execution, and an independent Python reader matching 512 fetched instructions across four files. Each decoded I²C backend passes 4,224 transactions / 822,896 cycles with identical examples and error forks. The generic engine suite also retains its passing 38-theorem audit and protocol/boundary checks.
 
-`build/binary/` contains native `.pwl` files, exact `storage.csv`, fetch CSVs, audit/logs, and the reproducible success receipt. The I²C images are 715 bytes explicit and 205 bytes counted, including metadata and explicit padding. The two wire backends write traces and coverage under `build/binary-explicit/` and `build/binary-looped/`. Python import caches are ignored alongside generated build artifacts.
+`build/binary/` contains native `.pwl` files, exact `storage.csv`, fetch CSVs, audit/logs, and the reproducible success receipt. The I²C images are 713 bytes explicit and 203 bytes counted, including metadata and explicit padding. The two wire backends write traces and coverage under `build/binary-explicit/` and `build/binary-looped/`. Python import caches are ignored alongside generated build artifacts.
 
 The decoder reconstructs typed programs before execution. It does not yet define raw-byte cycle timing, physical memory widths, circuit decoding, or upload hardware. Serialized-image savings are distinct from allocated chip memory and area; no RTL/synthesis flow was rerun for this milestone.
 
@@ -334,7 +336,7 @@ The Lean-only frontend commands are `lake env lean -DwarningAsError=true --run t
 python3 scripts/check-reactive-core.py
 ```
 
-The [integrated-core record](reactive-core-hardware.md) documents the 55-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
+The [integrated-core record](reactive-core-hardware.md) documents the 69-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
 
 For Lean-only validation, run `lake build`, `lake env lean test/ReactiveCoreAxioms.lean`, `lake env lean --run test/ReactiveCore.lean`, `python3 scripts/reactive-core-vectors.py`, and `lake env lean --run test/ReactiveCore.lean check`. The last command evaluates structural scheduler and store-read components using the named bindings also used during export. Existing `check-core.py` and `check-execution.py` retain the original complete-core and standalone frontend regressions.
 

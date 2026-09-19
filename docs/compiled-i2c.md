@@ -7,7 +7,7 @@ Implementation record: **2026-09-13**. The [candidate reactive engine](reactive-
 The engine keeps ordinary `Action`, `Wait`, and `Halt` instructions and adds two operations:
 
 - **`Checked`:** a timed action with a masked input guard, optional terminal capture, and a successor choice. Every execution edge checks the guard first. Failure restores the idle commands and faults without capturing. On the terminal edge, capture occurs first, then the successor is selected from the updated samples. The successor can be sequential, an explicit jump, or a branch on a stored sample. Its entry occurs on that same edge, including any entry capture it specifies.
-- **`Qualify`:** apply pin commands and require an input condition for a consecutive duration. A blocked observation resets the duration counter and consumes the wait budget. A ready observation advances the duration and refreshes the wait budget; readiness wins at the deadline. This implements initial bus-free qualification.
+- **`Qualify`:** apply pin commands and require an input condition for a consecutive duration. A blocked observation resets the duration counter and consumes the wait budget. A ready observation advances the duration and refreshes the wait budget; readiness wins at the deadline. This implements bus-free qualification before START and, since the 2026-09-17 [latency revision](input-latency.md), after STOP.
 
 Both operations use the same two observed inputs and three output value/enable pairs as the pulse experiment. Checked guards are evaluated after entry, on subsequent execution edges. The compiler enters clock-high phases only after a preceding ready observation. No hardware path calls the I²C reference controller: the shared transition function interprets general instructions and knows nothing about I²C addresses, bytes, ACKs, or STOP.
 
@@ -22,14 +22,14 @@ The fully expanded write needs **79 instructions**, including halt:
 | 0 | Qualify both observed lines high. |
 | 1 | START hold, guarded by observed SCL high. |
 | 2–73 | Eighteen clocks, with setup, wait-for-rise, guarded high, and low hold per clock. |
-| 74–77 | STOP low, wait for SCL high, guarded STOP setup, and guarded bus-free hold. |
+| 74–77 | STOP low, wait for SCL high, guarded STOP setup, and qualified bus-free hold (the same instruction as address 0). |
 | 78 | Halt and expose the result. |
 
 Address ACK is captured from SDA on the terminal edge of slot 36 into sample 0. Slot 37 holds SCL low, then branches to STOP at slot 74 on NACK or payload setup at slot 38 on ACK. Data ACK is captured into sample 1; the final low hold proceeds to STOP for either outcome. Completion distinguishes success, address NACK, and data NACK from those flags. Engine timeout and fault map to reference timeout and bus fault for this well-formed program.
 
 The original 32-slot capacity cannot contain this expansion. The Lean candidate therefore has a **128-slot bounded bank plus a per-program last address**. This compiler sets the last address to 78 and pads remaining storage with halt. Embedded original programs retain last address 31, preserving their exhaustion behavior; the compatibility proof includes that boundary. The pulse program also retains its 32-slot execution limit.
 
-This is an experiment capacity, not a hardware memory allocation or area result. Literal expansion makes timing and correspondence explicit but stores payload bits in instruction contents. The follow-up [counted byte loop](looped-i2c.md) stores 15 templates, two repeat descriptors, and two data bytes, with proved complete-state equality. It derives loop indices from the existing execution PC, adding selection logic without extra modeled cycles. The [V0 image comparison](binary-images.md) now reports 715 bytes explicit versus 205 counted. The subsequent [E64 hardware comparison](execution-hardware.md) measures allocated storage and generic synthesized cost for direct and indexed literal stores. Multiplying the new slot count by the old 16-bit word width would be misleading: the old encoding cannot express these instructions.
+This is an experiment capacity, not a hardware memory allocation or area result. Literal expansion makes timing and correspondence explicit but stores payload bits in instruction contents. The follow-up [counted byte loop](looped-i2c.md) stores 15 templates, two repeat descriptors, and two data bytes, with proved complete-state equality. It derives loop indices from the existing execution PC, adding selection logic without extra modeled cycles. The [V0 image comparison](binary-images.md) now reports 713 bytes explicit versus 203 counted. The subsequent [E64 hardware comparison](execution-hardware.md) measures allocated storage and generic synthesized cost for direct and indexed literal stores. Multiplying the new slot count by the old 16-bit word width would be misleading: the old encoding cannot express these instructions.
 
 ## Formal correspondence
 

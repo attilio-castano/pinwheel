@@ -1,0 +1,247 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-one-port-backend-routed",
+  "identity_manifest": {
+    "path": "physical/experiments/oneport-results.json",
+    "sha256": "0c6b8a02472785af41b82cd62f4bda57db78c08813d29262f570815dd1000c24"
+  },
+  "disposition": "The one-port backend fits the diagnostic floorplan and, under the clock-gating overlay, moves slow setup from -2.251 ns (combined-03, same overlay) to -0.187 ns and the register-launched family from -2.054 ns to -0.053 ns; the command-launched clock-gate enable path that limited the control is met. Not closed: all nine violating endpoints launch from the loader data port through the capacity check on the command decode. Retain as an experimental variant; no promotion, frequency or fit claim.",
+  "fixed_contract": "One-port backend behind the pin sampler (oneport-sampled RTL), physical/experiments/combined.json (calibrated RC, sampler, width-8 clock gating), 20 ns clock, unchanged I/O constraints and diagnostic 6x4 floorplan, four CPUs, 6 GiB. Departures from the earlier contract: a 150-minute cap instead of 90, and no stop after OpenROAD.STAPostPNR, so the flow continued into layout checks.",
+  "candidate": {
+    "design": "oneport-sampled",
+    "tag": "oneport-sampled-01",
+    "exit_code": 2,
+    "stop_reason": null,
+    "timeout_seconds": 9000,
+    "requested_stop": null,
+    "last_completed_step": "74-misc-reportmanufacturability",
+    "detailed_routing_completed": true,
+    "extracted_timing_completed": true,
+    "overrides_file": "physical/experiments/combined.json",
+    "resolved_config_sha256": "771b6be09bb5f0d9f294a67b5f3c41dd560567f9b7c68f2a52bae7a43962c12c",
+    "invocation_sha256": "2fcdf1c35502e3ba1ad29cbaf33c8615b945d7dd48f42780f8d5d6d61b1ca70b",
+    "rtl_sha256": "17fca429d1939a28e56669a4e97b422678e8b336e6225b6e68774dd3f5bcb62f",
+    "report": "build/physical/oneport-sampled-01-report.json",
+    "report_sha256": "ef94ae3cc5f2467065416d5eaa0bae48d52120feda62b8bd06ced66358187ccc",
+    "slow": {
+      "setup_ws_ns": -0.186601,
+      "setup_tns_ns": -1.168,
+      "setup_violations": 9,
+      "hold_ws_ns": 0.360489,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.729897,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.16768,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.601772,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.053838,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 10,
+      "capacitance": 0,
+      "fanout": 20
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 624825,
+    "sequential_cell_area_um2": 314802,
+    "combinational_cell_area_um2": 205539,
+    "timing_repair_buffers": {
+      "count": 6116,
+      "area_um2": 73234.6
+    },
+    "utilization": 0.69239,
+    "routed_wirelength_um": 1663828,
+    "layout_checks": {
+      "magic__drc_error__count": 0,
+      "magic__illegal_overlap__count": 0,
+      "design__lvs_error__count": 0
+    }
+  },
+  "control": {
+    "note": "combined-03: the pin-sampled candidate under the same overlay",
+    "design": "pin-sampled",
+    "tag": "combined-03",
+    "exit_code": 0,
+    "stop_reason": null,
+    "timeout_seconds": 5400,
+    "resume_step": "OpenROAD.DetailedRouting",
+    "checkpoint_sha256": "f7944d8df4d10290f98384bd8391bfd07ccebf0bf7d10ca4a376dace52ba2a65",
+    "config_sha256": "53573ebd1fc672ada7b8bf8980cc7dffbd1277a587123a0a9a1c199088feb171",
+    "inputs_sha256": "978e0aeb0cf4ce9c69f37cc21dc3117b8c87aec60623cbe62cb67299971fa9fc",
+    "invocation_sha256": "83cb6b3000298bde42f578fde1a633615617a2bd585b1bba8d5479eed09a8dcf",
+    "sta_summary_sha256": "4ce496c3f8ad922d6573bfd95d339badbd93bd4e4bf06c061664810ae4d52bf0",
+    "slow": {
+      "setup_ws_ns": -2.251342,
+      "setup_tns_ns": -30.043,
+      "setup_violations": 40,
+      "hold_ws_ns": 0.53863,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 4.454734,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.232117,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 7.730172,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.059152,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 30,
+      "capacitance": 0,
+      "fanout": 29
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 608058.05,
+    "utilization": 0.67381,
+    "routed_wirelength_um": 1753794,
+    "detailed_routing": {
+      "iterations": 58,
+      "runtime": "01:11:20.990"
+    }
+  },
+  "ungated_reference": {
+    "note": "pin-sampled-02: the pin-sampled candidate under the calibrated overlay without clock gating",
+    "tag": "pin-sampled-02",
+    "slow": {
+      "setup_ws_ns": 0.08998,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.421847,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.911841,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.193965,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.203523,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.05211,
+      "hold_violations": 0
+    },
+    "functional_cell_area_um2": 732103.15,
+    "utilization": 0.811269,
+    "routed_wirelength_um": 1792141
+  },
+  "slow_launch_families": {
+    "candidate": {
+      "receipt": "build/physical/oneport-sampled/targeted-sta/oneport-sampled-01-families/report.json",
+      "sha256": "5511c0c390fedfe002424ca8d9b559fe3414115a17eb22011c9c0d2213e8be4c",
+      "all": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "loader_command": {
+        "worst_ns": 0.473,
+        "negative_reported": 0,
+        "worst_path": "command[0] -> _31916_"
+      },
+      "loader_data": {
+        "worst_ns": -0.187,
+        "negative_reported": 9,
+        "worst_path": "data[35] -> _31916_"
+      },
+      "protocol": {
+        "worst_ns": 14.506,
+        "negative_reported": 0,
+        "worst_path": "incoming[0] -> _31653_"
+      },
+      "registers": {
+        "worst_ns": -0.053,
+        "negative_reported": 3,
+        "worst_path": "_31641_ -> _31916_"
+      },
+      "reset": {
+        "worst_ns": 0.228,
+        "negative_reported": 0,
+        "worst_path": "init -> _31916_"
+      }
+    },
+    "control": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/combined-03-families/report.json",
+      "sha256": "ffdb97c36d7c117fb8a3fccd62b86d247dbb598498be631c968e7402539d8d52",
+      "all": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_command": {
+        "worst_ns": -2.251,
+        "negative_reported": 40
+      },
+      "loader_data": {
+        "worst_ns": 0.116,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.496,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": -2.054,
+        "negative_reported": 38
+      },
+      "reset": {
+        "worst_ns": -2.053,
+        "negative_reported": 38
+      }
+    },
+    "ungated_reference": {
+      "receipt": "build/physical/pin-sampled/targeted-sta/pin-sampled-02-families/report.json",
+      "sha256": "43d391d7b687eedd3b0bb5332ef30dad9d8263f904e35f8b8a2cca3fddc18483",
+      "all": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "loader_command": {
+        "worst_ns": 0.175,
+        "negative_reported": 0
+      },
+      "loader_data": {
+        "worst_ns": 1.996,
+        "negative_reported": 0
+      },
+      "protocol": {
+        "worst_ns": 14.354,
+        "negative_reported": 0
+      },
+      "registers": {
+        "worst_ns": 0.09,
+        "negative_reported": 0
+      },
+      "reset": {
+        "worst_ns": 0.255,
+        "negative_reported": 0
+      }
+    }
+  },
+  "worst_register_path": "mode[2] -> dispatch decision -> port address -> read tree -> r_fetched_taken[52] (also r_start_word[52]): the endpoint the structural model ranks deepest (65 gate levels)",
+  "limiting_family": "loader data: data[35] -> capacity check -> command -> commit select -> port address -> read tree -> port word registers; the command-split form would remove the data port from this path",
+  "implemented_netlist_regression": {
+    "receipt": "build/physical/oneport-sampled-01-netlist-check/report.json",
+    "sha256": "eeba0a61dfcf8276c620bfe2c382154a8417e2bc054072d618ece7a632dc8f79",
+    "result": "Passed 29898 atomic edges and 4903194 defined output-bit comparisons; mutants rejected: 1",
+    "vectors": "build/oneport/oneport-03/measured-sampled/vectors.txt (ready mode, pins two edges early)"
+  },
+  "boundary": "One run on one host; equivalent RTLs have differed by about 0.6 ns under this flow, so -0.053 ns and +0.090 ns on the register family are not distinguishable. Electrical-limit violations remain. No wrapper, serial loader, official 8x4 floorplan, layout sign-off, metastability or board-timing claim. The design's refinement holds on programs satisfying the readiness rule."
+}

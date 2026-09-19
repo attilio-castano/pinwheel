@@ -36,7 +36,7 @@ def code (cfg : Pinwheel.I2C.Config) : Code :=
       (chain (.action (.literal (.openDrain 3)) cfg.phaseMinusOne) [
         .wait (.literal (.openDrain 2)) ⟨0, true⟩ cfg.waitMinusOne,
         .checked (.literal (.openDrain 2)) cfg.phaseMinusOne I2C.clockHigh,
-        .checked (.literal {}) cfg.phaseMinusOne I2C.bothHigh,
+        .qualify (.literal {}) I2C.bothHigh cfg.phaseMinusOne cfg.waitMinusOne,
         .halt]))
 
 def program (cfg : Pinwheel.I2C.Config) (r : Pinwheel.I2C.Request) : Program :=

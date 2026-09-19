@@ -1,0 +1,30 @@
+{
+  "MAX_FANOUT_CONSTRAINT": 8,
+  "CTS_SINK_CLUSTERING_SIZE": 8,
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "SIGNAL_WIRE_RC_LAYERS": [
+    "Metal2",
+    "Metal3"
+  ],
+  "LAYERS_RC": {
+    "*": {
+      "Metal2": {
+        "res": 0.0006955,
+        "cap": 0.0001611
+      },
+      "Metal3": {
+        "res": 0.0005799,
+        "cap": 0.0001924
+      },
+      "Metal4": {
+        "res": 0.0004835,
+        "cap": 0.0001393
+      }
+    }
+  },
+  "SYNTH_CLOCKGATE_MIN_WIDTH": 8,
+  "SYNTH_CLOCKGATE_POSEDGE_ICG": "sg13cmos5l_lgcp_1/GATE/CLK/GCLK",
+  "PL_TARGET_DENSITY_PCT": 62,
+  "GRT_ALLOW_CONGESTION": true
+}

@@ -1,148 +1,129 @@
 # Research status
 
-Updated 2026-09-17 with the hardware closure, [cache-enable follow-up](../cache-enable-study.md),
-and UART receive capability from main.
-This is the current decision brief; [results](results.md) owns completed
-conclusions and [journal](journal.md) routes historical evidence.
+Updated 2026-09-19 during local PR preparation. This is the current decision
+brief; [results](results.md) owns completed conclusions and [journal](journal.md)
+owns the dated evidence trail. The [submission plan](../submission-plan.md)
+records the work and acceptance criteria behind the next steps below.
 
 ## Objective and current belief
 
-Build a general reloadable protocol engine whose implementation preserves
-specified pin timing, input capture, branching, and atomic program replacement,
-then establish physical feasibility under the [competition constraints](../competition.md).
-Keep the reference execution semantics steady while closing implementation gaps.
+Build a reloadable protocol engine whose implementation preserves specified pin
+timing, input capture, branching, and atomic program replacement, then establish
+physical feasibility under the [competition constraints](../competition.md).
+Lean remains the specification and proof foundation; emitted RTL and physical
+implementation each need their own evidence.
 
-The formal work now connects the emitted RTL of one explicitly composed 32-entry
-dense cached Lean netlist to the reference machine. Its initialization, per-edge
-state relation, and every pre/post-edge
-observation refine the atomic machine with the existing 322-word capacity
-restriction. The serializer consumes that netlist. The legacy dense cached
-emitter remains the default and physical comparison baseline.
+**Advance the experimental one-port organization.** Its command-split core
+completed one routed run on the 6×4 die area at 69.3% utilization, with setup and
+hold met at all three extracted corners and slow setup +0.602 ns. DRC, LVS and
+antenna checks passed; 5 slew and 15 fanout violations remain. This is core
+engineering evidence, not a validated whole chip or a qualified frequency.
+The [routed record](../memory-abstraction.md#the-command-split-backends-routed)
+and [manifest](../../physical/experiments/oneport-split-physical-results.json)
+own the exact boundary and receipts. The legacy dense cached emitter remains
+the default; no experimental backend has been promoted.
 
-Completed validation distinguishes the two translation endpoints:
+The one-port refinement requires ready program words. The current compiler
+proves that condition for UART/SPI transmission and for I²C writes/reads with
+phases of at least two cycles. **The compiled UART receiver fails it.** A
+readiness admission filter is proved as a model transformation but is absent
+from emitted hardware. Both a compatible receiver and an enforced acceptance
+rule are required for the candidate's supported program contract.
 
-- **Countdown:** actual emitted RTL is interpreted back into Lean, with
-  kernel-checked transition/trace equality and rejected corrupted artifacts.
-  Yosys proves all 19 RTL/generic-gate comparison points.
-- **Composed backend:** Lean checks the actual emitted RTL against the complete
-  netlist refinement, covering 607 registers, 33 outputs and initialized traces.
-  Its audit permits only standard axioms. Yosys proves
-  all 6,315 old/new RTL and 6,309 RTL/generic-gate comparison points under the
-  recorded state correspondence. Independent loader/storage regression and two
-  mapped corners pass. The Verilog frontend/JSON adapter remain explicit trusted
-  boundaries; technology-mapped sequential equivalence remains open.
-- **External interface:** a proposed two-register sampling pipeline and
-  open-drain interpretation have Lean contracts. They add no latency to the
-  current core; the wrapper, serial transport and electrical assumptions remain
-  integration work.
+The [whole chip](../whole-chip.md) is a Lean netlist containing the Tiny Tapeout
+pin map, two-register samplers, three-pin serial loader, and a proved core. A
+host upload commits a fitting program with the engine stopped; later execution
+follows the reference machine under the stated rules. The chip has been emitted
+and mapped, but its RTL has no independent serial-driver simulation, gate
+equivalence, or routed result.
 
-The [bank-selection experiment](../bank-selection-study.md) applies that method
-to a composed command-split control and one candidate that selects between
-completed bank reads. Both full circuit refinements and actual emitted-RTL
-read-backs pass, including initialization, all 607 register updates and all 33
-outputs. Each passes legacy/generic-gate equivalence, independent loader/storage
-regressions, focused bank-switch cases and corruption checks. The actual circuit
-can now be changed and measured with an explicit proof for each emitted variant.
+**The chip has no defined host result-readback transaction.**
+The output map exposes status and protocol levels/enables, not the 16 capture
+bits. Result transfer and ownership across consume/reset/program replacement
+must be specified before calling UART reception or SPI/I²C reads usable from a
+host. This is broader than the previously listed missing serial status readback.
 
-The [cache-enable follow-up](../cache-enable-study.md) preserves the shared read
-and every register update while simplifying the update decision. Both fresh
-control and candidate pass complete emitted-RTL read-back, the standard-axiom
-audit, equivalence and independent regressions. Exact-cache cases cover stopped
-and running edges, faults, reset, self-branches and busy commit rejection. The
-result removes direct control dependencies from the enable, while an indirect
-cursor/command path remains through successor decoding.
+## Evidence and boundaries
 
-The earlier portable gate passed 109 modules, 9,125 declarations / 4,665 theorems using
-only standard Lean axioms, and all 20 executable suites. See the owning
-[closure record](../hardware-closure.md) for exact hashes, initial-state
-assumptions and failed attempts.
+| Layer | Established | Remaining boundary |
+| --- | --- | --- |
+| Protocols and compilers | UART, SPI, I²C models and compiler correspondence; input-latency contracts; I²C STOP now qualifies bus-free time | One-port-compatible UART RX; declared supported rates and lifecycle/result ownership |
+| Memory and fetch policies | Generic memory/latency contracts and one-, two-, and three-port refinements; command/data dependency separation | One-port admission not emitted; SRAM's actual collision, enable, and dependent-read schedule unvalidated |
+| Translation | Actual RTL read-back for the composed baseline; equivalence and independent regressions for recorded core variants | New chip RTL has not inherited a read-back or independent simulation claim |
+| Core physical result | One-port command-split run meets setup/hold and completes layout checks | Electrical violations, repeatability, real chip pin template and changed interface |
+| Whole-chip model | Serial session delivery, committed image, subsequent execution and pin-map composition | Host result transfer, independent chip RTL checks, board/electrical assumptions and physical closure |
 
-## Physical finding
+The fresh `pr-review-20260919` foundation gate audited 183 modules, 13,322
+declarations and 6,873 theorems with standard axioms only, and passed 30 suites
+from a clean source snapshot. All 250 recorded inputs match the current working
+tree. These include generated declarations; counts are not counts of handwritten
+proofs. The [validation guide](../validation.md) defines current local checks;
+the [journal](journal.md#2026-09-19-local-branch-review-and-submission-plan) records
+the validation scope and receipt location.
 
-The matched `command-split-closure` candidate completed routing and final
-three-corner extracted timing with unchanged F2 controls and constraints.
-Worst setup is **−5.049 ns**, essentially unchanged from F2's **−5.055 ns**.
-Cell area excluding fill falls about 0.91%, while setup violations rise from
-112 to 1,426 and the worst hold margin shrinks to about 2.9 ps. Electrical
-violations remain. The implemented-netlist regression passes.
+Earlier results remain in their owners: [hardware closure](../hardware-closure.md),
+[bank selection](../bank-selection-study.md), [cache enables](../cache-enable-study.md),
+[flow correlation](../physical-correlation-study.md), [pin sampling](../pin-sampler-study.md),
+[structural timing](../structural-timing.md), [register enables](../register-enables.md),
+[input latency](../input-latency.md), and [memory/fetch organization](../memory-abstraction.md).
+Historical next-step proposals in those records are not the current allocation.
 
-The worst path now starts at `loader_cursor[5]` and ends in the current-word
-cache. Loader-data timing improves, but that does not close the core. The
-[matched comparison](../successor-fetch-study.md#matched-command-split-physical-comparison)
-owns launch-family measurements and the final layout-check disposition. The
-one-hour attempt stopped during Magic DRC with exit 124. Magic DRC, LVS and later
-checks are incomplete; routing/antenna checks report zero violations. The
-[physical manifest](../../physical/experiments/command-split-physical-results.json)
-pins that partial flow result. No candidate is promoted to the default.
+## The official outline (2026-09-18)
 
-The new bank-selection candidate stops at the matched mapping gate. Cursor-to-cache
-logic depth falls from 32 to 25, but protocol-input depth grows from 35 to 38.
-Area rises about 2.1%; typical ABC delay worsens 6.6% and the slow estimate improves
-only 0.15%. This does not justify routing under the agreed gate. No new physical
-run was started, and the conditional two-run allocation was unused. The
-[bank-selection manifest](../../physical/experiments/bank-selection-results.json)
-retains the proved candidate and exact receipts. These mapping measurements
-do not replace the legacy artifact's extracted physical timing.
+The announcement's maximum is **6×4 tiles**; 8×4 remains a possibility. The
+[competition brief](../competition.md#the-outline-and-the-pinned-files) records
+the checked source and pinned template.
 
-The cache-enable candidate improves the matched mapping screen: typical/slow
-cell area falls 0.375% / 0.452%, and ABC delay falls 9.108% / 1.312%. Cursor logic
-depth drops 32 → 28; protocol depth drops 35 → 32. Commands and reset also get
-shallower, with unchanged maximum fanout. Retain this experimental variant; the
-modest slow-corner gain supports a fresh matched physical comparison but does
-not establish routed improvement. No physical run or default promotion occurred.
-The [cache-enable manifest](../../physical/experiments/cache-enable-results.json)
-pins eight completed receipts and 914 verified source/artifact hash entries.
+Every routed core used the official 1,289.28 × 710.64 µm die area and
+902,417 µm² core area. None applied `tt_block_6x4_pgvdd.def`: its 43 Metal4 pins
+sit in the top-left corner, whereas the core's roughly 200 stand-in ports were
+spread around the edge. The template is available, but applying and validating
+it requires chip-specific flow configuration and timing constraints.
+
+The two-port run timed out after 150 minutes, at 75.2% utilization, before
+detailed routing; there is no extracted timing. This supports deferring that
+candidate under the tested flow and budget. It does not prove an absolute
+utilization cutoff or that two ports cannot fit. The old 8×4/56% estimate is
+inapplicable. Whole-chip one-port mapped area is 0.8% above its test-boundary
+core; that estimate does not predict its routed area or routability.
 
 ## Next discriminators
 
-1. Extend sequential equivalence from generic gates to a selected technology
-   mapping, explicitly accounting for initial-state correspondence and eliminated
-   bits. Preserve independent tests with uninitialized storage.
-2. Use the [cache-enable candidate](../cache-enable-study.md) for the next matched
-   physical discriminator, with a separately accounted fresh composed control,
-   unchanged 20 ns/I/O constraints and F2 controls. Keep the indirect shared-read
-   dependency visible when interpreting the worst path. The current completed
-   batch ends at mapping; the next physical allocation remains a separate step.
-3. Resolve the actual wrapper/I/O budget and loading transport, then compose the
-   [external timing contract](../external-interface.md) with protocol assumptions.
-   Synchronizer delay must appear in those bounds; no asynchronous or analog
-   detection guarantee follows from the digital two-edge theorem.
+1. **Close the one-port program contract in Lean.** Build a UART receiver that
+   passes readiness and re-prove its timing/link bounds. Realize the rejecting
+   filter in the chip and prove accepted/rejected uploads against the reference.
+   A filter alone cannot make the existing UART receiver supported.
+2. **Define and implement host result transfer.** Specify capture visibility,
+   acknowledgement/consumption, overflow, reset and program replacement, then
+   prove the output path. Include observable command rejection and the existing
+   continuous-receiver supervisor's lifecycle.
+3. **Check the resulting emitted chip independently.** Use an external serial
+   driver, the reference oracle and corruption cases; establish RTL/generic-gate
+   equivalence with explicit initialization and storage-X handling. Validate
+   the final interface before relying on physical measurements of it.
+4. **Prepare the real physical boundary, then allocate a run.** Add the
+   `tt_um_pinwheel` configuration, chip-port SDC, official DEF template, and
+   chip-aware regression/reporting. Require a fresh allocation specifying
+   time, memory, CPUs and stop conditions before any physical run. Accept only
+   evidence for the actual chip artifact and its declared constraints.
 
-The completed command-split physical attempt used four CPUs, a 6 GiB limit and a
-one-hour cap; its receipt records the end state. The bank-selection and
-cache-enable follow-ups consumed no additional physical run. Historical cumulative
-resource use remains unknown. This status record grants no additional run or
-external action.
-
-## UART receive capability
-
-The [one-byte UART receiver](../uart-receive.md) now compiles to the existing
-reactive engine and runs through E64, the atomic loader, and the default dense
-cached core. It adds a digital receive contract without changing core circuitry.
-All supported period/input configurations fit the current storage capacities.
-TX and RX remain separate loaded programs. The [link contract](../uart-link.md)
-now proves communication between independent program instances under clock and
-observation-age bounds, including successive frames under the strengthened
-continuous bound. Continuous buffering has a Lean supervisor contract;
-its structural circuit and loader composition, a concrete input wrapper, and
-concurrent execution still need their own designs and evidence. These capability
-results add no physical closure evidence to the comparison above.
-
-## Next proposed Lean question: receiver lifecycle and program replacement
-
-Continuous listening keeps the current RX program busy, so stopping, resetting,
-and reloading need an explicit supervisor contract that composes with
-[atomic program replacement](../atomic-loader.md). It must also define ownership
-of a pending result. The present theorem assumes one fixed RX program; this
-lifecycle contract is the proposed follow-on.
+The [submission plan](../submission-plan.md) gives the required tool changes and
+completion gates, including host demonstration and submission packaging.
+Screen structural changes with `check-structure.py` before mapping/routing.
+Pin-sampling latency remains part of protocol bounds: SPI requires
+`d + tco ≤ halfCycles`; I²C requires `d ≤ phaseCycles` and `d < waitCycles` under
+the tested contract. Digital two-edge delay is not an analog detection bound.
 
 ## Deferred questions
 
-- Synchronous SRAM/latches need a proved availability/write schedule for arbitrary
-  accepted programs; average protocol idle time is insufficient.
-- The bounded I²C repetition prototype has narrower scope than the general engine.
-- The official 8×4 wrapper, package pins, electrical limits and physical timing
-  closure remain separate obligations.
+SRAM and address-path rewrites remain possible follow-ups, not prerequisites
+for merging the current proofs and experiment records. SRAM targets the large
+flip-flop area, but the real macro must meet the dependent map/dictionary read
+schedule and collision contract. Repeatability, technology-mapped sequential
+equivalence, alternative gating plans and cache-enable experiments retain
+separate acceptance gates and run allocations.
 
-Reopen these when evidence changes the allocation, using the conditions in
-[results](results.md). Preserve detailed limitations and frozen comparison contracts.
+Current local PR preparation covers review, bounded fixes, documentation and
+local validation. It authorizes no new physical run, backend promotion, push,
+PR creation or submission. Historical cumulative physical resource use remains
+unrecorded.

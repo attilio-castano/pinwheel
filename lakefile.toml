@@ -15,3 +15,27 @@ root = "test.Backend"
 [[lean_exe]]
 name = "bank_select_emit"
 root = "test.BankSelect"
+
+[[lean_exe]]
+name = "sampled_emit"
+root = "test.Sampled"
+
+[[lean_exe]]
+name = "structure_report"
+root = "test.Structure"
+
+[[lean_exe]]
+name = "prefetch_emit"
+root = "test.Prefetch"
+
+[[lean_exe]]
+name = "oneport_emit"
+root = "test.OnePort"
+
+[[lean_exe]]
+name = "twoport_emit"
+root = "test.TwoPort"
+
+[[lean_exe]]
+name = "chip_emit"
+root = "test.ChipEmit"

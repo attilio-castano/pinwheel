@@ -1,0 +1,127 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-one-port-backend",
+  "disposition": "Experimental variant under the per-program readiness rule; validation and mapped screen recorded below, no routed run yet.",
+  "control": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "mapping": {
+      "typical": {
+        "standard_cell_area_um2": 547995.1806,
+        "abc_combinational_delay_ps": 6802.53,
+        "flip_flops": 6236,
+        "cells": 27306
+      },
+      "slow": {
+        "standard_cell_area_um2": 548114.931,
+        "abc_combinational_delay_ps": 9944.97,
+        "flip_flops": 6236,
+        "cells": 27306
+      }
+    },
+    "identity": "Byte-identical to the routed pin-sampled candidate in pin-sampled-results.json (pin-sampled-02)"
+  },
+  "three_port_reference": {
+    "variant": "prefetch-sampled",
+    "rtl_sha256": "e90db3002df588de5133df41d548b533ca5fff1628bceda5dd1cb4153375bb16",
+    "mapping": {
+      "typical": {
+        "standard_cell_area_um2": 654086.097,
+        "abc_combinational_delay_ps": 5814.69,
+        "flip_flops": 6419,
+        "cells": 33684
+      },
+      "slow": {
+        "standard_cell_area_um2": 654093.3546,
+        "abc_combinational_delay_ps": 9269.33,
+        "flip_flops": 6419,
+        "cells": 33685
+      }
+    }
+  },
+  "inner": {
+    "variant": "oneport",
+    "rtl_sha256": "9333ee66dd96b9ff62937e8ed33b42af87f44d40deec22c3de4158f54bfe49d7",
+    "mlir_sha256": "380f1b42f77214f2d9bc978a212e5518ff7d7b5920ce4e8e9eb20e68d4da1e08",
+    "register_fields": 611,
+    "register_bits": 6426
+  },
+  "sampled": {
+    "variant": "oneport-sampled",
+    "rtl_sha256": "17fca429d1939a28e56669a4e97b422678e8b336e6225b6e68774dd3f5bcb62f",
+    "mlir_sha256": "22c5db68d2bd9224db47e505e52519849c26afa3717322ff496ba6911ff94148",
+    "register_fields": 613,
+    "register_bits": 6430
+  },
+  "fixed_contract": "Ports, module name and host-port timing are the general backend's. Two fetched-word registers, a start-word register and one flag replace the same-edge successor lookup, behind one composite read of the selected bank; the sampled emission adds the two pin-pipeline registers. Programs must satisfy the readiness rule: no branching checked record with a zero duration.",
+  "proofs_and_checks": {
+    "lean": "SinglePort (FetchPolicy) rule refinement, Backend.OnePort.netlist_next/netlist_output/completeRefinement, OnePort.sampled_trace_correct, on ready programs",
+    "generic_gate_equivalence_points": {
+      "inner": 6508,
+      "sampled": 6506
+    },
+    "induction": "three-step: the untaken-word register can skip a load for one edge, never two in a row; two steps leave 107 points unproven",
+    "independent_regression": {
+      "inner": "Passed 29898 atomic loader edges and 18617968 physical storage observations",
+      "sampled": "Passed 29898 atomic loader edges and 18617968 physical storage observations",
+      "vectors": "generated in ready mode: the UART receiver exercise is replaced by a register read, the terminal-capture branch record lasts one cycle; no pushed word violates the rule"
+    },
+    "rejected_traces": [
+      "sampled RTL with unshifted pins",
+      "inner RTL on the unrestricted vectors (programs outside the readiness rule)"
+    ]
+  },
+  "structural_levels": {
+    "receipt": "build/structure/oneport-01/oneport.json",
+    "sha256": "8c66b9e9f88d2897e6d262b67d2d1f706ce8a50e7c5e15e858acf310b5e3211a",
+    "registers_family_gates": {
+      "fed successor": 19,
+      "dispatch decision": 33,
+      "target": 22,
+      "cached word enable": 36,
+      "cached word": 38,
+      "port address": 35,
+      "port word": 63,
+      "fetched taken": 65,
+      "fetched untaken": 65,
+      "start word": 65,
+      "entered flag": 33,
+      "core state": 60
+    }
+  },
+  "mapping": {
+    "inner": {
+      "typical": {
+        "standard_cell_area_um2": 566745.606,
+        "abc_combinational_delay_ps": 5744.51,
+        "flip_flops": 6416,
+        "cells": 27869
+      },
+      "slow": {
+        "standard_cell_area_um2": 566956.0764,
+        "abc_combinational_delay_ps": 9439.9,
+        "flip_flops": 6416,
+        "cells": 27898
+      }
+    },
+    "sampled": {
+      "typical": {
+        "standard_cell_area_um2": 576805.3578,
+        "abc_combinational_delay_ps": 5271.67,
+        "flip_flops": 6420,
+        "cells": 30690
+      },
+      "slow": {
+        "standard_cell_area_um2": 576812.6154,
+        "abc_combinational_delay_ps": 8343.38,
+        "flip_flops": 6420,
+        "cells": 30691
+      }
+    }
+  },
+  "receipts": {
+    "check": "build/oneport/oneport-03/report.json",
+    "check_sha256": "4ce44cf5cd659275d50ac599f3f2a59f06ec85d52b1a9eeb7360bc2e0869c165"
+  },
+  "boundary": "No routed run, no extracted timing. No Yosys sequential equivalence to the composed RTL (different register sets), no Lean read-back of this RTL, technology-mapped equivalence, metastability or electrical claim. The refinement and the oracle runs hold on programs satisfying the readiness rule; the UART receiver as compiled is outside it."
+}

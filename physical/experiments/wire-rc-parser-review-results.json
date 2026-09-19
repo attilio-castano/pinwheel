@@ -1,0 +1,143 @@
+{
+  "baseline_commit": "4d5de85",
+  "parser_before_sha256": "aad3b74c9c38c0ad1c9c3b3649c13d44ad7ff6c453574d8993a645b93b1769ad",
+  "parser_after_sha256": "3119240aa898ce3555f91844a38d003dff351e8cf9554f14d74baaf7f9598261",
+  "original_calibration_sources": {
+    "build/physical/core/runs/command-split-closure/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.def": false,
+    "build/physical/core/runs/command-split-closure/56-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef": false
+  },
+  "core_directory_is_symlink": false,
+  "comparisons": [
+    {
+      "run": "rc-calibrated-01",
+      "def": "build/physical/core/runs/rc-calibrated-01/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.def",
+      "spef": "build/physical/core/runs/rc-calibrated-01/56-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef",
+      "def_sha256": "9ed4701b36f15cf736814a7c7e4713c4ef0e6853d19897ca4fd2f200f3bc0384",
+      "spef_sha256": "2b62c94b2dbf83df866f103c3adfd479c749de447bc6c7dde91150df9b652f3d",
+      "nets": 43449,
+      "nets_with_changed_lengths": 0,
+      "nets_with_changed_vias": 26434,
+      "total_vias_before": 338188,
+      "total_vias_after": 282102,
+      "formatting_variants_equal": [
+        "NEW segments joined on one line",
+        "points and via names continued on new lines"
+      ],
+      "spef_units": {
+        "C_UNIT": "1 PF",
+        "R_UNIT": "1 OHM"
+      },
+      "fit_before": {
+        "nets": 10638,
+        "routed_um": {
+          "Metal2": 522901.71,
+          "Metal3": 910164.455,
+          "Metal4": 231065.96
+        },
+        "cap_per_um": {
+          "Metal2": 0.0001570772129543781,
+          "Metal3": 0.00019479119858546815,
+          "Metal4": 0.0001426692527816877
+        },
+        "cap_per_um_overall": 0.0001782363934714619,
+        "cap_r_squared": 0.9855799320454454,
+        "res_per_um": {
+          "Metal2": 0.6737509246504724,
+          "Metal3": 0.5891857554401825,
+          "Metal4": 0.4822272750156071
+        },
+        "res_per_via": 15.95610198001885,
+        "res_r_squared": 0.9925345955760411
+      },
+      "fit_after": {
+        "nets": 10638,
+        "routed_um": {
+          "Metal2": 522901.71,
+          "Metal3": 910164.455,
+          "Metal4": 231065.96
+        },
+        "cap_per_um": {
+          "Metal2": 0.0001570772129543781,
+          "Metal3": 0.00019479119858546815,
+          "Metal4": 0.0001426692527816877
+        },
+        "cap_per_um_overall": 0.0001782363934714619,
+        "cap_r_squared": 0.9855799320454454,
+        "res_per_um": {
+          "Metal2": 0.5189756562480423,
+          "Metal3": 0.5173860285662975,
+          "Metal4": 0.5096557392517242
+        },
+        "res_per_via": 20.092764307290203,
+        "res_r_squared": 0.9999797445823879
+      },
+      "cap_fit_unchanged": true
+    },
+    {
+      "run": "clock-gated-03",
+      "def": "build/physical/core/runs/clock-gated-03/54-openroad-fillinsertion/pinwheel_atomic_small_dense_cached.def",
+      "spef": "build/physical/core/runs/clock-gated-03/56-openroad-rcx/nom/pinwheel_atomic_small_dense_cached.nom.spef",
+      "def_sha256": "60303aa81bbe7297f8ac55f0fd12202c23329d924c03dc5bb358eedb9ddc3a2d",
+      "spef_sha256": "3f282fb84bbeef2bc33365f038a9fd1f6270909c90800fa1147dd179e4e941be",
+      "nets": 31307,
+      "nets_with_changed_lengths": 0,
+      "nets_with_changed_vias": 17015,
+      "total_vias_before": 238554,
+      "total_vias_after": 201197,
+      "formatting_variants_equal": [
+        "NEW segments joined on one line",
+        "points and via names continued on new lines"
+      ],
+      "spef_units": {
+        "C_UNIT": "1 PF",
+        "R_UNIT": "1 OHM"
+      },
+      "fit_before": {
+        "nets": 8635,
+        "routed_um": {
+          "Metal2": 479896.635,
+          "Metal3": 844417.555,
+          "Metal4": 183445.08
+        },
+        "cap_per_um": {
+          "Metal2": 0.00016267078416322875,
+          "Metal3": 0.00017371746550415976,
+          "Metal4": 0.0001498455183850376
+        },
+        "cap_per_um_overall": 0.00017194800769488886,
+        "cap_r_squared": 0.9716330239387645,
+        "res_per_um": {
+          "Metal2": 0.6128891095734995,
+          "Metal3": 0.5536615663662383,
+          "Metal4": 0.5340680674545174
+        },
+        "res_per_via": 16.228589841345663,
+        "res_r_squared": 0.9926979225955093
+      },
+      "fit_after": {
+        "nets": 8635,
+        "routed_um": {
+          "Metal2": 479896.635,
+          "Metal3": 844417.555,
+          "Metal4": 183445.08
+        },
+        "cap_per_um": {
+          "Metal2": 0.00016267078416322875,
+          "Metal3": 0.00017371746550415976,
+          "Metal4": 0.0001498455183850376
+        },
+        "cap_per_um_overall": 0.00017194800769488886,
+        "cap_r_squared": 0.9716330239387645,
+        "res_per_um": {
+          "Metal2": 0.5160976411311204,
+          "Metal3": 0.5164221309491573,
+          "Metal4": 0.5065203570489293
+        },
+        "res_per_via": 20.103182207902858,
+        "res_r_squared": 0.9999603178411773
+      },
+      "cap_fit_unchanged": true
+    }
+  ],
+  "boundary": "Read-only parser and fit comparisons on retained DEF/SPEF, with generated comparison receipt only. No CAD or original run evidence changed. The original command-split-closure inputs are absent, so their historical resistance fit cannot be recomputed exactly."
+}

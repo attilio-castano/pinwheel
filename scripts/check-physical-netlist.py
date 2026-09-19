@@ -10,6 +10,8 @@ import re
 import subprocess
 from pathlib import Path
 
+import physical_receipt
+
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "build/physical"
 TOP = "pinwheel_atomic_small_dense_cached"
@@ -19,13 +21,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("netlist", type=Path)
     parser.add_argument("--label", default="netlist")
+    parser.add_argument("--design", default="core", help="Prepared design under build/physical supplying the source RTL")
     parser.add_argument("--vectors", type=Path, default=ROOT / "build/storage/small-dense-cached/vectors.txt",
                         help="Atomic oracle vectors; the selected file is included in the receipt")
     args = parser.parse_args()
     out = BASE / (args.label + "-check")
     out.mkdir(parents=True, exist_ok=True)
     (out / "report.json").unlink(missing_ok=True)
-    source = (BASE / "core/design.sv").read_text()
+    source = (BASE / args.design / "design.sv").read_text()
     ports = []
     direction = None
     width = 1
@@ -120,8 +123,10 @@ def main():
     if result.returncode == 0 or not any(s in result.stdout for s in ["NETLIST edge", "LOADER edge"]):
         raise RuntimeError("Output corruption was not rejected by the behavioral check")
     receipt = {"simulation": simulation, "mutants_rejected": 1, "boundary": "Zero-delay gate simulation; reference-X bits excluded. No timing simulation or universal equivalence proof."}
-    paths = [args.netlist, models, primitives, BASE / "core/design.sv", ROOT / "test/loader_tb.sv", args.vectors, Path(__file__).resolve()]
-    receipt["sha256"] = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
+    paths = [args.netlist, models, primitives, BASE / args.design / "design.sv", ROOT / "test/loader_tb.sv",
+             args.vectors, out / "tb.sv", out / "reference.sv", Path(__file__).resolve(),
+             Path(physical_receipt.__file__)]
+    receipt["sha256"] = {physical_receipt.path_key(p, ROOT): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     (out / "report.json").write_text(json.dumps(receipt, indent=2) + "\n")
     print(simulation + "Rejected output corruption mutant.")
 

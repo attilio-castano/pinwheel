@@ -1,0 +1,187 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/memory-abstraction.md#routed-comparison",
+  "identity_manifest": {
+    "path": "physical/experiments/prefetch-results.json",
+    "sha256": "26b4c979ff001e69ca69bc5e8072d61db83057d8bc5a4713b3a205a9265e04d8"
+  },
+  "disposition": "Negative by capacity, not a timing result: two attempts under the sampled candidate's contract, neither reached routing. Attempt 1 (calibrated tolerant overlay) failed detailed placement after clock-tree synthesis at 81.1% utilization. Attempt 2 (sampler plus width-8 clock gating overlay) placed and clocked at 80.7% utilization after post-CTS repair, then global routing ran 858 congestion-removal iterations in 84 minutes without clearing overflow and hit the 90-minute wall-time limit; the same-overlay control stood at 66.9% and needed 29. No extracted timing: the structural-level gain is neither confirmed nor refuted after routing. At this floorplan area binds before logic depth. Retain as evidence; no promotion.",
+  "fixed_contract": "Decoupled prefetch backend behind the pin sampler (prefetch-sampled RTL: the pin-sampled candidate's register set plus two fetched words and the start word), 20 ns clock, unchanged I/O constraints and diagnostic 6x4 floorplan, four CPUs, 6 GiB, 90-minute cap, stop after OpenROAD.STAPostPNR. Magic DRC and LVS not run.",
+  "attempts": [
+    {
+      "design": "prefetch-sampled",
+      "tag": "prefetch-sampled-01",
+      "exit_code": 2,
+      "stop_reason": null,
+      "timeout_seconds": 5400,
+      "requested_stop": null,
+      "last_completed_step": "36-openroad-stamidpnr-1",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "overrides_file": "physical/experiments/rc-calibrated-tolerant.json",
+      "overrides": {
+        "MAX_FANOUT_CONSTRAINT": 8,
+        "CTS_SINK_CLUSTERING_SIZE": 8,
+        "RUN_POST_GRT_DESIGN_REPAIR": true,
+        "RUN_POST_GRT_RESIZER_TIMING": true,
+        "SIGNAL_WIRE_RC_LAYERS": [
+          "Metal2",
+          "Metal3"
+        ],
+        "LAYERS_RC": {
+          "*": {
+            "Metal2": {
+              "res": 0.0006955,
+              "cap": 0.0001611
+            },
+            "Metal3": {
+              "res": 0.0005799,
+              "cap": 0.0001924
+            },
+            "Metal4": {
+              "res": 0.0004835,
+              "cap": 0.0001393
+            }
+          }
+        },
+        "GRT_ALLOW_CONGESTION": true
+      },
+      "resolved_config_sha256": "779e20748b085d1a8da6c980f8307659fa1c08c8f112db2a6bee2746ede080a4",
+      "invocation_sha256": "15838b05debf621fb432720f4aad87e56667ca5d0e6eca0edc5c6b0b56c2f3ea",
+      "report": "build/physical/prefetch-sampled-01-report.json",
+      "report_sha256": "73fc248eafdb1b446b2bc6f68dd3da4e0760b38745524c66faff324a0a77a84f",
+      "synthesis": {
+        "step": "06-yosys-synthesis",
+        "instances": 36930,
+        "instance_area_um2": 663713.3412,
+        "utilization": null
+      },
+      "after_cts": {
+        "step": "36-openroad-stamidpnr-1",
+        "instances": 43775,
+        "instance_area_um2": 732201,
+        "utilization": 0.811378
+      },
+      "after_post_cts_repair": null,
+      "note": "Exit 2 at OpenROAD.ResizerTimingPostCTS: DPL-0036, detailed placement failed on 157 instances after clock-tree synthesis; the core has no room for the repair buffers."
+    },
+    {
+      "design": "prefetch-sampled",
+      "tag": "prefetch-sampled-02",
+      "exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "timeout_seconds": 5400,
+      "requested_stop": null,
+      "last_completed_step": "38-openroad-stamidpnr-2",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "overrides_file": "physical/experiments/combined.json",
+      "overrides": {
+        "MAX_FANOUT_CONSTRAINT": 8,
+        "CTS_SINK_CLUSTERING_SIZE": 8,
+        "RUN_POST_GRT_DESIGN_REPAIR": true,
+        "RUN_POST_GRT_RESIZER_TIMING": true,
+        "SIGNAL_WIRE_RC_LAYERS": [
+          "Metal2",
+          "Metal3"
+        ],
+        "LAYERS_RC": {
+          "*": {
+            "Metal2": {
+              "res": 0.0006955,
+              "cap": 0.0001611
+            },
+            "Metal3": {
+              "res": 0.0005799,
+              "cap": 0.0001924
+            },
+            "Metal4": {
+              "res": 0.0004835,
+              "cap": 0.0001393
+            }
+          }
+        },
+        "SYNTH_CLOCKGATE_MIN_WIDTH": 8,
+        "SYNTH_CLOCKGATE_POSEDGE_ICG": "sg13cmos5l_lgcp_1/GATE/CLK/GCLK",
+        "PL_TARGET_DENSITY_PCT": 62,
+        "GRT_ALLOW_CONGESTION": true,
+        "PL_RESIZER_HOLD_SLACK_MARGIN": 0.15,
+        "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.1
+      },
+      "resolved_config_sha256": "11f5e11f598bd1f07f869ced9f96e4cef23b2999b72c4e664c1f99586fff6a79",
+      "invocation_sha256": "a276216e68c16d1322e7e0b461733b834574e254ec409cd84f902e2c949fc4de",
+      "report": "build/physical/prefetch-sampled-02-report.json",
+      "report_sha256": "8e13a855071d2571538a5614ebd9ab4f3d01a1e18bf91750f7a667aa1371178b",
+      "synthesis": {
+        "step": "06-yosys-synthesis",
+        "instances": 32182,
+        "instance_area_um2": 618435.3294,
+        "utilization": null
+      },
+      "after_cts": {
+        "step": "36-openroad-stamidpnr-1",
+        "instances": 38058,
+        "instance_area_um2": 681608,
+        "utilization": 0.755314
+      },
+      "after_post_cts_repair": {
+        "step": "38-openroad-stamidpnr-2",
+        "instances": 40878,
+        "instance_area_um2": 728416,
+        "utilization": 0.807183
+      },
+      "note": "Wall-time limit (exit 124) inside OpenROAD.GlobalRouting after 38 completed steps. The mid-PnR typical setup slack after post-CTS repair (+5.92 ns) is a placement estimate at one corner, not a result.",
+      "global_routing": {
+        "congestion_iterations_logged": 858,
+        "converged": false
+      }
+    }
+  ],
+  "control": {
+    "note": "The pin-sampled candidate under attempt 2's overlay: combined-02 (same flow to global routing) and combined-03 (resumed detailed routing and extracted timing), combined-physical-results.json",
+    "synthesis": {
+      "step": "06-yosys-synthesis",
+      "instances": 24346,
+      "instance_area_um2": 507042.4338,
+      "utilization": null
+    },
+    "after_post_cts_repair": {
+      "step": "38-openroad-stamidpnr-2",
+      "instances": 31482,
+      "instance_area_um2": 604090,
+      "utilization": 0.669413
+    },
+    "global_routing": {
+      "congestion_iterations_logged": 29,
+      "converged": true
+    },
+    "routed": {
+      "tag": "combined-03",
+      "slow": {
+        "setup_ws_ns": -2.251342,
+        "setup_tns_ns": -30.043,
+        "setup_violations": 40,
+        "hold_ws_ns": 0.53863,
+        "hold_violations": 0
+      },
+      "typical": {
+        "setup_ws_ns": 4.454734,
+        "setup_tns_ns": 0,
+        "setup_violations": 0,
+        "hold_ws_ns": 0.232117,
+        "hold_violations": 0
+      },
+      "fast": {
+        "setup_ws_ns": 7.730172,
+        "setup_tns_ns": 0,
+        "setup_violations": 0,
+        "hold_ws_ns": 0.059152,
+        "hold_violations": 0
+      },
+      "functional_cell_area_um2": 608058.05,
+      "utilization": 0.67381,
+      "routed_wirelength_um": 1753794
+    }
+  },
+  "boundary": "Two attempts on one host under one floorplan; no routing, no extracted timing, no electrical or wirelength figure for the candidate. Iteration counts are log lines of the global router's congestion loop, comparable only between runs of the same flow. The result says the decoupled backend does not fit the diagnostic 6x4 floorplan with this flow's time budget; it says nothing about a larger floorplan, a one-port backend, or the routed recurrence."
+}

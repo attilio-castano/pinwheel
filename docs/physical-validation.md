@@ -15,6 +15,12 @@ Lean circuit proofs and independent RTL simulations.
 - LibreLane: `3.1.0.dev3`, with the ARM64 container manifest digest pinned.
 - IHP Open PDK: `2bbec755dc67ca3db0261c3d6163e15735d66710`, selected by the action.
 
+> **Update 2026-09-18.** The announcement now sets the maximum at 6×4 tiles, so
+> the rectangle below is the official die area, and the official 6×4 template
+> is in the pinned files ([brief](competition.md#the-outline-and-the-pinned-files)).
+> The rest of this section is kept as written, when the announcement said 8×4.
+> Still true: these runs do not apply the template's pins.
+
 The [competition](https://blog.janestreet.com/protocol-emulator-asic-competition/)
 specifies 8×4 tiles. The pinned
 [CMOS5L tile table](https://github.com/TinyTapeout/tt-support-tools/blob/da63c9927411e3aca350977d653d24bbf5bca972/tech/ihp-sg13cmos5l/tile_sizes.yaml)

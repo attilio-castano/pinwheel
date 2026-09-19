@@ -88,7 +88,7 @@ private def boundaries : IO Unit := do
   let request : Request := ⟨0x53, 0xa6⟩
   for wait in [:256] do
     let cfg : Config := ⟨3, Fin.ofNat 256 wait⟩
-    for phase in [Phase.free, .rise, .stopRise] do
+    for phase in [Phase.free, .rise, .stopRise, .stopFree] do
       let seed := {initial cfg request with phase := phase}
       let mut s := seed
       for n in [:wait + 1] do
@@ -117,6 +117,16 @@ private def boundaries : IO Unit := do
   let mut s := initial cfg request
   for _ in [:8] do s := step cfg s ⟨true, false⟩
   ensure (result s == some .timeout) "stuck SDA did not time out before START"
+  -- After STOP the bus-free interval is qualified the same way: a line that stays low
+  -- spends the wait budget, and a full free interval still reports the outcome.
+  let mut stop := {initial cfg request with phase := .stopFree}
+  for _ in [:8] do stop := step cfg stop ⟨true, false⟩
+  ensure (result stop == some .timeout && pins stop == ({} : Pins)) "stuck SDA after STOP did not time out"
+  let mut free := {initial cfg request with phase := .stopFree, outcome := .dataNack}
+  for n in [:4] do
+    ensure (busy free) s!"bus-free interval ended early at {n}"
+    free := step cfg free ⟨true, true⟩
+  ensure (result free == some .dataNack) "bus-free interval did not report the transaction outcome"
   IO.println "Passed all 256 wait budgets and high durations, ready-at-deadline, reset, stuck SDA/SCL, and bus-fault cases."
 
 private def negativeChecks : IO Unit := do

@@ -391,6 +391,650 @@ All source and evidence changes remain local and uncommitted. The next formal
 obligation remains technology-mapped equivalence; physical measurement and
 external interface integration retain their separate contracts.
 
+## 2026-09-17: estimate/extraction correlation diagnosis
+
+- **Scope:** read-only analysis of the retained `command-split-closure` run plus
+  one scratch pair of synthesis-only container runs (about 38 s each, two CPUs,
+  no network). No place-and-route run, Lean change or RTL change.
+- **Result:** the resizer's final slow-corner view is +0.055 ns against −5.049 ns
+  extracted. Fitted extracted capacitance is 0.161 / 0.192 / 0.139 fF/µm on
+  Metal2–4 versus about 0.092 fF/µm estimated. Hold repair contributes 6,423
+  delay cells. Clock gating reduces mapped area 578,449 → 505,878 µm² in the
+  unrecorded screen.
+- **Disposition and identity:** the [study](../physical-correlation-study.md)
+  owns the measurements; routed DEF SHA-256 `e668da67060aca2bc12d57651229cdfe97cbf95c58d1674bce1b5f0fd5db6a04`,
+  nominal SPEF `6d4df224254d646f6a117353b5df429d3e261c250ee5dbd499117bd972b2b536`.
+  `scripts/fit-wire-rc.py` and its unit test reproduce the fit. The screen has no
+  retained receipt and supports only a recorded follow-up.
+
+## 2026-09-17: calibrated-estimate physical run `rc-calibrated-01`
+
+- **Scope:** one user-authorized bounded run (four CPUs, 6 GiB, one-hour cap,
+  stop after `OpenROAD.STAPostPNR`), command-split RTL
+  `1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42`, unchanged
+  constraints/floorplan, overlay `physical/experiments/rc-calibrated.json`.
+  Tools and PDK are symlinked from the foundation worktree; the PDK identity
+  check passed. Exit 0, about 35 minutes of step time.
+- **Result:** extracted slow setup −0.153 ns (was −5.049 ns), 56 violating
+  endpoints (was 1,426), no slew/capacitance violations, 25 fanout violations.
+  Magic DRC/LVS not run. Worst path now launches from the `incoming[1]` port.
+- **Disposition and identity:** config SHA-256
+  `7ffe348d4ecf9295d9f86ffdda6581a7ca74f14076b14dace3751cf99c2fc0cc`; final STA
+  summary `2d195b98c0ec085a3dbeb9ffef06f5a0ddddf96104398293884ed87983f2cd10`.
+  Adopt calibrated estimates as the control for further flow comparisons; no
+  default promotion or closure claim. The [study](../physical-correlation-study.md)
+  owns the table.
+
+## 2026-09-17: clock-gated physical attempt `clock-gated-01` (failed)
+
+- **Scope:** second bounded run under the same authorization and limits;
+  calibrated control plus Yosys clock gating with `sg13cmos5l_lgcp_1`.
+- **Result:** exit 2 at `OpenROAD.GlobalRouting` (`GRT-0116`, overflow 526, 515 on
+  Metal3) after about 13 minutes. Post-CTS-repair cell area 604,627 µm² versus
+  742,324 µm²; utilization 67.0% versus 82.3%. No routed design or final timing.
+- **Disposition:** retain the failed evidence. A retry needs its own allocation
+  and one stated change; see the [study](../physical-correlation-study.md).
+
+## 2026-09-17: clock-gated retry `clock-gated-02` (failed)
+
+- **Scope:** one authorized retry; only `PL_TARGET_DENSITY_PCT` 70 → 62 added to
+  the clock-gated overlay. Same limits, RTL, constraints and floorplan.
+- **Result:** the first three global routes pass with zero overflow. Exit 2 at
+  `OpenROAD.ResizerTimingPostGRT` (`GRT-0116`): after antenna repair the global
+  route overflows by 3 on Metal3 (70.0% of derated capacity). No routed design
+  or final timing.
+- **Disposition:** retain the failed evidence under
+  `build/physical/core/runs/clock-gated-02/`. The area result (−18.5% after
+  clock-tree and hold repair) stands; routability is unresolved. See the
+  [study](../physical-correlation-study.md).
+
+## 2026-09-17: pin-sampler proofs, artifact checks and physical attempts
+
+- **Scope:** Lean wrapper/refinement work, emitted-artifact checks, and bounded
+  physical runs under the user's authorization to carry the input pipeline into
+  the physical design (four CPUs, 6 GiB, one-hour cap each, calibrated flow).
+- **Proof/artifact result:** `Netlist.extend`, pair traces, `PinSampler.trace_eq`,
+  `Sampled.trace_correct`/`initialized_trace`/`reference_registered` and the UART
+  `Safe.delayed`/`pipelined_observe` lemmas build with warnings as errors.
+  Foundation gate `build/validation/pin-sampler-01/report.json`: 142 modules,
+  10,927 declarations / 5,683 theorems, standard axioms only, 25 suites,
+  1,093 s. `build/sampled/cs-02/report.json` (re-run as `cs-03` on final sources
+  with identical artifacts): inner RTL identical to the read-back-proved control
+  `318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764`; sampled RTL
+  `3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1`; 6,319 / 6,313
+  equivalence points; 28,165 oracle edges; four rejections.
+- **Physical result so far:** `composed-control-01` exits 0 with slow setup
+  −0.797 ns, all 67 violating paths launched from `incoming` ports and the next
+  family at +3.380 ns. `pin-sampled-01` exits 2 at the first global route with
+  overflow 1 on Metal3. `pin-sampled-02` retries with `GRT_ALLOW_CONGESTION`.
+- **Disposition:** the [study](../pin-sampler-study.md) owns measurements and the
+  trust boundary; the identity manifest is
+  `physical/experiments/pin-sampled-results.json`. No default promotion.
+
+## 2026-09-17: sampled candidate routes and meets extracted timing (`pin-sampled-02`)
+
+- **Scope:** one further bounded run (same limits); only `GRT_ALLOW_CONGESTION`
+  added to the calibrated overlay (`physical/experiments/rc-calibrated-tolerant.json`),
+  inert for the zero-overflow control.
+- **Result:** exit 0. Slow setup +0.090 ns with no violating endpoints (control
+  −0.797 ns, 67, all launched from `incoming`); typical/fast +5.912/+8.204 ns;
+  worst hold +0.052 ns; 4 slew, 1 capacitance and 17 fanout violations; functional
+  area 732,103 µm² (control 743,469). Global routes tolerated overflow of
+  1, 1, 3, 75 and 41; detailed routing and the antenna check finish with zero
+  violations. Implemented-netlist regression: 28,165 edges, 4,618,982 defined
+  output-bit comparisons, mutant rejected. Magic DRC/LVS not run.
+- **Disposition and identity:**
+  [physical manifest](../../physical/experiments/pin-sampled-physical-results.json);
+  the [study](../pin-sampler-study.md) owns interpretation. One run, no margin
+  against the observed spread between equivalent RTLs; no promotion or claim.
+
+## 2026-09-17: clock-gated design routes (`clock-gated-03`)
+
+- **Scope:** one user-authorized bounded run (same limits); `GRT_ALLOW_CONGESTION`
+  added to the 62%-density clock-gated overlay. Follow-up gate simulations and one
+  scratch synthesis-only screen; no further physical run.
+- **Result:** exit 0; global overflow 0, 0, 0, 3, 0; zero detailed-routing and
+  antenna violations. Functional area 608,454 µm² versus 748,353 (−18.7%),
+  utilization 67.4%, wirelength 1.670 m. Slow setup −0.617 ns / 16 endpoints, all
+  launched from `incoming`; worst hold +0.0034 ns; 11 slew and 18 fanout
+  violations. Netlist regression passes with the original (28,165 edges) and
+  extended (29,062 edges) vectors. Stuck clock-gate enables rejected: 84/134
+  with the original vectors, 134/134 with the extended ones.
+- **Disposition and identity:**
+  [manifest](../../physical/experiments/clock-gated-physical-results.json);
+  the [study](../physical-correlation-study.md#third-attempt-clock-gated-03-routes)
+  owns interpretation. `scripts/measure-storage-variant.py` now exercises every
+  dictionary word, so fresh regression counts differ from earlier receipts.
+  No promotion or claim; Magic DRC/LVS not run.
+
+## 2026-09-17: combined sampler and clock-gating attempts `combined-01`/`-02`
+
+- **Scope:** user-authorized combined run: pin-sampled RTL
+  `3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1` with
+  `physical/experiments/combined.json` (calibrated estimates, width-8 clock gating,
+  62% density, tolerated global overflow, hold-repair margins 0.15/0.10 ns).
+- **`combined-01` (infrastructure failure):** exit 125; the Docker client lost its
+  connection (`error waiting for container: unexpected EOF`) during the 11th
+  detailed-routing iteration. No cause found; the daemon and image were intact
+  afterwards. This is not a flow result.
+- **`combined-02` (wall-time limit):** identical configuration; its first ten
+  detailed-routing iterations reproduce `combined-01` exactly. Exit 124 at the
+  one-hour cap in the 39th iteration with five Metal2/Metal3 spacing violations
+  left (21,548 initially). All five global routes finish with zero final
+  overflow (208 transiently). Pre-route: 607,329 µm², 67.3% utilization; hold
+  repair reaches its 0.10 ns target; the resizer's setup estimate ends at
+  −1.118 ns. Ungated designs need 17–19 detailed-routing iterations (22–24 min),
+  `clock-gated-03` 35 (28.5 min): gated designs are markedly harder to
+  detail-route despite lower utilization.
+- **Disposition:** `combined-03` resumes at `OpenROAD.DetailedRouting` from the
+  verified `combined-02` step-45 checkpoint
+  (`build/physical/combined-02-step45-checkpoint.json`) with a 90-minute cap for
+  this one run; detailed routing restarts from its first iteration.
+
+## 2026-09-17: combined run completes (`combined-03`) and corrects a launch-family claim
+
+- **Scope:** resume of the authorized combined run from the verified `combined-02`
+  step-45 checkpoint, 90-minute cap for this run; per-family extracted STA on four
+  retained designs; gate-level functional checks.
+- **Result:** exit 0; detailed routing 58 iterations / 71 min to zero violations.
+  608,058 µm², 67.4% utilization, worst hold +0.059 ns, slow setup −2.251 ns (40
+  endpoints), 30 slew and 29 fanout violations. Families (slow, worst ns):
+  `incoming` +14.496, `command` −2.251, `data` +0.116, `init`/`reset` −2.053,
+  registers −2.054 (38 negative); all worst paths end at the `r_cached_word` clock
+  gate. Regression 29,062 edges; 134/134 clock-gate mutants rejected.
+- **Correction:** the earlier statement that no register-launched path violated
+  in `composed-control-01` was wrong: the default report shows only the worst
+  launch point per endpoint. Per-family STA gives registers −0.294 ns (64
+  negative) there and +0.090 ns in `pin-sampled-02`. Study, status, results and the
+  sampler manifest are corrected.
+- **Disposition and identity:**
+  [combined manifest](../../physical/experiments/combined-physical-results.json);
+  the [study](../pin-sampler-study.md#combined-with-clock-gating) owns
+  interpretation. `check-targeted-timing.py` now takes `--design`.
+
+## 2026-09-17: structural timing model in Lean
+
+- **Scope:** Lean definitions, theorems, a compiled report and a comparison with
+  tracked manifests. No CAD tool, mapping or physical run.
+- **Result:** `Hardware/Structure.lean` and the pin-isolation theorems build with
+  warnings as errors; `test/StructuralTiming.lean` passes.
+  `build/structure/validation-02/report.json`: 13 exact source depths, mapped-cone
+  r = 0.954 over 12 points, 8 of 8 candidate directions, port-family ranking
+  equal to extracted slack, deepest endpoint the cached word. Loop stages from
+  registers (gate levels): address 22, successor 50, next address 91, enable 99,
+  cached word 101. Recirculating bits 6,172 of 6,233.
+- **Disposition:** the [study](../structural-timing.md) owns the model, its
+  boundary and the suggested abstractions. One early version of the report
+  repeated wire evaluation inside a launch function and did not finish in ten
+  minutes; wire arrivals are now computed as values first.
+
+## 2026-09-17: certified register enables and Lean-chosen gating plans
+
+- **Scope:** Lean definitions and proofs, report extension, a Yosys gating step
+  with gate-level simulation and mapping. No placement or routing.
+- **Result:** `Hardware/Enable.lean` and `Storage/EnabledBackend.lean` build with
+  warnings as errors and standard axioms; `test/Enables.lean` passes. Shapes hold
+  by `rfl` for both bodies. Plans: dictionary 66 gates / 3,536 bits, storage
+  580 / 6,108, cached word never gated (SHA-256 `254d768dd0cadfc3…`,
+  `c4cccf8bf225e359…` in `build/structure/validation-03/`). On RTL
+  `318930699f99e92eae489eee05c0ad2cdca9f8e34d6aeb2f7a07fe0fc6c6f764`:
+  `build/gated/none-02`, `dictionary-01`, `storage-01` match their plans, pass
+  29,062 oracle edges with 18,079,584 storage observations, reject 132/132 and
+  1,160/1,160 stuck-enable mutants, and map to 546,149 / 497,263 / 457,577 µm²
+  (typical) with slow ABC delay 9.964 / 9.974 / 9.970 ns.
+- **Disposition:** the [study](../register-enables.md) owns the construction,
+  boundary and open physical questions. A `clockgate` selection converted
+  nothing in the pinned Yosys; the step unmaps the enables of unplanned registers
+  instead. An empty-plan control first failed on an invalid `select -none`
+  combination and is retained as `build/gated/none-01`.
+
+## 2026-09-17: input latency as a contract parameter
+
+- **Scope:** Lean definitions, theorems and one executable suite. No CAD tool.
+- **Result:** `Pinwheel/Latency.lean`, `Hardware/InputLatency.lean`,
+  `SPI/Latency.lean`, `Compile/SPILatency.lean`, `I2C/Latency.lean` and the UART
+  corollary build with warnings as errors and standard axioms.
+  `test/Latency.lean`: 600 SPI transfers correct inside `d + tco ≤ halfCycles`
+  and `0xAA` misread one cycle beyond; 58 closed-loop I²C runs — the specified
+  controller reports `busFault` after a complete wire transaction for
+  `1 ≤ d ≤ phaseCycles`, the revised controller succeeds (also stretched, and with
+  both NACKs), `d = phaseCycles + 1` faults before any clock pulse, wait budget
+  `d` times out and `d + 1` succeeds.
+- **Disposition:** the [study](../input-latency.md) owns the contracts and the
+  open I²C recompilation. The premature-high hazard was found by the closed-loop
+  suite (a `d = 3`, two-cycle-phase case faulted with no clock pulses) and then
+  stated as a theorem.
+
+## 2026-09-17: I²C recompiled for input latency
+
+- **Scope:** both I²C reference controllers, the explicit, counted and
+  register-read programs with their correspondence proofs, the independent
+  vector generators, and the RTL regressions by simulation and equivalence.
+  No place-and-route; no instruction-set or RTL change.
+- **Result:** bus-free time after STOP is qualified like the interval before
+  START (`I2C/Controller.lean`, `I2C/RegisterRead.lean`). Address 77, counted
+  template 13 and read address 153 became the existing `qualify` record, identical
+  to address 0; `advance_stopFree` and the read lift were re-proved and every
+  downstream theorem builds unchanged. `I2C/Latency.lean` keeps the hazard as
+  `guarded_stop_echo_faults` and adds `stop_echo_is_waited_out`,
+  `blocked_prefix`, `rise_behind_pipeline` and `stop_completes_behind_pipeline`
+  (also for the register read). Library audit: standard axioms only.
+  `test/Latency.lean`: 111 write and 64 register-read closed-loop runs, reference
+  and compiled. Images: 713 and 203 bytes (were 715 and 205); distinct E64 records
+  for the write 13 (was 14), read 25; capacity sweep maxima 3/11/13/25.
+  Gates rerun: `check-i2c`, `check-compiled-i2c`, `check-i2c-read`,
+  `check-binary`, `check-reactive`, `check-execution`, `check-reactive-core`
+  (40,881 direct and 45,297 indexed edges), `check-loader` (33,858 edges).
+  `check-sampled --tag i2c-02`: 6,319 reference and 6,313 gate equivalence
+  points; 35,824 edges with pins presented two edges early, among them eight
+  closed-loop I²C runs behind the two registers and the former guarded record
+  faulting after a complete wire transaction; unshifted and inner-shifted replays
+  rejected; `sampled.sv` byte-identical to the routed candidate.
+  `check-foundation --tag i2c-qualify-01`: 150 modules, 11,319 declarations,
+  5,933 theorems, 28 suites, untrusted axiom rejected, 1,045 s. 38 Python unit
+  tests pass.
+- **Disposition:** the [study](../input-latency.md) owns the contract, the
+  `d = 0` behaviour change (a line held low after STOP now ends in `timeout`, not
+  `busFault`) and the remaining obligations. `check-reactive-core.py` had been
+  failing on `main` since the fetch-choice and interface modules were added: its
+  audit list lacked their 14 theorems and its rule assumed one namespace. Both were
+  repaired so the gate could run; the theorems were already covered by the
+  library-wide audit.
+
+## 2026-09-17: memory abstraction
+
+- **Scope:** Lean definitions, theorems and one executable suite. No CAD tool,
+  no RTL change.
+- **Result:** `Hardware/Memory.lean` (contract, `registered_refines`,
+  `read_untouched`), `Memory/Flops.lean` and `Memory/Registered.lean`
+  (refinements of latency 0 and 1, certified enables), `Storage/MemoryView.lean`
+  (the loader image and the routed backend's words as instances) and
+  `Storage/Prefetch.lean` (the reference machine against latency one:
+  `refinement`, `trace_correct`, `initialize_valid`, `fetched_reads`). All build
+  with warnings as errors; library audit standard axioms only (three cursor
+  decode lemmas were first proved by `bv_decide`, whose native fallback adds an
+  axiom the audit rejects, and are now arithmetic). `test/Memory.lean`: 400
+  requests through both implementations against the specification; the prefetch
+  machine closed-loop against the atomic reference on 4,754 edges (I²C write with
+  ACK, address NACK and data NACK, register read for three bytes, UART, SPI, an
+  image staged around a run and committed after it, resets, rejected commands),
+  24 taken branches, no difference; a variant reading only the untaken candidate
+  agrees until the first taken branch and then diverges. About 96 s interpreted.
+  `check-foundation --tag memory-01`: 155 modules, 11,641 declarations,
+  6,085 theorems, 29 suites, untrusted axiom rejected, 1,140 s.
+- **Disposition:** the [study](../memory-abstraction.md) owns the contract, the
+  prefetch machine and the boundary. It discharges the scheduling gate of the
+  [primitive review](../storage-primitives.md) at the functional level: two read
+  ports, next-state addresses, the map or the dictionary combinational. Whether
+  to build the structural machine is a fit question for
+  [status](status.md#next-discriminators).
+
+## 2026-09-17: decoupled prefetch machine, structural backend, levels
+
+- **Scope:** Lean machine and proofs, structural netlist and emission, the
+  structural report, the independent RTL regression and generic mapping. Then
+  one routed comparison against the pin-sampled candidate (below).
+- **Result:** the prefetch machine's first structural form put the fetched
+  registers at 103 gate levels (`build/structure/prefetch-01`): its addresses
+  wait for the next-state decode. `Storage/Decoupled.lean` computes them from
+  the dispatch decision (`advancing`, `dispatching`) and the target, with a
+  start word loaded on commit; `step_structure` and `candidate_correct` carry
+  the invariant, `refinement`/`trace_correct` reach the reference.
+  `Storage/PrefetchBackend.lean` is its netlist on the general backend (three
+  wires, 610 fields, 6,425 bits) with `netlist_next`, `netlist_output`,
+  `reference_next` and `completeRefinement`; `PrefetchEmit.lean` emits it alone
+  and behind the pin sampler. `build/structure/prefetch-02`: deepest register
+  endpoint 63 levels (composed 101), cached word 38 (101), core state 59 (91),
+  fetched words 63; from `incoming` 60 (99). `test/Memory.lean`: both machines
+  match the reference on 5,161 edges, 12 transactions, 24 taken branches.
+  Library audit standard axioms only (6,235 theorems).
+  `check-prefetch --tag prefetch-03`: RTL/gate equivalence 6,373 (inner) and
+  6,377 (sampled) points, oracle 35,824 edges on both, unshifted sampled trace
+  rejected; mapped typical 636,986 µm² inner and 654,086 µm² sampled (sampled
+  candidate 547,995), ABC delay 5,815 ps (6,803), 233 s. Identity manifest
+  `physical/experiments/prefetch-results.json`.
+  `prefetch-sampled-01` (calibrated tolerant overlay, 90-minute cap): exit 2 at
+  `OpenROAD.ResizerTimingPostCTS`, detailed placement failed on 157 instances
+  after clock-tree synthesis; 732,201 µm² of instances at 81.1% utilization before
+  timing repair, so the 6×4 core has no room for the repair buffers. No routing,
+  no extracted timing. `prefetch-sampled-02` (`combined.json`: calibrated RC,
+  sampler, width-8 clock gating; 90-minute cap): placement and clock tree
+  complete, 40,878 instances and 728,416 µm² at 80.7% utilization after
+  post-CTS repair (the same-overlay control `combined-02`: 31,482, 604,090 µm²,
+  66.9%); `OpenROAD.GlobalRouting` logged 858 congestion-removal iterations in
+  84 minutes without clearing overflow (control: 29) and hit the wall-time limit
+  (exit 124). Synthesis 32,182 instances, 618,435 µm² against 24,346 and
+  507,042. No routing, no extracted timing. Manifest
+  `physical/experiments/prefetch-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  machine, the levels and the boundary. Gate equivalence needs two-step
+  induction because synthesis drops the constant top bit of each fetched word;
+  no Yosys sequential equivalence to the composed RTL is claimed, the register
+  sets differ. The routed comparison is negative by capacity, not a timing
+  result: the decoupled backend does not fit the diagnostic floorplan with this
+  flow's time budget, so the levels gain is unconfirmed after routing and the
+  next physical question is area, not depth.
+
+## 2026-09-17: one read port under a per-program rule
+
+- **Scope:** Lean machine and proof, executable checks; no netlist, no mapping.
+- **Result:** `Storage/SinglePort.lean` reads the untaken candidate on the entry
+  edge and the taken one on the following edge (`readTaken`, `second`). The
+  rule `Ready` (no branching `checked` record with a zero duration) is carried
+  as an invariant on every pushed word (`ReadyImages`, `read_ready`); the taken
+  word is owed only once `second` is false, and a branching word one edge after
+  entry has not counted down (`branching_dispatch`). `trace_correct` gives trace
+  equality with the atomic reference on every input history whose data words
+  are ready, stated on traces (`trace_cons`) since the refinement is conditional
+  on inputs. `test/Memory.lean`: the one-port machine matches the reference on
+  the full scenario, 5,161 edges, 12 transactions, 24 taken branches; the four
+  fixture programs have no unready word, the one-cycle-phase I²C write one and
+  read three, the UART receiver two at any bit period; on the one-cycle-phase
+  write the machine agrees under an address ACK and diverges on the address
+  NACK's unready taken branch. 271 s interpreted. Library audit standard axioms
+  only (6,281 theorems).
+  `check-foundation --tag prefetch-single-01`: 159 modules, 11,990 declarations, 6,281 theorems, 29 suites, untrusted axiom rejected, 1,286 s.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  rule and the boundary. A one-port structural backend (one read tree instead of
+  two) is a fit question; the receiver's zero-duration branching records are a
+  compiler question.
+
+## 2026-09-18: fetch organizations as a parameter; the one-port backend
+
+- **Scope:** Lean theory and instances, one new structural backend with emission,
+  the structural report, the independent RTL regression and generic mapping. No
+  physical run.
+- **Result:** `Storage/FetchPolicy.lean`: a `Policy p σ` (registers, `p` read
+  ports, fed from registers only) and `Correct` (invariant, rule, `covers`,
+  `preserved`, `initial`), from which `step_eq`, `machine_next`,
+  `cache_valid_next`, `ruleRefinement` and `trace_correct` are proved once;
+  `Hardware/TimedRule.lean` is refinement under a rule on inputs, with trace and
+  pair-trace equality and composition below an unconditional refinement.
+  `Storage/Dispatch.lean` collects the scheduler-decision facts and expressions,
+  `Storage/ImageRule.lean` a rule on program words carried by the loader.
+  Instances: `Decoupled` (three ports — its start word is a third read tree;
+  obligations about 40 lines, the hand-written proof was about 190; the flat
+  machine is identified with the generic one by `next_toPolicy`, and the emitted
+  backend is byte-identical to `prefetch-03`), `TwoPort` (63 lines, start word on
+  port 0 on commit edges, `covers` reused), `SinglePort` (one port, `Ready`).
+  `test/Memory.lean`: all four machines match the reference on 5,161 edges, 12
+  transactions, 24 taken branches; readiness and divergence checks as before;
+  363 s (the generic step shares its feed, and the driver forces the fetched
+  words each edge — as first written the interpreter re-derived the feed inside
+  the words' closures and did not finish).
+  `Storage/OnePortBackend.lean`: 611 fields, 6,426 bits, wires for the fed
+  successor, the port address and the port word; `netlist_next`,
+  `netlist_output`, `reference_next`, `completeRefinement` (a rule refinement),
+  `trace_correct`; `OnePortEmit.lean` with `sampled_trace_correct`
+  (`PinSampler.delayed_data`). `build/structure/oneport-01`: fetched words 65
+  gate levels (decoupled 63, composed 101), port address 35, core state 60.
+  `check-prefetch --variant oneport --tag oneport-03`: RTL/gate equivalence
+  6,508 and 6,506 points with three-step induction (`oneport-01`: two steps
+  leave 107 points unproven; the untaken-word register can skip a load for one
+  edge, never two in a row); oracle in ready mode 29,898 edges on both
+  emissions (`oneport-02` failed in the generator: with the UART receiver
+  exercise merely skipped its live-replacement check found no captured samples,
+  so a register read now stands in); unshifted sampled trace rejected; the inner
+  RTL on the unrestricted vectors rejected, as the rule predicts. Mapped typical
+  566,746 µm² inner and 576,805 µm² sampled (sampled candidate 547,995,
+  decoupled 654,086), ABC delay 5,272 ps sampled (6,803; 5,815), slow 8,343 ps
+  (9,945; 9,269). 343 s. Identity manifest
+  `physical/experiments/oneport-results.json`.
+  `check-foundation --tag fetch-policy-01`: 166 modules, 12,365 declarations, 6,456 theorems, 29 suites, untrusted axiom rejected, 1,409 s.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  theory, the instances, the backend and the boundary. The one-port backend
+  passes the mapped gate; one routed comparison under the clock-gating overlay
+  is the next physical discriminator and is not allocated. A policy-parametric
+  backend is the next Lean step; `TwoPort`'s backend would follow from it.
+
+## 2026-09-18: policy-parametric backend, two-port backend, rules enforced and proved
+
+- **Scope:** Lean factoring of the backends, one new backend with emission, the
+  structural report, RTL regressions and generic mapping; a correction to the
+  gate-equivalence harness; the program rule as a filter and as compiler
+  theorems. One routed run of the one-port backend (below).
+- **Result:** `Storage/PolicyBackend.lean`: `core`, the general backend with the
+  successor as a wire input, proved against the functional step (`core_step`,
+  `core_observe`); `Realization` and `Realization.twoWires`; from a realization
+  and `Correct`, `netlist_next`, `netlist_output`, `reference_next`, the rule
+  refinement of the reference with the capacity contract and the trace
+  theorems, once; `PolicyEmit.lean`: emission and `sampled_trace_correct` once
+  (`PinSampler.delayed_rule`). `PrefetchBackend` 379 → 135 lines,
+  `OnePortBackend` 473 → 226, `Decoupled`'s flat machine and bridge removed;
+  both re-based backends emit byte-identical MLIR to `prefetch-03` and
+  `oneport-03`, alone and sampled, with unchanged level reports
+  (`build/structure/policy-01`). `TwoPortBackend.lean` (148 lines, compiled at
+  the first attempt): port 0's word is a shared wire; fetched words 63 levels,
+  start word 65 (`build/structure/policy-02`).
+  `check-prefetch --variant twoport`: `twoport-01` left 148 points unproven at
+  two and at three steps — synthesis had narrowed the three word registers to
+  63 bits, name matching dropped them, and the start word loads on commits only.
+  The harness now re-exposes narrowed registers at full width in a copy used
+  for the comparison. `twoport-02`: 6,501 and 6,511 points with two-step
+  induction, unrestricted oracle 35,824 edges on both emissions, unshifted
+  sampled trace rejected; mapped typical 618,244 µm² sampled (+12.8% over the
+  sampled candidate), ABC delay 5,027 ps (−26.1%), slow 8,150 ps (−18.1%).
+  `prefetch-05`: the decoupled RTL, identical to `prefetch-03`, now compared at
+  6,501 and 6,505 points (the two fetched registers had been left out of the
+  6,373; they reload every edge, so that result stood). `prefetch-04` was
+  invalidated by my editing sources during the run. The explanation given on
+  2026-09-18 for the one-port backend's three-step induction ("the untaken-word
+  register can skip a load for one edge") is withdrawn: every register is
+  matched there and the cause was not isolated.
+  `Storage/Admission.lean`: `admit`, `admit_rule`, `admit_of_rule`, `discharge`
+  (`Timed.RuleRefinement.precompose`); the one-port rule now reads
+  `command = 2 → Ready data`; `SinglePort.admitted`, `Backend.OnePort.admitted`;
+  the capacity check is `admit (Small.capacity cursor)` by `rfl`.
+  `Storage/Readiness.lean`: `ready_encode`, `upload_ready`, `i2c_write`,
+  `i2c_read` (every request, `phaseMinusOne ≠ 0`), `embedded` (UART and SPI
+  transmission), `uart_receiver` (never). Library audit standard axioms only
+  (6,480 theorems). `check-foundation --tag policy-backend-01`: 172 modules, 12,450 declarations, 6,480 theorems, 29 suites, untrusted axiom rejected, 1,483 s.
+  `oneport-sampled-01` (`combined.json`, 150-minute cap, no stop after
+  `STAPostPNR`): the flow ran to its end in about 100 minutes, 51 detailed-routing
+  passes to zero violations, Magic DRC 0, LVS 0, antenna 0; exit 2 for the one
+  deferred error, slow-corner setup. Slow setup −0.187 ns (9 endpoints, TNS
+  −1.168 ns), typical +5.730, fast +8.602; hold +0.361 / +0.168 / +0.054;
+  624,825 µm² of functional cells, 69.2% utilization, 1,663,828 µm of wire,
+  6,116 repair buffers (73,235 µm²); 10 slew and 20 fanout violations.
+  Per-family query `oneport-sampled-01-families`: registers −0.053 ns (3 paths;
+  `combined-03` −2.054, `pin-sampled-02` +0.090), loader command +0.473 (−2.251,
+  +0.175), loader data −0.187 (+0.116, +1.996), protocol +14.506, reset +0.228.
+  The worst register path ends in `r_fetched_taken[52]` and `r_start_word[52]`
+  through the port's read — the level model's deepest endpoint; all nine
+  violating endpoints launch from `data[35]` through the capacity check on the
+  command, the commit select and the port's address. Implemented-netlist
+  regression on the ready-mode vectors: 29,898 edges, 4,903,194 comparisons,
+  mutant rejected. Manifest `physical/experiments/oneport-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  backends, the rule, the routed comparison and the boundary. The one-port
+  organization is the first variant to fit with clock gating and come within
+  0.2 ns of the slow corner; the command-split form inside `Backend.Policy.core`
+  is the next Lean step, and a routed repeat and a two-port run are separate
+  allocations.
+
+## 2026-09-18: command split in the generic backend; the data port as a theorem; two routed runs
+
+- **Scope:** one Lean change in the generic policy backend with its proofs, a
+  structural theorem file, an extension of the structure check, re-validation
+  of the three emitted backends, and two routed runs approved as such: a repeat
+  of the one-port backend and a first run of the two-port backend, both under
+  the contract of `oneport-sampled-01` (`combined.json`, 150-minute cap, whole
+  flow), stated before the runs.
+- **Result:** `Backend.Policy` lifts with `BankSelect.lift` (`feedW`,
+  `BankSelect.circuit` for the loader's registers and outputs, `liftC`); new
+  lemmas `BankSelect.lift_correct`, `circuit_next_eq`, `circuit_output_eq`; no
+  policy file changed. Level report `build/structure/split-01`, then
+  `check-structure --tag split-02` with the new policy-backend section: data
+  port into fetched words 71 → no path, into core state 61 → no path, loader
+  control 42 → 41; cursor into fetched words 65 → 50; registers into the
+  dispatch decision 33 → 20, cached word 38 → 25, fetched words 65 → 64
+  (two-port 64, decoupled 62). The earlier report (`policy-02`) already ranked
+  the data port deepest; I had not read that row before `oneport-sampled-01`.
+  `Storage/DataPort.lean`: `dataPort`, leaf facts by `rfl`
+  (`base_data_free`, `commit_lift_data_free`, `branch_lift_data_free`,
+  `chosen_data_free`, and `plain_commit_sees_data` by `decide`), generic
+  `sched_data_free`, `sched0_data_free`, `readAt_data_free`, `core_data_free`,
+  `core_output_data_free`, `DataFree`, `DataFree.next`, `DataFree.output`,
+  `DataFree.step_independent`, instances `Prefetch.dataFree`,
+  `TwoPort.dataFree`, `OnePort.dataFree`. A section variable mentioning `next`
+  resolved to `DataFree.next` once that existed and elaborated to `sorry`
+  without an error; written `Policy.next`.
+  `check-prefetch`: `oneport-04` (6,508 and 6,506 points, three-step induction,
+  29,898 ready-mode edges on both emissions, both rejections), `prefetch-06`
+  (6,501 and 6,511, 35,824 edges), `twoport-03` stopped on the mapped
+  flip-flop assertion of the sampled emission with everything before it passed
+  — 6,425 where 6,419 was expected: bits 3–8 of the cached word, deleted as
+  unread in `twoport-02`, are kept — and `twoport-04` passed with the count
+  recorded (6,507 and 6,505 points, 35,824 edges). Mapped typical, sampled:
+  one port 557,736 µm² (+1.8% over the sampled candidate; was 576,805), ABC
+  5,167 ps; two ports 628,939 µm² (+14.8%; was 618,244), 5,431 ps; decoupled
+  637,827 µm² (+16.4%; was 654,086), 5,601 ps. Manifests
+  `physical/experiments/{oneport,twoport,prefetch}-split-results.json`.
+  `check-foundation --tag command-split-policy-01`: 173 modules, 12,519
+  declarations, 6,528 theorems, 29 suites, untrusted axiom rejected, 1,494 s.
+  `oneport-split-01`: exit 0, the whole flow in 55 minutes; 17 detailed-routing
+  passes to zero violations (13, then 4 after antenna repair); slow setup
+  +0.602 ns with no violation, typical +6.325, fast +8.815; hold +0.379 /
+  +0.152 / +0.060; 625,727 µm² of functional cells, 69.3% utilization,
+  1,617,478 µm of wire, 6,026 repair buffers (70,119 µm²); 5 slew and 15 fanout
+  violations; Magic DRC 0, LVS 0, antenna 0. Families
+  (`oneport-split-01-families`): registers +1.100 (`cached_word[39]` →
+  `start_word[1]`), loader command +0.602 (`command[0]` → `start_word[1]`),
+  loader data +4.383 (`data[2]` → `loader_rejected`), protocol +14.459, reset
+  +0.874. Implemented-netlist regression on the ready-mode vectors: 29,898
+  edges, 4,903,194 comparisons, mutant rejected. Manifest
+  `physical/experiments/oneport-split-physical-results.json`.
+  `twoport-split-01`: exit 124 at the 150-minute limit. Utilization 75.2%
+  (678,368 µm²) entering global routing, which ran from 17:45:52 to 19:49:17
+  container time — 71 `GRT-0273` rounds, each disabling the non-default rule of
+  one clock net and re-running 50 overflow iterations — and completed with
+  3,386,282 µm of estimated wire and 66 antenna violations (one port at the same
+  step: 2,156,400 µm); `RepairDesignPostGRT` re-entered the loop (8 more rounds)
+  until the limit. Last completed step `40-openroad-checkantennas`; no detailed
+  routing, no extracted timing; mid-flow estimates are omitted from the manifest
+  `physical/experiments/twoport-split-physical-results.json`.
+- **Disposition:** the [memory abstraction](../memory-abstraction.md) owns the
+  change, the theorem and both routed results.
+  The one-port organization with the command split is the first design here
+  to meet setup at all corners with clock gating, in one run; the two-port
+  organization does not route on the test rectangle under this overlay. Both
+  conclusions are about the test boundary — a core rectangle with stand-in
+  pins — and the [whole chip](../whole-chip.md) is now a Lean object whose
+  routed run has not been made.
+
+## 2026-09-18: the whole chip in Lean — feeders, serial loader, upload theorem
+
+- **Scope:** Lean only, plus emission and one mapped screen. No simulation of the
+  emitted chip and no physical run. Direction set by the user the same day: the
+  Lean specification should cover the whole stack, the serial loader first.
+- **Result:** `Hardware/Feeder.lean`: `Feeder` (expressions for the inner inputs
+  and for the layer's own registers), `wrap`, `wrap_step`, `wrap_observe`,
+  `wrap_pairTrace` (any netlist behind any feeder takes the edges of the fed
+  history), `Model` with `pairTrace_eq`, `history_fst`, `history_append`,
+  timing laws `wrap_arrivalNext`, `wrap_shields`, the generic two-register
+  `sampler` with `samplerModel` and `sampler_consumed`, `Netlist.mapOutputs`.
+  A component built from unapplied `n.step` left goals in an eta form that
+  `rw` could not match; `Netlist.component` uses explicit lambdas.
+  `Hardware/Serial/Receiver.lean`: five registers (76 bits), `receiver` as a
+  feeder, `model` (circuit = functions, through three Bool/BitVec bridge
+  lemmas and `rfl`; `simp` with a Bool hypothesis on a BitVec literal did not
+  rewrite, as before), `no_path_from_host`. `Serial/Frame.lean`: `IsBit` (clock
+  low at least once, high at least twice, data at the first high sample),
+  `run_bit`, the shift invariant `Partial` on `c ++ d`, `frame_delivers`,
+  `Session`, `session_delivers`. `Loader/Delivery.lean`: `Quiet`, `Carries`,
+  `Delivers`. `Hardware/Chip.lean`: `pinMap`, `outputs`, `netlist`, `trace_eq`,
+  `consumed_delayed`, `session_delivers`, `advance`, `history_append`,
+  `pins_shielded`. `Storage/ChipBackend.lean`: `Policy.chip_trace`,
+  `OnePort.chip_trace`, `TwoPort.chip_trace`, `chipText` (module
+  `tt_um_pinwheel` with the template's ports). `Loader/Upload.lean`: `admitted`,
+  `stepWith`, `runWith`, `imageOf`, `idle_next`, `quiet_next`, `begin_next`,
+  `pushed_next`, `complete_commits`, `Staging`, `Loaded`, `staged_run`,
+  `upload_loads`, `Delivers.pushes`. `Loader/Program.lean`: `Holds`,
+  `scheduler_holds`, `core_next_holds` (through `Reactive.step_refines`),
+  `Running`, `runs_program`, `runs_program_with`, `Loaded.running`.
+  `Storage/ProgramUpload.lean`: `upload_holds`, `upload_good`, `Fits`,
+  `upload_fits`, `program_loads`. `Storage/ChipUpload.lean`:
+  `chip_program_loads`, `chip_upload_ready`, `TwoPort.chip_runs_upload`,
+  `OnePort.chip_runs_upload`. Inside `theorem DataFree.next`-style names a
+  section variable mentioning `next` had elaborated to `sorry` earlier in the
+  day; the same trap was avoided here by qualifying names.
+  `test/SerialUpload.lean` (suite 30): the compiled I²C write's upload and a
+  start as 325 frames, 70,855 Tiny Tapeout pin samples through `Chip.consumed`,
+  delivered in order; longer and uneven phases; garbage on the data pin except
+  at the first high sample; command 7 as reset; inverted and
+  least-significant-first drivers, a frame cut by the select line and a missing
+  two-sample tail rejected; 322 words, at most 32 distinct records, all ready
+  and within capacity; the UART receiver's stream not ready. Under one second.
+  `chip_emit` → `build/chip/chip-01`; CIRCT export; mapped typical: one-port
+  chip 562,152 µm², ABC 5,364 ps (test-boundary core behind the sampler
+  557,736); two-port chip 614,555 µm², 5,391 ps (628,939).
+  `check-foundation --tag whole-chip-01`: 183 modules, 13,322 declarations, 6,873 theorems, 30 suites, untrusted axiom rejected, 1,423 s.
+- **Disposition:** [the whole chip](../whole-chip.md) owns the stack, the
+  theorems and the boundary. The proved object is now the chip's netlist, from
+  a host's serial session to the instruction-level engine running the uploaded
+  program. The emitted RTL of that netlist has no independent check yet and no
+  physical run; both are separate steps, the second needing an allocation and
+  an outline decision.
+
+## 2026-09-18: the competition's outline is now 6×4
+
+- **Source:** the [announcement](https://blog.janestreet.com/protocol-emulator-asic-competition/),
+  reread 2026-09-18 after a note from the project owner. It now says: set the
+  tile size to `6x4`; the current maximum is 6×4 tiles (24 tiles, about 0.7 mm²
+  of nominal tile area, about 1,000 logic cells per tile as a budget); 8×4
+  (about 30% more) is being worked on, with updates by page and email. Deadline
+  (2027-01-18) and shuttle target (March 2027) unchanged. First read
+  (2026-09-12): `8x4`.
+- **Pinned files:** support commit `da63c99` has the 6×4 tile entry
+  (1,289.28 × 710.64 µm) and the official template
+  `tech/ihp-sg13cmos5l/def/tt_block_6x4_pgvdd.def`
+  (SHA-256 `b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4`):
+  186 rows × 2,674 sites = 902,417 µm² of core, the `design__instance__area` of
+  the routed runs; 43 pins, all Metal4, top edge, x from 29.76 to 191.04 µm.
+  No 8×4 entry, consistent with the announcement. The flow already has an
+  `Odb.ApplyDEFTemplate` step (step 27 of the routed runs), unused so far.
+- **Disposition:** no run. The "diagnostic" rectangle was the official die area;
+  the outline decision recorded as blocking a whole-chip run is resolved. On
+  this outline the one-port organization is the candidate (69.3%, met) and the
+  two-port one is not (75.2%, did not route), so a UART receiver inside the
+  one-port rule is required, not optional. [Competition brief](../competition.md#the-outline-and-the-pinned-files),
+  [status](status.md#the-official-outline-2026-09-18) and
+  [the whole chip](../whole-chip.md#the-outline) updated;
+  `tools/physical-toolchain.json` records the allocation. Older studies keep
+  their wording about an 8×4 outline as written at the time.
+
+## 2026-09-19: local branch review and submission plan
+
+- **Scope:** review of `claude/physical-fit`, starting at `4d5de85`, followed by
+  bounded script, test and documentation fixes. No Lean definitions or proofs
+  changed; no new mapping, physical run or default-backend promotion.
+- **Fixes:** physical preparation now requires the manifest's HEAD, index and
+  working-tree bytes to agree. Netlist receipts use portable logical paths;
+  clock-gate mutation checks bind retained inputs and require the unmodified
+  baseline to pass. Sampled/prefetch checks bind their full oracle dependency
+  chain and terminate timed-out process groups with retained diagnostics.
+  DEF parsing follows logical route segments and excludes patch rectangles
+  from via counts; the [dated correction](../physical-correlation-study.md#parser-correction-2026-09-19)
+  preserves the original physical results and records the changed resistance
+  fits on two retained input pairs. The original calibration pair is absent.
+- **Validation:** the clean-source foundation gate passed all 30 suites and
+  audited 183 modules, 13,322 declarations and 6,873 theorems with standard axioms
+  only; the injected untrusted axiom was rejected. It took 1,521.681 s, and all
+  250 recorded inputs match the working tree. Receipt:
+  `build/pr-review-20260919/source/build/validation/pr-review-20260919/report.json`
+  (SHA-256 `707af9088f0e50abb3628a539c5904740fcaa4858a9c7c3113f85139b997fd0a`).
+  All 56 Python tests passed, with all script/test source hashes unchanged
+  during the run. Fresh emission of one-/two-/three-port cores, their
+  sampled variants and both chip variants matched all eight retained MLIR/RTL
+  pairs. This is emission identity, not new simulation, equivalence or physical
+  evidence. Local receipts are under `build/pr-review-20260919/`.
+- **Disposition:** the [submission plan](../submission-plan.md) names the next
+  implementation gates: a ready UART receiver and emitted admission rule, host
+  result transfer, independent chip RTL validation and the actual chip physical
+  boundary. Current status no longer treats a two-port timeout as an absolute
+  utilization cutoff. Host documentation now states the three-edge idle
+  preparation and separates upload commitment from a later start.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,

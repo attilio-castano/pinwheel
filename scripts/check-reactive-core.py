@@ -38,8 +38,10 @@ def main():
     lean = [lake, 'env', 'lean', '-DwarningAsError=true']
     expected = []
     for p in sorted((ROOT/'Pinwheel/Hardware/Reactive').glob('*.lean')):
-        ns = 'Pinwheel.Hardware.Reactive.Core.' if p.name == 'CoreProofs.lean' else 'Pinwheel.Hardware.Reactive.'
-        expected += [ns+n for n in re.findall(r'^theorem (\w+)', p.read_text(), re.M)]
+        text = p.read_text()
+        # Each of these modules declares its theorems in the namespace it opens first.
+        ns = re.search(r'^namespace (\S+)', text, re.M).group(1) + '.'
+        expected += [ns+n for n in re.findall(r'^theorem (\w+)', text, re.M)]
     expected.sort()
     audit_source = (ROOT/'test/ReactiveCoreAxioms.lean').read_text()
     if sorted(re.findall(r'^#print axioms (\S+)', audit_source, re.M)) != expected:

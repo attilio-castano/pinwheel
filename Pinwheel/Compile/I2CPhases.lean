@@ -20,7 +20,7 @@ def control (s : Pinwheel.I2C.State) : Control :=
   | .stopLow => .active 74 s.remaining
   | .stopRise => .waiting 75 s.waitLeft
   | .stopHigh => .checked 76 s.remaining
-  | .stopFree => .checked 77 s.remaining
+  | .stopFree => .qualifying 77 s.remaining s.waitLeft
   | .finished => .stopped (match s.outcome with
       | .timeout => .timeout | .busFault => .fault | _ => .completed)
 
@@ -144,7 +144,8 @@ theorem advance_stopFree (cfg : Pinwheel.I2C.Config) (s : Pinwheel.I2C.State)
     (hp : s.phase = .stopFree) (hs : SamplesOK s slots) :
     Matches (Pinwheel.I2C.step cfg s bus)
       (advance (program cfg s.request) (lift s slots) (encodeInputs bus)) := by
-  by_cases hr : s.remaining = 0 <;> cases hb : bus.scl <;> cases hd : bus.sda
+  by_cases hr : s.remaining = 0 <;> by_cases hw : s.waitLeft = 0 <;>
+    cases hb : bus.scl <;> cases hd : bus.sda
   all_goals simp_all
   all_goals cases h0 : slots[0] <;> cases h1 : slots[1] <;> simp_all
   done

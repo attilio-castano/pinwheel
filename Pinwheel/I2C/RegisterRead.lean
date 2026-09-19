@@ -109,7 +109,12 @@ def step (cfg : Config) (s : State) (bus : Bus) : State :=
   | .stopLow => timed cfg s .stopRise
   | .stopRise => if bus.scl then move cfg s .stopHigh else blocked cfg s
   | .stopHigh => guarded cfg s bus.scl .stopFree
-  | .stopFree => guarded cfg s (bus.scl && bus.sda) .finished
+  -- Qualified like the initial bus-free interval: behind input registers the first
+  -- observations after STOP still show the controller's own SDA low.
+  | .stopFree => if bus.scl && bus.sda then
+      if s.remaining.val == 0 then move cfg s .finished
+      else {count s with waitLeft := cfg.waitMinusOne}
+    else blocked cfg s
 
 def received (samples : Vector Bool 16) : BitVec 8 :=
   BitVec.ofBoolListBE [samples[0], samples[1], samples[2], samples[3],

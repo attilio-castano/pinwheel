@@ -1,0 +1,14 @@
+{
+  "MAX_FANOUT_CONSTRAINT": 8,
+  "CTS_SINK_CLUSTERING_SIZE": 8,
+  "RUN_POST_GRT_DESIGN_REPAIR": true,
+  "RUN_POST_GRT_RESIZER_TIMING": true,
+  "SIGNAL_WIRE_RC_LAYERS": ["Metal2", "Metal3"],
+  "LAYERS_RC": {
+    "*": {
+      "Metal2": {"res": 6.955e-04, "cap": 1.611e-04},
+      "Metal3": {"res": 5.799e-04, "cap": 1.924e-04},
+      "Metal4": {"res": 4.835e-04, "cap": 1.393e-04}
+    }
+  }
+}

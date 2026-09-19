@@ -19,15 +19,22 @@ The [continuous clock contract](docs/uart-stream-clocks.md) extends those proofs
 to unequal TX/RX clocks and varying bounded observation age, including time to
 rearm and observe idle high between adjacent frames.
 
-The project has a general reloadable core with atomic program replacement,
-compressed instruction storage, and a current-instruction cache. Its first physical
-implementation exposed a slow-corner timing failure. The project has not established
-qualified operating frequency or full submission fit. Lean model proofs, RTL checks,
-and physical evidence have distinct boundaries.
+The project has a reloadable core with atomic program replacement, compressed
+instruction storage, and proved alternatives for fetching instructions. The
+one-port experimental core meets extracted setup and hold at all three corners
+of one 20 ns routed run on the 6×4 die area; electrical-limit violations remain.
+The [whole chip](docs/whole-chip.md) adds a proved serial loader and Tiny Tapeout
+pin map, and has been emitted and mapped, but has no independent RTL check or
+routed result. Its interface has no host result-readback transaction, and
+the compiled UART receiver does not satisfy the one-port program rule.
+The [submission plan](docs/submission-plan.md) records those remaining gates.
+No backend is promoted to the default, and full submission fit is unestablished.
+Lean model proofs, RTL checks, and physical evidence have distinct boundaries.
 
 ## Start here
 
 - [Current research status](docs/research/status.md): the active question, evidence, and next decision.
+- [Submission plan](docs/submission-plan.md): remaining functionality, tool changes, dependencies, and completion gates.
 - [Research results](docs/research/results.md): completed conclusions and conditions for reconsidering them.
 - [Research journal](docs/research/journal.md): dated milestones and evidence locations.
 - [Research workflow](docs/research/README.md): how experiments and outside research become durable knowledge.
@@ -47,7 +54,7 @@ lake env lean -DwarningAsError=true --run test/Engine.lean
 Run the local pre-push checks (Python 3.12+, no CAD tools or pre-existing fixtures):
 
 ```sh
-python3 -B -m unittest discover -s test -p 'test_physical_checkpoint.py'
+python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
 

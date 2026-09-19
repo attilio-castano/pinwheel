@@ -1,0 +1,255 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/physical-correlation-study.md",
+  "disposition": "Clock-gated storage routes with 18.7% less functional cell area and comparable extracted timing; the routed netlist passes the extended oracle regression and every stuck clock-gate enable is rejected. Retain as an experimental flow variant; no default, fit or frequency claim.",
+  "fixed_contract": "Byte-identical command-split RTL (1a1fd62b6e17bcdf584abaf7b9733c3e28eab1ab7ce565057588139504cc5a42), calibrated flow, 20 ns clock, unchanged I/O constraints, diagnostic 6x4 floorplan, four CPUs, 6 GiB, one-hour cap, stop after OpenROAD.STAPostPNR. Magic DRC, LVS and later layout checks not run.",
+  "control": {
+    "design": "core",
+    "tag": "rc-calibrated-01",
+    "exit_code": 0,
+    "stop_step": "OpenROAD.STAPostPNR",
+    "overrides_file_keys": [
+      "CTS_SINK_CLUSTERING_SIZE",
+      "LAYERS_RC",
+      "MAX_FANOUT_CONSTRAINT",
+      "RUN_POST_GRT_DESIGN_REPAIR",
+      "RUN_POST_GRT_RESIZER_TIMING",
+      "SIGNAL_WIRE_RC_LAYERS"
+    ],
+    "config_sha256": "7ffe348d4ecf9295d9f86ffdda6581a7ca74f14076b14dace3751cf99c2fc0cc",
+    "inputs_sha256": "a64c56bdb2817805c7dddfa0c70b05db2c69e0427f55fedb1fc07a2d4dcbfa97",
+    "invocation_sha256": "63f85a809551d187bcf570f5f5e7089785bea7f8f756896b4f404959f0ea1537",
+    "sta_summary_sha256": "2d195b98c0ec085a3dbeb9ffef06f5a0ddddf96104398293884ed87983f2cd10",
+    "report_sha256": "0e252c7b2d4237db96d59db8bd0d92ef99966c6af62942bfedf3e38ec00dc435",
+    "slow": {
+      "setup_ws_ns": -0.153184,
+      "setup_tns_ns": -5.392,
+      "setup_violations": 56,
+      "hold_ws_ns": 0.30714,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.706818,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.155307,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 8.3612,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.08622,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 0,
+      "capacitance": 0,
+      "fanout": 25
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 748352.9,
+    "cell_classes": {
+      "Antenna cell": {
+        "count": 288,
+        "area_um2": 1567.64
+      },
+      "Buffer": {
+        "count": 8,
+        "area_um2": 58.06
+      },
+      "Clock buffer": {
+        "count": 1033,
+        "area_um2": 24365.58
+      },
+      "Timing Repair Buffer": {
+        "count": 10952,
+        "area_um2": 142902.14
+      },
+      "Inverter": {
+        "count": 157,
+        "area_um2": 932.6
+      },
+      "Clock inverter": {
+        "count": 65,
+        "area_um2": 459.04
+      },
+      "Sequential cell": {
+        "count": 6232,
+        "area_um2": 305298.2
+      },
+      "Multi-Input combinational cell": {
+        "count": 25034,
+        "area_um2": 272769.64
+      }
+    },
+    "utilization": 0.829276,
+    "routed_wirelength_um": 1926710
+  },
+  "failed_attempts": [
+    {
+      "design": "core",
+      "tag": "clock-gated-01",
+      "exit_code": 2,
+      "stop_step": "OpenROAD.STAPostPNR",
+      "overrides_file_keys": [
+        "CTS_SINK_CLUSTERING_SIZE",
+        "LAYERS_RC",
+        "MAX_FANOUT_CONSTRAINT",
+        "RUN_POST_GRT_DESIGN_REPAIR",
+        "RUN_POST_GRT_RESIZER_TIMING",
+        "SIGNAL_WIRE_RC_LAYERS",
+        "SYNTH_CLOCKGATE_MIN_WIDTH",
+        "SYNTH_CLOCKGATE_POSEDGE_ICG"
+      ],
+      "config_sha256": "7a73243c3d674e94423486697383d6990edcb153ba7c0a324105383029a14695",
+      "inputs_sha256": "a64c56bdb2817805c7dddfa0c70b05db2c69e0427f55fedb1fc07a2d4dcbfa97",
+      "invocation_sha256": "d94f627a664d48c4050b5622221a1fad5c0f781eeef6c2289253a78c3d9cfe51",
+      "failed_step": "39-openroad-globalrouting"
+    },
+    {
+      "design": "core",
+      "tag": "clock-gated-02",
+      "exit_code": 2,
+      "stop_step": "OpenROAD.STAPostPNR",
+      "overrides_file_keys": [
+        "CTS_SINK_CLUSTERING_SIZE",
+        "LAYERS_RC",
+        "MAX_FANOUT_CONSTRAINT",
+        "PL_TARGET_DENSITY_PCT",
+        "RUN_POST_GRT_DESIGN_REPAIR",
+        "RUN_POST_GRT_RESIZER_TIMING",
+        "SIGNAL_WIRE_RC_LAYERS",
+        "SYNTH_CLOCKGATE_MIN_WIDTH",
+        "SYNTH_CLOCKGATE_POSEDGE_ICG"
+      ],
+      "config_sha256": "d8040bee3217701444bdb8032607a7cadebe2aff0061fa94b8142bcdc758ee49",
+      "inputs_sha256": "a64c56bdb2817805c7dddfa0c70b05db2c69e0427f55fedb1fc07a2d4dcbfa97",
+      "invocation_sha256": "f8c4fc72126b0fa83bdf68492dfa14f06c57e93c2bf932539d8a7ee70110566c",
+      "failed_step": "44-openroad-resizertimingpostgrt"
+    }
+  ],
+  "candidate": {
+    "design": "core",
+    "tag": "clock-gated-03",
+    "exit_code": 0,
+    "stop_step": "OpenROAD.STAPostPNR",
+    "overrides_file_keys": [
+      "CTS_SINK_CLUSTERING_SIZE",
+      "GRT_ALLOW_CONGESTION",
+      "LAYERS_RC",
+      "MAX_FANOUT_CONSTRAINT",
+      "PL_TARGET_DENSITY_PCT",
+      "RUN_POST_GRT_DESIGN_REPAIR",
+      "RUN_POST_GRT_RESIZER_TIMING",
+      "SIGNAL_WIRE_RC_LAYERS",
+      "SYNTH_CLOCKGATE_MIN_WIDTH",
+      "SYNTH_CLOCKGATE_POSEDGE_ICG"
+    ],
+    "config_sha256": "51770d597b119cc4c7e41193faf3c4f91016671ae85a3d395c8dfeb786ee75c8",
+    "inputs_sha256": "a64c56bdb2817805c7dddfa0c70b05db2c69e0427f55fedb1fc07a2d4dcbfa97",
+    "invocation_sha256": "ab6b2516a25ba58cbb74ad054b2a8cba0a2b9c89f9e7abdb98ab943b367bc317",
+    "sta_summary_sha256": "a575ac6295b112b44bfdf86e8ce2e0f0e06828eb6d2ceba491ded3efdc1f305a",
+    "report_sha256": "67a3d10a004be8f1c37f190affa183c01fe00fa95015a4971388e80fe9df30be",
+    "slow": {
+      "setup_ws_ns": -0.617042,
+      "setup_tns_ns": -3.365,
+      "setup_violations": 16,
+      "hold_ws_ns": 0.275927,
+      "hold_violations": 0
+    },
+    "typical": {
+      "setup_ws_ns": 5.230155,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.084025,
+      "hold_violations": 0
+    },
+    "fast": {
+      "setup_ws_ns": 7.530009,
+      "setup_tns_ns": 0,
+      "setup_violations": 0,
+      "hold_ws_ns": 0.003373,
+      "hold_violations": 0
+    },
+    "electrical": {
+      "slew": 11,
+      "capacitance": 0,
+      "fanout": 18
+    },
+    "route_drc_errors": 0,
+    "antenna_violating_nets": 0,
+    "functional_cell_area_um2": 608453.59,
+    "cell_classes": {
+      "Antenna cell": {
+        "count": 198,
+        "area_um2": 1077.75
+      },
+      "Buffer": {
+        "count": 8,
+        "area_um2": 58.06
+      },
+      "Clock buffer": {
+        "count": 1081,
+        "area_um2": 25497.76
+      },
+      "Timing Repair Buffer": {
+        "count": 6112,
+        "area_um2": 73174.75
+      },
+      "Inverter": {
+        "count": 105,
+        "area_um2": 587.87
+      },
+      "Clock inverter": {
+        "count": 90,
+        "area_um2": 547.95
+      },
+      "Clock gate cell": {
+        "count": 67,
+        "area_um2": 1823.47
+      },
+      "Sequential cell": {
+        "count": 6232,
+        "area_um2": 305298.2
+      },
+      "Multi-Input combinational cell": {
+        "count": 17678,
+        "area_um2": 200387.78
+      }
+    },
+    "utilization": 0.674249,
+    "routed_wirelength_um": 1669648
+  },
+  "candidate_global_route_overflow": "Total overflow 0, 0, 0, 3 and finally 0 across the flow's global routes with GRT_ALLOW_CONGESTION; detailed routing and the antenna check finish with zero violations.",
+  "implemented_netlist_regression": {
+    "original_vectors": {
+      "receipt": "build/physical/clock-gated-03-netlist-check/report.json",
+      "sha256": "912c3492f3f1f8c62e9d1206484c75daa394838be1139908f91bd6a28a091c57",
+      "result": "28,165 edges, 4,618,982 defined output-bit comparisons; output mutant rejected"
+    },
+    "extended_vectors": {
+      "receipt": "build/physical/clock-gated-03-netlist-full-check/report.json",
+      "sha256": "8fc5fdb6d2475b7a0fbfbf58df16ac16672ebd8b54b6693450f80509c95af2cb",
+      "result": "29,062 edges, 4,766,090 defined output-bit comparisons; output mutant rejected"
+    }
+  },
+  "clock_gate_mutation": {
+    "original_vectors": {
+      "receipt": "build/physical/clock-gated-03-netlist-gates/report.json",
+      "rejected": 84,
+      "mutants": 134,
+      "note": "All 50 survivors are the gates of bank-0 words 25-31 and bank-1 words 14-31, which the earlier traces never execute."
+    },
+    "extended_vectors": {
+      "receipt": "build/physical/clock-gated-03-netlist-full-gates/report.json",
+      "sha256": "46d2cf40ae1ddac91336b86413a6d5249eabb9c19e30d434cd89b30ca4976c49",
+      "rejected": 134,
+      "mutants": 134
+    }
+  },
+  "gated_registers": "67 gates: 64 dictionary words (55 flip-flops each), two last-address registers and the cached word. The 512 five-bit index registers stay ungated at SYNTH_CLOCKGATE_MIN_WIDTH = 8.",
+  "scratch_screen": "Unrecorded synthesis-only runs: ungated 578,449 um2; width-8 gating 505,878 um2 (67 gates); width-5 gating 455,658 um2 (582 gates). The width-5 variant has not been placed, routed or checked.",
+  "boundary": "One run per configuration on one host. Zero-delay gate simulation and mutation sensitivity are not an equivalence proof; technology-mapped and clock-gating equivalence remain open. Gated clock trees add skew that only extracted STA has checked here; worst hold slack is 3.4 ps. No wrapper, official floorplan or layout sign-off."
+}

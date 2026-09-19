@@ -38,8 +38,10 @@ a revised schedule or a proved prefetch design; it cannot silently add a cycle.
 
 ## Proof coverage
 
-All **55 public reactive hardware theorems** pass the dependency audit, allowing
-only Lean's standard axioms or none. The chain is:
+All **69 public reactive hardware theorems** pass the dependency audit, allowing
+only Lean's standard axioms or none: the 55 of the integrated core, plus the 14 of
+the later fetch, fetch-choice and interface modules, which the audit list had
+omitted until 2026-09-17. The chain is:
 
 1. Structural decoder, capture, comparator, and scheduler expressions equal
    explicit register-update equations.

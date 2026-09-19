@@ -1,6 +1,6 @@
 # PWL version 0: binary program images
 
-Implementation record: **2026-09-13**. Pinwheel now encodes explicit and counted programs into canonical binary files, decodes them in Lean, and proves that decoded execution preserves the existing engine semantics. The I²C examples occupy **715 bytes explicit** and **205 bytes counted**. This is an exact serialized-image comparison, including metadata and explicit bank padding. Physical memory allocation, a circuit decoder, and synthesis cost remain open.
+Implementation record: **2026-09-13**. Pinwheel now encodes explicit and counted programs into canonical binary files, decodes them in Lean, and proves that decoded execution preserves the existing engine semantics. The I²C examples occupy **713 bytes explicit** and **203 bytes counted** (715 and 205 before the 2026-09-17 [STOP revision](input-latency.md) replaced a guarded record with a qualifying one). This is an exact serialized-image comparison, including metadata and explicit bank padding. Physical memory allocation, a circuit decoder, and synthesis cost remain open.
 
 V0 uses byte-aligned, tagged records to make the first load-image contract inspectable and independently implementable. It is not a commitment to byte-wide physical instruction memory. The decoder currently reconstructs the typed program before execution; the bytes do not execute directly from a structural memory/decoder circuit.
 
@@ -94,12 +94,12 @@ The generated examples use duration 4; I²C uses wait budget 8, address `0x53`, 
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | UART explicit | 8 | 82 | 0 | 0 | 96 | **186** |
 | SPI explicit | 8 | 141 | 0 | 0 | 96 | **245** |
-| I²C explicit | 8 | 658 | 0 | 0 | 49 | **715** |
-| I²C counted | 7 | 163 | 33 | 2 | 0 | **205** |
+| I²C explicit | 8 | 656 | 0 | 0 | 49 | **713** |
+| I²C counted | 7 | 161 | 33 | 2 | 0 | **203** |
 
-The explicit header includes its last-address byte. Embedded UART/SPI retain execution limit 31, so their first 32 records can include halt padding; 96 more halt records remain outside that limit. I²C's first 79 records occupy 658 bytes, followed by 49 one-byte halts. The counted layout contains only its actual tree, within the 64-node bound.
+The explicit header includes its last-address byte. Embedded UART/SPI retain execution limit 31, so their first 32 records can include halt padding; 96 more halt records remain outside that limit. I²C's first 79 records occupy 656 bytes, followed by 49 one-byte halts. The counted layout contains only its actual tree, within the 64-node bound.
 
-The counted image is **510 bytes smaller** under this common V0 grammar. Even excluding the explicit bank's 49 padding bytes, its header plus first 79 records would occupy 666 bytes; that prefix alone is **not a valid V0 explicit image**, because the format preserves the complete bank. This separates instruction reuse from bank-capacity overhead.
+The counted image is **510 bytes smaller** under this common V0 grammar. Even excluding the explicit bank's 49 padding bytes, its header plus first 79 records would occupy 664 bytes; that prefix alone is **not a valid V0 explicit image**, because the format preserves the complete bank. This separates instruction reuse from bank-capacity overhead.
 
 These files are not the older hardware's 32×16-bit instruction bank and cannot be loaded directly into that RTL. Byte alignment, variable record lengths, staging storage, decoded representation, and configured physical capacities all affect a future chip implementation. The numbers above do not establish area savings or operating frequency.
 

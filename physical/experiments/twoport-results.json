@@ -1,0 +1,119 @@
+{
+  "date": "2026-09-18",
+  "study": "docs/memory-abstraction.md#the-two-port-backend",
+  "disposition": "Experimental variant without a program rule; validation and mapped screen recorded below, no routed run.",
+  "control": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "mapping": {
+      "typical": {
+        "standard_cell_area_um2": 547995.1806,
+        "abc_combinational_delay_ps": 6802.53,
+        "flip_flops": 6236,
+        "cells": 27306
+      },
+      "slow": {
+        "standard_cell_area_um2": 548114.931,
+        "abc_combinational_delay_ps": 9944.97,
+        "flip_flops": 6236,
+        "cells": 27306
+      }
+    },
+    "identity": "Byte-identical to the routed pin-sampled candidate in pin-sampled-results.json (pin-sampled-02)"
+  },
+  "inner": {
+    "variant": "twoport",
+    "rtl_sha256": "9c64c9512e7ed99b839f5e3f53860b693c5287c97bc25f84f2fea1d36b35c7c8",
+    "mlir_sha256": "fc3c485d516b7dced577d33b95e3f14bc034fa34cba52de812e6e607990912be",
+    "register_fields": 610,
+    "register_bits": 6425
+  },
+  "sampled": {
+    "variant": "twoport-sampled",
+    "rtl_sha256": "b4ad2f390b3b7ed8e0601b342b1527c26176636ae5dc53ca5673f5c4aabe1539",
+    "mlir_sha256": "1f2d21f8976040761f00558e5a75c868299ea322d8ac200b619c3e65f5697b2f",
+    "register_fields": 612,
+    "register_bits": 6429
+  },
+  "fixed_contract": "Ports, module name and host-port timing are the general backend's. The decoupled organization's two fetched-word registers and start word, behind two composite reads: port 0 reads word 0 on a commit and the untaken candidate otherwise, and its word is shared by the untaken register and the start word.",
+  "proofs_and_checks": {
+    "lean": "TwoPort (FetchPolicy) refinement, Backend.Policy netlist_next/netlist_output/completeRefinement via Backend.TwoPort.realization, TwoPort.sampled_trace_correct",
+    "generic_gate_equivalence_points": {
+      "inner": 6501,
+      "sampled": 6511
+    },
+    "induction": "two-step, with the three word registers synthesis narrows to 63 bits re-exposed at full width for name matching; without that the start word, which loads on commits only, is left out and no depth suffices (twoport-01: 148 points unproven at two and at three steps)",
+    "registers_rewidened_for_matching": {
+      "twoport": [
+        "r_fetched_taken",
+        "r_fetched_untaken",
+        "r_start_word"
+      ],
+      "twoport-sampled": [
+        "r_fetched_taken",
+        "r_fetched_untaken",
+        "r_start_word"
+      ]
+    },
+    "independent_regression": {
+      "inner": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "sampled": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "vectors": "unrestricted: the UART receiver exercise included"
+    },
+    "rejected_traces": [
+      "sampled RTL with unshifted pins"
+    ]
+  },
+  "structural_levels": {
+    "receipt": "build/structure/policy-02/twoport.json",
+    "sha256": "90b0659b1b6c47d8bf324f3e8651f36b2d23e47b504a0ff94533e606dbd94e1a",
+    "registers_family_gates": {
+      "fed successor": 18,
+      "dispatch decision": 33,
+      "cached word enable": 36,
+      "cached word": 38,
+      "port 0 address": 35,
+      "port 0 word": 63,
+      "candidate taken": 35,
+      "fetched taken": 63,
+      "fetched untaken": 63,
+      "start word": 65,
+      "core state": 59
+    }
+  },
+  "mapping": {
+    "inner": {
+      "typical": {
+        "standard_cell_area_um2": 619542.378,
+        "abc_combinational_delay_ps": 5654.12,
+        "flip_flops": 6415,
+        "cells": 32247
+      },
+      "slow": {
+        "standard_cell_area_um2": 619549.6356,
+        "abc_combinational_delay_ps": 9018.56,
+        "flip_flops": 6415,
+        "cells": 32248
+      }
+    },
+    "sampled": {
+      "typical": {
+        "standard_cell_area_um2": 618244.2126,
+        "abc_combinational_delay_ps": 5027.26,
+        "flip_flops": 6419,
+        "cells": 32705
+      },
+      "slow": {
+        "standard_cell_area_um2": 618215.1822,
+        "abc_combinational_delay_ps": 8149.5,
+        "flip_flops": 6419,
+        "cells": 32701
+      }
+    }
+  },
+  "receipts": {
+    "check": "build/twoport/twoport-02/report.json",
+    "check_sha256": "22b45c9c8c3e6d5d18adf314dd8370d340590e8a36c2a2ffa301382578f7d184"
+  },
+  "boundary": "No routed run, no extracted timing. No Yosys sequential equivalence to the composed RTL (different register sets), no Lean read-back of this RTL, technology-mapped equivalence, metastability or electrical claim."
+}

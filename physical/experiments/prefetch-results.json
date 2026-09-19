@@ -1,0 +1,75 @@
+{
+  "date": "2026-09-17",
+  "study": "docs/memory-abstraction.md",
+  "disposition": "Experimental variant; validation recorded below, physical comparison pending.",
+  "control": {
+    "variant": "pin-sampled-command-split",
+    "rtl_sha256": "3e6cf6bea9a4435ffcbc7fcbde57f255f68a28ce3bf3093533a865994a9442a1",
+    "identity": "Byte-identical to the routed pin-sampled candidate in pin-sampled-results.json (pin-sampled-02)"
+  },
+  "inner": {
+    "variant": "prefetch",
+    "rtl_sha256": "2849055597da057cc934465b95fb7dcd1322d657a0a8443d72224d0ec0e13b1c",
+    "mlir_sha256": "f4f8bb336e004b9efb76903c8ae5cf53da6ec05ba5fdbbd381cfb1795ca22f61",
+    "register_fields": 610,
+    "register_bits": 6425
+  },
+  "sampled": {
+    "variant": "prefetch-sampled",
+    "rtl_sha256": "e90db3002df588de5133df41d548b533ca5fff1628bceda5dd1cb4153375bb16",
+    "mlir_sha256": "c2a333ee412deb9251e1248398eef7b9d4381392d838877733b60e1a458c60b3",
+    "register_fields": 612,
+    "register_bits": 6429
+  },
+  "fixed_contract": "Ports, module name and host-port timing are the general backend's. Two fetched-word registers and a start-word register replace the same-edge successor lookup; the sampled emission adds the two pin-pipeline registers.",
+  "proofs_and_checks": {
+    "lean": "Decoupled.refinement/trace_correct, Backend.Prefetch.netlist_next/netlist_output/completeRefinement, Prefetch.sampled_trace_correct: the emitted netlist refines the atomic reference edge for edge, alone and behind the pin pipeline.",
+    "generic_gate_equivalence_points": {
+      "inner": 6373,
+      "sampled": 6377
+    },
+    "induction": "two-step: synthesis drops the constant top bit of each fetched word",
+    "independent_regression": {
+      "inner": "Passed 35824 atomic loader edges and 22434312 physical storage observations",
+      "sampled": "Passed 35824 atomic loader edges and 22434312 physical storage observations"
+    },
+    "rejected_traces": [
+      "sampled RTL with unshifted pins"
+    ]
+  },
+  "mapping": {
+    "inner": {
+      "typical": {
+        "standard_cell_area_um2": 636985.6038,
+        "abc_combinational_delay_ps": 5801.58,
+        "flip_flops": 6415,
+        "cells": 32326
+      },
+      "slow": {
+        "standard_cell_area_um2": 636978.3462,
+        "abc_combinational_delay_ps": 9084.98,
+        "flip_flops": 6415,
+        "cells": 32325
+      }
+    },
+    "sampled": {
+      "typical": {
+        "standard_cell_area_um2": 654086.097,
+        "abc_combinational_delay_ps": 5814.69,
+        "flip_flops": 6419,
+        "cells": 33684
+      },
+      "slow": {
+        "standard_cell_area_um2": 654093.3546,
+        "abc_combinational_delay_ps": 9269.33,
+        "flip_flops": 6419,
+        "cells": 33685
+      }
+    }
+  },
+  "receipts": {
+    "check": "build/prefetch/prefetch-03/report.json",
+    "check_sha256": "43e88fbf347d704dcd14c6930dd63c6ed1ede39ea1e77a45b2a3959d1cfc03a9"
+  },
+  "boundary": "No Yosys sequential equivalence to the composed RTL (different register sets), no Lean read-back of this RTL, technology-mapped equivalence, metastability, electrical or routed-timing claim."
+}

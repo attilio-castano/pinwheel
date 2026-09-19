@@ -114,9 +114,12 @@ Evaluate an RTL-to-mapped-netlist equivalence check using a suitable formal hard
 The [atomic-loader record](atomic-loader.md) owns the implemented synchronous
 interface and its evidence. Serialized transport, pin allocation, and synchronization
 must satisfy the additional boundary below.
-The [external interface contract](external-interface.md) now specifies a proposed
-two-edge digital sampling delay and open-drain interpretation, with Lean lemmas;
-the physical wrapper and transport remain to be implemented.
+The [external interface contract](external-interface.md) specifies the two-edge
+digital sampling delay and open-drain interpretation. The experimental
+[whole-chip netlist](whole-chip.md) now implements sampling, serial loading and
+the pin map in Lean and emitted RTL. Host result readback, independent validation
+of that RTL and physical/electrical integration remain open; the
+[submission plan](submission-plan.md) gives their completion gates.
 
 Today's load operation replaces the complete program and idle profile atomically. A chip will receive writes over a concrete interface. Define accepted commands, response/status, address/data widths, reset behavior, and priority among writes, commit, and start. Begin at synchronous core ports; select a serialized transport and package-pin mapping only after checking the available I/O budget.
 
