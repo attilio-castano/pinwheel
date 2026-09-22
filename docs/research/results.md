@@ -43,11 +43,14 @@ the flow-correlation diagnosis and the pin-sampler comparison.
 
 ## Outside research and adoption
 
-These entries index the prior source review, not a new online verification. Source
-links and detailed applicability live in the [timed-components record](../timed-components.md#sources-and-next-application).
+These entries index source reviews; review dates and detailed applicability live
+in the [timed-components record](../timed-components.md#sources-and-next-application)
+and the [PIO/PRU note](../pio-pru-lessons.md). A recorded lesson is not automatically
+an adopted implementation or a new work allocation.
 
 | Reference | Lesson used here | Boundary / decision |
 | --- | --- | --- |
+| [RP2040 PIO and TI PRU](../pio-pru-lessons.md) | Review dated 2026-09-22: let physical dependencies shape execution granularity; separate resident code and payload; specify permitted waits and resource contention. Formal compilation could preserve rich protocol intent over a compact timed engine. | Future comparison: resident UART, SPI payloads and conditional input response. No new ISA, weakened timing contract or physical run is selected; research status owns allocation. |
 | Hardcaml | Checked signal interfaces, typed lookup, explicit observation phases | Implemented for the scheduler and cache consumers; retain other interfaces until a concrete migration need appears. |
 | Kôika | Make within-cycle scheduling and forwarding dependencies explicit | Capture → branch → successor entry is explicit in Pinwheel; no rule-language adoption is established or required by that lesson. |
 | Kami | Compose refinement across replaceable components | Pinwheel uses exact-edge correspondence; this is an influence, not an imported framework or equivalence of semantics. |
