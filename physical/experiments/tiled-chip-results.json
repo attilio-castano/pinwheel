@@ -1,0 +1,226 @@
+{
+  "schema": 1,
+  "created_utc": "2026-09-22T09:39:42.723970+00:00",
+  "study": "integration-03",
+  "status": "functionally-verified-structural-screen-failed",
+  "decision": "Retain the experimental complete-chip candidate and defer timing/physical allocation. Evaluate a combined controller/selection optimization boundary and aggregate producer loads next.",
+  "report": "build/storage/tiled-chip/integration-03/report.json",
+  "report_sha256": "b2bd581024355682a5fecc70eb3d05181a3182aa17d76851a6efb25ab59e27d4",
+  "unchanged_baseline_report": "build/validation/tiled-chip-boundary-01/report.json",
+  "unchanged_baseline_report_sha256": "a4115d2928fbb2aac8c8001d3244a693100cc99d60991de90035dc571643f77d",
+  "boundary_diagnostics": "build/validation/tiled-chip-02/boundary-diagnostics.json",
+  "boundary_diagnostics_sha256": "c2c081e998856aedda76efd3eeb3a68194987ac92e3d5338158f35024d165584",
+  "tests": "build/validation/tiled-chip-02/tests.json",
+  "tests_sha256": "d5977184b925da4329343d14103fc4de2549531fd7f0d4bbbf826473458e52e0",
+  "test_artifacts_sha256": {
+    "tests.json": "d5977184b925da4329343d14103fc4de2549531fd7f0d4bbbf826473458e52e0",
+    "map-tests.log": "121297c03eb649f59513ddf1819281c268047d25ec3102e9cad733b1154e8a4c",
+    "tiled-tests.log": "6860c60c62428b6b6fd55f2d78cdef2b27dba370bccd3809c5aed6920d565b0b"
+  },
+  "variants": {
+    "typical": {
+      "baseline": {
+        "cells": 15490,
+        "flip_flops": 2895,
+        "macros": 2,
+        "combinational_cells": 12593,
+        "standard_cell_area_um2": 292580.0514,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 393558.317,
+        "maximum_signal_fanout": 11,
+        "macro_address_depth": {
+          "memory.storage0": 29,
+          "memory.storage1": 29
+        },
+        "package_output_depth": {
+          "uo_out": 14,
+          "uio_out": 0,
+          "uio_oe": 0
+        },
+        "next_state_depth": 27,
+        "scope": "Complete mapped chip cell area, conservative gate depth and sink count. Clock excluded; no electrical or wire timing model."
+      },
+      "tiled": {
+        "cells": 11224,
+        "flip_flops": 2895,
+        "macros": 2,
+        "combinational_cells": 8327,
+        "standard_cell_area_um2": 288888.201,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 389866.4666,
+        "maximum_signal_fanout": 15,
+        "macro_address_depth": {
+          "memory.storage0": 30,
+          "memory.storage1": 30
+        },
+        "package_output_depth": {
+          "uo_out": 14,
+          "uio_out": 0,
+          "uio_oe": 0
+        },
+        "next_state_depth": 24,
+        "scope": "Complete mapped chip cell area, conservative gate depth and sink count. Clock excluded; no electrical or wire timing model."
+      },
+      "standard_cell_area_change_um2": -3691.8504,
+      "standard_cell_area_change_percent": -1.261826,
+      "structural_screen_passed": false,
+      "baseline_state_projection": {
+        "logical_state_bits": 2901,
+        "physical_flip_flops": 2895,
+        "pruned_state_positions": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        "derived_or_constant_state_bits": 0
+      },
+      "tiled_state_projection": {
+        "logical_state_bits": 2901,
+        "physical_flip_flops": 2895,
+        "pruned_state_positions": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        "derived_or_constant_state_bits": 0
+      },
+      "distribution_buffers": 346,
+      "distribution_area_um2": 2511.1296
+    },
+    "slow": {
+      "baseline": {
+        "cells": 15490,
+        "flip_flops": 2895,
+        "macros": 2,
+        "combinational_cells": 12593,
+        "standard_cell_area_um2": 292580.0514,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 393558.317,
+        "maximum_signal_fanout": 11,
+        "macro_address_depth": {
+          "memory.storage0": 29,
+          "memory.storage1": 30
+        },
+        "package_output_depth": {
+          "uo_out": 13,
+          "uio_out": 0,
+          "uio_oe": 0
+        },
+        "next_state_depth": 27,
+        "scope": "Complete mapped chip cell area, conservative gate depth and sink count. Clock excluded; no electrical or wire timing model."
+      },
+      "tiled": {
+        "cells": 11225,
+        "flip_flops": 2895,
+        "macros": 2,
+        "combinational_cells": 8328,
+        "standard_cell_area_um2": 288895.4586,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 389873.7242,
+        "maximum_signal_fanout": 15,
+        "macro_address_depth": {
+          "memory.storage0": 30,
+          "memory.storage1": 30
+        },
+        "package_output_depth": {
+          "uo_out": 14,
+          "uio_out": 0,
+          "uio_oe": 0
+        },
+        "next_state_depth": 24,
+        "scope": "Complete mapped chip cell area, conservative gate depth and sink count. Clock excluded; no electrical or wire timing model."
+      },
+      "standard_cell_area_change_um2": -3684.5928,
+      "standard_cell_area_change_percent": -1.259345,
+      "structural_screen_passed": false,
+      "baseline_state_projection": {
+        "logical_state_bits": 2901,
+        "physical_flip_flops": 2895,
+        "pruned_state_positions": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        "derived_or_constant_state_bits": 0
+      },
+      "tiled_state_projection": {
+        "logical_state_bits": 2901,
+        "physical_flip_flops": 2895,
+        "pruned_state_positions": [
+          92,
+          93,
+          94,
+          95,
+          96,
+          97
+        ],
+        "derived_or_constant_state_bits": 0
+      },
+      "distribution_buffers": 346,
+      "distribution_area_um2": 2511.1296
+    }
+  },
+  "state_projections": {
+    "core": {
+      "logical_state_bits": 2778,
+      "physical_flip_flops": 2778,
+      "pruned_state_positions": [],
+      "derived_or_constant_state_bits": 0
+    },
+    "chip": {
+      "logical_state_bits": 2901,
+      "physical_flip_flops": 2901,
+      "pruned_state_positions": [],
+      "derived_or_constant_state_bits": 0
+    }
+  },
+  "validation": {
+    "positive_sat_checks": 4,
+    "joined_address_mutation_rejected": true,
+    "focused_python_tests": 24,
+    "chip_edges_per_oracle": 508252,
+    "chip_oracles": [
+      "rtl",
+      "typical_mapped",
+      "slow_mapped"
+    ],
+    "core_edges": 11840,
+    "consecutive_branch_edges": 1000,
+    "total_simulated_edges": 1536596,
+    "declarations_audited": 14831,
+    "theorems_audited": 7529,
+    "standard_axioms_only": true,
+    "frozen_study_inputs_verified": 248,
+    "study_artifacts_verified": 119,
+    "prior_experiment_manifests_preserved": 44,
+    "four_baseline_emission_pairs_byte_identical": true,
+    "per_command_timeout_seconds": 180,
+    "study_elapsed_seconds": 254.643,
+    "baseline_identity_seconds": 16.161
+  },
+  "source_sha256": {
+    "Pinwheel/Hardware/NetlistTools.lean": "b8b97c77cd0b41e4b2be84c724390b23b106a05b0611aaea472e711460b03a11",
+    "Pinwheel/Hardware/Storage/TiledMap.lean": "a53f183fef46df92bf055838fbfbe2df641a17e9dc9930a28ceca80bd7092cc7",
+    "Pinwheel/Hardware/Storage/TiledController.lean": "e64b6e550d3c4a817cad6c6529b1a1bd01ae686544e98d1a0389b2300cb48526",
+    "Pinwheel.lean": "451b7d9accbb82741ce39b96c1bcbd3496336393cacf69eb05b2ba04e87c7853",
+    "lakefile.toml": "e920399e1b4f770a57c1357b47cd5dcecfb6acbe71db27b75c0d72b8a6d4850d",
+    "test/MapTileEmit.lean": "c6103fc403432701d3dc78f39e7d71425d2749cd76d5269a8524f68bb6a631fc",
+    "test/TiledChipEmit.lean": "a483712ca857cb5ac088aff0c719a9523fdb330981e6365ec257b7baca9d8952",
+    "scripts/check-tiled-chip.py": "b65498ebe146d3ab5563cba1d0a6d9e4b46b304736e5c682571d320d01d3f291",
+    "scripts/tiled_chip.py": "45142a028afa1bc04364435873074514a35aab6fc8a75f7c50c89918d3fd83a7",
+    "test/test_tiled_chip.py": "b641fe20ca21d79d2f1dcaac6bd0d5791074c28520b71e0b4d4534de262d6011"
+  },
+  "scope": "Experimental full-chip RTL/mapped controller output and surviving-state equivalence with arbitrary SRAM responses and reference state, exact external/macro terminals, independent macro-model/pin oracles and complete mapped cost. Only next values of state slots absent in both mapped chips are excluded; reference current inputs remain arbitrary. No physical run or backend promotion.",
+  "next_discriminator": "One bounded controller/selection mapping comparison preserving storage tiles, with aggregate fanout, whole-chip area/depth and independent equivalence checked before electrical or physical work.",
+  "production_baseline_replaced": false,
+  "physical_tools_launched": false
+}

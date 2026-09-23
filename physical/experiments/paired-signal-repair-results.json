@@ -1,0 +1,214 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-09-23",
+  "recorded_at_utc": "2026-09-23T11:27:46.976551+00:00",
+  "decision": "retain-local-signal-repair-require-whole-chip-qualification",
+  "local_estimated_timing_pass": true,
+  "local_electrical_pass": true,
+  "physical_closure": false,
+  "detailed_route_admitted": false,
+  "new_whole_chip_route": false,
+  "source_preparation": {
+    "path": "physical/experiments/paired-repair-plan-results.json",
+    "sha256": "e6544ca25901370d13a5b67214b8f99860201898d33eca475acc53ff08d62293"
+  },
+  "plan": {
+    "path": "physical/experiments/paired-signal-repair-plan.json",
+    "sha256": "03f72ee73fe73069169bd9353783155293b05206c61fed900556c4b86f6690cf"
+  },
+  "producer": {
+    "path": "build/physical/repair-probes/paired-signal-repair-01/report.json",
+    "sha256": "19fc87ebbc93c703b10c4dc3bfd8e123431d593b201b5bc6d791bcf2ad7dfa4d"
+  },
+  "measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-signal-repair-01/report.json",
+    "sha256": "5d9dbb42309c6c21a8f3f06582acfeeba6c3b8b5e6516b34bd7c4ebc04adcf69"
+  },
+  "selected_database": {
+    "path": "build/physical/repair-probes/paired-signal-repair-01/repaired.odb",
+    "sha256": "ab06f28fb15ec642ed158f3fdce3227576836a83fafa39b9830a1f4b3a49c773"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-signal-repair-01/implemented.v",
+    "sha256": "6cd5eede5b21f14def89a4685e2d849acbfd8627bb5c317e1c981817bfe8a74d"
+  },
+  "selected_recipe": {
+    "path": "build/validation/paired-signal-repair-01/candidate.tcl",
+    "sha256": "688c836ec571423d218b3758092f3821ac47cb125432068d2818cf6d97aec3a6"
+  },
+  "changes": {
+    "driver_buffers": 21,
+    "sram_receiver_buffers": 6,
+    "total_buffers": 27,
+    "moved_original_cells": 0,
+    "resized_original_cells": 0,
+    "new_state_bits": 0,
+    "added_pipeline_cycles": 0
+  },
+  "area": {
+    "source_um2": 357660.6912,
+    "selected_um2": 358297.5456,
+    "increase_um2": 636.8544000000111,
+    "increase_percent": 0.1780610549801498
+  },
+  "timing": {
+    "before": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.46671,
+        "timing__hold__ws": 0.0817902,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 4,
+        "design__max_cap_violation__count": 19
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.430335,
+        "timing__hold__ws": 0.347819,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 80,
+        "design__max_cap_violation__count": 16
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.20501,
+        "timing__hold__ws": 0.169243,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 5,
+        "design__max_cap_violation__count": 19
+      }
+    },
+    "after": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.49388,
+        "timing__hold__ws": 0.0817902,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.527857,
+        "timing__hold__ws": 0.347819,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.25844,
+        "timing__hold__ws": 0.169243,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      }
+    },
+    "semantic_path_slacks_ns": {
+      "nom_fast_1p32V_m40C": {
+        "sram_address": 13.205735,
+        "entry_state": 14.449859,
+        "rejection_status": 9.493882,
+        "upload_hold": 0.164731
+      },
+      "nom_slow_1p08V_125C": {
+        "sram_address": 3.60204,
+        "entry_state": 6.684455,
+        "rejection_status": 0.527857,
+        "upload_hold": 0.512045
+      },
+      "nom_typ_1p20V_25C": {
+        "sram_address": 9.686031,
+        "entry_state": 11.61368,
+        "rejection_status": 6.258437,
+        "upload_hold": 0.298312
+      }
+    }
+  },
+  "functional": {
+    "identity": {
+      "path": "build/validation/paired-signal-repair-01/identity.json",
+      "sha256": "e0bcfbbc71559cf069e373cd9c47738178ffe3a2beac4fb9f9c1651ae31e170f"
+    },
+    "ancestry": {
+      "path": "build/validation/paired-signal-repair-01/functional-ancestry.json",
+      "sha256": "3871e45efa8599147988a0bbc414829b8e34316405f1aa207ba4d74e19ce6cfb"
+    },
+    "corruption_control": {
+      "status": "rejected",
+      "mutation": "prepared_signal_0/A tied to zero",
+      "reason": "Changed connectivity after buffer contraction"
+    },
+    "original_pin_edges_reused": 331401,
+    "new_pin_simulation": false
+  },
+  "physical_checks": {
+    "exact_plan_implemented": true,
+    "original_geometry_retained": true,
+    "clock_connections_fixed": 342,
+    "corridor_clear": true,
+    "added_power_terminals_bound": true,
+    "independent_placement_check": true,
+    "complete_consumed_net_estimates": true,
+    "nominal_layer_rc_verified": true,
+    "stored_nondefault_rule_bindings_unchanged": true,
+    "changed_guide_rectangle_sets": 46,
+    "guide_changes_outside_declared_connections": 0
+  },
+  "congestion": {
+    "source_whole_chip_overflow": 22,
+    "saved_incremental_grid": {
+      "Metal2": 0,
+      "Metal3": 0,
+      "Metal4": 0
+    },
+    "whole_chip_result_requalified": false,
+    "boundary": "The saved incremental grid is not a fresh whole-chip congestion result. The prior 22 Metal3 units and 15 hotspots outside failing-net guides still require full-route requalification."
+  },
+  "verification": {
+    "affected_nets": 54,
+    "corners": 3,
+    "positive_min_max_path_summaries": 324,
+    "exact_containers_confirmed_absent": 8,
+    "prior_identities_preserved_before_docs": 621,
+    "prior_source_and_evidence_identities_preserved": 616,
+    "documentation_updates": [
+      "docs/research/status.md",
+      "docs/research/results.md",
+      "docs/research/journal.md",
+      "docs/physical-targets.md",
+      "docs/validation.md"
+    ],
+    "checked_hashes": 916
+  },
+  "bounds": {
+    "each_physical_command_seconds": 120,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "runtime_seconds": {
+    "probe": 6.005,
+    "independent_measurement": 12.448,
+    "connection_and_placement_checks": 12.752,
+    "total_physical_commands": 31.205,
+    "native_readbacks": 0.865
+  },
+  "evidence_boundary": [
+    "One additive local candidate, followed by independent saved-ODB checks; no new whole-chip or detailed routing.",
+    "All timing uses coarse estimated wires and nominal layer RC; no extracted timing or silicon claim.",
+    "The fast screen still uses -40 C cells with -55 C SRAM, and its 0.081790 ns hold margin is narrow.",
+    "Power-terminal bindings pass; physical power continuity and whole-chip pin access remain separate.",
+    "Repeated guide rectangles caused 2297 raw file differences without changing their rectangle sets; they are not new physical wire changes.",
+    "Buffer-only identity transfers the existing pin trace; full Lean compiler/package refinement is still open."
+  ],
+  "next_gate": "Bind this exact candidate and its complete buffer-identity ancestry through routing intake, account for the saved Metal3 hotspots, then run one bounded whole-chip coarse route with fresh timing/electrical, congestion and pin-access checks. No detailed routing until those gates pass.",
+  "report": "build/validation/paired-signal-repair-01/report.json",
+  "report_sha256": "52184dbc7bf5d2d19cacb7a1e113860cbb00928733e9fa6df09d7891425adcaf"
+}

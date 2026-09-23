@@ -1,0 +1,428 @@
+{
+  "schema": 1,
+  "date": "2026-09-23",
+  "recorded_at_utc": "2026-09-23T09:16:48.981416+00:00",
+  "status": "passed",
+  "decision": "retain-local-repair-require-fresh-whole-chip-coarse-route-and-pin-access",
+  "local_estimated_timing_pass": true,
+  "physical_closure": false,
+  "detailed_route_admitted": false,
+  "source_selection": {
+    "path": "physical/experiments/paired-route-results.json",
+    "sha256": "369fbd95b81d2ca3bab6bd2e1d0f98caaed62955b4e3a6745d131f63f544e12d"
+  },
+  "selected_database": {
+    "path": "build/physical/repair-probes/paired-local-status-01/repaired.odb",
+    "sha256": "9c17a4ab5aa5f06d7add46f1c45da39b633f2edb5a377445fb46ec32547456c6"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-local-status-01/implemented.v",
+    "sha256": "3f8a76129fa222c33257d6cea7415fc89528157319f2a9dd7960f45508974e4c"
+  },
+  "selected_recipe": {
+    "path": "physical/experiments/paired-local-status-repair.tcl",
+    "sha256": "dfa194973392d131e34f2ea943cfdf2f068f2094526030a4c01816a66b548140"
+  },
+  "stages": {
+    "paired-clock-trunk-02": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-clock-trunk-02/report.json",
+        "sha256": "4e16d3bfc2e472bfbec6cecd34c3c15e4032f437659ce237e2350d8498becf1f"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-clock-trunk-02/report.json",
+        "sha256": "c5490c197253b934480fb2c87ea3ba40751628c3c0e25b4d15119c28f69c4a3e"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-clock-trunk-02-check.json",
+        "sha256": "947638e6820bb5cae2716d8f121b6e0ae9217811ce192c98e7db7bd190b8d27b"
+      },
+      "area_um2": 354104.4672,
+      "added_buffers": 4,
+      "repair_seconds": 3.957,
+      "measurement_seconds": 11.793,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 8.21147,
+          "timing__hold__ws": -0.0777459,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 12,
+          "design__max_slew_violation__count": 11,
+          "design__max_cap_violation__count": 70,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": -2.49374,
+          "timing__hold__ws": 0.215945,
+          "timing__setup_vio__count": 1,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 316,
+          "design__max_cap_violation__count": 68,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 4.37579,
+          "timing__hold__ws": 0.0339248,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 41,
+          "design__max_cap_violation__count": 69,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    },
+    "paired-clock-signal-01": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-clock-signal-01/report.json",
+        "sha256": "43c1cad718b3e241224ec8affba40f4b91d11485a3e47cfbc075e67700cbd232"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-clock-signal-01/report.json",
+        "sha256": "ce1f12e69cafef077102f1bd8abdbcc2f62ddc34beb02cd106d115973bcd281f"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-clock-signal-01-v2-check.json",
+        "sha256": "b1de191889a9012533829e33a256ed9037d464033c7f7ff3b83f4b5e81b141d2"
+      },
+      "area_um2": 356439.6,
+      "added_buffers": 103,
+      "repair_seconds": 4.012,
+      "measurement_seconds": 11.745,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 8.97346,
+          "timing__hold__ws": -0.362108,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 17,
+          "design__max_slew_violation__count": 1,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": -1.13985,
+          "timing__hold__ws": 0.0458587,
+          "timing__setup_vio__count": 1,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 5.27316,
+          "timing__hold__ws": -0.212334,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 1,
+          "design__max_slew_violation__count": 1,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    },
+    "paired-endpoint-01": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-endpoint-01/report.json",
+        "sha256": "a65bb561c0b91d43368469a6aebbd31c7e88633e371a46d69ff9ac792d413c88"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-endpoint-01/report.json",
+        "sha256": "9723e609dc91bc7f69c81e92b528dfe0c71966b6e68eaf3d114aa9d77e5a3208"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-endpoint-01-v3-check.json",
+        "sha256": "b5e7d6d48a7590dbf5fd6fecebc3b60f8b2d9f878577bda38b16111d066e0f62"
+      },
+      "area_um2": 357130.8864,
+      "added_buffers": 187,
+      "repair_seconds": 4.016,
+      "measurement_seconds": 12.063,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 9.02191,
+          "timing__hold__ws": 0.000454969,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": -0.589186,
+          "timing__hold__ws": 0.360733,
+          "timing__setup_vio__count": 1,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 5.60588,
+          "timing__hold__ws": 0.146792,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    },
+    "paired-margin-01": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-margin-01/report.json",
+        "sha256": "d0c296fd0dd1f85030c39473cbc40db374f0005dac27f55512e87277271b7af3"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-margin-01/report.json",
+        "sha256": "e1a8fa29ca7c694b94713d8ee69d6c68384ddf7a37098130efc6149140f3d484"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-margin-01-v3-check.json",
+        "sha256": "95c074b14010c2077224791cd284175d7f0c3ea1858813d60e26fa49160aecdd"
+      },
+      "area_um2": 357520.9824,
+      "added_buffers": 234,
+      "repair_seconds": 3.916,
+      "measurement_seconds": 11.821,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 9.02191,
+          "timing__hold__ws": 0.0311171,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": -0.162361,
+          "timing__hold__ws": 0.360733,
+          "timing__setup_vio__count": 1,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 5.70544,
+          "timing__hold__ws": 0.176697,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    },
+    "paired-local-closure-01": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-local-closure-01/report.json",
+        "sha256": "84b3ecceebfe80252c9cb298dc4aa0a91356883864cbf95f7741375641f34aa4"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-local-closure-01/report.json",
+        "sha256": "a7b04974198e74ae01e8f952d295ecad004f07856e3c8cff61c3773cd7ceb63f"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-local-closure-01-v3-check.json",
+        "sha256": "7fbfe46ab85bd3640e5fc6a0abb5d60c7dfbafd08b1f8cf7358198fb480ee32e"
+      },
+      "area_um2": 357613.5168,
+      "added_buffers": 240,
+      "repair_seconds": 3.999,
+      "measurement_seconds": 11.943,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 9.01828,
+          "timing__hold__ws": 0.0726892,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": -0.0112248,
+          "timing__hold__ws": 0.360733,
+          "timing__setup_vio__count": 1,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 5.70009,
+          "timing__hold__ws": 0.176697,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    },
+    "paired-local-status-01": {
+      "producer": {
+        "path": "build/physical/repair-probes/paired-local-status-01/report.json",
+        "sha256": "d3124a9e7cdcc464c7e8fa101a27f821a5f1213550bf1281f743f5ccb42c6811"
+      },
+      "measurement": {
+        "path": "build/physical/mapped-diagnostics/paired-local-status-01/report.json",
+        "sha256": "343105abdcaef5b6bb2edc94bdec4871ae7b605ee3ece6eb4c0654e5117a5191"
+      },
+      "identity": {
+        "path": "build/validation/paired-local-repair-01/paired-local-status-01-v3-check.json",
+        "sha256": "6b30b68b3d7c5ccbb6052d0b80272c689bd5bb6ce29605a896ad5973b0dfee5d"
+      },
+      "area_um2": 357660.6912,
+      "added_buffers": 242,
+      "repair_seconds": 4.111,
+      "measurement_seconds": 11.948,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 9.12178,
+          "timing__hold__ws": 0.0726892,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 0.0710436,
+          "timing__hold__ws": 0.360733,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 5.87398,
+          "timing__hold__ws": 0.176697,
+          "timing__setup_vio__count": 0,
+          "timing__hold_vio__count": 0,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 0
+        }
+      }
+    }
+  },
+  "diagnostics": {
+    "paired-local-inspect-01": {
+      "path": "build/physical/repair-probes/paired-local-inspect-01/report.json",
+      "sha256": "c518fb03d4a0bebc93fc133f6bea76b65d758b7858fcfa60365e22c020b86ec7"
+    },
+    "paired-clock-trunk-01": {
+      "path": "build/physical/repair-probes/paired-clock-trunk-01/report.json",
+      "sha256": "6b232c4484acae4e8351cf4efda446ba7e0847b444279765280776093693cab4"
+    },
+    "paired-near-status-01": {
+      "path": "build/physical/repair-probes/paired-near-status-01/report.json",
+      "sha256": "132b55107a646933fc5f13256720d2ce4969ec27407fb8ca25009ef3f8c920b2"
+    }
+  },
+  "area": {
+    "source_um2": 354010.1184,
+    "selected_um2": 357660.6912,
+    "increase_percent": 1.0312057792300822,
+    "routed_control_um2": 484422.6752,
+    "saving_vs_routed_control_percent": 26.16764046969203
+  },
+  "selected_timing": {
+    "nom_fast_1p32V_m40C": {
+      "timing__setup__ws": 9.12178,
+      "timing__hold__ws": 0.0726892,
+      "timing__setup_vio__count": 0,
+      "timing__hold_vio__count": 0,
+      "design__max_slew_violation__count": 0,
+      "design__max_cap_violation__count": 0,
+      "design__max_fanout_violation__count": 0
+    },
+    "nom_slow_1p08V_125C": {
+      "timing__setup__ws": 0.0710436,
+      "timing__hold__ws": 0.360733,
+      "timing__setup_vio__count": 0,
+      "timing__hold_vio__count": 0,
+      "design__max_slew_violation__count": 0,
+      "design__max_cap_violation__count": 0,
+      "design__max_fanout_violation__count": 0
+    },
+    "nom_typ_1p20V_25C": {
+      "timing__setup__ws": 5.87398,
+      "timing__hold__ws": 0.176697,
+      "timing__setup_vio__count": 0,
+      "timing__hold_vio__count": 0,
+      "design__max_slew_violation__count": 0,
+      "design__max_cap_violation__count": 0,
+      "design__max_fanout_violation__count": 0
+    }
+  },
+  "semantic_path_slacks_ns": {
+    "nom_fast_1p32V_m40C": {
+      "sram_address": 13.001363,
+      "entry_state": 14.125734,
+      "rejection_status": 9.121782,
+      "upload_hold": 0.072689
+    },
+    "nom_slow_1p08V_125C": {
+      "sram_address": 3.312355,
+      "entry_state": 6.22934,
+      "rejection_status": 0.071044,
+      "upload_hold": 0.457178
+    },
+    "nom_typ_1p20V_25C": {
+      "sram_address": 9.54353,
+      "entry_state": 11.229974,
+      "rejection_status": 5.873979,
+      "upload_hold": 0.257888
+    }
+  },
+  "changes": {
+    "clock_repeaters": 4,
+    "signal_driver_buffers": 111,
+    "receiver_slew_buffer": 1,
+    "endpoint_hold_buffers": 126,
+    "total_added_buffers": 242,
+    "resized_originals": 0,
+    "moved_originals": 0,
+    "added_state_bits": 0,
+    "changed_pipeline_cycles": 0
+  },
+  "verification": {
+    "focused_tests": 25,
+    "initial_identities_preserved": 514,
+    "complete_wire_estimates": true,
+    "nominal_layer_rc_verified": true,
+    "exact_containers_confirmed_absent": 36
+  },
+  "bounds": {
+    "each_probe_seconds": 120,
+    "each_collection_command_seconds": 120,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "runtime_seconds": {
+    "probes": 34.193,
+    "measurements": 71.313
+  },
+  "preserved_failures": [
+    "paired-clock-trunk-01 aborted in the pinned resizer DPL post-insertion path; no candidate selected. Direct database insertion followed by normal legalization succeeded.",
+    "The first signal-candidate check incorrectly required every edited net to change its guide bytes. Twenty-eight retained coarse guide blocks were valid for nearby replacement drivers; v2 checks guide presence together with complete fresh RC and independent connectivity."
+  ],
+  "evidence_boundary": [
+    "Incrementally refreshed coarse routes and verified nominal layer RC; no extraction or silicon timing claim.",
+    "Fast screening mixes -40 C standard cells and -55 C SRAM.",
+    "Setup and hold margins are narrow and must survive whole-chip rerouting.",
+    "Prior full-route overflow of 41 and prior pin-access success are baseline results, not measurements of the modified candidate.",
+    "Power terminal binding is checked; physical power qualification, antenna closure and detailed-route DRC remain open.",
+    "Functional evidence transfers by independent noninverting-buffer contraction; no new RTL simulation, state, pipeline cycle or protocol change."
+  ],
+  "next_gate": "Run one bounded whole-chip coarse route from this exact candidate, then fresh three-corner timing/electrical collection and pin-access/congestion checks. Reject regression before detailed routing.",
+  "checked_hashes": 1693,
+  "report": "build/validation/paired-local-repair-01/report.json",
+  "report_sha256": "3b9c6a31b3f63dd6e8ff98918b1939a186ffd1d2ff72ca181cdc60b89ad06c73",
+  "functional_identity": {
+    "path": "build/validation/paired-local-repair-01/paired-local-status-01-v3-check.json",
+    "sha256": "6b30b68b3d7c5ccbb6052d0b80272c689bd5bb6ce29605a896ad5973b0dfee5d"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "kind": "map-tile-contract-study",
+  "status": "specified-not-implemented",
+  "purpose": "Test whether keeping read and write decoding inside a small map tile avoids exporting many decoded control nets without excessive decoder duplication or delay.",
+  "first_tile": {
+    "bank": 0,
+    "fixed_low_address_bits": 4,
+    "low_address_value": 0,
+    "words": [0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240],
+    "bits_per_word": 5,
+    "state_bits": 80
+  },
+  "whole_map": {"atomic_banks": 2, "tiles_per_bank": 16, "total_state_bits": 2560},
+  "proposed_inputs": [
+    {"name": "read_hi0", "width": 4, "meaning": "High nibble of the existing first candidate PC"},
+    {"name": "read_hi1", "width": 4, "meaning": "High nibble of the existing second candidate PC"},
+    {"name": "write_hi", "width": 4, "meaning": "High nibble of the accepted index address, cursor minus 64"},
+    {"name": "write_data", "width": 5, "meaning": "Low five data bits of the accepted index push"},
+    {"name": "write_enable", "width": 1, "meaning": "Accepted index push, inactive bank, matching fixed low nibble; excludes reset and unrelated pushes"}
+  ],
+  "proposed_outputs": [{"name": "index0", "width": 5}, {"name": "index1", "width": 5}],
+  "clock": "Existing chip clock; separate from the 18 functional input bits",
+  "schedule": "Two combinational reads before the existing SRAM edge; a selected word updates on an accepted upload edge. No new registers, read latency, fetch bubbles or SRAM macros. Map words hold when write_enable is false, including reset.",
+  "composition": "For each reader, combine partial results using the low candidate-PC nibble and existing bank selection. Global loader admission and atomic ownership remain outside the tile.",
+  "checks_before_placement": [
+    "Define the tile from the existing readTree and Store.next behavior; prove both reads and each stored next value match the current state projection.",
+    "Check immediate start, consecutive branches, accepted index pushes, abort/replacement and reset retention through the existing controller contract.",
+    "Generate one tile and verify the intended 18-input-bit/10-output-bit functional interface survives the candidate mapping boundary.",
+    "Measure decoder duplication, standard-cell area, logic depth, fanout and the complete remaining map glue under the same library and mapping conditions.",
+    "A changed chip emission requires a fresh independent RTL/mapped comparison; prior byte-identity receipts do not validate it.",
+    "Advance to one bounded placement/global-routing comparison only after a useful complete-chip mapping result or a justified timing tradeoff. Preserve macro locations and the half corridor."
+  ],
+  "limits": "The compact interface is a proposed implementation contract, not a measured reduction from the current tile's 280 incoming nets. No physical experiment is launched by this plan."
+}

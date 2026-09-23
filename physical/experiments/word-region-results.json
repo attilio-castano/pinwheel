@@ -1,0 +1,557 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "reject-local-site-exchanges",
+  "experiment_status": "no-physical-run",
+  "retained_physical_tag": "local-slew-route-01",
+  "source_selection": {
+    "path": "physical/experiments/upload-locality-results.json",
+    "sha256": "5fa65daf454b50b7d1b22e245aa86d30f6df40503e7f3a11909321a8b94d5b30"
+  },
+  "source_database": {
+    "path": "build/physical/mapped-local-01/runs/local-slew-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "3d21200b80f2dd0f9d60fc863489ee26446268cfc98ea14b9f8555870945c80b"
+  },
+  "receipts": {
+    "readback": {
+      "path": "build/validation/word-region-01/readback-receipt.json",
+      "sha256": "5ece8ea2a54fa0530c75b5aea07df6b73a36772bec9132839e6f22ccfd7e38dd"
+    },
+    "analysis": {
+      "path": "build/validation/word-region-01/analysis-final.json",
+      "sha256": "7da6b347c7c7cb5b692dfea819968aaca5863dd82bbe5a77f3bdfd3817638848"
+    },
+    "independent-audit": {
+      "path": "build/validation/word-region-01/audit-final.json",
+      "sha256": "e95886c3ff95fc544fa5e443753bda1b1cef3f655726adcc78da64c7d82a7645"
+    },
+    "interior-consumers": {
+      "path": "build/validation/word-region-01/interior-consumers.json",
+      "sha256": "04a14d57a789349cdfc4e63778f41e5ccf2b34e3303bec3f8ea1df22e878db44"
+    },
+    "commands": {
+      "path": "build/validation/word-region-01/commands-final.json",
+      "sha256": "1a0f361166b631ec897b1291b80f01a6078111c46960456b4d63ffd419d4fc1e"
+    },
+    "next-branch": {
+      "path": "build/validation/word-region-01/next-bit41.json",
+      "sha256": "cb001dd09519431ded91580ac3027941bd057d107555825af6ba45933fcde9b0"
+    }
+  },
+  "elapsed_seconds": {
+    "readback": 0.73,
+    "analysis": 1.587,
+    "analysis_command": 1.734,
+    "independent_audit": 1.194,
+    "tests": 0.056
+  },
+  "binding": {
+    "flip_flops": 2895,
+    "readback_instances": 18708,
+    "readback_nets": 18669,
+    "claim": "Every physical FF bound to a retained typed slot; all fresh-readback non-power pins/nets reconciled."
+  },
+  "region": {
+    "cells": 871,
+    "types": {
+      "sg13cmos5l_a21oi_1": 3,
+      "sg13cmos5l_a22oi_1": 2,
+      "sg13cmos5l_and2_1": 3,
+      "sg13cmos5l_and3_1": 2,
+      "sg13cmos5l_and4_1": 1,
+      "sg13cmos5l_buf_1": 389,
+      "sg13cmos5l_buf_2": 1,
+      "sg13cmos5l_buf_4": 6,
+      "sg13cmos5l_buf_8": 3,
+      "sg13cmos5l_dfrbpq_1": 76,
+      "sg13cmos5l_dlygate4sd3_1": 149,
+      "sg13cmos5l_inv_1": 6,
+      "sg13cmos5l_mux2_1": 65,
+      "sg13cmos5l_nand2_1": 14,
+      "sg13cmos5l_nand2b_1": 3,
+      "sg13cmos5l_nand3_1": 9,
+      "sg13cmos5l_nand3b_1": 1,
+      "sg13cmos5l_nand4_1": 4,
+      "sg13cmos5l_nor2_1": 14,
+      "sg13cmos5l_nor2b_1": 2,
+      "sg13cmos5l_nor3_1": 14,
+      "sg13cmos5l_nor4_1": 15,
+      "sg13cmos5l_o21ai_1": 8,
+      "sg13cmos5l_or2_1": 4,
+      "sg13cmos5l_tiehi": 76,
+      "sg13cmos5l_xor2_1": 1
+    },
+    "area_um2": 11826.2592,
+    "bbox_dbu": [
+      51840,
+      3780,
+      1241280,
+      695520
+    ]
+  },
+  "source_locations": {
+    "above_macros": 6,
+    "below_sram0": 53,
+    "below_sram1": 3,
+    "right_of_macros": 2
+  },
+  "boundary_nets": {
+    "outgoing": 421,
+    "incoming": 25
+  },
+  "endpoint_owners": {
+    "loader": 9,
+    "serial_receiver": 66,
+    "image_metadata": 28,
+    "result_observer": 1,
+    "index_maps": 2560,
+    "package_outputs": 1,
+    "memory.storage1/A_DIN": 64,
+    "memory.storage0/A_DIN": 64,
+    "memory.storage0/A_ADDR": 6,
+    "memory.storage1/A_ADDR": 6,
+    "memory.storage1/A_WEN": 1,
+    "memory.storage0/A_WEN": 1,
+    "memory.storage1/A_REN": 1,
+    "memory.storage0/A_REN": 1
+  },
+  "word_fields": {
+    "map_payload_0_4": {
+      "bits": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "nets": 392,
+      "span_um": 61868.4725,
+      "interior_guide_nets": []
+    },
+    "metadata_bit_5": {
+      "bits": [
+        5
+      ],
+      "nets": 4,
+      "span_um": 1053.14,
+      "interior_guide_nets": []
+    },
+    "remaining_6_63": {
+      "bits": [
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "nets": 184,
+      "span_um": 22649.445,
+      "interior_guide_nets": [
+        "memory.mem_data[10]",
+        "memory.mem_data[13]",
+        "memory.mem_data[14]",
+        "memory.mem_data[15]",
+        "memory.mem_data[16]",
+        "memory.mem_data[17]",
+        "memory.mem_data[18]",
+        "memory.mem_data[19]",
+        "memory.mem_data[20]",
+        "memory.mem_data[24]",
+        "memory.mem_data[25]",
+        "memory.mem_data[32]",
+        "memory.mem_data[33]",
+        "memory.mem_data[34]",
+        "memory.mem_data[36]",
+        "memory.mem_data[37]",
+        "memory.mem_data[39]",
+        "memory.mem_data[41]",
+        "memory.mem_data[43]",
+        "memory.mem_data[49]",
+        "memory.mem_data[50]",
+        "memory.mem_data[53]",
+        "memory.mem_data[57]",
+        "memory.mem_data[8]",
+        "memory.mem_data[9]",
+        "net3377",
+        "net3379",
+        "net3383",
+        "net3386",
+        "net3393",
+        "net3407",
+        "net3408",
+        "net3413",
+        "net3414",
+        "net3417",
+        "net3425",
+        "net3427",
+        "net3429",
+        "net3436",
+        "net3470",
+        "net3476",
+        "net3490",
+        "net6386",
+        "net6390"
+      ]
+    }
+  },
+  "cases": {
+    "20um": {
+      "exchanges": 14,
+      "displaced_outside_region": {
+        "cells": 4,
+        "types": {
+          "sg13cmos5l_buf_1": 2,
+          "sg13cmos5l_buf_2": 1,
+          "sg13cmos5l_nor2_1": 1
+        },
+        "area_um2": 30.8448,
+        "bbox_dbu": [
+          364800,
+          120960,
+          1189920,
+          378000
+        ]
+      },
+      "affected_nets": {
+        "nets": 64,
+        "before_um": 9223.789999999999,
+        "after_um": 9152.619999999999,
+        "change_um": -71.17000000000007,
+        "change_percent": -0.7715917209737004
+      },
+      "complete_region_and_displaced_nets": {
+        "nets": 905,
+        "before_um": 104495.10749999991,
+        "after_um": 104423.93749999988,
+        "change_um": -71.17000000002736,
+        "change_percent": -0.06810845187180406
+      },
+      "clock": {
+        "nets": 670,
+        "changed_geometry_nets": [],
+        "boundary": "Same masters, connectivity and terminal-coordinate multisets; no new clock RC or skew measurement."
+      },
+      "shortened_hold_adjacent_arcs": 13,
+      "largest_shortening_um": 15.72,
+      "electrical_target_changed_pins": {
+        "memory.mem_q0[50]": [],
+        "_00576_": [],
+        "net3401": [],
+        "net3426": [],
+        "net3446": [],
+        "net6365": [],
+        "_00470_": [],
+        "memory.mem_q0[36]": [],
+        "_00558_": [],
+        "net3533": []
+      },
+      "interior_guide_net_span_changes_um": {
+        "memory.mem_data[49]": 3.6175,
+        "memory.mem_data[53]": 7.56,
+        "net3429": -1.735,
+        "memory.mem_data[39]": -15.72
+      },
+      "physical_probe_admitted": false,
+      "seconds": 0.185
+    },
+    "40um": {
+      "exchanges": 18,
+      "displaced_outside_region": {
+        "cells": 6,
+        "types": {
+          "sg13cmos5l_buf_1": 2,
+          "sg13cmos5l_buf_2": 1,
+          "sg13cmos5l_buf_4": 2,
+          "sg13cmos5l_nor2_1": 1
+        },
+        "area_um2": 59.8752,
+        "bbox_dbu": [
+          364800,
+          3780,
+          1189920,
+          378000
+        ]
+      },
+      "affected_nets": {
+        "nets": 77,
+        "before_um": 12517.512500000004,
+        "after_um": 12341.770000000002,
+        "change_um": -175.7425000000021,
+        "change_percent": -1.403973033779691
+      },
+      "complete_region_and_displaced_nets": {
+        "nets": 909,
+        "before_um": 105453.03249999991,
+        "after_um": 105277.28999999989,
+        "change_um": -175.74250000002212,
+        "change_percent": -0.1666547616826688
+      },
+      "clock": {
+        "nets": 670,
+        "changed_geometry_nets": [],
+        "boundary": "Same masters, connectivity and terminal-coordinate multisets; no new clock RC or skew measurement."
+      },
+      "shortened_hold_adjacent_arcs": 15,
+      "largest_shortening_um": 36.48,
+      "electrical_target_changed_pins": {
+        "memory.mem_q0[50]": [],
+        "_00576_": [],
+        "net3401": [],
+        "net3426": [],
+        "net3446": [],
+        "net6365": [],
+        "_00470_": [],
+        "memory.mem_q0[36]": [],
+        "_00558_": [],
+        "net3533": []
+      },
+      "interior_guide_net_span_changes_um": {
+        "net6390": 39.24,
+        "net3429": -1.735,
+        "memory.mem_data[49]": 3.6175,
+        "memory.mem_data[53]": 7.56,
+        "memory.mem_data[39]": -15.72
+      },
+      "physical_probe_admitted": false,
+      "seconds": 0.228
+    },
+    "80um": {
+      "exchanges": 19,
+      "displaced_outside_region": {
+        "cells": 7,
+        "types": {
+          "sg13cmos5l_buf_1": 2,
+          "sg13cmos5l_buf_2": 2,
+          "sg13cmos5l_buf_4": 2,
+          "sg13cmos5l_nor2_1": 1
+        },
+        "area_um2": 68.9472,
+        "bbox_dbu": [
+          364800,
+          3780,
+          1189920,
+          378000
+        ]
+      },
+      "affected_nets": {
+        "nets": 81,
+        "before_um": 13827.880000000005,
+        "after_um": 13606.6025,
+        "change_um": -221.27750000000378,
+        "change_percent": -1.6002272221049336
+      },
+      "complete_region_and_displaced_nets": {
+        "nets": 911,
+        "before_um": 106105.73249999991,
+        "after_um": 105884.45499999989,
+        "change_um": -221.2775000000256,
+        "change_percent": -0.20854434042951053
+      },
+      "clock": {
+        "nets": 670,
+        "changed_geometry_nets": [],
+        "boundary": "Same masters, connectivity and terminal-coordinate multisets; no new clock RC or skew measurement."
+      },
+      "shortened_hold_adjacent_arcs": 16,
+      "largest_shortening_um": 60.0,
+      "electrical_target_changed_pins": {
+        "memory.mem_q0[50]": [],
+        "_00576_": [],
+        "net3401": [],
+        "net3426": [],
+        "net3446": [],
+        "net6365": [],
+        "_00470_": [],
+        "memory.mem_q0[36]": [],
+        "_00558_": [],
+        "net3533": []
+      },
+      "interior_guide_net_span_changes_um": {
+        "net3470": -60.0,
+        "net6390": 39.24,
+        "net3429": -1.735,
+        "memory.mem_data[49]": 3.6175,
+        "memory.mem_data[53]": 7.56,
+        "memory.mem_data[39]": -15.72
+      },
+      "physical_probe_admitted": false,
+      "seconds": 0.27
+    }
+  },
+  "validation": {
+    "focused_tests": 14,
+    "independent_audit": "passed",
+    "prior_reports": {
+      "build/validation/upload-locality-01/report.json": {
+        "sha256": "ca03690b760cb652e3e111e606ef13fa325715179915e71cdc93197c9bae0dbe",
+        "artifacts": 21
+      },
+      "build/validation/sram-interface-01/report.json": {
+        "sha256": "df288d6500c8309b1cb7172e2a6bb33a1a0738fff5f71febfbd630df1cb9559a",
+        "artifacts": 86
+      },
+      "build/validation/electrical-cost-01/report.json": {
+        "sha256": "9ff604cb4fa1e97c343a745fc0fd22d72c03351e2c38fe31f18a052c68612f40",
+        "artifacts": 120
+      },
+      "build/validation/local-slew-01/report.json": {
+        "sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b",
+        "artifacts": 531
+      }
+    },
+    "unchanged_lean_files": 269,
+    "existing_source_changes": [
+      "docs/chip-physical-study.md",
+      "docs/research/journal.md",
+      "docs/research/results.md",
+      "docs/research/status.md",
+      "docs/validation.md"
+    ],
+    "new_source_files": [
+      "scripts/word_region.py",
+      "test/test_word_region.py"
+    ],
+    "unchanged_rtl_and_physical_inputs": true,
+    "final_replay_matches_initial_cases": true
+  },
+  "next_gate": {
+    "status": "cost-study-target-only-not-launched",
+    "net": "net3533",
+    "payload_bit": 41,
+    "source_bit": {
+      "bit": 41,
+      "terminals": [
+        [
+          "memory.storage0",
+          "A_DIN[41]"
+        ],
+        [
+          "memory.storage1",
+          "A_DIN[41]"
+        ]
+      ],
+      "source_net": "memory.mem_data[41]",
+      "root_net": "memory.mem_data[41]",
+      "source_ff": "_10403_"
+    },
+    "source_database_sha256": "3d21200b80f2dd0f9d60fc863489ee26446268cfc98ea14b9f8555870945c80b",
+    "directed_role": "sram-only",
+    "terminals": [
+      {
+        "instance": "memory.storage1",
+        "pin": "A_DIN[41]",
+        "direction": "INPUT",
+        "point_um": [
+          785.78,
+          144.13
+        ]
+      },
+      {
+        "instance": "memory.storage0",
+        "pin": "A_DIN[41]",
+        "direction": "INPUT",
+        "point_um": [
+          785.78,
+          30.13
+        ]
+      },
+      {
+        "instance": "hold3533",
+        "pin": "X",
+        "direction": "OUTPUT",
+        "point_um": [
+          773.735,
+          13.2225
+        ]
+      }
+    ],
+    "existing_root_path_nets": [
+      "net3533",
+      "net3534",
+      "memory.mem_data[41]"
+    ],
+    "hypothesis": "A known noninverting buffer on this exclusive SRAM branch may reduce the load seen by the hold-cell output. Cost buffer input/output wiring and both replicas before choosing a site.",
+    "preserve": [
+      "source FF and all other source-side consumers",
+      "all existing hold-delay cells",
+      "both SRAM data functions and existing write edge",
+      "clock topology and clocked-state count"
+    ],
+    "required_before_probe": [
+      "exact buffer master and legal row/site",
+      "complete added area and all affected nets",
+      "before/after driver and buffer load estimates with actual pin capacitance",
+      "minimum-delay and annotated-RC measurement plan"
+    ],
+    "not_established": [
+      "an accepted buffer placement",
+      "a routed capacitance or slew improvement",
+      "hold/setup preservation",
+      "congestion or DRC improvement"
+    ]
+  },
+  "boundary": [
+    "All combinational inputs conservatively influence outputs; no sensitized-path or activity claim.",
+    "Typed state ownership does not make downstream mixed logic exclusive to this region.",
+    "Three bounded greedy exchange searches are not a global placement optimum.",
+    "Same occupied footprints and clock pin sets do not establish unchanged RC or timing.",
+    "Guide overlap is measured on the retained route only; no new guide, DRC, antenna or extracted timing result.",
+    "Candidate swaps are coordinates in JSON only; no physical database was modified.",
+    "The experimental upload stage and retained execution contract are unchanged."
+  ],
+  "report": "build/validation/word-region-01/report.json",
+  "report_sha256": "7353edc329e0329c727b1cbdf7712ee7dac62b33ec9cb9a3367848e3fd52cd5d"
+}

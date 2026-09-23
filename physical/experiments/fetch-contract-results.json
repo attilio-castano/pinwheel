@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "adopt-cheap-fetch-and-electrical-checks; retain-flat-repair-as-cost-probe; defer-routing",
+  "report": "build/validation/fetch-contract-01/report.json",
+  "report_sha256": "36a8dc1e982cf7dac31a5cfdff27a8fcafc6b1d1b0b111be6bdff6636592a181",
+  "experiments": {
+    "timing": {
+      "report": "build/storage/sram-timing/fetch-contract-03/report.json",
+      "report_sha256": "afb5634061f07b84c47d15c843f7e5f2bff02a1ca96d0b2c171e2ab42554d1e7",
+      "elapsed_seconds": 5.087,
+      "inputs": 25,
+      "artifacts": 31
+    },
+    "distribution": {
+      "report": "build/storage/electrical-distribution/fanout-01/report.json",
+      "report_sha256": "cada2e7052a84f685a98a5d7be22e02964c08620e031bead3c145a579423746c",
+      "elapsed_seconds": 15.094,
+      "inputs": 18,
+      "artifacts": 36
+    }
+  },
+  "boundary": "Kernel-checked semantic facts, unchanged baseline emission, retained cell/SRAM timing and equivalent buffer cost probe. No routed timing, clock tree, physical fit or backend promotion.",
+  "timing_gate_policy": {
+    "source": "scripts/check-tiled-chip.py",
+    "sha256": "6f7dcf20fbf0f4f690953501fb0fb69b1229d477de8b326446a06be5ee37030c",
+    "change": "Successful future tiled-chip checks are eligible for cheap STA; retain the old structural score as diagnostic only. Physical allocation remains separate."
+  }
+}

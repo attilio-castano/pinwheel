@@ -1,0 +1,179 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "scope": "Connection diagnosis and checked repair preparation; no candidate execution.",
+  "source_database": {
+    "path": "build/physical/target-paired-01/runs/paired-reroute-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "6f782186bd3434997e40872d35b9c3ac8c67024bb79188fc8f9f3918b20c30dc"
+  },
+  "families": {
+    "mode_control": 1,
+    "serial_data_distribution": 9,
+    "parameter_word_control": 11,
+    "sram_write_input": 6
+  },
+  "comparison": {
+    "pin_capacitance_unchanged": true,
+    "consumers_and_placement_unchanged": true,
+    "all_selected_wire_capacitances_increased": true,
+    "fresh_global_metrics_reproduced": true,
+    "complete_consumed_net_annotation": true,
+    "explicit_nominal_rc": true,
+    "propagated_clocks": true,
+    "load_ranges_by_family": {
+      "mode_control": {
+        "wire_cap_ratio": [
+          1.0568408385859767,
+          1.056840936006652
+        ],
+        "wire_fraction": [
+          0.8543392058458815,
+          0.8720917393810687
+        ]
+      },
+      "serial_data_distribution": {
+        "wire_cap_ratio": [
+          1.0337616889934704,
+          3.0370410035899966
+        ],
+        "wire_fraction": [
+          0.834960959385225,
+          0.9409662018716093
+        ]
+      },
+      "parameter_word_control": {
+        "wire_cap_ratio": [
+          1.1142537122377232,
+          3.5217804923539004
+        ],
+        "wire_fraction": [
+          0.8307926609480181,
+          0.9046390287004961
+        ]
+      },
+      "sram_write_input": {
+        "wire_cap_ratio": [
+          1.1956166432669486,
+          3.023681990784342
+        ],
+        "wire_fraction": [
+          0.9444683049084192,
+          0.9845982536978191
+        ]
+      }
+    },
+    "stored_nondefault_bindings_unchanged": true,
+    "effective_routing_warning": {
+      "net": "clk",
+      "nondefault_rule_disabled": true,
+      "warning": "[WARNING GRT-0273] Disabled NDR (to reduce congestion) for net: clk",
+      "observed_in_baseline": false,
+      "attribution": "No isolated experiment attributes timing or overflow gains to this rule change."
+    }
+  },
+  "congestion": {
+    "overflow_units": 22.0,
+    "hot_cells": 22,
+    "layers": [
+      "Metal3"
+    ],
+    "cells_north_of_macro": 17,
+    "cells_overlapping_macro": 1,
+    "cells_overlapping_corridor": 1,
+    "cells_overlapping_failing_net_guides": 7,
+    "cells_without_failing_net_guide_overlap": 15,
+    "coordinates": {
+      "path": "build/validation/paired-repair-plan-01/congestion.json",
+      "sha256": "0f1790840cc634624a9c4022b140e2840e51c6b7d421f39458a2720895d5b43b"
+    },
+    "boundary": "Saved grid values include capacity reductions in usage; totals are not free-track counts. Guide overlap lists candidates for inspection, not causal attribution or detailed DRC."
+  },
+  "candidate": {
+    "plan": {
+      "path": "physical/experiments/paired-signal-repair-plan.json",
+      "sha256": "03f72ee73fe73069169bd9353783155293b05206c61fed900556c4b86f6690cf"
+    },
+    "recipe": {
+      "path": "build/validation/paired-repair-plan-01/candidate.tcl",
+      "sha256": "688c836ec571423d218b3758092f3821ac47cb125432068d2818cf6d97aec3a6"
+    },
+    "operations": {
+      "driver": 21,
+      "receiver": 6
+    },
+    "added_cell_area_um2": 636.8544,
+    "added_cell_area_percent": 0.17806105498014538,
+    "acceptance": {
+      "all_corner_setup_hold_positive": true,
+      "all_corner_electrical_zero": true,
+      "all_consumed_nets_annotated": true,
+      "buffer_contracted_identity": true,
+      "original_geometry_and_power_retained": true,
+      "added_cells_legal_and_power_bound": true,
+      "all_affected_connections_reported": true,
+      "fresh_whole_chip_route_required": true,
+      "detailed_route_admitted": false
+    },
+    "invariants": {
+      "original_cells_fixed": true,
+      "original_hold_cells_retained": true,
+      "clock_connections_fixed": true,
+      "state_changes": 0,
+      "added_pipeline_cycles": 0
+    },
+    "placement_screen": "Unoccupied row rectangles only; legalization, power and pin access untested.",
+    "ready_for_bounded_probe": true,
+    "executed": false
+  },
+  "validation": {
+    "focused_tests": 35,
+    "successful_collection_seconds": 20.684,
+    "diagnostic_bounds": {
+      "seconds_per_command": 120,
+      "cpus": 2,
+      "memory_gib": 2
+    },
+    "independent_container_absence": {
+      "pinwheel-paired-plan-inspect-01": "absent",
+      "pinwheel-paired-plan-geometry-01": "absent",
+      "pinwheel-paired-plan-geometry-02": "absent",
+      "pinwheel-paired-plan-geometry-03": "absent",
+      "pinwheel-paired-plan-local-03": "absent",
+      "pinwheel-paired-plan-whole-03": "absent"
+    },
+    "checked_hashes": 799,
+    "prior_identities_preserved_before_doc_update": 600,
+    "prior_source_and_evidence_identities_preserved": 595,
+    "planned_documentation_updates": [
+      "docs/research/status.md",
+      "docs/research/results.md",
+      "docs/research/journal.md",
+      "docs/physical-targets.md",
+      "docs/validation.md"
+    ],
+    "recipe_reproduced": true,
+    "tcl_braces_complete": true
+  },
+  "new_source_sha256": {
+    "scripts/physical_connection_probe.py": "699fbed6e9957bbf909a1cd641914619483ec45c1c91289cee1562f5e3954bbf",
+    "scripts/physical_connections.py": "a55853874784fb74d8f02bc4bc7dc6321bbb7848c258b8591185a57b218e0554",
+    "scripts/physical_repair_plan.py": "c2b63cea41b8a72f437d1ba5111f5f22c330d50c668bb5cefa69780bbb47e1af",
+    "test/test_physical_connections.py": "953c1cbea8853cdc690a3327c7f17066268d77f05d22a2136427c57bf08b4e72",
+    "test/test_physical_repair_plan.py": "3d23ad5d7c156a3b642d17f29644206770150208f1b4e15c065d170dd5c668b3"
+  },
+  "executed_repairs": 0,
+  "additional_routes": 0,
+  "detailed_route_admitted": false,
+  "physical_closure": false,
+  "evidence_boundary": [
+    "Typed owners describe conservative connectivity; shared combinational logic has no exclusive inferred owner.",
+    "Observed load changes do not isolate the effect of the runtime clock routing-rule override.",
+    "One min/max path summary through each selected driver is not exhaustive path enumeration.",
+    "Grid overflow and guide overlap are coarse diagnostics, not detailed-route DRC or causal net attribution.",
+    "The candidate is unexecuted; area is cell-footprint cost only and no timing improvement is claimed.",
+    "Coarse nominal RC estimates are not extraction; the fast cell/SRAM temperature mismatch remains."
+  ],
+  "next_gate": "Run the generated additive candidate as one bounded local probe; independently check all affected connections, all-corner timing/electrical results, identity, placement and power. Diagnose the remaining congestion separately before full-route requalification; no detailed route is admitted.",
+  "report": "build/validation/paired-repair-plan-01/report.json",
+  "report_sha256": "b7ac5d6ff3f30b4cbf421945aa5d2761d665057ee0f90550a62efd332f5b8ce5"
+}

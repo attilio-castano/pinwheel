@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "retain-candidate-for-clock-and-sram-interface-repair",
+  "report": "build/validation/mapped-physical-01/report-02.json",
+  "report_sha256": "db3978fca891740b51a5505ef3accdee93ec9df042a2b06f1912e479b6a605ab",
+  "source_mapping": {
+    "selection": "physical/experiments/local-load-results.json",
+    "selection_sha256": "f726a95f633fb318df5e4757bd3d2e8fd1db790a863410dceabde02337f66878"
+  },
+  "constraints": {
+    "clock_period_ns": 20,
+    "physical_cap_seconds_per_case": 600,
+    "physical_cpus": 4,
+    "physical_memory_gib": 6,
+    "import_cap_seconds_per_case": 120,
+    "diagnostic_cap_seconds_per_command": 120,
+    "stop_step": "OpenROAD.GlobalRouting",
+    "placement_exclusions": "physical/experiments/sram-corridor-half.json",
+    "identical_controls": {
+      "MAX_FANOUT_CONSTRAINT": 8,
+      "GRT_ALLOW_CONGESTION": true
+    }
+  },
+  "receipts": {
+    "baseline-import": {
+      "report": "build/physical/mapped-base-01/checks/mapped-base-import-01/report.json",
+      "report_sha256": "be02ff091d2086c3fd482bcda7eeee6c0ba267702821e30a101ac262bdba6034"
+    },
+    "baseline-physical": {
+      "report": "build/physical/mapped-base-place-01-report.json",
+      "report_sha256": "1ab51ce4b4db6d37634312c997a92cbbab9ab051cc8dce42a5b98a7c94201891"
+    },
+    "baseline-diagnostics": {
+      "report": "build/physical/mapped-diagnostics/mapped-base-diagnostics-04/report.json",
+      "report_sha256": "446f6bd70a486841cfac2eba8c87c9146604804ae3a38e6416bf0fe148077b50"
+    },
+    "baseline-oracle": {
+      "report": "build/physical/chip-check/mapped-base-oracle-01/report.json",
+      "report_sha256": "7ed1fde7cc43e9d31f144c200fc30c8b6ce1d000e11e40e8e52be8ad5c773300"
+    },
+    "candidate-import": {
+      "report": "build/physical/mapped-local-01/checks/mapped-local-import-01/report.json",
+      "report_sha256": "bcc0646309842f6a24e71cc1b75583ba799bb0a3bdfdcc15c8d378f46836b448"
+    },
+    "candidate-physical": {
+      "report": "build/physical/mapped-local-place-01-report.json",
+      "report_sha256": "259a5568ae7a46a9783a2fab01d5d8ac00e9bebf5927e438d9a3886baec86f4b"
+    },
+    "candidate-diagnostics": {
+      "report": "build/physical/mapped-diagnostics/mapped-local-diagnostics-01/report.json",
+      "report_sha256": "095efe534c38c22f37746fa16fd2d8b59bd54ab0b3a8d3405cfca18cf0a56f34"
+    },
+    "candidate-oracle": {
+      "report": "build/physical/chip-check/mapped-local-oracle-01/report.json",
+      "report_sha256": "e101bdfd9232c82ec26774be806977ba8422f385385c745826a7c593e4cc946c"
+    },
+    "candidate-postrepair": {
+      "report": "build/physical/mapped-diagnostics/mapped-local-postrepair-01/report.json",
+      "report_sha256": "27096936e43d442a06cf357e5ac895ec7354ed8b721ba7bec9209a902ee088cf"
+    }
+  },
+  "matched_postrepair": {
+    "baseline": {
+      "total_instance_area_um2": 485738.1152,
+      "timing": {
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 7.92549,
+          "timing__hold__ws": 0.242196,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 209,
+          "design__max_slew_violation__count": 2,
+          "design__max_cap_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 0.580206,
+          "timing__hold__ws": 0.418857,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 209,
+          "design__max_slew_violation__count": 4,
+          "design__max_cap_violation__count": 0
+        },
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 12.1647,
+          "timing__hold__ws": 0.100957,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 209,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0
+        }
+      }
+    },
+    "candidate": {
+      "total_instance_area_um2": 473519.9456,
+      "timing": {
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 11.3344,
+          "timing__hold__ws": 0.257308,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 1,
+          "design__max_cap_violation__count": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 6.09608,
+          "timing__hold__ws": 0.458213,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 5,
+          "design__max_cap_violation__count": 0
+        },
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 13.0068,
+          "timing__hold__ws": 0.0996939,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0
+        }
+      }
+    },
+    "candidate_area_reduction_percent": 2.5153820994609943,
+    "parasitics": "placement estimates; propagated clocks; fixed macro/corridor/constraints"
+  },
+  "baseline_outcome": {
+    "tag": "mapped-base-place-01",
+    "exit_code": 124,
+    "last_completed_step": "25-openroad-stamidpnr-2",
+    "container": "independently-confirmed-absent",
+    "global_routing": "timed-out; no completed global-routing comparison"
+  },
+  "candidate_outcome": {
+    "tag": "mapped-local-place-01",
+    "exit_code": 0,
+    "last_completed_step": "26-openroad-globalrouting",
+    "container": "independently-confirmed-absent",
+    "timing": {
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 8.6547,
+        "timing__hold__ws": 0.0314323,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 203,
+        "design__max_slew_violation__count": 21,
+        "design__max_cap_violation__count": 6
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 2.00859,
+        "timing__hold__ws": 0.215494,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 203,
+        "design__max_slew_violation__count": 57,
+        "design__max_cap_violation__count": 6
+      },
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 11.3003,
+        "timing__hold__ws": -0.105158,
+        "timing__hold_vio__count": 2,
+        "design__max_fanout_violation__count": 203,
+        "design__max_slew_violation__count": 16,
+        "design__max_cap_violation__count": 6
+      }
+    },
+    "parasitics": "global-routing estimates; propagated clocks",
+    "total_overflow": 1312,
+    "wire_length_um": 1429862,
+    "vias": 135787,
+    "completed_step_seconds": 92.868,
+    "global_routing_step_seconds": 45.202,
+    "route_log": "build/physical/mapped-local-01/runs/mapped-local-place-01/26-openroad-globalrouting/openroad-globalrouting.log",
+    "route_log_sha256": "8ac3a65e59f6acd9bb0e6837d4c54c47d5e12c0ff79243f5536203802b6e0655",
+    "baseline_comparison": "Unavailable: baseline global routing timed out; no matched final overflow or routed timing."
+  },
+  "validation": {
+    "focused_tests": 57,
+    "functional_edges": 1016504,
+    "public_output_mutations_rejected": 2,
+    "checked_hashes": 402,
+    "lean_sources": 267,
+    "preceding_experiment_manifests": 48
+  },
+  "next_gate": "Bind the remaining clock fanout and SRAM return-load violations to exact physical drivers and branches; test a bounded clock/interface repair with fresh multi-corner estimates, including upload hold, area and congestion. Detailed routing requires an improved coarse screen.",
+  "boundary": "Both exact imports and fresh final-ODB pin oracles passed. Candidate area advantage survives matched placement/clock/hold repair. Coarse routing completes with congestion and reopens two fast-screen hold violations. No detailed routing, antenna result, extracted timing, qualified fast corner, backend promotion or silicon claim."
+}

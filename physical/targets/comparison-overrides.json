@@ -1,0 +1,4 @@
+{
+  "MAX_FANOUT_CONSTRAINT": 8,
+  "GRT_ALLOW_CONGESTION": true
+}

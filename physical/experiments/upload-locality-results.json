@@ -1,0 +1,267 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "decision": "reject-upload-stage-in-current-pin-face-gaps",
+  "experiment_status": "geometry-admission-failed-no-placement-run",
+  "retained_physical_tag": "local-slew-route-01",
+  "source_selection": {
+    "path": "physical/experiments/sram-interface-results.json",
+    "sha256": "dab1f4fcb98889108b75e08cee93e348e44b7c759b20bf95f7c1c2960ee0ced1"
+  },
+  "physical_control": {
+    "path": "physical/experiments/local-slew-results.json",
+    "sha256": "56f201237923dcb8752b6f206e870c42f628c4f282c7fe0b8b3504eee27f96c3"
+  },
+  "receipts": {
+    "plan": {
+      "path": "build/validation/upload-locality-01/plan.json",
+      "sha256": "bb6ef9338e653c1d5fee12c9c1bffe0528af85448554d2d623ff57e239609718"
+    },
+    "analysis": {
+      "path": "build/validation/upload-locality-01/analysis-final.json",
+      "sha256": "5c701fbbfa310cf200f93162faa89328113e58bd3fd1154d954536e68caa3450"
+    },
+    "cost": {
+      "path": "build/validation/upload-locality-01/cost.json",
+      "sha256": "1dde9c51b4f147a1c6e4e2e6486772741713818af6b63e96119c220659f9df9c"
+    },
+    "relaxed-packing": {
+      "path": "build/validation/upload-locality-01/packing.json",
+      "sha256": "267a412b55320b0c25d407a46d7a3fed989c3d1d1a005fb1a5b04b231c0a4d22"
+    }
+  },
+  "elapsed_seconds": {
+    "analysis": 0.797,
+    "packing": 0.196
+  },
+  "classification": {
+    "word_family_nets": 580,
+    "directed": {
+      "other-consumers": 378,
+      "shared": 172,
+      "sram-only": 30
+    },
+    "metal4_guides": {
+      "body": {
+        "shared": 79,
+        "sram-only": 13
+      },
+      "interior_inset_10um": {
+        "shared": 41,
+        "sram-only": 3
+      }
+    },
+    "hold_delays": {
+      "shared": 106,
+      "sram-only": 22
+    }
+  },
+  "layout": {
+    "footprint": {
+      "ff_width_dbu": 12960,
+      "mux_width_dbu": 4800,
+      "height_dbu": 3780,
+      "payload_pairs_required": 62,
+      "total_new_ff": 71
+    },
+    "windows": {
+      "below_sram0": {
+        "window_dbu": [
+          252000,
+          0,
+          1036480,
+          30000
+        ],
+        "retained": {
+          "row_area_um2": 11861.3376,
+          "free_area_um2": 3919.7088,
+          "ff_capacity": 42,
+          "adjacent_ff_mux_capacity": 25
+        },
+        "optimistic_exclusive_release": {
+          "row_area_um2": 11861.3376,
+          "free_area_um2": 4179.168,
+          "ff_capacity": 44,
+          "adjacent_ff_mux_capacity": 27
+        }
+      },
+      "below_sram1": {
+        "window_dbu": [
+          252000,
+          119180,
+          1036480,
+          144000
+        ],
+        "retained": {
+          "row_area_um2": 8896.0032,
+          "free_area_um2": 2968.9632,
+          "ff_capacity": 22,
+          "adjacent_ff_mux_capacity": 10
+        },
+        "optimistic_exclusive_release": {
+          "row_area_um2": 8896.0032,
+          "free_area_um2": 3027.024,
+          "ff_capacity": 22,
+          "adjacent_ff_mux_capacity": 10
+        }
+      }
+    },
+    "exclusive_release": {
+      "types": {
+        "sg13cmos5l_dlygate4sd3_1": 22,
+        "sg13cmos5l_buf_4": 4,
+        "sg13cmos5l_buf_8": 2,
+        "sg13cmos5l_buf_1": 1,
+        "sg13cmos5l_buf_2": 1
+      },
+      "area_um2": 480.816,
+      "boundary": "Optimistic release of macro-only branches; no hold-repair credit is certified."
+    },
+    "mapped_stage": {
+      "total_ff": 71,
+      "payload_mux_pairs": 62,
+      "input_cells": {
+        "upload_data": {
+          "sg13cmos5l_a21oi_1": 2,
+          "sg13cmos5l_mux2_1": 62
+        },
+        "upload_address": {
+          "sg13cmos5l_a21oi_1": 2,
+          "sg13cmos5l_mux2_1": 4
+        },
+        "upload_pending": {
+          "sg13cmos5l_nor2_1": 1
+        }
+      }
+    }
+  },
+  "wire_projections": {
+    "below_sram0": {
+      "affected_nets": 96,
+      "before_um": 17316.2725,
+      "after_um": 16602.5825,
+      "change_um": -713.69,
+      "change_percent": -4.121499011984254,
+      "complete_word_family_before_um": 85571.0575,
+      "complete_word_family_after_um": 84857.3675,
+      "complete_word_family_change_percent": -0.8340319973257313
+    },
+    "below_sram1": {
+      "affected_nets": 96,
+      "before_um": 17316.2725,
+      "after_um": 20287.305,
+      "change_um": 2971.0325,
+      "change_percent": 17.157459840159017,
+      "complete_word_family_before_um": 85571.0575,
+      "complete_word_family_after_um": 88542.09,
+      "complete_word_family_change_percent": 3.472006291379536
+    },
+    "split": {
+      "affected_nets": 96,
+      "before_um": 17316.2725,
+      "after_um": 15653.14,
+      "change_um": -1663.1325,
+      "change_percent": -9.604448647940833,
+      "complete_word_family_before_um": 85571.0575,
+      "complete_word_family_after_um": 83907.92499999999,
+      "complete_word_family_change_percent": -1.9435689456099103
+    }
+  },
+  "relaxed_packing": {
+    "below_sram0": {
+      "ff_slots": 44,
+      "required_data_ff": 64,
+      "status": "insufficient-even-without-muxes"
+    },
+    "below_sram1": {
+      "ff_slots": 22,
+      "required_data_ff": 64,
+      "status": "insufficient-even-without-muxes"
+    },
+    "split": {
+      "ff_slots": 66,
+      "required_data_ff": 64,
+      "status": "relaxed-optimum",
+      "affected_nets": 96,
+      "before_um": 17316.2725,
+      "after_um": 26064.8275,
+      "change_um": 8748.555,
+      "change_percent": 50.52216058623471
+    }
+  },
+  "additional_resources": {
+    "sg13cmos5l_stdcell_typ_1p20V_25C.lib": {
+      "path": "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/tools/ihp-cmos5l/sg13cmos5l_stdcell_typ_1p20V_25C.lib",
+      "sha256": "34163f3e7de9f854afac57332ba06f1739b78e7ac35660a8a5ddd39c570124ad",
+      "clock_pin_pf": 0.00276976,
+      "added_clock_pin_pf": 0.19665296,
+      "bare_ff_area_um2": 3478.2048,
+      "payload_mux_area_um2": 1124.9279999999999,
+      "boundary": "Library pin capacitance only: wires, clock tree, skew and new hold repair are unmeasured."
+    },
+    "sg13cmos5l_stdcell_slow_1p08V_125C.lib": {
+      "path": "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/tools/ihp-cmos5l/sg13cmos5l_stdcell_slow_1p08V_125C.lib",
+      "sha256": "3ee222c580ba33acb2131ac2bf224ff8ee9700751835b73aaec72b670bb31d3c",
+      "clock_pin_pf": 0.00258675,
+      "added_clock_pin_pf": 0.18365925,
+      "bare_ff_area_um2": 3478.2048,
+      "payload_mux_area_um2": 1124.9279999999999,
+      "boundary": "Library pin capacitance only: wires, clock tree, skew and new hold repair are unmeasured."
+    }
+  },
+  "earlier_attempts": {
+    "first": "Failed while supply connections were incorrectly included in a data-only projection; the guard rejected a package power port. Log and source snapshot retained.",
+    "preliminary": "Successful preliminary analysis assumed 64 logical FF/mux pairs. Superseded by exact mapped census showing 62 ordinary pairs plus two differently implemented data inputs."
+  },
+  "next_gate": "Cost the existing received-word registers, immediate decoding/validation consumers and shared distribution as one physical neighborhood. Include both SRAMs, execution/index-map links, displaced cells, clock and hold costs before another placement allocation.",
+  "boundary": "Rejects stated fixed-neighbor pin-face layouts under explicit geometric models. No Lean/RTL/netlist changes, new synthesis/simulation, physical placement/routing, timing closure or pipeline/backend promotion. Broader repacking and alternative organizations remain unmeasured.",
+  "validation": {
+    "focused_tests": 13,
+    "assignment_checks": {
+      "brute_force_cases": 48,
+      "dual_feasibility_and_equal_cost": true
+    },
+    "prior_receipts": [
+      {
+        "path": "build/validation/sram-interface-01/report.json",
+        "sha256": "df288d6500c8309b1cb7172e2a6bb33a1a0738fff5f71febfbd630df1cb9559a",
+        "artifacts_unchanged": 86
+      },
+      {
+        "path": "build/validation/electrical-cost-01/report.json",
+        "sha256": "9ff604cb4fa1e97c343a745fc0fd22d72c03351e2c38fe31f18a052c68612f40",
+        "artifacts_unchanged": 120
+      },
+      {
+        "path": "build/validation/local-slew-01/report.json",
+        "sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b",
+        "artifacts_unchanged": 531
+      }
+    ],
+    "unchanged_lean_files": 269,
+    "previous_source_files": 537,
+    "unchanged_previous_source_files": 529,
+    "new_source_files": [
+      "scripts/upload_locality.py",
+      "test/test_upload_locality.py"
+    ],
+    "unrelated_new_files_observed_but_not_modified": [
+      "docs/pio-pru-lessons.md"
+    ],
+    "python_syntax": "passed",
+    "git_diff_check": "passed",
+    "changed_source_files": [
+      "docs/README.md",
+      "docs/architecture.md",
+      "docs/chip-physical-study.md",
+      "docs/fetch-contract-study.md",
+      "docs/research/journal.md",
+      "docs/research/results.md",
+      "docs/research/status.md",
+      "docs/validation.md"
+    ]
+  },
+  "report": "build/validation/upload-locality-01/report.json",
+  "report_sha256": "ca03690b760cb652e3e111e606ef13fa325715179915e71cdc93197c9bae0dbe",
+  "checked_artifacts": 21
+}

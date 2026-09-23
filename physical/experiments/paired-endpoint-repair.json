@@ -1,0 +1,241 @@
+{
+  "status_drivers": [
+    {
+      "index": 99,
+      "driver": "_05597_/Y",
+      "net": "_01782_",
+      "location": [
+        875.52,
+        113.4
+      ]
+    },
+    {
+      "index": 100,
+      "driver": "_05601_/Y",
+      "net": "_01786_",
+      "location": [
+        900.96,
+        359.1
+      ]
+    },
+    {
+      "index": 101,
+      "driver": "_05814_/Y",
+      "net": "_01999_",
+      "location": [
+        790.56,
+        427.14
+      ]
+    },
+    {
+      "index": 102,
+      "driver": "_05815_/X",
+      "net": "_02000_",
+      "location": [
+        530.88,
+        427.14
+      ]
+    }
+  ],
+  "hold_endpoints": [
+    {
+      "index": 0,
+      "endpoint": "_10883_/D",
+      "net": "controller._GEN_63[28]",
+      "slack_ns": -0.362108,
+      "stages": 13,
+      "location": [
+        646.08,
+        94.5
+      ]
+    },
+    {
+      "index": 1,
+      "endpoint": "_10766_/D",
+      "net": "_01401_",
+      "slack_ns": -0.126817,
+      "stages": 6,
+      "location": [
+        551.52,
+        90.72
+      ]
+    },
+    {
+      "index": 2,
+      "endpoint": "memory.storage/A_DIN[56]",
+      "net": "net1849",
+      "slack_ns": -0.077746,
+      "stages": 5,
+      "location": [
+        954.38,
+        108.0
+      ]
+    },
+    {
+      "index": 3,
+      "endpoint": "memory.storage/A_DIN[13]",
+      "net": "net1980",
+      "slack_ns": -0.074258,
+      "stages": 5,
+      "location": [
+        401.54,
+        108.0
+      ]
+    },
+    {
+      "index": 4,
+      "endpoint": "memory.storage/A_DIN[55]",
+      "net": "net1843",
+      "slack_ns": -0.07376,
+      "stages": 5,
+      "location": [
+        943.14,
+        108.0
+      ]
+    },
+    {
+      "index": 5,
+      "endpoint": "memory.storage/A_DIN[57]",
+      "net": "net1855",
+      "slack_ns": -0.072366,
+      "stages": 5,
+      "location": [
+        965.62,
+        108.0
+      ]
+    },
+    {
+      "index": 6,
+      "endpoint": "memory.storage/A_DIN[61]",
+      "net": "net1869",
+      "slack_ns": -0.068597,
+      "stages": 5,
+      "location": [
+        1010.58,
+        108.0
+      ]
+    },
+    {
+      "index": 7,
+      "endpoint": "memory.storage/A_DIN[59]",
+      "net": "net1860",
+      "slack_ns": -0.066609,
+      "stages": 5,
+      "location": [
+        988.1,
+        108.0
+      ]
+    },
+    {
+      "index": 8,
+      "endpoint": "memory.storage/A_DIN[9]",
+      "net": "net1969",
+      "slack_ns": -0.064784,
+      "stages": 4,
+      "location": [
+        356.58,
+        108.0
+      ]
+    },
+    {
+      "index": 9,
+      "endpoint": "memory.storage/A_DIN[62]",
+      "net": "net1838",
+      "slack_ns": -0.055099,
+      "stages": 4,
+      "location": [
+        1021.82,
+        108.0
+      ]
+    },
+    {
+      "index": 10,
+      "endpoint": "memory.storage/A_DIN[48]",
+      "net": "net1891",
+      "slack_ns": -0.050224,
+      "stages": 4,
+      "location": [
+        864.46,
+        108.0
+      ]
+    },
+    {
+      "index": 11,
+      "endpoint": "memory.storage/A_ADDR[3]",
+      "net": "memory.mem_addr0[3]",
+      "slack_ns": -0.023471,
+      "stages": 3,
+      "location": [
+        647.2,
+        108.0
+      ]
+    },
+    {
+      "index": 12,
+      "endpoint": "_10770_/D",
+      "net": "_01397_",
+      "slack_ns": -0.018861,
+      "stages": 3,
+      "location": [
+        632.16,
+        98.28
+      ]
+    },
+    {
+      "index": 13,
+      "endpoint": "_10764_/D",
+      "net": "_01403_",
+      "slack_ns": -0.018661,
+      "stages": 3,
+      "location": [
+        511.68,
+        90.72
+      ]
+    },
+    {
+      "index": 14,
+      "endpoint": "_10762_/D",
+      "net": "_01405_",
+      "slack_ns": -0.008515,
+      "stages": 3,
+      "location": [
+        450.72,
+        90.72
+      ]
+    },
+    {
+      "index": 15,
+      "endpoint": "_10878_/D",
+      "net": "controller._GEN_63[23]",
+      "slack_ns": -0.003163,
+      "stages": 3,
+      "location": [
+        502.08,
+        98.28
+      ]
+    },
+    {
+      "index": 16,
+      "endpoint": "_10879_/D",
+      "net": "controller._GEN_63[24]",
+      "slack_ns": -0.001182,
+      "stages": 3,
+      "location": [
+        521.28,
+        98.28
+      ]
+    }
+  ],
+  "slew_endpoint": {
+    "index": 17,
+    "endpoint": "memory.storage/A_DIN[16]",
+    "net": "net29",
+    "stages": 1,
+    "location": [
+      435.26,
+      108.0
+    ],
+    "cell": "sg13cmos5l_buf_8"
+  },
+  "hold_sizing": "ceil((measured fast deficit + 0.075 ns) / 0.035 ns); hypothesis remeasured in all corners"
+}

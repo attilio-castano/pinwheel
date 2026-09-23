@@ -1,0 +1,5 @@
+{
+  "GRT_ALLOW_CONGESTION": true,
+  "DRT_SAVE_SNAPSHOTS": true,
+  "DRT_SAVE_DRC_REPORT_ITERS": 1
+}

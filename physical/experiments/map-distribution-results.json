@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "created_utc": "2026-09-22T00:53:24.349088+00:00",
+  "study": "distributed-02",
+  "status": "buffered-map-only-candidate",
+  "decision": "Retain as an experimental structural candidate with near-equal area. Next one complete-chip correctness and mapping comparison; no placement or routing allocation.",
+  "report": "build/storage/map-tile/distributed-02/report.json",
+  "report_sha256": "4a9ad92c4464506580df6f4afc603b7dbdbe722250e04d5ca6052081350a0fb2",
+  "baseline": {
+    "selected": "physical/experiments/map-tile-results.json",
+    "selected_sha256": "4c67ad0d1962160da15d0b53bc6fe50cb06c0a8758056414073e1df46f7c7ff4",
+    "report": "build/storage/map-tile/local-decode-03/report.json",
+    "report_sha256": "3c69d92ca85e0d81030bad2b69c0184218e5f0b0273b5f97446fb2b97ac929e3",
+    "verified_artifacts": 102,
+    "source_exception": "scripts/check-map-tile.py extended for distribution; current hash frozen"
+  },
+  "tests": "build/validation/map-distribution-01/tests.json",
+  "tests_sha256": "1cf03842cef0b42fb20b84969771a27ad823ee186babf5bc72d6fcef4fad055a",
+  "unchanged_chip_inputs": "build/validation/map-distribution-01/unchanged-chip-inputs.json",
+  "unchanged_chip_inputs_sha256": "e43cb252ca8d3c00d073561890f26d4b737b25bb784a302f5f83d736da911315",
+  "variants": {
+    "typical": {
+      "baseline_flat": {
+        "state_bits": 2560,
+        "cells": 10078,
+        "combinational_cells": 7518,
+        "area_um2": 253254.9348,
+        "logic_depth": {
+          "index0": 14,
+          "index1": 13,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_bank": 4,
+          "cursor": 7,
+          "write_data": 1,
+          "read_bank": 1,
+          "pc0": 2,
+          "pc1": 3
+        }
+      },
+      "baseline_tiled": {
+        "state_bits": 2560,
+        "cells": 8548,
+        "combinational_cells": 5988,
+        "area_um2": 250189.4304,
+        "logic_depth": {
+          "index0": 9,
+          "index1": 9,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 224,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 224,
+          "write_data": 224,
+          "read_bank": 1,
+          "pc0": 64,
+          "pc1": 64
+        }
+      },
+      "distributed": {
+        "state_bits": 2560,
+        "cells": 8894,
+        "combinational_cells": 6334,
+        "area_um2": 252700.56,
+        "logic_depth": {
+          "index0": 10,
+          "index1": 10,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 7,
+          "write_data": 4,
+          "read_bank": 1,
+          "pc0": 8,
+          "pc1": 8
+        }
+      },
+      "buffer_distribution": {
+        "fanout_limit": 10,
+        "buffer_cell": "sg13cmos5l_buf_1",
+        "buffer_area_um2": 7.2576,
+        "added_buffers": 346,
+        "added_area_um2": 2511.1296
+      },
+      "buffered_signal_bits": 17,
+      "maximum_added_buffer_levels": 2,
+      "remaining_area_advantage_um2": 554.3748,
+      "remaining_area_advantage_percent": 0.2189,
+      "child_modules_unchanged": true,
+      "mapped_sha256": "b9231342fc34780832a16e151a0db89172f663753177bbd1ca3f296c9b32eb45"
+    },
+    "slow": {
+      "baseline_flat": {
+        "state_bits": 2560,
+        "cells": 10078,
+        "combinational_cells": 7518,
+        "area_um2": 253254.9348,
+        "logic_depth": {
+          "index0": 14,
+          "index1": 13,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_bank": 4,
+          "cursor": 7,
+          "write_data": 1,
+          "read_bank": 1,
+          "pc0": 2,
+          "pc1": 3
+        }
+      },
+      "baseline_tiled": {
+        "state_bits": 2560,
+        "cells": 8548,
+        "combinational_cells": 5988,
+        "area_um2": 250189.4304,
+        "logic_depth": {
+          "index0": 9,
+          "index1": 9,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 224,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 224,
+          "write_data": 224,
+          "read_bank": 1,
+          "pc0": 64,
+          "pc1": 64
+        }
+      },
+      "distributed": {
+        "state_bits": 2560,
+        "cells": 8894,
+        "combinational_cells": 6334,
+        "area_um2": 252700.56,
+        "logic_depth": {
+          "index0": 10,
+          "index1": 10,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 7,
+          "write_data": 4,
+          "read_bank": 1,
+          "pc0": 8,
+          "pc1": 8
+        }
+      },
+      "buffer_distribution": {
+        "fanout_limit": 10,
+        "buffer_cell": "sg13cmos5l_buf_1",
+        "buffer_area_um2": 7.2576,
+        "added_buffers": 346,
+        "added_area_um2": 2511.1296
+      },
+      "buffered_signal_bits": 17,
+      "maximum_added_buffer_levels": 2,
+      "remaining_area_advantage_um2": 554.3748,
+      "remaining_area_advantage_percent": 0.2189,
+      "child_modules_unchanged": true,
+      "mapped_sha256": "14f041ab42a1987e5ace2bf4e1fa968d212cd3681acfb76b5b556d103efaf620"
+    }
+  },
+  "validation": {
+    "mapped_arbitrary_state_sat_checks": 2,
+    "inverted_buffer_rejected": true,
+    "shared_generic_tile_sat_check": true,
+    "shared_reader_mutation_rejected": true,
+    "focused_python_tests": 14,
+    "frozen_study_inputs_verified": 213,
+    "baseline_artifacts_verified": 102,
+    "prior_production_gate_inputs_unchanged": 239,
+    "child_modules_unchanged": true,
+    "per_command_timeout_seconds": 180,
+    "study_elapsed_seconds": 37.02
+  },
+  "source_sha256": {
+    "scripts/check-map-tile.py": "d587f72ccd8c199a616214d4547e038a2d6ac04026e7d903bb36bf17571c8085",
+    "scripts/map_distribution.py": "af4c14467ab7ee2b15ea2063b3dff8a2495f4f865c5b7589466abaaf29f72b1c",
+    "test/test_map_distribution.py": "8989ce050362507c74eb0f52b33854d829d01e43d3019f736dcf7cab6cedb2ce"
+  },
+  "scope": "Map-only buffer insertion into retained mapped hierarchy; all child modules unchanged. Independent arbitrary-state output/next-state SAT at both library corners and inverted-buffer rejection. Exact cell area, conservative gate depth and sink-pin budget. No new synthesis, whole-chip replacement, electrical timing, wire, power, placement or routing claim.",
+  "next_gate": "One experimental whole-chip integration preserving actual admission and execution edges. Compare complete controller/map/distribution/SRAM-interface correctness and mapping cost before electrical or physical work.",
+  "production_chip_rewired": false,
+  "physical_tools_launched": false
+}

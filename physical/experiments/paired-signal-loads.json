@@ -1,0 +1,893 @@
+[
+  {
+    "net": "_01717_",
+    "driver": "_05524_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      401.76,
+      362.88
+    ]
+  },
+  {
+    "net": "_01719_",
+    "driver": "_05526_/Y",
+    "cell": "sg13cmos5l_a21oi_1",
+    "location": [
+      593.28,
+      347.76
+    ]
+  },
+  {
+    "net": "_01784_",
+    "driver": "_05599_/Y",
+    "cell": "sg13cmos5l_nor4_1",
+    "location": [
+      336.96,
+      366.66
+    ]
+  },
+  {
+    "net": "_01793_",
+    "driver": "_05608_/Y",
+    "cell": "sg13cmos5l_nand3_1",
+    "location": [
+      488.64,
+      102.06
+    ]
+  },
+  {
+    "net": "_01825_",
+    "driver": "_05640_/Y",
+    "cell": "sg13cmos5l_o21ai_1",
+    "location": [
+      728.64,
+      113.4
+    ]
+  },
+  {
+    "net": "_01853_",
+    "driver": "_05668_/Y",
+    "cell": "sg13cmos5l_o21ai_1",
+    "location": [
+      631.2,
+      347.76
+    ]
+  },
+  {
+    "net": "_01877_",
+    "driver": "_05692_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      960.96,
+      525.42
+    ]
+  },
+  {
+    "net": "_02584_",
+    "driver": "_06399_/X",
+    "cell": "sg13cmos5l_a21o_1",
+    "location": [
+      817.92,
+      529.2
+    ]
+  },
+  {
+    "net": "_02930_",
+    "driver": "_06745_/Y",
+    "cell": "sg13cmos5l_nor2_1",
+    "location": [
+      1046.88,
+      151.2
+    ]
+  },
+  {
+    "net": "_02935_",
+    "driver": "_06750_/Y",
+    "cell": "sg13cmos5l_nor2_1",
+    "location": [
+      924.48,
+      495.18
+    ]
+  },
+  {
+    "net": "_02940_",
+    "driver": "_06755_/Y",
+    "cell": "sg13cmos5l_nor2_1",
+    "location": [
+      888.48,
+      453.6
+    ]
+  },
+  {
+    "net": "_02944_",
+    "driver": "_06759_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      902.88,
+      631.26
+    ]
+  },
+  {
+    "net": "_02945_",
+    "driver": "_06760_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      904.8,
+      631.26
+    ]
+  },
+  {
+    "net": "_02956_",
+    "driver": "_06771_/X",
+    "cell": "sg13cmos5l_or4_1",
+    "location": [
+      745.44,
+      102.06
+    ]
+  },
+  {
+    "net": "_02960_",
+    "driver": "_06775_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1176.48,
+      555.66
+    ]
+  },
+  {
+    "net": "_02961_",
+    "driver": "_06776_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1075.2,
+      665.28
+    ]
+  },
+  {
+    "net": "_02963_",
+    "driver": "_06778_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1020.48,
+      642.6
+    ]
+  },
+  {
+    "net": "_02969_",
+    "driver": "_06784_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1156.32,
+      438.48
+    ]
+  },
+  {
+    "net": "_02976_",
+    "driver": "_06791_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      593.76,
+      567.0
+    ]
+  },
+  {
+    "net": "_02980_",
+    "driver": "_06795_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      930.72,
+      529.2
+    ]
+  },
+  {
+    "net": "_02982_",
+    "driver": "_06797_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1063.68,
+      604.8
+    ]
+  },
+  {
+    "net": "_02992_",
+    "driver": "_06807_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      977.28,
+      627.48
+    ]
+  },
+  {
+    "net": "_02994_",
+    "driver": "_06809_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1128.48,
+      419.58
+    ]
+  },
+  {
+    "net": "_02997_",
+    "driver": "_06812_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      950.88,
+      525.42
+    ]
+  },
+  {
+    "net": "_03009_",
+    "driver": "_06824_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1142.4,
+      514.08
+    ]
+  },
+  {
+    "net": "_03016_",
+    "driver": "_06831_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1161.12,
+      412.02
+    ]
+  },
+  {
+    "net": "_03036_",
+    "driver": "_06851_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      933.12,
+      434.7
+    ]
+  },
+  {
+    "net": "_03043_",
+    "driver": "_06858_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      983.52,
+      536.76
+    ]
+  },
+  {
+    "net": "_03046_",
+    "driver": "_06861_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1091.52,
+      449.82
+    ]
+  },
+  {
+    "net": "_03047_",
+    "driver": "_06862_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      331.2,
+      430.92
+    ]
+  },
+  {
+    "net": "_03062_",
+    "driver": "_06877_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1129.92,
+      427.14
+    ]
+  },
+  {
+    "net": "_03072_",
+    "driver": "_06887_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1017.12,
+      548.1
+    ]
+  },
+  {
+    "net": "_03082_",
+    "driver": "_06897_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      645.6,
+      498.96
+    ]
+  },
+  {
+    "net": "_03099_",
+    "driver": "_06914_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1101.12,
+      438.48
+    ]
+  },
+  {
+    "net": "_03100_",
+    "driver": "_06915_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      343.68,
+      529.2
+    ]
+  },
+  {
+    "net": "_03101_",
+    "driver": "_06916_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1123.2,
+      438.48
+    ]
+  },
+  {
+    "net": "_03114_",
+    "driver": "_06929_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1125.12,
+      498.96
+    ]
+  },
+  {
+    "net": "_03151_",
+    "driver": "_06966_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      363.84,
+      597.24
+    ]
+  },
+  {
+    "net": "_03157_",
+    "driver": "_06972_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      343.68,
+      532.98
+    ]
+  },
+  {
+    "net": "_03167_",
+    "driver": "_06982_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      929.28,
+      502.74
+    ]
+  },
+  {
+    "net": "_03181_",
+    "driver": "_06996_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1137.6,
+      434.7
+    ]
+  },
+  {
+    "net": "_03185_",
+    "driver": "_07000_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1154.4,
+      442.26
+    ]
+  },
+  {
+    "net": "_03246_",
+    "driver": "_07061_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      331.68,
+      419.58
+    ]
+  },
+  {
+    "net": "_03283_",
+    "driver": "_07098_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      435.84,
+      585.9
+    ]
+  },
+  {
+    "net": "_03340_",
+    "driver": "_07155_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      918.72,
+      495.18
+    ]
+  },
+  {
+    "net": "_03398_",
+    "driver": "_07213_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      1040.16,
+      536.76
+    ]
+  },
+  {
+    "net": "_04197_",
+    "driver": "_08012_/Y",
+    "cell": "sg13cmos5l_inv_1",
+    "location": [
+      412.32,
+      113.4
+    ]
+  },
+  {
+    "net": "_04294_",
+    "driver": "_08148_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      374.4,
+      529.2
+    ]
+  },
+  {
+    "net": "_04300_",
+    "driver": "_08160_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      348.96,
+      495.18
+    ]
+  },
+  {
+    "net": "_04336_",
+    "driver": "_08216_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      437.28,
+      374.22
+    ]
+  },
+  {
+    "net": "_04354_",
+    "driver": "_08246_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      307.2,
+      449.82
+    ]
+  },
+  {
+    "net": "_04361_",
+    "driver": "_08268_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      231.84,
+      449.82
+    ]
+  },
+  {
+    "net": "_04369_",
+    "driver": "_08295_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      300.0,
+      446.04
+    ]
+  },
+  {
+    "net": "_04371_",
+    "driver": "_08301_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      303.84,
+      449.82
+    ]
+  },
+  {
+    "net": "_04375_",
+    "driver": "_08320_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      263.52,
+      457.38
+    ]
+  },
+  {
+    "net": "_04382_",
+    "driver": "_08346_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      246.72,
+      442.26
+    ]
+  },
+  {
+    "net": "_04384_",
+    "driver": "_08352_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      286.08,
+      461.16
+    ]
+  },
+  {
+    "net": "_04397_",
+    "driver": "_08399_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      823.2,
+      532.98
+    ]
+  },
+  {
+    "net": "_04399_",
+    "driver": "_08401_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      270.24,
+      442.26
+    ]
+  },
+  {
+    "net": "_04403_",
+    "driver": "_08409_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      312.48,
+      540.54
+    ]
+  },
+  {
+    "net": "_04410_",
+    "driver": "_08431_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      271.68,
+      457.38
+    ]
+  },
+  {
+    "net": "_04432_",
+    "driver": "_08491_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      240.96,
+      453.6
+    ]
+  },
+  {
+    "net": "_04436_",
+    "driver": "_08504_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      358.08,
+      430.92
+    ]
+  },
+  {
+    "net": "_04440_",
+    "driver": "_08518_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      282.72,
+      453.6
+    ]
+  },
+  {
+    "net": "_04448_",
+    "driver": "_08545_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      279.36,
+      461.16
+    ]
+  },
+  {
+    "net": "_04468_",
+    "driver": "_08604_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      384.96,
+      525.42
+    ]
+  },
+  {
+    "net": "_04479_",
+    "driver": "_08633_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      420.96,
+      514.08
+    ]
+  },
+  {
+    "net": "_04480_",
+    "driver": "_08635_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      382.08,
+      544.32
+    ]
+  },
+  {
+    "net": "_04513_",
+    "driver": "_08745_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      238.56,
+      461.16
+    ]
+  },
+  {
+    "net": "_04518_",
+    "driver": "_08767_/Y",
+    "cell": "sg13cmos5l_nor2_1",
+    "location": [
+      251.52,
+      483.84
+    ]
+  },
+  {
+    "net": "_04536_",
+    "driver": "_08814_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      754.56,
+      427.14
+    ]
+  },
+  {
+    "net": "_04553_",
+    "driver": "_08860_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      336.48,
+      563.22
+    ]
+  },
+  {
+    "net": "_04572_",
+    "driver": "_08955_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      336.48,
+      555.66
+    ]
+  },
+  {
+    "net": "_04583_",
+    "driver": "_09004_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      354.72,
+      544.32
+    ]
+  },
+  {
+    "net": "_04605_",
+    "driver": "_09078_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      229.44,
+      438.48
+    ]
+  },
+  {
+    "net": "_04611_",
+    "driver": "_09103_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      293.28,
+      449.82
+    ]
+  },
+  {
+    "net": "_04623_",
+    "driver": "_09153_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      295.68,
+      438.48
+    ]
+  },
+  {
+    "net": "_04628_",
+    "driver": "_09177_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      233.76,
+      446.04
+    ]
+  },
+  {
+    "net": "_04635_",
+    "driver": "_09203_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      296.16,
+      446.04
+    ]
+  },
+  {
+    "net": "_04642_",
+    "driver": "_09229_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      262.56,
+      449.82
+    ]
+  },
+  {
+    "net": "_04659_",
+    "driver": "_09265_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      243.84,
+      438.48
+    ]
+  },
+  {
+    "net": "_04669_",
+    "driver": "_09313_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      266.4,
+      438.48
+    ]
+  },
+  {
+    "net": "_04689_",
+    "driver": "_09409_/Y",
+    "cell": "sg13cmos5l_nand2_1",
+    "location": [
+      278.88,
+      453.6
+    ]
+  },
+  {
+    "net": "_05222_",
+    "driver": "_10456_/X",
+    "cell": "sg13cmos5l_buf_1",
+    "location": [
+      258.24,
+      351.54
+    ]
+  },
+  {
+    "net": "net1888",
+    "driver": "hold1888/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      924.96,
+      351.54
+    ]
+  },
+  {
+    "net": "net1891",
+    "driver": "hold1891/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      880.8,
+      113.4
+    ]
+  },
+  {
+    "net": "net1897",
+    "driver": "hold1897/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      505.44,
+      347.76
+    ]
+  },
+  {
+    "net": "net1901",
+    "driver": "hold1901/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      673.44,
+      347.76
+    ]
+  },
+  {
+    "net": "net1903",
+    "driver": "hold1903/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      494.88,
+      347.76
+    ]
+  },
+  {
+    "net": "net1916",
+    "driver": "hold1916/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      640.8,
+      347.76
+    ]
+  },
+  {
+    "net": "net1921",
+    "driver": "hold1921/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      669.12,
+      347.76
+    ]
+  },
+  {
+    "net": "net1940",
+    "driver": "hold1940/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      474.72,
+      347.76
+    ]
+  },
+  {
+    "net": "net1946",
+    "driver": "hold1946/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      719.04,
+      347.76
+    ]
+  },
+  {
+    "net": "net1969",
+    "driver": "hold1969/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      501.12,
+      347.76
+    ]
+  },
+  {
+    "net": "net1972",
+    "driver": "hold1972/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      883.68,
+      355.32
+    ]
+  },
+  {
+    "net": "net1980",
+    "driver": "hold1980/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      442.56,
+      374.22
+    ]
+  },
+  {
+    "net": "net1989",
+    "driver": "hold1989/X",
+    "cell": "sg13cmos5l_dlygate4sd3_1",
+    "location": [
+      573.6,
+      385.56
+    ]
+  },
+  {
+    "net": "net28",
+    "driver": "wire28/X",
+    "cell": "sg13cmos5l_buf_4",
+    "location": [
+      710.88,
+      427.14
+    ]
+  },
+  {
+    "net": "net29",
+    "driver": "wire29/X",
+    "cell": "sg13cmos5l_buf_4",
+    "location": [
+      754.08,
+      483.84
+    ]
+  }
+]

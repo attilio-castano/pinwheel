@@ -1,0 +1,381 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-09-22",
+  "report": "build/validation/paired-execution-03/report.json",
+  "report_sha256": "c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f2e7d4e",
+  "decision": "keep-paired-direction-open; next exact controller emission and composed timing",
+  "resources": {
+    "declared_register_bits": 1592,
+    "register_bits": {
+      "parameters": 1280,
+      "boot": 64,
+      "current_token": 32,
+      "current_parameter": 20,
+      "mode": 3,
+      "remaining": 8,
+      "wait_left": 8,
+      "pins": 6,
+      "captures": 16,
+      "payload": 8,
+      "atomic_bank_valid_pending": 3,
+      "upload_cursor": 9,
+      "idle_metadata": 12,
+      "input_sampler": 12,
+      "serial_receiver": 76,
+      "result_observer": 35
+    },
+    "macro": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+    "macro_count": 1,
+    "macro_array_bits": 32768,
+    "rows_per_atomic_bank": 256,
+    "parameter_read_ports": 2,
+    "parameter_write_ports": 1,
+    "parameter_reads_per_entry": 1,
+    "parameter_reads_per_row_upload": 2,
+    "synchronous_sram_reads_per_execution_edge": 1,
+    "logical_successors_per_read": 2,
+    "upload_words": 290,
+    "index_map_bits": 0,
+    "critical_paths": [
+      "SRAM Q -> half selection -> 8-bit row -> SRAM address",
+      "SRAM Q -> half selection -> parameter table -> entry capture/state",
+      "serial word -> two parameter reads -> validation -> upload admission"
+    ],
+    "unmeasured": [
+      "full emitted controller",
+      "parameter muxes and write decode",
+      "opcode/parameter validation",
+      "clock distribution",
+      "hold repair",
+      "wire and pin access",
+      "package integration and correspondence"
+    ]
+  },
+  "macro_geometry": {
+    "64": {
+      "width_um": 784.48,
+      "height_um": 64.36,
+      "area_um2": 50489.1328
+    },
+    "512": {
+      "width_um": 784.48,
+      "height_um": 191.34,
+      "area_um2": 150102.4032
+    }
+  },
+  "lookup_screen": {
+    "scope": "standalone matched FF tables; not the current emitted map or complete candidate",
+    "tool_image": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+    "runtime_config_sha256": "1cb10a3ad40599fd3024680505bef500797e4d2bd92ae0c87de5757401619e73",
+    "variants": {
+      "index": {
+        "typical": {
+          "flip_flops": 2560,
+          "cells": 13688,
+          "cell_types": {
+            "sg13cmos5l_buf_1": 1040,
+            "sg13cmos5l_inv_1": 9,
+            "sg13cmos5l_nand2b_1": 42,
+            "sg13cmos5l_nor4_1": 798,
+            "sg13cmos5l_nand4_1": 1033,
+            "sg13cmos5l_a21oi_1": 94,
+            "sg13cmos5l_or2_1": 22,
+            "sg13cmos5l_nand2_1": 463,
+            "sg13cmos5l_o21ai_1": 116,
+            "sg13cmos5l_or4_1": 9,
+            "sg13cmos5l_nor2_1": 200,
+            "sg13cmos5l_nor3_1": 376,
+            "sg13cmos5l_a22oi_1": 1362,
+            "sg13cmos5l_a221oi_1": 2,
+            "sg13cmos5l_and4_1": 25,
+            "sg13cmos5l_and2_1": 692,
+            "sg13cmos5l_nor2b_1": 26,
+            "sg13cmos5l_nand3_1": 2254,
+            "sg13cmos5l_or3_1": 1,
+            "sg13cmos5l_and3_1": 10,
+            "sg13cmos5l_a21o_1": 1,
+            "sg13cmos5l_mux2_1": 2553,
+            "sg13cmos5l_dfrbpq_1": 2560
+          },
+          "area_um2": 252384.174,
+          "abc_module_delays_ps": [
+            1653.67
+          ],
+          "cell_timing": {
+            "setup_slack_ns": 10.06,
+            "hold_slack_ns": 0.1,
+            "electrical_violations": {
+              "max fanout": 1166,
+              "max slew": 0,
+              "max capacitance": 0,
+              "min pulse width": 0,
+              "min period": 0
+            }
+          },
+          "worst_read_arrival_ns": 5.74
+        },
+        "slow": {
+          "flip_flops": 2560,
+          "cells": 13688,
+          "cell_types": {
+            "sg13cmos5l_buf_1": 1040,
+            "sg13cmos5l_inv_1": 9,
+            "sg13cmos5l_nand2b_1": 42,
+            "sg13cmos5l_nor4_1": 798,
+            "sg13cmos5l_nand4_1": 1033,
+            "sg13cmos5l_a21oi_1": 94,
+            "sg13cmos5l_or2_1": 22,
+            "sg13cmos5l_nand2_1": 463,
+            "sg13cmos5l_o21ai_1": 116,
+            "sg13cmos5l_or4_1": 9,
+            "sg13cmos5l_nor2_1": 200,
+            "sg13cmos5l_nor3_1": 376,
+            "sg13cmos5l_a22oi_1": 1362,
+            "sg13cmos5l_a221oi_1": 2,
+            "sg13cmos5l_and4_1": 25,
+            "sg13cmos5l_and2_1": 692,
+            "sg13cmos5l_nor2b_1": 26,
+            "sg13cmos5l_nand3_1": 2254,
+            "sg13cmos5l_or3_1": 1,
+            "sg13cmos5l_and3_1": 10,
+            "sg13cmos5l_a21o_1": 1,
+            "sg13cmos5l_mux2_1": 2553,
+            "sg13cmos5l_dfrbpq_1": 2560
+          },
+          "area_um2": 252384.174,
+          "abc_module_delays_ps": [
+            2653.14
+          ],
+          "cell_timing": {
+            "setup_slack_ns": 9.03,
+            "hold_slack_ns": 0.26,
+            "electrical_violations": {
+              "max fanout": 1166,
+              "max slew": 0,
+              "max capacitance": 0,
+              "min pulse width": 0,
+              "min period": 0
+            }
+          },
+          "worst_read_arrival_ns": 6.77
+        }
+      },
+      "parameter": {
+        "typical": {
+          "flip_flops": 1280,
+          "cells": 5192,
+          "cell_types": {
+            "sg13cmos5l_nand2b_1": 23,
+            "sg13cmos5l_buf_1": 564,
+            "sg13cmos5l_nand2_1": 66,
+            "sg13cmos5l_nor3_1": 180,
+            "sg13cmos5l_or2_1": 7,
+            "sg13cmos5l_a22oi_1": 1234,
+            "sg13cmos5l_nand4_1": 319,
+            "sg13cmos5l_nor4_1": 67,
+            "sg13cmos5l_nor2_1": 35,
+            "sg13cmos5l_o21ai_1": 3,
+            "sg13cmos5l_or4_1": 1,
+            "sg13cmos5l_or3_1": 2,
+            "sg13cmos5l_nand3_1": 94,
+            "sg13cmos5l_inv_1": 3,
+            "sg13cmos5l_and3_1": 19,
+            "sg13cmos5l_a221oi_1": 2,
+            "sg13cmos5l_and2_1": 6,
+            "sg13cmos5l_mux2_1": 1278,
+            "sg13cmos5l_nor2b_1": 7,
+            "sg13cmos5l_a21oi_1": 2,
+            "sg13cmos5l_dfrbpq_1": 1280
+          },
+          "area_um2": 111557.0988,
+          "abc_module_delays_ps": [
+            1303.16
+          ],
+          "cell_timing": {
+            "setup_slack_ns": 10.41,
+            "hold_slack_ns": 0.11,
+            "electrical_violations": {
+              "max fanout": 569,
+              "max slew": 0,
+              "max capacitance": 0,
+              "min pulse width": 0,
+              "min period": 0
+            }
+          },
+          "worst_read_arrival_ns": 5.39
+        },
+        "slow": {
+          "flip_flops": 1280,
+          "cells": 5192,
+          "cell_types": {
+            "sg13cmos5l_nand2b_1": 23,
+            "sg13cmos5l_buf_1": 564,
+            "sg13cmos5l_nand2_1": 66,
+            "sg13cmos5l_nor3_1": 180,
+            "sg13cmos5l_or2_1": 7,
+            "sg13cmos5l_a22oi_1": 1234,
+            "sg13cmos5l_nand4_1": 319,
+            "sg13cmos5l_nor4_1": 67,
+            "sg13cmos5l_nor2_1": 35,
+            "sg13cmos5l_o21ai_1": 3,
+            "sg13cmos5l_or4_1": 1,
+            "sg13cmos5l_or3_1": 2,
+            "sg13cmos5l_nand3_1": 94,
+            "sg13cmos5l_inv_1": 3,
+            "sg13cmos5l_and3_1": 19,
+            "sg13cmos5l_a221oi_1": 2,
+            "sg13cmos5l_and2_1": 6,
+            "sg13cmos5l_mux2_1": 1278,
+            "sg13cmos5l_nor2b_1": 7,
+            "sg13cmos5l_a21oi_1": 2,
+            "sg13cmos5l_dfrbpq_1": 1280
+          },
+          "area_um2": 111557.0988,
+          "abc_module_delays_ps": [
+            2035.7
+          ],
+          "cell_timing": {
+            "setup_slack_ns": 9.63,
+            "hold_slack_ns": 0.27,
+            "electrical_violations": {
+              "max fanout": 569,
+              "max slew": 0,
+              "max capacitance": 0,
+              "min pulse width": 0,
+              "min period": 0
+            }
+          },
+          "worst_read_arrival_ns": 6.17
+        }
+      }
+    },
+    "containers": {
+      "pinwheel-paired-execution-03-index-typical": "absent",
+      "pinwheel-paired-execution-03-index-slow": "absent",
+      "pinwheel-paired-execution-03-parameter-typical": "absent",
+      "pinwheel-paired-execution-03-parameter-slow": "absent"
+    },
+    "wire_parasitics": false,
+    "assumptions": {
+      "period_ns": 20,
+      "input_max_ns": 4,
+      "input_min_ns": 0.2,
+      "output_max_ns": 4,
+      "output_min_ns": 0.2,
+      "output_load_pf": 0.01,
+      "input_driver": "sg13cmos5l_buf_2",
+      "clock_uncertainty_ns": 0.2,
+      "clock_transition_ns": 0.15
+    }
+  },
+  "lookup_plus_macro_delta_um2": {
+    "typical": -91702.9376,
+    "slow": -91702.9376
+  },
+  "focused_tests": 18,
+  "compiled_protocols": {
+    "images": {
+      "uart": {
+        "logical_positions": 32,
+        "distinct_e64_records": 3,
+        "parameter_entries": 1
+      },
+      "spi": {
+        "logical_positions": 32,
+        "distinct_e64_records": 11,
+        "parameter_entries": 9
+      },
+      "i2c-write": {
+        "logical_positions": 79,
+        "distinct_e64_records": 13,
+        "parameter_entries": 6
+      },
+      "i2c-read": {
+        "logical_positions": 155,
+        "distinct_e64_records": 25,
+        "parameter_entries": 19
+      },
+      "uart-rx": {
+        "logical_positions": 13,
+        "distinct_e64_records": 13,
+        "parameter_entries": 10
+      },
+      "uart-rx-split": {
+        "logical_positions": 22,
+        "distinct_e64_records": 14,
+        "parameter_entries": 11
+      }
+    },
+    "i2c_cases": 24,
+    "i2c_edges": 10349,
+    "uart_rx_frames": 9,
+    "compiled_tx_edges": {
+      "uart": 40,
+      "spi": 68
+    },
+    "input_boundary": "already sampled inputs; no package serial replay"
+  },
+  "schedule_theorems": [
+    "PairedSchedule.step_related",
+    "PairedSchedule.trace_related"
+  ],
+  "behavioral_mutants_rejected": 6,
+  "mapped_sat_checks": 4,
+  "joined_reader_negative_rejected": true,
+  "axiom_negative_rejected": true,
+  "unchanged_hardware_sources": 205,
+  "seconds": 122.269,
+  "available_macro_views_sha256": {
+    "build/storage/macros/RM_IHPSG13_1P_64x64_c2_bm_bist.lef": "2bbeda3804b585f9e1bdd22edf531a68898152f15a66c65ab643f49f873ae87f",
+    "build/storage/macros/RM_IHPSG13_1P_64x64_c2_bm_bist.v": "85b38148ba6a455b22ff93a5290f7bd366395033c33956d0a9e2fd5f16fef59c",
+    "build/storage/macros/RM_IHPSG13_1P_64x64_c2_bm_bist_typ_1p20V_25C.lib": "6064c5909605d9d4242df1ab3043598e558951122d210c18f12f1ab15badd044",
+    "build/storage/macros/RM_IHPSG13_1P_64x64_c2_bm_bist_slow_1p08V_125C.lib": "363a49c4905e0899b1391903b16a37a18ba9db9cafa627f6fc4d9bc6f9e01db0",
+    "build/storage/macros/RM_IHPSG13_1P_512x64_c2_bm_bist.lef": "93aced65c204c35cc3a9e0315048346df149b6957fd95787df1a2ee0b1bb274b",
+    "build/storage/macros/RM_IHPSG13_1P_512x64_c2_bm_bist.v": "8aab6b018ab7dd90014fede340923bac537f610b9c2d9a082ab1c2d953b118c7",
+    "build/storage/macros/RM_IHPSG13_1P_512x64_c2_bm_bist_typ_1p20V_25C.lib": "1fb769565599938fa7179d4d62f1d49ffd356ef0fdf7277d705ca19486b27b0e",
+    "build/storage/macros/RM_IHPSG13_1P_512x64_c2_bm_bist_slow_1p08V_125C.lib": "c09bbbe341c8ce701933d645198a4045e2cb53f5621842534722876e8243cb40",
+    "build/storage/macros/RM_IHPSG13_1P_core_behavioral_bm_bist.v": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12"
+  },
+  "evidence_boundary": [
+    "Canonical E64-operation model with full 256-address/32-record capacity; no universal compiler theorem.",
+    "Independent sampled-pin and E64 oracles, including compiled I2C/RX; no package-wrapper RTL composition.",
+    "Conditional Lean dispatch schedule includes the cached parameter; not compiler/loader refinement.",
+    "Mapped lookup SAT covers arbitrary two-valued state/inputs and every output/next-state bit.",
+    "Lookup RTL uses identical generic topology for both sizes; neither is the actual full chip.",
+    "Standalone cell timing excludes SRAM clock-to-Q/setup, branch/entry logic and wires.",
+    "Lookup-plus-macro delta excludes other controller logic, clocks, hold repair and placement.",
+    "The new 290-word program format requires host translation and new admission integration.",
+    "No new production hardware, placement, detailed routing, extracted timing or silicon claim."
+  ],
+  "preserved_receipts": {
+    "compact-execution": {
+      "report": "build/validation/compact-execution-01/report.json",
+      "sha256": "841e3dd1e334bb72645ea26a8086528b895f775d45ebcbdb34378fd4d232c89f"
+    },
+    "chip-architecture": {
+      "report": "build/validation/chip-architecture-02/report.json",
+      "sha256": "f5c87c5e9f6f0d6567aa682347783e7597a51c482fa88f64b61d9b628c6c4ce0"
+    },
+    "local-slew": {
+      "report": "build/validation/local-slew-01/report.json",
+      "sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b"
+    }
+  },
+  "prior_attempts": [
+    {
+      "report": "build/validation/paired-execution-01/report.json",
+      "report_sha256": "e56ef635268b7d4b7044f16d4cee29227fc036f88fa0c85fc8cd6108655c2a82",
+      "reason": "Docker socket unavailable in sandbox; no CAD run"
+    },
+    {
+      "report": "build/validation/paired-execution-02/report.json",
+      "report_sha256": "682b182e0a04985e325d2b9c38cd271c6f6faccc289ef13056f4d5871c9b6228",
+      "reason": "negative-control port mutation did not survive named-wire JSON intake"
+    }
+  ],
+  "negative_control_repair": {
+    "report": "build/validation/paired-negative-01/report.json",
+    "report_sha256": "dd1842265cdcb847a2fca765b01c657ac2cdaeb5a39deec0ffa91771cdccd910"
+  }
+}

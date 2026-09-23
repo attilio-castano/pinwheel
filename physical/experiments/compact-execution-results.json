@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "status": "passed",
+  "scope": "model comparison only",
+  "report": "build/validation/compact-execution-01/report.json",
+  "report_sha256": "841e3dd1e334bb72645ea26a8086528b895f775d45ebcbdb34378fd4d232c89f",
+  "decision": "retain-current-engine; reject-paired32-as-equivalent-replacement",
+  "next_gate": "cost net3533 SRAM-only bit-41 buffering with both replicas and existing hold chain",
+  "focused_tests": 18,
+  "seconds": 8.881,
+  "model_test_seconds": 2.35,
+  "schedule_theorems": [
+    "CompactSchedule.step_related",
+    "CompactSchedule.trace_related"
+  ],
+  "axiom_negative_rejected": true,
+  "behavioral_mutants_rejected": 4,
+  "coverage": {
+    "uart_payloads": 256,
+    "spi_tx_rx_cases": 256,
+    "branch_histories": 4096,
+    "branch_edges_per_history": 6,
+    "additional_consecutive_branch_edges": 128,
+    "uart_reset_positions": 40,
+    "wait_pins": 2,
+    "wait_budgets": [
+      0,
+      1,
+      7,
+      255
+    ]
+  },
+  "candidate": {
+    "declared_register_bits": 250,
+    "register_bits_by_owner": {
+      "current_word": 32,
+      "start_word": 32,
+      "start_pending": 1,
+      "mode": 3,
+      "remaining": 8,
+      "pins": 6,
+      "captures": 16,
+      "payload": 8,
+      "atomic_bank_valid_pending": 3,
+      "upload_cursor": 6,
+      "idle_metadata": 12,
+      "input_sampler": 12,
+      "serial_receiver": 76,
+      "result_observer": 35
+    },
+    "macro_count": 1,
+    "macro_array_bits": 4096,
+    "atomic_banks": 2,
+    "rows_per_bank": 32,
+    "word_bits": 32,
+    "macro_data_bits": 64,
+    "independent_reads_per_edge": 1,
+    "candidate_words_per_read": 2,
+    "image_upload_words": 33,
+    "index_map_bits": 0,
+    "unmeasured": [
+      "opcode/field validation",
+      "payload selection and shifts",
+      "successor-half selection and address path",
+      "loader decode",
+      "clock tree",
+      "hold repair",
+      "buffers and wires",
+      "routing and timing",
+      "serial/result wrapper composition"
+    ]
+  },
+  "baseline": {
+    "mapped_register_bits": 2895,
+    "declared_register_bits": 2901,
+    "macro_count": 2,
+    "macro_array_bits": 8192,
+    "index_map_bits": 2560,
+    "macro": "RM_IHPSG13_1P_64x64_c2_bm_bist"
+  },
+  "programs": {
+    "uart": {
+      "used_rows": 11,
+      "used_macro_bits": 704,
+      "upload_words": 33,
+      "baseline": {
+        "logical_instructions": 11,
+        "distinct_E64_records_min": 3,
+        "distinct_E64_records_max": 3,
+        "per_image_index_bits": 1280,
+        "per_image_metadata_bits": 14,
+        "upload_words": 322,
+        "resident_payload_supported": false
+      }
+    },
+    "spi": {
+      "used_rows": 18,
+      "used_macro_bits": 1152,
+      "upload_words": 33,
+      "baseline": {
+        "logical_instructions": 18,
+        "distinct_E64_records_min": 10,
+        "distinct_E64_records_max": 11,
+        "per_image_index_bits": 1280,
+        "per_image_metadata_bits": 14,
+        "upload_words": 322,
+        "resident_payload_supported": false
+      }
+    },
+    "branches": {
+      "used_rows": 3,
+      "used_macro_bits": 192,
+      "upload_words": 33
+    }
+  },
+  "counterexamples": [
+    {
+      "name": "32-repeated-full-duration-actions",
+      "E64_words": [
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        130632,
+        4
+      ],
+      "reason": "capacity: 33 successor rows exceed 32",
+      "current_distinct_records": 2
+    },
+    {
+      "name": "qualifying-wait",
+      "E64_words": [
+        34473987,
+        4
+      ],
+      "reason": "capability: qualifying wait needs a second counter and guard",
+      "current_distinct_records": 2
+    },
+    {
+      "name": "checked-guard",
+      "E64_words": [
+        33554434,
+        4
+      ],
+      "reason": "capability: checked guard has no compact encoding",
+      "current_distinct_records": 2
+    },
+    {
+      "name": "independent-capture-slots",
+      "E64_words": [
+        36051028306558978,
+        4
+      ],
+      "reason": "capability: independent entry/terminal/branch slots",
+      "current_distinct_records": 2
+    }
+  ],
+  "boundary": [
+    "Python clocked execution/command model; delivered commands and sampled inputs only.",
+    "Independent wire formulas and existing E64 oracle; current code is specialized per payload.",
+    "Two Lean schedule lemmas assume Closed image correspondence; no Python/Lean correspondence proof.",
+    "Retained 12+76+35 wrapper bits are budgeted; package sampler/serial/mailbox RTL is not composed.",
+    "Logical state budget includes all declared owners; no synthesized area or physical benefit claim.",
+    "Encoding and loader format differ; no compatibility with identical raw E64 upload histories.",
+    "One concrete compiler/layout rejected; no impossibility claim for all compact engines."
+  ],
+  "preserved_receipts": {
+    "chip-architecture": {
+      "path": "build/validation/chip-architecture-02/report.json",
+      "sha256": "f5c87c5e9f6f0d6567aa682347783e7597a51c482fa88f64b61d9b628c6c4ce0"
+    },
+    "word-region": {
+      "path": "build/validation/word-region-01/report.json",
+      "sha256": "7353edc329e0329c727b1cbdf7712ee7dac62b33ec9cb9a3367848e3fd52cd5d"
+    },
+    "local-slew": {
+      "path": "build/validation/local-slew-01/report.json",
+      "sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b"
+    }
+  },
+  "unchanged_hardware_sources": 205
+}

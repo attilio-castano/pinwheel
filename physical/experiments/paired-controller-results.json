@@ -1,0 +1,334 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "status": "passed",
+  "decision": "Proceed to one bounded placement, clock and hold-repair comparison after exact one-macro intake.",
+  "report": "build/validation/paired-controller-02/report.json",
+  "report_sha256": "9e2d550a924006e332efb4be15c93c883d7f9f0e6b10965278dd5d9e53e4be0f",
+  "seconds": 63.291,
+  "declared_register_bits": 1592,
+  "evidence": {
+    "source_hashes": 262,
+    "artifact_hashes": 78,
+    "inputs_unchanged": true,
+    "prior_library_sources_unchanged": 205,
+    "new_opt_in_library_sources": 1
+  },
+  "coverage": {
+    "core": {
+      "edges": 173359,
+      "e64_compared_edges": 116811,
+      "branch_histories": 4096,
+      "consecutive_branch_edges": 24576,
+      "resident_uart_bytes": 256,
+      "resident_spi_pairs": 256,
+      "atomic_interruptions": 27,
+      "i2c_cases": 24,
+      "i2c_edges": 10349,
+      "uart_rx_frames": 9
+    },
+    "chip": {
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+    }
+  },
+  "mapped_arbitrary_state_checks": 2,
+  "typical_mapped_pin_replay_edges": 331401,
+  "negative_controls": {
+    "axiom_injection": "rejected",
+    "stale_sram_row": "behavioral rejection at edge 296",
+    "inverted_distribution_buffer": "SAT rejection",
+    "intake": {
+      "report": "build/validation/paired-intake-01/report.json",
+      "report_sha256": "cee5d7f4c035fd2e6523bfd831f533b673e4bbcba8f8febf3e084ac78cbbe325",
+      "tests": 8,
+      "graph_negative_controls": 4,
+      "seconds": 3.159
+    }
+  },
+  "state_projection": {
+    "logical_state_bits": 1592,
+    "physical_flip_flops": 1572,
+    "pruned_state_positions": [
+      670,
+      671,
+      1348,
+      1349,
+      1368,
+      1369,
+      1370,
+      1371,
+      1372,
+      1373,
+      1374,
+      1375,
+      1376,
+      1385,
+      1386,
+      1387,
+      1388,
+      1389,
+      1398,
+      1399
+    ],
+    "derived_or_constant_state_bits": 0,
+    "unused_reserved_x_coordinates": [
+      [
+        "controller.r_boot_b0",
+        30
+      ],
+      [
+        "controller.r_boot_b0",
+        31
+      ],
+      [
+        "controller.r_boot_b1",
+        30
+      ],
+      [
+        "controller.r_boot_b1",
+        31
+      ],
+      [
+        "controller.r_current",
+        30
+      ],
+      [
+        "controller.r_current",
+        31
+      ]
+    ]
+  },
+  "variants": {
+    "typical": {
+      "metrics": {
+        "cells": 6950,
+        "flip_flops": 1572,
+        "macros": 1,
+        "standard_cell_area_um2": 152136.8352,
+        "macro_area_um2": 150102.4032,
+        "total_cell_and_macro_area_um2": 302239.2384,
+        "maximum_signal_fanout": 8
+      },
+      "cell_timing": {
+        "setup_slack_ns": 8.53,
+        "hold_slack_ns": -0.61,
+        "electrical_violations": {
+          "max fanout": 0,
+          "max slew": 0,
+          "max capacitance": 0,
+          "min pulse width": 0,
+          "min period": 0
+        },
+        "sram_to_sram_slack_ns": 12.59,
+        "sram_to_entry_slack_ns": 13.09,
+        "entry_state_endpoints": 69
+      },
+      "design": "build/validation/paired-controller-02/typical/design.v",
+      "design_sha256": "232861aafbf6eba8efb2760093a6ff8e22ea20b38278b015216cf00b66aecc3f",
+      "post_mapping_distribution_buffers": 3
+    },
+    "slow": {
+      "metrics": {
+        "cells": 6951,
+        "flip_flops": 1572,
+        "macros": 1,
+        "standard_cell_area_um2": 152144.0928,
+        "macro_area_um2": 150102.4032,
+        "total_cell_and_macro_area_um2": 302246.496,
+        "maximum_signal_fanout": 8
+      },
+      "cell_timing": {
+        "setup_slack_ns": 3.93,
+        "hold_slack_ns": -0.9,
+        "electrical_violations": {
+          "max fanout": 0,
+          "max slew": 0,
+          "max capacitance": 0,
+          "min pulse width": 0,
+          "min period": 0
+        },
+        "sram_to_sram_slack_ns": 8.04,
+        "sram_to_entry_slack_ns": 8.81,
+        "entry_state_endpoints": 69
+      },
+      "design": "build/validation/paired-controller-02/slow/design.v",
+      "design_sha256": "1db3dce0bb544640ea89851192107cb17f03cf1c108a26c933fa19b96a413c51",
+      "post_mapping_distribution_buffers": 3
+    }
+  },
+  "reference": {
+    "name": "optimized local eight-load mapped chip",
+    "report": "build/storage/tiled-chip/local-load-01/report.json",
+    "sha256": "2d9e83fe72e888cd199d6e1a8e9392fc89fc1db9ef4b756309750703fa323c5b",
+    "variants": {
+      "typical": {
+        "cells": 11467,
+        "flip_flops": 2895,
+        "macros": 2,
+        "standard_cell_area_um2": 290943.954,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 391922.2196,
+        "maximum_signal_fanout": 8
+      },
+      "slow": {
+        "cells": 11467,
+        "flip_flops": 2895,
+        "macros": 2,
+        "standard_cell_area_um2": 290943.954,
+        "macro_area_um2": 100978.2656,
+        "total_cell_and_macro_area_um2": 391922.2196,
+        "maximum_signal_fanout": 8
+      }
+    },
+    "timing": {
+      "report": "build/storage/sram-timing/local-load-01/report.json",
+      "report_sha256": "a4a8687a5b9549e86b7ab7787524ce37b5dd05f93ad578895332f4717dcb7a05",
+      "metrics": {
+        "typical": {
+          "setup_slack_ns": 13.5,
+          "hold_slack_ns": -0.58,
+          "electrical_violations": {
+            "max fanout": 0,
+            "max slew": 0,
+            "max capacitance": 0,
+            "min pulse width": 0,
+            "min period": 0
+          },
+          "sram_to_sram_slack_ns": 14.09,
+          "cached_to_address_slack_ns": 15.76,
+          "address_paths_slack_ns": 14.09
+        },
+        "slow": {
+          "setup_slack_ns": 10.52,
+          "hold_slack_ns": -0.86,
+          "electrical_violations": {
+            "max fanout": 0,
+            "max slew": 0,
+            "max capacitance": 0,
+            "min pulse width": 0,
+            "min period": 0
+          },
+          "sram_to_sram_slack_ns": 10.52,
+          "cached_to_address_slack_ns": 13.48,
+          "address_paths_slack_ns": 10.52
+        }
+      },
+      "artifacts_verified": 31
+    }
+  },
+  "comparison": {
+    "typical": {
+      "mapped_area_delta_um2": -89682.9812,
+      "mapped_area_delta_percent": -22.8829,
+      "signal_electrical_pass": true,
+      "setup_pass": true,
+      "hold_pass": false
+    },
+    "slow": {
+      "mapped_area_delta_um2": -89675.7236,
+      "mapped_area_delta_percent": -22.881,
+      "signal_electrical_pass": true,
+      "setup_pass": true,
+      "hold_pass": false
+    }
+  },
+  "assumptions": {
+    "period_ns": 20,
+    "input_output_delay_max_ns": 4,
+    "input_output_delay_min_ns": 0.2,
+    "uncertainty_ns": 0.2,
+    "clock_transition_ns": 0.15,
+    "output_load_pf": 0.01
+  },
+  "limiting_slow_paths": {
+    "setup": {
+      "start": "memory.storage/A_DOUT[53]",
+      "end": "uo_out[4]",
+      "end_role": "combinational rejection status",
+      "arrival_ns": 11.87,
+      "required_ns": 15.8,
+      "slack_ns": 3.93,
+      "includes": "SRAM clock-to-Q, shared parameter selection, admission and distribution",
+      "false_path_exception": false
+    },
+    "hold": {
+      "start": "_10742_/Q",
+      "start_role": "controller.r_serial_shift[0]",
+      "end": "memory.storage/A_DIN[0]",
+      "arrival_ns": 0.33,
+      "required_ns": 1.23,
+      "slack_ns": -0.9
+    }
+  },
+  "containers": {
+    "pinwheel-paired-controller-02-typical": "absent",
+    "pinwheel-paired-controller-02-slow": "absent"
+  },
+  "per_command_cap_seconds": 120,
+  "sta_cpu_limit": 2,
+  "sta_memory_gib": 2,
+  "placement_or_routing": false,
+  "wire_parasitics": false,
+  "evidence_boundary": [
+    "Typed Lean controller and existing sampler/serial/mailbox composition; emitter is not formally proved.",
+    "Independent Python/E64/peer RTL traces, arbitrary-state saved-mapped equivalence and mapped pin replay.",
+    "Exact one-macro terminal and exhaustive physical-FF ownership intake; no hidden parameter read port.",
+    "Complete mapped area includes SRAM, admission, payload, wrappers and signal fanout repair.",
+    "20 ns ideal-clock cell/macro STA with 4/0.2 ns max/min I/O delays, .010 pF output load and .2 ns uncertainty.",
+    "No clock-tree, wire-parasitic, placed hold-repair, congestion, routing, antenna or silicon closure.",
+    "290-word experimental upload format differs from E64 wire uploads; current production chip unchanged."
+  ],
+  "preserved_receipts": {
+    "paired-execution": {
+      "report": "build/validation/paired-execution-03/report.json",
+      "sha256": "c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f2e7d4e"
+    },
+    "local-load": {
+      "report": "build/storage/tiled-chip/local-load-01/report.json",
+      "sha256": "2d9e83fe72e888cd199d6e1a8e9392fc89fc1db9ef4b756309750703fa323c5b"
+    }
+  },
+  "prior_attempts": [
+    {
+      "log": "build/validation/paired-controller-dev-02/emit.log",
+      "log_sha256": "f01e2d82e6584f5ef4ac752c9e87f85efbbdea10962ca6f64c0fd71c3106c041",
+      "reason": "Expression-tree emission reached the 120-second cap; process group stopped before RTL or CAD. Explicit combinational sharing fixes the repeated traversal."
+    },
+    {
+      "report": "build/validation/paired-controller-01/report.json",
+      "report_sha256": "b20a0dbdfc93bd1a5800d7a4fdecf688c70c0fecf849457a975a6d882fbe9265",
+      "reason": "Strict state intake rejected six unused reserved token bits represented as literal x. Only those unused coordinates are now normalized for census; live unknowns still fail."
+    }
+  ],
+  "next_gate": {
+    "intake": "Exact saved mapped chip, one 512x64 macro, pinned Liberty/LEF and the retained clock and package constraints.",
+    "geometry": "Check the larger contiguous obstruction, pin access, power connections and legal cell space before placement.",
+    "comparison": "Include placement, clocks and hold repair; compare control and candidate at the same saved physical stage. Check the rejection output and both execution paths.",
+    "decision": "Continue only if repaired area retains an advantage and setup/electrical margins and macro access justify a subsequent bounded routing diagnostic.",
+    "detailed_route_admitted": false
+  }
+}

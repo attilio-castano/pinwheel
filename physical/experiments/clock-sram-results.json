@@ -1,0 +1,184 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "retain-clock-budget-control-reject-generic-postroute-repair",
+  "report": "build/validation/clock-sram-01/report.json",
+  "report_sha256": "971b80dbd28e3458ebe1f8aae064f771acc677066d2376095584deab9a1342a0",
+  "source_selection": {
+    "path": "physical/experiments/mapped-physical-results.json",
+    "sha256": "f6f59dbc26401f4279b50bee7fd0537831e9e10b16c7c16da34fd4d8d94a03bb"
+  },
+  "controls": {
+    "MAX_FANOUT_CONSTRAINT": 8,
+    "GRT_ALLOW_CONGESTION": true,
+    "CTS_SINK_CLUSTERING_SIZE": 7,
+    "RUN_POST_GRT_DESIGN_REPAIR": true,
+    "RUN_POST_GRT_RESIZER_TIMING": true,
+    "RUN_ANTENNA_REPAIR": false
+  },
+  "bounds": {
+    "physical_timeout_seconds": 600,
+    "physical_cpus": 4,
+    "physical_memory_gib": 6,
+    "diagnostic_seconds_per_command": 120,
+    "stop_step": "OpenROAD.STAMidPNR-3"
+  },
+  "receipts": {
+    "physical": {
+      "report": "build/physical/clock-sram-01-report.json",
+      "report_sha256": "79b0b9b8a1dc68dacc292e983c637ee082a88b4b8a5d8f4ecc10aa2c386fd4f9"
+    },
+    "before-postroute-repair": {
+      "report": "build/physical/mapped-diagnostics/clock-sram-before-repair-01/report.json",
+      "report_sha256": "df98c1839d3de1706589c74cbb97d77a37e9b1ca674924d99f5c2f50dca3f477"
+    },
+    "final": {
+      "report": "build/physical/mapped-diagnostics/clock-sram-final-01/report.json",
+      "report_sha256": "2c3028a81d281e4eb00b32f06d78fa1fd6d9e489861c81754a6b9e97525038c3"
+    },
+    "oracle": {
+      "report": "build/physical/chip-check/clock-sram-oracle-01/report.json",
+      "report_sha256": "8f2c41ff2ac2cd99207c4647b7591b4b1e5ac4deb58052b91c2cd129b03ef081"
+    },
+    "previous-candidate": {
+      "report": "build/physical/mapped-diagnostics/mapped-local-diagnostics-01/report.json",
+      "report_sha256": "095efe534c38c22f37746fa16fd2d8b59bd54ab0b3a8d3405cfca18cf0a56f34"
+    }
+  },
+  "comparison": {
+    "previous_candidate": {
+      "area_um2": 473519.9456,
+      "instances": 18236,
+      "timing": {
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 8.6547,
+          "timing__hold__ws": 0.0314323,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 21,
+          "design__max_cap_violation__count": 6
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 2.00859,
+          "timing__hold__ws": 0.215494,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 57,
+          "design__max_cap_violation__count": 6
+        },
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 11.3003,
+          "timing__hold__ws": -0.105158,
+          "timing__hold_vio__count": 2,
+          "design__max_fanout_violation__count": 203,
+          "design__max_slew_violation__count": 16,
+          "design__max_cap_violation__count": 6
+        }
+      }
+    },
+    "clock_policy_before_repair": {
+      "area_um2": 483444.7136,
+      "instances": 18654,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 11.7975,
+          "timing__hold__ws": 0.0716975,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 16,
+          "design__max_cap_violation__count": 4
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 2.06228,
+          "timing__hold__ws": 0.277147,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 70,
+          "design__max_cap_violation__count": 4
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 8.63585,
+          "timing__hold__ws": 0.134815,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 30,
+          "design__max_cap_violation__count": 4
+        }
+      }
+    },
+    "final": {
+      "area_um2": 483444.7136,
+      "instances": 18654,
+      "timing": {
+        "nom_fast_1p32V_m40C": {
+          "timing__setup__ws": 11.3693,
+          "timing__hold__ws": 0.0212911,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 17,
+          "design__max_cap_violation__count": 9
+        },
+        "nom_slow_1p08V_125C": {
+          "timing__setup__ws": 2.39656,
+          "timing__hold__ws": 0.277147,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 52,
+          "design__max_cap_violation__count": 9
+        },
+        "nom_typ_1p20V_25C": {
+          "timing__setup__ws": 8.77363,
+          "timing__hold__ws": 0.134815,
+          "timing__hold_vio__count": 0,
+          "design__max_fanout_violation__count": 4,
+          "design__max_slew_violation__count": 20,
+          "design__max_cap_violation__count": 9
+        }
+      }
+    }
+  },
+  "postroute_repair_identity": {
+    "netlist_byte_identical": true,
+    "instance_geometry_identical": true,
+    "connectivity_identical": true
+  },
+  "congestion": {
+    "26-openroad-globalrouting": {
+      "total_overflow_sequence": [
+        1319
+      ],
+      "log": "build/physical/mapped-local-01/runs/clock-sram-01/26-openroad-globalrouting/openroad-globalrouting.log",
+      "sha256": "d4058766dbc180b88c9ced4b8e71e67434ec80689b731fbe3159f00c03cc635c"
+    },
+    "28-openroad-repairdesignpostgrt": {
+      "total_overflow_sequence": [
+        1322,
+        1320
+      ],
+      "log": "build/physical/mapped-local-01/runs/clock-sram-01/28-openroad-repairdesignpostgrt/openroad-repairdesignpostgrt.log",
+      "sha256": "72fd911b0493f3ff6d044cceb09caf55d116cfce971dee95a2dd2b283edd3b78"
+    },
+    "30-openroad-resizertimingpostgrt": {
+      "total_overflow_sequence": [
+        1322,
+        1320
+      ],
+      "log": "build/physical/mapped-local-01/runs/clock-sram-01/30-openroad-resizertimingpostgrt/openroad-resizertimingpostgrt.log",
+      "sha256": "a290aaf5d03000b51c21fa9ef9b0e25567e9930044e8a1ffb1086bbc57890307"
+    }
+  },
+  "completed_step_seconds": 392.249,
+  "postroute_repair_seconds": 284.023,
+  "area_increase_um2": 9924.768,
+  "remaining_area_reduction_vs_original_baseline_percent": 0.4721477537449758,
+  "validation": {
+    "focused_tests": 60,
+    "checked_hashes": 334,
+    "independent_pin_edges": 508252,
+    "public_output_mutations_rejected": 1,
+    "lean_sources": 267,
+    "preceding_experiment_manifests": 49
+  },
+  "next_gate": "Probe the four upper clock branches and SRAM interface loads locally. Require an explicit netlist/placement change, independent functional preservation and improved fresh timing before another full coarse-routing comparison.",
+  "boundary": "One 600 s bounded flow completed before detailed routing. Positive fresh setup/hold screening includes mixed-temperature fast models and coarse RC, not extraction. Clock/electrical/congestion violations remain. No backend promotion; postroute repair made no netlist or instance-placement change."
+}

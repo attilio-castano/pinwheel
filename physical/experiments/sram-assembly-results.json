@@ -1,0 +1,105 @@
+{
+  "study": "sram-assembly-check-02",
+  "date": "2026-09-21",
+  "scope": "Typed state ownership and macro crossings for the existing hybrid/direct assemblies; digital edge obligations from the shared controller and hybrid array/execution model. No physical partition or new hardware experiment.",
+  "source_comparison": "build/storage/sram-chip/corridor-02",
+  "source_comparison_report_sha256": "e8096258f929b677c578fd733d2a6781a9f70ae7e9797b326307c3ec32ac8353",
+  "report": "build/validation/sram-assembly-check-02/report.json",
+  "report_sha256": "f1e7cce1e8f166a112fe3e124e86a00f4c58eddb872643520e77950b87e46de2",
+  "tests": "build/validation/sram-assembly-check-02/tests.json",
+  "tests_sha256": "a913f92e6a94a09a1475c27fe174ba7a34314c130d1149531d789e617f6cdc81",
+  "focused_tests_passed": 13,
+  "source_sha256": {
+    "Pinwheel.lean": "722d3469bf02b0ff53de9bf67d8d2dc0f53d87625f199eb121dade19626812bb",
+    "Pinwheel/Hardware/Storage/SramAssembly.lean": "23dc76158c914ca81053a3189e845b753921e834b4f0b0c6479a8412f281cd84",
+    "Pinwheel/Hardware/Storage/SramSchedule.lean": "6c4c252132867c93f9d3e2cb5ee29bff1a602a585dd0e0ea82bf2751f1cbebf5",
+    "test/SramChipEmit.lean": "ef0a19827db8fac31935b8b19a99b78317f143c405f2d89ca3202ddd16c448b7",
+    "test/Interfaces.lean": "f0bd3489e38ec5f3cb061a10c6876c92f023ebf0e22b6eeaff87a42010cdf46d",
+    "scripts/report-chip-architecture.py": "cb5f6306d2d2db33599abaeea5395c90922d489d47a485dc0c3b49347b625521",
+    "test/test_chip_architecture.py": "25b429ca4b905a6f1a0e10e7915ae96ba18a59b8c9c644344c419642a333c4a6"
+  },
+  "library_modules_reachable": 199,
+  "axiom_audit": {
+    "declarations": 14395,
+    "theorems": 7354,
+    "standard_axioms_only": true,
+    "log": "build/validation/sram-assembly-check-02/assembly-axioms.log",
+    "log_sha256": "4643f74d0a89a00811fe4d9d91efad87d6d6afd9f68ed9b49fd59db6a5cce8fc"
+  },
+  "schedule_lemmas": [
+    "candidates_ready",
+    "candidates_after_edge",
+    "one_access",
+    "response_edge",
+    "start_ready",
+    "commit_pending",
+    "commit_bypass",
+    "commit_saved",
+    "active_bank_untouched",
+    "broadcast_write"
+  ],
+  "schedule_scope": "one_access covers both controller variants. Other listed lemmas concern the existing hybrid array/controller model; validity/running and commit/write hypotheses are explicit in their statements.",
+  "seconds": {
+    "assembly_verification_seconds": 15.361,
+    "analysis_seconds": 1.746,
+    "elapsed_seconds": 17.108
+  },
+  "variants": {
+    "hybrid": {
+      "assembly": "build/validation/sram-assembly-check-02/emitted/hybrid-assembly.json",
+      "assembly_sha256": "7bfd9e27019648c169cacf6336d27798de9ec1aa981e19f43d781fe2134eda91",
+      "state_slots": 574,
+      "named_state_bits": 2901,
+      "mapped_flip_flops": 2895,
+      "binding": {
+        "crossings": 7,
+        "macro_terminals": 10,
+        "address_truncation_checked": true
+      },
+      "emitted_artifacts": {
+        "core": {
+          "mlir_sha256": "9fd47292a7cf31e279fb28c764fb414a14c97a7707ce1437889a3b4d416c5c64",
+          "rtl_sha256": "929a4df603ce8bb7a340e867b3975a8e040ec0afe51ba47c19d093e73999399c"
+        },
+        "chip": {
+          "mlir_sha256": "368610c01824bafd4f63c98d0e903a25a3df2f6771bb156e5b94aa22c106e228",
+          "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8"
+        }
+      },
+      "boundary_signature_sha256": "3544d8275fe8c976a50465c6801644ff89940a12a7fa4d5ba5bdf472a8d14317"
+    },
+    "direct": {
+      "assembly": "build/validation/sram-assembly-check-02/emitted/direct-assembly.json",
+      "assembly_sha256": "16da679a0ee36f52a352b309c3adaf68f04884202256a436e8c756db66e3f48d",
+      "state_slots": 94,
+      "named_state_bits": 2101,
+      "mapped_flip_flops": 2095,
+      "binding": {
+        "crossings": 7,
+        "macro_terminals": 10,
+        "address_truncation_checked": true
+      },
+      "emitted_artifacts": {
+        "core": {
+          "mlir_sha256": "ba3cb3ffdb4c6beeae72f7a50f3de2191f37c5f517ba7f32a1646947f4651f94",
+          "rtl_sha256": "92b2be616a9901d049d190ff316a4dba2c48b690b458440e7ae0fefed42eaa55"
+        },
+        "chip": {
+          "mlir_sha256": "aa998e5ba1dd3304c3dbcce26eceaab76a4666fe9933bc247cb6c8c6d32cb400",
+          "rtl_sha256": "4a31943cd96a15e6982f10109fcd0f705b4b7d5784f83efa4dab9c0b21a05b29"
+        }
+      },
+      "boundary_signature_sha256": "1a23dbc9297db3e6c63d836597279aa721dc26379ee6545e3ee8dd739519953d"
+    }
+  },
+  "remaining": [
+    "Assign shared combinational producers and consumers and bind a locality hypothesis to the mapped graph.",
+    "Complete external macro behavior/control binding and full package composition/read-back.",
+    "Direct execution requires its own proof.",
+    "Routing, extracted timing, antenna and final layout qualification remain separate."
+  ],
+  "preserved_development_runs": [
+    "build/validation/sram-assembly-01",
+    "build/validation/sram-assembly-check-01"
+  ]
+}

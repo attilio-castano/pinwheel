@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "recorded_at_utc": "2026-09-23T15:24:58.043363+00:00",
+  "decision": "retain-organization-policy-screen-one-bounded-placement-extension-before-physical-trial",
+  "screening_completed": true,
+  "complete_candidate_selected": false,
+  "source_manifest": {
+    "path": "physical/experiments/paired-path-route-results.json",
+    "sha256": "edd25f15fb1f5932bddcd3b6c758c296dd39a658ab8e32d3e08b9a4c9ed2a582"
+  },
+  "source_database": {
+    "path": "build/physical/target-paired-01/runs/paired-path-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "384f389d9a2eb16866b706df8234f9ce2d4c697ddcdd6daea7b204a0de4102f8"
+  },
+  "source_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-path-route-01/implemented.v",
+    "sha256": "4d4a0cb29e6149e86d8375fe9744755dab149826eea4042675c2337ba167017c"
+  },
+  "contract": {
+    "path": "physical/experiments/paired-path-contract.json",
+    "sha256": "bfbde821c882834324c177ac80e6fdc090516680f259614139d0e37da4389010"
+  },
+  "policy": {
+    "path": "physical/experiments/paired-organization-policy.json",
+    "sha256": "9691419e39c053819780e0357bcbf08ed2a18bc97ed24697cfe86efbdbfe1916"
+  },
+  "screen": {
+    "path": "build/validation/paired-organization-screen-05/report.json",
+    "sha256": "33eead7ebb14ed1eb9ee456b2811efc6d6eac393c4891e2debb0097a9b55067b"
+  },
+  "reconstructed": {
+    "trees": 211,
+    "branches": 1109,
+    "transport_cells": 898,
+    "buffers": 774,
+    "delay_cells": 124,
+    "transport_area_um2": 10303.9776,
+    "leaves": 4613,
+    "total_instance_area_um2": 359360.784,
+    "complete_path_contract_connections": 1145
+  },
+  "scope": {
+    "targets": [
+      "_02981_",
+      "_03253_",
+      "_03380_",
+      "_04527_",
+      "_04701_",
+      "net31"
+    ],
+    "affected_roots": [
+      "_04524_",
+      "distribution_branch_24",
+      "memory.mem_data[14]",
+      "memory.mem_data[53]"
+    ],
+    "affected_branches": 64,
+    "independent_library_pin_corner_checks": 192
+  },
+  "area": {
+    "original_um2": 358297.5456,
+    "current_um2": 359360.784,
+    "cap_um2": 359372.43823679996,
+    "remaining_um2": 11.654236799979117,
+    "minimum_complete_resize_um2": 18.143999999999995
+  },
+  "comparison": {
+    "candidates": 18,
+    "complete_portfolios": 0,
+    "affordable_footprint_screened_portfolios": 0,
+    "eligible": [],
+    "virtual_exchange_identity_checks": 2,
+    "search_boundary": "Bounded greedy exchanges, uniform per-tree residual resizes, or one macro receiver; not an exhaustive search."
+  },
+  "hypothetical_mixed_candidate": {
+    "candidate_ids": [
+      "candidate-00",
+      "candidate-04",
+      "candidate-10",
+      "candidate-17"
+    ],
+    "added_area_um2": 10.886399999999998,
+    "remaining_after_um2": 0.7678367999791185,
+    "area_screen_pass": true,
+    "current_policy_footprint_pass": false,
+    "execution_admitted": false,
+    "electrical_qualified": false,
+    "timing_qualified": false,
+    "blocked_driver": "_09463_",
+    "occupied_neighbor": "_11880__1348",
+    "missing_evidence": [
+      "permitted_move_and_resize_placement",
+      "independent_exact_edit_and_new_readback",
+      "regrouped_weak_branch_wire_load_and_slew",
+      "legal_placement_power_pin_geometry",
+      "whole_family_upstream_and_global_STA",
+      "whole_chip_path_contract_and_fresh_route"
+    ]
+  },
+  "invariants": {
+    "complete_path_contract_connections": 1145,
+    "reserve_fraction": 0.2,
+    "timing_floors_ns": {
+      "nom_fast_1p32V_m40C": {
+        "setup": 8.530533,
+        "hold": 0.07927839
+      },
+      "nom_slow_1p08V_125C": {
+        "setup": 0.3673431,
+        "hold": 0.31582889999999997
+      },
+      "nom_typ_1p20V_25C": {
+        "setup": 5.565105,
+        "hold": 0.1573092
+      }
+    },
+    "original_area_reference_retained": true,
+    "protected_instances": 2202,
+    "source_implementation_unchanged": true
+  },
+  "verification": {
+    "focused_tests": 107,
+    "new_organization_tests": 17,
+    "independent_pin_corner_checks": 192,
+    "virtual_exchange_identity_checks": 2,
+    "commands": {
+      "path": "build/validation/paired-organization-01/final-commands.json",
+      "sha256": "d5d0eed988446ca773c91f0c79869e44513967d7369fd1baef6ce835fc231354"
+    },
+    "final_screen_seconds": 7.33,
+    "verified_hashes_at_report_creation": 2229
+  },
+  "preservation": {
+    "initial_identities": 1952,
+    "unchanged_prior_nondocument_identities": 1946,
+    "original_document_snapshots": {
+      "docs/architecture.md": "architecture.md",
+      "docs/physical-targets.md": "physical-targets.md",
+      "docs/validation.md": "validation.md",
+      "docs/research/status.md": "research-status.md",
+      "docs/research/results.md": "research-results.md",
+      "docs/research/journal.md": "research-journal.md"
+    },
+    "prior_source_helpers_unchanged": true,
+    "initial": {
+      "path": "build/validation/paired-organization-01/initial.json",
+      "sha256": "eb529565b822812e6222c6129685a3c6381342a7c9043697890c5b827b8ebfd7"
+    },
+    "earlier_passing_screen_sources_archived": [
+      2,
+      3,
+      4
+    ]
+  },
+  "preserved_attempts": [
+    {
+      "tag": "paired-organization-screen-01",
+      "status": "rejected-pin-capacitance-aggregation"
+    },
+    {
+      "tag": "paired-organization-screen-02",
+      "status": "preserved-baseline-leaf-grouping-screen"
+    },
+    {
+      "tag": "paired-organization-screen-03",
+      "status": "preserved-mixed-branch-grouping-screen"
+    },
+    {
+      "tag": "paired-organization-screen-04",
+      "status": "preserved-virtual-identity-and-placement-diagnostics"
+    },
+    {
+      "tag": "paired-organization-screen-05",
+      "status": "selected"
+    }
+  ],
+  "execution_admitted": false,
+  "executed_repairs": 0,
+  "executed_cad_commands": 0,
+  "executed_whole_chip_routes": 0,
+  "physical_closure": false,
+  "extracted_timing_completed": false,
+  "congestion_diagnosed": false,
+  "evidence_boundary": [
+    "Candidate topology and geometric cost only; no source database or netlist is edited.",
+    "Pin capacitance is reconciled with independent saved STA. New wire loads, slew and setup/hold remain unmeasured.",
+    "Virtual branch exchanges preserve buffer-contracted connectivity in the saved independent netlist readback; actual edits still require new independent readback.",
+    "The unchanged whole-chip contract and original cumulative budgets remain required.",
+    "The unresolved 22/21 congestion discrepancy is not used to rank geometric candidates.",
+    "Transport cell counts distinguish 774 buffers from 124 delays; earlier screen buffer columns included both.",
+    "Area headroom is the retained experiment allowance, not a claim that the entire chip has no free area.",
+    "No complete enumerated portfolio passes fixed-placement rules; this is not proof that no feasible organization exists.",
+    "No source RTL, execution schedule, pipeline, backend default, physical checkpoint or licensing decision changes."
+  ],
+  "next_gate": {
+    "cheap_screen": "Permit a bounded move-and-resize of _09463_ only after accounting for every incident connection, protected boundary and original area budget. Compare bit-53 groups against weak-branch wire budgets.",
+    "implementation": "Require independent exact edit and fresh physical readback for regroup/resize/move, then bounded local placement, power, pin geometry, whole-family/upstream STA and complete contract qualification.",
+    "congestion": "Resolve the saved 22-marker versus 21-grid discrepancy separately before location-specific capacity changes.",
+    "routing": "No new whole-chip or detailed route is allocated by this screen."
+  },
+  "source_sha256": {
+    "scripts/physical_organization.py": "ebc74eb4858d20d3d3bf0f5469a5e4c1c228d4682c59223a653c3ff876a964cc",
+    "scripts/check-physical-organization.py": "506e7563eb9377d7f88c86e4682a25eb5f887979e00e21a151ce59f8553dc783",
+    "test/test_physical_organization.py": "13b53184bbb8a07343d040725b5a2ad9724838d553b2635d11549a145d695efe",
+    "physical/experiments/paired-organization-policy.json": "9691419e39c053819780e0357bcbf08ed2a18bc97ed24697cfe86efbdbfe1916"
+  },
+  "report": "build/validation/paired-organization-01/report.json",
+  "report_sha256": "40621e90cb011a1e96520acac28010dc9973867035ce06e374ed0a65b2ea5d32"
+}

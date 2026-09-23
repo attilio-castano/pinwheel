@@ -1,0 +1,324 @@
+{
+  "study": "chip-architecture-02",
+  "date": "2026-09-21",
+  "scope": "Typical-corner saved netlists; structural cones overapproximate dependence. No new synthesis, simulation or physical run.",
+  "source_comparison": "build/storage/sram-chip/corridor-02",
+  "source_comparison_report_sha256": "e8096258f929b677c578fd733d2a6781a9f70ae7e9797b326307c3ec32ac8353",
+  "report": "build/validation/chip-architecture-02/report.json",
+  "report_sha256": "f5c87c5e9f6f0d6567aa682347783e7597a51c482fa88f64b61d9b628c6c4ce0",
+  "tests": "build/validation/chip-architecture-02/tests.json",
+  "tests_sha256": "4922065a573806b563592cf9bc3dd7935b5b2a90a30494826e6064fd18f7472b",
+  "focused_tests_passed": 9,
+  "analysis_readback_seconds": 1.793,
+  "interpretation": "Describe physical ownership and per-edge resource use before changing the implementation. Hybrid retains the mapped-area advantage; direct has a smaller execution address cone. Neither is a routed winner.",
+  "variants": {
+    "hybrid": {
+      "mapped_metrics": {
+        "total_cell_and_macro_area_um2": 393558.317,
+        "macro_area_um2": 100978.2656,
+        "standard_cell_area_um2": 292580.0514,
+        "macros": 2,
+        "flip_flops": 2895,
+        "cells": 15492,
+        "abc_combinational_delay_ps": 4393.9,
+        "netlist_sha256": "1a929ac175a31d74ad18d4c31443a2b42bcc0dcdc0147d3ec79a23ab87ea032a"
+      },
+      "macro_geometry": {
+        "width_um": 784.48,
+        "height_um": 64.36,
+        "footprint_um2": 50489.1328
+      },
+      "physical_cells": 15490,
+      "combinational_cells": 12593,
+      "state": {
+        "index_maps": {
+          "named_bits": 2560,
+          "mapped_ff_bits": 2560,
+          "unimplemented_bits": []
+        },
+        "upload_scratch": {
+          "named_bits": 0,
+          "mapped_ff_bits": 0,
+          "unimplemented_bits": []
+        },
+        "image_metadata": {
+          "named_bits": 28,
+          "mapped_ff_bits": 28,
+          "unimplemented_bits": []
+        },
+        "loader": {
+          "named_bits": 12,
+          "mapped_ff_bits": 12,
+          "unimplemented_bits": []
+        },
+        "fetch_state": {
+          "named_bits": 129,
+          "mapped_ff_bits": 123,
+          "unimplemented_bits": [
+            "controller.r_cached_word[3]",
+            "controller.r_cached_word[4]",
+            "controller.r_cached_word[5]",
+            "controller.r_cached_word[6]",
+            "controller.r_cached_word[7]",
+            "controller.r_cached_word[8]"
+          ]
+        },
+        "execution": {
+          "named_bits": 49,
+          "mapped_ff_bits": 49,
+          "unimplemented_bits": []
+        },
+        "pin_sampler": {
+          "named_bits": 12,
+          "mapped_ff_bits": 12,
+          "unimplemented_bits": []
+        },
+        "serial_receiver": {
+          "named_bits": 76,
+          "mapped_ff_bits": 76,
+          "unimplemented_bits": []
+        },
+        "result_observer": {
+          "named_bits": 35,
+          "mapped_ff_bits": 35,
+          "unimplemented_bits": []
+        }
+      },
+      "macro_ports": {
+        "A_ADDR": {
+          "endpoint_pins": 12,
+          "nonconstant_endpoint_pins": 12,
+          "distinct_nonconstant_nets": 11,
+          "loaded_nets": 11
+        },
+        "A_DIN": {
+          "endpoint_pins": 128,
+          "nonconstant_endpoint_pins": 128,
+          "distinct_nonconstant_nets": 64,
+          "loaded_nets": 64
+        },
+        "A_DOUT": {
+          "endpoint_pins": 128,
+          "nonconstant_endpoint_pins": 128,
+          "distinct_nonconstant_nets": 128,
+          "loaded_nets": 128
+        },
+        "A_REN": {
+          "endpoint_pins": 2,
+          "nonconstant_endpoint_pins": 2,
+          "distinct_nonconstant_nets": 1,
+          "loaded_nets": 1
+        },
+        "A_WEN": {
+          "endpoint_pins": 2,
+          "nonconstant_endpoint_pins": 2,
+          "distinct_nonconstant_nets": 1,
+          "loaded_nets": 1
+        }
+      },
+      "cones": {
+        "macro_addresses": {
+          "combinational_cells": 6037,
+          "max_cell_depth": 29,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "index_maps": 2560,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 68
+          }
+        },
+        "broadcast_write_data": {
+          "combinational_cells": 0,
+          "max_cell_depth": 0,
+          "root_bits_by_owner": {
+            "serial_receiver": 64
+          }
+        },
+        "read_write_enables": {
+          "combinational_cells": 106,
+          "max_cell_depth": 14,
+          "root_bits_by_owner": {
+            "execution": 3,
+            "loader": 10,
+            "pin_sampler": 1,
+            "serial_receiver": 68
+          }
+        },
+        "execution_next": {
+          "combinational_cells": 1336,
+          "max_cell_depth": 27,
+          "root_bits_by_owner": {
+            "execution": 49,
+            "fetch_state": 123,
+            "image_metadata": 28,
+            "loader": 12,
+            "memory.storage0": 64,
+            "memory.storage1": 64,
+            "pin_sampler": 3,
+            "serial_receiver": 4
+          }
+        }
+      },
+      "verilog_binding": "structurally matched at all sequential inputs and package ports",
+      "boundary_signature_sha256": "3544d8275fe8c976a50465c6801644ff89940a12a7fa4d5ba5bdf472a8d14317"
+    },
+    "direct": {
+      "mapped_metrics": {
+        "total_cell_and_macro_area_um2": 479596.0464,
+        "macro_area_um2": 300204.8064,
+        "standard_cell_area_um2": 179391.24,
+        "macros": 2,
+        "flip_flops": 2095,
+        "cells": 8880,
+        "abc_combinational_delay_ps": 3316.08,
+        "netlist_sha256": "169edf034f9fac11a6ef0d170340add93c012126cbbea07e389f26cbf4a44686"
+      },
+      "macro_geometry": {
+        "width_um": 784.48,
+        "height_um": 191.34,
+        "footprint_um2": 150102.4032
+      },
+      "physical_cells": 8878,
+      "combinational_cells": 6781,
+      "state": {
+        "index_maps": {
+          "named_bits": 0,
+          "mapped_ff_bits": 0,
+          "unimplemented_bits": []
+        },
+        "upload_scratch": {
+          "named_bits": 1760,
+          "mapped_ff_bits": 1760,
+          "unimplemented_bits": []
+        },
+        "image_metadata": {
+          "named_bits": 28,
+          "mapped_ff_bits": 28,
+          "unimplemented_bits": []
+        },
+        "loader": {
+          "named_bits": 12,
+          "mapped_ff_bits": 12,
+          "unimplemented_bits": []
+        },
+        "fetch_state": {
+          "named_bits": 129,
+          "mapped_ff_bits": 123,
+          "unimplemented_bits": [
+            "controller.r_cached_word[3]",
+            "controller.r_cached_word[4]",
+            "controller.r_cached_word[5]",
+            "controller.r_cached_word[6]",
+            "controller.r_cached_word[7]",
+            "controller.r_cached_word[8]"
+          ]
+        },
+        "execution": {
+          "named_bits": 49,
+          "mapped_ff_bits": 49,
+          "unimplemented_bits": []
+        },
+        "pin_sampler": {
+          "named_bits": 12,
+          "mapped_ff_bits": 12,
+          "unimplemented_bits": []
+        },
+        "serial_receiver": {
+          "named_bits": 76,
+          "mapped_ff_bits": 76,
+          "unimplemented_bits": []
+        },
+        "result_observer": {
+          "named_bits": 35,
+          "mapped_ff_bits": 35,
+          "unimplemented_bits": []
+        }
+      },
+      "macro_ports": {
+        "A_ADDR": {
+          "endpoint_pins": 18,
+          "nonconstant_endpoint_pins": 18,
+          "distinct_nonconstant_nets": 17,
+          "loaded_nets": 17
+        },
+        "A_DIN": {
+          "endpoint_pins": 128,
+          "nonconstant_endpoint_pins": 126,
+          "distinct_nonconstant_nets": 63,
+          "loaded_nets": 63
+        },
+        "A_DOUT": {
+          "endpoint_pins": 128,
+          "nonconstant_endpoint_pins": 128,
+          "distinct_nonconstant_nets": 128,
+          "loaded_nets": 128
+        },
+        "A_REN": {
+          "endpoint_pins": 2,
+          "nonconstant_endpoint_pins": 2,
+          "distinct_nonconstant_nets": 1,
+          "loaded_nets": 1
+        },
+        "A_WEN": {
+          "endpoint_pins": 2,
+          "nonconstant_endpoint_pins": 2,
+          "distinct_nonconstant_nets": 1,
+          "loaded_nets": 1
+        }
+      },
+      "cones": {
+        "macro_addresses": {
+          "combinational_cells": 607,
+          "max_cell_depth": 21,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 63
+          }
+        },
+        "broadcast_write_data": {
+          "combinational_cells": 999,
+          "max_cell_depth": 11,
+          "root_bits_by_owner": {
+            "serial_receiver": 5,
+            "upload_scratch": 1760
+          }
+        },
+        "read_write_enables": {
+          "combinational_cells": 93,
+          "max_cell_depth": 12,
+          "root_bits_by_owner": {
+            "execution": 3,
+            "loader": 10,
+            "pin_sampler": 1,
+            "serial_receiver": 63
+          }
+        },
+        "execution_next": {
+          "combinational_cells": 1424,
+          "max_cell_depth": 26,
+          "root_bits_by_owner": {
+            "execution": 49,
+            "fetch_state": 123,
+            "image_metadata": 28,
+            "loader": 12,
+            "memory.storage0": 64,
+            "memory.storage1": 64,
+            "pin_sampler": 3,
+            "serial_receiver": 4
+          }
+        }
+      },
+      "verilog_binding": "structurally matched at all sequential inputs and package ports",
+      "boundary_signature_sha256": "1a23dbc9297db3e6c63d836597279aa721dc26379ee6545e3ee8dd739519953d"
+    }
+  }
+}

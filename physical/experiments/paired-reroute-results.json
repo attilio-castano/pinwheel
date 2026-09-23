@@ -1,0 +1,565 @@
+{
+  "schema": 1,
+  "date": "2026-09-23",
+  "recorded_at_utc": "2026-09-23T10:08:35.231416+00:00",
+  "status": "passed",
+  "decision": "retain-positive-coarse-timing-repair-27-signal-nets-and-diagnose-22-metal3-overflow-before-detailed-routing",
+  "physical_closure": false,
+  "detailed_route_admitted": false,
+  "setup_hold_pass": true,
+  "electrical_pass": false,
+  "fresh_timing_electrical_pass": false,
+  "source_selection": {
+    "path": "physical/experiments/paired-local-repair-results.json",
+    "sha256": "68a63469547305d0abbafbb798cc9220fdc7fdef06e4f0be00cb23fd243d48a0"
+  },
+  "receipts": {
+    "admission": {
+      "path": "build/validation/paired-reroute-01/admission.json",
+      "sha256": "ed002b4503af772fa4f5bc92d6d748cb535e87958804ee3db359be2d8889eb6f"
+    },
+    "functional": {
+      "path": "build/validation/paired-reroute-01/functional/report.json",
+      "sha256": "cd3fb68e8ec99d8f1b6f719a2eebc0f8724bbb068c8dc295bb8297e5edee4054"
+    },
+    "invocation": {
+      "path": "build/physical/paired-reroute-01-invocation.json",
+      "sha256": "f9155eac87a5eb07965cff24c291a729990b0caac6e4803290661d3686c76ac7"
+    },
+    "physical": {
+      "path": "build/physical/paired-reroute-01-report.json",
+      "sha256": "853fab9dfdaa3e0ec0a4288a97b3fbaece1134e8450ae21f83731ad1700bbfbb"
+    },
+    "measurement": {
+      "path": "build/physical/mapped-diagnostics/paired-reroute-01/report.json",
+      "sha256": "e785b499ab7c157a4a99285ff9bf27d9c0ab86b08a326a06026633b04fb993b7"
+    },
+    "pin_access": {
+      "path": "build/physical/probes/paired-reroute-access-01/report.json",
+      "sha256": "5460d634620bd744927c853dbd06f76fac47b3407a53742304795b5e91dd862a"
+    },
+    "guide_overlap": {
+      "path": "build/validation/paired-reroute-01/guide-overlap.json",
+      "sha256": "4126bacdf29d081646ea19e728fe1770532e4b521cd6ec212930ff59a3f88a6d"
+    },
+    "electrical": {
+      "path": "build/validation/paired-reroute-01/electrical.json",
+      "sha256": "97a51746d868adc740ccf65457a54b804e5ce31aeb395d43919d6689432510e2"
+    },
+    "containers": {
+      "path": "build/validation/paired-reroute-01/containers.json",
+      "sha256": "e0261752d51bc613d3e3f9c002f51de96adc68f65f4f20bbe61bb05743bb1db8"
+    },
+    "tests": {
+      "path": "build/validation/paired-reroute-01/test-commands-qualified.json",
+      "sha256": "9d83f910bd5342a56df8b72a65f01a9aafce1650218799c614ce7343d65a69f8"
+    }
+  },
+  "selected_database": {
+    "path": "build/physical/target-paired-01/runs/paired-reroute-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "6f782186bd3434997e40872d35b9c3ac8c67024bb79188fc8f9f3918b20c30dc"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-reroute-01/implemented.v",
+    "sha256": "3f8a76129fa222c33257d6cea7415fc89528157319f2a9dd7960f45508974e4c"
+  },
+  "selected_state": {
+    "path": "build/physical/target-paired-01/runs/paired-reroute-01/01-openroad-globalrouting/state_out.json",
+    "sha256": "a87db6b3d396bcea00f2d67d2ebaec48a507003347e2669b66d2e2ea8b61d62a"
+  },
+  "runtime_seconds": 58.116,
+  "measurement_seconds": 12.353,
+  "pin_access_seconds": 2.36,
+  "bounds": {
+    "route_seconds": 600,
+    "cpus": 4,
+    "memory_gib": 6,
+    "pin_access_seconds": 180
+  },
+  "congestion": {
+    "baseline": {
+      "Metal1": {
+        "resource": 0,
+        "demand": 0,
+        "usage_percent": 0.0,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal2": {
+        "resource": 132967,
+        "demand": 69599,
+        "usage_percent": 52.34,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal3": {
+        "resource": 162127,
+        "demand": 97348,
+        "usage_percent": 60.04,
+        "max_horizontal": 2,
+        "max_vertical": 0,
+        "overflow": 40
+      },
+      "Metal4": {
+        "resource": 130502,
+        "demand": 24907,
+        "usage_percent": 19.09,
+        "max_horizontal": 1,
+        "max_vertical": 0,
+        "overflow": 1
+      },
+      "Total": {
+        "resource": 425596,
+        "demand": 191854,
+        "usage_percent": 45.08,
+        "max_horizontal": 3,
+        "max_vertical": 0,
+        "overflow": 41
+      }
+    },
+    "reroute": {
+      "Metal1": {
+        "resource": 0,
+        "demand": 0,
+        "usage_percent": 0.0,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal2": {
+        "resource": 132967,
+        "demand": 66554,
+        "usage_percent": 50.05,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal3": {
+        "resource": 162127,
+        "demand": 96812,
+        "usage_percent": 59.71,
+        "max_horizontal": 1,
+        "max_vertical": 0,
+        "overflow": 22
+      },
+      "Metal4": {
+        "resource": 130502,
+        "demand": 23570,
+        "usage_percent": 18.06,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Total": {
+        "resource": 425596,
+        "demand": 186936,
+        "usage_percent": 43.92,
+        "max_horizontal": 1,
+        "max_vertical": 0,
+        "overflow": 22
+      }
+    }
+  },
+  "timing": {
+    "local_candidate": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.12178,
+        "timing__hold__ws": 0.0726892,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.0710436,
+        "timing__hold__ws": 0.360733,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 5.87398,
+        "timing__hold__ws": 0.176697,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      }
+    },
+    "whole_chip_reroute": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.46671,
+        "timing__hold__ws": 0.0817902,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 4,
+        "design__max_cap_violation__count": 19
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.430335,
+        "timing__hold__ws": 0.347819,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 80,
+        "design__max_cap_violation__count": 16
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.20501,
+        "timing__hold__ws": 0.169243,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 5,
+        "design__max_cap_violation__count": 19
+      }
+    }
+  },
+  "electrical": {
+    "unique_signal_nets": 27,
+    "clock_net_failures": 0,
+    "groups": {
+      "eight_load_distribution": [
+        {
+          "net": "_01588_",
+          "driver": "_05393_/Y",
+          "driver_cell": "sg13cmos5l_xnor2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_02995_",
+          "driver": "_06810_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03073_",
+          "driver": "_06888_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03074_",
+          "driver": "_06889_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03107_",
+          "driver": "_06922_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03136_",
+          "driver": "_06951_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03189_",
+          "driver": "_07004_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03199_",
+          "driver": "_07014_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_03312_",
+          "driver": "_07127_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04257_",
+          "driver": "_08088_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04288_",
+          "driver": "_08138_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04319_",
+          "driver": "_08189_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04333_",
+          "driver": "_08212_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04420_",
+          "driver": "_08460_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04520_",
+          "driver": "_08772_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04557_",
+          "driver": "_08882_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04575_",
+          "driver": "_08976_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04674_",
+          "driver": "_09337_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04679_",
+          "driver": "_09361_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04694_",
+          "driver": "_09433_/Y",
+          "driver_cell": "sg13cmos5l_nand2_1",
+          "loads": 8,
+          "macro_inputs": []
+        },
+        {
+          "net": "_04700_",
+          "driver": "_09459_/X",
+          "driver_cell": "sg13cmos5l_buf_1",
+          "loads": 8,
+          "macro_inputs": []
+        }
+      ],
+      "sram_write_inputs": [
+        {
+          "net": "net1897",
+          "driver": "paired_signal_86/X",
+          "driver_cell": "sg13cmos5l_buf_8",
+          "loads": 2,
+          "macro_inputs": [
+            "memory.storage/A_DIN[21]"
+          ]
+        },
+        {
+          "net": "net1898",
+          "driver": "hold1898/X",
+          "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+          "loads": 1,
+          "macro_inputs": [
+            "memory.storage/A_DIN[52]"
+          ]
+        },
+        {
+          "net": "net1901",
+          "driver": "paired_signal_87/X",
+          "driver_cell": "sg13cmos5l_buf_8",
+          "loads": 1,
+          "macro_inputs": [
+            "memory.storage/A_DIN[19]"
+          ]
+        },
+        {
+          "net": "net1916",
+          "driver": "paired_signal_89/X",
+          "driver_cell": "sg13cmos5l_buf_8",
+          "loads": 1,
+          "macro_inputs": [
+            "memory.storage/A_DIN[15]"
+          ]
+        },
+        {
+          "net": "net1921",
+          "driver": "paired_signal_90/X",
+          "driver_cell": "sg13cmos5l_buf_8",
+          "loads": 1,
+          "macro_inputs": [
+            "memory.storage/A_DIN[17]"
+          ]
+        },
+        {
+          "net": "net1936",
+          "driver": "hold1936/X",
+          "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+          "loads": 1,
+          "macro_inputs": [
+            "memory.storage/A_DIN[10]"
+          ]
+        }
+      ]
+    },
+    "corner_counts": {
+      "nom_fast_1p32V_m40C": {
+        "max slew": {
+          "pins": 4,
+          "nets": 4
+        },
+        "max capacitance": {
+          "pins": 19,
+          "nets": 19
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "max slew": {
+          "pins": 80,
+          "nets": 14
+        },
+        "max capacitance": {
+          "pins": 16,
+          "nets": 16
+        }
+      },
+      "nom_typ_1p20V_25C": {
+        "max slew": {
+          "pins": 5,
+          "nets": 5
+        },
+        "max capacitance": {
+          "pins": 19,
+          "nets": 19
+        }
+      }
+    }
+  },
+  "routing_rule_change": {
+    "net": "clk",
+    "nondefault_rule_disabled": true,
+    "warning": "[WARNING GRT-0273] Disabled NDR (to reduce congestion) for net: clk",
+    "observed_in_baseline": false,
+    "attribution": "No isolated experiment attributes timing or overflow gains to this rule change."
+  },
+  "semantic_path_slacks_ns": {
+    "nom_fast_1p32V_m40C": {
+      "sram_address": 13.178568,
+      "entry_state": 14.422691,
+      "rejection_status": 9.466714,
+      "upload_hold": 0.164731
+    },
+    "nom_slow_1p08V_125C": {
+      "sram_address": 3.504518,
+      "entry_state": 6.586933,
+      "rejection_status": 0.430335,
+      "upload_hold": 0.512045
+    },
+    "nom_typ_1p20V_25C": {
+      "sram_address": 9.632602,
+      "entry_state": 11.560249,
+      "rejection_status": 6.205006,
+      "upload_hold": 0.298312
+    }
+  },
+  "pin_access": {
+    "counts": {
+      "stdCellPinCnt": 33426,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "area_um2": 357660.6912,
+  "identity": {
+    "netlist_byte_identical": true,
+    "unchanged_context_fields": [
+      "schema",
+      "extractor_sha256",
+      "units",
+      "dbu_per_micron",
+      "die",
+      "evidence_helper_sha256",
+      "instances",
+      "nets",
+      "power_shapes",
+      "ports",
+      "macro_pins",
+      "macro_obstructions",
+      "signal_segments",
+      "route_coverage",
+      "routing_obstructions",
+      "layers",
+      "rows",
+      "placement_blockages",
+      "exclusions",
+      "exclusions_sha256",
+      "exclusion_checker_sha256"
+    ],
+    "state_flip_flops": 1572,
+    "original_pin_edges_reused": 331401,
+    "new_pin_simulation": false
+  },
+  "validation": {
+    "focused_tests": 49,
+    "prior_identities_preserved": 528,
+    "complete_wire_estimates": true,
+    "nominal_layer_rc_verified": true
+  },
+  "changed_prior_sources": [
+    "scripts/physical_route_intake.py"
+  ],
+  "checked_hashes": 753,
+  "source_sha256": {
+    "scripts/physical_route_intake.py": "286ed83d5289f7dd26acebc14d73a9fd42c3dd9be40f5026a3dc2e1ccf9b4dd6",
+    "scripts/physical_added_route.py": "00053c629bb1b74bcdcfa34ceaf90acc2bc528547b42f38eeefd44e6efd17cd7",
+    "test/test_physical_added_route.py": "f2e93d3c2e220f759d97fbb550671fea780bdee1070a1e9c54600b8aadb511a2",
+    "physical/experiments/paired-reroute-selection.json": "7c8a912349cd0759b22621ede2545652937a7a19fc4eeeb11831389757b1be41"
+  },
+  "evidence_boundary": [
+    "One full GlobalRouting step with fixed cells, placement and clock topology; all repair disabled.",
+    "The router disabled the nondefault routing rule on clk to reduce congestion; topology identity does not imply unchanged wire policy.",
+    "Fresh nominal coarse wire estimates, not extracted timing. Fast cell/SRAM temperatures remain mismatched.",
+    "Overflow counts are excess coarse demand, not detailed-route DRC.",
+    "Minimum-one-access-point success does not prove simultaneous legal routing.",
+    "Logical identity transfers the existing functional trace; no new timing simulation or protocol changes."
+  ],
+  "next_gate": "Repair 21 eight-load distribution nets and six SRAM write-input nets using bounded local wire-aware checks; preserve setup/hold and functional identity. Locate the 22 Metal3 overflow units in the saved grid before proposing a geometry change. Requalify the resulting whole chip before detailed routing.",
+  "report": "build/validation/paired-reroute-01/report.json",
+  "report_sha256": "86abf480ddf026fe10d4163a63017fb1f68afbe5a3e4c4f64a585ede635d9065"
+}
