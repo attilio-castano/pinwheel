@@ -5,6 +5,16 @@ This records architectural lessons and a proposed future comparison. It does
 not select a new ISA, change Pinwheel's timing contract, or allocate another
 physical run. [Research status](research/status.md) owns the active work queue.
 
+**Follow-up:** the [bounded comparison](compact-execution-study.md) rejected the
+first encoding's lost capacity and operations. The
+[revised organization](compact-execution-study.md#full-capacity-follow-up) restores
+both with a larger SRAM and banked parameter tables. Its
+[complete experimental controller](compact-execution-study.md#complete-controller-and-macro-timing)
+now saves 22.88% of total mapped area after signal load repair, with positive
+setup but unresolved hold before wires. This justifies a bounded physical
+comparison while retaining the existing chip as control. The proposal below
+records the motivation, not a selected ISA.
+
 ## Why these references matter
 
 The [Jane Street competition announcement](https://blog.janestreet.com/protocol-emulator-asic-competition/)

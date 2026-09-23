@@ -56,6 +56,37 @@ equality corollaries. `test/Memory.lean` runs 400 requests through both against
 the specification and confirms that latency one shows exactly the previous
 edge's latency-zero read.
 
+The experimental SRAM binding uses mutually exclusive reads and writes and
+holds Q during writes. `Memory/Sram.lean` gives this behavior its own contract,
+reusing `Memory.Write`, `Memory.Request` and the word-update laws. Its replicated
+physical states refine a partial model: a cell becomes defined when written,
+and a registered response becomes defined when a read of such a cell completes.
+The copies may have unrelated initial contents. `related_step` and `related_run`
+preserve agreement on every defined value; `broadcast_write`, `write_holds_q`
+and `read_defined` describe the interface. `bankAddress_ne` and
+`inactive_write_preserves_active` establish bank separation for either address
+width. These facts are independent of hybrid index maps and direct upload
+expansion. `Storage/SramController.lean` now owns the expressions used by the
+experimental emitter. Its hybrid request bridge proves accepted write enables,
+address-port selection/truncation, selected-bank index reads, commit read enable,
+broadcast initialization and active-bank preservation using this array contract.
+These statements are about the core's actual expressions, with explicit input
+and register interpretations. `Storage/SramCoverage.lean` now proves that the
+accepted cursor covers the inactive dictionary before commit and preserves
+initializedness through every command history after reset. Actual controller
+control/request bridges connect that invariant to selected-bank read addresses
+and defined physical responses. `Model.Defined` belongs to the generic memory
+contract; the accepted-cursor invariant belongs to the storage adapter.
+`Storage/SramContents.lean` strengthens initializedness with equality to the
+existing loader image, preserved by accepted writes. `Storage/SramExecution.lean`
+then closes the feedback loop: actual array Q feeds the shared controller,
+its selected addresses return the expected program words, and its register
+transitions and observations refine the capacity-adapted atomic machine after
+one initializing edge. Arbitrary initial arrays and Q are allowed. The proof
+reuses `Storage.Sram` and `TwoPort`; it adds no instruction semantics or duration
+rule. Full chip-wrapper/Verilog binding and translation correspondence remain
+separate. The direct controller does not inherit these hybrid-specific proofs.
+
 ## The storage the design has, seen through the contract
 
 `Storage/MemoryView.lean` changes no expression, so emitted RTL and its
@@ -390,15 +421,18 @@ filter; on inputs that satisfy the rule the filter is the identity
 (`admit_of_rule`). `SinglePort.admitted` and `Backend.OnePort.admitted` are the
 instances. The backend's capacity check *is* such a filter, by definition
 (`adapt i b = admit (Small.capacity cursor) i`, by `rfl`), which is how the
-rule is shown to survive it. No emitted netlist includes the readiness filter
-yet; it is a few gates beside the capacity gate.
+rule is shown to survive it. Since the 2026-09-19 consolidation,
+`AdmissionNetlist` realizes the generic filter and `OnePortAdmission` supplies
+the readiness predicate in the result-enabled chip. The historical core
+emissions and measurements below remain conditional on ready programs.
 
 **Proved for the compilers.** `Storage/Readiness.lean` restates the rule on
 instructions (`ready`), shows it is the word-level rule through the record
 encoding (`ready_encode`, `ready_widen`), and carries it to every word the host
 pushes for an image — dictionary, addresses, idle pins, last address
-(`upload_ready`; `test/Memory.lean` loads exactly that stream). Then, for every
-request and configuration: the compiled I²C write and register read are ready
+(`upload_ready`; `Loader.ProgramImage` owns the stream and `test/Memory.lean`
+loads it). `Compile/Readiness.lean` now owns the compiler certificates: for every
+request and configuration the compiled I²C write and register read are ready
 whenever a phase lasts at least two cycles (`i2c_write`, `i2c_read`); programs
 of the original engine — UART and SPI transmission — always (`embedded`); the
 UART receiver never (`uart_receiver`): it polls for the start bit with

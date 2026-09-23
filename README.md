@@ -62,6 +62,7 @@ next decision. Detailed measurements and historical milestones live in the
 
 ## Start here
 
+- [Run the host demo](docs/host-workflow.md): upload UART TX/RX, SPI, I²C and a custom trigger to one unchanged RTL chip, then read and consume their results.
 - [Current research status](docs/research/status.md): the active question, evidence, and next decision.
 - [Submission plan](docs/submission-plan.md): remaining functionality, tool changes, dependencies, and completion gates.
 - [Research results](docs/research/results.md): completed conclusions and conditions for reconsidering them.

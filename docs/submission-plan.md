@@ -1,78 +1,99 @@
 # From the experimental chip to submission
 
-Prepared 2026-09-19. [Research status](research/status.md) owns priorities; this
-page owns the remaining implementation and acceptance gates. These steps are
-planned work, not claims of completion or permission to start physical runs.
-The current PR can preserve the proofs and experimental evidence before these
-chip milestones are complete; [validation](validation.md) defines its merge gate.
+Updated 2026-09-21. [Research status](research/status.md) owns priorities; this
+page owns the implementation sequence and acceptance gates. Completed pieces
+are distinguished from the remaining work; [validation](validation.md) defines
+the local merge gate.
+
+The sequence below records the earlier hybrid-SRAM implementation. The later
+paired controller is now the active experimental architecture; consult
+[research status](research/status.md) and the
+[integration guide](branch-integration.md) for its current disposition and
+remaining correspondence and physical gates. The earlier hybrid selection
+below does not supersede that newer decision.
 
 ## Starting point
 
 The [whole-chip model](whole-chip.md) connects serial pins to a committed program
 and subsequent reference-machine execution. The one-port core has one
 command-split routed sample with +0.602 ns slow setup, passing hold and layout
-checks, and remaining slew/fanout violations. The emitted whole chip has only
-mapping evidence. Its input pins and core boundary differ from the routed core.
+checks, and remaining slew/fanout violations. The new result-enabled chip has
+its own external-pin validation path. Its input pins and boundary differ from
+the routed core. Its [first SRAM physical experiment](chip-physical-study.md)
+now reaches routing with the official pin template; closure remains open.
 
-The one-port organization is the candidate for the current official 6×4 limit.
-The two-port attempt timed out under the recorded flow budget. Preserve both
-results; neither a new floorplan allocation nor a universal fit cutoff follows.
+The two-port flip-flop core timed out under the recorded flow budget. The early
+SRAM study makes an unrestricted two-read organization worth investigating
+before tailoring UART to one port. Preserve both historical physical results;
+they do not choose between the new storage organizations.
 
-## Close the one-port program contract
+## Consolidate shared contracts and host results
 
-**Exists:** generic fetch-policy refinement, `Readiness.Image`, compiler
-readiness proofs for TX/SPI and sufficiently long I²C phases, and
-`Admission.admit` as a proved model filter. **Missing:** a compatible UART
-receiver and that filter in an emitted circuit.
+**Implemented:** generic upload encoding in `Loader.ProgramImage`, separate
+storage rules and compiler certificates, shared netlist/input/feeder/observer
+composition, and shared validation command capture. `AdmissionNetlist` realizes
+the generic word filter without reconnecting payload data to commit/start
+decoding. The result-enabled one-port circuit uses its proved readiness gate.
 
-1. Choose a receiver polling schedule that obeys readiness. A two-cycle poll
-   is a candidate, not a proved replacement. State supported bit periods and
-   re-prove start detection, data/framing capture, clock/observation-age bounds,
-   and any continuous-stream composition affected by the schedule.
-2. Realize the readiness predicate and rejection path in the structural chip,
-   preserving capacity admission and atomic loading. Use the existing feeder
-   abstraction where it fits; prove the actual circuit equals the admitted
-   reference for arbitrary pushes, including later uploads.
-3. Specify how a host observes rejection. The current `rejected` status is a
-   command-edge indication; it is not a sticky acknowledgement protocol.
+`HostResult` provides a 16-bit retained result and outcome, paged host reads,
+consumption, overflow and sticky command rejection. Its step/output proofs and
+core noninterference theorem bind the structural observer to that contract.
+The [version-1 interface](whole-chip.md#host-result-interface-version-1) specifies
+reset, stop, replacement and simultaneous consume/arrival. UART remains one-shot
+on this interface; the continuous-RX supervisor has no composed chip circuit.
 
-**Done when:** uploaded UART RX images are proved ready, non-ready pushes are
-rejected by the emitted circuit without corrupting active/staged program state,
-and the updated receiver/compiler/link tests pass with explicit timing bounds.
-Rejecting the current receiver's image does not satisfy UART receive support.
+**Gate:** fresh foundation audit, unchanged historical emissions for the shared
+cleanup, and the independent chip checks below. Generic infrastructure can
+advance before selecting the final memory implementation.
 
-## Return captured results to the host
+## Use the bounded SRAM study to choose storage/fetch
 
-**Exists:** 16 internal capture bits, protocol read models and compiler proofs,
-status pins, and a Lean continuous-RX supervisor. **Missing:** a result-transfer
-interface in `Chip.outputs` and a composed hardware lifecycle for that supervisor.
+**Candidate selected:** [the complete-chip comparison](storage-primitives.md#complete-chip-comparison-2026-09-19)
+favors hybrid dictionary SRAM with two reads. Its complete mapped chip occupies
+393,558 µm², versus 479,596 for direct SRAM and 622,897 for the matched flip-flop
+reference. Both SRAM prototypes pass independent external-pin and core-edge
+traces, including 1,000 consecutive branches and immediate commit/start. The
+selected macro/cell views match the pinned physical PDK byte for byte.
 
-Define the smallest useful host transaction: upload, start, run a receive/read,
-observe completion or error, and retrieve the exact result. Choose the pin or
-serial return path and specify framing, width/order, stable result snapshot,
-consume/acknowledgement, overflow, reset, stop and program replacement. Decide
-the supported one-shot/continuous behavior explicitly; do not imply the Lean
-supervisor's queue already exists in the chip.
+Macro-aware pre-layout STA at 20 ns gives hybrid +10.26 ns slow setup and
+−0.86 ns hold, with fanout violations. Clock/hold/fanout repair, physical-view
+installation and macro integration remain required. No routed fit or complete
+SRAM refinement follows from the comparison. The current two-port flip-flop chip
+remains the unrestricted proved reference.
 
-Build the structural output path and prove its connection to the captured
-result. Preserve protocol pin timing while the host transfers data. Include
-result ownership when a reset or new program arrives before consumption.
+## Finish the selected admission and protocol contract
 
-**Done when:** UART bytes and SPI/I²C read results are observable through actual
-chip ports, with proved transfer/ownership behavior and executable negative cases
-for incomplete transfers, duplicate consumption, reset and replacement.
+Existing one-port admission enforces `SinglePort.Ready`; two ports require no
+duration rule. Both retain the small dictionary's capacity check. The current
+UART receiver violates the one-port rule even at a slower baud, so rejection
+does not constitute receiver support.
+
+The selected hybrid keeps the small dictionary's capacity contract and adds no
+duration restriction; retain the current UART compiler and timing contract.
+The closed-loop hybrid array/controller model now refines the capacity-adapted
+atomic reference after initialization, including uploaded word correspondence,
+actual lookup addresses, held Q and commit/start bypass. Every controller
+register matches the shared netlist. Complete package-wrapper/Verilog binding
+and translation correspondence remain separate gates. Later uploads and
+abort/restart are already part of the independent regression. Reopen a one-port
+receiver schedule only if physical evidence changes the storage decision.
+
+**Done when:** the emitted filter enforces the selected rule, supported compiler
+images satisfy it, and protocol tests pass with explicit timing bounds. Shared
+admission/result work does not depend on resolving this specialization early.
 
 ## Validate the emitted chip independently
 
-**Exists:** `chip_emit`, core oracles, core RTL/generic-gate equivalence and
-mutation checks, and a Lean host-session test. **Missing:** an independent test
-of the emitted `tt_um_pinwheel` at its external ports.
+**Implemented:** `check-chip.py` drives the emitted `tt_um_pinwheel` from an
+independent serial/core/mailbox oracle, simulates RTL and generic gates, checks
+their equivalence and requires a corrupted result bit to fail behaviorally.
 
-Add a driver outside Lean for the specified host transactions and actual pin
-map. Compare execution, status and returned results to the reference oracle.
-Cover initialization from unknown RTL registers, minimum/uneven serial phases,
-idle gaps, partial frames, reset during upload, malformed/over-capacity/non-ready
-images, busy rejection, commit/start, replacement and pin-sampling latency.
+The regression covers initialization from unknown RTL registers, minimum/uneven
+serial phases, partial frames, reset during upload, malformed/over-capacity/
+non-ready images, busy rejection, commit/start, replacement, result ownership,
+all 16 capture bits, UART TX, SPI mode 0, a stretched I²C read and two-port UART
+framing capture. The interactive [host demonstration](host-workflow.md) adds
+same-chip protocol replacement and a custom captured-input trigger.
 Respect the digital session contract; analog metastability remains outside it.
 
 Retain source/MLIR/RTL/tool/oracle identities, check RTL/generic-gate equivalence
@@ -88,27 +109,31 @@ be a useful intermediate result, but must be rerun after interface changes.
 
 ## Prepare and validate the physical chip
 
-**Exists:** pinned CMOS5L tools/PDK/support files and
-`tt_block_6x4_pgvdd.def`, core flow scripts and recorded core constraints.
-**Missing:** a chip-specific physical configuration and validation path.
+**Implemented:** chip-specific configuration/SDC, official 6×4 DEF, pinned macro
+GDS/LEF/CDL/Liberty views, explicit array/core power connections and immutable
+preparation/runner snapshots. The shared PDK stays read-only. The bounded
+[physical experiment](chip-physical-study.md) records the attempted placements,
+power-grid correction, hold-repair area and remaining congestion. It runs early
+enough to inform the proof/storage investment.
 
-Before a run:
+The verified half-height placement corridor lowers global overflow 1,255→870
+and Metal4 body-overlapping guides 129→45 without materially increasing area.
+The full-height reservation is rejected. In the half strip's 90-minute
+continuation, matched first-pass iteration-59 markers improve 126→92; the first
+pass ends with 73 markers inside macros. Its antenna check finds 49 net/55 pin
+violations and the budget expires during the second routing pass, after
+iteration 35 with 230 markers. These passes must be reported separately.
+The corridor survives both repair stages. The
+[physical study](chip-physical-study.md#corridor-continuation-2026-09-21) retains
+the exact geometry and comparison boundaries. Next test macro-body routing
+obstructions before generating global guides, with a bounded screen first.
+No physical closure or backend promotion follows yet.
 
-- Add a configuration for `tt_um_pinwheel` and the official 6×4 DEF, with the
-  template's ports, power nets and pin placement. Keep the existing core
-  configuration as historical comparison evidence.
-- Add SDC for `ui_in`, `uio_in`, `rst_n`, `ena`, outputs and output enables.
-  State clock, host/protocol timing, reset and synchronizer assumptions. Existing
-  `physical/core.sdc` constrains `command`, `data`, `incoming`, `init` and `reset`;
-  renaming a design directory does not adapt those constraints.
-- Extend preparation, execution, targeted timing and netlist regression for
-  the actual chip top and ports. `--design` currently selects a core artifact
-  directory; `prepare-physical.py`, the flow config and checker still assume
-  the core module. `run-physical.py`'s allowed overrides do not include the
-  top-level module, SDC or DEF template.
-- Freeze the verified chip RTL, constraints, DEF, PDK, libraries and flow
-  controls. Declare time, CPUs, RAM, stopping steps and comparison objective;
-  obtain the physical-run allocation before execution.
+**Remaining:** qualify the macro power grid and mixed-temperature fast screen,
+close routing and electrical limits, then validate the implemented chip netlist
+with the external-port regression. Keep each new attempt bounded and preserve
+the exact inputs and failed receipts. Physical learning and adapter proof can
+advance independently.
 
 **Done when:** the final chip routes with the official template; all declared
 corners meet extracted setup/hold and electrical limits; required DRC, LVS and
@@ -121,10 +146,16 @@ repeatability or board-level electrical behavior.
 
 Use the [official template and competition brief](competition.md), rechecked
 at packaging time. Set the actual tile allocation, source list, pin map and
-clock information. Choose and record an open-source license; none is currently
-present at the repository root. Include reproducible host upload/readback tools,
-example UART/SPI/I²C transactions with declared rates/roles, tests, and a clear
-account of proved behavior versus simulated and measured behavior.
+clock information. **Licensing is pending by user decision**; do not add an
+implied license or describe the repository as submission-ready open source.
+The reproducible host upload/readback tools and UART/SPI/I²C/custom-trigger
+examples are implemented, with declared digital roles and cycle counts. Keep
+proved, simulated and physically measured behavior distinct.
+
+The demo identifies program-upload cost as the next data-flow question. Measure
+repeated transfers with varying payloads before selecting data registers, shifts,
+rearm or FIFO changes. Preserve a resident program and define delivery/overflow
+semantics; use the physical results to bound the hardware budget.
 
 Check electrical drive/release, pull-ups, voltage and reset assumptions against
 the intended board. FPGA or board demonstration is a separate evidence step
@@ -137,13 +168,8 @@ check; recheck it and the deadline before any submission.
 host interface and passes the applicable submission checks. Publishing, opening
 a PR, and submitting remain distinct user-authorized actions.
 
-## Optional architecture experiments
+## Other architecture experiments
 
-SRAM, address-path factoring, alternative gating plans and additional physical
-repeatability studies are separate experiments. For SRAM, bind the actual
-macro's read enable, masked-write/collision behavior and latency to
-`Memory.spec`; account for dependent map/dictionary reads and two-bank loading.
-The existing read-first abstraction and one-port schedule are not yet proofs
-of that macro. Screen the complete wrapper's area and timing before allocating
-a physical comparison. Do not replace this branch's historical receipts with
-new experimental results.
+Address-path factoring, alternative gating and physical repeatability remain
+separate experiments. Reopen them when the selected chip's measured bottleneck
+justifies the work. Preserve historical receipts when adding new results.

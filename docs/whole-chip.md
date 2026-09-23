@@ -1,19 +1,24 @@
 # The whole chip in Lean
 
-Status: **experimental top level, proved in Lean from a host's serial session to
-a committed program and its subsequent execution; emitted and mapped; the
-emitted RTL has not been independently simulated or routed.**
+Status: **experimental top level, with proved serial delivery, program loading,
+execution and a retained host result interface.** The historical status-only
+chip has mapping evidence. The new result emissions have a separate independent
+external-pin check; neither has a routed whole-chip result.
 
-The host interface has no readback transaction for captured data. The one-port
-chip assumes ready uploads: its admission filter is not in the emitted circuit and the
-compiled UART receiver violates that rule. These are explicit gates in the
-[submission plan](submission-plan.md).
+`chip-oneport-result` enforces readiness through the generic admission machinery.
+The compiled UART receiver still violates that rule; `chip-twoport-result`
+supports the unrestricted receiver. The [SRAM comparison](storage-primitives.md#complete-chip-comparison-2026-09-19)
+selects hybrid dictionary SRAM with two reads for the next proof/physical
+experiment, retaining the current UART timing. The
+[submission plan](submission-plan.md) records the remaining gates.
 
 ## Question
 
-Every physical result so far is about the core alone, on a test rectangle, with
+The original physical results were about the core alone, on a test rectangle, with
 its 67-wire loader port and about 130 observation wires exposed as if they were
-pins, and with assumed arrival times at those stand-in pins. The chip the
+pins, and with assumed arrival times at those stand-in pins. The subsequent
+[whole-chip experiment](chip-physical-study.md) now reaches detailed routing
+with the official template, but has not established closure. The chip the
 competition asks for has 24 user pins, a clock and a reset. What is between the
 two, and can the Lean specification cover it — so that the object we place and
 route is the object the theorems are about?
@@ -27,12 +32,13 @@ route is the object the theorems are about?
 | Engine and records | the reactive engine, 64-bit records, images | `Engine/`, `Binary/`, `Hardware/Execution/` | proved |
 | Reference machine | atomic loader, scheduler, two program banks | `Hardware/Loader/` | proved |
 | Core backends | dense storage, cached word, fetch policies | `Hardware/Storage/` | proved to refine the reference, edge for edge |
-| **Serial loader** | three pins in place of the 67-wire port | `Hardware/Serial/` | **new: proved** |
-| **Pin samplers** | two registers on each consumed serial/protocol/reset input | `Hardware/Feeder.lean` | **new: generic, proved** |
-| **Pin map and output map** | Tiny Tapeout's ports | `Hardware/Chip.lean` | **new: proved** |
-| **Upload theorem** | this session commits the program, ready for a later start | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | **new: proved** |
-| Emitted RTL of the chip | `tt_um_pinwheel` | `test/ChipEmit.lean` | emitted and mapped; not simulated |
-| Routed chip | official 6×4 outline, `tt_block_6x4_pgvdd.def` | — | not started; the template is in the pinned Tiny Tapeout files, with the die area of every routed run so far |
+| Serial loader | three pins in place of the 67-wire port | `Hardware/Serial/` | proved |
+| Pin samplers | two registers on each consumed serial/protocol/reset input | `Hardware/Feeder.lean` | generic, proved |
+| Pin map and output map | Tiny Tapeout's ports | `Hardware/Chip.lean` | proved |
+| Upload theorem | this session commits the program, ready for a later start | `Hardware/Loader/Upload.lean`, `Program.lean`, `Storage/ProgramUpload.lean`, `ChipUpload.lean` | proved |
+| Host result observer | retained capture/outcome and host ownership | `Hardware/HostResult.lean` | step/output correspondence and core noninterference proved |
+| Emitted RTL of the chip | `tt_um_pinwheel` | `test/ChipEmit.lean`, `scripts/check-chip.py` | separate external-pin simulation and RTL/generic-gate check for result emissions |
+| Routed chip | official 6×4 outline, `tt_block_6x4_pgvdd.def` | — | bounded hybrid SRAM attempts reach detailed routing; final routing, extracted timing and layout checks remain open |
 
 ## Feeders
 
@@ -119,7 +125,7 @@ Four statements, each usable alone, and one that chains them.
   the one theorem covers the machine itself and the capacity-checked reference
   that the dense backends refine, which is what a chip runs.
 - **The stream is the program** (`Storage/ProgramUpload.lean`). For the 322 words
-  a host builds from a program `p` (`Readiness.upload`): the bank they leave
+  a host builds from a program `p` (`Loader.ProgramImage.upload`): the bank they leave
   reads as `p` at every address, with `p`'s idle pins and last address
   (`upload_holds`); every word passes the loader's validation at its position
   (`upload_good`); and, for images with at most 32 distinct records, the small
@@ -152,7 +158,7 @@ the select line and a missing two-sample tail are all visible. It also checks
 the theorem's hypotheses on that program: 322 words, at most 32 distinct
 records, every word ready and within capacity; the UART receiver is not ready.
 
-## First measurements
+## Historical status-only measurements
 
 Mapped screen, same recipe as the backends (typical corner, no placement):
 
@@ -177,23 +183,112 @@ and the third lets the receiver consume idle and clear its count/fire state.
 This prepares the serial session; initializing the core through `rst_n` is a
 separate obligation.
 
-`Chip.outputs` shows loader status and protocol levels/enables, but does not
-expose the 16 capture bits or implement a host readback command. The supplied
-UART receive, SPI read, and I²C register-read programs leave their captured data
-inside the engine. A useful receive/read interface needs a result-transfer
-contract, including ownership across consume, reset, and program replacement.
-Status readback over the serial pins is also absent.
+`Chip.netlist`/`Chip.outputs` retain the historical status-only boundary.
+`HostResult.netlist` adds the result interface below. `Observer.inner_step` and
+`HostResult.core_unchanged` prove that observing results changes no core register
+transition; `HostResult.next_correct` and `output_correct` connect the structural
+observer to its mailbox model. This is a one-shot host interface, not the
+automatic continuous-UART supervisor.
 
-The one-port theorem requires ready words on every later push. `Admission.admit`
-proves how to reject a non-ready push, but no emitted netlist contains that
-filter. Adding it and compiling a receiver that passes it are separate
-obligations; rejection alone does not add UART receive support.
+The historical one-port theorem still requires ready words on later pushes.
+`OnePort.admittedNetlist` now realizes the rejecting filter, and
+`admittedRefinement` discharges the rule for every input history against the
+same admitted reference. Generic input substitution preserves shared wires and
+direct commit/start decoding. The result-enabled one-port emission uses it.
+Rejecting the current receiver image does not add UART receive support.
 
-Independent serial-driver simulation of the emitted `tt_um_pinwheel`, gate
-equivalence, a placed/routed chip, and electrical/metastability evidence remain
+`check-chip.py` validates serial transport and results at the actual external
+ports, including RTL/generic-gate equivalence and behavioral corruption cases.
+It does not extend the older backend's emitted-RTL-to-Lean read-back proof to
+the chip. A placed/routed chip and electrical/metastability evidence remain
 open. The existing physical scripts target the core's module and ports; the
 [submission plan](submission-plan.md#prepare-and-validate-the-physical-chip)
 lists the required chip-specific tooling changes.
+
+## Host result interface, version 1
+
+`chip-oneport-result.mlir` and `chip-twoport-result.mlir` add 35 register bits and
+use the previously spare `ui_in[6:3]`. The serial frame format and protocol pins
+are unchanged. All controls below are sampled through two registers.
+
+| Input | Meaning |
+| --- | --- |
+| `ui_in[4:3]` | Select the `uo_out` page, 0–3 |
+| `ui_in[5]` | Rising edge consumes the current result |
+| `ui_in[6]` | Rising edge clears sticky overflow and command-rejection flags |
+| `ui_in[7]` | Reserved |
+
+| Page | `uo_out` |
+| --- | --- |
+| 0 | Existing live status: mode `[7:5]`, command rejection `[4]`, active bank `[3]`, pending upload `[2]`, program valid `[1]`, busy `[0]` |
+| 1 | Retained capture slots `[7:0]` |
+| 2 | Retained capture slots `[15:8]` |
+| 3 | Retained outcome mode `[7:5]`, version-1 marker `[4]=1`, reserved `[3]=0`, sticky command rejection `[2]`, overflow `[1]`, result valid `[0]` |
+
+Hold a page selection for at least two chip edges before reading. To consume or
+clear flags, hold the control low and then high for at least three edges each;
+the third edge performs the action after the two input stages. Holding high
+performs one action. Reads do not consume; incomplete reads leave the snapshot
+intact, and consuming an empty slot has no effect. A subsequent consume pulse
+consumes whichever result is current; there is no transaction-ID deduplication.
+
+Completion, timeout or fault produces one snapshot on the edge after the core
+stops. Accepted starts are tracked as well as busy execution, so a halt-only
+program also returns a zero-capture completion. Chip initialization and an
+engine reset that cancels a running program produce no completion snapshot.
+Outcome modes are complete=5, timeout=6, fault=7. Protocol-specific status, such
+as UART stop/framing capture or I²C ACK slots, remains in the 16 capture bits;
+the outcome mode is the engine's reason for stopping.
+
+The oldest unread result remains stable across new starts, serial engine reset,
+partial uploads, abort and program replacement. A new result while full is
+discarded and sets overflow. Consumption is applied before arrival on the same
+edge, permitting replacement without overflow. Clearing flags is applied before
+new errors, so a concurrent rejection/overflow remains visible. `rst_n=0`
+clears the mailbox and flags immediately on the next edge and holds them reset
+through the two release stages; it also initializes the core through the
+existing sampler. Data/outcome after consumption are stale until `valid=1`.
+
+The host transaction is: upload, commit, start, poll page 3 for `valid`, read
+pages 1 and 2, interpret the outcome/capture layout, then consume. Page 0 remains
+available for live execution/upload status. There is no serial return channel
+or automatic rearm in this interface.
+
+## Independent result-chip checks (2026-09-19)
+
+The driver in `chip_oracle.py` constructs host pin histories and computes
+expected observations using an independent serial/mailbox model and the existing
+Python atomic/E64 interpreter. Only compiled program images come from Lean.
+`chip_tb.sv` compares all three output buses before and after each checked edge,
+starting with unknown RTL registers and an explicit reset sequence. Execution
+begins only after the reachable storage has been uploaded.
+The equivalence check separately aligns matching state points; fetched/start
+words narrowed by synthesis are re-exposed with their constant high bit for
+matching. Its state relation and the simulation's reset/upload prefix are
+distinct initialization conditions.
+
+| Result emission | Serial frames | Edges in each RTL/generic-gate trace | Proven equivalence points |
+| --- | ---: | ---: | ---: |
+| Two ports | 2,324 | 508,252 | 6,580 |
+| Admitted one port | 1,998 | 436,800 | 6,575 |
+
+Both runs cover malformed and over-capacity uploads, busy rejection, partial
+frames, uneven legal serial phases, reset during upload, capture/readback of
+all 16 slots, overflow, repeated/empty consumption, replacement and halt-only
+completion. Both include UART TX, SPI mode 0 and a compiled I²C register read
+with a stretching target. The TX/SPI peers inspect external pins independently
+of the execution model and verify driven bytes and edge spacing.
+Two ports additionally receive UART bytes with good and bad stop bits; one port
+checks rejection of an unready word. The Lean mailbox suite separately checks
+same-edge consumption/arrival and clear/new-error priority.
+
+Each run first passes the unchanged RTL and generic gates, then rejects a
+syntactically valid mutation that flips a bit only on the result-data page.
+Receipts retain sources, MLIR, RTL, gates, vectors, tool versions and commands:
+`build/chip/integrated-twoport-01/report.json` and
+`build/chip/integrated-oneport-01/report.json`. These checks establish the
+reported digital traces and RTL/generic-gate equivalence. They do not constitute
+emitted-RTL-to-Lean read-back, technology-mapped equivalence or physical closure.
 
 ## The outline
 
@@ -206,19 +301,31 @@ within the leftmost 191 µm. On that area the one-port core has routed and met
 setup at every corner at 69.3% utilization; the two-port core, at 75.2%, did not
 route within the time limit
 ([routed results](memory-abstraction.md#the-command-split-backends-routed)).
-Mapped, the whole one-port chip is 0.8% larger than that core, so it is the
-candidate to advance on this outline. The two-port candidate is deferred after
-the timed-out run; these two designs and one flow budget do not establish a
-universal utilization cutoff. What a routed run of the chip adds to the core runs:
+The historical status-only one-port chip mapped 0.8% larger than its core.
+Neither this estimate nor the two-port timeout selects the new result-enabled
+chip's storage organization. The complete SRAM comparison selects hybrid
+dictionary SRAM with two reads for the next proof and physical experiment.
+These historical designs and one flow budget do not establish a universal
+utilization cutoff. What a routed run of the chip adds to the core runs:
 the real pin template (43 pins in one corner in place of 200-odd spread ports),
 the loader and samplers, and register-launched core inputs in place of assumed
 4 ns arrivals.
 
 ## Reproduction
 
+For an interactive upload/execute/read/consume client and UART TX/RX, SPI, I²C
+and conditional-trigger demonstrations on one unchanged chip, see the
+[host workflow](host-workflow.md). UART TX and SPI pin peers are also included
+in the fresh independent whole-chip oracle. The [physical experiment](chip-physical-study.md)
+uses the actual result-enabled chip, its chip-port SDC and the official pin DEF;
+its incomplete closure does not transfer the earlier core's signoff results.
+
 ```sh
 lake build Pinwheel chip_emit
 lake env lean -DwarningAsError=true test/ProofAudit.lean
 lake env lean -DwarningAsError=true --run test/SerialUpload.lean
+lake env lean -DwarningAsError=true --run test/HostResult.lean
 .lake/build/bin/chip_emit build/chip/NAME
+python3 scripts/check-chip.py --tag NAME-twoport --variant twoport
+python3 scripts/check-chip.py --tag NAME-oneport --variant oneport
 ```

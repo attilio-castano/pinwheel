@@ -1,16 +1,28 @@
 # Technical documentation
 
-Start at [research status](research/status.md) for the active question and next
-decision. These records describe individual milestones and their evidence;
-historical next-step statements are not the current work queue.
-The [submission plan](submission-plan.md) records the remaining chip work and
-the acceptance gate for each step.
-The [PIO and PRU lessons](pio-pru-lessons.md) preserve the source review and a
-future comparison of execution granularity, resident payloads and explicit
-waiting rules. They propose an investigation, not a change to the active plan.
+Start with the [branch integration guide](branch-integration.md) for the retained
+interfaces, experimental implementations, evidence boundaries and review order.
+[Research status](research/status.md) owns the active decision;
+[results](research/results.md) summarizes completed studies and
+[journal](research/journal.md) preserves their chronology. Historical next-step
+statements in individual studies are not the current work queue.
+
+| Question | Start here |
+| --- | --- |
+| How is the implementation organized? | [Architecture and ownership](architecture.md) |
+| How do I exercise the chip? | [Host workflow](host-workflow.md) |
+| Which storage and execution choices were compared? | [SRAM comparison](storage-primitives.md), [paired execution](compact-execution-study.md) |
+| What did the intermediate architecture experiments teach us? | [State and communication](chip-architecture-study.md), [map slices](map-slice-study.md), [map tiles](map-tile-study.md), [fetch deadlines and upload pipeline](fetch-contract-study.md) |
+| How do logical responsibilities reach physical checks? | [Shared physical targets and organization](physical-targets.md) |
+| How can I diagnose a saved layout cheaply? | [Routing diagnostics](routing-diagnostics.md), [earlier chip experiments](chip-physical-study.md) |
+| What remains before submission? | [Submission obligations](submission-plan.md), read alongside current [research status](research/status.md) |
+| How do I reproduce and validate changes? | [Development setup](development.md), [validation](validation.md) |
+
+The complete topic index follows. Experimental results have the scope and
+limitations recorded in their owning study; none implies whole-chip closure.
 
 1. [The competition brief](competition.md) for official constraints and primary sources.
-2. [The architecture plan](architecture.md) for Lean's role, proof boundaries, and the proposed repository structure.
+2. [Architecture](architecture.md) for Lean's role, proof boundaries, composition rules and module ownership.
 3. [The UART experiment plan](uart-experiment.md) for the first milestones and acceptance criteria.
 4. [Development setup](development.md) for the pinned Lean toolchain and terminal build commands.
 5. [The pure Lean UART experiment](uart-model.md) for its interface, proved claims, and runnable trace.
@@ -33,7 +45,7 @@ waiting rules. They propose an investigation, not a change to the active plan.
 22. [Atomic loading](atomic-loader.md) for staging, validation, commit, initialization, proofs, and RTL checks.
 23. [Early CMOS5L mapping](technology-mapping.md) for measured area pressure.
 24. [Cheaper storage](storage-study.md) for capacity certificates, caching, dense records, and runtime repetition.
-25. [Storage primitives](storage-primitives.md) for pinned SRAM/latch evidence and scheduling requirements.
+25. [Storage primitives](storage-primitives.md) for pinned SRAM/latch evidence, complete-chip mapping and pre-layout timing, and the hybrid SRAM decision.
 26. [Timed component contracts](timed-components.md) for shared fetch semantics, checked signal interfaces, named edge observations, and composed structural-cache refinement.
 27. [Successor-fetch experiments](successor-fetch-study.md) for the measured path breakdown and controlled flow/architecture comparison with exact-cycle preservation.
 28. [Physical validation](physical-validation.md) for the first routed baseline, extracted timing, layout checks, and limitations.
@@ -51,7 +63,7 @@ waiting rules. They propose an investigation, not a change to the active plan.
 40. [Register enables](register-enables.md) for certified enable/data views of the proved registers, Lean-chosen gating plans, and the checked flow step that applies them to unchanged RTL.
 41. [Input latency](input-latency.md) for latency as a parameter of the pin-level contracts: the bridge from the pin sampler, the SPI rate condition, the three I²C echo hazards, and the qualified STOP hold now compiled into both I²C programs.
 42. [Memory abstraction](memory-abstraction.md) for the memory contract with latency, its flip-flop and registered implementations, the existing storage seen through it, and the prefetch machine that runs the reference against a latency-one memory.
-43. [The whole chip in Lean](whole-chip.md) for feeders, the serial loader and its host contract, the Tiny Tapeout top level as one Lean netlist, and the theorem from pins to the reference machine.
+43. [The whole chip in Lean](whole-chip.md) for serial delivery/upload proofs, retained host results, emitted admission and independent external-pin checks of the Tiny Tapeout top level.
 
 [Research workflow](research/README.md) explains how to record new evidence.
 
