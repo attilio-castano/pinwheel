@@ -125,11 +125,13 @@ def main():
     parser.add_argument("action", choices=["capture", "verify"])
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--design", type=Path, default=CORE,
+                        help="Prepared design directory containing the checkpoint and its views")
     args = parser.parse_args()
     if args.action == "capture":
-        capture(args.state, args.manifest)
+        capture(args.state, args.manifest, args.design)
     else:
-        verify(args.state, args.manifest)
+        verify(args.state, args.manifest, args.design)
     print(f"Checkpoint {args.action} succeeded: {args.manifest}")
 
 

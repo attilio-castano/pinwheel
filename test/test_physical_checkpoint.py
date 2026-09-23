@@ -177,6 +177,81 @@ class CheckpointTests(unittest.TestCase):
         self.assertEqual(receipt["checkpoint"]["artifact_count"], 2)
         self.assertEqual(receipt["checkpoint_sha256"], checkpoint.sha(self.state))
 
+    def test_diagnostic_controls_are_frozen_without_changing_constraints(self):
+        image = self.prepare_runner()
+        controls = {"DRT_SAVE_SNAPSHOTS": True, "DRT_SAVE_DRC_REPORT_ITERS": 1}
+        overrides = self.root / "diagnostics.json"
+        overrides.write_text(json.dumps(controls))
+        with patch.object(runner, "ROOT", self.root), \
+                patch.object(runner, "BASE", self.core.parent), \
+                patch.object(sys, "argv", ["run-physical.py", "--tag", "diagnostic",
+                    "--overrides", str(overrides)]), \
+                patch.object(runner.subprocess, "check_output", return_value=json.dumps([image])), \
+                patch.object(runner.subprocess, "run") as launch:
+            launch.return_value.returncode = 0
+            with self.assertRaises(SystemExit) as result:
+                runner.main()
+            self.assertEqual(result.exception.code, 0)
+        frozen = self.core / "experiments/diagnostic"
+        self.assertEqual(json.loads((frozen / "core.json").read_text()), controls)
+        self.assertEqual((frozen / "core.sdc").read_bytes(), (self.core / "core.sdc").read_bytes())
+        receipt = json.loads((self.core.parent / "diagnostic-invocation.json").read_text())
+        self.assertEqual(receipt["overrides"], controls)
+        self.assertEqual(receipt["config_sha256"], checkpoint.sha(frozen / "core.json"))
+
+    def test_macro_experiment_resume_preserves_only_recorded_placements(self):
+        image = self.prepare_runner()
+        config = {"DIE_AREA": [0, 0, 100, 100], "CLOCK_PERIOD": 20,
+                  "MACROS": {"ram": {"instances": {
+                      "memory": {"location": [10, 20], "orientation": "N"}}}}}
+        placement = {"memory": {"location": [10, 20], "orientation": "FS"}}
+        (self.root / "physical/core.json").write_text(json.dumps(config))
+        experiment = runner.physical_floorplan.apply_placement(config, placement)
+        (self.core / "core.json").write_text(json.dumps(experiment))
+        inputs_path = self.core / "inputs.json"
+        inputs = json.loads(inputs_path.read_text())
+        inputs["macro_placement"] = placement
+        inputs_path.write_text(json.dumps(inputs))
+        argv = ["run-physical.py", "--tag", "macro-resume", "--from-step", "OpenROAD.CheckAntennas",
+                "--state", str(self.state), "--checkpoint-manifest", str(self.manifest)]
+        with patch.object(runner, "ROOT", self.root), patch.object(runner, "BASE", self.core.parent), \
+                patch.object(sys, "argv", argv), \
+                patch.object(runner.subprocess, "check_output", return_value=json.dumps([image])), \
+                patch.object(runner.subprocess, "run") as launch:
+            launch.return_value.returncode = 0
+            with self.assertRaises(SystemExit) as result:
+                runner.main()
+            self.assertEqual(result.exception.code, 0)
+        frozen = self.core / "experiments/macro-resume/core.json"
+        self.assertEqual(json.loads(frozen.read_text()), experiment)
+        # A new tag with a changed clock must fail before Docker, even if the
+        # placement is still the recorded experiment.
+        experiment["CLOCK_PERIOD"] = 30
+        (self.core / "core.json").write_text(json.dumps(experiment))
+        argv[argv.index("macro-resume")] = "bad-macro-resume"
+        with patch.object(runner, "ROOT", self.root), patch.object(runner, "BASE", self.core.parent), \
+                patch.object(sys, "argv", argv), patch.object(runner.subprocess, "check_output") as docker:
+            with self.assertRaisesRegex(RuntimeError, "beyond its recorded placements"):
+                runner.main()
+            docker.assert_not_called()
+
+    def test_malformed_diagnostic_controls_fail_before_docker(self):
+        self.prepare_runner()
+        overrides = self.root / "diagnostics.json"
+        invalid = [{"DRT_SAVE_SNAPSHOTS": "true"}] + [
+            {"DRT_SAVE_DRC_REPORT_ITERS": value} for value in [True, 0, -1, 1.5, "1", None]]
+        for controls in invalid:
+            overrides.write_text(json.dumps(controls))
+            with self.subTest(controls=controls), patch.object(runner, "ROOT", self.root), \
+                    patch.object(runner, "BASE", self.core.parent), \
+                    patch.object(sys, "argv", ["run-physical.py", "--tag", "bad-diagnostic",
+                        "--overrides", str(overrides)]), \
+                    patch.object(runner.subprocess, "check_output") as docker:
+                with self.assertRaisesRegex(RuntimeError, "DRT_SAVE"):
+                    runner.main()
+                docker.assert_not_called()
+            self.assertFalse((self.core / "experiments/bad-diagnostic").exists())
+
     def test_runner_timeout_stops_only_its_named_container(self):
         image = self.prepare_runner()
         with patch.object(runner, "ROOT", self.root), \
@@ -354,6 +429,28 @@ class TimeoutReportTests(unittest.TestCase):
         report = json.loads((self.base / "bounded-report.json").read_text())
         self.assertEqual(report["flow_exit_code"], 0)
         self.assertIsNone(report["container_termination"])
+
+    def test_first_resumed_step_timeout_reports_input_checkpoint_as_inherited(self):
+        run = self.base / "core/runs/bounded"
+        (run / "1-finished/state_out.json").unlink()
+        state = self.base / "core/experiments/bounded/checkpoint/state.json"
+        state.parent.mkdir(parents=True)
+        state.write_text(json.dumps({"metrics": {"timing__setup__ws": 7.5}}))
+        self.receipt["container_termination"] = {"status": "stopped"}
+        self.receipt["checkpoint"] = {
+            "state_path": "/work/core/experiments/bounded/checkpoint/state.json",
+            "snapshot_state_sha256": checkpoint.sha(state)}
+        self.report()
+        report = json.loads((self.base / "bounded-report.json").read_text())
+        self.assertEqual(report["state_origin"], "input_checkpoint")
+        self.assertIsNone(report["last_completed_step"])
+        self.assertEqual(report["completed_steps"], [])
+        self.assertEqual(report["metrics"]["timing__setup__ws"], 7.5)
+        self.assertFalse(report["detailed_routing_completed"])
+        self.assertEqual(report["state_sha256"], checkpoint.sha(state))
+        state.write_text(state.read_text() + "\n")
+        with self.assertRaisesRegex(RuntimeError, "Changed input checkpoint"):
+            self.report()
 
 
 if __name__ == "__main__":

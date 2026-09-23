@@ -3,8 +3,9 @@
 import argparse
 import hashlib
 import json
-import re
 from pathlib import Path
+import physical_checkpoint
+from routing_evidence import reconcile_iterations
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "build/physical"
@@ -31,9 +32,18 @@ def main():
     design = BASE / invocation.get("design", "core")
     run = design / "runs" / args.tag
     states = sorted(run.glob("[0-9]*-*/state_out.json"), key=lambda p: int(p.parent.name.split("-", 1)[0]))
-    if not states:
-        raise RuntimeError("No completed physical-flow steps")
-    last = json.loads(states[-1].read_text())
+    if states:
+        state_path = states[-1]
+        state_origin = "completed_step"
+    elif invocation.get("checkpoint"):
+        checkpoint = invocation["checkpoint"]
+        state_path = physical_checkpoint.artifact_path(checkpoint["state_path"], design)
+        if sha(state_path) != checkpoint["snapshot_state_sha256"]:
+            raise RuntimeError("Changed input checkpoint state")
+        state_origin = "input_checkpoint"
+    else:
+        raise RuntimeError("No completed physical-flow steps or input checkpoint")
+    last = json.loads(state_path.read_text())
     metrics = last["metrics"]
     resolved = json.loads((run / "resolved.json").read_text())
     stages = {}
@@ -65,12 +75,9 @@ def main():
     ])}
     routing_passes = []
     for log in run.glob("*-openroad-detailedrouting/openroad-detailedrouting.log"):
-        iteration = None
-        for line in log.read_text().splitlines():
-            if match := re.search(r"Start (\d+)(?:st|nd|rd|th) (?:optimization|stubborn tiles|guides tiles) iteration", line):
-                iteration = int(match[1])
-            if match := re.search(r"Number of violations = (\d+)", line):
-                routing_passes.append({"iteration": iteration, "violations": int(match[1])})
+        outer = BASE / (args.tag + ".log")
+        counts = reconcile_iterations(log.read_text(), outer.read_text() if outer.exists() else None)
+        routing_passes.extend(dict(routing_pass=p, iteration=i, violations=v) for (p, i), v in counts.items())
     report = {
         "tag": args.tag, "flow_exit_code": invocation["exit_code"],
         "variant": invocation.get("variant", "small-dense-cached"),
@@ -78,7 +85,10 @@ def main():
         "timeout_seconds": invocation.get("timeout_seconds"),
         "stop_reason": invocation.get("stop_reason"),
         "container_termination": invocation.get("container_termination"),
-        "last_completed_step": states[-1].parent.name,
+        "last_completed_step": states[-1].parent.name if states else None,
+        "state_origin": state_origin,
+        "state_path": "/work/core/" + state_path.relative_to(design).as_posix(),
+        "state_sha256": sha(state_path),
         "completed_steps": [p.parent.name for p in states],
         "detailed_routing_completed": any("-openroad-detailedrouting" in p.parent.name for p in states),
         "extracted_timing_completed": any("-openroad-stapostpnr" in p.parent.name for p in states),
