@@ -48,7 +48,7 @@ private def uploadBytes (ws : List (BitVec 64)) : List (BitVec 8 × BitVec 64) :
 
 def main : IO Unit := do
   let write := Execution.widenProgram (Compile.I2C.program ⟨3, 7⟩ ⟨0x53, 0xa6⟩)
-  let some ws := Storage.Readiness.upload write | throw (IO.userError "I2C write has no indexed image")
+  let some ws := Loader.ProgramImage.upload write | throw (IO.userError "I2C write has no indexed image")
   -- The hypotheses of `chip_runs_upload` for a real program.
   ensure (ws.length == 322) "upload length"
   ensure (((Execution.imageWords write).toList.eraseDups).length ≤ 32) "I2C write must fit the small store"
@@ -56,7 +56,7 @@ def main : IO Unit := do
   ensure ((List.range 322).all fun k => Storage.Small.capacity (BitVec.ofNat 9 k) (ws.getD k 0))
     "every word must pass the capacity check at its position"
   let receiver := Compile.UARTRx.program ⟨16, by decide, by decide, 0⟩
-  let some rx := Storage.Readiness.upload receiver | throw (IO.userError "UART RX has no indexed image")
+  let some rx := Loader.ProgramImage.upload receiver | throw (IO.userError "UART RX has no indexed image")
   ensure (!rx.all Storage.SinglePort.Ready) "the UART receiver is outside the one-port rule"
   -- A whole upload, then start, at the slowest legal phase lengths.
   let commands := uploadBytes ws ++ [(5, 0)]

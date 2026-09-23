@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.Structure
+import Pinwheel.Hardware.Feeder
 import Pinwheel.Hardware.PinBoundary
 import Pinwheel.Hardware.Loader.Machine
 import Pinwheel.Hardware.TimedPairs
@@ -17,23 +17,26 @@ def stageValues (p : PinBoundary.Samples 2) : Values Stage
   | _, .first => p.first
   | _, .second => p.second
 
-/-- The engine-side `incoming` is the second stage. Host ports pass through. -/
-def input : {w : Nat} → Machine.Input w → Expr Machine.Input (Extended R Stage) w
-  | _, .init => .input .init
-  | _, .reset => .input .reset
-  | _, .command => .input .command
-  | _, .data => .input .data
-  | _, .incoming => .reg (.extra .second)
+/-- Sample only protocol inputs; synchronous host ports retain their timing. -/
+def feeder : Feeder Machine.Input Stage Machine.Input where
+  input := fun p => match p with
+    | .incoming => .reg .second
+    | p => .input p
+  next := fun p => match p with
+    | .first => .input .incoming
+    | .second => .reg .first
 
-/-- The pipeline never resets. Nothing sits between the two stages, and only
-the second stage reaches engine logic. -/
-def stage : {w : Nat} → Stage w → Expr Machine.Input (Extended R Stage) w
-  | _, .first => .input .incoming
-  | _, .second => .reg (.extra .first)
+def input (p : Machine.Input w) : Expr Machine.Input (Extended R Stage) w :=
+  Feeder.outer (feeder.input p)
+
+def stage (p : Stage w) : Expr Machine.Input (Extended R Stage) w :=
+  Feeder.outer (feeder.next p)
 
 def netlist (n : Netlist R Machine.Output Machine.Input) :
-    Netlist (Extended R Stage) Machine.Output Machine.Input :=
-  n.extend input stage
+    Netlist (Extended R Stage) Machine.Output Machine.Input := n.extend input stage
+
+theorem netlist_feeder (n : Netlist R Machine.Output Machine.Input) :
+    netlist n = feeder.wrap n := rfl
 
 /-- What the wrapped netlist consumes on an edge where the pins show `i.incoming`. -/
 def engineInputs (i : Machine.Inputs) (p : PinBoundary.Samples 2) : Machine.Inputs :=

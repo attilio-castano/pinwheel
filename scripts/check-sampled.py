@@ -13,10 +13,11 @@ import re
 import sys
 import time
 
+from validation_run import Commands, sha
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import backend_readback as rb
-import process_group
 
 TOP = rb.TOP
 PROVED = {
@@ -30,11 +31,6 @@ PIPELINE = {
     "one-stage": ("r_pin_first", False),
     "bypass": ("incoming", False),
 }
-
-
-def sha(path):
-    import hashlib
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def ports(rtl):
@@ -85,25 +81,11 @@ def main():
                ROOT / "scripts/reactive-core-vectors.py", ROOT / "scripts/execution-vectors.py",
                ROOT / "scripts/uart_rx_oracle.py",
                ROOT / "tools/hardware-toolchain.json", ROOT / "tools/technology-library.json", ROOT / manifest]
+    sources += [ROOT / "scripts/validation_run.py", ROOT / "scripts/process_group.py"]
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     commands, started = [], time.monotonic()
 
-    def run(command, label, timeout=900, reject=None):
-        command = list(map(str, command))
-        then = time.monotonic()
-        result = process_group.run_captured(command, cwd=ROOT, timeout=timeout, log_path=out / f"{label}.log")
-        text = result.stdout + result.stderr
-        commands.append({"argv": command, "exit_code": result.returncode, "expected_failure": bool(reject),
-                         "seconds": round(time.monotonic() - then, 3)})
-        if reject:
-            if result.returncode == 0 or reject not in text:
-                raise RuntimeError(f"{label}: expected rejection containing {reject!r}; see {out / (label + '.log')}")
-            print(label + ": corruption rejected", flush=True)
-        elif result.returncode:
-            raise RuntimeError(f"{label}: {text[-3000:]}")
-        else:
-            print(label + ": passed", flush=True)
-        return text
+    run = Commands(ROOT, out, commands, default_timeout=900)
 
     run(["lake", "build", "Pinwheel", "sampled_emit"], "build", timeout=3600)
     run([ROOT / ".lake/build/bin/sampled_emit", out, args.variant], "emit")

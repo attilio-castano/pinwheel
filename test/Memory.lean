@@ -58,7 +58,7 @@ private def contract : IO Nat := do
 /-- The words the host pushes for an image: the library's definition, the one
 `Readiness.upload_ready` speaks about. -/
 private def upload (p : Execution.Image) : IO (List (BitVec 64)) := do
-  let some words := Storage.Readiness.upload p
+  let some words := Loader.ProgramImage.upload p
     | throw (IO.userError "program does not fit the 64-entry dictionary")
   pure words
 

@@ -1,4 +1,6 @@
 import Pinwheel.Hardware.Chip
+import Pinwheel.Hardware.HostResult
+import Pinwheel.Hardware.Storage.OnePortAdmission
 import Pinwheel.Hardware.Storage.OnePortEmit
 import Pinwheel.Hardware.Storage.TwoPortEmit
 
@@ -74,6 +76,15 @@ def chipText (name : String) (n : Netlist (Register X) Machine.Output Machine.In
     (extra : Array (Sigma X)) (label : {w : Nat} → X w → String) : Except String String :=
   Hardware.Netlist.moduleText name (Chip.netlist n) chipInputs (chipRegisters extra) chipOutputs
     chipInputLabel (chipRegisterLabel label) chipOutputLabel
+
+/-- The same core and transport, with the independent host result mailbox. -/
+def resultText (name : String) (n : Netlist (Register X) Machine.Output Machine.Input)
+    (extra : Array (Sigma X)) (label : {w : Nat} → X w → String) : Except String String :=
+  let rs := (chipRegisters extra).map (fun ⟨w, r⟩ => ⟨w, Extended.inner r⟩) ++
+    HostResult.registers.map (fun ⟨w, r⟩ => ⟨w, Extended.extra r⟩)
+  let labels : {w : Nat} → Extended (Chip.Register (Register X)) HostResult.Register w → String := fun r =>
+    match r with | .inner q => chipRegisterLabel label q | .extra q => HostResult.label q
+  Hardware.Netlist.moduleText name (HostResult.netlist n) chipInputs rs chipOutputs chipInputLabel labels chipOutputLabel
 
 end Pinwheel.Hardware.Storage.Backend.Policy
 

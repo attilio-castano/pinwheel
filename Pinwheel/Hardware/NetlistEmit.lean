@@ -3,7 +3,9 @@ import Pinwheel.Hardware.Emit
 
 namespace Pinwheel.Hardware.Netlist
 
-private def emitBody (registers : Array (Sigma R)) (outputs : Array (Sigma O))
+/-- Emit the body once. Diagnostic consumers may reuse its operation cache to
+identify existing expressions without adding observations or changing RTL. -/
+def emitBody (registers : Array (Sigma R)) (outputs : Array (Sigma O))
     (rn : {w : Nat} → R w → String) :
     {I : Nat → Type} → Netlist R O I → ({w : Nat} → I w → String) →
       Emit.M (Array String × Array String)

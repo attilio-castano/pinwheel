@@ -26,6 +26,7 @@ SUITES = [
     ('StorageCapacity', []), ('StorageRepetition', []), ('PinSampler', []),
     ('StructuralTiming', []), ('Enables', []), ('Latency', []), ('Memory', []),
     ('SerialUpload', []),
+    ('HostResult', []),
 ]
 
 

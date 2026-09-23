@@ -1,11 +1,12 @@
 import Pinwheel.Hardware.Storage.ChipBackend
 import Pinwheel.Hardware.Storage.ProgramUpload
+import Pinwheel.Hardware.Storage.Readiness
 
 /-! From the serial pins to a running program.
 
 The pieces, in order: a host session on the pins delivers its commands to the
 core (`Chip.session_delivers`); an upload's commands leave the reference machine
-holding the program with its engine reset (`Readiness.program_loads`); the chip's
+holding the program with its engine reset (`ProgramUpload.program_loads`); the chip's
 pins show that reference machine (`Policy.chip_trace`); and a machine that holds
 a program runs it, edge for edge, as the instruction-level engine does
 (`Machine.runs_program`). `chip_runs_upload` puts them in one statement. -/
@@ -24,7 +25,7 @@ between frames, engine stopped: a session carrying the stream of a fitting
 program `p`, then two more samples of anything, leaves the reference machine
 with `p` committed and its engine reset on `p`. -/
 theorem chip_program_loads {p : Execution.Image} {ws : List (BitVec 64)}
-    (h : Readiness.upload p = some ws) (hfits : Readiness.Fits p) (d₀ d₁ : BitVec 64)
+    (h : Loader.ProgramImage.upload p = some ws) (hfits : ProgramUpload.Fits p) (d₀ d₁ : BitVec 64)
     (x : Chip.State) (hcount : x.receiver.count = 0) (hfire : x.receiver.fire = false)
     (hfirst : Serial.Idle x.first) (hsecond : Serial.Idle x.second)
     (pins : List Chip.Pins) (a b : Chip.Pins)
@@ -33,13 +34,13 @@ theorem chip_program_loads {p : Execution.Image} {ws : List (BitVec 64)}
     Machine.Running p (Engine.Reactive.reset p)
       (referenceComponent.run m (Chip.consumed x (pins ++ [a, b]))) := by
   rw [reference_run]
-  exact Readiness.program_loads Small.capacity h (Readiness.upload_fits h hfits) d₀ d₁ _ m hidle
+  exact ProgramUpload.program_loads Small.capacity h (ProgramUpload.upload_fits h hfits) d₀ d₁ _ m hidle
     (Chip.session_delivers x hcount hfire hfirst hsecond pins a b _ hs)
 
 /-- On an upload of a ready program, every push the core consumes is ready: the
 one-port rule holds along the session. -/
 theorem chip_upload_ready {p : Execution.Image} {ws : List (BitVec 64)}
-    (h : Readiness.upload p = some ws) (hready : Readiness.Image p) (d₀ d₁ : BitVec 64)
+    (h : Loader.ProgramImage.upload p = some ws) (hready : Readiness.Image p) (d₀ d₁ : BitVec 64)
     (x : Chip.State) (hcount : x.receiver.count = 0) (hfire : x.receiver.fire = false)
     (hfirst : Serial.Idle x.first) (hsecond : Serial.Idle x.second)
     (pins : List Chip.Pins) (a b : Chip.Pins)
@@ -69,7 +70,7 @@ during `rest` that machine starts from a state with `p` committed and its engine
 reset on `p` — from which `Machine.runs_program_with` makes every edge without an
 `init` or a commit one edge of the instruction-level engine running `p`. -/
 theorem TwoPort.chip_runs_upload {p : Execution.Image} {ws : List (BitVec 64)}
-    (h : Readiness.upload p = some ws) (hfits : Readiness.Fits p) (d₀ d₁ : BitVec 64)
+    (h : Loader.ProgramImage.upload p = some ws) (hfits : ProgramUpload.Fits p) (d₀ d₁ : BitVec 64)
     (s : TwoPort.State) (hvalid : TwoPort.Valid s)
     (hidle : Reactive.runningValue s.reference.machine.core = false)
     (x : Chip.State) (hcount : x.receiver.count = 0) (hfire : x.receiver.fire = false)
@@ -93,7 +94,7 @@ theorem TwoPort.chip_runs_upload {p : Execution.Image} {ws : List (BitVec 64)}
 /-- The same for the one-port chip, for fitting programs that are ready, as long
 as what follows the upload keeps the rule. -/
 theorem OnePort.chip_runs_upload {p : Execution.Image} {ws : List (BitVec 64)}
-    (h : Readiness.upload p = some ws) (hfits : Readiness.Fits p) (hready : Readiness.Image p)
+    (h : Loader.ProgramImage.upload p = some ws) (hfits : ProgramUpload.Fits p) (hready : Readiness.Image p)
     (d₀ d₁ : BitVec 64) (s : OnePort.State) (hvalid : OnePort.Valid s)
     (hidle : Reactive.runningValue s.reference.machine.core = false)
     (x : Chip.State) (hcount : x.receiver.count = 0) (hfire : x.receiver.fire = false)

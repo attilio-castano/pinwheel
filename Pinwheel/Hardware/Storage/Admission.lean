@@ -7,8 +7,9 @@ The small backend already turns a push it cannot hold into a rejection (the
 capacity check). The same filter discharges any rule on pushed words: behind it
 a rule-conditional refinement holds for every input history, against the
 reference behind the same filter. For programs that satisfy the rule the filter
-changes nothing. The filter is a gate on the command port; no emitted netlist
-includes it yet. -/
+changes nothing. `AdmissionNetlist` implements this gate while preserving
+independent commit/start decoding; `OnePortAdmission` supplies the readiness
+predicate used by the admitted one-port result chip. -/
 namespace Pinwheel.Hardware.Storage.Admission
 open Loader
 
