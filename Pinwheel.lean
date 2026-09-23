@@ -89,6 +89,7 @@ import Pinwheel.Hardware.Storage.SramExecution
 import Pinwheel.Hardware.Storage.MapTile
 import Pinwheel.Hardware.Storage.TiledController
 import Pinwheel.Hardware.Storage.FetchContract
+import Pinwheel.Hardware.Storage.PairedController
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
