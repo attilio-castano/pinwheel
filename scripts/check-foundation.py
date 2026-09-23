@@ -22,7 +22,7 @@ SUITES = [
     ('CompiledI2C', ['--looped']), ('Binary', []),
     ('CompiledI2C', ['--binary-explicit']), ('CompiledI2C', ['--binary-looped']),
     ('I2CRead', []), ('Encoding', []), ('Hardware', []),
-    ('TimedContracts', []), ('FetchChoice', []), ('Interfaces', []),
+    ('TimedContracts', []), ('FetchChoice', []), ('FetchContract', []), ('Interfaces', []),
     ('StorageCapacity', []), ('StorageRepetition', []), ('PinSampler', []),
     ('StructuralTiming', []), ('Enables', []), ('Latency', []), ('Memory', []),
     ('SerialUpload', []),
