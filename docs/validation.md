@@ -828,3 +828,34 @@ Preserve historical experiment identities when integrating new work. The hardwar
 closure and optimization studies record their own artifact-specific evidence;
 new physical timing closure or default promotion is not a prerequisite for
 merging those functional proofs and experimental variants.
+
+
+## Timing and communication organization study
+
+The [organization study](physical-organization-study.md) reuses the matched
+saved-chip diagnosis through `report-physical-organization.py`. It verifies
+source/report/database/library identities, checks all 1,152 inherited/watchlist
+endpoints, reconciles 354 net/corner input loads and recomputes family budgets
+from the raw connection reports. Conditional timing obligations retain exact
+path and clock identities; a shared launch/capture endpoint cancels a common
+clock shift. Opposite checks and unmeasured physical effects stay explicit.
+
+```sh
+python3 -B scripts/report-physical-organization.py \
+  --study physical/experiments/paired-organization-study.json \
+  --check-tag organization-comparison-next
+python3 -B -m unittest discover -s test -p 'test_physical_organization*.py' -v
+```
+
+The selected saved-chip comparison takes 4.112 seconds with no CAD commands.
+The focused suite has 42 passes, including eleven new helper cases. Four
+integration controls reject a changed diagnosis hash, missing path role, added
+pipeline cycle and attempted state replication. The full exchange portfolio
+preserves virtual buffer-contracted identity for twenty rewired scalar inputs,
+but has no complete conditional wire-budget pass. Local decoder-copy costs
+include their additional upstream pin load; two parents reuse full-inventory
+raw measurements and two remain missing. No production admission or numerical
+budget changes. The [manifest](../physical/experiments/paired-organization-study-results.json)
+binds the source study, selected report and test receipts. Fresh tags preserve
+prior attempts; the helper tests are portable, while replaying the study needs
+its bound local physical artifacts and libraries.

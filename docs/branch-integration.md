@@ -55,8 +55,11 @@ targeted connections, but fails whole-chip timing/electrical qualification and
 has 33 coarse-routing overflow units. The saved-chip comparison separates
 control data delay, SRAM launch-clock delay and input capture-clock delay.
 It proposes expanding the next inventory to 1,152 connections; it does not
-change production admission or select another repair. See the
-[matched diagnosis](physical-targets.md#matched-clock-control-and-capacity-diagnosis).
+change production admission or select another repair. The subsequent
+[organization study](physical-organization-study.md) verifies those 1,152
+connections and finds no complete candidate within the bounded exchange policy.
+It adds reusable timing obligations and replica costs, retaining regional
+decoding for an explicit structural comparison.
 
 ## Evidence and reproduction
 
@@ -87,11 +90,11 @@ Two independent gaps deserve separate tasks within the research plan:
    accepted uploaded image to the controller's execution and package contract.
    Existing conditional lemmas and finite traces identify useful intermediate
    obligations; they do not finish this chain.
-2. **Screen physical organization with the diagnosed mechanisms.** Compare
-   area-neutral grouping across complete control and serial-data trees, and
-   inspect which clock-delivery constraints the pinned router actually supports.
-   Preserve passing neighbors and global capacity checks before selecting a
-   bounded physical candidate.
+2. **Compare complete physical organizations.** The bounded grouping screen is
+   complete. Obtain the missing decoder-parent measurements and opposite timing
+   checks, then cost regional tree replacement/reuse and local decoding with
+   explicit clock-delivery obligations. Preserve passing neighbors and global
+   capacity checks before selecting a bounded physical candidate.
 
 The physical experiments' 0.3% incremental area allowance, timing floors and
 20% electrical reserve are comparison-specific contracts, not universal chip

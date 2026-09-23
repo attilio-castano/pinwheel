@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "source_diagnosis": {
+    "path": "physical/experiments/paired-coupling-results.json",
+    "sha256": "f7412f47ca344f35f25930bc8db501f0b299a13579685ed262ac40e0bfe3eb11"
+  },
+  "exchange_policy": {
+    "path": "physical/experiments/paired-organization-policy.json",
+    "sha256": "9691419e39c053819780e0357bcbf08ed2a18bc97ed24697cfe86efbdbfe1916"
+  },
+  "added_pipeline_cycles": 0,
+  "path_roles": {
+    "mode_status": "Current rejection on status page zero; same-edge observation.",
+    "sram_status": "Admission rejection through the memory response; same-edge observation.",
+    "input_hold": "Host clear control entering its first sampler; minimum physical delay obligation.",
+    "parameter_hold": "Parameter-state self feedback; preserve state updates and hold protection."
+  },
+  "replicated_decoders": [
+    "_05733_",
+    "_09533_"
+  ],
+  "semantic_sources": [
+    {
+      "path": "Pinwheel/Hardware/Chip.lean",
+      "sha256": "eaf28c3932b2c9e068e50fe49d3d117242cb2e6de36f76074bf5dc9de394a331"
+    },
+    {
+      "path": "Pinwheel/Hardware/HostResult.lean",
+      "sha256": "5d1b57f0d2f74fcd90cbd542628993064a42960ba100016dd679b97da8941e63"
+    },
+    {
+      "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+      "sha256": "28143757cbb09f9df3180dfdeaaf36b67d4d224fa072cb1caa4d88cb0b9b930d"
+    },
+    {
+      "path": "Pinwheel/Hardware/Storage/ChipBackend.lean",
+      "sha256": "072ee07b60e978bae61feaf9a389c97b981c21998c13787dbc75a1bcaa5b8377"
+    },
+    {
+      "path": "physical/chip.sdc",
+      "sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1"
+    },
+    {
+      "path": "physical/experiments/paired-locality-contract.json",
+      "sha256": "666f215076304297c1896f78d8308e46eae395858893a9ece9dd26062a21eaa2"
+    }
+  ],
+  "boundary": "Study specification only. It rebinds the saved exchange policy to the measured checkpoint in memory; no existing acceptance contract is modified. Decoder copies are conditional proposals, not authorized physical edits."
+}

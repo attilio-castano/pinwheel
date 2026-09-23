@@ -50,6 +50,10 @@ class TimingWindows(unittest.TestCase):
         self.assertTrue(r['common_clock_shift_cancels'])
         self.assertEqual(r['clock_shift_coefficients'], {})
 
+    def test_package_path_does_not_claim_shared_clock_cancellation(self):
+        r = timing_budget(*matched('max', 'in', 'out'), .2)
+        self.assertFalse(r['common_clock_shift_cancels'])
+
     def test_positive_slack_can_miss_reserve(self):
         r = timing_budget(*matched(), 1.2)
         self.assertTrue(r['meets_zero_slack'])
@@ -108,6 +112,11 @@ class Replication(unittest.TestCase):
         with self.assertRaises(ValueError): replication_cost(c, lib, 'decode', ['fast'])
         for copies in [0, -1, True]:
             with self.assertRaises(ValueError): replication_cost(c, lib, 'decode', ['fast'], copies)
+
+    def test_missing_corners_rejected(self):
+        c, lib = self.fixture()
+        for corners in [[], ['fast', 'fast']]:
+            with self.assertRaises(ValueError): replication_cost(c, lib, 'decode', corners)
 
 
 if __name__ == '__main__':

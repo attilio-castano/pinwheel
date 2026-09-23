@@ -358,6 +358,16 @@ path-specific clock-delivery contract, rather than a blanket rule that every
 clock shift or longer wire has the same effect. The proposed next inventory
 adds the shared-control tree's six branches while retaining global checks.
 
+The [timing and communication study](physical-organization-study.md) now joins
+those measurements to explicit same-edge observations, conditional clock-shift
+bounds and alternative distribution costs. `physical_organization_study.py`
+owns the small timing/replication calculations; the existing planner still owns
+consumer exchanges. The reporter verifies 1,152 endpoint connections and reuses
+saved parent-net measurements. Its bounded exchange portfolio has no complete
+conditional pass. Local decoder copies remain a structural alternative whose
+area, upstream wires and clock environment must be budgeted explicitly. No
+study result bypasses the independent physical route intake.
+
 ## Proof and validation boundaries
 
 [Processor verification](processor-verification.md#the-chain-of-evidence) defines

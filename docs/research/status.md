@@ -26,10 +26,17 @@ rises 22 → 33; all 33 new markers reconcile with the saved grid. Area remains
 +0.299786%, within the unchanged 0.3% cap. The read-only comparison now separates
 the causes: mode/status loses 2.318 ns mainly in data, SRAM/status loses 0.307 ns
 mainly in launch-clock delivery, and input hold loses 39.835 ps through its
-capture clock. Next screen area-neutral data regrouping and a supported
-clock-delivery constraint separately, using the measured watchlist and original
-budgets. Keep the local evidence, 43-buffer control and opt-in pipeline. Detailed
-routing remains unadmitted.**
+capture clock. The [organization study](../physical-organization-study.md) now
+checks the 1,152-connection watchlist and compares existing trees, bounded
+regrouping and local decoding in 4.112 seconds without CAD. Twelve swaps across
+fourteen branches preserve virtual identity but have no complete conditional
+wire-budget pass. Restoring the earlier clock environment still leaves mode
+and SRAM setup below the retained floors. Two decoder copies total 21.7728 µm²,
+exceeding the remaining 0.767837 µm²; their broader physical potential remains
+open. Next obtain the two missing parent-net measurements and opposite timing
+checks, then compare regional tree replacement/reuse and decoding under an
+explicit structural budget. Keep original budgets, the local evidence,
+43-buffer control and opt-in pipeline. Detailed routing remains unadmitted.**
 
 The [full-capacity paired model](../compact-execution-study.md#full-capacity-follow-up)
 retains canonical E64 operations and the 256-position/32-record capacity using

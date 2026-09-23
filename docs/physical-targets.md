@@ -18,9 +18,14 @@ ten absent-container checks pass. Area remains **359,371.6704 µm²**, cumulativ
 **+0.299786%**. The subsequent [read-only diagnosis](#matched-clock-control-and-capacity-diagnosis)
 now separates the mechanisms: mode/status loses **2.318 ns**, almost entirely
 in data; SRAM/status loses **0.307 ns**, mostly in its launch clock; input hold
-loses **39.835 ps** through capture-clock delay. Next screen area-neutral data
-organization and a clock-delivery constraint separately, using the measured
-watchlist and original budgets. Detailed routing remains unadmitted.
+loses **39.835 ps** through capture-clock delay. The subsequent
+[organization study](physical-organization-study.md) completes a 4.112-second
+saved-chip screen: twelve consumer swaps have no complete conditional pass, and
+two proposed decoder copies exceed the remaining incremental area allowance.
+Clock-environment replay still leaves both setup paths below their retained
+floors. Next compare regional tree replacement and decoding with explicit
+upstream, clock and area budgets; the original contract remains intact.
+Detailed routing remains unadmitted.
 [Research status](research/status.md) owns allocation.
 The [initial](../physical/experiments/physical-target-results.json),
 [repair](../physical/experiments/paired-closure-results.json) and

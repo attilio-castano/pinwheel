@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "status": "study-completed",
+  "recorded_at_utc": "2026-09-23T20:51:47.099791+00:00",
+  "decision": "Do not promote the bounded exchange portfolio. Retain regional decoding for an explicitly budgeted structural comparison; complete parent and opposite-check timing evidence first.",
+  "study": {
+    "path": "physical/experiments/paired-organization-study.json",
+    "sha256": "c410d03a7734d2efbd47d9ca87d851864c3c14e794b4047c95ee4fcbaa64b257"
+  },
+  "source_diagnosis": {
+    "path": "physical/experiments/paired-coupling-results.json",
+    "sha256": "f7412f47ca344f35f25930bc8db501f0b299a13579685ed262ac40e0bfe3eb11"
+  },
+  "source_database_sha256": "cbd36b49f8ebe75aa269ec30dd1753a6aebd032ca493096c76cbd0d00fbfd904",
+  "report": "build/validation/paired-organization-comparison-04/report.json",
+  "report_sha256": "2cadb6f430305cdb8713b9f04d24ffe7924c9837439520238c4ef65b7309b910",
+  "check_seconds": 4.112,
+  "executed_cad_commands": 0,
+  "physical_qualification": false,
+  "whole_chip_route_admitted": false,
+  "production_admission_changed": false,
+  "added_pipeline_cycles": 0,
+  "inherited_coverage_connections": 1152,
+  "independent_pin_corner_checks": 354,
+  "area": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359371.6704,
+    "limit_um2": 359372.43823679996,
+    "remaining_um2": 0.7678367999615148
+  },
+  "regional_exchange": {
+    "affected_families": 5,
+    "swaps": 12,
+    "changed_branches": 14,
+    "combined_virtual_identity": {
+      "checked": true,
+      "rewired_scalar_inputs": 20,
+      "whole_circuit_buffer_contracted_identity": true,
+      "actual_physical_edit": false,
+      "independent_new_physical_readback": false,
+      "timing_qualified": false
+    },
+    "all_targets_pass_conditional_screen": false
+  },
+  "timing_deficits_ns": {
+    "input_hold": {
+      "corner": "nom_fast_1p32V_m40C",
+      "slack_ns": 0.064550534,
+      "floor_ns": 0.07927839,
+      "required_slack_gain_ns": 0.014727855999999998,
+      "restored_environment_remaining_deficit_ns": 0
+    },
+    "mode_status": {
+      "corner": "nom_slow_1p08V_125C",
+      "slack_ns": -0.055813134,
+      "floor_ns": 0.3673431,
+      "required_slack_gain_ns": 0.42315623399999996,
+      "restored_environment_remaining_deficit_ns": 0.403915556
+    },
+    "sram_status": {
+      "corner": "nom_slow_1p08V_125C",
+      "slack_ns": 0.113294266,
+      "floor_ns": 0.3673431,
+      "required_slack_gain_ns": 0.254048834,
+      "restored_environment_remaining_deficit_ns": 0.04842177199999992
+    }
+  },
+  "local_decoding": [
+    {
+      "instance": "_05733_",
+      "cell": "sg13cmos5l_xor2_1",
+      "extra_cell_area_um2": 14.5152,
+      "fits_remaining_increment_budget": false,
+      "upstream_electrical_measurements_complete": false
+    },
+    {
+      "instance": "_09533_",
+      "cell": "sg13cmos5l_nor2_1",
+      "extra_cell_area_um2": 7.2576,
+      "fits_remaining_increment_budget": false,
+      "upstream_electrical_measurements_complete": true
+    }
+  ],
+  "missing_parent_measurements": [
+    "_01590_",
+    "_01808_"
+  ],
+  "reused_parent_measurements": [
+    "_04488_",
+    "_04717_"
+  ],
+  "tests": {
+    "unit_tests": 42,
+    "new_unit_tests": 11,
+    "unit_receipt": {
+      "path": "build/validation/paired-organization-study-01/comparison-02.json",
+      "sha256": "f6050341bb47eb23b99b656326f032fb8be31bb0ff6876226a825d1837e98046"
+    },
+    "integration_receipt": {
+      "path": "build/validation/paired-organization-study-01/comparison-04.json",
+      "sha256": "fd946f88df090f5a8a4eff2385d486023f52caadb11729f184f68f76be7191ca"
+    },
+    "negative_controls": [
+      "changed diagnosis hash",
+      "missing path classification",
+      "unapproved pipeline cycle",
+      "state replication"
+    ]
+  },
+  "evidence_boundary": [
+    "One-sided matched-path clock bounds do not constitute a feasible clock tree or complete timing proof.",
+    "Exchanges retain existing cells and per-corner pin loads; span scaling is a conditional heuristic.",
+    "Decoder replication costs include extra gate area and parent pin load, but unknown wires and placement.",
+    "Regional guidance is not a physical edit. No candidate is promoted on geometry or local budgets alone.",
+    "The fast corner retains the historical standard-cell -40 C / SRAM -55 C mismatch."
+  ],
+  "next_gate": [
+    "Collect the two missing parent-net measurements and opposite checks at the four matched path boundaries.",
+    "Compare regional tree replacement/reuse and local decoding with explicit area accounting, protected hold stages and path-specific clock budgets.",
+    "Preserve the old acceptance contract; a separately budgeted comparison must state its absolute area limit and reference before execution.",
+    "Require a complete physical candidate and independent qualification before admitting coarse or detailed routing."
+  ]
+}

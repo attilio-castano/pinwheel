@@ -3816,3 +3816,62 @@ labels its earlier hybrid sequence and points to the current paired decision.
 No physical experiment, RTL behavior change, default promotion, push, PR or
 licensing decision is part of this consolidation. Source snapshots, checks and
 commit receipts live in `build/validation/branch-consolidation-01/`.
+
+
+## 2026-09-23 — Timing obligations and complete organization comparison
+
+Implemented the approved organization study with saved chips and no CAD run.
+The source audit identifies live rejection on page zero as part of the current
+edge observation; the existing registered page-three result is a distinct view.
+The host input-hold witness is `ui_in[6]` to first-stage clear control, and the
+parameter self-hold witness uses one physical clock endpoint. The measured SDC
+matches the current 20 ns / 4.0 ns maximum / 0.2 ns minimum I/O assumptions.
+The organizer page still specifies 6x4; the 0.3% increment remains our separate
+experimental comparison budget.
+
+`physical_organization_study.py` adds conditional clock-shift obligations and
+combinational-copy costs. `report-physical-organization.py` joins these to the
+existing planner and independent virtual identity check. The first helper
+milestone is committed as `47aaa9c`. No Lean/RTL source or physical edit changes.
+
+Selected comparison **paired-organization-comparison-04** completes in
+**4.112 s** under a **120-second** command cap. It checks all **1,152** inherited
+and proposed-watchlist connections against the selected database, reconstructs
+five trees and reconciles **354** independent net/corner pin loads. Twelve
+consumer swaps across fourteen branches change twenty scalar inputs with whole
+buffer-contracted virtual identity preserved. No complete family clears the
+conditional wire screen. The bit-51 ratio improves **1.725 -> 1.186**, which is
+still above budget and remains a geometric scenario rather than a routed result.
+
+Clock-environment replay keeps newer data delay and substitutes earlier launch
+and required time. It restores the measured input-hold reserve but still leaves
+**0.403916 ns mode/status** and **0.048422 ns SRAM/status** below retained setup
+floors. These are conditional, one-sided obligations; no feasible clock tree is
+claimed, and opposite checks remain to collect.
+
+Two regional decoder-copy proposals add **14.5152 / 7.2576 um^2**, or
+**21.7728 um^2** together, against **0.767837 um^2** left in the existing allowance.
+The NOR's parent nets already have full-inventory measurements; reusing them
+shows that the extra pin load fits the capacitance reserve with saved wire.
+The XOR's two parent measurements remain missing. New wire, slew, placement and
+timing remain unqualified. The small cost supports retaining local decoding as
+a structural alternative instead of interpreting the incremental-cap rejection
+as physical infeasibility.
+
+**42 focused tests** pass, including eleven new helper cases. Four final
+integration mutations reject changed diagnosis identity, missing path coverage,
+an added cycle and state replication. The initial preparation attempt expected
+hash strings to be reference objects and stopped before writing its initial
+receipt; the error receipt is preserved. Four completed comparison versions and
+all earlier outputs remain, with the fourth including reusable full-inventory
+parent measurements and measured-SDC identity. No timeout occurred.
+
+**Decision:** compare regional tree replacement/reuse and decoding with explicit
+area, clock and shared-capacity budgets. Obtain the two missing parent-net
+measurements and opposite timing checks before selecting a physical candidate.
+Keep the prior admission contract and all numerical budgets intact; any separate
+budget must be declared before execution. No coarse/detailed route is admitted.
+The [study](../physical-organization-study.md) owns interpretation and the
+[manifest](../../physical/experiments/paired-organization-study-results.json)
+binds the selected report and checks. Supporting receipts are under
+`build/validation/paired-organization-study-01/`.

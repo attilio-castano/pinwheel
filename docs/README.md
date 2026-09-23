@@ -14,6 +14,7 @@ statements in individual studies are not the current work queue.
 | Which storage and execution choices were compared? | [SRAM comparison](storage-primitives.md), [paired execution](compact-execution-study.md) |
 | What did the intermediate architecture experiments teach us? | [State and communication](chip-architecture-study.md), [map slices](map-slice-study.md), [map tiles](map-tile-study.md), [fetch deadlines and upload pipeline](fetch-contract-study.md) |
 | How do logical responsibilities reach physical checks? | [Shared physical targets and organization](physical-targets.md) |
+| How should timing failures guide organization choices? | [Timing and communication organization study](physical-organization-study.md) |
 | How can I diagnose a saved layout cheaply? | [Routing diagnostics](routing-diagnostics.md), [earlier chip experiments](chip-physical-study.md) |
 | What remains before submission? | [Submission obligations](submission-plan.md), read alongside current [research status](research/status.md) |
 | How do I reproduce and validate changes? | [Development setup](development.md), [validation](validation.md) |

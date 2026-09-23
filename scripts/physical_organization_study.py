@@ -48,6 +48,7 @@ def timing_budget(comparison, specification, floor_ns):
         raise ValueError('Mismatched path boundaries')
 
     coefficients = defaultdict(int)
+    clock_endpoints = []
     for kind, sign in (('launch_clock', -sense), ('capture_clock', sense)):
         arcs = comparison['clock_arc_deltas'][kind]
         for arc in arcs:
@@ -58,6 +59,7 @@ def timing_budget(comparison, specification, floor_ns):
             raise ValueError('Missing clock path or unexpected clock on package boundary')
         if arcs:
             pin = arcs[-1]['after']['pin']
+            clock_endpoints.append(pin)
             if pin.rsplit('/', 1)[0] != specification['source' if kind == 'launch_clock' else 'sink'].rsplit('/', 1)[0]:
                 raise ValueError('Clock path ends at a different instance')
             for label in ('before', 'after'):
@@ -81,7 +83,7 @@ def timing_budget(comparison, specification, floor_ns):
                 slack_ns=slack, meets_zero_slack=slack >= 0, meets_retained_floor=margin >= 0,
                 margin_to_floor_ns=margin, required_slack_gain_ns=max(0, -margin),
                 clock_shift_coefficients=coefficients, isolated_clock_shift_bounds_ns=bounds,
-                common_clock_shift_cancels=not coefficients,
+                common_clock_shift_cancels=len(clock_endpoints) == 2 and not coefficients,
                 restored_saved_clock_environment_slack_ns=restored_slack,
                 restored_environment_meets_floor=restored_slack >= floor_ns,
                 restored_environment_remaining_deficit_ns=max(0, floor_ns - restored_slack),
@@ -100,6 +102,8 @@ def replication_cost(context, library, instance, corners, copies=1):
     """
     if type(copies) is not int or copies < 1:
         raise ValueError('Require a positive extra-copy count')
+    if not corners or len(set(corners)) != len(corners):
+        raise ValueError('Require distinct measured corners')
     info = context['instances'][instance]
     if info['macro'] or info['cell'] in CHAIN_CELLS | {FF}:
         raise ValueError('Replicate only combinational logic, not state or transport')
@@ -111,17 +115,23 @@ def replication_cost(context, library, instance, corners, copies=1):
     if (not inputs or len(outputs) != 1 or len(inputs) + len(outputs) != len(terms) or
             any(context['nets'][net]['type'] != 'SIGNAL' for net, _ in terms)):
         raise ValueError('Require one combinational signal output and only signal inputs')
+    footprint = area(info['bbox_dbu'], context['dbu_per_micron'])
+    if _finite(footprint) <= 0:
+        raise ValueError('Require a positive cell footprint')
     loads = {}
     for corner in corners:
         totals = defaultdict(lambda: dict(rise=0.0, fall=0.0))
         for net, pin in inputs:
             caps = library.capacitance_edges(corner, info['cell'], pin)
             for edge in ('rise', 'fall'):
-                totals[net][edge] += _finite(caps[edge][1]) * copies
+                cap = _finite(caps[edge][1])
+                if cap < 0:
+                    raise ValueError('Require nonnegative pin capacitance')
+                totals[net][edge] += cap * copies
         loads[corner] = {net: max(edges.values()) for net, edges in totals.items()}
     return dict(instance=instance, cell=info['cell'], extra_copies=copies,
                 output_net=outputs[0][0], inputs=[dict(net=n, pin=p) for n, p in inputs],
-                extra_cell_area_um2=copies * area(info['bbox_dbu'], context['dbu_per_micron']),
+                extra_cell_area_um2=copies * footprint,
                 extra_upstream_pin_capacitance_pf=loads,
                 extra_wire_capacitance_pf=None, legal_placement_qualified=False,
                 timing_qualified=False, source_netlist_changed=False)
