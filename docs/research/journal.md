@@ -1,9 +1,45 @@
 # Research journal
 
-Concise reconstruction index. [Results](results.md) owns interpretations and
+Dated reconstruction record. [Results](results.md) owns interpretations and
 [status](status.md) owns current priorities. Detailed commands and hashes stay
 with the technical study and run artifacts. Append decisive receipts; do not
 replace a failed attempt with its successful retry.
+
+## Find a receipt
+
+Choose a topic or date to jump to the sequence of attempts, including failed
+or interrupted work.
+
+### By topic
+
+| Topic | Entry points |
+| --- | --- |
+| Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
+| Artifact proof and composition | [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
+| Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
+| Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
+| Physical correlation and placement | [Estimate/extraction diagnosis](#2026-09-17-estimateextraction-correlation-diagnosis), [placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution), [exact mapping and hold repair](#2026-09-22--preserve-the-mapping-through-placement-and-hold-repair) |
+| Repair and admission | [Whole-chip signal repair](#2026-09-23--whole-chip-qualification-of-the-27-buffer-signal-repair), [rejected shared-edit route](#2026-09-23--shared-physical-edits-and-a-rejected-whole-chip-qualification), [timing and organization comparison](#2026-09-23--timing-obligations-and-complete-organization-comparison) |
+
+### By date
+
+| Date | Start of that day's entries | Main threads |
+| --- | --- | --- |
+| 2026-09-15 | [UART stream clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks) | Protocols, compilers, decoder and backend screens |
+| 2026-09-17 | [Physical correlation](#2026-09-17-estimateextraction-correlation-diagnosis) | Sampler, structural timing, input latency, memory policies |
+| 2026-09-18 | [Fetch organizations](#2026-09-18-fetch-organizations-as-a-parameter-the-one-port-backend) | One/two-port backends and whole-chip composition |
+| 2026-09-19 | [Branch review](#2026-09-19-local-branch-review-and-submission-plan) | SRAM comparison, integration and routing diagnosis |
+| 2026-09-21 | [Placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) | Closed-loop SRAM, hybrid/direct costs and tile boundaries |
+| 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
+| 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
+
+## Future receipt shape
+
+Record the actual date, study/run identity, source commit or candidate digest,
+evidence location and digest, completion/interruption state, concise result,
+resource accounting when available, and link to the result or current status.
+For outside research, link the source interpretation and adoption decision in the
+owning study. Interpretation-only updates need no fabricated run identity.
 
 ## 2026-09-15 — Continuous UART reception with unequal clocks
 
@@ -1881,14 +1917,6 @@ Require another bounded full-chip mapping/equivalence screen before allocating
 physical work. The production baseline, previous physical receipts, macro
 locations and half-height corridor are preserved; licensing remains pending.
 
-## Future receipt shape
-
-Record the actual date, study/run identity, source commit or candidate digest,
-evidence location and digest, completion/interruption state, concise result,
-resource accounting when available, and link to the result or current status.
-For outside research, link the source interpretation and adoption decision in the
-owning study. Interpretation-only updates need no fabricated run identity.
-
 ## 2026-09-22 — Combined controller/selection mapping and complete load budget
 
 Completed the [combined boundary comparison](../map-tile-study.md#combined-controller-and-selection--september-22)
@@ -3064,7 +3092,7 @@ cell/SRAM temperature mismatch remain explicit. Extracted timing, detailed DRC,
 antenna closure and physical power qualification are still open. No RTL,
 pipeline, protocol, backend-default or licensing change occurred.
 
-### 2026-09-23 — Whole-chip qualification of the 27-buffer signal repair
+## 2026-09-23 — Whole-chip qualification of the 27-buffer signal repair
 
 Executed the approved **single** `OpenROAD.GlobalRouting` step as
 `paired-signal-route-01`, with a 600-second/four-CPU/6 GiB cap and all automatic
@@ -3127,7 +3155,7 @@ wire estimates and the fast cell/SRAM temperature mismatch remain explicit.
 No RTL, pipeline, protocol, default-backend or licensing change occurred.
 
 
-### 2026-09-23 — Measured distribution contract and checked family repair plan
+## 2026-09-23 — Measured distribution contract and checked family repair plan
 
 Completed the approved saved-evidence inventory and plan preparation without
 executing another repair or route. The shared `physical_distribution.py` helper

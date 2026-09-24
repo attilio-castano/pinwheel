@@ -533,8 +533,9 @@ units**, one in each of 22 Metal3 grid cells. **Seventeen lie north of SRAM**;
 the other five form a column at x=259.2 µm. One cell overlaps the macro and one
 the reserved corridor. Only **seven** overlap coarse guides of the 27 failing
 nets; the other **15** require separate traffic diagnosis. The coordinate and
-guide-candidate lists are in
-[`congestion.json`](../build/validation/paired-repair-plan-01/congestion.json).
+guide-candidate lists are in the ignored local artifact
+`build/validation/paired-repair-plan-01/congestion.json`, identified by the
+tracked [preparation manifest](../physical/experiments/paired-repair-plan-results.json).
 Guide overlap does not assign blame to a net or establish detailed DRC. Saved
 grid totals include capacity reductions in usage and are not free-track counts.
 
@@ -636,8 +637,10 @@ native readback takes another 0.865 seconds. All **eight exact containers** are
 independently absent, **616 prior source/evidence identities** remain unchanged,
 and five documentation pages are updated separately. The
 [signal-repair manifest](../physical/experiments/paired-signal-repair-results.json)
-binds the candidate, measurement, complete functional ancestry and
-[connection reports](../build/validation/paired-signal-repair-01/connections.json).
+binds the candidate, measurement and complete functional ancestry. The local
+connection reports reside at
+`build/validation/paired-signal-repair-01/connections.json`; this generated
+artifact requires the matching local run or reproduction.
 
 **Decision:** retain this locally qualified candidate. Bind its exact source and
 complete ancestry through routing intake, account for the saved congestion
@@ -952,7 +955,8 @@ Saved paths make the next diagnosis concrete:
 
 - **Status setup:** the worst output path changes from SRAM bit 51 to bit 53,
   both ending at `uo_out[4]`. An exact matching bit-53 path prefix in the old
-  reports shows `_06301_/Y → _06302_/B1` growing **0.068197 → 0.113368 pF**.
+  reports shows net `_02486_` (`_06301_/Y → _06302_/B1`) growing
+  **0.068197 → 0.113368 pF**.
   Its gate delay grows **1.117685 → 1.732932 ns**, adding **0.615247 ns**.
   This one-receiver link is outside the branching-family inventory. The prefix
   comparison is valid; the differing worst output paths are not a same-path

@@ -167,7 +167,8 @@ one additional buffer in the candidate: 288,895.4586 µm² of standard cells,
 and maximum fanout is again 15. Both corners fail the structural screen.
 Cell counts exclude `$scopeinfo` metadata; areas include every physical cell.
 
-The [bound diagnostic](../build/validation/tiled-chip-02/boundary-diagnostics.json)
+The local diagnostic `build/validation/tiled-chip-02/boundary-diagnostics.json`
+(identified by the tracked [tile result](../physical/experiments/tiled-chip-results.json))
 locates the composed loads. Cursor bits zero and one each drive eight engine
 pins and seven map pins. Upload-data bits three and four each drive seven
 engine pins, four map distribution roots and two SRAM pins. A map-internal
@@ -220,7 +221,8 @@ The [subsequent timing study](fetch-contract-study.md) supersedes that allocatio
 rule while preserving this receipt. These gate and sink counts do not measure
 delay, electrical limits or wire costs.
 
-The [bound path diagnostic](../build/validation/combined-chip-01/boundary-diagnostics.json)
+The local path diagnostic `build/validation/combined-chip-01/boundary-diagnostics.json`
+(identified by the tracked [combined result](../physical/experiments/combined-chip-results.json))
 traces one deepest path per address from cached-word bit 35. The two paths have
 18 controller/selection gates before a candidate PC, one distribution buffer,
 four tile gates, then seven or six final selection gates. No signal exceeds ten

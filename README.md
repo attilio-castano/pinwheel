@@ -60,16 +60,21 @@ The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).
 
-## Start here
+## Find your way around
 
-- [Run the host demo](docs/host-workflow.md): upload UART TX/RX, SPI, I²C and a custom trigger to one unchanged RTL chip, then read and consume their results.
-- [Current research status](docs/research/status.md): the active question, evidence, and next decision.
-- [Submission plan](docs/submission-plan.md): remaining functionality, tool changes, dependencies, and completion gates.
-- [Research results](docs/research/results.md): completed conclusions and conditions for reconsidering them.
-- [Research journal](docs/research/journal.md): dated milestones and evidence locations.
-- [Research workflow](docs/research/README.md): how experiments and outside research become durable knowledge.
-- [Technical documentation](docs/README.md): protocol models, architecture, proofs, storage studies, and physical reports.
-- [Development setup](docs/development.md): installation, pinned tools, and reproduction commands.
+To resume an experiment, start at [research status](docs/research/status.md) for
+the active decision. Use the [technical topic map](docs/README.md) to find the
+relevant contract or study, then follow its [result](docs/research/results.md),
+manifest, and reproduction steps. The [journal](docs/research/journal.md) records
+dated milestones; a next-step statement in an older study is historical context.
+
+| I want to... | Start here |
+| --- | --- |
+| Try the programmable chip | [Host workflow](docs/host-workflow.md): load UART TX/RX, SPI, I²C, and a custom trigger into one unchanged RTL chip, then retrieve results. |
+| Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
+| See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
+| Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |
+| Reproduce or extend work | [Development setup](docs/development.md), [validation](docs/validation.md), and the [research workflow](docs/research/README.md). |
 
 ## Build
 

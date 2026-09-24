@@ -1,13 +1,14 @@
-# Branch integration guide
+# Chip-contract integration record
 
-Updated 2026-09-23. This guide describes the integration boundaries of
-`codex/chip-contract-consolidation`. [Research status](research/status.md) owns
-the next research decision; this page owns the review order and separation of
-reusable infrastructure from experimental implementations.
+Recorded 2026-09-23; integrated on local main in `f0be558` on 2026-09-24.
+This is the review record for `codex/chip-contract-consolidation`, not a live
+work queue. [Research status](research/status.md) owns the current decision.
+The sections below preserve the dependency order and the separation of reusable
+infrastructure from experimental implementations at integration time.
 
 The objective is a reloadable protocol engine with specified pin timing,
-capture, branching and atomic program replacement. The branch connects that
-behavior to storage schedules, emitted hardware, mapped ownership and measured
+capture, branching and atomic program replacement. The integration connected
+that behavior to storage schedules, emitted hardware, mapped ownership and measured
 physical distribution. Physical closure remains open.
 
 ## Review in dependency order
@@ -50,11 +51,11 @@ SRAM comparison, map tiles and upload pipeline retain their individual
 dispositions in [results](research/results.md). A rejected configuration stays
 useful evidence; it is not a blanket rejection of its underlying idea.
 
-**Current physical result:** the latest locality candidate improves its six
+**Physical result at integration:** the locality candidate improves its six
 targeted connections, but fails whole-chip timing/electrical qualification and
 has 33 coarse-routing overflow units. The saved-chip comparison separates
 control data delay, SRAM launch-clock delay and input capture-clock delay.
-It proposes expanding the next inventory to 1,152 connections; it does not
+The diagnosis proposed expanding the inventory to 1,152 connections; it did not
 change production admission or select another repair. The subsequent
 [organization study](physical-organization-study.md) verifies those 1,152
 connections and finds no complete candidate within the bounded exchange policy.
@@ -82,9 +83,10 @@ that a newly audited import or updated document was present in an earlier run.
 The consolidation's isolated Git-index snapshots and validation receipts live
 under `build/validation/branch-consolidation-01/`.
 
-## Next work after consolidation
+## Open gates identified at integration
 
-Two independent gaps deserve separate tasks within the research plan:
+Two independent gaps were identified at integration. Consult
+[research status](research/status.md#next-discriminators) before allocating work:
 
 1. **Complete the paired behavioral correspondence.** Connect the encoder and
    accepted uploaded image to the controller's execution and package contract.

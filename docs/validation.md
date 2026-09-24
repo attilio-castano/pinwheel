@@ -5,9 +5,9 @@ separately reproducible with the pinned Apple Silicon tools and explicit fixture
 prerequisites. Passing the portable gate does not establish emitted-RTL
 equivalence, physical fit, or an operating frequency.
 
-The [branch integration guide](branch-integration.md) identifies the retained
-interfaces, experimental backends and remaining proof obligations. During
-consolidation, validate the exact staged source snapshot so uncommitted modules
+The [integration record](branch-integration.md) identifies retained interfaces,
+experimental backends and proof obligations at consolidation. When integrating
+a staged subset, validate that exact source snapshot so uncommitted modules
 cannot supply a dependency missing from the commit. Reusing a prior validated
 Lean build cache is acceptable; the current source build, complete import
 coverage and axiom audit must still pass. Generated fixtures belong to the
