@@ -19,7 +19,7 @@ ten absent-container checks pass. Area remains **359,371.6704 µm²**, cumulativ
 now separates the mechanisms: mode/status loses **2.318 ns**, almost entirely
 in data; SRAM/status loses **0.307 ns**, mostly in its launch clock; input hold
 loses **39.835 ps** through capture-clock delay. The subsequent
-[organization study](physical-organization-study.md) completes a 4.112-second
+[organization study](physical/physical-organization-study.md) completes a 4.112-second
 saved-chip screen: twelve consumer swaps have no complete conditional pass, and
 two proposed decoder copies exceed the remaining incremental area allowance.
 Clock-environment replay still leaves both setup paths below their retained
@@ -551,8 +551,8 @@ Added cell-footprint area is **636.8544 µm² (0.178061%)**. The rectangles are
 placement hints; site alignment, legalization, power binding, pin access and
 timing have not been established for the candidate.
 
-This applies the [interface and timing-contract lessons](timed-components.md#sources-and-next-application)
-and the [separation of hardware allocation from scheduling](chip-architecture-study.md#the-structural-next-step):
+This applies the [interface and timing-contract lessons](engine/timed-components.md#sources-and-next-application)
+and the [separation of hardware allocation from scheduling](physical/chip-architecture-study.md#the-structural-next-step):
 one checked description connects semantic owners to concrete pins and defines
 the obligations a physical implementation must retain. These Python checks are
 not Lean proofs of placement, routing or timing.

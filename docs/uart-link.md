@@ -4,7 +4,7 @@ Implemented 2026-09-15. A transmitted 8N1 byte now has a Lean proof through
 independent clocks, a bounded digital observation delay, start detection, and
 reception. The result also composes through the existing TX and RX compilers.
 
-The [one-byte receiver](uart-receive.md) previously required the client to supply
+The [one-byte receiver](protocols/uart-receive.md) previously required the client to supply
 correct start and data/stop samples. This milestone derives those samples from
 the actual transmitter waveform and numerical timing conditions. It establishes
 one-frame communication under a stated environment contract.
@@ -126,12 +126,12 @@ age bounds, without supplying `Rx.SamplesFrame` or an assumed received byte.
 Compiler composition relates two independent modeled instances: the existing
 TX `Engine.Program` and RX `Reactive.Program 255 15`. TX's unrelated input and
 the spare RX input may vary arbitrarily. Existing RX lowering and storage proofs
-remain owned by [the receive implementation](uart-receive.md#repository-integration).
+remain owned by [the receive implementation](protocols/uart-receive.md#repository-integration).
 This theorem does not schedule both programs on one core.
 
 The clock relation lives beside UART, where its concrete start/data/stop
 obligations are known. It does not change the common engine's edge semantics or
-the [timed-component interfaces](timed-components.md).
+the [timed-component interfaces](engine/timed-components.md).
 
 ## Validation and receipts
 
@@ -195,10 +195,10 @@ that a synchronizer or physical pin meets any particular age bound, resolve
 metastability, or qualify a clock/baud rate. Those need a concrete sampler and
 separate implementation/electrical evidence.
 
-The [continuous receive milestone](uart-stream.md) adds successive ideal frames,
+The [continuous receive milestone](protocols/uart-stream.md) adds successive ideal frames,
 delivery ownership, automatic rearm, reset, and overrun semantics. It also records
 a case where the one-frame `Safe` bounds hold but rearm misses the next start.
-The subsequent [continuous clock contract](uart-stream-clocks.md) supplies the
+The subsequent [continuous clock contract](protocols/uart-stream-clocks.md) supplies the
 additional rearm condition and proves finite-stream reception with unequal
 clocks and varying bounded observation age through the compiled RX supervisor.
 Simultaneous TX/RX still needs a resource design.

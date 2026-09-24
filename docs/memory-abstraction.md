@@ -11,7 +11,7 @@ by the loader, or proved of a compiler. The contract, the theory and the
 machines are Lean proofs and one executable suite; the backends are emitted and
 checked with the pinned tools (`check-prefetch.py`), and the decoupled one was
 compared once after routing. The
-[storage study](storage-study.md) owns the implementation candidates, the
+[storage study](storage/storage-study.md) owns the implementation candidates, the
 [primitive review](storage-primitives.md) the macro and latch facts, and
 [research status](research/status.md) allocation.
 
@@ -46,7 +46,7 @@ this edge's request at all.
 
 | Implementation | Module | Refines | Structure |
 | --- | --- | --- | --- |
-| Flip-flops | `Memory/Flops.lean` | `spec a w p 0` | One register per word, loaded under the decoded write enable; one balanced multiplexer tree per read port. Every word is a certified `Update` (`Flops.enables`), so a [gating plan](register-enables.md) can name it. |
+| Flip-flops | `Memory/Flops.lean` | `spec a w p 0` | One register per word, loaded under the decoded write enable; one balanced multiplexer tree per read port. Every word is a certified `Update` (`Flops.enables`), so a [gating plan](physical/register-enables.md) can name it. |
 | Registered ports | `Memory/Registered.lean` | `spec a w p 1` | The same words with an output register per read port: the model of a synchronous macro, or of flip-flops behind a register. |
 | Latches | none | `spec a w p 0` | Registered write data and an enable pulse in the clock-low phase give the flip-flop array's edge-level behaviour; what changes is electrical (a half-cycle write path, a glitch-free enable), which this model does not see. |
 
@@ -550,7 +550,7 @@ What it does not say. The slow corner is not closed: −0.187 ns. All nine
 violating endpoints launch from `data[35]`, the loader's data port: the capacity
 check rewrites the command from the data word, the commit decode reads that
 command, and the commit select sits in the port's address. The
-[command-split](successor-fetch-study.md#command-decoder-experiment) form —
+[command-split](storage/successor-fetch-study.md#command-decoder-experiment) form —
 decode predicates the capacity check cannot change from the raw command —
 removes that dependency and is not applied in `Backend.Policy.core` yet. One
 run: equivalent RTLs have differed by 0.6 ns under this flow, so −0.053 ns and
@@ -590,7 +590,7 @@ rewritten command at every command leaf — so the commit decode, the start
 decode and the bank selection behind them all wait for a 64-bit comparison on
 the data port, although the check cannot change any of them
 (`Small.adapt_command_predicate`). The
-[command-split](successor-fetch-study.md#command-decoder-experiment) form
+[command-split](storage/successor-fetch-study.md#command-decoder-experiment) form
 decodes those predicates from the raw command. The composed control has had it
 since that study (`BankSelect.lift`, proved equal to the plain lift at every
 valuation); the policy backends had not.
@@ -736,7 +736,7 @@ completed routing and met setup/hold, while the two-port core did not complete.
 The result supports advancing one port; it does not establish a universal
 utilization cutoff or impossibility of routing two ports. Since 2026-09-18 the
 official outline is the same 6×4 die area used here. The old 8×4/56% estimate is
-inapplicable. A [whole-chip run](whole-chip.md#the-outline) must still use the
+inapplicable. A [whole-chip run](engine/whole-chip.md#the-outline) must still use the
 official pin template and include the serial interface.
 
 ## What the abstraction buys

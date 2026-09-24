@@ -75,6 +75,8 @@ dated milestones; a next-step statement in an older study is historical context.
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |
 | Reproduce or extend work | [Development setup](docs/development.md), [validation](docs/validation.md), and the [research workflow](docs/research/README.md). |
+| Find experiment inputs and records | [Physical inputs](physical/README.md) and [experiment records](physical/experiments/README.md): tracked configurations, selections, and result manifests. |
+| Find a checker or flow command | [Script index](scripts/README.md): entry points and the evidence each can establish. |
 
 ## Build
 

@@ -19,7 +19,7 @@ evidence layers.
 | Role | Current position | Detailed owner |
 | --- | --- | --- |
 | Semantic reference | The unrestricted two-read flip-flop chip preserves the exact edge contract. The selected hybrid dictionary SRAM has a closed-loop initialized array/controller proof, with external macro and emitted-package binding still open. | [Storage and execution](../storage-primitives.md#closed-loop-hybrid-execution-2026-09-21) |
-| Experimental execution candidate | The full-capacity paired controller retains canonical E64 operations and 256 positions/32 records using one 512×64 SRAM, banked parameters and a one-read successor schedule. Its 290-word image is experimental; mapped checks and conditional schedule lemmas do not close complete compiler, admission or package refinement. | [Compact execution](../compact-execution-study.md#full-capacity-follow-up) |
+| Experimental execution candidate | The full-capacity paired controller retains canonical E64 operations and 256 positions/32 records using one 512×64 SRAM, banked parameters and a one-read successor schedule. Its 290-word image is experimental; mapped checks and conditional schedule lemmas do not close complete compiler, admission or package refinement. | [Compact execution](../storage/compact-execution-study.md#full-capacity-follow-up) |
 | Physical comparison | The latest paired locality edit passes its local budgets, but its independently rerouted whole-chip candidate is **rejected**. Its original area reference is 358,297.5456 µm², with a fixed cumulative 0.3% increment cap; the candidate uses 359,371.6704 µm², leaving 0.767837 µm². | [Physical targets](../physical-targets.md#shared-physical-edits-and-whole-chip-requalification) |
 
 **Retain the shared physical-edit abstraction and independent admission checks;
@@ -44,7 +44,7 @@ loses **39.835 ps** through its capture clock. The
 binds four exact paths, five complete transport trees and thirteen clock nets.
 These observations do not identify a single routing-policy cause.
 
-The subsequent [timing and communication organization study](../physical-organization-study.md)
+The subsequent [timing and communication organization study](../physical/physical-organization-study.md)
 has **already screened all 1,152 watchlist connections** against the saved chip.
 Twelve bounded consumer swaps across fourteen branches preserve virtual
 buffer-contracted identity, but no complete family passes its conditional wire
@@ -92,9 +92,9 @@ remains the physical control; the upload pipeline stays opt-in.
 | Question | Evidence owner and current limit |
 | --- | --- |
 | What exactly did the paired physical attempts establish? | [Physical targets](../physical-targets.md) traces local repairs, reroutes, admission and diagnosis. Its [latest route manifest](../../physical/experiments/paired-locality-route-results.json) records successful collection and failed qualification. A local electrical pass does not imply whole-chip or detailed routing closure. |
-| Why did the latest organization screen stop? | [Timing and communication organization](../physical-organization-study.md) gives the complete tree, timing and area comparison. Its span scaling and virtual identity are planning evidence, not measured routed benefit. |
-| What does the chosen execution model prove? | [Compact execution](../compact-execution-study.md) gives the paired capacity, controller, mapped SAT and open refinement boundary. [Storage primitives](../storage-primitives.md) owns the earlier hybrid closed-loop theorem, which does not automatically transfer to the paired controller. |
-| What happened in other physical and architectural branches? | [First chip physical study](../chip-physical-study.md), [chip architecture](../chip-architecture-study.md) and [map tiles](../map-tile-study.md) retain their experiments. [Results](results.md) indexes dispositions and reopening conditions; [journal](journal.md) retains dated receipts. No experimental backend is promoted by those screens. |
+| Why did the latest organization screen stop? | [Timing and communication organization](../physical/physical-organization-study.md) gives the complete tree, timing and area comparison. Its span scaling and virtual identity are planning evidence, not measured routed benefit. |
+| What does the chosen execution model prove? | [Compact execution](../storage/compact-execution-study.md) gives the paired capacity, controller, mapped SAT and open refinement boundary. [Storage primitives](../storage-primitives.md) owns the earlier hybrid closed-loop theorem, which does not automatically transfer to the paired controller. |
+| What happened in other physical and architectural branches? | [First chip physical study](../chip-physical-study.md), [chip architecture](../physical/chip-architecture-study.md) and [map tiles](../physical/map-tile-study.md) retain their experiments. [Results](results.md) indexes dispositions and reopening conditions; [journal](journal.md) retains dated receipts. No experimental backend is promoted by those screens. |
 | What is demonstrated to a host? | [Host workflow](../host-workflow.md) covers RTL pin demonstrations and upload cost. Board transport, continuous supervision and the paired 290-word host path remain separate obligations. |
 
 The fast-screen standard-cell and SRAM temperatures remain mismatched. The

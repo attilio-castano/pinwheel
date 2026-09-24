@@ -29,7 +29,7 @@ These are suggestions and stated interests, not Pinwheel commitments. Source: [a
 - Teams and FPGA prototyping are encouraged.
 - Novel functionality and design/verification methods matter; formal, constrained-random, and AI-assisted verification are welcomed.
 - Synthesize early; verify routed timing and area. A design that looks small enough after synthesis can still be hard to route or too slow.
-- For instruction memory, SRAM can be more area-efficient than flip-flops; Tiny Tapeout has SRAM examples on this process. Pinwheel's position is in the [storage study](storage-study.md) and the [primitive review](storage-primitives.md).
+- For instruction memory, SRAM can be more area-efficient than flip-flops; Tiny Tapeout has SRAM examples on this process. Pinwheel's position is in the [storage study](storage/storage-study.md) and the [primitive review](storage-primitives.md).
 
 Formal verification is welcomed, not required. Lean is Pinwheel's selected specification and modeling language; it is not an organizer requirement. The [architecture plan](architecture.md) records our design choices separately from the competition rules.
 
@@ -44,7 +44,7 @@ The following resources are linked directly from the announcement.
 | [CMOS5L Verilog template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/cmos5l) | Starting repository for the RTL-to-GDS flow. Its README describes `src/`, `test/`, `docs/info.md`, and LibreLane automation. Preserve the explicit `cmos5l` branch when following this link. |
 | [Tiny Tapeout](https://www.tinytapeout.com/) | Official entry point for HDL guides, testing, technical specifications, and fabrication documentation. |
 | [SRAM example: 1024×8 test](https://www.tinytapeout.com/chips/ttihp0p2/tt_um_urish_sram_test) | Foundry SRAM macro example with controller description, pin mapping, test instructions, and a linked implementation repository. |
-| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. Pinwheel's [UART experiment plan](uart-experiment.md) explores Lean specifications and a proposed Lean-to-CIRCT hardware generation path. |
+| [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. Pinwheel's [UART experiment plan](history/uart-experiment.md) explores Lean specifications and a proposed Lean-to-CIRCT hardware generation path. |
 | [Competition update form](https://docs.google.com/forms/d/e/1FAIpQLSeF7fq756MegxZRQxotBwUJYZx-cL9MrGjxV0z4uD_J0sADxQ/viewform) | Receives deadline, template, and submission-form updates. Signing up neither commits participation nor enters the competition. |
 
 Useful next reading within the template: [project configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/info.yaml) and [testbench instructions](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/test/README.md).
@@ -76,7 +76,7 @@ Consequences for Pinwheel are recorded in
 
 ## Open project questions
 
-These are questions for the broader Pinwheel project, not additional competition rules. The bounded first experiment is described in [the UART plan](uart-experiment.md).
+These are questions for the broader Pinwheel project, not additional competition rules. The bounded first experiment is described in [the UART plan](history/uart-experiment.md).
 
 - What use case and distinctive capability should guide the design?
 - Which protocol roles and speeds should the first demonstrator support?

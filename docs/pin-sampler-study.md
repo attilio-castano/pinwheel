@@ -2,7 +2,7 @@
 
 This record owns the structural two-register input pipeline, its Lean
 correspondence, the emitted-artifact checks and the matched physical comparison.
-The [external interface contract](external-interface.md) owns the digital boundary
+The [external interface contract](engine/external-interface.md) owns the digital boundary
 it implements; [research status](research/status.md) owns allocation. The reference
 instruction, loader and timing semantics of the inner core are unchanged.
 
@@ -111,7 +111,7 @@ unchanged, and `sampled.mlir` behind the pipeline. For the command-split base:
 
 - `inner.sv` is **byte-identical** (SHA-256 `31893069…c6c6f764`) to the composed
   command-split control whose full Lean read-back is recorded in the
-  [bank-selection](bank-selection-study.md) and [cache-enable](cache-enable-study.md)
+  [bank-selection](storage/bank-selection-study.md) and [cache-enable](storage/cache-enable-study.md)
   manifests.
 - `sampled.mlir` differs from `inner.mlir` in eight lines: three operands
   `%incoming` → `%r_pin_second` and two added `seq.compreg` lines. `sampled.sv`
@@ -240,7 +240,7 @@ The limiting path is `r_cached_word[37]` → `r_cached_word[51]` — current wor
 successor selection and lookup, cache update — with 38 logic cells contributing
 12.634 ns, buffers 6.063 ns and wire 0.458 ns. That register-to-register loop is
 the architectural limit which the earlier
-[successor-fetch candidates](successor-fetch-study.md) address; it is now visible
+[successor-fetch candidates](storage/successor-fetch-study.md) address; it is now visible
 because the input-budget paths no longer mask it.
 
 The tolerated global-route overflow did not stay at one: the flow's five global
@@ -356,7 +356,7 @@ and all 134 stuck clock-gate-enable mutants are rejected.
 Consequences for the next experiment, none of them measured: keep the cached word
 out of clock gating (the pinned flow only offers a minimum width, and the cached
 word is the widest group, so this needs a synthesis-script or attribute hook);
-or measure the proved [cache-enable](cache-enable-study.md) variant behind the
+or measure the proved [cache-enable](storage/cache-enable-study.md) variant behind the
 sampler, since it simplifies exactly the decision that now lands on the gate.
 [Combined manifest](../physical/experiments/combined-physical-results.json).
 

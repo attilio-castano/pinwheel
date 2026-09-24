@@ -8,13 +8,13 @@ describe that phase and are not the current work queue.
 
 The sequence below records the earlier hybrid-SRAM implementation. The later
 paired controller is the active experimental architecture in the
-[research status](research/status.md). The [integration record](branch-integration.md)
+[research status](research/status.md). The [integration record](history/branch-integration.md)
 explains its correspondence and physical boundaries at consolidation. The
 earlier hybrid selection below does not supersede that newer decision.
 
 ## Starting point
 
-The [whole-chip model](whole-chip.md) connects serial pins to a committed program
+The [whole-chip model](engine/whole-chip.md) connects serial pins to a committed program
 and subsequent reference-machine execution. The one-port core has one
 command-split routed sample with +0.602 ns slow setup, passing hold and layout
 checks, and remaining slew/fanout violations. The new result-enabled chip has
@@ -38,7 +38,7 @@ decoding. The result-enabled one-port circuit uses its proved readiness gate.
 `HostResult` provides a 16-bit retained result and outcome, paged host reads,
 consumption, overflow and sticky command rejection. Its step/output proofs and
 core noninterference theorem bind the structural observer to that contract.
-The [version-1 interface](whole-chip.md#host-result-interface-version-1) specifies
+The [version-1 interface](engine/whole-chip.md#host-result-interface-version-1) specifies
 reset, stop, replacement and simultaneous consume/arrival. UART remains one-shot
 on this interface; the continuous-RX supervisor has no composed chip circuit.
 

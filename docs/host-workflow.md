@@ -2,7 +2,7 @@
 
 The host workflow exercises one unchanged chip through its package pins. Programs
 are data: UART TX/RX, SPI, I²C and a conditional trigger use the same RTL. The
-[whole-chip contract](whole-chip.md#host-result-interface-version-1) owns pin
+[whole-chip contract](engine/whole-chip.md#host-result-interface-version-1) owns pin
 assignments, synchronization and mailbox semantics; this page owns the client,
 demonstration and its limits.
 
@@ -68,7 +68,7 @@ result is refused, and readback preserves overflow/rejection flags.
 
 Exported JSON has exactly `format: "pinwheel-e64-v1"`, `words`, `last`,
 `idle_levels`, and `idle_enabled`. This is a host-side E64 interchange format,
-separate from the [PWL binary format](binary-images.md). For example:
+separate from the [PWL binary format](storage/binary-images.md). For example:
 
 ```sh
 python3 scripts/pinwheel-host.py run --backend hybrid --tag custom-trigger \
@@ -102,7 +102,7 @@ all 256 byte values, with four chip edges per bit and the same program image
 throughout. This is a specification for a future data path, not implemented
 behavior of the current emitter.
 
-The [compact execution study](compact-execution-study.md) now tests this payload
+The [compact execution study](storage/compact-execution-study.md) now tests this payload
 ownership and all 256 UART values in an isolated execution model. It does not
 implement this extension in the current E64 emitter or close the budget gate below.
 
