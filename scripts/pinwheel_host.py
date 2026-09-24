@@ -64,7 +64,12 @@ class Program:
 
     @classmethod
     def read(cls, path: Path):
-        obj = json.loads(path.read_text())
+        return cls.from_bytes(path.read_bytes())
+
+    @classmethod
+    def from_bytes(cls, data: bytes):
+        """Parse captured input without reopening its original file."""
+        obj = json.loads(data.decode('utf-8'))
         if not isinstance(obj, dict) or set(obj) != {'format', 'words', 'last', 'idle_levels', 'idle_enabled'} or obj['format'] != 'pinwheel-e64-v1':
             raise ValueError('Unsupported program image schema')
         if not isinstance(obj['words'], list) or any(type(obj[k]) is not int for k in ['last', 'idle_levels', 'idle_enabled']):

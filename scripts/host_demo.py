@@ -10,9 +10,10 @@ def _require(condition, message):
         raise RuntimeError(message)
 
 
-def compiler_images(path):
+def compiler_images(data: bytes):
+    """Parse one captured compiler output, shared with its receipt digest."""
     images = {}
-    for line in path.read_text().splitlines():
+    for line in data.decode('utf-8').splitlines():
         name, *values = line.split()
         last, levels, enabled, *words = map(int, values)
         images[name] = Program(tuple(words), last, levels, enabled)

@@ -23,6 +23,12 @@ JSON, command logs and a receipt in `build/host/<tag>/`. The receipt binds sourc
 tool, compiler-image, MLIR, RTL and macro-model identities. The reference is the
 unrestricted two-port flip-flop chip; the one-port chip cannot run this RX program.
 
+Each run retains the exact compiler output as `compiler-images.txt`; custom
+`run` inputs are captured as `program.json` before building or executing hardware.
+Parsing and receipt hashes use those same captured bytes. Editing or replacing
+the original files afterward cannot change the program selected for the run or
+the input identities recorded in its receipt.
+
 | Workload | Independent external observation |
 | --- | --- |
 | UART TX | Byte `0x53`, 8N1, four chip edges per bit; all 40 driven edges checked |

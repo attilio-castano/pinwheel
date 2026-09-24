@@ -1,4 +1,5 @@
 """Host failures and serialization boundaries; protocol behavior is tested in RTL."""
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -53,12 +54,21 @@ class HostTests(unittest.TestCase):
             program = Program((4,), 0, 7, 3)
             program.write(path)
             self.assertEqual(Program.read(path), program)
+            self.assertEqual(Program.from_bytes(path.read_bytes()), program)
             path.write_text('{"format":"pinwheel-e64-v99"}')
             with self.assertRaisesRegex(ValueError, 'schema'):
                 Program.read(path)
             path.write_text('[1, 2, 3]')
             with self.assertRaisesRegex(ValueError, 'schema'):
                 Program.read(path)
+
+    def test_captured_bytes_use_the_same_schema_and_capacity_validation(self):
+        image = dict(format='pinwheel-e64-v1', words=[4], last=0, idle_levels=0, idle_enabled=0)
+        for changes in [dict(format='other'), dict(words='4'), dict(words=[]),
+                        dict(words=[1 << 64]), dict(last=True), dict(last=1),
+                        dict(words=[k << 9 for k in range(32)], last=31)]:
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                Program.from_bytes(json.dumps(image | changes).encode('utf-8'))
 
     def test_result_read_is_nondestructive_and_preserves_error_flags(self):
         transport = Transport((2, 0x53, 0xa6, 0xb7))

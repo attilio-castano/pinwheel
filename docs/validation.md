@@ -28,6 +28,13 @@ process-group timeout cleanup, host input/readback/timeout boundaries, shared co
 checks using disposable files and Python children; it
 requires no CAD tools. The second runs the portable Lean/model gate.
 
+`test_host_demo.py` and `test_host_receipts.py` also run in optimized Python
+children. They reject invalid observations, require repeated mailbox reads and
+consumption checks, bind receipts to captured input bytes despite later file
+replacement, and check that failed demonstrations publish no success receipt.
+Their CAD commands and host observations are stubbed; these are validation-tool
+regressions, not new RTL or physical evidence.
+
 The runner requires no prior `.lake/` or `build/` content. Each run writes logs,
 commands, source hashes and a success receipt under `build/validation/<tag>/`.
 Choose a fresh tag to preserve earlier gate evidence. Other model suites retain
