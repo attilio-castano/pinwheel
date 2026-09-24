@@ -1,7 +1,13 @@
 """Pin-only protocol peers and monitors for the reusable host demonstration."""
 from dataclasses import asdict
 
-from pinwheel_host import Command, Host, Program
+from pinwheel_host import Host, Program
+
+
+def _require(condition, message):
+    """Acceptance checks must execute even when Python assertions are disabled."""
+    if not condition:
+        raise RuntimeError(message)
 
 
 def compiler_images(path):
@@ -23,13 +29,13 @@ class UARTTransmit:
         if pins.enabled & 1 and not pins.levels & 1:
             self.started = True
         if self.started and len(self.trace) < 10 * self.period:
-            assert pins.enabled & 1, 'UART released TX within a frame'
+            _require(pins.enabled & 1, 'UART released TX within a frame')
             self.trace.append(pins.levels & 1)
         return 3
 
     def check(self):
         symbols = [0, *[(self.byte >> k) & 1 for k in range(8)], 1]
-        assert self.trace == [bit for bit in symbols for _ in range(self.period)], 'UART pin waveform'
+        _require(self.trace == [bit for bit in symbols for _ in range(self.period)], 'UART pin waveform')
         return dict(byte=self.byte, bit_cycles=self.period, frame_cycles=len(self.trace))
 
 
@@ -43,7 +49,7 @@ class SPI:
 
     def __call__(self, cycle, pins, ui):
         if pins.enabled & 4 and not pins.levels & 4:
-            assert pins.enabled == 7, 'SPI must drive MOSI/SCLK/CS'
+            _require(pins.enabled == 7, 'SPI must drive MOSI/SCLK/CS')
             clock = (pins.levels >> 1) & 1
             if clock and not self.previous_clock:
                 self.bits.append(pins.levels & 1)
@@ -56,8 +62,8 @@ class SPI:
         return self.miso
 
     def check(self):
-        assert self.bits == [(0xa6 >> k) & 1 for k in range(7, -1, -1)], 'SPI outgoing byte'
-        assert [b - a for a, b in zip(self.rises, self.rises[1:])] == [8] * 7, 'SPI clock spacing'
+        _require(self.bits == [(0xa6 >> k) & 1 for k in range(7, -1, -1)], 'SPI outgoing byte')
+        _require([b - a for a, b in zip(self.rises, self.rises[1:])] == [8] * 7, 'SPI clock spacing')
         return dict(transmitted=0xa6, received=self.receive, clock_cycles=8, rising_edges=len(self.bits))
 
 
@@ -94,28 +100,29 @@ class I2C:
         self.rise_at = self.fall_at = 0
 
     def __call__(self, cycle, pins, ui):
-        assert pins.levels == 0 and pins.enabled < 4, 'Unsafe I2C drive'
+        _require(pins.levels == 0 and pins.enabled < 4, 'Unsafe I2C drive')
         command = [pins.enabled & 1, (pins.enabled >> 1) & 1]
         if self.previous_command[0] and not command[0]:
             self.stretch_left = self.releases % 4
             self.releases += 1
         bus = [int(not (command[0] or self.stretch_left)), int(not (command[1] or self.target_sda))]
         if self.previous[0] and bus[0] and self.previous[1] != bus[1]:
-            assert cycle - self.rise_at >= 4, 'I2C START/STOP high interval'
+            _require(cycle - self.rise_at >= 4, 'I2C START/STOP high interval')
             if self.previous[1]:
                 self.starts += 1
-                assert self.starts == 1 or (self.starts == 2 and len(self.clocks) == 18)
+                _require(self.starts == 1 or (self.starts == 2 and len(self.clocks) == 18),
+                         'Unexpected I2C START')
             else:
-                assert self.starts > 0
+                _require(self.starts > 0, 'I2C STOP without START')
                 self.stopped = True
             self.pending = None
         if not self.previous[0] and bus[0] and self.starts and not self.stopped:
-            assert cycle - self.fall_at >= 4, 'I2C clock low interval'
+            _require(cycle - self.fall_at >= 4, 'I2C clock low interval')
             self.rise_at, self.pending = cycle, bus[1]
         if self.previous[0] and not bus[0]:
             self.fall_at = cycle
             if self.pending is not None:
-                assert cycle - self.rise_at >= 4, 'I2C clock high interval'
+                _require(cycle - self.rise_at >= 4, 'I2C clock high interval')
                 self.clocks.append(self.pending)
                 self.pending = None
         if not bus[0]:
@@ -129,11 +136,11 @@ class I2C:
         return bus[0] | bus[1] << 1
 
     def check(self):
-        assert self.stopped and self.starts == 2 and len(self.clocks) == 36, 'I2C transaction framing'
+        _require(self.stopped and self.starts == 2 and len(self.clocks) == 36, 'I2C transaction framing')
         outgoing = [0xa6, 0xa6, 0xa7, self.byte]
         expected = [((0 if k < 27 else 1) if k % 9 == 8 else
                      (outgoing[k // 9] >> (7 - k % 9)) & 1) for k in range(36)]
-        assert self.clocks == expected, 'I2C wire bytes/ACKs'
+        _require(self.clocks == expected, 'I2C wire bytes/ACKs')
         return dict(address=0x53, register=0xa6, received=self.byte, clocks=36,
                     starts=self.starts, stretching_cycles='0..3 per SCL release')
 
@@ -161,13 +168,16 @@ def demonstrate(sim, images, directory):
         sim.device = device
         host.start()
         result = host.read_result(timeout_cycles=4000, consume=False)
-        assert result.samples == samples and result.outcome == outcome, (name, result)
-        assert not result.overrun and not result.rejected, (name, result)
+        _require(result.samples == samples and result.outcome == outcome,
+                 f'{name}: expected samples={samples:#x}, outcome={outcome}; got {result}')
+        _require(not result.overrun and not result.rejected, f'{name}: unexpected result flags: {result}')
         # A second read is nondestructive and observes the same retained slot.
-        assert host.read_result(timeout_cycles=0, consume=False) == result
+        retained = host.read_result(timeout_cycles=0, consume=False)
+        _require(retained == result, f'{name}: retained result changed: {result} -> {retained}')
         details = check() if check else {}
         host.consume()
-        assert not host.result_status() & 1, 'Consumption did not release result'
+        status = host.result_status()
+        _require(not status & 1, f'{name}: consumption did not release result')
         cases.append(dict(name=name, result=asdict(result), upload_cycles=upload_cycles,
                           **details))
         sim.device = None
@@ -187,7 +197,7 @@ def demonstrate(sim, images, directory):
                                           ('trigger-timeout', 0, 0, 6)]:
         peer = Receive(trigger=True, value=value)
         def check(peer=peer, value=value):
-            assert len(peer.pulse) == (8 if value == 3 else 0), 'Triggered pulse width/branch'
+            _require(len(peer.pulse) == (8 if value == 3 else 0), 'Triggered pulse width/branch')
             return dict(pulse_cycles=len(peer.pulse), external_value=value)
         run(name, program, peer, samples, outcome, check)
     # The client must fail closed on a chip-rejected record, retain the old
@@ -195,16 +205,17 @@ def demonstrate(sim, images, directory):
     try:
         host.upload(Program((1 << 63, 4), 1))
     except RuntimeError as error:
-        assert 'rejected the staged image' in str(error)
+        _require('rejected the staged image' in str(error), f'Unexpected malformed-upload failure: {error}')
     else:
-        raise AssertionError('Malformed program was accepted')
-    assert host.page(0) & 7 == 2
+        raise RuntimeError('Malformed program was accepted')
+    live = host.page(0)
+    _require(live & 7 == 2, 'Malformed upload did not retain the active image')
     cases.append(dict(name='malformed-upload-retains-active-image'))
     host.clear_flags()
     sim.device = Receive(trigger=True, value=3)
     host.start()
     result = host.read_result(timeout_cycles=4000)
-    assert result.samples == 1 and result.outcome == 5
+    _require(result.samples == 1 and result.outcome == 5, f'Recovered program result: {result}')
     sim.device = None
     return dict(cases=cases, edges=host.edges, frames=host.frames,
                 transport='Actual RTL pins over an interactive Icarus pipe; no internal state access',

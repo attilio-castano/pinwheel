@@ -36,6 +36,9 @@ The trigger runs with high, low and absent input, covering both branches and
 timeout. Each successful run reads its retained result twice, then consumes it.
 The peers inspect only pin values and edge counts. `host_bridge.sv` never reads
 internal DUT state, and the host client does not import the engine oracle.
+Acceptance checks remain active with `python -O`, `python -OO`, or
+`PYTHONOPTIMIZE`. Mailbox observations execute before their values are checked;
+any failed check prevents the CLI from publishing its success receipt.
 
 Capture slots are the machine's raw 16-bit result. SPI/I²C place the first received
 bit in slot 0, so wire byte `0x96` appears as `0x69`. UART RX uses the low byte for
