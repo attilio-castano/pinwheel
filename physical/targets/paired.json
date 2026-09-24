@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "name": "paired",
+  "source": {
+    "kind": "paired-controller",
+    "selection": "physical/experiments/paired-controller-results.json",
+    "sha256": "dedce509b2ba20700b39e8af79f66b6079baa4c0a36582877d6b1e6e8cb7be2d"
+  },
+  "macro": {
+    "master": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+    "instances": {
+      "memory.storage": {
+        "location": [
+          252,
+          144
+        ],
+        "orientation": "N"
+      }
+    },
+    "power": {
+      "VPWR": [
+        "VDD!",
+        "VDDARRAY!"
+      ],
+      "VGND": [
+        "VSS!"
+      ]
+    }
+  },
+  "placement_exclusions": [
+    [
+      252,
+      119.18,
+      1036.48,
+      144
+    ]
+  ],
+  "entry_state": [
+    "r_cached",
+    "r_mode",
+    "r_remaining",
+    "r_wait_left",
+    "r_levels",
+    "r_enabled",
+    "r_samples",
+    "r_payload"
+  ],
+  "upload_state": [
+    "r_serial_shift"
+  ]
+}

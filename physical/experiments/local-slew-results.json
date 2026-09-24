@@ -1,0 +1,488 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "retain-diagnostic-buffer-candidate-electrical-and-congestion-gates-open",
+  "source_selection": {
+    "path": "physical/experiments/local-route-results.json",
+    "sha256": "1e075a4eb0d638bb334700b30d7079b6a95ce43504ab4bcdd0ac39725d3ca2a5"
+  },
+  "receipts": {
+    "probe-rejected-protection": {
+      "path": "build/physical/repair-probes/slew-buffer-01/report.json",
+      "sha256": "67893ef519bb637849b79c777b6c04119cf6ba1da6303d130af26610f572acc4",
+      "status": "failed",
+      "seconds": 18.891
+    },
+    "probe-rejected-cleanup": {
+      "path": "build/physical/repair-probes/slew-buffer-02/report.json",
+      "sha256": "dc53b9cfd70dc09cd6729abf67d5d08709989ec947390398312e72f2d06f93ae",
+      "status": "failed",
+      "seconds": 32.737
+    },
+    "probe-selected": {
+      "path": "build/physical/repair-probes/slew-buffer-03/report.json",
+      "sha256": "dfdee0b898a325817901759568cd6a41c4cb4fd2e28147d8e98ab95420c10d57",
+      "status": "passed",
+      "seconds": 36.866
+    },
+    "geometry-and-placement-initial": {
+      "path": "build/physical/repair-validation/slew-local-01/report.json",
+      "sha256": "ba6aa80b4ab4b43af82a74672fc6a206ff8bd52637493942cc15491149388378",
+      "status": "passed",
+      "seconds": 29.701
+    },
+    "placement-only-annotation-rejected": {
+      "path": "build/physical/repair-validation/slew-local-02/report.json",
+      "sha256": "e647257c90e4412b2fddabdcc6a5806182fc911df609ee7b017fd144193445f7",
+      "status": "failed",
+      "seconds": 28.06
+    },
+    "oracle": {
+      "path": "build/physical/chip-check/local-slew-oracle-01/report.json",
+      "sha256": "62d6679539139f4273479f07a48fa4cf7ef2f9ede822a1ca489da9bdd70741b1",
+      "status": "passed",
+      "seconds": 103.399
+    },
+    "routed-diagnostics": {
+      "path": "build/physical/mapped-diagnostics/local-slew-route-final-01/report.json",
+      "sha256": "f2645030372cf8c8abc9613557c975f08497e19483c6ce2119766d9ea672beb9",
+      "status": "passed",
+      "seconds": 14.466
+    },
+    "invocation": {
+      "path": "build/physical/local-slew-route-01-invocation.json",
+      "sha256": "f70265714a29ce7b98c948420656b5650911caa7f106b2d9ae51927b9911a631"
+    },
+    "physical": {
+      "path": "build/physical/local-slew-route-01-report.json",
+      "sha256": "fe07e821ac710fbfba9746a84938b15137adc26b37e3803d36d4ffb6e0b3a39e"
+    },
+    "route-admission": {
+      "path": "build/validation/local-slew-01/route-admission.json",
+      "sha256": "13a858a6e853285426200c099df7c41486ef8cb2ce5dc283829287a4bea54553"
+    }
+  },
+  "checked_artifacts": 531,
+  "recipe": {
+    "path": "physical/experiments/local-data-buffer-repair.tcl",
+    "sha256": "f368f07b2b248a64aaeea3711d1434b4115571ef3701991da2772775aa5e70c8"
+  },
+  "coarse_route_seconds": 42.652,
+  "diagnostics_seconds": 14.466,
+  "comparison": {
+    "control": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 12.0653,
+        "timing__hold__ws": 0.0935423,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 17
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 2.0218,
+        "timing__hold__ws": 0.355188,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 58
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 8.71641,
+        "timing__hold__ws": 0.184903,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 26
+      }
+    },
+    "candidate": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 11.8405,
+        "timing__hold__ws": 0.0602609,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 2,
+        "design__max_slew_violation__count": 3
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 5.33932,
+        "timing__hold__ws": 0.336383,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 22
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 10.0474,
+        "timing__hold__ws": 0.16841,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 2,
+        "design__max_slew_violation__count": 3
+      }
+    }
+  },
+  "congestion": {
+    "control_overflow": 1302,
+    "candidate_overflow": 1310,
+    "resource": 452959,
+    "demand": 147062,
+    "usage_percent": 32.47,
+    "max_horizontal_overflow": 5,
+    "max_vertical_overflow": 6
+  },
+  "area_um2": {
+    "before": 483653.3696,
+    "after": 484422.6752,
+    "added": 769.3056
+  },
+  "identity": {
+    "netlist_byte_identical": true,
+    "checked_context_fields": [
+      "schema",
+      "extractor_sha256",
+      "units",
+      "dbu_per_micron",
+      "die",
+      "evidence_helper_sha256",
+      "instances",
+      "nets",
+      "power_shapes",
+      "ports",
+      "macro_pins",
+      "macro_obstructions",
+      "signal_segments",
+      "route_coverage",
+      "routing_obstructions",
+      "layers",
+      "rows",
+      "placement_blockages",
+      "exclusions",
+      "exclusions_sha256",
+      "exclusion_checker_sha256"
+    ],
+    "original_instances_unchanged": 18665,
+    "clock_nets_unchanged": 670,
+    "instances": 18708,
+    "added_buffers": {
+      "sg13cmos5l_buf_1": 1,
+      "sg13cmos5l_buf_2": 7,
+      "sg13cmos5l_buf_4": 14,
+      "sg13cmos5l_buf_8": 21
+    },
+    "corridor_clear": true,
+    "routed_candidate_netlist_sha256": "f1c315b60def7ec2f6c8f64fb323592a9d685e8514d7dc135db818a71211fce1"
+  },
+  "annotation": {
+    "nom_fast_1p32V_m40C": {
+      "unused_ports": [
+        "ena",
+        "ui_in[7]",
+        "uio_in[2]",
+        "uio_in[3]",
+        "uio_in[4]",
+        "uio_in[5]",
+        "uio_in[6]",
+        "uio_in[7]"
+      ],
+      "unconnected_dummy_outputs": 184,
+      "consumed_unannotated": 0,
+      "partial": 0
+    },
+    "nom_slow_1p08V_125C": {
+      "unused_ports": [
+        "ena",
+        "ui_in[7]",
+        "uio_in[2]",
+        "uio_in[3]",
+        "uio_in[4]",
+        "uio_in[5]",
+        "uio_in[6]",
+        "uio_in[7]"
+      ],
+      "unconnected_dummy_outputs": 184,
+      "consumed_unannotated": 0,
+      "partial": 0
+    },
+    "nom_typ_1p20V_25C": {
+      "unused_ports": [
+        "ena",
+        "ui_in[7]",
+        "uio_in[2]",
+        "uio_in[3]",
+        "uio_in[4]",
+        "uio_in[5]",
+        "uio_in[6]",
+        "uio_in[7]"
+      ],
+      "unconnected_dummy_outputs": 184,
+      "consumed_unannotated": 0,
+      "partial": 0
+    }
+  },
+  "original_cap_driver": {
+    "nom_fast_1p32V_m40C": {
+      "before_pf": 0.314642,
+      "after_pf": 0.123815,
+      "limit_pf": 0.3
+    },
+    "nom_slow_1p08V_125C": {
+      "before_pf": 0.308889,
+      "after_pf": 0.117662,
+      "limit_pf": 0.3
+    },
+    "nom_typ_1p20V_25C": {
+      "before_pf": 0.311663,
+      "after_pf": 0.120653,
+      "limit_pf": 0.3
+    }
+  },
+  "sram_load_comparison": {
+    "nom_fast_1p32V_m40C": {
+      "memory.storage0/A_DOUT[42]": {
+        "before_pf": 0.053584,
+        "after_pf": 0.056224,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[37]": {
+        "before_pf": 0.047665,
+        "after_pf": 0.047647,
+        "limit_pf": 0.064
+      },
+      "memory.storage1/A_DOUT[42]": {
+        "before_pf": 0.052395,
+        "after_pf": 0.053788,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[44]": {
+        "before_pf": 0.029643,
+        "after_pf": 0.030982,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[29]": {
+        "before_pf": 0.033535,
+        "after_pf": 0.038884,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[47]": {
+        "before_pf": 0.023502,
+        "after_pf": 0.024842,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[33]": {
+        "before_pf": 0.016177,
+        "after_pf": 0.016177,
+        "limit_pf": 0.064
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "memory.storage0/A_DOUT[42]": {
+        "before_pf": 0.053038,
+        "after_pf": 0.055678,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[37]": {
+        "before_pf": 0.047118,
+        "after_pf": 0.0471,
+        "limit_pf": 0.064
+      },
+      "memory.storage1/A_DOUT[42]": {
+        "before_pf": 0.051985,
+        "after_pf": 0.053378,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[44]": {
+        "before_pf": 0.029096,
+        "after_pf": 0.030436,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[29]": {
+        "before_pf": 0.032133,
+        "after_pf": 0.037482,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[47]": {
+        "before_pf": 0.022956,
+        "after_pf": 0.024295,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[33]": {
+        "before_pf": 0.014775,
+        "after_pf": 0.014775,
+        "limit_pf": 0.064
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "memory.storage0/A_DOUT[42]": {
+        "before_pf": 0.053282,
+        "after_pf": 0.055922,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[37]": {
+        "before_pf": 0.047362,
+        "after_pf": 0.047345,
+        "limit_pf": 0.064
+      },
+      "memory.storage1/A_DOUT[42]": {
+        "before_pf": 0.052168,
+        "after_pf": 0.053561,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[44]": {
+        "before_pf": 0.029341,
+        "after_pf": 0.03068,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[29]": {
+        "before_pf": 0.032759,
+        "after_pf": 0.038109,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[47]": {
+        "before_pf": 0.0232,
+        "after_pf": 0.02454,
+        "limit_pf": 0.064
+      },
+      "memory.storage0/A_DOUT[33]": {
+        "before_pf": 0.015401,
+        "after_pf": 0.015401,
+        "limit_pf": 0.064
+      }
+    }
+  },
+  "slow_slew_groups": {
+    "standard cells": 13,
+    "SRAM A_DIN": 8,
+    "SRAM A_ADDR": 1
+  },
+  "slow_slew_nets": 8,
+  "slow_slew_pin_delta": {
+    "new": 21,
+    "cleared": 57
+  },
+  "remaining_capacitance": {
+    "nom_fast_1p32V_m40C": {
+      "memory.storage0/A_DOUT[36]": {
+        "limit": 0.064,
+        "actual": 0.077484,
+        "slack": -0.013484,
+        "net": "memory.mem_q0[36]",
+        "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+        "original_driver": {
+          "pin": "memory.storage0/A_DOUT[36]",
+          "net": "memory.mem_q0[36]",
+          "was_target": false
+        }
+      },
+      "memory.storage0/A_DOUT[50]": {
+        "limit": 0.064,
+        "actual": 0.064976,
+        "slack": -0.000976,
+        "net": "memory.mem_q0[50]",
+        "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+        "original_driver": {
+          "pin": "memory.storage0/A_DOUT[50]",
+          "net": "memory.mem_q0[50]",
+          "was_target": false
+        }
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "memory.storage0/A_DOUT[36]": {
+        "limit": 0.064,
+        "actual": 0.076355,
+        "slack": -0.012355,
+        "net": "memory.mem_q0[36]",
+        "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+        "original_driver": {
+          "pin": "memory.storage0/A_DOUT[36]",
+          "net": "memory.mem_q0[36]",
+          "was_target": false
+        }
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "memory.storage0/A_DOUT[36]": {
+        "limit": 0.064,
+        "actual": 0.076879,
+        "slack": -0.012879,
+        "net": "memory.mem_q0[36]",
+        "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+        "original_driver": {
+          "pin": "memory.storage0/A_DOUT[36]",
+          "net": "memory.mem_q0[36]",
+          "was_target": false
+        }
+      },
+      "memory.storage0/A_DOUT[50]": {
+        "limit": 0.064,
+        "actual": 0.064371,
+        "slack": -0.000371,
+        "net": "memory.mem_q0[50]",
+        "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+        "original_driver": {
+          "pin": "memory.storage0/A_DOUT[50]",
+          "net": "memory.mem_q0[50]",
+          "was_target": false
+        }
+      }
+    }
+  },
+  "placement_annotation_rejection": {
+    "slew-local-01": {
+      "report": "build/physical/repair-validation/slew-local-01/report.json",
+      "report_sha256": "ba6aa80b4ab4b43af82a74672fc6a206ff8bd52637493942cc15491149388378",
+      "disposition": "unqualified-timing",
+      "annotation": {
+        "baseline": {
+          "nom_fast_1p32V_m40C": 0,
+          "nom_slow_1p08V_125C": 0,
+          "nom_typ_1p20V_25C": 0
+        },
+        "candidate": {
+          "nom_fast_1p32V_m40C": 524,
+          "nom_slow_1p08V_125C": 524,
+          "nom_typ_1p20V_25C": 524
+        }
+      }
+    },
+    "slew-local-02": {
+      "report": "build/physical/repair-validation/slew-local-02/report.json",
+      "report_sha256": "e647257c90e4412b2fddabdcc6a5806182fc911df609ee7b017fd144193445f7",
+      "disposition": "unqualified-timing",
+      "annotation": {
+        "baseline": {
+          "nom_fast_1p32V_m40C": 513,
+          "nom_slow_1p08V_125C": 513,
+          "nom_typ_1p20V_25C": 513
+        },
+        "candidate": {
+          "nom_fast_1p32V_m40C": 524,
+          "nom_slow_1p08V_125C": 524,
+          "nom_typ_1p20V_25C": 524
+        }
+      }
+    }
+  },
+  "validation": {
+    "focused_tests": 55,
+    "pin_edges": 508252,
+    "mutants_rejected": 1,
+    "postroute_oracle_reused_by_identical_export": true,
+    "postroute_simulation_repeated": false,
+    "lean_sources_unchanged": 267,
+    "prior_experiment_files_unchanged": 53,
+    "prior_receipts_unchanged": 22
+  },
+  "next_gate": "Treat eight remaining slow-slew driver nets and SRAM outputs storage0/A_DOUT[36,50] as ten named electrical groups. Preserve hold-delay cells and clock topology. Require complete fresh wire annotations, positive setup/hold and independent connectivity/behavior before accepting a repair. Congestion needs its own evidence-backed intervention; no detailed-route admission.",
+  "boundary": "One diagnostic GlobalRouting-only run, 600 s/four CPU/6 GiB cap. Fresh propagated-clock coarse-wire estimates with explicit nominal RC; no extraction, detailed routing, antenna closure, signoff or backend promotion. Fast screen mixes -40 C cells and -55 C SRAM. Initial placement timing is unqualified despite positive slack and lower violation counts.",
+  "report": "build/validation/local-slew-01/report.json",
+  "report_sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b"
+}

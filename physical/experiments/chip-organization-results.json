@@ -1,0 +1,1288 @@
+{
+  "schema": 1,
+  "study": "chip-organization-check-03",
+  "date": "2026-09-21",
+  "decision": "Retain the computational map and cheap checks. Defer the tested address-window projection before physical placement; include upstream map state and both read trees in the next grouping.",
+  "report": "build/validation/chip-organization-check-03/report.json",
+  "report_sha256": "8872735b6d46cd552d5b5976bcbf18fd0ac42ce84aa24aa35e515f48f28e8cab",
+  "tests": "build/validation/chip-organization-check-03/tests.json",
+  "tests_sha256": "e555c93117d60a0469115df77353cf35e67157bbeee94a0464baddcec93200ce",
+  "focused_tests": 21,
+  "source_sha256": {
+    "Pinwheel/Hardware/NetlistEmit.lean": "ae04f9a0bc0f1647db3ac1e6f383b4cf6ca9ca701650aece7430f1becf780a20",
+    "Pinwheel/Hardware/Storage/SramAssembly.lean": "2781e1704bff0b972881e2b63c0101d285a36fc13f7321d8c8b7a97ba510518b",
+    "Pinwheel/Hardware/Storage/SramSchedule.lean": "62842e1a4432af90b9eaefca64a226ad4c5d0374267ebbb63be5baa3d7b8a926",
+    "test/SramChipEmit.lean": "edd4cf709349f01d4c88a5aee1a0881f8a02c1018256183448f6752029c48b3c",
+    "scripts/report-chip-architecture.py": "96e1039821e10d315e7826a8139126d6e6df1ad863d108f4465ae626ce5c0fce",
+    "scripts/chip_organization.py": "ffb9c498e377943fe347d83b43f20f155cb6538e624f29af577ad56dbfbd3e0c",
+    "test/test_chip_architecture.py": "6b03fa27c7688571e7b97b0ae1c8bca1e787d7088dc5ddbcdf7100f9665142b7",
+    "physical/experiments/sram-address-locality.json": "fd3deab2bd66e063332f49956a73586e55bf20c6312e2dea32c2ae80a3f52a60"
+  },
+  "axiom_audit": {
+    "declarations": 14479,
+    "theorems": 7393,
+    "standard_axioms_only": true,
+    "log": "build/validation/chip-organization-check-03/assembly-axioms.log",
+    "log_sha256": "423a36c27b783278a55d1bad93a7e0dd9d4342643cdc2e6c6b1812bfe0bf8bba"
+  },
+  "emission": {
+    "eight_named_computations_per_variant": true,
+    "no_added_probe_operations": true,
+    "all_four_mlir_and_rtl_artifacts_byte_identical": true,
+    "comparison": "build/storage/sram-chip/corridor-02",
+    "artifacts": {
+      "hybrid": {
+        "core": {
+          "mlir_sha256": "9fd47292a7cf31e279fb28c764fb414a14c97a7707ce1437889a3b4d416c5c64",
+          "rtl_sha256": "929a4df603ce8bb7a340e867b3975a8e040ec0afe51ba47c19d093e73999399c"
+        },
+        "chip": {
+          "mlir_sha256": "368610c01824bafd4f63c98d0e903a25a3df2f6771bb156e5b94aa22c106e228",
+          "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8"
+        }
+      },
+      "direct": {
+        "core": {
+          "mlir_sha256": "ba3cb3ffdb4c6beeae72f7a50f3de2191f37c5f517ba7f32a1646947f4651f94",
+          "rtl_sha256": "92b2be616a9901d049d190ff316a4dba2c48b690b458440e7ae0fefed42eaa55"
+        },
+        "chip": {
+          "mlir_sha256": "aa998e5ba1dd3304c3dbcce26eceaab76a4666fe9933bc247cb6c8c6d32cb400",
+          "rtl_sha256": "4a31943cd96a15e6982f10109fcd0f705b4b7d5784f83efa4dab9c0b21a05b29"
+        }
+      }
+    }
+  },
+  "seconds": {
+    "assembly_verification_seconds": 13.168,
+    "analysis_seconds": 1.942,
+    "elapsed_seconds": 15.11
+  },
+  "variants": {
+    "hybrid": {
+      "artifact": "build/validation/chip-organization-check-03/hybrid-organization.json",
+      "sha256": "4bb9a941f541032b91e70b299ad4137dd469e588c62c6cc9b69589dad6f4d0f7",
+      "mapped_summary": {
+        "groups": {
+          "fetch": {
+            "combinational_cells": 12094,
+            "flip_flops": 2732,
+            "macros": 2
+          },
+          "configuration": {
+            "combinational_cells": 83,
+            "flip_flops": 40,
+            "macros": 0
+          },
+          "interface": {
+            "combinational_cells": 224,
+            "flip_flops": 123,
+            "macros": 0
+          },
+          "shared": {
+            "combinational_cells": 192,
+            "flip_flops": 0,
+            "macros": 0
+          },
+          "unused": {
+            "combinational_cells": 0,
+            "flip_flops": 0,
+            "macros": 0
+          }
+        },
+        "consumer_sets": [
+          {
+            "consumers": [
+              "address:memory.storage0"
+            ],
+            "cells": 2489
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1"
+            ],
+            "cells": 42
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:image_metadata",
+              "state:index_maps",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 15
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:image_metadata",
+              "state:index_maps",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 78
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:image_metadata",
+              "state:index_maps",
+              "state:loader",
+              "state:result_observer",
+              "state:serial_receiver"
+            ],
+            "cells": 8
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "state:index_maps",
+              "state:loader"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:index_maps",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 7
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:result_observer"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution"
+            ],
+            "cells": 78
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 172
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:fetch_state",
+              "state:loader"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:fetch_state",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:loader"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:fetch_state"
+            ],
+            "cells": 6
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:index_maps"
+            ],
+            "cells": 23
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:index_maps",
+              "state:loader"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:execution"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 46
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:fetch_state"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:index_maps"
+            ],
+            "cells": 28
+          },
+          {
+            "consumers": [
+              "address:memory.storage1"
+            ],
+            "cells": 2931
+          },
+          {
+            "consumers": [
+              "address:memory.storage1",
+              "state:index_maps"
+            ],
+            "cells": 88
+          },
+          {
+            "consumers": [
+              "package_outputs"
+            ],
+            "cells": 29
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:execution"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:execution",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:result_observer"
+            ],
+            "cells": 5
+          },
+          {
+            "consumers": [
+              "state:execution"
+            ],
+            "cells": 781
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 208
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:image_metadata"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:loader"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "state:fetch_state"
+            ],
+            "cells": 81
+          },
+          {
+            "consumers": [
+              "state:image_metadata"
+            ],
+            "cells": 46
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:index_maps"
+            ],
+            "cells": 20
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:index_maps",
+              "state:loader"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:index_maps",
+              "state:serial_receiver"
+            ],
+            "cells": 7
+          },
+          {
+            "consumers": [
+              "state:index_maps"
+            ],
+            "cells": 5117
+          },
+          {
+            "consumers": [
+              "state:index_maps",
+              "state:loader"
+            ],
+            "cells": 9
+          },
+          {
+            "consumers": [
+              "state:index_maps",
+              "state:serial_receiver"
+            ],
+            "cells": 10
+          },
+          {
+            "consumers": [
+              "state:loader"
+            ],
+            "cells": 37
+          },
+          {
+            "consumers": [
+              "state:pin_sampler"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "state:result_observer"
+            ],
+            "cells": 77
+          },
+          {
+            "consumers": [
+              "state:serial_receiver"
+            ],
+            "cells": 112
+          }
+        ],
+        "crossing_nets": 255,
+        "crossing_pairs": {
+          "configuration -> fetch": {
+            "nets": 33,
+            "sink_pins": 41
+          },
+          "configuration -> interface": {
+            "nets": 3,
+            "sink_pins": 3
+          },
+          "configuration -> shared": {
+            "nets": 13,
+            "sink_pins": 36
+          },
+          "external -> interface": {
+            "nets": 10,
+            "sink_pins": 12
+          },
+          "fetch -> external": {
+            "nets": 6,
+            "sink_pins": 6
+          },
+          "fetch -> interface": {
+            "nets": 17,
+            "sink_pins": 18
+          },
+          "fetch -> shared": {
+            "nets": 3,
+            "sink_pins": 3
+          },
+          "interface -> configuration": {
+            "nets": 4,
+            "sink_pins": 9
+          },
+          "interface -> external": {
+            "nets": 8,
+            "sink_pins": 8
+          },
+          "interface -> fetch": {
+            "nets": 66,
+            "sink_pins": 139
+          },
+          "interface -> shared": {
+            "nets": 69,
+            "sink_pins": 116
+          },
+          "shared -> configuration": {
+            "nets": 41,
+            "sink_pins": 77
+          },
+          "shared -> fetch": {
+            "nets": 95,
+            "sink_pins": 631
+          },
+          "shared -> interface": {
+            "nets": 25,
+            "sink_pins": 30
+          }
+        },
+        "scope": "All operating modes. Unique cells assigned by endpoint-consumer regions; shared producers counted once. Clock and constants excluded from crossings; reset included. Region cuts are a communication budget, not wire lengths or placement improvement."
+      },
+      "request_modes": {
+        "all_edges": {
+          "operations": 1312,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "index_maps": 2560,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 68
+          }
+        },
+        "read_edge": {
+          "operations": 1239,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "index_maps": 2560,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 4
+          }
+        },
+        "write_edge": {
+          "operations": 4,
+          "root_bits_by_owner": {
+            "loader": 6
+          }
+        }
+      }
+    },
+    "direct": {
+      "artifact": "build/validation/chip-organization-check-03/direct-organization.json",
+      "sha256": "b5890e1783e34841ee539f88e1b44c75d020e58b81b4547b496188f11d57ebe8",
+      "mapped_summary": {
+        "groups": {
+          "fetch": {
+            "combinational_cells": 1613,
+            "flip_flops": 172,
+            "macros": 2
+          },
+          "configuration": {
+            "combinational_cells": 4736,
+            "flip_flops": 1800,
+            "macros": 0
+          },
+          "interface": {
+            "combinational_cells": 225,
+            "flip_flops": 123,
+            "macros": 0
+          },
+          "shared": {
+            "combinational_cells": 207,
+            "flip_flops": 0,
+            "macros": 0
+          },
+          "unused": {
+            "combinational_cells": 0,
+            "flip_flops": 0,
+            "macros": 0
+          }
+        },
+        "consumer_sets": [
+          {
+            "consumers": [
+              "address:memory.storage0"
+            ],
+            "cells": 62
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1"
+            ],
+            "cells": 42
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:upload_scratch"
+            ],
+            "cells": 17
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:serial_receiver",
+              "state:upload_scratch"
+            ],
+            "cells": 10
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "memory_control",
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:upload_scratch"
+            ],
+            "cells": 63
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 13
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:loader",
+              "state:result_observer",
+              "state:upload_scratch"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:fetch_state",
+              "state:result_observer"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "package_outputs",
+              "state:execution",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution"
+            ],
+            "cells": 81
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 217
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:fetch_state",
+              "state:loader"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:loader"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:execution",
+              "state:result_observer"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:fetch_state"
+            ],
+            "cells": 6
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:image_metadata",
+              "state:loader",
+              "state:upload_scratch"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:loader"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "address:memory.storage1",
+              "state:upload_scratch"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:execution"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 41
+          },
+          {
+            "consumers": [
+              "address:memory.storage0",
+              "state:fetch_state"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "address:memory.storage1"
+            ],
+            "cells": 36
+          },
+          {
+            "consumers": [
+              "address:memory.storage1",
+              "state:execution"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "memory_control"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "package_outputs"
+            ],
+            "cells": 28
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:execution"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:execution",
+              "state:result_observer"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:image_metadata"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:serial_receiver",
+              "state:upload_scratch"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:serial_receiver",
+              "state:upload_scratch",
+              "write_data"
+            ],
+            "cells": 6
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:upload_scratch"
+            ],
+            "cells": 26
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:image_metadata",
+              "state:loader",
+              "state:result_observer",
+              "state:upload_scratch",
+              "write_data"
+            ],
+            "cells": 7
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:loader",
+              "state:result_observer"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "package_outputs",
+              "state:result_observer"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "state:execution"
+            ],
+            "cells": 838
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:fetch_state"
+            ],
+            "cells": 195
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:image_metadata"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "state:execution",
+              "state:loader"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "state:fetch_state"
+            ],
+            "cells": 92
+          },
+          {
+            "consumers": [
+              "state:image_metadata"
+            ],
+            "cells": 47
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:loader"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:serial_receiver",
+              "state:upload_scratch"
+            ],
+            "cells": 7
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:serial_receiver",
+              "state:upload_scratch",
+              "write_data"
+            ],
+            "cells": 9
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:serial_receiver",
+              "write_data"
+            ],
+            "cells": 3
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "state:upload_scratch"
+            ],
+            "cells": 7
+          },
+          {
+            "consumers": [
+              "state:image_metadata",
+              "write_data"
+            ],
+            "cells": 4
+          },
+          {
+            "consumers": [
+              "state:loader"
+            ],
+            "cells": 36
+          },
+          {
+            "consumers": [
+              "state:loader",
+              "state:upload_scratch"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "state:pin_sampler"
+            ],
+            "cells": 1
+          },
+          {
+            "consumers": [
+              "state:result_observer"
+            ],
+            "cells": 79
+          },
+          {
+            "consumers": [
+              "state:serial_receiver"
+            ],
+            "cells": 113
+          },
+          {
+            "consumers": [
+              "state:serial_receiver",
+              "state:upload_scratch"
+            ],
+            "cells": 13
+          },
+          {
+            "consumers": [
+              "state:upload_scratch"
+            ],
+            "cells": 3669
+          },
+          {
+            "consumers": [
+              "state:upload_scratch",
+              "write_data"
+            ],
+            "cells": 2
+          },
+          {
+            "consumers": [
+              "write_data"
+            ],
+            "cells": 968
+          }
+        ],
+        "crossing_nets": 335,
+        "crossing_pairs": {
+          "configuration -> fetch": {
+            "nets": 92,
+            "sink_pins": 156
+          },
+          "configuration -> interface": {
+            "nets": 2,
+            "sink_pins": 2
+          },
+          "configuration -> shared": {
+            "nets": 14,
+            "sink_pins": 24
+          },
+          "external -> interface": {
+            "nets": 10,
+            "sink_pins": 12
+          },
+          "fetch -> external": {
+            "nets": 6,
+            "sink_pins": 6
+          },
+          "fetch -> interface": {
+            "nets": 16,
+            "sink_pins": 16
+          },
+          "fetch -> shared": {
+            "nets": 3,
+            "sink_pins": 4
+          },
+          "interface -> configuration": {
+            "nets": 47,
+            "sink_pins": 52
+          },
+          "interface -> external": {
+            "nets": 8,
+            "sink_pins": 8
+          },
+          "interface -> fetch": {
+            "nets": 2,
+            "sink_pins": 12
+          },
+          "interface -> shared": {
+            "nets": 69,
+            "sink_pins": 113
+          },
+          "shared -> configuration": {
+            "nets": 88,
+            "sink_pins": 464
+          },
+          "shared -> fetch": {
+            "nets": 46,
+            "sink_pins": 212
+          },
+          "shared -> interface": {
+            "nets": 44,
+            "sink_pins": 56
+          }
+        },
+        "scope": "All operating modes. Unique cells assigned by endpoint-consumer regions; shared producers counted once. Clock and constants excluded from crossings; reset included. Region cuts are a communication budget, not wire lengths or placement improvement."
+      },
+      "request_modes": {
+        "all_edges": {
+          "operations": 260,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 68
+          }
+        },
+        "read_edge": {
+          "operations": 185,
+          "root_bits_by_owner": {
+            "execution": 35,
+            "fetch_state": 57,
+            "loader": 12,
+            "memory.storage0": 21,
+            "memory.storage1": 21,
+            "pin_sampler": 3,
+            "serial_receiver": 4
+          }
+        },
+        "write_edge": {
+          "operations": 4,
+          "root_bits_by_owner": {
+            "loader": 9
+          }
+        }
+      }
+    }
+  },
+  "placed": {
+    "artifact": "build/validation/chip-organization-check-03/placed-address-funnels.json",
+    "sha256": "b0f5a353504305a0946c968537b99a525f33122e813b080e94bf78b1c4b5c11c",
+    "context": "build/validation/chip-organization-01/global-15-context.json",
+    "context_sha256": "8f6252116bc58dc133b03a923e5901e8f42eb6993847280a173c7db9a3fc37b2",
+    "database_sha256": "7afd145606c88e40c9a1cfb6c00d64f635f2e3c8dcad786667958a4adf8846e0",
+    "physical_flip_flops": 2901,
+    "selected_depth": 3,
+    "selection": {
+      "memory.storage0": {
+        "cell_count": 36,
+        "incoming_net_count": 58,
+        "cell_area_um2": 379.21,
+        "mean_center_distance_um": 314.021,
+        "max_center_distance_um": 571.71,
+        "bbox_um": [
+          490.56,
+          321.3,
+          870.24,
+          502.74
+        ]
+      },
+      "memory.storage1": {
+        "cell_count": 34,
+        "incoming_net_count": 51,
+        "cell_area_um2": 353.808,
+        "mean_center_distance_um": 182.863,
+        "max_center_distance_um": 307.59,
+        "bbox_um": [
+          623.52,
+          283.5,
+          670.08,
+          506.52
+        ]
+      }
+    },
+    "unique_incoming_nets": 100,
+    "window_geometry": "build/validation/chip-organization-check-03/window-geometry.json",
+    "window_geometry_sha256": "4f1ef8c74b4a79ccb34fece21e669feaea44b495c4106115e61d68272949a387"
+  },
+  "projection": {
+    "artifact": "build/validation/chip-organization-check-03/address-window-projection.json",
+    "sha256": "c3f3518d5c04a80c6f71ccda230088858974488a9cefc16eb67413ebec416848",
+    "joint": {
+      "cells": 70,
+      "incident_nets": 170,
+      "before_span_um": 18503.61,
+      "projected_span_um": 34161.03,
+      "delta_percent": 84.618
+    },
+    "isolated_improving_moves": [],
+    "per_macro": {
+      "memory.storage0": {
+        "cells": 36,
+        "incident_nets": 94,
+        "before_span_um": 11700.52,
+        "projected_span_um": 22946.68,
+        "delta_percent": 96.117
+      },
+      "memory.storage1": {
+        "cells": 34,
+        "incident_nets": 85,
+        "before_span_um": 7690.01,
+        "projected_span_um": 13197.47,
+        "delta_percent": 71.618
+      }
+    },
+    "disposition": "defer this fixed-neighbor window projection",
+    "scope": "Sum of signal-net bounding-box half perimeters, counted once per net. Standard-cell centers and macro/package pin-envelope centers approximate endpoints. Includes incoming, internal and outgoing nets; excludes clock/power/ground. Fixed neighbors and overlapping projected cells; no legalized placement, route, capacitance or timing claim."
+  },
+  "context_refresh": {
+    "receipt": "build/validation/chip-organization-01/global-context-receipt-02.json",
+    "receipt_sha256": "2aeec3096c125396c5a92184d160fc904a927587794b152c6f010a84369a409c",
+    "seconds": 2.81,
+    "container_absence_confirmed": true,
+    "previous_context": "build/validation/routing-diagnostics-01/global-15-context.json",
+    "previous_context_sha256": "7812f0c82ca9ca93f28824dcbe2f0971bafb9b0d131e7f6e6c7a734396383903",
+    "changed_fields": [
+      "evidence_helper_sha256"
+    ],
+    "geometry_and_connectivity_identical": true
+  },
+  "next_hypothesis": "Cost one of the five index-map bit planes: 512 FF bits across both atomic banks, both read trees, upload feedback and explicitly shared candidate/row decoder nets. Preserve the exact execution contract and compare all incident connections before any placement run.",
+  "preserved_development_receipts": [
+    "build/validation/chip-organization-01",
+    "build/validation/chip-organization-check-01",
+    "build/validation/chip-organization-check-02"
+  ],
+  "limits": [
+    "Lean lemmas bind model request phases, not electrical timing or external macro implementation.",
+    "Read-edge cones include idle and commit and are not timing false-path certificates.",
+    "Mapped partitions are all-mode consumer groups, not placed blocks.",
+    "Physical membership is reselected from saved OpenDB connectivity, not transferred by mapped names.",
+    "Center-span projection permits overlaps and fixes neighbors; it does not prove all nearby placements worse or measure routed length or timing.",
+    "No new synthesis, RTL simulation, placement, routing or backend promotion. External macro/full package binding, direct proof and physical closure remain open."
+  ]
+}

@@ -1,0 +1,253 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "retain-local-repair-require-slew-and-congestion-work",
+  "receipts": {
+    "invocation": {
+      "path": "build/physical/local-route-01-invocation.json",
+      "sha256": "60ffcc337263f86b0165f7cdd40b7ed510bad6d8d207d0678f441f173d6d8cec"
+    },
+    "physical": {
+      "path": "build/physical/local-route-01-report.json",
+      "sha256": "d00f0e4f28edd68f956646b77b87852eab355509140258d19d4f11a879182871"
+    },
+    "local-route-final-01": {
+      "path": "build/physical/mapped-diagnostics/local-route-final-01/report.json",
+      "sha256": "bf6c47d52c854054e41a49cba38013ad5913157ab5f0648237a4175e51eed55e",
+      "seconds": 14.571
+    },
+    "local-route-final-02": {
+      "path": "build/physical/mapped-diagnostics/local-route-final-02/report.json",
+      "sha256": "699e69e056db91f452387e7bbe251c6684aea2ac8a2820fe5ef1e0c6782584c6",
+      "seconds": 14.408
+    },
+    "oracle_reused": {
+      "path": "build/physical/chip-check/local-repair-oracle-01/report.json",
+      "sha256": "4896a3bfcd78c608c6063118612bee2778bbd515868af6f5e15c9c6f8d63946d",
+      "netlist_sha256": "503fea96988af21fa23681007affb6c3c5a74ad24846f875120eaf8505efa03b",
+      "reason": "The fresh routed ODB export is byte-identical to the independently tested local-repair export; no simulation repeated."
+    }
+  },
+  "checked_artifacts": 182,
+  "coarse_route_seconds": 45.112,
+  "diagnostics_seconds": [
+    14.571,
+    14.408
+  ],
+  "congestion": {
+    "control_final_overflow": 1320,
+    "control_first_route_overflow": 1319,
+    "candidate_overflow": 1302,
+    "reduction": 18,
+    "reduction_percent": 1.3636363636363635,
+    "resource": 452959,
+    "demand": 146206,
+    "usage_percent": 32.28,
+    "max_horizontal_overflow": 7,
+    "max_vertical_overflow": 7
+  },
+  "comparison": {
+    "control": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 11.3693,
+        "timing__hold__ws": 0.0212911,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 9,
+        "design__max_slew_violation__count": 17
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 2.39656,
+        "timing__hold__ws": 0.277147,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 9,
+        "design__max_slew_violation__count": 52
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 8.77363,
+        "timing__hold__ws": 0.134815,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 9,
+        "design__max_slew_violation__count": 20
+      }
+    },
+    "candidate": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 12.0653,
+        "timing__hold__ws": 0.0935423,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 17
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 2.0218,
+        "timing__hold__ws": 0.355188,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 58
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 8.71641,
+        "timing__hold__ws": 0.184903,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "design__max_slew_violation__count": 26
+      }
+    }
+  },
+  "sram_load_comparison": {
+    "memory.storage0/A_DOUT[42]": {
+      "before_pf": 0.106882,
+      "after_pf": 0.053038,
+      "limit_pf": 0.064
+    },
+    "memory.storage0/A_DOUT[37]": {
+      "before_pf": 0.105969,
+      "after_pf": 0.047118,
+      "limit_pf": 0.064
+    },
+    "memory.storage1/A_DOUT[42]": {
+      "before_pf": 0.101092,
+      "after_pf": 0.051985,
+      "limit_pf": 0.064
+    },
+    "memory.storage0/A_DOUT[44]": {
+      "before_pf": 0.08937,
+      "after_pf": 0.029096,
+      "limit_pf": 0.064
+    },
+    "memory.storage0/A_DOUT[29]": {
+      "before_pf": 0.080981,
+      "after_pf": 0.032133,
+      "limit_pf": 0.064
+    },
+    "memory.storage0/A_DOUT[47]": {
+      "before_pf": 0.076789,
+      "after_pf": 0.022956,
+      "limit_pf": 0.064
+    },
+    "memory.storage0/A_DOUT[33]": {
+      "before_pf": 0.066338,
+      "after_pf": 0.014775,
+      "limit_pf": 0.064
+    }
+  },
+  "remaining_capacitance": {
+    "_09593_/X": {
+      "limit": 0.3,
+      "actual": 0.308889,
+      "slack": -0.008889,
+      "net": "_01806_",
+      "cell": "sg13cmos5l_buf_1"
+    }
+  },
+  "slow_slew_groups": {
+    "SRAM A_ADDR": 12,
+    "SRAM A_REN": 2,
+    "SRAM A_WEN": 2,
+    "standard cells": 24,
+    "SRAM A_DIN": 18
+  },
+  "slow_slew_pins": 58,
+  "slow_slew_nets": 28,
+  "slow_critical_path": {
+    "start": "memory.storage0/A_DOUT[42]",
+    "end": "memory.storage0/A_ADDR[4]",
+    "setup_slack_ns": 2.021801
+  },
+  "identity": {
+    "netlist_byte_identical": true,
+    "instance_geometry_identical": true,
+    "connectivity_identical": true,
+    "checked_geometry_fields": [
+      "instances",
+      "nets",
+      "ports",
+      "macro_pins",
+      "rows",
+      "placement_blockages",
+      "power_shapes",
+      "routing_obstructions"
+    ],
+    "instances": 18665,
+    "area_um2": 483653.3696,
+    "corridor_clear": true,
+    "nominal_layer_rc_verified_corners": 3,
+    "nominal_layers_per_corner": 5,
+    "annotation": {
+      "nom_fast_1p32V_m40C": {
+        "unused_ports": [
+          "ena",
+          "ui_in[7]",
+          "uio_in[2]",
+          "uio_in[3]",
+          "uio_in[4]",
+          "uio_in[5]",
+          "uio_in[6]",
+          "uio_in[7]"
+        ],
+        "unconnected_dummy_outputs": 184,
+        "consumed_unannotated": 0,
+        "partial": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "unused_ports": [
+          "ena",
+          "ui_in[7]",
+          "uio_in[2]",
+          "uio_in[3]",
+          "uio_in[4]",
+          "uio_in[5]",
+          "uio_in[6]",
+          "uio_in[7]"
+        ],
+        "unconnected_dummy_outputs": 184,
+        "consumed_unannotated": 0,
+        "partial": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "unused_ports": [
+          "ena",
+          "ui_in[7]",
+          "uio_in[2]",
+          "uio_in[3]",
+          "uio_in[4]",
+          "uio_in[5]",
+          "uio_in[6]",
+          "uio_in[7]"
+        ],
+        "unconnected_dummy_outputs": 184,
+        "consumed_unannotated": 0,
+        "partial": 0
+      }
+    }
+  },
+  "validation": {
+    "focused_tests": 43,
+    "pin_edges_reused": 508252,
+    "mutation_rejection_reused": 1,
+    "simulation_repeated": false,
+    "lean_sources_unchanged": 267,
+    "prior_experiment_files_unchanged": 52,
+    "prior_receipts_unchanged": 17
+  },
+  "next_gate": "A bounded local repair of the identified data-driver nets with explicit layer RC and frozen clocks: prioritize the SRAM address/control input slew and remaining _09593_/X load; require preserved connectivity and setup/hold margins before another coarse route. Congestion remains a separate obstacle to detailed routing.",
+  "boundary": "One 600 s capped GlobalRouting-only run, completed in 45.112 s. Fresh propagated-clock coarse-RC screening and exact netlist/geometry preservation; no detailed routing, antenna check/repair, extraction, timing signoff or backend promotion. Fast cells -40 C/SRAM -55 C.",
+  "report": "build/validation/local-route-01/report.json",
+  "report_sha256": "889c23b38c495ab763256a2431451d2b3b8c73ed611c9b09669c8185867471db",
+  "source_selection": {
+    "path": "physical/experiments/local-repair-results.json",
+    "sha256": "614513cbb0c0991bf394d1acf343c537ad60686a59c504392be0ecacceda38f0"
+  }
+}

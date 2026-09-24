@@ -1,0 +1,26 @@
+{
+  "schema": 4,
+  "status": "passed",
+  "decision": "admit-one-validated-added-buffer-coarse-route",
+  "validation": {
+    "path": "build/validation/paired-signal-repair-01/report.json",
+    "sha256": "52184dbc7bf5d2d19cacb7a1e113860cbb00928733e9fa6df09d7891425adcaf"
+  },
+  "candidate": "paired-signal-repair-01",
+  "reference_measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-reroute-01/report.json",
+    "sha256": "e785b499ab7c157a4a99285ff9bf27d9c0ab86b08a326a06026633b04fb993b7"
+  },
+  "parent_state": {
+    "path": "build/physical/target-paired-01/runs/paired-reroute-01/01-openroad-globalrouting/state_out.json",
+    "sha256": "a87db6b3d396bcea00f2d67d2ebaec48a507003347e2669b66d2e2ea8b61d62a"
+  },
+  "parent_physical": {
+    "path": "build/physical/paired-reroute-01-report.json",
+    "sha256": "853fab9dfdaa3e0ec0a4288a97b3fbaece1134e8450ae21f83731ad1700bbfbb"
+  },
+  "functional": {
+    "path": "build/validation/paired-signal-route-01/functional/report.json",
+    "sha256": "2fae09ff98a13474b2fb52547fc4aae79d48349f8006c15662ad118cbcad0d41"
+  }
+}

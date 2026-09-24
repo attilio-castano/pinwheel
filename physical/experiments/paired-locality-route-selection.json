@@ -1,0 +1,34 @@
+{
+  "schema": 5,
+  "status": "passed",
+  "decision": "admit-one-validated-organization-coarse-route",
+  "validation": {
+    "path": "build/validation/paired-locality-01/report.json",
+    "sha256": "28d4f25a4d50d303afadf833a6ccfc95fd9c9fa119a19e22f025d02179293d5d"
+  },
+  "candidate": "paired-locality-01",
+  "edits": {
+    "path": "physical/experiments/paired-locality-edits.json",
+    "sha256": "d7b1134a3ab922b8ad9f2c4cdae3e24a13eea1cffd306f9518d1a5b67354edfa"
+  },
+  "policy": {
+    "path": "physical/experiments/paired-locality-edit-policy.json",
+    "sha256": "038d960c2d514f55986da6cee1d74b6da449ac3ec722ce86e857b7fc895ad101"
+  },
+  "reference_measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-path-route-01/report.json",
+    "sha256": "739977b3567479c397b2b14354108baa17071181e168ad3712a489eb317bdcbe"
+  },
+  "parent_state": {
+    "path": "build/physical/target-paired-01/runs/paired-path-route-01/01-openroad-globalrouting/state_out.json",
+    "sha256": "c8db84aea0af46fd70cd60f8fcfd52fbb8d51c73c60b2dc3f4229e0bb745dd4d"
+  },
+  "parent_physical": {
+    "path": "build/physical/paired-path-route-01-report.json",
+    "sha256": "b068a0c380fe5ceda3b039eacf1dca6f2a7f62444ce19e5db48e86a8ef09d031"
+  },
+  "functional": {
+    "path": "build/validation/paired-locality-route-01/functional/report.json",
+    "sha256": "e12cbf25cbeaf905e99ee2e2c277c5403bd1407f72aa354d32ce3aab99a9f1b9"
+  }
+}

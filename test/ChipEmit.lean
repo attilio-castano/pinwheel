@@ -24,4 +24,12 @@ def main (args : List String) : IO Unit := do
   match TwoPort.chipText with
   | .ok text => IO.FS.writeFile (out ++ "/chip-twoport.mlir") text
   | .error e => throw (IO.userError e)
+  unless HostResult.registers.size == 14 && HostResult.registers.foldl (fun n p => n + p.1) 0 == 35 do
+    throw (IO.userError "Changed result interface register layout")
+  match Policy.resultText "tt_um_pinwheel" TwoPort.netlist TwoPort.extra TwoPort.label with
+  | .ok text => IO.FS.writeFile (out ++ "/chip-twoport-result.mlir") text
+  | .error e => throw (IO.userError e)
+  match Policy.resultText "tt_um_pinwheel" OnePort.admittedNetlist OnePort.extra OnePort.label with
+  | .ok text => IO.FS.writeFile (out ++ "/chip-oneport-result.mlir") text
+  | .error e => throw (IO.userError e)
   IO.println "Emitted the whole chip around the one-port and two-port backends."

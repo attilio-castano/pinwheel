@@ -1,38 +1,68 @@
 # Pinwheel
 
-A Lean-centered exploration of a programmable protocol-emulator ASIC for
-[Jane Street's competition](docs/competition.md).
+An experiment in learning chip design through mathematics, formal verification,
+and AI-assisted development.
 
-UART, SPI, and I²C motivate a shared engine for timed pin updates, input capture,
-and conditional execution. Lean specifies the behavior and proves correspondence
-between protocol models and machine implementations. Structural circuits lower
-through CIRCT to SystemVerilog for independent simulation and hardware measurement.
+I started this project as a former mathematician with no experience designing
+hardware. The question is whether Lean and modern AI tools can make the journey
+from an abstract specification to a working chip more understandable—and make
+the iteration and testing loop shorter and more reliable.
 
-[UART reception](docs/uart-receive.md) now supports one 8N1 byte with start
-confirmation and framing-error reporting, compiled for the same reloadable engine.
-The [UART link proof](docs/uart-link.md) connects transmitted bytes to received
-bytes under explicit clock and digital observation-delay bounds.
-The [continuous receive model](docs/uart-stream.md) adds automatic rearm, a
-one-entry result buffer, explicit consumption/overrun, and proofs for finite
-ideal back-to-back frames through a compiled-program supervisor.
-The [continuous clock contract](docs/uart-stream-clocks.md) extends those proofs
-to unequal TX/RX clocks and varying bounded observation age, including time to
-rearm and observe idle high between adjacent frames.
+The concrete project is a programmable protocol engine: a chip that can be
+reloaded with programs for communicating through its pins. UART, SPI, and I²C
+provide practical examples of timed outputs, input capture, and conditional
+execution. [Jane Street’s chip-design competition](docs/competition.md) supplies
+inspiration and useful constraints. The broader goal is to learn what designing
+a chip entails and document what these tools help with, where they fall short,
+and what the process teaches us.
 
-The project has a reloadable core with atomic program replacement, compressed
-instruction storage, and proved alternatives for fetching instructions. The
-one-port experimental core meets extracted setup and hold at all three corners
-of one 20 ns routed run on the 6×4 die area; electrical-limit violations remain.
-The [whole chip](docs/whole-chip.md) adds a proved serial loader and Tiny Tapeout
-pin map, and has been emitted and mapped, but has no independent RTL check or
-routed result. Its interface has no host result-readback transaction, and
-the compiled UART receiver does not satisfy the one-port program rule.
-The [submission plan](docs/submission-plan.md) records those remaining gates.
-No backend is promoted to the default, and full submission fit is unestablished.
-Lean model proofs, RTL checks, and physical evidence have distinct boundaries.
+## Making hardware feel closer to mathematics
+
+The approach is to make assumptions explicit, describe behavior precisely, and
+build implementations through small, checkable steps. Lean gives us a place to
+state models and prove relationships between them. AI tools help explore ideas,
+write code and proofs, investigate failures, and interpret experiments. Their
+suggestions still need evidence from proof checking, independent tests, and
+hardware measurements.
+
+For example, transmitting a UART byte connects several kinds of reasoning:
+
+1. Specify the bit sequence and when each bit should appear at the output pin.
+2. Compile it into an engine program and prove that the modeled execution
+   produces the specified trace under explicit assumptions.
+3. Emit a structural circuit through CIRCT to SystemVerilog, test it independently,
+   and measure whether its physical implementation can meet timing and electrical
+   constraints.
+
+A correct abstract machine still has to become wires, clocks, and transistors.
+Lean can catch some mistakes before expensive hardware runs; placement and
+routing expose costs that the behavioral model does not capture. An important
+part of the experiment is feeding those discoveries back into better interfaces,
+assumptions, and checks.
+
+Whether this approach makes the overall process faster or easier is a question
+the project is exploring. Failed experiments and the limits of each result are
+part of the record.
+
+## Where things stand
+
+Pinwheel has executable protocol models, Lean proofs for parts of the engine and
+its protocol behavior, emitted circuits, and independent simulation checks.
+The [UART link proof](docs/uart-link.md), for example, connects transmitted bytes
+to received bytes under explicit clock and observation-delay bounds.
+
+Physical experiments have reached placement and routing. Whole-chip timing,
+electrical limits, and routing closure remain open. A Lean model proof, an RTL
+test, a physical measurement, and a result from silicon establish different
+things; the project keeps those evidence boundaries explicit.
+
+The [research status](docs/research/status.md) tracks the current question and
+next decision. Detailed measurements and historical milestones live in the
+[results](docs/research/results.md) and [journal](docs/research/journal.md).
 
 ## Start here
 
+- [Run the host demo](docs/host-workflow.md): upload UART TX/RX, SPI, I²C and a custom trigger to one unchanged RTL chip, then read and consume their results.
 - [Current research status](docs/research/status.md): the active question, evidence, and next decision.
 - [Submission plan](docs/submission-plan.md): remaining functionality, tool changes, dependencies, and completion gates.
 - [Research results](docs/research/results.md): completed conclusions and conditions for reconsidering them.

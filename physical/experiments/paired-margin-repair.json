@@ -1,0 +1,189 @@
+{
+  "status_drivers": [
+    {
+      "index": 103,
+      "driver": "_05669_/Y",
+      "net": "_01854_",
+      "location": [
+        796.32,
+        113.4
+      ]
+    },
+    {
+      "index": 104,
+      "driver": "_05671_/Y",
+      "net": "_01856_",
+      "location": [
+        805.44,
+        366.66
+      ]
+    },
+    {
+      "index": 105,
+      "driver": "_06720_/Y",
+      "net": "_02905_",
+      "location": [
+        1001.76,
+        491.4
+      ]
+    }
+  ],
+  "hold_endpoints": [
+    {
+      "index": 18,
+      "endpoint": "memory.storage/A_DIN[0]",
+      "net": "net1887",
+      "slack_ns": 0.000455,
+      "stages": 4,
+      "location": [
+        255.42000000000002,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 19,
+      "endpoint": "_10877_/D",
+      "net": "controller._GEN_63[22]",
+      "slack_ns": 0.003593,
+      "stages": 4,
+      "location": [
+        420.96,
+        90.72
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 20,
+      "endpoint": "memory.storage/A_DIN[7]",
+      "net": "net33",
+      "slack_ns": 0.004307,
+      "stages": 4,
+      "location": [
+        334.1,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 21,
+      "endpoint": "memory.storage/A_DIN[12]",
+      "net": "net1989",
+      "slack_ns": 0.005833,
+      "stages": 4,
+      "location": [
+        390.3,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 22,
+      "endpoint": "memory.storage/A_DIN[16]",
+      "net": "paired_endpoint_net_17_0",
+      "slack_ns": 0.006603,
+      "stages": 4,
+      "location": [
+        435.26,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 23,
+      "endpoint": "memory.storage/A_DIN[4]",
+      "net": "net1881",
+      "slack_ns": 0.006994,
+      "stages": 4,
+      "location": [
+        300.38,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 24,
+      "endpoint": "memory.storage/A_DIN[1]",
+      "net": "net1892",
+      "slack_ns": 0.02339,
+      "stages": 3,
+      "location": [
+        266.65999999999997,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 25,
+      "endpoint": "memory.storage/A_DIN[18]",
+      "net": "net28",
+      "slack_ns": 0.025046,
+      "stages": 3,
+      "location": [
+        457.74,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 26,
+      "endpoint": "memory.storage/A_DIN[6]",
+      "net": "net34",
+      "slack_ns": 0.027594,
+      "stages": 3,
+      "location": [
+        322.86,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 27,
+      "endpoint": "memory.storage/A_DIN[3]",
+      "net": "net1875",
+      "slack_ns": 0.029171,
+      "stages": 3,
+      "location": [
+        289.14,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 28,
+      "endpoint": "memory.storage/A_DIN[60]",
+      "net": "net1896",
+      "slack_ns": 0.029532,
+      "stages": 3,
+      "location": [
+        999.34,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 29,
+      "endpoint": "memory.storage/A_DIN[5]",
+      "net": "net1886",
+      "slack_ns": 0.041706,
+      "stages": 3,
+      "location": [
+        311.62,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    },
+    {
+      "index": 30,
+      "endpoint": "memory.storage/A_DIN[62]",
+      "net": "paired_endpoint_net_9_3",
+      "slack_ns": 0.071741,
+      "stages": 2,
+      "location": [
+        1021.82,
+        108.0
+      ],
+      "cell": "sg13cmos5l_buf_1"
+    }
+  ]
+}

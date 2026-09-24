@@ -1035,6 +1035,852 @@ external interface integration retain their separate contracts.
   utilization cutoff. Host documentation now states the three-edge idle
   preparation and separates upload commitment from a later start.
 
+## 2026-09-19: shared contracts, early SRAM study and host result checks
+
+- **Scope:** local `codex/chip-contract-consolidation` work from `a256e7847dc3`.
+  Moved generic upload encoding out of readiness, compiler certificates out of
+  storage, and common timed/netlist operations out of the feeder. Added generic
+  input admission preserving commit/start decoding, an output observer and the
+  35-bit retained host result interface. Historical one-/two-port chips and
+  sampled/inner core MLIR reproduce byte for byte. Validation runners now share
+  command capture, timeout cleanup and reasoned rejection checks.
+- **Early SRAM discriminator:** public pinned macro models pass 1,979 storage
+  edges and 1,000 branch fetches across four consecutive-branch runs. Expanded
+  uploads retain all 322 push edges, two atomic banks and immediate commit/start
+  via a Q bypass followed by retained start data. Collapsing the read responses
+  is rejected. `build/storage/feasibility/schedule-05/report.json`, SHA-256
+  `b73f06937bfab326a61fd985d72db552281f22d72d76213eacdce01b435f74bc`,
+  binds all 13 selected views and the scenario formulas. Two-read whole-chip
+  scenarios are 445,327–503,560 µm² hybrid and 509,854–585,117 µm² direct;
+  these include banks, buffering/control and repair allowance, but exclude
+  routing space/halos and physical integration. They are not measured bounds.
+- **Independent result-chip gates:** two ports pass 365,966 edges / 1,672 serial
+  frames in both RTL and generic gates, with all 6,580 equivalence points proved.
+  Admitted one-port passes 294,514 edges / 1,346 frames and 6,575 points.
+  Each positive baseline passes before a real result-bit corruption is rejected.
+  Receipts `build/chip/twoport-result-check-02/report.json` (464.373 s, SHA-256
+  `dc8d79e8a79a0e13bdad967f781316b7ea5d3efbcbf640ace4fd6cccdbc7b604`)
+  and `build/chip/oneport-result-check-01/report.json` (356.297 s, SHA-256
+  `6fc401bef8fa70f380ff6c974945d7f15f460f8917a00635aa8f89092fbc471a`)
+  bind exact sources/artifacts and the external-pin oracle. Both cover retained
+  captures, upload failures, replacement, halt-only completion and a stretched
+  I²C read. Two ports also cover UART receive with good/bad stop bits.
+- **Cleanup regression:** `build/sampled/contracts-cleanup-01/report.json`
+  (175.576 s, SHA-256
+  `4956b493569033ebb15fc73cceace9efbcde489f01f9e31d8dafa48f159abd6d`)
+  confirms historical inner RTL identity, 6,319 reference-pipeline and 6,313
+  generic-gate equivalence points, 35,824 atomic edges / 22,434,312 storage
+  observations, both mapped corners and rejected wrong sampling depths.
+  Python checks pass 76 tests with two platform-specific skips (7.280 s).
+- **Foundation:** `build/validation/contracts-cleanup-02/report.json` passes all
+  31 suites and audits 191 modules, 13,755 declarations and 7,084 theorems with
+  standard axioms only; the injected untrusted axiom is rejected. All 259
+  recorded inputs match the working tree. Elapsed 1,437.784 s; receipt SHA-256
+  `b50d37b321f6fd8d9d4217bd1b92caa7bd13c618b33a95ed0f5ef5ddf2213321`.
+- **Disposition:** the [SRAM study](../storage-primitives.md#bounded-sram-scheduling-study-2026-09-19)
+  supports keeping unrestricted two-read execution available. The next storage
+  experiment is the complete direct wrapper, compared with the hybrid's lower
+  area estimate. Physical SRAM views are not integrated; no SRAM backend or
+  final storage choice follows. UART timing is unchanged. The [whole-chip
+  record](../whole-chip.md#independent-result-chip-checks-2026-09-19) owns the
+  result-interface validation; actual RTL read-back and the official-template
+  physical experiment remain separate gates. No new physical run or default
+  promotion occurred.
+
+## 2026-09-19: complete SRAM chip comparison
+
+- **Implementation:** `test/SramChipEmit.lean` emits direct and hybrid controllers
+  from the shared Lean loader/scheduler/transport/result expressions; only
+  storage and synchronous fetch binding change. A small Verilog binding connects
+  two real macro instances. Both variants retain two atomic banks, independent
+  successor reads, broadcast writes, commit/start bypass and retained start data.
+  Direct uses 32×55 scratch; hybrid retains two 256×5 combinational maps. This is
+  an experimental emitter, outside the promoted library and without an SRAM
+  refinement theorem. The existing library is unchanged; its fresh audit still
+  reports 13,755 declarations / 7,084 theorems with standard axioms only. The
+  prior foundation receipt differs only in the newly added Lake executable target.
+- **Complete functional/mapping comparison:**
+  `build/storage/sram-chip/comparison-01/report.json`, 515.390 s, SHA-256
+  `927551be871e7bb9587129809ff0ce1e5173954567a6a1e24aa3347b529628e6`,
+  binds 212 source inputs, tool/view identities and regenerated vectors. Each
+  of direct SRAM, hybrid SRAM and matched two-port FF passes 365,966 external-pin
+  edges / 1,672 serial frames at RTL and both mapped CMOS5L corners. Each SRAM
+  also passes 11,840 core edges, every address in both banks, 1,000 consecutive
+  branches, immediate commit/start and aborted-upload restart. Collapsed-read
+  and disabled-broadcast mutants compile and fail behaviorally for both SRAMs.
+- **Cost:** typical complete mapped totals are 479,596 µm² direct, 393,558 hybrid
+  and 622,897 FF; mapped FF counts are 2,095 / 2,895 / 6,544 respectively. Macro
+  areas are 300,205 / 100,978 / 0 µm². No placement, clock tree or repair area is
+  included. The study separately applies the earlier 10–20% standard-cell repair
+  allowance, retaining its estimate boundary. Hybrid is 36.8% smaller than the
+  matched FF chip and 17.9% smaller than direct.
+- **Compatibility:** all 13 selected macro views match Git blobs in the physical
+  PDK revision `2bbec755dc67ca3db0261c3d6163e15735d66710`; both mapping Liberty
+  files match the installed PDK. LEF routing uses Metal1–Metal4. GDS/CDL/fast
+  views exist in the pinned inventory but are not installed. LEF power pins use
+  `!` suffixes absent from Liberty groups; explicit power integration remains.
+- **Pre-layout timing:** `build/storage/sram-timing/comparison-01/report.json`,
+  3.528 s, SHA-256
+  `a67570c75a64687d059a3161bedfea8aad1f2a43372d6e0ba86a481c9e6e88a6`,
+  binds the mapped comparison and verified OpenSTA container snapshots. Each
+  invocation is capped at two CPUs, 2 GB and 120 s, with no network or writable
+  host mounts. At 20 ns, ideal clocks/no wires, macro-aware slow setup/hold is
+  +9.97/−0.53 ns direct, +10.26/−0.86 ns hybrid, +10.38/+0.02 ns FF. Fanout
+  violations are 800 / 1,300 / 3,048; no slew, capacitance, minimum-period or
+  pulse-width violations were reported in these two corners. This is a timing
+  screen, not closure; fast-corner and extracted checks remain open.
+- **Decision:** select hybrid SRAM with two reads for the complete adapter proof
+  and macro-aware physical experiment. Retain the current capacity/UART contract;
+  no duration restriction is needed by the tested schedule. Fix hold/fanout in
+  the physical flow and validate power, placement and the official chip template.
+  The [storage study](../storage-primitives.md#complete-chip-comparison-2026-09-19)
+  owns the detailed comparison. No place/route run, backend promotion, commit,
+  push, PR or submission was made by this follow-up.
+
+## 2026-09-19: integrated chip workflow and early physical diagnosis
+
+- **Decision/authority:** proceed with the approved shared-contract, focused
+  SRAM-proof, host-demonstration and bounded physical work. Licensing remains
+  pending by explicit user decision. The September 19 reread of the
+  [announcement](https://blog.janestreet.com/protocol-emulator-asic-competition/)
+  retains 6×4 and the emphasis on programmability, verification and early routing.
+  Local implementation and experiments do not promote a backend or publish a
+  submission.
+- **Response model:** `Storage.Sram` proves initialization, invariant
+  preservation and trace refinement for held synchronous responses and delayed
+  start-word ownership. The experimental emitter shares its bypass expression;
+  direct/hybrid chip/core MLIR remains byte-identical to `comparison-01`.
+  Physical arrays, bank/address wiring and emitted-adapter composition remain
+  proof obligations. There are no unfinished proof placeholders.
+- **Host workflow:** the pin-only interactive client runs nine cases on one
+  unchanged chip: UART TX, SPI mode 0, stretched I²C read, two UART RX frames,
+  high/low/timeout custom triggers and malformed-upload recovery. Hybrid and FF
+  reference each pass 855,975 edges / 2,925 serial frames. A full upload costs
+  94,629 edges, versus the TX example's 40 execution edges. This motivates a
+  resident-program variable-payload workload before data/FIFO/ISA expansion.
+  `build/host/integrated-hybrid-03/report.json` (88.637 s) has SHA-256
+  `a6e599a543ef979e0526cde95959d49eda8a726ec0ec3085ad85f23523e825bf`;
+  `build/host/integrated-reference-02/report.json` (98.229 s),
+  `844acafcd1931fe1edf0fe073d2a855d55cf1b35674b1b6c2c9b961a4db84304`.
+  Reusing an exported trigger image through `run` passes 94,991 edges / 325
+  frames; `build/host/integrated-custom-02/report.json` (16.827 s),
+  `b015255c3444f2a217a0e9c743e2e299a59fd5a13d09a85e7d0319d7f69b0ad3`.
+- **Whole-chip regression:** the independent oracle now includes UART TX/SPI
+  pin peers. Two ports pass 508,252 edges / 2,324 frames and 6,580 equivalence
+  points; admitted one-port passes 436,800 / 1,998 and 6,575 points. Each passes
+  RTL/generic gates and rejects the syntactically valid result corruption.
+  `build/chip/integrated-twoport-01/report.json` (571.670 s),
+  `48a828227ba686655c01c4bf74c33e4df4879089c8b2003f53946093b5f54329`;
+  `build/chip/integrated-oneport-01/report.json` (465.534 s),
+  `47534896430e29e04cc617db061af240cba880abc19dfb77aadb85b94964e986`.
+- **SRAM refresh:** all three chips pass the expanded 508,252-edge trace at RTL
+  and typical/slow mapped corners. Both SRAMs pass 11,840 core edges, 1,000
+  seeded consecutive branches, all addresses/banks and both mutation controls.
+  Mapped area and pre-layout slack are unchanged. `build/storage/sram-chip/integration-02/report.json`
+  (775.901 s), `535b20efe796f762f218d37a72e82db3fef936e1e4ffaf0c66e8f925551da097`;
+  `build/storage/sram-timing/integration-02/report.json` (3.701 s),
+  `d36d557ddebb7db5925d4cd7e0accc6dfca047b12c276c49ccd265c0bc205d17`.
+  Hybrid slow pre-layout setup/hold remains +10.26/−0.86 ns with 1,300 fanout
+  violations; this screen is not extracted timing. The fresh hybrid RTL matches
+  each frozen physical attempt exactly. Preparation from this fresh receipt
+  succeeds at `build/physical/hybrid-validated-01/inputs.json`.
+- **Physical integration:** chip-specific SDC/config, the official 43-pin DEF,
+  all pinned macro views and read-only PDK snapshots now exist. Initial lint
+  required extracting the vendor black-box interface. Subsequent attempts find
+  disconnected array supply at 50 µm power pitch, clear the connectivity report
+  at 16 µm, and reduce global overflow from 5,021 to 1,668 by moving both macros
+  near the bottom. Attempt 04 costs 483,185 µm² after repair, above the earlier
+  allowance. Attempt 05 continues its verified checkpoint for at most 2,700 s,
+  with four CPUs / 6 GiB and no network, allowing global congestion solely to
+  diagnose detailed routing. The [physical study](../chip-physical-study.md)
+  owns its final outcome and the grid/corner/layout qualification limits.
+- **Portable checks:** 90 Python tests pass, with two Linux-specific skips.
+  New checks cover host pre-I/O rejection, nondestructive readback, bounded
+  polling, complete macro-view snapshots and rejection of stale sources,
+  changed RTL/GDS and mismatched downloads. The first parallel fresh runs
+  exposed missing `Pinwheel` build dependencies in the host/comparison runners;
+  both now build the library explicitly. Failed tags retain their logs and
+  have no success receipts. Final review also reproduces and fixes a pipe
+  read-ahead timeout when vendor diagnostics and a reply arrive together; the
+  current host receipts above follow that fix. The new regression sends both
+  lines in one OS write.
+- **Foundation:** `build/validation/integrated-chip-01/report.json` passes all
+  31 suites in 1,474.135 s and audits 192 modules, 13,824 declarations and 7,112
+  theorems with standard axioms only; the injected unapproved axiom is rejected.
+  Receipt SHA-256: `a0a630b089c9d0cb91ec209569ca6144ccf87f45bee099bcfceda35d1b296f12`.
+- **Physical netlist behavior:** `check-chip-physical.py` validates a completed
+  report's exact netlist view against the fresh comparison's pin vectors and
+  pinned cell/macro models, then requires a compiled public-output corruption to
+  fail. Attempt 04's step-37 clock/hold-repaired netlist passes 508,252 edges.
+  `build/physical/chip-check/repaired-hybrid-01/report.json` (103.838 s), SHA-256
+  `b6807e6ef92f3c64d9311c4e0bdf1178de108da6fe793d1536b1adae9c959ad0`.
+  This is zero-delay evidence for that exported netlist, not the later routing
+  database, timing simulation or sequential equivalence.
+- **Bounded physical outcome:** `hybrid-chip-05` exits 124 at 2,700 seconds;
+  `docker stop` succeeds and the receipt confirms the container stopped. The
+  last complete step-log iteration (58) reports 168 detailed-route violations;
+  stdout records iteration 60 underway. No detailed-route state completes, so
+  the final retained state is `05-openroad-stamidpnr-3`, not a routed result.
+  It reports 483,806 µm², estimated typical setup/hold +7.57528/+0.0419088 ns,
+  24 slew, 222 fanout and 14 capacitance violations. Older fast/slow metrics are
+  inherited. No extracted multi-corner timing or final DRC/LVS result exists.
+  `build/physical/hybrid-chip-05-report.json`, SHA-256
+  `6af820485c0dde78a373829f367cdca323bda7b61afe77327c8290de35148d4f`.
+  The [tracked manifest](../../physical/experiments/hybrid-chip-physical-results.json)
+  retains all four substantive attempts and links the functional receipts.
+  Per-iteration detailed-route geometry was not retained; enable its capture
+  before the next bounded attempt so remaining locations can guide changes.
+  Keep SRAM experimental, preserve UART/capacity semantics, and finish the
+  physical-array/address proof alongside targeted physical diagnosis. Licensing,
+  backend promotion and publication remain pending.
+
+## 2026-09-19 — Routing diagnosis and replicated SRAM contract
+
+- **Geometry capture:** `hybrid-chip-06` resumes the verified pre-detailed-route
+  checkpoint, enabling snapshots and per-iteration DRC reports without changing
+  RTL, placement, pins or timing. It is stopped deliberately after diagnosis;
+  exit 137 is not a timeout or completion. The last completed log iteration, 38,
+  agrees with the retained report's 196 markers: 141 shorts, 55 spacing failures,
+  all Metal4 and fully inside SRAM footprints; 136 involve power/ground.
+  `build/physical/hybrid-chip-06-report.json`, SHA-256
+  `e9ae69a0781adc6f85baa661947196825207216966cc07ed2749502ef627e161`.
+  `build/physical/diagnosis/baseline-final/report.json`, SHA-256
+  `e3947f59477c1ec977e3d3ee7df8381b08411516ead7d16545d27ea9045237b8`.
+- **Controlled negative result:** a separate checkpoint adds two Metal4 routing
+  obstructions over SRAMs, exempting power nets, with unchanged placement and
+  connectivity. `hybrid-chip-07` has 240 markers at iteration 38: 236 shorts,
+  four spacing failures, all Metal4 and intersecting SRAM footprints. Global
+  guides are byte-identical: 470 Metal4 rectangles overlap SRAMs on 228 nets.
+  The keepouts are not adopted. Both containers are confirmed absent in
+  `build/physical/routing-termination.json`. The comparison is of intermediate
+  routing markers, not foundry DRC or closure; the prior 168-marker result used
+  a longer run and a different iteration.
+  `build/physical/hybrid-chip-07-report.json`, SHA-256
+  `ecc8d6b95a7151624328dca7aa49fc7b37161fbec5a1485ced42168ae75b18ac`.
+  `build/physical/diagnosis/keepouts-final/report.json`, SHA-256
+  `56d29676bc113a1810f1cbb6a7463518bd96bbb97f99321ce269f7d5ea0659b6`.
+- **Reusable proof:** `Memory.Sram` proves partial-model preservation for
+  replicated single-port arrays, arbitrary initial contents and finite request
+  histories, plus broadcast initialization, held Q, defined reads and bank
+  isolation. Actual controller request/address correspondence and complete
+  emitted-adapter refinement remain open. Fresh library build, whole-library
+  axiom audit and `test/Memory.lean` pass: 193 modules, 13,878 declarations and
+  7,132 theorems, including generated declarations, with standard axioms only.
+  This is a targeted gate, not a rerun of the earlier full 31-suite foundation.
+  `build/validation/sram-contract-01/report.json`, SHA-256
+  `20360034af6f14736fb38c193863304fc3676f62467f32299b5db8eecb84433c`.
+- **Fresh artifact checks:** direct/hybrid/FF chips pass 508,252 edges at RTL
+  and both mapped corners; SRAM core stress and both mutations pass their
+  expected outcomes. All four SRAM emissions are byte-identical to the previous
+  comparison. `build/storage/sram-chip/routing-03/report.json` (753.825 s), SHA-256
+  `c653cb41ffd62b527afb7041611a706eb3cb28a1c9605defa12f604eb5c3b39c`.
+  The baseline's inherited step-37 repaired netlist again passes 508,252 pin
+  edges and rejects compiled output corruption. This exercises the reporter's
+  first-resumed-step checkpoint fallback; it does not validate a later routed
+  layout. `build/physical/chip-check/routing-baseline-02/report.json` (108.402 s),
+  SHA-256 `408b38e810dfc9523daaf0bde91c293753e0eb2d9ae78687d8e1e8b2604a5ffd`.
+  Python: 97 tests run, 95 passed, two platform skips.
+- **Decision:** investigate macro orientation/placement and regenerated global
+  guides before another long detailed-route run or a storage change. Preserve
+  capacity/UART semantics and leave licensing pending. The
+  [physical study](../chip-physical-study.md#routing-diagnosis-2026-09-19) owns the
+  annotated layout and interpretation; the
+  [manifest](../../physical/experiments/hybrid-chip-physical-results.json)
+  binds both runs, the keepout derivation, diagnoses and validation receipts.
+
+## 2026-09-19 — Mirrored macro screen and emitted SRAM request bridge
+
+- **Controlled screen:** a separate prepared configuration mirrors both SRAMs
+  vertically, keeping the same macro boxes, RTL, views, clock, grid and package
+  pins. The pinned LEF permits the orientation; OpenDB confirms `MX` and all 342
+  signal shapes per macro on its north edge. `hybrid-chip-08` starts before
+  placement/clock repair and stops successfully after global routing. Total
+  overflow falls 1,668→1,255, Metal4 overflow 758→208 and Metal4 body-overlapping
+  guide rectangles 470→129. Metal2 overflow rises 566→785 and estimated wire
+  length grows 4.8%. This is a screening improvement, not routing closure.
+  The base profile is unchanged. `physical_floorplan.py` freezes/verifies only
+  existing instance placements; `report-routing-guides.py` verifies same-step
+  database/context/guide identity and coordinate scale.
+- **Bounded continuation:** `hybrid-chip-09` resumes the verified global checkpoint
+  at `OpenROAD.CheckAntennas` with four CPUs, 6 GiB and a 2,700-second limit.
+  Exit 124, confirmed stopped and independently absent. Last completed step:
+  `04-openroad-stamidpnr-3`; detailed routing and extracted timing incomplete.
+  The matched iteration-38 comparison is 196→174 markers (11.2% lower).
+  Last completed logged iteration 59 has 126 markers: 90 shorts, 36 spacing,
+  all Metal4 and fully inside SRAM footprints, 84 involving power/ground.
+  Reports/snapshots through 61 exist, but completions 60/61 are not in the step
+  log and are excluded from the final diagnosis. Matching geometry locates
+  terminals of 70/76 implicated non-power nets in the 49.64 µm inter-macro gap,
+  which contains 858 standard cells. This supports screening increased macro
+  separation next; it does not prove root cause. After 231 antenna diodes, the
+  last pre-route typical STA is setup +8.409 ns / hold −0.611 ns, with 16 hold,
+  67 slew, 30 cap and 229 fanout violations; instance area 484,675 µm².
+- **Proof integration:** controller expressions move from the test emitter to
+  `Storage.SramController`. Thirteen explicit lemmas connect accepted hybrid
+  write enables, physical address mux/truncation, selected-bank index lookup,
+  commit reads, broadcast host data and active-bank preservation to the reusable
+  array model. Complete upload coverage, response-definedness/ownership in every
+  reachable state and full emitted-chip composition remain open. Direct SRAM's
+  request/expansion proof remains separate. The four emitted MLIR files and the
+  hybrid RTL are byte-identical to the earlier comparison and frozen experiment.
+- **Validation:** fresh build and whole-library audit cover 194 modules, 14,073
+  declarations and 7,212 theorems with standard axioms only. Targeted memory
+  checks pass in 388.053 s. The first attempt's 300-second limit was too short;
+  its process group was confirmed stopped before the 900-second retry.
+  This is not a rerun of all 31 foundation suites. Python: 102 tests, 100 passed
+  and two platform skips; the final empty-guide rejection additionally passes
+  the two guide-parser tests. Full SRAM comparison `orientation-05` passes
+  all three chips at RTL and both mapped corners in 745.679 s, with the 508,252
+  pin-edge oracle, SRAM branch stress and both expected mutation rejections.
+  An initial build attempt caught the new root import after declarations; moving
+  it into the import block fixed it before the successful fresh comparison.
+- **Implemented netlist:** `orientation-repaired-03` passes 508,252 edges and
+  rejects compiled output corruption in 112.248 s. It validates the exact
+  `hybrid-chip-08/37-openroad-resizertimingpostcts/tt_um_pinwheel.nl.v` view,
+  not a later routed database or extracted timing. The continuation inherits
+  these same netlist bytes through its frozen checkpoint; diode-insertion ODB
+  and later routing snapshots are not covered by that netlist regression.
+- **Resident payload:** the host proposal uses START's existing data word to
+  initialize a byte shift register, with one shift per instruction entry and
+  explicit host result consumption. The serial budget becomes one 292-edge
+  frame per byte after initial upload, compared with 325 frames / 94,900 edges
+  for reupload-plus-start, excluding status/results and execution in both cases.
+  Instruction encoding, hardware cost, proof and implementation remain future
+  work dependent on physical headroom. No ISA or host protocol changes are made.
+- **Receipts:** `build/validation/controller-contract-03/report.json`, SHA-256
+  `603d36fc0a2f60684d7996649038153fd17212147d7a040ca95ccb4395de961c`;
+  `build/storage/sram-chip/orientation-05/report.json`, SHA-256
+  `689f826d3ba04628ba486cc9627d16d5816842d65b173d2c16e6e55de651ecec`;
+  `build/physical/chip-check/orientation-repaired-03/report.json`, SHA-256
+  `95ceda8ca19ea299949bcf3e1da54ac511c2976424fbf69f2c7ae5709588f62a`.
+  The global-screen comparison is
+  `build/physical/hybrid-chip-north/diagnosis/orientation/screen-comparison.json`,
+  SHA-256 `51b2cc117aa560143a11148791a7109580f85e695394924426d6d2b47071fef9`.
+  `build/physical/hybrid-chip-09-report.json`, SHA-256
+  `2936573505709d36425e62e7f8dd8e7adcd27c197e5b154f365ce240870fb9c7`;
+  `build/physical/diagnosis/orientation-final/report.json`, SHA-256
+  `44accc1fdc04d41e20e8a39b2c948d3dbb7b8fdba678cebf1b6141a61a665bd9`.
+
+## 2026-09-19 — Accepted-cursor coverage and rejected wider-gap screen
+
+- **Controlled placement:** `hybrid-chip-10` changes only `storage1`'s location
+  from `(252, 144)` to `(252, 272)` µm relative to the north-facing screen.
+  Both macro orientations stay `FS`; the gap grows 49.64→177.64 µm. The move
+  is eight horizontal grid pitches. The exact configuration comparison, macro
+  geometry, RTL and 43 official signal-pin shapes are checked; power shapes
+  regenerate around the moved macro and are not claimed identical. The flow
+  exits 0 at `39-openroad-globalrouting` under a 1,800-second cap, four CPUs and
+  6 GiB, and the container is independently confirmed absent.
+- **Negative result and decision:** global overflow rises 1,255→1,892 (+50.8%),
+  Metal4 overflow 208→480, and Metal4 guides overlapping SRAM bodies 129→276.
+  Estimated wire length rises 1,869,386→2,349,619 µm (+25.7%). Cells fully inside
+  the gap rise 825→4,201 and their footprint occupancy 30.8→47.5%; instance/repair
+  area is essentially unchanged. Both supply-connectivity checks report zero.
+  Typical pre-route setup/hold are +10.380/+0.254 ns, with two slew and 207 fanout
+  violations. Reject this separation-only screen and allocate no detailed
+  route. The next hypothesis is a placement exclusion that actually reserves a
+  routing corridor, with fresh placement/guides and verification after repair.
+  No unique causal diagnosis, extracted timing or layout signoff follows.
+- **Proof integration:** `Memory.Sram.Model.Defined` records initialized words.
+  `Storage.SramCoverage` proves the inactive prefix below the accepted cursor
+  and all 32 words of a valid bank remain defined through every command history
+  after initialization. Commit, abort, reset, rejected commands and interrupted
+  uploads reuse the existing loader transition. `SramController.control_next`
+  connects actual control-register updates; request/address bridges connect
+  usable reads to defined words and the related physical copies' returned
+  values. No zero-filled SRAM, initial copy equality or minimum duration is
+  assumed. Program-word correspondence, scheduler/current/start ownership and
+  full emitted-chip composition remain open; direct SRAM's proof is separate.
+- **Validation:** the fresh build and audit pass 195 modules, 14,107 declarations
+  and 7,235 theorems using standard axioms only. The targeted memory regression
+  passes in 374.033 s. The four experimental MLIR emissions and the staged
+  hybrid RTL remain byte-identical. This is not a rerun of the 31-suite
+  foundation gate or the preceding Python suite.
+- **Fresh chip checks:** `widegap-01` passes all three implementations at RTL
+  and both mapped corners in 681.941 s, with 508,252 independent chip edges,
+  11,840 SRAM core edges and rejection of both SRAM corruptions. Its 218 source
+  hashes match the final sources. `widegap-repaired-01` passes those chip edges
+  and compiled output-corruption rejection in 96.458 s. It checks the new
+  `37-openroad-resizertimingpostcts` netlist inherited by the global-routing
+  state, not a new netlist export of the later layout database.
+- **Receipts:** `build/validation/sram-coverage-01/report.json`, SHA-256
+  `d2a72a2ed392b4ec23ca48a9200fc0fbafee00a800f7f1bc7979ce36e4753b8f`;
+  `build/physical/hybrid-chip-10-report.json`, SHA-256
+  `07bc4abf76fa74f29a4b41ee1495309f014aeafeb2b3f9aca8a2263cad4e3114`;
+  `build/physical/hybrid-chip-widegap/diagnosis/gap/comparison.json`, SHA-256
+  `59fc114c3d5c3cad7ae60a35cc8000c15b195173f4b908f5cbc86ef7b772aadb`;
+  `build/storage/sram-chip/widegap-01/report.json`, SHA-256
+  `2ba55ffa2d102aa73a46f22538ecc35f3a6d2da126a24d85d46a3acfc1788a9f`;
+  `build/physical/chip-check/widegap-repaired-01/report.json`, SHA-256
+  `7429a80ef67313f9d40d1ddec5f732627f5a88583516be5884e1ef22bc477f17`.
+  The [physical study](../chip-physical-study.md#wider-gap-screen-2026-09-19)
+  owns the matched-stage table and annotated layout; the manifest binds its
+  sources and validation artifacts.
+
+## 2026-09-21 — Verified placement corridors and closed-loop SRAM execution
+
+- **Controlled screens:** the approved cycle reserves placement sites within
+  the original 49.64 µm gap using hard `FP_OBSTRUCTIONS`, created before rows.
+  Full-height `hybrid-chip-11` and half-height `hybrid-chip-12` retain the exact
+  RTL, macro boxes, 43 official signal-pin shapes, views, grid parameters and
+  20 ns clock. Both finish at global routing inside separate 1,800-second caps
+  with four CPUs and 6 GiB. After legalization, post-CTS repair and global
+  routing, both reservations have zero overlapping rows or instances and the
+  matching hard blockage. The full strip has 110 temporary boundary straddlers
+  at global placement; legalization removes them. The half strip remains empty
+  after antenna repair. Power geometry is regenerated, not claimed identical.
+- **Screen decision:** the full strip raises total overflow 1,255→1,686 and is
+  rejected despite fewer Metal4 guide overlaps. The half strip lowers overflow
+  to 870 (−30.7%), Metal4 body-overlapping guides 129→45 (−65.1%) and estimated
+  wire length by 1.7%, with essentially unchanged cell/repair area and zero
+  supply violations. It passes the predeclared overflow/area/wire gates.
+  Timing remains met at the same pre-route typical stage and electrical counts
+  do not regress; small reductions in positive setup/hold margin are reported.
+  This interpretation of the timing gate is explicit in the frozen comparison.
+  Only the half strip receives the one allocated 5,400-second continuation.
+- **Bounded continuation:** `hybrid-chip-13` reaches that limit in antenna
+  reroute pass 1; exit 124 and independent absence checks confirm termination.
+  Matched first-pass iteration-59 markers improve 126→92 (−27.0%). Pass 0 ends
+  at iteration 64 with 73 markers fully inside SRAMs: 68 Metal4 and five Metal3.
+  Its antenna check finds 49 net/55 pin violations, adds 82 antenna cells and
+  starts a new pass. The final completed logged entry is pass 1, iteration 35,
+  with 230 markers; 225 are inside macros and five within 5 µm. The reservation
+  remains empty in all matched snapshots. The complete routing/antenna step
+  does not finish. Latest completed typical STA is +8.517/+0.063 ns with
+  62 slew, 25 capacitance and 219 fanout violations, before the later repair;
+  fast/slow metrics are inherited. Retain the half strip; next screen macro-body
+  routing obstructions before regenerating global guides. No additional run,
+  backend promotion, storage/protocol change or physical signoff is claimed.
+- **Proof integration:** `SramContents` relates every defined dictionary word
+  to the existing loader image and preserves that relation through accepted
+  writes. `SramExecution` composes the actual arrays, controller addresses,
+  held Q, start bypass and execution invariant. Every controller register
+  matches the shared netlist; one initializing edge establishes trace equality
+  with the capacity-adapted atomic reference from arbitrary arrays and Q.
+  The retained backend image is specification bookkeeping. No SRAM clear,
+  initial copy equality, new interpreter, duration rule or UART change is
+  assumed. External macro binding, package composition and emitted-chip
+  read-back remain separate; direct SRAM does not inherit the hybrid proof.
+- **Validation and correction:** the first audit rejected a native `bv_decide`
+  dependency. The comparison in progress was cleanly interrupted before that
+  source was changed. The corrected proof uses ordinary bank separation and
+  arithmetic; the allowed axiom policy is unchanged. Fresh `sram-execution-02`
+  passes all 31 suites in 1,476.691 s and audits 197 modules, 14,217 declarations
+  and 7,313 theorems with standard axioms only. The Python suite passes 105 tests
+  with two platform skips. Failed/interrupted attempts remain retained.
+- **Fresh chip checks:** `corridor-02` passes direct/hybrid/FF RTL and both
+  mapped corners in 740.287 s. Each simulation checks 508,252 external-pin edges;
+  SRAM cores check 11,840 edges, including 1,000 consecutive branches, and both
+  SRAM mutations are rejected. All 220 comparison sources and 266 foundation
+  sources match the final checkout. Four experimental MLIR emissions and hybrid
+  RTL remain byte-identical to the preceding validated emission and prepared
+  physical inputs. `corridor-repaired-01` passes the full external-pin oracle
+  and compiled output-corruption control in 108.392 s. It identifies the half
+  strip's exported post-CTS netlist, not a later layout-database export.
+- **Receipts:** `build/validation/sram-execution-02/report.json`, SHA-256
+  `96d484981d55068fce5ea09484e178cd847a935ac53ff9fc028baefe40d1250c`;
+  `build/validation/corridor-cycle-01/screen-comparison.json`, SHA-256
+  `361277196d6e3998cda0eaa5a503d331ece41a8c2da385f3ed7978c57fdffb77`;
+  `build/storage/sram-chip/corridor-02/report.json`, SHA-256
+  `e8096258f929b677c578fd733d2a6781a9f70ae7e9797b326307c3ec32ac8353`;
+  `build/physical/chip-check/corridor-repaired-01/report.json`, SHA-256
+  `c3555b83bb6ef43c0cf5c1e8c02fc8939e07771f503e96c41a74c05a5f5c6a71`.
+  The [physical study](../chip-physical-study.md#reserved-corridor-screens-2026-09-21)
+  owns geometry, matched comparisons and continuation results; its manifest
+  preserves the earlier phase hashes and records this cycle separately.
+  `build/physical/hybrid-chip-13-report.json`, SHA-256
+  `329a519f6378768f5e92f739a6f48ec503ab93a2d923c7b6df9fb30a227fd852`;
+  `build/validation/corridor-cycle-01/continuation-comparison.json`, SHA-256
+  `7d796547a50ecde1d2a576ae00876e29a272533aff50cbaf5162352f6389dcc8`.
+
+## 2026-09-21 — Cheap routing diagnostics and rejected early obstructions
+
+The approved diagnostic cycle reads settled artifacts, adds repeatable static
+checks, and allocates one global screen with a 900-second cap; it allocates no
+new detailed route. Its source baseline is
+`build/validation/routing-diagnostics-01/baseline.json` on
+`codex/chip-contract-consolidation`, base commit `a256e7847dc3`.
+Earlier local work and receipts are retained.
+
+The preceding `hybrid-chip-14` three-hour retry completes detailed routing and
+RC extraction but times out before extracted STA completes. Its final antenna
+check reports three nets/four pins. Fresh static checks show that retained
+73/174/283/384 pass-end marker counts include old and duplicate entries: current
+snapshot counts are 75/103/112/103. The completed routing ODB independently
+reports 103. The shorter attempt-13 log's 35/230 endpoint is corrected to 38/198
+using the consistent outer log and matching report, without overwriting the
+earlier snapshot analysis.
+
+`hybrid-chip-15` derives two early Metal4 signal obstructions from the frozen
+post-CTS checkpoint and completes its global-routing process in 44.360 seconds.
+The objects survive and pin-access checks pass, but global guides and the entire
+saved Metal4 capacity/usage map are identical to attempt 12. Reject this
+ineffective mechanism before allocating detailed routing. The proposed next
+mechanism is explicit regional capacity control; it was not routed this cycle.
+
+The final probes use resolved Metal2–Metal4 limits. Initial probes using an
+incomplete configuration's Metal1 default are preserved and superseded; correct
+repeats reproduce the same counts. The new report also binds inherited timing to
+its source stage: attempt 15's older resizer hold estimate is not comparable to
+attempt 12's post-CTS STA. These safeguards prevent false physical conclusions.
+The Python suite passes 121 tests with two platform skips; the final receipt
+guard change additionally passes all seven targeted evidence-selection tests.
+Lean and RTL behavior are unchanged. All diagnostic containers are absent and
+the preceding retry heartbeat stays paused.
+
+The [diagnostic guide](../routing-diagnostics.md) owns commands and limitations.
+`build/validation/routing-diagnostics-01/completion.json` indexes settled checks,
+source identities and the rejection. `gate-final-02/report.json` takes 6.702 s;
+resolved static checks take 9.067–9.538 s each, and pin access 3.548/3.559 s.
+The tracked physical manifest appends runs 14/15 and this cycle while preserving
+all preceding run objects. No foundry DRC, antenna or timing closure is claimed.
+
+## 2026-09-21 — Costed hybrid/direct architecture comparison
+
+Stepped back from routing adjustments to compare the existing organizations at
+the same whole-chip mapping boundary. Added `report-chip-architecture.py`, which
+reads the saved typical-corner JSON, accounts for every mapped FF and measures
+macro ports and structural dependency cones. The pinned Yosys only reads the
+already simulated, receipt-hashed Verilog; all named sequential inputs and
+package ports match the saved JSON structurally. No synthesis, simulation,
+physical experiment or Lean rebuild was run. All 220 original comparison source
+hashes still match, and previous routing receipts were preserved.
+
+Hybrid has 2,560 map FF bits; direct has 1,760 upload scratch bits; both have 335
+common FF bits. Six unused cached-word bits explain the emitter/mapped-count
+difference. Hybrid's macro-address union contains 6,037 combinational cells,
+versus 607 for direct. Both responses reach both address ports, including the
+same 21 response bits per macro in the union. Direct saves 113,189 µm² of mapped
+standard cells and adds 199,227 µm² of macros. Preserve both candidates: this
+identifies a structural trade, not a routed winner or a routing-failure cause.
+
+The [architecture study](../chip-architecture-study.md) owns state diagrams,
+the complete upload/execution schedule, communication/area tables, source
+interpretation and the next assembly-description increment. Its selected
+measurements are in `physical/experiments/chip-architecture-results.json`.
+`build/validation/chip-architecture-02/report.json` has SHA-256
+`f5c87c5e9f6f0d6567aa682347783e7597a51c482fa88f64b61d9b628c6c4ce0`;
+its analysis/readback phase takes 1.793 s. `tests.json` and `analyzer-tests.log`
+record nine passing tests, including corrupt logic/sequential inputs and invalid
+graph/ownership controls. The development report in `chip-architecture-01` is
+retained. No generic physical IR or RTL hierarchy was introduced. Status now
+allocates the ownership/interface/schedule description before another physical
+change; regional capacity control remains a separate deferred diagnostic.
+
+## 2026-09-21 — Shared SRAM assembly and checked edge obligations
+
+Implemented the approved first assembly increment while preserving the existing
+circuit. `Storage.SramAssembly` now owns package composition, register lists and
+labels formerly in `test/SramChipEmit.lean`. Typed register constructors select
+nine state owners; emission and the architecture analyzer consume that one
+description. The test emitter serializes MLIR and an assembly JSON manifest.
+No pipeline state, generic compiler framework or physical hierarchy was added.
+
+The complete, uniquely named request interface supplies five pre-edge signals;
+two macro responses complete seven crossings. The analyzer binds all named state
+and ten address/data/enable terminals per variant against both saved JSON and
+mapped-Verilog read-back. It checks hybrid nine-to-six-bit address narrowing,
+broadcast connections, response direction and interface phase. `SramSchedule`
+states ten obligations using existing controller/array/execution definitions:
+exclusive access, candidate readiness and renewal, response arrival, start-word
+ownership, commit/pending/bypass/save behavior, active-bank isolation and writes
+to both replicas. Only the generic access obligation covers both variants;
+direct execution does not inherit the hybrid proof.
+
+`build/validation/sram-assembly-check-02/report.json` records the successful
+cached library/emitter build, whole-library audit, extended `Interfaces` suite,
+four emissions/exports and both mapped read-backs. Its SHA-256 is
+`f1e7cce1e8f166a112fe3e124e86a00f4c58eddb872643520e77950b87e46de2`.
+All four MLIR and RTL hashes equal the earlier `corridor-02` comparison. Current
+source hashes are captured separately: the assembly refactor changes the library
+entry point and emitter, and adds two library modules. The audit reports 14,395
+declarations / 7,354 theorems with standard axioms only. The gate takes 17.108 s,
+including 1.746 s analysis/read-back. Its `tests.json` and `analyzer-tests.log`
+record all 13 passing focused tests with missing/duplicate state, wrong ownership,
+crossing, phase, width, response-swap and address-bit mutations. Earlier graph
+and structural-signature controls remain in the same suite.
+
+The first development gate `sram-assembly-check-01` is preserved: its build and
+audit passed, then the interface test failed to elaborate rank-polymorphic local
+values. Explicit type annotations fixed that test before the successful repeat.
+`sram-assembly-01` retains the pre-edit source hashes and original emitter. All
+earlier routing and architecture receipts remain unchanged. No new synthesis,
+RTL simulation, placement or routing was run; the full foundation regression
+was not rerun for this byte-identical hardware refactor.
+
+The [assembly study](../chip-architecture-study.md#checked-assembly-and-edge-obligations)
+and `physical/experiments/sram-assembly-results.json` own the new interpretation
+and selected receipt. The remaining structural increment is combinational
+producer/consumer ownership and a mapped locality hypothesis. State names and
+edge obligations do not assign every gate to a region. External macro behavior,
+full package proof/read-back and physical closure remain distinct obligations.
+
+## 2026-09-21 — Computational map and a rejected locality projection
+
+Extended `SramAssembly` with eight width-indexed computations from the existing
+controller expressions. The probes reuse the actual emitter cache and reject
+any added operation. `SramSchedule` now also checks actual read/write address
+cuts for both variants and the hybrid running/read relation. Source analysis
+tracks selected bit positions; mapped analysis assigns every combinational cell
+by its sequential/package consumers, counting shared producers once.
+
+The hybrid all-mode/read-branch address unions contain 1,312/1,239 unoptimized
+source operations; direct contains 260/185. Read branches shed the 64 serial
+payload bits, but hybrid retains all 2,560 map bits and direct retains no
+scratch bits. This is a read-edge envelope including idle and commit, not a
+timing false-path certificate. The hybrid fetch region owns 12,094 of 12,593
+mapped combinational cells, too broad for a useful placement constraint.
+
+The saved physical view retains 2,901 FFs versus 2,895 in the typical mapping
+and almost entirely different cell names. A new connectivity-based selection
+finds 36/34 cells in the final three private address stages, with 58/51 incoming
+net incidences (100 distinct nets across both groups). Their mean cell-center
+distances from SRAM address-pin envelopes are 314.021/182.863 µm.
+
+Tested an analysis-only projection toward two pin-adjacent windows on existing
+rows, outside the macros and verified half corridor. Shorter output connections
+do not compensate for longer inputs: the bounding-box half-perimeter estimate
+over all 170 incident signal nets grows from 18,503.610 to 34,161.030 µm
+(+84.618%). Neither group alone nor any of the 70 individual projections
+improves the estimate with neighbors fixed. **Defer this projection before
+placement.** The screen permits cell overlap and is not an optimized placement,
+routed length, timing result or impossibility proof. Next cost a complete map
+bit plane including both atomic banks, both read trees and shared decode nets.
+
+`build/validation/chip-organization-check-03/report.json` records the final gate,
+SHA-256 `8872735b6d46cd552d5b5976bcbf18fd0ac42ce84aa24aa35e515f48f28e8cab`.
+All four regenerated MLIR and RTL pairs equal the saved `corridor-02` comparison;
+mapped boundary signatures and consumer summaries match Verilog read-back.
+The audit covers 14,479 declarations / 7,393 theorems using standard axioms only.
+`Interfaces` and 21 focused Python tests pass. Cached checks/export take
+13.168 s, analysis/read-back/projection 1.942 s, total 15.110 s. Final input hashes
+were verified unchanged. `physical/experiments/chip-organization-results.json`
+owns selected results; `sram-address-locality.json` preserves the tested windows.
+
+The first gate `chip-organization-check-01` passed Lean and artifact checks but
+rejected the saved export's old geometry-helper identity. A read-only OpenDB
+export in `chip-organization-01` took 2.810 s and reproduced everything except
+that helper hash. The named export container's absence was independently
+confirmed. The sandbox-denied initial invocation and the successful retry have
+separate receipts. `chip-organization-check-02` completed the computational map;
+`-03` adds the reusable projection and its analytical rejection test. Existing
+receipts remain unchanged. No new synthesis, RTL simulation, placement or routing
+was performed; no hardware behavior, admission or execution edge was changed.
+External macro/full package binding, direct proof and physical closure remain
+separate obligations.
+
+## 2026-09-21 — Complete map slice and read-tree tile costs
+
+Completed the approved slice study and one bounded comparison of small word
+groups. `SramAssembly.indexLocation` now exports bank/word coordinates from
+typed constructors; `chip_map_slice.py` assigns data-bearing mapped logic by its
+stored-map support and absorbs control only when every consumer is local.
+It checks exact per-bit map/read support and accounts for remaining shared
+decoding once. Retained Liberty areas sum to the original 292,580.0514 µm²
+standard-cell total. No hardware behavior changed.
+
+The complete bit-zero plane contains 512 FFs and 1,986 private gates, costing
+48,576.5532 µm². It imports 1,073 nets: 520 for updates, 220 for read zero,
+330 for read one and three for both. Of these, 1,062 directly serve at least
+two planes. Its outputs are the two index bits delivered to the SRAM replicas.
+
+The source `Execution.readTree` selects low address bits last along the data
+path. Its natural 16-entry subtrees therefore share a low nibble, e.g.
+0,16,…,240. A consecutive group in bank zero exports 90 nets and keeps only
+10/0 gates from the two read cones; the corresponding strided group exports
+13 and keeps 76/76. The strided group owns 80 FFs and 294 private gates,
+7,662.0978 µm², but still imports 280 nets. Whole-map cut totals are 1,265
+for five bit planes, 4,099 for 32 consecutive groups and 1,615 for 32 strided
+groups. Different group sizes and graph cuts do not determine a routed winner.
+
+The next [specified experiment](../../physical/experiments/map-tile-plan.json)
+is one 16×5 tile with local read/write decoding: 18 functional input bits,
+ten output bits and the existing clock, without new pipeline state. This is an
+unimplemented interface target, not a measured reduction from 280 inputs.
+Prove its two reads and all updates against the existing projection, map the
+block with its boundary intact, and measure decoder duplication and remaining
+map glue before allocating placement. The [slice study](../map-slice-study.md)
+owns the interpretation; `physical/experiments/map-slice-results.json` owns
+selected measurements.
+
+`build/validation/map-slice-check-01/report.json`, SHA-256
+`ffee1f5c04158c4503f196b6e5b9d484dec3c542f2bbafc4ae1b1470db7987c0`,
+passes library/emitter build, the standard-axiom audit, `Interfaces`, four
+MLIR/RTL identity checks and both mapped-Verilog read-backs. Selected boundary
+signatures, state membership, all partition costs and cell counts match the
+independently parsed Verilog. The audit covers 14,484 declarations and 7,393
+theorems. All 30 focused Python tests pass, including shared/external consumers,
+cross-bit errors, invalid coordinates, read-tree grouping and renumbered artifacts.
+The gate takes 17.166 s: 14.827 s build/audit/emission and 2.339 s analysis/read-back.
+
+`build/validation/map-slice-01` preserves the pre-edit hashes, emitted manifest
+and two development analyses. Earlier receipts and experiments are unchanged.
+No new synthesis, RTL simulation, OpenDB export, placement or routing was run;
+the full foundation regression was not repeated for byte-identical hardware.
+Macro/full-package proof boundaries, physical closure and licensing remain open.
+
+## 2026-09-21 — Proved local-decoding tile and complete map cost
+
+Implemented the approved 16×5 tile experiment by reusing the existing
+`Memory.Flops.circuit 4 5 2`. `Storage.MapTile` proves cursor decomposition,
+each store update, both restricted reads, selected full lookup, and correspondence
+to actual hybrid controller updates and candidate read addresses. All inputs
+and states are covered without cleared memory or an extra execution edge.
+The chip itself is not rewired to the candidate.
+
+The compact 18-input-bit/10-output-bit boundary survives typical and slow
+mapping. One tile costs 7,664.0256 µm² (80 FFs and 178 combinational cells).
+All 32 copies plus 292 glue cells cost 250,189.4304 µm², versus
+253,254.9348 µm² for a matched flat map: 1.210442% less. Read gate depths change
+14/13→9/9 and next-state depth stays eight. There are 369 distinct signal nets
+at tile interfaces, excluding clock. Composed cursor/data fanout reaches 224
+versus ten for the flat map, exposing the next missing distribution cost.
+Per-module ABC estimates do not include the whole broadcast load and do not
+establish an end-to-end timing win.
+
+`build/storage/map-tile/local-decode-03/report.json`, SHA-256
+`3c69d92ca85e0d81030bad2b69c0184218e5f0b0273b5f97446fb2b97ac929e3`,
+passes in 77.772 s. Nine independent arbitrary-state SAT checks compare both
+outputs and every next-state bit at RTL and in both mapped corners for tile,
+flat map and tiled map. Mapped checks use Verilog read-back; state, area,
+depth and fanout agree with mapped JSON. A joined-reader mutation is rejected.
+Six checker tests and the existing 30 architecture tests pass. The library
+audit covers 14,526 declarations and 7,421 theorems with standard axioms only.
+
+`build/validation/map-tile-boundary-01/report.json`, SHA-256
+`58e1acdde31fc838ec692bcc1e6bbf9ec66d7b415831d7d82973905011c6a021`,
+passes in 11.456 s and confirms all four production MLIR/RTL pairs remain
+byte-identical to `corridor-02`. Its 239 frozen inputs and the tile experiment's
+209 frozen inputs match the validated checkout. `build/validation/map-tile-01`
+retains the pre-edit snapshot, initial emission and focused test logs.
+
+Failed attempts are preserved: `local-decode-01` stopped at the axiom audit
+and led to replacing native certificate evaluation with kernel arithmetic;
+`local-decode-02` stopped when its negative control did not reject and led to
+correcting both the mutated JSON port and its same-named net binding. Only
+`local-decode-03` is selected. The [tile study](../map-tile-study.md) owns the
+interpretation and `physical/experiments/map-tile-results.json` pins the result.
+Earlier physical receipts and the original tile plan are unchanged. Next cost
+bounded buffer distribution before whole-chip integration or physical work.
+No placement, routing, Docker run, protocol change or backend promotion occurred.
+
+## 2026-09-21 — Costed buffer distribution with tile boundaries intact
+
+The approved follow-up inserts explicit IHP `sg13cmos5l_buf_1` trees into the
+retained map hierarchy. Every tile, glue and library module stays unchanged.
+Actual internal pin loads and glue pass-through aliases determine each tree;
+leaf groups stay within logical banks. Seventeen shared bits need 346 buffers,
+adding 2,511.1296 µm². The complete map becomes 252,700.5600 µm² versus the flat
+253,254.9348 µm²: only 554.3748 µm² (0.2189%) of the original saving remains.
+Maximum signal fanout falls 224→10, read gate depth rises 9→10 versus flat
+14/13, and next-state depth stays eight. Both library corners agree. No state
+or execution edge is added; sink count is a structural budget, not an electrical
+limit or proof of improved timing.
+
+`build/storage/map-tile/distributed-02/report.json`, SHA-256
+`4a9ad92c4464506580df6f4afc603b7dbdbe722250e04d5ca6052081350a0fb2`,
+passes in 37.020 s. Two independent arbitrary-state SAT checks cover both
+outputs and every next-state bit at typical and slow corners; a deliberately
+inverted distribution buffer is rejected. Flattened JSON and reread Verilog
+agree on all cell, state, area, depth and fanout measurements. Every command
+has a 180-second cap. Reusing the retained mapped artifacts avoids new synthesis.
+
+The checker verifies the selected baseline, its 102 artifacts, tools and pinned
+libraries, and reproduces the original flat/tiled metrics before modifying
+the parent wiring. Its 213 current inputs are frozen. Fourteen focused Python
+tests pass; the factored SAT helper also proves the saved generic tile and
+rejects the original joined-reader mutation. All 239 inputs to the existing
+production emission gate are unchanged, retaining its byte-identity and Lean
+audit evidence. `build/validation/map-distribution-01` keeps the pre-edit hashes,
+test receipts and input-identity verification. No new Lean proof, production
+emission or physical run was needed.
+
+`distributed-01` stopped before export because generated cell and wire names
+collided in Yosys. Distinct names and a regression resolve that checker defect;
+both attempts are preserved. The [tile study](../map-tile-study.md) owns the
+interpretation and `physical/experiments/map-distribution-results.json` pins the
+selected result. All 43 earlier experiment manifests remain unchanged.
+
+The candidate now has explicit distribution, near-equal area and fewer read
+levels. The next discriminator is one experimental whole-chip integration:
+preserve actual admission, bank/PC selection and execution edges, then check
+complete-chip function and mapped costs before allocating electrical/physical
+work. A map-only result does not transfer automatically to the chip. No
+production replacement, backend promotion, placement, routing or Docker run
+occurred in this step.
+
+## 2026-09-22 — Complete-chip tile integration passes function, fails structural screen
+
+Completed the experimental controller/map split. Shared `TiledMap` owns the
+interface and selection glue previously in the probe emitter; all four original
+map artifacts remain byte-identical. `TiledController` reuses actual admitted
+pushes, inactive write bank, cursor, payload, candidate PCs and selected bank.
+Its emitted controller excludes the 2,560 map bits now owned exactly once by
+32 tiles. The existing SRAM/serial/sampler/result assembly is reused. General
+netlist substitution, remaining transitions, core observations, map reads and
+every map update have Lean correspondence results. This adds no execution edge
+or new capacity/host protocol, and does not add a complete Lean theorem for the
+external macro model and package trace.
+
+`build/storage/tiled-chip/integration-03/report.json`, SHA-256
+`b2bd581024355682a5fecc70eb3d05181a3182aa17d76851a6efb25ab59e27d4`,
+passes validation in **254.643 s**, with a 180-second cap per command. Four SAT
+checks cover core/chip RTL and both mapped chip corners; joining the SRAM
+addresses is rejected. Actual package aliases and every macro/control terminal
+are checked. The independent pin oracle passes 508,252 edges on chip RTL and
+each mapped corner; the core oracle passes 11,840 edges with 1,000 consecutive
+branches. Total simulated edges: 1,536,596. Twenty-four focused Python tests also
+pass. The audit covers 14,831 declarations / 7,529 theorems with standard axioms.
+
+Both mapped chips prune cached-word bits 3–8: 2,901 generic state bits become
+2,895 FFs. The comparison excludes only those absent slots' next values while
+keeping all reference current-state inputs arbitrary. It still proves every
+output and surviving next-state bit; no reset/reachability assumption hides a
+dependency. Exact FF bijections, actual external-port checks and live-use/pruning
+negative tests guard the projection. Independent Verilog read-back reproduces
+the complete mapped census and costs.
+
+Typical standard-cell area falls 292,580.0514→288,888.2010 µm² (**1.261826%**).
+The two SRAM footprints remain 100,978.2656 µm², so cells plus macros fall
+393,558.3170→389,866.4666 µm² (**0.938069%**). Combinational cells fall
+12,593→8,327; next-state depth falls 27→24. However, address depth changes
+29/29→30/30 and maximum signal fanout 11→15. Slow mapping has one extra candidate
+buffer and address depth 30/30 versus baseline 29/30. Both corners fail the
+agreed structural screen. No timing, placement, routing or Docker run follows.
+
+`build/validation/tiled-chip-02/boundary-diagnostics.json`, SHA-256
+`c2c081e998856aedda76efd3eeb3a68194987ac92e3d5338158f35024d165584`,
+binds its observations to the settled maps. Cursor bits zero/one drive eight
+engine and seven map pins each. Upload-data bits three/four drive seven engine
+pins, four map distribution roots and two macro pins. One deepest candidate
+address path starts at cached-word bit 35 and has twenty engine gates plus ten
+map gates. A local interface/load budget does not establish a complete-chip
+budget. These are conservative graph measurements, not electrical delays.
+
+`build/validation/tiled-chip-boundary-01/report.json`, SHA-256
+`a4115d2928fbb2aac8c8001d3244a693100cc99d60991de90035dc571643f77d`,
+passes in 16.161 s: all four retained hybrid/direct MLIR/RTL pairs remain
+byte-identical, with audit, `Interfaces` and both mapped Verilog read-backs.
+Its 241 frozen inputs and the new comparison's 248 frozen inputs match the
+completed checkout. The comparison records 119 generated artifacts.
+
+`integration-01` stopped at a reserved Verilog instance name. `integration-02`
+passed RTL equivalence but stopped when mapped pruning was compared against
+the generic state list. Both are retained. The third run verifies the matching
+mapped pruning and arbitrary-reference-state relation described above.
+`build/validation/tiled-chip-01` preserves initial work and its pre-edit snapshot;
+`tiled-chip-02` preserves the continuation snapshot, proof work, focused tests,
+projection check and diagnostics. All 44 prior experiment manifests remain
+unchanged. The [tile study](../map-tile-study.md) owns interpretation;
+`physical/experiments/tiled-chip-results.json` pins the selected result.
+
+Retain this candidate as verified evidence and defer timing/physical allocation.
+The next hypothesis is to optimize controller and selection glue together while
+retaining storage tiles, and to count producer loads across all consumers.
+Require another bounded full-chip mapping/equivalence screen before allocating
+physical work. The production baseline, previous physical receipts, macro
+locations and half-height corridor are preserved; licensing remains pending.
+
 ## Future receipt shape
 
 Record the actual date, study/run identity, source commit or candidate digest,
@@ -1042,3 +1888,1990 @@ evidence location and digest, completion/interruption state, concise result,
 resource accounting when available, and link to the result or current status.
 For outside research, link the source interpretation and adoption decision in the
 owning study. Interpretation-only updates need no fabricated run identity.
+
+## 2026-09-22 — Combined controller/selection mapping and complete load budget
+
+Completed the [combined boundary comparison](../map-tile-study.md#combined-controller-and-selection--september-22)
+without changing Lean definitions, RTL, SRAMs or the execution schedule. An opt-in
+synthesis mode retains 32 storage tiles and combines the surrounding logic.
+The distribution helper counts controller, tile and fixed macro loads, preserves
+tie-offs/clock wiring, and reproduces both prior separate mapped hierarchies and
+buffer receipts exactly.
+
+- **Result:** both corners map to 289,427.1156 µm² of standard cells, 1.077632%
+  below the original hybrid; 354 distribution buffers are included. Maximum
+  fanout falls from the previous candidate's 15 to ten. Address depths are 30/29,
+  next-state depth is 25, and package output depth increases to 15. The maximum
+  address-depth requirement fails at both corners. Keep timing and physical
+  allocation deferred; neither tiled candidate is promoted.
+- **Evidence:** `build/storage/tiled-chip/combined-01/report.json`, SHA-256
+  `a3d49d4c94914288b0c1f1025813c553912b2ac9327a0c3c648e6072b9998d31`. Four positive arbitrary-state
+  SAT checks, rejected address/buffer mutations, 1,536,596 simulated edges and
+  27 focused Python tests pass. The unchanged standard-axiom audit covers 14,831
+  declarations / 7,529 theorems. The gate takes 274.167 s with a 180 s per-command
+  cap; its longest command takes 74.092 s. All 252 inputs and 123 generated
+  artifacts match after completion. All 45 preceding experiment manifests remain
+  unchanged; retained hybrid emissions and tiled RTL/state projections match.
+- **Diagnosis:** the longest paths start at cached-word bit 35 and contain
+  eighteen gates before a candidate PC, one distribution buffer, four tile gates
+  and seven/six final selection gates. The diagnostic's first optional named-net
+  probe encountered an optimized-away alias; that attempt is retained. The final
+  diagnostic records absent named bits as `null` and independently reproduces
+  every live address path and the complete mapped metrics.
+- **Next discriminator:** connect this candidate-PC dependency to actual
+  decode/dispatch expressions and check its relevance on admitted executions.
+  Then evaluate a cycle-preserving refactor with explicit correspondence if
+  computation moves earlier. A conservative path count does not establish
+  sensitizable delay or authorize an added execution cycle.
+
+The [selected receipt](../../physical/experiments/combined-chip-results.json)
+binds the report, diagnostics, tests and current synthesis/helper hashes. No
+physical tool, container, commit, push, licensing decision or heartbeat change.
+
+## 2026-09-22 — Fetch deadlines, retained STA and electrical repair cost
+
+Completed the [fetch contract study](../fetch-contract-study.md) with the
+existing assembly/schedule abstractions. New Lean facts prove arbitrary-state
+capture forwarding, the entered-word address calculation's 21-bit metadata
+dependence, and its 18-bit reduction under an explicit valid-word premise.
+Two valid programs entered from rest demonstrate that cached bit 35 can change
+the same-edge branch and following candidate address. Production and tiled
+emissions remain unchanged. No false paths or added pipeline cycles.
+
+- **Timing:** six complete-chip Liberty STA checks of retained baseline,
+  separate and combined mappings complete in 5.087 s. Slow setup slack is
+  +10.26/+10.03/+10.11 ns; each limiting path begins at SRAM Q. Cached-word
+  paths have more than 2 ns additional slack. Upload-data-to-SRAM hold fails,
+  and fanout violations number 1,300/687/685 per corner. Wire parasitics and
+  clock-tree effects are absent. Report: `build/storage/sram-timing/fetch-contract-03/report.json`,
+  SHA-256 `afb5634061f07b84c47d15c843f7e5f2bff02a1ca96d0b2c171e2ab42554d1e7`.
+- **One controlled repair:** the pinned library specifies fanout eight, not
+  the earlier structural budget ten. The exact combined mapping receives
+  1,369 noninverting buffers, costing 9,935.6544 µm². Both corners then report
+  zero fanout/slew/capacitance/pulse-width/period violations, but hold remains
+  negative. Slow setup changes only +10.11→+10.13 ns; address depth grows
+  30/29→37/36. Whole-controller arbitrary-state SAT passes at both corners,
+  an inverted buffer is rejected, and mapped Verilog read-back agrees.
+  The 15.094 s probe's longest command is 4.041 s. Report:
+  `build/storage/electrical-distribution/fanout-01/report.json`, SHA-256
+  `cada2e7052a84f685a98a5d7be22e02964c08620e031bead3c145a579423746c`.
+- **Validation:** the 13.141 s final gate passes 30 focused Python tests, the
+  new valid-program witness, 128 consecutive-branch checks, default build and
+  the standard-axiom audit (14,847 declarations / 7,543 theorems). Four freshly
+  emitted core/chip MLIR files and the assembly manifest match the retained
+  comparison byte for byte. Both old separate distribution results reproduce.
+  All 46 preceding experiment manifests are unchanged. The selected timing
+  and repair reports' 43 inputs and 67 artifacts verify; all eight corresponding
+  containers were independently confirmed absent. The final gate binds 221
+  code inputs and 16 artifacts. Report: `build/validation/fetch-contract-01/report.json`,
+  SHA-256 `36a8dc1e982cf7dac31a5cfdff27a8fcafc6b1d1b0b111be6bdff6636592a181`.
+
+The first timing attempt stopped at a private-cell-name lookup mismatch and
+confirmed cleanup; the next succeeded in 3.983 s. The selected third run
+verifies the shared runner refactor with identical numeric results. These
+receipts remain preserved. The initial native SAT lemma failed the existing
+axiom audit and was replaced by a kernel-checked mask/case proof; the final
+audit passes without widening its trusted axiom list.
+
+Adopt the cheap checks and retire strict depth reduction as a prerequisite for
+STA. Future successful tiled-chip checks now report timing eligibility while
+retaining the historical structural score as a diagnostic; the policy source
+hash is recorded in the [selected receipt](../../physical/experiments/fetch-contract-results.json).
+Keep the flat repair as a cost probe: it is 2.32% larger than the original
+hybrid and is not promoted. Next integrate the real load budget into local
+map decode/selection before a placement/global-routing comparison. No routing,
+clock-tree synthesis, extracted timing, commit, push, licensing or heartbeat
+change occurred.
+
+## 2026-09-22 — Map with the library load budget
+
+Completed one [bounded local-load comparison](../fetch-contract-study.md#local-mapping-with-the-library-budget--september-22),
+selected by [this receipt](../../physical/experiments/local-load-results.json).
+The pinned ABC buffer limit defaults to ten; the library budget is eight.
+The new opt-in complete-chip mapping applies eight during ABC and aggregate
+distribution, with the same 16-word tiles, readers, state and execution schedule.
+
+- The isolated control/candidate tile checks pass at both corners in 1.218 s.
+  Nine extra buffers per tile reduce write-data input load seven→two.
+- Complete standard-cell area is 290,943.9540 µm² at both corners, 0.559196%
+  below the original baseline and 8,418.8160 µm² below flat repair. Local
+  tiles add 288 buffers, surrounding mapping adds 50, and shared distribution
+  falls 354→225: net 209 extra buffers. All nonbuffer cell counts are unchanged.
+- Four complete-controller SAT checks, two rejected mutations and 1,536,596
+  independent simulated edges pass in 252.468 s; the longest command is
+  67.035 s against its 180 s cap. Original and tiled emissions stay identical.
+  Report: `build/storage/tiled-chip/local-load-01/report.json`, SHA-256
+  `2d9e83fe72e888cd199d6e1a8e9392fc89fc1db9ef4b756309750703fa323c5b`.
+- Six cell/SRAM timing checks take 5.125 s and reproduce the baseline/separate
+  controls. Candidate typical/slow setup slack is +13.50/+10.52 ns and hold
+  is −0.58/−0.86 ns. All measured electrical violation counts are zero;
+  all six containers are independently confirmed absent. Report:
+  `build/storage/sram-timing/local-load-01/report.json`, SHA-256
+  `a4a8687a5b9549e86b7ab7787524ce37b5dd05f93ad578895332f4717dcb7a05`.
+- The final verification checks every artifact in six retained reports,
+  current experiment inputs, 32 focused Python tests and unchanged identities
+  for 267 Lean sources and all 47 preceding experiment manifests. The main
+  gate audits 14,847 declarations / 7,543 theorems with standard axioms only.
+  Validation: `build/validation/local-load-01/report.json`, SHA-256
+  `a862281d26dc3ab8157a87106e5adfa58f8256c82459e8991d16b158d3872c3f`.
+
+Retain this mapping for a bounded physical comparison, beginning with exact
+mapped-netlist intake. The old physical preparer consumes original hybrid RTL;
+the experiment must preserve the new mapping instead of silently resynthesizing
+it. Matched placement, clock distribution, hold repair and global congestion
+will decide whether the small area margin survives. No placement/routing run
+or production promotion occurred; the old routing and antenna issues remain.
+
+## 2026-09-22 — Preserve the mapping through placement and hold repair
+
+Completed the [bounded exact-mapping comparison](../chip-physical-study.md#exact-mapping-placement-and-hold-repair--september-22),
+selected by [this receipt](../../physical/experiments/mapped-physical-results.json).
+The preparer now accepts the retained mapping, starts after synthesis, and
+requires a fresh floorplan ODB connection check before physical continuation.
+Both imports preserve all named cells and terminals; only one high and one low
+constant tie cell are added per case. Five new tests cover connection mutation,
+unknown/conflicting ties, stale receipts and unsafe continuation starts.
+
+- Both cases use the same 20 ns boundary, two macro positions, half corridor,
+  pinned tool/PDK and repair controls. Imports have 120 s caps; the two sequential
+  physical flows each have a 600 s cap, four CPUs and 6 GiB. There is no detailed
+  routing or automatic cap extension.
+- `mapped-base-place-01` times out during global routing after completing
+  placement, clock synthesis and hold repair. `mapped-local-place-01` completes
+  global routing with 1,312 overflow in 92.868 s summed step runtime. Both exact
+  flow containers are independently confirmed absent. The timed-out baseline
+  has no completed global-route congestion/timing result.
+- Total instance area, including macros, is 485,738.1152 versus 473,519.9456 µm²:
+  candidate reduction 2.515382%. Both final databases retain the same macros
+  and a clear corridor. Fresh matched post-repair placement-RC STA passes hold
+  in all three screens; slow setup is +0.580206 versus +6.09608 ns.
+- Fresh candidate coarse-route RC reduces slow setup to +2.00859 ns and reopens
+  two fast-screen hold violations at `A_DIN[0]`, worst −0.105158 ns. There are
+  203 clock-tree fanout violations, 57 slow slew violations and six capacitance
+  violations, five on SRAM outputs. Fast screening still mixes −40 °C cells
+  and −55 °C SRAM. No extracted timing or qualified closure claim follows.
+- Three-corner checks start with empty inherited metrics, confirm propagated
+  clocks and record placement/global-routing RC mode. Their successful reports
+  are `mapped-base-diagnostics-04`, `mapped-local-diagnostics-01` and
+  `mapped-local-postrepair-01` under `build/physical/mapped-diagnostics/`.
+  Three preceding read-only wrapper attempts failed on SDK API/serialization
+  details; their reports remain, with containers absent. Physical runs were
+  not repeated. The first closeout test invocation failed on Python package
+  discovery; its receipt is also preserved separately from the successful gate.
+- Fresh final-ODB exports each pass 508,252 original independent pin edges and
+  reject a compiled public-output mutation. Reports are under
+  `build/physical/chip-check/mapped-base-oracle-01/` and
+  `build/physical/chip-check/mapped-local-oracle-01/`. The gate checks 402 retained
+  hashes and passes 57 focused tests. All 267 Lean sources and all 48 preceding
+  experiment manifests remain unchanged. Validation:
+  `build/validation/mapped-physical-01/report-02.json`, SHA-256
+  `db3978fca891740b51a5505ef3accdee93ec9df042a2b06f1912e479b6a605ab`.
+
+Retain the candidate and target clock distribution, SRAM output loading and
+upload minimum-delay repair before more detailed routing. The digital schedule
+and program contract are unchanged; the next discriminator concerns the
+implementation's actual clocks, loads and arrival windows. No commit, push,
+license or heartbeat change occurred.
+
+## 2026-09-22 — Clock load budget and ineffective generic repair
+
+Completed one [bounded clock/SRAM comparison](../chip-physical-study.md#clock-budget-and-post-routing-repair--september-22),
+selected by [this receipt](../../physical/experiments/clock-sram-results.json).
+The prior 203 clock fanout failures are bound to actual leaf nets; each can
+include one dummy load. The candidate therefore requests explicit clusters of
+seven registers and enables post-routing design/timing repair, retaining the
+same mapping, macros, corridor and 20 ns timing boundary. Antenna repair stays
+outside this isolated experiment.
+
+- `clock-sram-01` completes through `31-openroad-stamidpnr-3` in 392.249 s summed
+  step runtime within the 600 s cap, using four CPUs and 6 GiB. The exact flow
+  and diagnostic containers are independently confirmed absent. Detailed routing
+  is not run.
+- Clock fanout violations fall 203→4; the four remaining upper branches each
+  drive 16 buffers. Before post-route repair, fresh coarse-route hold screening
+  already passes, worst +0.071698 ns. Area rises 9,924.7680 µm² to 483,444.7136
+  µm², leaving a 0.472148% advantage over the original physical baseline.
+- Post-route design/timing repair spends 284.023 s but produces byte-identical
+  exported Verilog and identical cell placements/connections. The saved NL
+  views before and after both repair steps have SHA-256
+  `07d4127c1b82d5f1d4a314069b3106d81736938dbe332f8c41f1fe05161c6a24`.
+  Global rerouting changes overflow 1,319→1,320 and the wire estimates; it does
+  not implement the intended cell-level repair. The repair counter alone would
+  have overstated progress.
+- Final fresh slow setup is +2.39656 ns; the smallest hold slack is +0.021291 ns
+  in the mixed −40 °C-cell/−55 °C-SRAM screen. Four fanout, 52 slow slew and nine
+  capacitance violations remain. Seven capacitance failures are SRAM outputs,
+  including nets with only one or two sinks. No extracted timing is claimed.
+- The shared `check-mapped-physical.py` replaces copied measurement wrappers for
+  future work. It verifies a completed checkpoint and measures fresh corners
+  with propagated clocks and explicit RC mode. Three new tests reject changed
+  final states/databases, incomplete checkpoints and missing/ambiguous timing
+  modes. The final annotation audit accounts for eight unused ports and 184
+  unconnected dummy outputs, with no consumed unannotated nets or partials.
+- The final ODB export passes 508,252 independent pin edges and rejects public
+  output corruption. Sixty focused tests and 334 retained hash checks pass;
+  all 267 Lean sources and all 49 preceding experiment manifests are unchanged.
+  Validation: `build/validation/clock-sram-01/report.json`, SHA-256
+  `971b80dbd28e3458ebe1f8aae064f771acc677066d2376095584deab9a1342a0`.
+
+Retain the explicit clock-budget policy as a comparison, and reject repetition
+of the unchanged generic post-route repair. The next inexpensive discriminator
+is an effective local repair of the four upper branches and SRAM driver/load
+interfaces, with actual changed implementation and functional preservation
+checked before another full routing pass. No source execution contract, backend
+default, license, heartbeat, commit or publication changes.
+
+
+## 2026-09-22 — Local clock repair and optimizer RC initialization
+
+The approved local investigation finds two distinct causes of the ineffective
+repair. Ordinary OpenROAD repair excludes clock nets. The SRAM repair tree
+sees zero per-layer wire RC while timing sees 0.100344 pF wire capacitance on
+the worst output. Explicit initialization from the same PDK preserves the
+reported load and produces a real inserted buffer on that same net.
+
+The selected recipe repairs all seven SRAM outputs and copies four upper clock
+buffers at their existing tree level. It adds eleven buffers, 208.656 µm²,
+while preserving every original cell, parameter and placement. New cells are
+legalized, the corridor remains clear, and new power pins connect to VPWR/VGND.
+Fresh matched placement-RC fanout is 4→0, capacitance 0→0, and all three
+setup/hold screens pass. Smallest hold is +0.087491 ns; slow setup +5.829120 ns.
+Five slow SRAM address-input slew failures persist. Routed SRAM load remains
+unmeasured for this candidate; the prior 1,320 overflow is not a new result.
+
+The local recipe takes 40.023 s and independent fresh measurement 31.626 s.
+Per-container bounds are 120 s, two CPUs and 2 GiB, with no network or source/PDK
+writes. All exact containers are independently absent. The final pin oracle
+passes 508,252 edges and rejects compiled public-output corruption in 114.663 s.
+Twelve focused tests pass, including buffer contraction with wrong clocks,
+addresses, parameters, cycles, shorts and missing drivers as negative cases.
+
+Receipts:
+
+- `physical/experiments/local-repair-results.json` selects the completed result;
+  `physical/experiments/local-clock-sram-repair.tcl` retains the exact recipe.
+- `build/physical/local-repair/inspect-03/report.json` records eligibility;
+  `direct-global-01` and `rc-initialized-01` isolate the RC initialization effect.
+- `build/physical/local-repair/targeted-03/report.json` records the legal local
+  repair; `local-measure-03/report.json` binds fresh geometry, independent
+  read-back, buffer contraction and matched corner measurements.
+- `build/physical/chip-check/local-repair-oracle-01/report.json` binds the
+  independent trace to a fresh export with the same final candidate netlist hash.
+- `build/validation/local-repair-01/report.json` checks 505 artifacts, all 267
+  unchanged Lean sources and 50 preceding experiment manifests. SHA-256:
+  `0b2891234e4cafe1ef0af856caec918154a69fb34224fa960f609aae7b98e98d`.
+
+The earlier failed probes remain preserved: command-adapter discovery,
+generated buffer naming, legalization eligibility, and omitted CTS dummy
+outputs were resolved before selecting the completed candidate. None is
+reported as a physical improvement. No full global-routing run, detailed
+routing, extraction, source execution-contract change or backend promotion
+occurred. The next discriminator is one capped coarse-routing comparison of
+the frozen repaired checkpoint with explicit layer RC and the existing CTS.
+
+## 2026-09-22 — Frozen local repair survives coarse routing
+
+Admitted the selected repaired ODB to exactly one GlobalRouting step, retaining
+CTS and every cell placement. `local-route-01` completed in 45.112 s under a
+600 s/four-CPU/6 GiB cap. Explicit nominal layer RC is verified independently
+against the technology LEF for five layers in all three fresh timing screens.
+No post-route repair or detailed route ran.
+
+Fanout violations fall 4→0 and capacitance 9→1 in every screen. All seven
+repaired SRAM outputs satisfy 0.064 pF; the prior worst is now 0.053038 pF.
+Minimum hold improves +0.021291→+0.093542 ns, while slow setup falls
++2.396560→+2.021800 ns and slow slew rises 52→58. Those slew failures share 28
+nets; 12 address, four enable and 18 upload-data SRAM pins are affected, along
+with 24 standard-cell pins. One `buf_1` output, `_09593_/X`, remains at
+0.308889 pF against 0.300000 pF. Overflow changes only 1,320→1,302.
+
+The completed route exports the exact previously tested netlist
+`503fea96988af21fa23681007affb6c3c5a74ad24846f875120eaf8505efa03b`.
+All 18,665 instance geometries and connections remain; area is unchanged at
+483,653.3696 µm² and the corridor is clear. The previous 508,252-edge pin trace
+and corruption rejection are reused by byte identity and unchanged model/vector
+inputs, without another simulation. Forty-three focused tests pass.
+
+The final diagnostic receipt is
+`build/physical/mapped-diagnostics/local-route-final-02/report.json` (14.408 s).
+The initial 14.571 s receipt is preserved; a literal report-label quoting fix
+was followed by identical fresh metrics. All exact containers are absent.
+The final `build/validation/local-route-01/report.json` checks 182 artifacts,
+267 unchanged Lean sources, 52 preceding experiment files and 17 earlier local
+receipts. SHA-256:
+`889c23b38c495ab763256a2431451d2b3b8c73ed611c9b09669c8185867471db`.
+`physical/experiments/local-route-results.json` selects this result.
+
+Retain the repaired candidate for a bounded local data-driver repair with
+initialized RC and frozen clocks, preserving setup/hold and connectivity.
+Congestion and slew remain obstacles to detailed routing. Antenna closure,
+extraction, timing signoff and backend promotion remain open.
+
+
+## 2026-09-22 — Data buffering survives a complete coarse-wire check
+
+The bounded follow-up to `local-route-01` adds 43 buffers on 29 named driver
+nets, preserving all original cells, placement, hold-delay cells, 670 clock
+nets and untargeted signal connections. The successful local probe takes
+36.866 s. Its area cost is 769.3056 µm² (0.16%); total instance area is
+484,422.6752 µm². Independent buffer-contracted readback and the 508,252-edge
+pin oracle pass, with one compiled output corruption rejected.
+
+The first local timing report appeared clean, but had 524 partially unannotated
+candidate drivers per corner. A fresh placement-only initialization also leaves
+513 partial annotations on the unchanged control and 524 on the candidate.
+Those timing results are unqualified, and both receipts are preserved. Their
+independent structural checks remain useful. The evidence does not establish
+why the placement estimator leaves these mostly SRAM-connected nets partial.
+
+One schema-2 diagnostic admission then starts only GlobalRouting, requiring the
+functional/geometry evidence and explicitly withholding timing qualification.
+`local-slew-route-01` finishes in 42.652 s within a 600 s/four-CPU/6 GiB cap.
+Fresh diagnostics take 14.466 s and verify complete coarse-wire annotations and
+nominal per-layer RC. Every exact container is independently absent.
+
+Slow setup improves +2.021800→+5.339320 ns, while slow slew falls 58→22: 57
+previous failures clear and 21 newly reported pins fail. Eleven of twelve SRAM
+address inputs and all four enable inputs now pass. The weak `_09593_/X` load
+clears, and the seven earlier SRAM output repairs remain within their limits.
+All setup/hold/fanout counts remain zero, but minimum hold decreases to
++0.060261 ns. Other SRAM outputs, `storage0/A_DOUT[36]` and `[50]`, now exceed
+their load limits in at least one screen. Capacitance counts are 2/1/2 across
+typical/slow/fast; overflow moves 1,302→1,310. This improves the electrical
+candidate without establishing congestion or timing closure.
+
+The routed export and full cell/connectivity/placement context match the tested
+local candidate exactly, so its pin oracle is reused without a second
+simulation. Fifty-five focused tests pass. Closeout checks 531 artifacts,
+267 unchanged Lean sources, 53 prior experiment files and 22 prior receipts.
+
+The next investigation has ten named electrical groups: eight remaining
+slow-slew driver nets and two SRAM output loads. Hold-delay cells and clock
+topology remain part of the preservation contract. Require complete annotations
+before using timing, and audit all nets for new failures after rerouting.
+Congestion remains a separate evidence gate before detailed routing.
+
+Receipts:
+
+- `physical/experiments/local-slew-results.json` selects the diagnostic result;
+  `local-data-buffer-repair.tcl` preserves its exact recipe.
+- `build/physical/repair-probes/slew-buffer-03/report.json` records the selected
+  local repair; the two earlier failed attempts remain separate.
+- `build/physical/repair-validation/slew-local-01/report.json` records independent
+  geometry/connectivity and the initial, subsequently rejected timing estimate.
+  `slew-local-02/report.json` fails the placement-only annotation gate.
+- `build/physical/chip-check/local-slew-oracle-01/report.json` binds the functional
+  export, models and vectors.
+- `build/physical/local-slew-route-01-invocation.json`, its standard report and
+  `build/physical/mapped-diagnostics/local-slew-route-final-01/report.json` bind
+  the completed coarse route and fresh diagnostics.
+- `build/validation/local-slew-01/analysis.json` maps every remaining pin to its
+  driver. `report.json` has SHA-256
+  `4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b`.
+
+No detailed routing, antenna stage, extraction or backend promotion is claimed.
+
+
+## 2026-09-22 — Bound the electrical investigation and localize SRAM congestion
+
+The step-back decision was to classify the ten remaining electrical groups,
+allow at most one justified local repair, and stop with an architectural
+decision rather than continue a repair loop. Fresh read-only diagnostics
+(17.484 s) reproduce `local-slew-route-01`'s complete coarse-wire timing and
+export exactly, adding all 128 SRAM output loads and selected driver inputs.
+
+All ten drivers have two or four sinks; 82–97% of slow load is wire capacitance.
+Three long logic connections, four upload hold-delay outputs, one SRAM address
+branch and two SRAM outputs therefore admit a buffer-isolation hypothesis.
+The one 120 s/two-CPU/2 GiB probe fails after 17.801 s with `GRT-0183`: heap
+underflow during 3D maze routing on `net6399`. It saves no changed netlist or
+repaired ODB. The last progress count of seven buffers/four nets is unvalidated;
+source hashes and the pre-edit netlist are unchanged. No candidate is adopted,
+and the prepared structural/oracle follow-ups and standalone route do not run.
+This is a tool failure, not a timeout or physical infeasibility result.
+
+A 0.641 s read-only OpenDB query gives a more useful next boundary. The prior
+and current 179×98 GCell grids have identical coordinates and capacities.
+Every recorded overflowing cell lies in the lower SRAM strip. About 90% of
+recorded overflow is in cells centered inside the SRAM footprints, mostly
+SRAM0; about 2% is in the reserved corridor. Saved-grid sums 1,298/1,309 differ
+from flow totals 1,302/1,310 by four/one units, so both measures remain explicit.
+Guide/body overlaps also include non-SRAM-connected traffic. Neither bounding-
+box membership nor guide overlap is an exact detailed-track or DRC test.
+
+Retain the validated 43-buffer chip and its storage/fetch contract. The next
+investigation should bind real SRAM pin shapes, obstructions, power routing
+and capacity, distinguishing upload, address, return and unrelated transit
+traffic. Any proposed physical region must include all incident connections;
+the rejected earlier address-only projection and unchanged-capacity screen
+remain rejected. Require a measurable geometry/capacity change and preserved
+pin access before another physical run. The tool error does not justify
+switching storage organization or relaxing the execution contract.
+
+`physical/experiments/electrical-cost-results.json` records the decision.
+`build/validation/electrical-cost-01/` contains classification, saved grids,
+congestion accounting, guide reports and the failed-probe disposition.
+`report.json` has SHA-256
+`9ff604cb4fa1e97c343a745fc0fd22d72c03351e2c38fe31f18a052c68612f40`.
+Closeout verifies 120 artifacts, preserves 531 preceding artifacts, 267 Lean
+sources, 55 prior experiment files and 13 prior receipts, and independently
+confirms all seven exact containers absent. No standalone routing run or new
+functional simulation is claimed.
+
+## 2026-09-22 — SRAM interface geometry and a bounded upload-stage prototype
+
+Completed the approved interface study and considered pipelining by adding an
+opt-in stage to upload, whose physical write can wait while execution reads
+retain priority. The 43-buffer `local-slew-route-01` remains the physical control.
+No new placement, routing, clock/hold repair or backend promotion was performed.
+
+The 2.586 s read-only extraction binds 58,781 terminal geometries, tracks,
+macro obstructions and 30,592 power-via metal rectangles to the retained ODB.
+Both macros expose south-facing Metal2 pins; Metal2/3 footprint obstruction
+fractions are 99.74%/100%. Metal4 union with power geometry is 50.75%/50.66%.
+After following known buffers/delays, upload accounts for 92/171 Metal4 nets
+whose guides overlap a macro and 44/64 whose guides overlap its inset interior.
+These are guide/geometry screens, not DRC attribution. All 684 nominal escape
+rays clear south; the width-fit grid screen is not a legal-access proof.
+Fixed-neighbor mirror projections worsen all-incident span by 42.23%, 81.82%
+and 72.52%, so none earns a placement run.
+
+The pinned OpenROAD exporter adds capacity reductions to both saved capacity
+and saved usage. This corrects the earlier inference that equal saved capacity
+alone establishes unchanged obstruction effects. Earlier receipts remain intact;
+their unchanged guides and lack of improvement still do not justify long routing.
+Saved overflow 1,309 and flow overflow 1,310 remain distinct measurements.
+
+`Storage.UploadPipeline` adds valid/address/data registers totaling 71 bits.
+The checked queue invariant, memory view and emitted write-priority expression
+preserve pending writes across busy/start edges; full chip refinement remains
+open. `upload-pipeline-01` passed 13,947 core edges and 508,252 pin edges, but
+failed its negative gate because the test hid an unconditional-write error.
+`upload-pipeline-02` shortened the pulse but still hid the error in old halt
+contents; its incomplete receipt says `running`, although both commands exited
+and the expected rejection failed. Preserve that receipt as a failed attempt.
+The final `upload-pipeline-03` fixture preloads a distinguishable opposite bank:
+14,200 core edges pass and the faulty wrapper is rejected at edge 12,494.
+
+`build/validation/sram-interface-01/final-validation/` then rebuilds the complete
+library, audits 14,932 declarations / 7,573 theorems, checks `Interfaces` and ten
+geometry controls, and re-emits byte-identical core/chip RTL. It reruns the
+14,200-edge core fixture and rejects the stronger mutant that bypasses the
+shared grant, including its address/read users. The pin trace is reused only
+with exact RTL/model/oracle/tool identity. This final gate takes 16.878 s.
+
+The matched typical-library synthesis comparison takes 11.153 s and changes
+393,558.3170→401,138.8046 µm², 2,895→2,966 FFs and 15,492→15,994 cells.
+The 1.926141% overhead compares the shared reference hybrid and upload-stage
+variant; it does not compare against the separately optimized physical chip.
+Keep the stage opt-in. Next cost a concrete local upload-distribution placement
+including source wires, both replicas, clock, hold, ties and return/address
+traffic before admitting further physical work. The durable
+[manifest](../../physical/experiments/sram-interface-results.json) binds all
+reports and the preceding studies' preserved artifacts.
+
+## 2026-09-22 — Reject upload-stage insertion using directed ownership and free space
+
+Completed the approved placement-cost discriminator without a physical run.
+`scripts/upload_locality.py` binds the prior interface receipt, frozen geometry,
+guides and exact mapped stage. Directed traversal verifies 64 distinct FF source
+bits and matching replicas. The 580-net word family has 172 shared, 30 SRAM-only
+and 378 other-consumer nets. Among its 44 Metal4 interior crossings, 41 are shared
+and three SRAM-only. Of 128 hold-delay cells, 106 are shared; only 22 plus eight
+buffers are exclusive candidates for release (480.8160 µm²).
+
+The exact mapping has 62 ordinary data FF/mux pairs and two data FFs using other
+logic, plus seven address/valid FFs. Fixed-neighbor gaps below the two macros
+fit 25/10 pairs, or 27/10 after optimistic exclusive-branch removal. An idealized
+projection ignoring occupied cells suggests −9.60% span on 96 affected nets,
+only −1.94% over the complete word family. That apparent gain does not establish
+a feasible layout.
+
+A separate relaxation allows muxes elsewhere and assigns only the 64 data FFs
+to free-interval capacity. Individual bands admit at most 44/22 FFs. Across both,
+66 slots suffice, but the optimal affected-net span becomes
+17,316.2725→26,064.8275 µm (+50.52%; +10.22% over the complete word family).
+Multiple centers can overlap within an interval and other costs are zero, so
+this is a lower bound for the stated point/row model, not a legalized placement
+or physical-wire theorem. The assignment has a matching dual certificate and
+agrees with brute force on 48 small cases.
+
+The 71 new clock pins add 0.19665296 pF typical / 0.18365925 pF slow before
+wires and buffers. Bare FFs cost 3,478.2048 µm² and the 62 ordinary payload
+muxes 1,124.9280 µm²; other logic and clock/hold repair remain additional.
+The earlier 1.926141% matched whole-synthesis overhead remains a separate result.
+
+The first helper attempt rejected power-net package ports after collecting
+removed-cell supply connections into a data-only projection. Signal/power
+separation was corrected and tested; the failed log and source copy remain.
+The preliminary successful analysis used 64 logical pairs; the final version
+binds the actual 62 mapped mux pairs. Final analysis takes 0.797 s, relaxed
+allocation 0.196 s, and all 13 focused tests pass. No Lean, RTL, mapped netlist,
+placement, routing or earlier receipt was changed.
+
+Reject these insertion configurations and retain the 43-buffer physical chip.
+The next candidate should own the existing received-word registers and their
+immediate decoding/validation/distribution region, with every shared consumer
+and displaced cell included. The
+[locality manifest](../../physical/experiments/upload-locality-results.json)
+binds the finished reports, assumptions and preservation checks.
+
+## 2026-09-22 — Bind the received-frame region and reject unrelated locality gains
+
+Completed the approved receiver/decoder/distribution cost study. A fresh native
+Yosys readback took 0.730 s. The helper reconciles 18,708 physical instances and
+18,669 nonempty, non-power nets and binds all 2,895 FFs through the retained
+typed reference and tiled state projections. Eight empty ODB aliases are
+explicitly excluded. The initial helper rejected an empty alias; a regression
+test distinguishes that case from missing, split or merged live connections.
+
+The receiver plus pure-input decode/distribution, complete receiver feedback and
+private ties contains 871 cells / 11,826.2592 µm², including 149 hold-delay cells.
+There are 421 outgoing and 25 incoming boundary nets. Mixed-state logic remains
+outside; all downstream register/macro/package consumers are counted.
+
+The full bit census corrects an initial impression from inspecting low bits:
+53 received-word FFs are below SRAM0, three below SRAM1, two beside the right
+macro edges and six above. Bits 0–4 supply the map payload and account for
+61,868.4725 µm (72.3%) of word-family span, but none of its 44 Metal4
+interior-overlap nets. Those 44 belong to 34 bits in the 6–63 field; all 41
+shared ones also reach receiver feedback/control and 25 additionally reach
+pure frame decode/control. This classifies existing guide traffic, not DRC.
+
+Three bounded fixed-site exchange searches at 20/40/80 µm preserve identical
+occupied footprints/orientations and all 670 clock-net pin-coordinate multisets.
+They make 14/18/19 exchanges and move 4/6/7 cells outside the chosen region.
+All connections of these displaced neighbors count. Affected-net span falls
+71.1700/175.7425/221.2775 µm, only 0.0681/0.1667/0.2085% over the complete region
+plus displaced nets. The ten diagnosed electrical nets have no moved terminals.
+There are 13/15/16 shortened arcs on nets touching existing hold cells, up to
+15.72/36.48/60.00 µm. These geometric changes imply no measured slack benefit.
+
+Reject all three candidates. The final native analysis takes 1.587 s (1.734 s
+command wall time); 14 focused tests pass, and an independent 1.194 s audit sums every
+live net in the chip and checks footprints, clocks, diagnosed pins and all
+previous receipt hashes. No physical tool, functional simulation, new RTL,
+clocked stage or candidate ODB was produced. A final replay after adding an
+explicit IHP-unit guard and clamping the reported largest shortening at zero
+when every arc grows reproduces all earlier case results. Both versions and
+their audits remain available.
+
+The next explicit boundary is `net3533`, the bit-41 branch driven by
+`hold3533/X` and used only by the two SRAM `A_DIN[41]` pins. Cost a concrete
+drive/buffering change there while preserving the hold chain and other
+source-side consumers. It targets a measured slew group and requires no new
+clocked state. The prior broad electrical probe's incremental-router failure
+did not settle this narrower hypothesis. The
+[word-region manifest](../../physical/experiments/word-region-results.json)
+binds this study; the 43-buffer chip remains the physical control.
+
+## 2026-09-22 — Bounded compact execution decision
+
+Completed the approved [PIO/PRU-inspired comparison](../compact-execution-study.md)
+against one concrete paired-successor machine. One 64×64 single-port SRAM holds
+two atomic 32-row images; each row contains two 32-bit possible successors.
+The selected old response supplies the next row address before the edge, so
+consecutive one-cycle branches do not require an extra fetch edge.
+
+`build/validation/compact-execution-01/report.json` records 18 tests, two explicit
+Lean schedule lemmas (with a compiler/image premise), four behavioral mutants
+and an injected-axiom rejection, completing in 8.881 seconds. UART covers all
+256 payloads on one image; SPI covers 256 distinct TX/RX pairs with independent
+edge/capture expectations; branching covers 4,096 six-sample histories plus
+128 consecutive edges. Wait timeouts, reset, program replacement and retained
+result ownership are also checked at delivered-command boundaries.
+
+A stale-row mutant initially escaped the UART test because four-edge holds
+allowed the memory request to recover. The final negative control exposes it
+on the second consecutive branch. Raw serial framing, package composition and
+Python/Lean correspondence remain outside this model gate.
+
+Reject the candidate as an equivalent replacement: a currently admitted
+32-action/8,192-edge sequence needs 33 paired rows including boot, exceeding
+the 32-row bank. Qualifying waits, general checked guards and independent
+entry/terminal/branch slots also lack encodings. Its 250 declared register bits
+include retained wrapper budgets but are not a mapped area result. All 205
+library sources and three prior receipt files remain unchanged during the gate.
+No hardware, synthesis or physical experiment was produced.
+
+Retain the current engine and 43-buffer physical control. Resume the bit-41
+SRAM-only buffering cost gate, with paired-successor scheduling preserved as a
+research result. Resident payload remains a separate proposal under its existing
+encoding/proof/physical-budget gate. The
+[compact-model manifest](../../physical/experiments/compact-execution-results.json)
+binds the decision and exact counterexamples.
+
+
+## 2026-09-22 — Reopened paired execution with full capacity and measured lookup cost
+
+The user challenged abandoning the organization after one encoding failed.
+Completed one [full-capacity revision](../compact-execution-study.md#full-capacity-follow-up):
+one 512×64 single-port SRAM, two 256-row atomic images, two 32×20-bit FF parameter
+tables and two boot tokens. The parameter projection restores canonical E64
+operations and the 256-position/32-record capacity without assuming recovered
+loops or compressible traces. Total declared state is 1,592 bits including
+retained wrapper budgets, compared with 2,901 for the current chip. The table
+has two read ports because upload validation reads both successor parameters.
+
+`build/validation/paired-execution-03/report.json` records 18 focused model tests,
+six detected behavioral mutants, two conditional Lean schedule lemmas with an
+axiom negative control, and all six compiled protocol fixtures. Independent
+peers exercise 24 I²C cases / 10,349 execution edges and nine UART receive frames.
+The former 8,192-edge counterexample and full 256-position images pass. Resident
+UART/SPI reuse one image across 256 payload or TX/RX cases. No universal compiler,
+loader, package-wrapper or full emitted-chip theorem is asserted.
+
+A matched standalone two-bank/two-read/one-write FF-table comparison maps the
+256×5 index organization to 252,384.1740 µm² and the 32×20 parameter organization
+to 111,557.0988 µm² at either corner. The 140,827.0752 µm² table saving exceeds
+the larger SRAM's 49,124.1376 µm² premium by 91,702.9376 µm². Those are component
+costs, not a new whole-chip area. Slow-corner read arrivals are 6.77 versus 6.17 ns,
+both including the same 4 ns input delay. Parameter-table standalone setup/hold
+slacks are +9.63/+0.27 ns, but 569 fanout-limit violations remain. No macro arcs,
+entry logic or wire parasitics are included in that timing result.
+
+Four independent arbitrary-state SAT checks validate saved mapped outputs and
+every next-state bit. The initial joined-reader injection changed only a JSON
+port; named-wire intake reconstructed the original connection, so its gate
+correctly refused to pass. Updating both the port and matching netname exposes
+the fault. The focused correction and final rerun retain the earlier receipts.
+Attempt 01 stopped at sandbox Docker access before CAD; attempt 02 stopped at
+that ineffective mutation. Attempt 03 passes in 122.269 s, with no subprocess
+exceeding 43.083 s. Four network-disabled, read-only timing containers were
+independently confirmed absent. All 205 library sources remain unchanged;
+239 source and 70 artifact hashes match, as do nine pinned macro views.
+
+**Decision:** continue the paired organization. Next emit and independently
+check the complete revised controller, include validation and the existing local
+electrical load policy, and time the actual larger-macro row/entry paths. Only
+that composed result can admit placement. Preserve the 43-buffer chip and the
+bit-41 repair as control/fallback; do not resume the local repair solely because
+the first compact encoding failed. No production chip source or detailed route
+was changed. The [follow-up manifest](../../physical/experiments/paired-execution-results.json)
+binds report SHA-256 `c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f2e7d4e`.
+
+## 2026-09-22 — Complete paired controller, exact mapped replay and macro timing
+
+Completed the [full-controller gate](../compact-execution-study.md#complete-controller-and-macro-timing)
+in `build/validation/paired-controller-02/report.json`. The opt-in
+`PairedController.lean` emits both banks, two parameter reads, atomic admission,
+boot/current/cached state, counters, captures and resident payload through the
+existing netlist machinery. Existing sampler, serial, pin-map and mailbox
+composition is reused. A separate wrapper binds one actual 512×64 SRAM; all
+205 preceding library sources and the default chip remain unchanged.
+
+Emission initially exceeded its 120-second cap while traversing shared
+expression trees. The process group stopped before RTL/CAD. Forty-five explicit
+combinational wire bindings remove that repeated traversal without adding state
+or cycles; emission then takes 2.637 seconds. The first complete gate stopped
+at strict state intake because Yosys represented six unused reserved token bits
+as literal `x`. Intake now permits only those exact unconnected coordinates
+for census, rejects live unknowns and preserves every functional connection.
+Both earlier receipts remain intact. Eight focused intake tests and four invalid
+graph controls pass in `paired-intake-01`, taking 3.159 seconds.
+
+The emitted core passes 173,359 edges, including 116,811 independent E64 state
+comparisons, 4,096 consecutive-branch histories, full-capacity execution, all
+256 resident UART payloads/SPI pairs, independent I²C/RX peers and interrupted
+atomic uploads. The complete serial/sampler/mailbox package passes 331,401 pin
+edges / 1,517 serial frames; all pin edges repeat on the typical mapped chip.
+Both saved mapped corners pass arbitrary-state output/next-state SAT, with
+macro responses exposed as independent inputs and every physical FF accounted
+for. The stale SRAM-row mutant fails at edge 296; an inverted mapped buffer and
+an injected axiom also fail. The namespace audit checks 463 declarations.
+This is not a complete Lean refinement of the compiler or package.
+
+The whole-chip typical/slow areas are **302,239.2384 / 302,246.4960 µm²**, including
+**150,102.4032 µm²** of SRAM. This is **22.8829% / 22.8810%** below the exact
+optimized `local-load-01` mapping under the same eight-load policy. There are
+1,572 physical FFs from 1,592 declared bits; 20 unused coordinates are recorded.
+All signal fanout, slew, capacitance, pulse-width and period checks pass at
+both corners. The final distribution adds three buffers beyond ABC's repair.
+
+Actual macro arcs are included under the retained 20 ns ideal-clock constraints.
+Typical/slow setup is **+8.53 / +3.93 ns** and hold **−0.61 / −0.90 ns**. The
+slow limiting setup path goes from SRAM `A_DOUT[53]` through parameter/admission
+logic to rejection status `uo_out[4]` (11.87 ns arrival, 15.80 ns required).
+Execution row/entry paths have **+8.04 / +8.81 ns** slow slack. The worst hold
+path is serial shift FF → SRAM `A_DIN`: 0.33 ns arrival versus 1.23 ns required.
+The reference's slow setup/hold is +10.52/−0.86 ns, so the area saving comes
+with reduced setup headroom. Wires and clock distribution are excluded.
+
+The main gate passes in **63.291 seconds**; 262 input and 78 artifact hashes
+were independently rechecked. The previous paired receipt's 309 bound files
+also match. The retained reference timing artifacts match their receipt and
+the exact netlists used for the area comparison. Both bounded timing containers
+were independently confirmed absent. The
+[manifest](../../physical/experiments/paired-controller-results.json) binds report
+SHA-256 `9e2d550a924006e332efb4be15c93c883d7f9f0e6b10965278dd5d9e53e4be0f`.
+
+**Decision:** proceed to exact one-macro physical intake and a bounded
+placement/clock/hold comparison, measuring the larger obstruction and total
+repaired area at the same stage as the control. No placement, detailed route,
+extracted timing or backend promotion occurred in this gate. Preserve the
+43-buffer physical control, bit-41 fallback and experimental upload pipeline.
+
+## 2026-09-22 — Shared physical targets and matched paired placement
+
+The [physical-target handoff](../physical-targets.md) now binds validated mappings,
+pinned macro views/power/placement, every typed state owner and four semantic
+path roles. The old control and new paired controller have small source adapters
+and share the existing preparation, runner, readback and reporting flow. Both
+floorplan imports preserve every signal connection. Actual paired macro/PDN
+intake confirms the 512×64 footprint, power-net binding and reserved clear band
+before standard-cell placement. Power continuity and routed access remain open.
+
+The saved-netlist power-port difference first stopped strict readback. A fresh
+receipt projects only explicitly declared isolated rail ports after OpenDB
+power checks; no signal identity is relaxed. A first approximately 26-second
+placement used the platform's fanout limit ten. The matched repeat uses the
+control's eight-load setting, with the same 600-second/four-CPU/6-GiB cap, and
+again finishes in about 26 seconds. Both attempts remain preserved.
+
+Fresh measurements compare `target-paired-place-02` at
+`17-openroad-stamidpnr-2` with the reused control `mapped-local-place-01` at
+`25-openroad-stamidpnr-2`. Both are post-CTS/hold-repair checkpoints; all common
+resolved constraints agree. Area is **348,205.8528 versus 473,519.9456 µm²**,
+a **125,314.0928 µm² / 26.464375%** saving including SRAM and physical repair.
+Hold buffers fall from 2,986 to 1,678; clock buffers/dummy loads from 427 to 242.
+
+Paired slow setup is **+0.304933 ns**, on SRAM `A_DOUT[51]` through shared
+parameter/admission logic to rejection status. Slow next-address/entry slacks
+are +3.790690/+6.185663 ns. Slow hold is +0.405227 ns; the fast screen has
++0.095552 ns hold. The control's corresponding overall slow setup is +6.096080
+ns and fast hold +0.099694 ns. The control has no SRAM-to-status combinational
+path. Its first collection rejected that absence; the final collector requires
+STA to agree with reachability derived from the exact mapping, including absence.
+
+All candidate signal electrical checks pass. Its **113 fanout violations are
+clock nets**, versus 203 in this control stage. The control has five slow slew
+violations; the candidate has none. Independent annotation reconciliation finds
+182 control/94 candidate unused drivers, zero consumed unannotated nets and zero
+partially unannotated drivers in every corner. These are qualified placement
+wire estimates with propagated clocks, not global-route or extracted timing.
+The fast screen still mixes −40 °C cells and −55 °C SRAM.
+
+The actual paired export passes **331,401 pin edges** and rejects a compiled
+public-output corruption. Final export identity reuses this result and the
+control's previous **508,252-edge** trace without another simulation. Vectors,
+bench and models match their original receipts. Sixty-nine focused tests pass;
+five mutations against the actual paired OpenDB reject wrong state ownership,
+missing paths, wrong power, changed macro location and an occupied corridor.
+All 27 exact containers are independently confirmed absent. The preceding
+paired controller's 262 source/78 artifact hashes and model's 239 source/70
+artifact hashes still match; no Lean or RTL source changed.
+
+`build/validation/physical-target-01/report.json` has SHA-256
+`4d0c0a9189de5ee32ec1b78d8491daf781d977ac29498fb3e83201f96063c0bc`.
+The [manifest](../../physical/experiments/physical-target-results.json) records
+both matched measurements, functional reuse, prior attempts and resource caps.
+
+**Decision:** retain the paired candidate, then diagnose its clock leaf loads
+and narrow rejection-status setup margin using these saved checkpoints. Preserve
+pin timing and remeasure any repair before admitting a bounded coarse route.
+Detailed routing, antenna closure, extracted timing, final power qualification
+and default upload-format promotion remain gated. The 43-buffer chip and
+bit-41 fallback remain available.
+
+## 2026-09-22 — Paired clock fanout and complete status-cone repair
+
+The paired placement's 113 fanout failures were clock leaf drivers carrying
+10–17 loads against the eight-load limit. `paired-clock-01` resumes the verified
+macro/PDN checkpoint with seven-sink CTS clustering and stops after post-CTS
+hold repair. Clustering is the only resolved flow change after path
+normalization. All fanout failures disappear. Area rises from 348,205.8528 to
+352,863.4176 µm², while slow setup barely changes from +0.304933 to +0.303624 ns.
+Fast-screen hold improves from +0.095552 to +0.099842 ns. The run is capped at
+600 seconds, four CPUs and 6 GiB; no routing step runs.
+
+The first data repair strengthens `_05626_`, `_05822_` and `_05886_`, three small
+buffers on the limiting SRAM-to-rejection path. Explicit nominal layer RC is
+initialized from the pinned LEF for the local optimizer. Applying that same
+initialization in fresh independent placement STA leaves 308 partially
+unannotated drivers on both the unchanged clock control and three-cell repair.
+Those `paired-status-control-01` and `paired-status-candidate-01` measurements
+remain unqualified. The collector now records optimizer and measurement RC
+separately; the repeated probe and `paired-status-candidate-02` measurement use
+the original flow configuration for independent STA and recover complete
+consumed-net estimates. The three-cell repair gains only **0.008933 ns**, with
+the worst path moving to another branch. Earlier receipts remain untouched.
+
+The selected bounded follow-up sizes the full SRAM-output-to-`uo_out[4]`
+combinational distribution cone: 128 `buf_1` and 40 `buf_2` cells become
+`buf_4`. Sequential and macro boundaries stop the selection. All other
+instances remain fixed during legalization; every net terminal and macro pin
+geometry stays identical. `paired-status-cone-01` takes about three seconds
+under the 120-second, two-CPU, 2 GiB repair cap. Fresh independent collection
+takes about eleven seconds using the retained flow configuration.
+
+Final slow setup is **+1.089368 ns**, on SRAM `A_DOUT[20]` to rejection status;
+slow next-address/entry slacks are **+4.680503/+7.196474 ns**. Slow hold is
+**+0.418639 ns** and fast-screen hold **+0.099842 ns**, unchanged by the data
+repair. Fanout, slew and capacitance checks pass in all three measured corners
+with zero partially unannotated drivers and zero consumed unannotated nets.
+Final instance area is **354,010.1184 µm²**: the cone repair costs 0.324970%
+over clock repair; both changes cost 1.666906% over initial paired placement.
+The candidate remains **25.238605% smaller** than the old control at the same
+post-CTS stage. These are propagated-clock placement estimates, including the
+existing mixed-temperature fast screen, not routed or extracted timing.
+
+The clock-repaired chip passes **331,401 independent package pin edges** and
+rejects a compiled output corruption. Fresh Yosys readbacks and explicit
+noninverting-buffer contraction establish identical connectivity after exactly
+168 permitted buffer resizes; real-netlist inverter and rewired-input controls
+fail. This transfers the same zero-delay trace evidence without repeating the
+final simulation. The shared physical checker resolves all 1,572 FF owners and
+four timing roles, confirms macro/power geometry and the empty corridor.
+**71 focused tests** pass. All **26 exact containers** are independently absent.
+The preceding paired controller's 262 source/78 artifact hashes and model's
+239 source/70 artifact hashes are unchanged.
+
+`build/validation/paired-closure-01/report.json` has SHA-256
+`6706c3a3f2a0a1629973be204ef6038478e99754a5a2ea3e606e5af03101407f`.
+The [repair manifest](../../physical/experiments/paired-closure-results.json)
+binds the selected `repair-probes/paired-status-cone-01/repaired.odb`, independent
+measurement, parent state, functional evidence, rejected measurements and caps.
+
+**Decision:** retain seven-sink clustering and the complete status-cone repair.
+Next capture and admit this exact repaired checkpoint for one bounded coarse
+route, then remeasure access, congestion and timing/electrical/annotation checks.
+Detailed routing remains unadmitted. No Lean, RTL, state, execution schedule,
+package timing or pipeline cycle changed; no antenna, extracted timing,
+power-continuity qualification or default backend promotion occurred.
+
+## 2026-09-22 — Exact paired repair intake and bounded coarse routing
+
+The shared route intake now accepts a target-based, hash-bound buffer-resize
+validation through schema 3. It recomputes noninverting-buffer connectivity,
+checks fixed unrelated geometry, links the original pin oracle and requires
+complete positive placement measurements with passing electrical limits.
+The staged state contains only the exact selected ODB and empty metrics.
+The existing GlobalRouting-only bound, 600-second maximum and disabled repair
+controls remain enforced. Prior experiment receipts and their executed artifacts
+are preserved; `physical_route_intake.py` is intentionally extended.
+
+`paired-route-01` admits the 168-buffer repair and runs one GlobalRouting step
+under a 600-second cap, four CPUs and 6 GiB. The physical stage completes in
+**36.283 seconds**. No synthesis, placement, CTS, signal/hold repair, detailed
+routing or antenna repair runs. The exact container is independently absent
+before standard reporting and fresh collection.
+
+Compared with the retained 43-buffer control's `local-slew-route-01`, overflow
+falls from **1,310 to 41**, a **96.870229% reduction**. Forty units remain on
+Metal3 and one on Metal4. Resource/demand are 425,596/191,854, versus the
+control's 452,959/147,062; reported usage rises from 32.47% to 45.08%. Overflow
+is a capacity-demand count, not a detailed DRC count. Normalized configurations
+differ only in netlist/defines, macro organization/power and placement
+obstructions. Clock, routing layers, eight-load policy, seven-sink clustering,
+30% capacity adjustment and explicit nominal RC match. The architecture and
+placement changed together, so this comparison does not isolate buffer sizing.
+
+Area remains exactly **354,010.1184 µm²**, versus the routed control's
+484,422.6752 µm²: **26.92% lower**. The earlier 25.24% saving used the control's
+post-CTS placement stage. Fresh independent collection takes **12.109 seconds**,
+verifies nominal per-layer RC in all corners and confirms complete consumed-net
+annotation. It reports **−2.493735 ns slow setup**, **−0.659543 ns fast-screen
+hold**, and **−0.491156 ns slow hold**. These coarse estimates differ in RC policy
+from the retained-flow placement measurement and remain separate from extraction.
+
+The slow critical path is SRAM `A_DOUT[53]` → rejection output `uo_out[4]`.
+It arrives at 18.293736 ns against 15.800000 ns required. Two loaded logic gates
+are `_05608_/Y` (`nand3_1`, two sinks, 0.226882 pF, 2.200929 ns cell delay) and
+`_06399_/X` (`a21o_1`, three sinks, 0.283454 pF, 1.218126 ns). Slow SRAM-to-address
+and SRAM-to-entry slacks remain +0.913580/+4.982161 ns.
+
+The worst fast hold path is `uio_in[1]` → `_12267_/D`, owned by
+`r_pin_first_incoming[1]`; data arrives at 0.737588 ns against 1.397131 ns
+required. The clock trunk into `clkbuf_3_2_0_clk_regs/A` contributes 0.632916 ns
+wire delay while passing fanout/electrical checks. Fast hold has 36 input and
+55 register-to-register failures; slow has 11 input failures. Serial-shift paths
+are among the internal failures. Fast SRAM upload hold remains +0.200687 ns.
+All fanout checks pass. The 316 slow slew failures cover 58 nets, and 68 slow
+capacitance failures cover 68 nets; their union is 96 signal nets. Fast/typical
+capacitance counts are 70/69. No electrical violation is on a clock net.
+
+A separate **2.348-second** minimum-one-access-point probe, capped at 180 seconds,
+passes with zero standard-cell pins lacking access across 32,942 checked pins,
+348 valid macro planar access points and zero macro pins lacking access. The
+source database stays unchanged and the probe container is absent. This does
+not establish simultaneous legal routing. The guide/body screen records 67
+Metal4 rectangles on 32 nets overlapping the macro footprint; this is not DRC.
+
+The routed export is byte-identical to the placed repair. All physical context
+fields except database identity are unchanged, including placement, clock
+connections, macro geometry, power shapes and the clear corridor. The prior
+331,401-edge pin trace and corruption rejection transfer without simulation.
+All 1,572 FFs and four semantic timing roles resolve. **79 focused tests** pass;
+the first combined test command used the wrong Python import path and is
+preserved separately. All **six exact containers** are independently absent.
+The analysis rechecks 648 hashes and 321 prior source/result identities.
+
+`build/validation/paired-route-01/report.json` has SHA-256
+`a2a08cfe904cd790b74964d3a708d1f54b95e5972f34d4cb840f5e42636b4726`.
+The [route manifest](../../physical/experiments/paired-route-results.json) binds
+the source selection, admission, routed database, comparison and diagnostics.
+
+**Decision:** retain the paired architecture and its saved coarse-route result.
+Next cost bounded repair of the register-clock trunk, input/serial hold paths
+and loaded status-cone logic, using complete wire estimates and explicit
+affected-net accounting. Recheck functional identity, setup/hold and electrical
+limits before another route; the 41 overflow units also remain open. Detailed
+routing is unadmitted. No Lean/RTL, pipeline cycle, package timing, host format,
+licensing decision, antenna closure, extracted timing or backend promotion changed.
+
+
+## 2026-09-23 — Paired local repair with fresh coarse wire estimates
+
+Retain `paired-local-status-01` from the bounded local study. Slow setup changes
+from **−2.493735 to +0.071044 ns** and fast-screen hold from **−0.659543 to
++0.072689 ns**. All measured setup, hold, fanout, slew and capacitance violations
+are zero in all three corners; consumed-net annotation is complete and nominal
+layer RC is independently verified. Slow/typical hold are +0.360733/+0.176697 ns.
+The fast screen still mixes −40 C standard cells with −55 C SRAM.
+
+Four clock repeaters alone reduce fast hold failures from 91 to 12 without
+changing status setup. Buffering the measured signal loads then clears
+capacitance, while exposing short-path hold failures. The selected combination
+adds four clock repeaters, 111 signal-driver buffers, 126 endpoint delay buffers
+and one SRAM receiver buffer. The final two status drivers are selected from a
+bounded 100-path near-critical audit. All 242 cells are noninverting buffers;
+no original cell moves or changes type, and no state or pipeline cycle is added.
+Area is **357,660.6912 µm²**, a **1.031206% increase** from the paired routed
+baseline and **26.167640% below** the retained routed control.
+
+Each candidate is legalized with the original placement frozen, incrementally
+coarse-routed, independently exported and remeasured in three corners. The
+successful repair recipes take about four seconds; independent collections take
+about twelve seconds each. All nine probes, including inspection/failure/audit,
+total **34.193 s**; six collections total **71.313 s**. Each probe and each
+collection command has a 120 s cap, two CPUs and 2 GiB.
+
+Independent readback and buffer contraction preserve logical connectivity;
+a deliberately grounded buffer input is rejected. Macro-pin geometry, the
+corridor, all 1,572 FFs, four semantic path roles and added-cell power bindings
+pass. The earlier 331,401-edge trace transfers through this identity check;
+no new pin simulation is claimed. **25 focused tests** pass, **514 prior
+identities** are preserved, and **36 exact containers** are independently absent.
+The final analysis verifies **1,693 hashes**.
+
+Preserve the failed first clock probe: the pinned resizer's DPL post-insertion
+path asserts before producing a selected candidate. Direct database insertion
+followed by normal legalization succeeds. Also preserve the initial overstrict
+guide-byte check: 28 nets legitimately retain their coarse guide blocks after
+nearby driver replacement. The corrected validator requires guide presence,
+complete fresh wire annotation and independent connection identity.
+
+`build/validation/paired-local-repair-01/report.json` has SHA-256
+`3b9c6a31b3f63dd6e8ff98918b1939a186ffd1d2ff72ca181cdc60b89ad06c73`.
+The [local-repair manifest](../../physical/experiments/paired-local-repair-results.json)
+binds the staged results, selected ODB, exported netlist and frozen recipe.
+
+**Decision:** retain this local candidate for one bounded whole-chip coarse
+reroute, then fresh timing/electrical, congestion and pin-access checks. Bind
+the added-buffer proof and changed clock topology in a distinct continuation
+contract; do not reuse the resize-only selection unchanged. The roughly 71 ps
+setup and 73 ps fast hold margins are narrow. The baseline's 41 overflow units
+and prior pin-access pass are not measurements of this modified candidate.
+Detailed routing, antenna/DRC closure, extracted timing, physical power
+qualification and backend promotion remain open. No Lean/RTL, pipeline cycle,
+package protocol, host format or licensing decision changed.
+
+
+## 2026-09-23 — Whole-chip coarse reroute of the paired local repair
+
+`paired-reroute-01` completes one GlobalRouting step in **58.116 seconds** under
+a 600-second, four-CPU, 6 GiB cap. It starts from the exact selected
+`paired-local-status-01` ODB with empty inherited metrics and automatic repair
+disabled. Independent three-corner collection takes **12.353 seconds** and
+verifies complete consumed-net annotation and actual nominal layer RC.
+
+Slow setup is **+0.430335 ns**, fast-screen hold **+0.081790 ns**, and slow hold
+**+0.347819 ns**. Setup, hold and fanout have zero violations in all three
+corners. Typical setup/hold are +6.205010/+0.169243 ns. The local incremental
+estimate had +0.071044 ns slow setup and +0.072689 ns fast hold; those timing
+gains survive the full reroute. These remain coarse estimates, with the existing
+−40 C cell/−55 C SRAM fast-screen mismatch, not extracted timing.
+
+Electrical failures reappear: fast slew/capacitance **4/19**, slow **80/16**,
+typical **5/19**. The union is **27 signal nets** and zero clock nets. Actual
+connectivity separates 21 nets with eight loads each from six SRAM write-input
+nets feeding bits 10, 15, 17, 19, 21 and 52. Four of those SRAM nets already use
+`buf_8` drivers; two retain delay cells. Worst fast capacitance is 0.386423 pF
+against 0.300000 pF at `_08772_/X`; worst fast input slew is 0.734179 ns against
+0.380000 ns at SRAM `A_DIN[15]`. Slow slew's 80 failing pins occupy 14 nets.
+
+Overflow falls **41 → 22 (46.34%)** relative to the pre-repair full route.
+All remaining overflow is Metal3; Metal4 falls from one to zero. Coarse demand
+falls 191,854 → 186,936 with the same 425,596 resource count. The router's
+`GRT-0273` warning states that the nondefault rule on `clk` was disabled to
+reduce congestion; the baseline has no such warning. Clock connectivity is
+unchanged, but this run does not isolate the contribution of the changed wire
+rule. Overflow is not a detailed-route DRC count.
+
+The **2.360-second** pin-access probe passes, with no standard-cell pin lacking
+access across 33,426 checked pins, no macro pin lacking access and 348 valid
+macro planar access points. This is individual access, not simultaneous legal
+routing. The guide/body screen records 68 Metal4 rectangles on 33 nets overlapping
+the macro footprint; it is not DRC evidence.
+
+The new schema-4 intake independently recomputes logical identity through 242
+added buffers and the preceding 168 buffer resizes to the original 331,401-edge
+pin oracle. It checks original placement, macro/corridor geometry, power bindings,
+source/configuration identities and complete passing local measurements before
+the bounded route. Shared PDK views and recorded tool/library aliases are admitted
+only with byte checks. All 49 focused tests pass, including malformed-clock,
+power/geometry, stale-input, partial-RC and scope rejection controls.
+
+The routed export is byte-identical to the local candidate; every collected
+physical context field except database path/hash is identical. This preserves
+functional connectivity, all 1,572 FFs, placement and **357,660.6912 µm²** area
+(**26.17% below** the retained routed control), without another pin simulation.
+All **six exact containers** are independently absent. The analysis verifies
+**753 hashes** and preserves **528 prior source/evidence identities**; the prior
+intake helper changes only to dispatch schema 4. Early shared-input preflight
+rejections and the corrected analysis warning-text check remain recorded.
+
+`build/validation/paired-reroute-01/report.json` has SHA-256
+`86abf480ddf026fe10d4163a63017fb1f68afbe5a3e4c4f64a585ede635d9065`.
+The [reroute manifest](../../physical/experiments/paired-reroute-results.json)
+binds the admitted selection, route, fresh timing/electrical reports, pin access
+and guide screening. Its setup/hold verdict is true; electrical and physical
+closure verdicts are false.
+
+**Decision:** retain the timing/area gains. Next apply bounded local repair to
+the 21 distribution nets and six SRAM write inputs, preserving hold and checking
+all affected connections. Locate the 22 Metal3 overflow units in the saved grid
+before choosing a congestion change. Requalify the resulting whole chip before
+detailed routing. No new detailed route, antenna closure, extraction, physical
+power qualification, RTL/pipeline/protocol change or licensing decision occurred.
+
+## 2026-09-23 — Connection ownership, reconciled loads and an unexecuted repair plan
+
+Completed the approved preparation before another physical repair. Three
+read-only geometry/STA commands take **20.684 seconds** in total, each capped at
+120 seconds, two CPUs and 2 GiB. They consume the settled local and full-route
+databases and reproduce both three-corner global measurement reports exactly.
+Consumed-net annotation is complete, clocks are propagated and actual nominal
+layer RC is verified. No repair, placement, routing or new pin simulation ran.
+
+The 27 failing nets now carry complete physical consumers, terminal geometry,
+typed source/sink owners, library limits, load ranges, retained delays and
+min/max path summaries. Conservative traversal retains shared owners. The
+distribution group splits into **one mode-control, nine serial-data and eleven
+parameter-word control branches**; six further nets feed SRAM write inputs.
+Pin capacitance, consumers, cells and placement are unchanged, while estimated
+wire capacitance increases **1.03–3.52×**. On SRAM bit 15 it rises from 0.075497
+to 0.228279 pF, and slew worsens from 0.067867 to 0.734179 ns against a 0.38 ns
+limit. All six SRAM drivers still pass capacitance limits. The shared serial
+consumer on `net1897` remains an explicit repair obligation.
+
+Both saved ODBs retain the same nine nondefault-rule bindings, including
+`clk → CTS_NDR_0`, despite the full-route log's runtime disable warning.
+Saved binding identity does not establish identical effective routing policy;
+this measurement does not isolate that override's contribution to the result.
+
+The saved grid reconciles all **22 Metal3 overflow units** with 22 individual
+cells. **Seventeen are above SRAM**, and the other five form the x=259.2 µm
+column. One overlaps the macro body and one the reserved corridor. Only seven
+overlap the failing nets' coarse guides. The other 15 require separate traffic
+diagnosis; guide overlap is not causal attribution or detailed DRC.
+
+Three shared helpers collect connections, join semantic ownership and compile
+checked repair descriptions. The durable
+[candidate](../../physical/experiments/paired-signal-repair-plan.json) specifies
+**21 driver buffers and six SRAM receiver buffers**, retaining all original
+cells, hold chains, clock connections and cycle boundaries. The unoccupied row
+rectangles are hints, not legalized placement. Added cell-footprint cost is
+**636.8544 µm² (0.178061%)**; no physical gain is claimed. The generated recipe
+reproduces byte-for-byte and passes Tcl completeness checking but is unexecuted.
+
+**35 focused tests** pass. Independent closeout confirms all **six diagnostic
+containers absent**. The first read-only geometry attempt encountered OpenDB
+SWIG proxy equality, and the second an unsupported layer-rule accessor; both
+failed receipts and worker versions remain intact. Final analysis verifies
+**799 hashes**. All 600 initial identities match before documentation updates;
+**595 prior source/evidence identities** remain unchanged while five docs are
+intentionally updated, including the stale next-discriminator list.
+
+`build/validation/paired-repair-plan-01/report.json` has SHA-256
+`b7ac5d6ff3f30b4cbf421945aa5d2761d665057ee0f90550a62efd332f5b8ce5`.
+The [preparation manifest](../../physical/experiments/paired-repair-plan-results.json)
+binds the read-only collection, reconciled diagnosis and unexecuted plan.
+
+**Decision:** run one bounded local probe of the checked candidate, requiring
+independent identity, legal placement, power bindings and complete all-corner
+setup/hold/electrical checks across all affected connections. Diagnose the
+remaining congestion separately before full-route requalification. Detailed
+routing, extraction, antenna closure, physical power qualification and the
+fast-screen temperature mismatch remain open; licensing remains pending.
+
+## 2026-09-23 — Bounded execution and local qualification of the checked signal plan
+
+Executed the approved 27-buffer plan once as `paired-signal-repair-01`, starting
+from the settled `paired-reroute-01` ODB. The **6.005-second** probe stays within
+its 120-second/two-CPU/2 GiB bound, with source design and PDK read-only. It inserts
+21 driver buffers and six SRAM receiver buffers, legalizes only the added cells
+and updates incremental coarse wires. The source checkpoint remains unchanged.
+
+Independent export, geometry and three-corner STA take **12.448 seconds**.
+Read-only reports for all 54 changed/new nets, saved grid/pin geometry and a
+separate OpenROAD placement check take **12.752 seconds**. All measured corners
+pass setup, hold, fanout, slew and capacitance, with complete consumed-net
+annotation, propagated clocks and verified nominal RC. Slow setup improves
+**+0.430335 → +0.527857 ns**. Fast-screen hold remains **+0.081790 ns**; slow
+hold remains +0.347819 ns. Typical setup/hold are +6.258440/+0.169243 ns.
+The 54 affected nets provide 324 positive min/max path summaries across the
+three corners, and global STA also covers adjacent paths.
+
+All 27 original problem nets are electrically repaired in these local estimates.
+Fast slew/capacitance counts fall **4/19 → 0/0**, slow **80/16 → 0/0**, typical
+**5/19 → 0/0**. The largest load on an original distribution driver falls from
+0.386423 to 0.012289 pF in the fast screen. SRAM bit-15 input slew falls
+**0.734179 → 0.019937 ns** against a 0.38 ns limit. The six new receiver branches
+retain at least +0.273833 ns fast hold slack. Existing hold-delay cells and the
+shared serial consumer on the bit-21 branch are retained.
+
+Fresh native Yosys readback takes 0.865 seconds. It checks the exact planned
+connections and buffer-contracted identity; grounding a new buffer input is
+rejected. The complete chain through 168 prior buffer resizes and now 269 added
+buffers is recomputed to the original 331,401-edge pin oracle. This reuses the
+functional trace without another simulation. Every original cell/type/location,
+all 342 clock-net connections, macro geometry and corridor remain unchanged.
+Independent placement, row/overlap and new power-terminal binding checks pass.
+Area is **358,297.5456 µm²**, exactly **636.8544 µm² (0.178061%)** above source.
+
+Only 46 guide rectangle sets change, all within the 54 declared connections.
+Another 2,297 raw guide blocks differ solely by repeated rectangles, not new
+geometric coverage. Stored nondefault-rule bindings remain unchanged. The saved
+incremental grid reports zero overflow; it does not supersede the prior full
+route's 22 Metal3 units or qualify the 15 source hotspots outside the failing
+nets' guides. No whole-chip or detailed route ran in this study.
+
+All **eight exact containers** are independently absent. The three physical
+stages total **31.205 seconds**. Analysis verifies **916 hashes** and preserves
+all 621 initial identities before documentation changes; **616 prior source and
+evidence identities** remain unchanged while five docs are intentionally updated.
+The [signal-repair manifest](../../physical/experiments/paired-signal-repair-results.json)
+binds the exact candidate, measurements, functional ancestry and local verdicts.
+`build/validation/paired-signal-repair-01/report.json` has SHA-256
+`52184dbc7bf5d2d19cacb7a1e113860cbb00928733e9fa6df09d7891425adcaf`.
+
+**Decision:** retain the locally qualified candidate. Bind its full buffer
+ancestry through routing intake, account for the saved Metal3 hotspots, then
+require one bounded whole-chip coarse route with fresh timing/electrical,
+congestion and pin-access checks. Coarse estimates, narrow fast hold and the
+cell/SRAM temperature mismatch remain explicit. Extracted timing, detailed DRC,
+antenna closure and physical power qualification are still open. No RTL,
+pipeline, protocol, backend-default or licensing change occurred.
+
+### 2026-09-23 — Whole-chip qualification of the 27-buffer signal repair
+
+Executed the approved **single** `OpenROAD.GlobalRouting` step as
+`paired-signal-route-01`, with a 600-second/four-CPU/6 GiB cap and all automatic
+design, timing and antenna repair disabled. It finishes in **100.452 seconds**.
+Independent mapped checks take **12.305 s**, minimum pin access **2.366 s**,
+saved-grid/rule collection **0.414 s**, and two read-only residual-net comparisons
+**20.470 s**. No additional route or physical repair runs.
+
+The intake extension distinguishes 27 immediate additions from 242 prior ones
+and 168 earlier resizes. Fresh Yosys readbacks of the original oracle, parent
+and candidate take 1.284 s and recompute both identities. The parent export is
+bound to its independent measurement; immediate geometry/power checks preserve
+earlier repairs. **41 focused tests** pass, including six new chained-intake
+cases. The original helper bytes and all prior experiment receipts are retained.
+
+All **27 original targets and all 54 edited connections pass electrical limits**
+after full routing. All corners have zero setup/hold/fanout violations, with
+complete annotation and verified nominal RC. Slow setup is **+0.408159 ns**,
+fast-screen hold **+0.088087 ns**, slow hold **+0.350921 ns**. Netlist bytes and
+all context fields except database identity match the local candidate, retaining
+342 clock nets, 1,572 FFs, every placement, macro/corridor geometry and
+**358,297.5456 µm²** area. Minimum standard-cell/macro pin access passes.
+
+Electrical qualification still fails on **15 different nets**: fourteen
+eight-load branches (twelve `buf_1`, two `nand2_1`) and hold-buffer output
+`net1889` into SRAM `A_DIN[51]`. Slow slew failures fall **80 → 16**; fast, slow
+and typical capacitance counts are **13, 12 and 12**. Read-only local/full
+measurements reproduce the independent global metrics and find unchanged pin
+capacitance, **1.025–2.682×** wire capacitance, and **83.5–94.9%** wire share of
+the residual nets' load. The ratio is measured variation, not a future bound.
+
+Flow and saved-grid totals agree on **21 Metal3 overflow units**, versus 22.
+Only two locations persist; twenty clear and nineteen appear. Capacity arrays
+match. One remaining hotspot overlaps the macro edge at (259.2, 144.0) µm;
+its sole guide association changes `_02961_` → `_01660_`. None overlaps the
+corridor, eleven include clock guides, and five include a failing-net guide.
+Association does not establish track-demand causality. Source accounting
+preserves all 258 guide-associated nets and their conservative shared owners.
+
+Runtime warnings name **`clknet_0_clk_regs`, `delaynet_4_clk`, and `clk`**, versus
+only `clk` in the source route; all nine stored rule bindings stay unchanged.
+The first analysis draft's generic wording incorrectly described repeated `clk`
+warnings. It is preserved under `analysis-draft/`; the final analysis asserts
+the exact distinct warning lists and reports the changed effective policy.
+No isolated comparison attributes timing or congestion to that policy change.
+
+All **nine exact containers** are independently absent. The
+[signal-route manifest](../../physical/experiments/paired-signal-route-results.json)
+binds `build/validation/paired-signal-route-01/report.json`, SHA-256
+`0b82d074d9879f41e48d0b73602fc0ecbe3d0e2eeb8c4b5e0f4a35b7a6ee3329`.
+Collection passes; electrical and congestion qualification fail. Before docs,
+615 of 616 initial identities remain unchanged; the one changed helper has a
+verified preserved copy. Five documentation pages are updated separately.
+
+**Decision:** retain the repairs, then establish distribution-family wire-load
+margins across passing neighbors as well as failing nets before selecting another
+bounded local candidate. Diagnose the persistent macro edge separately from
+migrating signal/clock congestion. Detailed routing remains unadmitted; coarse
+wire estimates and the fast cell/SRAM temperature mismatch remain explicit.
+No RTL, pipeline, protocol, default-backend or licensing change occurred.
+
+
+### 2026-09-23 — Measured distribution contract and checked family repair plan
+
+Completed the approved saved-evidence inventory and plan preparation without
+executing another repair or route. The shared `physical_distribution.py` helper
+uses explicit typed-owner predicates and all 64 SRAM write inputs, then closes
+coverage over buffer and hold chains. It retains shared memberships and exact
+consumers. The inventory contains **1,067 connections in 211 trees**, including
+**124 hold cells**. This is complete within its stated family scope, not an
+inventory of every chip signal.
+
+Read-only geometry and both three-corner STA collections finish in **57.258 s**,
+with 120-second/two-CPU/2 GiB caps per command. They yield **6,402 connection/corner
+records** and **12,804 min/max path summaries**. Global timing/electrical metrics
+match the prior independent measurements; terminal geometry and pin loads are
+unchanged. Complete consumed-net annotation and explicit nominal RC pass. All
+three exact containers are independently confirmed absent.
+
+The assessor records per-branch capacitance/slew headroom and available wire
+budget. Reserve sensitivity at 5/10/15/20/25% selects **20/27/29/33/34 connections**,
+respectively. The **20% experimental target** includes all 15 failing nets and
+**18 currently passing neighbors**. It is a trial gate, not a library requirement
+or universal guard against future routing. No 2.682× multiplier is embedded.
+SRAM bit 50 passes but has only **6.42% slow slew headroom** (0.556960 ns against
+0.595200 ns), so it joins failing bit 51 in the proposed receiver repair.
+
+The single checked plan contains **31 driver buffers and two SRAM receivers**,
+all `buf_8`, with joint unoccupied-row hints and a collision-checked namespace.
+Two targeted driver branches have six consumers; selection is not restricted to
+eight-load failures. Predicted area addition is **778.3776 µm² (0.217243%)**,
+within **1,074.8926 µm² (0.3%)**. Original cells, clocks and hold chains must remain.
+Actual legality, new power bindings and electrical benefit remain unmeasured.
+
+The [contract](../../physical/experiments/paired-distribution-contract.json)
+requires at least 20% capacitance/slew reserve for the rebuilt inventory and all
+new branches (**1,100 connections expected**, including 66 changed/new), zero
+chip-wide electrical failures and at least 90% of current setup/hold slack in
+every corner. Slow setup must remain at least **+0.367343 ns**, fast-screen hold
+at least **+0.079278 ns**. These are acceptance floors for a future candidate.
+Fresh whole-chip routing must later requalify congestion and effective clock
+rules. The model, state count and execution-edge contract do not change.
+
+Saved guide associations place inventory nets at 20 of 21 congestion hotspots,
+but proposed targets at only five. The persistent macro-edge guide `_01660_`
+belongs to shared cached/mode/capture logic outside the chosen scope. These
+associations do not establish the cause of excess track demand or predict that
+the buffer plan reduces congestion.
+
+**54 focused tests** pass, covering completeness, passing neighbors, changed
+source/consumer/corner evidence, reserve and budget gates, namespace collisions,
+and existing repair/intake checks. The recipe passes syntax checking without
+CAD execution. The prior generator and its test source are preserved byte for
+byte. Before documentation updates, **986 of 988 initial identities** remain
+unchanged; only those two source files change. Five documentation pages are
+updated separately.
+
+The [distribution manifest](../../physical/experiments/paired-distribution-results.json)
+binds `build/validation/paired-distribution-plan-01/report.json`, SHA-256
+`41ef9eab35ec182f42fe724fa438f66f11c4d738367314b1e03b4a017fc576c9`, and the
+[unexecuted plan](../../physical/experiments/paired-distribution-repair-plan.json).
+The next gate is one capped local execution of that exact plan followed by its
+independent identity, placement/power and full-inventory measurements. Congestion
+needs a separate discriminator before a full-route allocation. Detailed routing,
+extracted timing and the fast cell/SRAM temperature mismatch remain open. No RTL,
+pipeline, protocol, default-backend or licensing change occurred.
+
+## 2026-09-23 — Local execution of the distribution contract
+
+Executed the exact saved **33-buffer plan once** against `paired-signal-route-01`.
+The source checkpoint, contract, generated recipe and preceding report hashes
+pass preflight. The local probe takes **5.658 s**; independent export/geometry/STA
+takes **12.439 s**, and full-inventory geometry/STA/placement checks **28.784 s**:
+**46.881 s** of physical commands, each capped at 120 seconds, two CPUs and 2 GiB.
+All eight exact containers are independently confirmed absent.
+
+Independent readback verifies 31 driver buffers and two SRAM-input buffers,
+without moving/resizing original cells or changing state/cycle boundaries.
+All 342 clock-net connections, 1,682 chip-wide hold cells (124 covered by this
+inventory), macro/corridor geometry and original power bindings remain. New
+placement and power bindings pass; thirteen new cells move from their planning
+hints during legalization. Area rises **778.3776 µm² (0.217243%)** to
+**359,075.9232 µm²**, below the 0.3% cap.
+
+Rebuilt coverage is exactly **1,067 original + 33 new connections**, in 211
+logical trees, with all 64 SRAM write inputs retained. Every connection passes
+the saved 20% capacitance/slew reserve in all three corners. Minimum reserves
+are **26.12% capacitance / 21.87% slew**. Whole-chip electrical and setup/hold
+violation counts are zero. Worst setup/hold slack is unchanged in every corner:
+slow setup **+0.408159 ns**, fast-screen hold **+0.088087 ns**, so all fixed
+90%-retention floors pass. The independent measurements cover 3,300 connection/
+corner records and 6,600 min/max paths with complete consumed-net annotation,
+propagated clocks and verified nominal RC.
+
+All 31 selected original drivers see lower fast-corner load. Slow slew at SRAM
+bits 50/51 falls from **0.556960/0.605968 ns** to **0.062730/0.062341 ns**. The
+closest remaining budget is unedited bit 14's **21.87% fast slew reserve**;
+its 1.87-point excess over the trial threshold is not a routing guarantee.
+The new quantitative checker distinguishes incomplete evidence and failed
+budgets, with **61 focused tests** passing. Fresh buffer contraction rejects
+a grounded new-buffer input and independently recomputes the full ancestry:
+302 buffer additions, 168 prior resizes, preserving the 331,401-edge pin oracle.
+
+Only 57 declared connections change guide rectangle sets; no outside connection
+does. The incremental grid's zero overflow does not replace the source's
+**21 Metal3 units**. Nine stored clock-rule bindings remain. No new local NDR
+warning is observed, which does not establish that the three source full-route
+clock-rule relaxations were reversed. Congestion and effective policy retain
+separate evidence boundaries.
+
+The [distribution-repair manifest](../../physical/experiments/paired-distribution-repair-results.json)
+binds `build/validation/paired-distribution-repair-01/report.json`, SHA-256
+`9fa498482f38e0c8fc7c79a2426a08b494402a33d72815af2c61d626cb934b0b`.
+All **1,183 initial identities** remain unchanged before the five documentation
+updates. The planning receipt remains immutable; two new checker/test files
+record the post-edit acceptance logic.
+
+**Decision:** retain the locally qualified candidate. Diagnose the persistent
+macro edge and migrating full-route congestion using saved artifacts, then bind
+the exact candidate, ancestry and distribution budgets through intake before
+one bounded whole-chip coarse route. No new whole-chip route, detailed routing,
+extraction, RTL/pipeline/protocol/default or licensing change occurred here.
+
+## 2026-09-23 — Native congestion diagnosis and distribution-route qualification
+
+Completed the approved saved-congestion diagnosis and one bounded whole-chip
+requalification of the exact 33-buffer candidate. **`paired-distribution-route-01`**
+takes **62.633 s**, under 600 s/four CPUs/6 GiB with all automatic repair disabled.
+Independent global checks take **12.711 s**, full inventory/placement checks
+**28.869 s**, and minimum pin access **2.393 s**. All fourteen exact containers
+are independently absent. No further physical repair or route follows.
+
+Before launch, the extended schema-4 intake recomputes distribution coverage,
+the immutable selection and quantitative gates, then checks exact driver and
+receiver edits and legal added footprints. Three fresh native netlist readbacks
+retain the original **331,401-edge** oracle through 302 cumulative buffers and
+168 prior resizes. The route's independently exported netlist is byte-identical
+to the candidate; all cells, placements, **1,572 FFs**, **342 clock nets** and
+**359,075.9232 µm²** area remain unchanged. Minimum pin access passes.
+
+The reusable congestion checker binds native GRT markers to the matching saved
+grid and flow totals. The pinned OpenROAD source confirms that reductions are
+included in both saved capacity and usage. The former macro-edge **17/18** grid
+cell actually had available capacity/demand **0/1**, with `_02961_` crossing in
+the earlier route and `_01660_` in the source. Guide overlaps are wider than
+native crossings: source counts are **235 associations / 213 crossing nets**.
+The local candidate inherits all 21 source marker records byte for byte despite
+its incremental zero-overflow grid; a negative control rejects those as stale.
+Two read-only API-inspection failures are retained (system Python lacked `odb`;
+the SWIG source set was opaque), resolved with installed bindings and native JSON
+export. Neither is a route failure or timeout.
+
+Fresh Metal3 overflow changes **21 → 20**, with three persistent locations.
+Native capacity/demand is **10/11** on twelve edges, **11/12** on seven and
+**3/4** on one new upper macro-edge hotspot. The former zero-capacity overflow
+clears. Native markers name **209 crossing nets**, against 239 guide associations;
+six hotspots have actual clock crossings. Nine stored clock-rule bindings stay
+unchanged, but runtime relaxations shrink from three named nets to only `clk`.
+This does not isolate a causal timing effect or demonstrate congestion closure.
+
+All **33 repaired nets plus 33 new branches** retain the fixed 20% reserve.
+Across the full inventory, **1,091/1,100** meet reserve, six pass electrical limits
+but miss reserve, and `_03012_`, `_03116_`, `_03160_` violate capacitance in every
+corner. Their pin loads and consumers stay fixed, while wire capacitance grows
+about **2.11× / 1.99× / 2.73×** relative to local estimates. Global checks also
+find slow SRAM `A_REN` slew **0.596672 ns > 0.595200 ns** outside this inventory.
+
+Fresh slow setup is **−0.074067 ns**, versus **+0.408159 ns** locally and a fixed
+**+0.367343 ns** floor. Hold stays positive, but all retention floors fail:
+fast **+0.041429**, slow **+0.290273**, typical **+0.121309 ns**. All consumed nets
+have complete coarse wire estimates, propagated clocks and verified nominal RC.
+
+The worst setup path changes from SRAM bit 51 to bit 53, ending at `uo_out[4]`.
+An exact matching bit-53 prefix saved on another endpoint shows the one-receiver
+status link `_06301_/Y → _06302_/B1` gaining load **0.068197 → 0.113368 pF** and
+gate delay **1.117685 → 1.732932 ns**. This link is outside the branching-family
+inventory. The worst input-hold path retains identical pins and edges with
+**0.737588 ns** fast data arrival; capture-clock arrival grows
+**0.472345 → 0.519004 ns**. These separate path mechanisms are more specific than
+attributing every regression to congestion or an effective clock-rule change.
+
+**73 focused tests** pass. Of **1,316 initial identities**, 1,315 remain unchanged
+before documentation; the modified intake helper's original bytes are archived.
+Final collection verifies **1,640 hashes**. The
+[distribution-route manifest](../../physical/experiments/paired-distribution-route-results.json)
+binds `build/validation/paired-distribution-route-01/report.json`, SHA-256
+`e77b07eaf6e08e89d9abe6def32deb354c5ca2926c2132e19ed53284d1a29619`.
+
+**Decision:** retain local repair benefits and reject whole-chip qualification.
+Extend the checked scope to the single-receiver status link, capture-clock
+arrival, SRAM control inputs and all nine inventory connections below reserve.
+Select a bounded local repair with explicit setup/hold, neighborhood and area
+gates; keep native congestion capacity/demand as a separate investigation.
+Do not repeat a full route before local qualification. Detailed routing,
+antenna closure, extraction and physical power qualification remain open.
+No RTL, pipeline, protocol, default-backend or licensing change occurred.
+
+## 2026-09-23 — Explicit path/control coverage and one bounded local repair
+
+Extended the checked scope before selecting the next repair. Nineteen timed
+connections add the one-receiver status link, seven input-hold endpoints and
+all eleven dynamic SRAM control/address inputs to the complete distribution
+families. Another 208 static macro inputs and one clock input are classified
+separately. Read-only collection takes **12.134 s**. In addition to read-enable's
+known slew failure, write-enable has only **3.66%** slow slew reserve.
+
+The shared compiler gains an explicit-stage schema with checked sizes, original
+consumers, unoccupied footprints, unique names and FF-data hold endpoints.
+Legacy rendering remains byte-identical. The frozen plan declares nine `buf_4`
+distribution drivers, one `buf_8` status driver, two `buf_4` SRAM-enable receivers
+and fourteen `buf_1` buffers, two at each input endpoint. The **26-buffer** cost
+is **284.8608 µm²**; stronger cells at every site would exceed the original cap.
+The 20% reserve, timing floors and original area reference are not relaxed.
+
+**`paired-path-repair-01`** executes once in **5.739 s**. Independent global
+geometry/STA takes **12.434 s**, complete connection and saved-placement checks
+**30.897 s**. Including source diagnosis, physical commands total **61.204 s**;
+each is bounded to 120 s/two CPUs/2 GiB. All ten exact containers are absent.
+
+All **1,145 covered connections** pass reserve in all three corners, with
+minima **20.88% capacitance / 22.12% slew**. Whole-chip electrical violations
+are zero. Slow setup improves **−0.074067 → +0.436742 ns**; fast hold
+**+0.041429 → +0.093797 ns**, slow hold **+0.290273 → +0.439880 ns**, typical
+hold **+0.121309 → +0.208469 ns**. Every original timing floor passes. Area is
+**359,360.7840 µm²**, or **+0.296747%** cumulatively from the distribution-budget
+reference; only **11.6542 µm²** remains below its 0.3% cap.
+
+Matched status-path prefixes show driver load **0.113368 → 0.009168 pF** and
+driver-hop delay **1.733107 → 0.317004 ns**; the hop includes the unchanged
+predecessor's wire. That same output path reaches **+1.452227 ns** setup, while
+another path now sets the global minimum. Slow read/write-enable transitions
+become **0.073174 / 0.080670 ns**. The seven guarded inputs gain **82.4–88.6 ps**
+fast data delay with identical capture-clock arrival at each endpoint in every
+corner. The former worst endpoint's hold becomes **+0.123537 ns**.
+
+Independent readback confirms all original cells/placements, **342 clock
+connections**, **1,682 hold cells**, macro/corridor geometry and power bindings.
+Only 36 guide-rectangle sets change, within the 45 declared changed/new nets;
+clock guides stay fixed. Contraction transfers the **331,401-edge** oracle
+through **328 cumulative buffers** and 168 prior resizes. Grounding a second
+hold buffer fails the negative control. **74 focused tests** pass.
+
+The initial collector's source-sink classifier mislabels seven original input
+connections and their fourteen new branches after insertion. A separate checked
+metadata artifact restores the declared source roles, verifying that every
+electrical selector and connection stays identical. The initial collection is
+preserved. Final reconciliation checks **2,002 hashes**: **1,569 of 1,573**
+initial identities remain unchanged before documentation, three modified helper
+originals are archived, and an unrelated README edit is observed and left intact.
+
+The [path-repair manifest](../../physical/experiments/paired-path-repair-results.json)
+binds `build/validation/paired-path-repair-01/report.json`, SHA-256
+`bd8c280c0d19368043b43741baef7e5c1de3de826616eb0efb5a7fb682433178`.
+
+**Decision:** retain the locally qualified repair. Extend shared intake to bind
+the explicit path/control scope, every serial stage, complete functional ancestry
+and original cumulative budgets before one bounded whole-chip coarse reroute.
+The source's **20 Metal3 overflow units** remain the congestion reference;
+incremental zero counts and inherited markers do not requalify it. No new
+whole-chip route, detailed routing, extraction, RTL/pipeline/protocol change,
+default promotion or licensing change occurs in this study.
+
+## 2026-09-23 — Shared path intake and retained timing through a full route
+
+Implemented shared path/control admission before spending the next route.
+`physical_path_contract.py` rebuilds the nineteen declared connections, complete
+distribution families and every new stage from source connectivity. It checks
+the full non-data macro-input census, carries input-hold roles through inserted
+buffers, reparses raw measurements and retains the original reserve, timing
+floors and cumulative area reference. **90 focused tests** pass. The initial
+new test caught lost role propagation where a branch already had a family;
+the fix precedes admission. A mistaken parent-manifest choice was separately
+rejected by functional identity during preparation, before CAD ran. Both
+rejected receipts remain preserved.
+
+**`paired-path-route-01`** completes one GlobalRouting step in **92.059 s** under
+600 s/four CPUs/6 GiB. Automatic repair is disabled. Fresh whole-chip diagnostic
+collection takes **13.371 s**; all-connection and placement checks **31.520 s**;
+minimum pin access **2.515 s**. Two short read-only marker/API queries inspect
+the settled database. All eleven exact containers are independently absent.
+
+Slow setup is **+0.420384 ns** and fast-screen hold **+0.101286 ns**, versus
+**−0.074067/+0.041429 ns** in the prior full route. Slow/typical hold is
+**+0.457194/+0.221184 ns**. Every original timing floor passes. All **19 repaired
+source nets plus 26 new branches** retain the 20% reserve. Complete coverage
+finds **1,139 passing, four below-reserve and two failing connections**, from
+**3,435 corner records / 6,870 min/max paths**. Every chip-wide electrical
+failure is covered: `_03253_` and `_04701_` exceed capacitance in all three
+corners; all nine slow slew failures share `_03253_`.
+
+The remaining below-reserve connections are `_02981_`, `_03380_`, `_04527_`
+and SRAM DIN14 branch `net31`. Serial branches `_02981_`, `_03253_` and
+`_03380_` all carry bit 53; the five capacitance-sensitive drivers are existing eight-load `buf_1`
+cells. Every measured pin-load set is unchanged. On the two failing nets,
+fast-corner wire capacitance grows **2.57× / 2.13×** relative to the local
+candidate. The whole-family contract detects this migration of weak margins;
+the local 20% target does not prove a bound on global wire redistribution.
+
+Fresh export is byte-identical to the local candidate. Every cell and placement,
+**342 clock connections**, **1,572 FFs**, macro/corridor geometry and power
+binding remains. Functional ancestry transfers the **331,401-edge** oracle
+through the same **328 buffers and 168 prior resizes**, without another pin
+simulation. Area stays **359,360.7840 µm²**, cumulatively **+0.296747%**, leaving
+only **11.6542 µm²** beneath the fixed 0.3% allowance. Two more `buf_1` cells
+alone would cost 14.5152 µm², so additive repair cannot be presumed affordable.
+
+The final route table reports **22 overflow units**: 21 Metal3 and one Metal4,
+versus twenty Metal3 units previously. Native JSON also contains 22 markers;
+the saved grid exposes only 21 Metal3 units. Strict complete reconciliation
+rejects the mismatch. A separately labelled 21-marker subset matches exactly;
+the horizontal **11/12 capacity/demand marker at (511.2, 352.8) µm** remains
+unreconciled and is not assigned a layer by inference. Only two matched hotspot
+locations persist from the source. This is no congestion improvement or complete
+location diagnosis. Nine stored clock rules remain, but runtime relaxation now
+includes **`clknet_0_clk_regs` and `clk`**, versus only `clk` in the parent.
+Timing passes under this policy without isolating its causal contribution.
+
+The [path-route manifest](../../physical/experiments/paired-path-route-results.json)
+binds `build/validation/paired-path-route-01/report.json`, SHA-256
+`a6e2493a0b50a63066f7a174da3c6fef371f8b9986ad164669a646d11670a5d3`.
+Final report construction checks **2,099 hashes**, including all **1,797 prior
+identities**; 1,796 are unchanged before documentation and the original intake
+helper is archived. No previous receipt is rewritten.
+
+**Decision:** retain whole-chip timing gains and reject full electrical/reserve
+and congestion qualification. Use saved geometry, loads and library costs to
+compare redistribution or selective sizing over the residual families under
+unchanged budgets. Resolve the extra congestion marker independently before
+choosing a location-specific capacity change. No second route, further repair,
+detailed route, extraction, RTL/pipeline/protocol change, backend promotion or
+licensing decision occurs in this study.
+
+## 2026-09-23 — Physical organization policy and saved-chip candidate screening
+
+Added a bounded physical organization layer between the measured distribution
+inventory and exact repair plans. `physical_organization.py` reconstructs actual
+transport trees, retains shared trunks once and compares three explicit choices:
+fixed-origin buffer growth, equal-count same-source leaf exchanges and a separate
+SRAM data receiver. The policy binds the settled `paired-path-route-01` database
+and original path contract; 2,202 clock/hold/endpoint instances are protected.
+Ordinary leaves may move between branches while fixed state, macro and transport
+loads stay attached. No physical implementation is edited.
+
+The reconstruction finds **211 trees / 1,109 family branches / 4,613 leaves**.
+Its **898 transport cells** comprise **774 buffers and 124 delays**, with
+**10,303.9776 µm²** counted once. Earlier passing screen columns called this
+combined transport count buffers; the selected receipt distinguishes the two.
+The broader **1,145-connection path contract** remains the qualification scope.
+The six residual connections occupy four trees and 64 branches; **192 independent
+pin/corner checks** reproduce saved STA loads from pinned Liberty files.
+
+The first attempt rejects mixed-load capacitance aggregation: maxima from
+opposite rise/fall edges cannot be summed independently. The corrected reader
+sums all receivers at a common edge before taking extrema. That failed log and
+three intermediate passing screens remain, with their earlier helper bytes
+archived. A later refinement lets ordinary leaves on mixed branches regroup
+while fixed transport consumers stay attached. Virtual exchanges are checked
+against the saved independent Yosys readback; a wrong functional source is
+rejected by complete circuit comparison after buffer contraction.
+
+**`paired-organization-screen-05`** completes in **7.330 s**, without Docker or
+CAD. **107 focused tests** pass, including 17 new organization checks. Eighteen
+choices are costed and **no complete portfolio passes the current geometry
+policy**. Uniform stronger-driver choices cost at least **18.1440 µm²**, beyond
+the **11.6542 µm²** remaining in the original cumulative area allowance.
+`_04701_`'s driver `_09463_` collides with `_11880__1348` even at `buf_2`; allowed
+leaf exchanges do not reduce its span. Other rejected growth footprints are
+recorded by exact neighboring instance.
+
+An eight-swap, zero-added-area bit-53 candidate reduces the three residual
+branches' pin-envelope HPWL **602.275 → 598.0025**, **947.010 → 928.255** and
+**860.970 → 284.315 µm**. It changes thirteen scalar-input assignments in a
+virtual copy and preserves full buffer-contracted identity. Its greatest
+geometric gain is on `_03380_`; failing `_03253_` improves only about 2%, and
+no new wire capacitance, slew or setup/hold is measured. The second nonempty
+exchange improves a neighbor while leaving its residual target unchanged.
+Neither is evidence of physical qualification.
+
+The mixed hypothesis combines that bit-53 regrouping, two `buf_1` → `buf_2`
+upgrades and a DIN14 `buf_1` receiver, costing **10.8864 µm²** and leaving
+**0.7678 µm²** beneath the unchanged area cap. This is area arithmetic only:
+the `_09463_` footprint already fails, and timing/electrical benefit is unknown.
+The fixed-placement policy therefore exposes the next missing capability
+without widening budgets or selecting an executable repair.
+
+The [organization manifest](../../physical/experiments/paired-organization-results.json)
+binds `build/validation/paired-organization-01/report.json`, SHA-256
+`40621e90cb011a1e96520acac28010dc9973867035ce06e374ed0a65b2ea5d32`.
+Report creation checks **2,229 hashes**: all **1,946 prior nondocument identities**
+remain unchanged, and all six updated documents have matching pre-edit snapshots
+within the **1,952-identity** initial inventory. Existing source helpers and
+every prior receipt remain intact.
+
+**Decision:** retain the abstraction and screen a narrow move-and-resize rule
+for the blocked buffer, costing all incident connections and protected boundaries.
+Compare bit-53 grouping choices against weak-branch wire budgets. New edit types
+need independent exact-edit/readback checks and bounded local physical validation
+before whole-chip route admission. Keep the original reserve, timing floors and
+area reference. The **22-marker / 21-grid** congestion mismatch is a separate
+unresolved question. No CAD, new physical measurement, repair, route, RTL/pipeline
+change, backend promotion, commit, push or licensing decision occurs here.
+
+## 2026-09-23 — Bounded organization refinement and local electrical qualification
+
+Extended the organization policy with one named buffer's bounded same-row
+move-and-resize rule and a grouping objective that ranks weak branches against
+their wire budgets. The pinned LEF reproduces both source signal-pin locations
+before projecting a new footprint; the screen costs both incident connections,
+protected geometry and the original cumulative area allowance. Equal-count
+exchanges preserve source identity and pin-capacitance bounds. Proportional
+span/wire scenarios are conditional screening assumptions, not electrical bounds.
+
+**`paired-locality-screen-01`** takes **8.842 s** to compare **35 choices / 104
+complete combinations**. Twenty-six pass area/footprint checks and thirteen
+also pass the conditional wire-budget screen. The selected plan moves `_09463_`
+one **0.48 µm** site left while growing it from `buf_1` to `buf_2`, upgrades
+`_08797_` in place and adds one DIN14 receiver. Sixteen bit-53 leaf swaps produce
+**23 distinct scalar-input reassignments across ten branches**. The three target
+pin-envelope spans change **602.275 → 575.020**, **947.010 → 332.4225** and
+**860.970 → 534.445 µm**. Both incident spans of the moved buffer remain fixed.
+
+The new exact-plan compiler validates source endpoints, consumer bijections,
+protected cells, legal footprints, same-row/grid movement and area before
+producing the recipe. Six preflight mutations are rejected. **110 focused
+tests** pass, including twenty organization checks. The initial sandbox launch
+cannot access Docker and stops before a probe directory or container exists;
+that log is preserved. The authorized launch is the sole executed physical edit.
+
+**`paired-locality-01`** completes its local probe in **18.720 s** under
+**120 s / two CPUs / 2 GiB**, with source design and PDK mounted read-only.
+Fresh diagnostic collection takes **24.822 s**, complete connection/geometry/
+placement checks **81.585 s**, and minimum pin access **5.314 s**. Every bounded
+check completes; all nine exact containers are independently absent.
+
+All **1,146 connections / 3,438 corner records / 6,876 min/max paths** meet the
+original 20% reserve. Minimum reserves are **24.5592% capacitance / 21.5316%
+slew**. Capacitance, slew, fanout, setup and hold violation counts are zero in
+all three corners. Slow setup remains **+0.420384 ns** and fast-screen hold
+**+0.101286 ns**; all original timing floors pass. The derived contract advances
+source identity and edit selectors, adds the new receiver to complete coverage,
+and retains every original numerical budget.
+
+The bit-53 pin loads remain unchanged. Their fast-corner wire capacitances fall
+**0.157347 → 0.073543 pF**, **0.322079 → 0.042548 pF** and
+**0.173625 → 0.067571 pF**. The formerly failing `_03253_` now has **54.34%
+capacitance reserve** with its original `buf_1` driver. This is measured local
+coarse-routing benefit; the span screen did not predict the resulting parasitics.
+Added area is **10.8864 µm²**; total **359,371.6704 µm²** is cumulatively
+**+0.299786%**, leaving **0.7678 µm²** under the unchanged 0.3% experiment allowance.
+
+Independent fresh Yosys readbacks preserve complete buffer-contracted circuit
+identity and transfer the retained **331,401-edge** oracle. Exact physical
+readback confirms the declared reassignments, two resizes, one translation and
+one new receiver; all **2,202 protected instances**, **342 clock connections**,
+original power bindings and nine stored clock-rule bindings remain. Fifteen
+guide sets change within sixteen declared incident nets; clock guides remain
+unchanged. A grounded receiver and a corrupted moved footprint are rejected.
+All **33,600 standard-cell pins** and the macro pass minimum pin access, with
+no off-grid warnings. This access check does not prove simultaneous routability.
+
+The [locality manifest](../../physical/experiments/paired-locality-results.json)
+binds `build/validation/paired-locality-01/report.json`, SHA-256
+`28d4f25a4d50d303afadf833a6ccfc95fd9c9fa119a19e22f025d02179293d5d`.
+Report construction checks **2,582 hashes**, including preservation of all
+**2,008 initial identities**: 1,999 remain unchanged, and the three edited
+source/test files plus six documents have matching original snapshots. Prior
+receipts and source physical artifacts remain intact; this journal is append-only.
+
+**Decision:** retain the locally qualified candidate and extend shared route
+intake to independently recompute regroup/resize/move operations, full functional
+ancestry, all 1,146 connections and the original budgets before admitting one
+bounded whole-chip coarse comparison. The local incremental grid's zero overflow
+does not replace the source's unresolved **22-marker / 21-grid** congestion
+evidence. The unmatched **11/12 capacity/demand marker at (511.2, 352.8) µm**
+remains a separate diagnosis. No whole-chip route, detailed route, extraction,
+power-grid continuity qualification, RTL/pipeline change, backend promotion,
+commit, push or licensing decision occurs in this study.
+
+## 2026-09-23 — Shared physical edits and a rejected whole-chip qualification
+
+Extracted four declared operations into `physical_organization_edits.py`:
+buffer resize, bounded same-row move-and-resize, same-source consumer regrouping
+and receiver insertion. Candidate search and the historical recipe builder are
+separate from policy validation and independent readback. The common checker
+supports different operation counts, measures both incident sides and protects
+state, clocks, macro, hold cells, rows, blockages, supply connectivity and occupied
+footprints. The retained local recipe and exact proof reproduce unchanged.
+
+Schema-5 shared route intake independently reconstructs exact edits, functional
+ancestry, original roles, all **1,146 connections**, raw electrical/timing records,
+pin access and the original area reference. Fresh Yosys readbacks transfer the
+existing **331,401-edge** oracle. **121 focused tests** pass in **3.275 s**;
+six real-artifact mutations with updated hashes are rejected. The first negative
+control harness expected a later area-budget diagnostic; admission correctly
+rejected the mutation earlier at ancestry. The corrected harness and both logs
+are retained. Preparation's nonfatal unclosed-file warnings are also preserved;
+the resulting bytes and fresh readbacks are hash-bound.
+
+**`paired-locality-route-01`** is the sole whole-chip route, under **600 s / four
+CPUs / 6 GiB**, with automatic design, timing and antenna repair disabled. The
+flow reports **36 seconds**, exits zero and warns of congestion. All subsequent
+checks finish within their caps: fresh diagnostics **12.696 s**, complete
+connections/geometry/placement **71.632 s**, minimum pin access **4.888 s**.
+Ten exact containers are independently absent. No timeout occurs.
+
+The six original weak connections retain 20% reserve. `_03253_`'s fast wire
+capacitance is **0.044594 pF**, close to the local **0.042548 pF** and below the
+prior full-route **0.322079 pF**; its minimum capacitance reserve is **53.66%**.
+However, whole-chip qualification fails. Of **1,146** scoped connections,
+**1,142** meet reserve, three fail and one misses reserve. Serial-shift bit-50,
+bit-49 and bit-51 branches `_02988_`, `_03097_`, `_03552_` now fail capacitance;
+their unchanged drivers/pin loads accompany **2.76× / 3.26× / 2.84×** fast wire
+growth against local estimates. `_04718_` has **19.9146%** slow slew reserve.
+
+Independent global checks find a fourth capacitance failure on `_01924_`, outside
+the declared inventory. All corners have four capacitance failures; the slow
+corner has twelve slew failures across `_02988_` and `_03552_`. Slow setup falls
+**+0.420384 → −0.055813 ns**, and fast hold **+0.101286 → +0.064551 ns**. Both
+retained floors fail; all other timing floors and the original area cap pass.
+Area stays **359,371.6704 µm²**, cumulatively **+0.299786%**, leaving **0.7678 µm²**.
+
+Exact readback confirms a byte-identical netlist and unchanged physical context,
+including all 342 clock connections and power bindings. All **33,600 standard-cell
+pins** and the macro pass minimum access with no off-grid warnings. Every consumed
+net is annotated. These checks do not establish simultaneous routability.
+
+Reported overflow rises **22 → 33**. All **33 native markers / saved-grid units /
+flow units** reconcile on Metal3: ten 11/12 and twenty-three 10/11 capacity/demand
+edges, with no zero-capacity hotspot. Two locations persist from the prior result.
+The old 22-marker / 21-grid discrepancy remains unresolved for that older artifact;
+the new reconciliation does not retroactively explain its missing edge.
+
+Read-only analysis of the saved reports identifies one timing mechanism without
+another CAD command. For the matched `ui_in[6] → _12281_/D` hold path, every
+reported data arc and **0.785377 ns** data arrival are unchanged. Capture-clock
+arrival increases **0.509116 → 0.548950 ns**, explaining the **39.835 ps** slack
+loss at report precision. The worst setup source changes from SRAM to
+`r_mode[0]`, through overloaded `_01924_` to status `uo_out[4]`; the matching
+prior path is not present in the saved top-1,000 report. Its clock/data split
+therefore remains unmeasured. All nine stored nondefault-rule bindings remain,
+but the new route logs no relaxations versus prior `clk` and `clknet_0_clk_regs`.
+This is a runtime-policy observation, not proof of final spacing or sole cause.
+
+The [manifest](../../physical/experiments/paired-locality-route-results.json)
+binds `build/validation/paired-locality-route-01/report.json`, independent
+admission, tests, failed quantitative gates and saved-result diagnosis. All
+**2,151 initial identities** are accounted for: **2,141** unchanged, with matching
+original snapshots for four modified source files and six documents. Prior
+receipts remain intact and the journal update is append-only.
+
+**Decision:** retain the reusable abstraction and local evidence; reject the
+routed candidate's qualification. Next query matched mode-to-status and input
+clock paths on both saved chips, inventory the uncovered control tree and passing
+siblings, and compare complete bit-49/50/51 distribution families against the
+33 reconciled shared-capacity edges. Verify effective clock-rule application
+before choosing any further physical intervention. Keep the original budgets.
+No additional physical edit, new pin simulation, detailed route, extraction,
+RTL/pipeline change, backend promotion, commit, push or licensing decision occurs.
+
+## 2026-09-23 — Matched clock/control paths and complete affected families
+
+**`paired-coupling-01`** compares the settled `paired-path-route-01` and
+`paired-locality-route-01` chips using only read-only collectors. Normalized
+configurations match. Four paths fix source/destination transitions and every
+intermediate pin; independent parsing requires identical pin, transition and
+cell sequences. Complete transport closure covers **118 connections** in five
+trees: shared control **6**, serial bits 50/49/51 **13 / 8 / 88**, parameter
+control **3**. Thirteen clock nets cover root, SRAM delay chain and register
+branches. Exact pin loads and geometry are unchanged across both chips.
+
+Two three-corner family/path collections take **14.263 / 14.202 s** of command
+time. The initial reports lump input-wire and cell delays, so two additional
+path-only collections request input-pin detail: **10.777 / 10.756 s**. Geometry
+takes **0.491 s**. These five successful commands total **50.489 s**, each under
+**120 s / two CPUs / 2 GiB**. No route or repair runs. A prior **0.197 s** attempt
+stopped on a Python syntax error before OpenROAD; its worker, log and failed
+receipt are preserved. All six collector containers and both source-route
+containers are independently absent. No timeout occurs.
+
+The slow mode-to-status path changes **+2.262653 → −0.055813 ns**. Its arrival
+increase is **2.318466 ns**, comprising **2.299226 ns data** and **0.019240 ns
+launch clock**. The required time stays fixed. `_01924_`'s fast wire capacitance
+grows **0.115121 → 0.309965 pF**. Its driver, wire into `_06218_/B1` and following
+gate add **1.534994 ns**, or **66.76%** of the matched data increase. Other arcs
+contribute; this is measured attribution, not a predicted repair outcome.
+
+The slow SRAM-bit-53 status path changes **+0.420384 → +0.113294 ns**. Arrival
+grows **0.307090 ns**: **0.205627 ns launch clock / 0.101463 ns data**. Clock
+wire into `delaybuf_4_clk/A` and that cell add **0.173777 ns**; `delaynet_3_clk`
+wire capacitance changes **0.085832 → 0.162166 pF**. This is a distinct mechanism
+from the dominant mode/control data-path regression.
+
+Fast input hold changes **+0.104386 → +0.064551 ns** on the same path. Every data
+arc and **0.785376847 ns** arrival remain identical. Capture clock arrives
+**39.833486 ps** later, and the changed requirement accounts for **39.835244 ps**
+slack loss. The prior worst parameter self-hold path remains **+0.101285927 ns**
+as launch and capture move together with reconvergence correction. A clock shift
+therefore needs a path-specific contract, not one undifferentiated clock margin.
+
+All **118** family connections pass 20% reserve in the earlier full route;
+**113 pass / four fail / one misses reserve** afterwards. All six shared-control
+branches were outside the previous scope. The new measured watchlist proposes
+the inherited inventory plus these branches (**1,152** total), four exact paths
+and thirteen clock nets, while preserving all numerical budgets. Production
+admission is not changed. Fresh global timing/electrical values reproduce the
+saved measurements; consumed-net annotation remains complete.
+
+Fresh geometry independently reproduces all **33 native Metal3 overflow edges**.
+Thirty-four selected-family nets cross **21** edges, ordinary clocks cross
+**nine**, and all edges contain other signal traffic. No current edge directly
+contains a net with a stored NDR binding. The pinned OpenROAD source and binary
+version agree on commit `dcf36133a369abc8f3c5e5738cd4d82e4903c0e0`:
+`applySoftNDR` records a runtime cost change without clearing the database rule.
+Both artifacts retain nine identical bindings and dimensions, while only the
+older run logs softening `clk` and `clknet_0_clk_regs`. This does not establish
+a useful clock-rule relaxation counterfactual. The older 22-marker / 21-grid
+discrepancy remains unresolved for that artifact.
+
+Four negative controls reject wrong path transition, missing arc, ambiguous
+path and wrong grid identity. The preceding 121 production tests are retained;
+no production source changes or repeated suite run is needed. The
+[manifest](../../physical/experiments/paired-coupling-results.json) binds
+`build/validation/paired-coupling-01/report.json`, raw measurements, source-code
+evidence, complete diagnosis and the measured watchlist. All **2,497 initial
+identities** are accounted for: **2,491** unchanged, plus matching original
+snapshots for the six updated documents. Earlier receipts remain intact and
+this journal remains append-only.
+
+**Decision:** screen area-neutral data regrouping and the actual support for a
+clock-delivery constraint as separate choices. The former must cover complete
+control/serial trees and passing siblings; the latter must protect the measured
+SRAM launch and input capture behavior. Retain global capacity checks and the
+original timing, reserve and cumulative area contract. Only **0.7678 µm²** remains
+in its allowance. No new physical repair or route is selected, no numerical
+budget is relaxed, and no RTL/pipeline change, backend promotion, commit, push,
+new pin simulation or licensing decision occurs.
+
+## 2026-09-23 — Integrate the branch in reviewable local milestones
+
+The user approved consolidation and requested commits as work progresses.
+An initial inventory recorded **283 pending paths** (37 modified tracked files,
+246 untracked files) above `47f90b3`. The implementation was separated by
+logical dependencies: shared composition/admission/results, SRAM/fetch
+organizations, paired execution, physical tooling, experiment records, and
+current documentation. The first five commits are:
+
+- `fe6abab` — shared contracts
+- `7d3dc27` — sram and fetch
+- `c9e7391` — paired execution
+- `551b071` — physical tooling
+- `e927b77` — experiment records
+
+The default Lean import omitted `Storage.PairedController`, causing the
+portable gate's complete-module check to reject the accumulated tree. Adding
+that import brings all **206** modules into the default build/audit without
+changing a backend selection or claiming the missing paired refinement.
+The code and experiment recipes otherwise retain their initial contents.
+
+Isolated source snapshots passed **86**, **148**, **192**, then **408** Python
+tests as the relevant milestones accumulated; each run skipped the same two
+Linux-specific process-inspection cases on macOS. The final run has 406 passes.
+The clean first build and later incremental builds, complete-library audit,
+paired graph controls and conditional schedule checks passed. The final audit
+covers **15,395 declarations / 7,706 theorems**, including generated declarations,
+with standard axioms only and a rejected injected custom axiom.
+
+The full foundation wrapper hit its **1,200-second aggregate cap** during
+Memory after **29 of 32** suites passed. Its cleanup initially reported
+termination unconfirmed; independent `ps` and process-group probes confirmed
+the exact group **8135** absent before results were collected. The failed
+aggregate receipt is retained. Only Memory, SerialUpload and HostResult were
+resumed, under separate **600-second** bounds; all passed. All **32 constituent
+suites** are therefore complete, but the interrupted aggregate command is not
+reported as a pass. The separate `foundation-completion.json` binds the final
+sources and the split execution. No successful suite was needlessly restarted
+after that timeout.
+
+All **88** experiment-record files retain their inventory hashes, **76** JSON
+records parse, and **39** local report bindings match. Generated evidence and
+local one-off study scripts remain under ignored `build/`; committing their
+selected summaries does not distribute the raw artifacts. Previous receipts
+and this journal's initial prefix are preserved.
+
+The [integration guide](../branch-integration.md) now distinguishes retained
+interfaces, references, experimental implementations and open proof/physical
+obligations. The technical index routes readers to current owners instead of
+repeating an obsolete sequence of next steps. The submission plan explicitly
+labels its earlier hybrid sequence and points to the current paired decision.
+No physical experiment, RTL behavior change, default promotion, push, PR or
+licensing decision is part of this consolidation. Source snapshots, checks and
+commit receipts live in `build/validation/branch-consolidation-01/`.
+
+
+## 2026-09-23 — Timing obligations and complete organization comparison
+
+Implemented the approved organization study with saved chips and no CAD run.
+The source audit identifies live rejection on page zero as part of the current
+edge observation; the existing registered page-three result is a distinct view.
+The host input-hold witness is `ui_in[6]` to first-stage clear control, and the
+parameter self-hold witness uses one physical clock endpoint. The measured SDC
+matches the current 20 ns / 4.0 ns maximum / 0.2 ns minimum I/O assumptions.
+The organizer page still specifies 6x4; the 0.3% increment remains our separate
+experimental comparison budget.
+
+`physical_organization_study.py` adds conditional clock-shift obligations and
+combinational-copy costs. `report-physical-organization.py` joins these to the
+existing planner and independent virtual identity check. The first helper
+milestone is committed as `47aaa9c`. No Lean/RTL source or physical edit changes.
+
+Selected comparison **paired-organization-comparison-04** completes in
+**4.112 s** under a **120-second** command cap. It checks all **1,152** inherited
+and proposed-watchlist connections against the selected database, reconstructs
+five trees and reconciles **354** independent net/corner pin loads. Twelve
+consumer swaps across fourteen branches change twenty scalar inputs with whole
+buffer-contracted virtual identity preserved. No complete family clears the
+conditional wire screen. The bit-51 ratio improves **1.725 -> 1.186**, which is
+still above budget and remains a geometric scenario rather than a routed result.
+
+Clock-environment replay keeps newer data delay and substitutes earlier launch
+and required time. It restores the measured input-hold reserve but still leaves
+**0.403916 ns mode/status** and **0.048422 ns SRAM/status** below retained setup
+floors. These are conditional, one-sided obligations; no feasible clock tree is
+claimed, and opposite checks remain to collect.
+
+Two regional decoder-copy proposals add **14.5152 / 7.2576 um^2**, or
+**21.7728 um^2** together, against **0.767837 um^2** left in the existing allowance.
+The NOR's parent nets already have full-inventory measurements; reusing them
+shows that the extra pin load fits the capacitance reserve with saved wire.
+The XOR's two parent measurements remain missing. New wire, slew, placement and
+timing remain unqualified. The small cost supports retaining local decoding as
+a structural alternative instead of interpreting the incremental-cap rejection
+as physical infeasibility.
+
+**42 focused tests** pass, including eleven new helper cases. Four final
+integration mutations reject changed diagnosis identity, missing path coverage,
+an added cycle and state replication. The initial preparation attempt expected
+hash strings to be reference objects and stopped before writing its initial
+receipt; the error receipt is preserved. Four completed comparison versions and
+all earlier outputs remain, with the fourth including reusable full-inventory
+parent measurements and measured-SDC identity. No timeout occurred.
+
+**Decision:** compare regional tree replacement/reuse and decoding with explicit
+area, clock and shared-capacity budgets. Obtain the two missing parent-net
+measurements and opposite timing checks before selecting a physical candidate.
+Keep the prior admission contract and all numerical budgets intact; any separate
+budget must be declared before execution. No coarse/detailed route is admitted.
+The [study](../physical-organization-study.md) owns interpretation and the
+[manifest](../../physical/experiments/paired-organization-study-results.json)
+binds the selected report and checks. Supporting receipts are under
+`build/validation/paired-organization-study-01/`.

@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "status": "functionally-verified-cell-timing-measured",
+  "decision": "eligible-for-bounded-physical-comparison",
+  "report": "build/storage/tiled-chip/local-load-01/report.json",
+  "report_sha256": "2d9e83fe72e888cd199d6e1a8e9392fc89fc1db9ef4b756309750703fa323c5b",
+  "validation": {
+    "report": "build/validation/local-load-01/report.json",
+    "report_sha256": "a862281d26dc3ab8157a87106e5adfa58f8256c82459e8991d16b158d3872c3f"
+  },
+  "experiments": {
+    "tile_probe": {
+      "report": "build/storage/local-load/tile-01/report.json",
+      "report_sha256": "0b12af50cf5dd0c04b20d549a794a09591be19797e27a84959fe461467338ab7",
+      "inputs": 13,
+      "artifacts": 26,
+      "elapsed_seconds": 1.218
+    },
+    "timing": {
+      "report": "build/storage/sram-timing/local-load-01/report.json",
+      "report_sha256": "a4a8687a5b9549e86b7ab7787524ce37b5dd05f93ad578895332f4717dcb7a05",
+      "inputs": 25,
+      "artifacts": 31,
+      "elapsed_seconds": 5.125
+    },
+    "previous_mapping": {
+      "report": "build/storage/tiled-chip/combined-01/report.json",
+      "report_sha256": "a3d49d4c94914288b0c1f1025813c553912b2ac9327a0c3c648e6072b9998d31",
+      "inputs": 252,
+      "artifacts": 123,
+      "elapsed_seconds": 274.167
+    },
+    "flat_repair": {
+      "report": "build/storage/electrical-distribution/fanout-01/report.json",
+      "report_sha256": "cada2e7052a84f685a98a5d7be22e02964c08620e031bead3c145a579423746c",
+      "inputs": 18,
+      "artifacts": 36,
+      "elapsed_seconds": 15.094
+    },
+    "previous_timing": {
+      "report": "build/storage/sram-timing/fetch-contract-03/report.json",
+      "report_sha256": "afb5634061f07b84c47d15c843f7e5f2bff02a1ca96d0b2c171e2ab42554d1e7",
+      "inputs": 25,
+      "artifacts": 31,
+      "elapsed_seconds": 5.087
+    }
+  },
+  "candidate": {
+    "organization": "combined",
+    "fanout_limit": 8,
+    "flip_flops": 2895,
+    "macros": 2,
+    "standard_cell_area_um2": 290943.954,
+    "macro_area_um2": 100978.2656,
+    "area_change_vs_baseline_percent": -0.559196,
+    "area_saving_vs_flat_repair_um2": 8418.816,
+    "extra_buffers_vs_combined": 209,
+    "shared_distribution_buffers": 225,
+    "timing": {
+      "typical": {
+        "setup_slack_ns": 13.5,
+        "hold_slack_ns": -0.58,
+        "electrical_violations": {
+          "max fanout": 0,
+          "max slew": 0,
+          "max capacitance": 0,
+          "min pulse width": 0,
+          "min period": 0
+        },
+        "sram_to_sram_slack_ns": 14.09,
+        "cached_to_address_slack_ns": 15.76,
+        "address_paths_slack_ns": 14.09
+      },
+      "slow": {
+        "setup_slack_ns": 10.52,
+        "hold_slack_ns": -0.86,
+        "electrical_violations": {
+          "max fanout": 0,
+          "max slew": 0,
+          "max capacitance": 0,
+          "min pulse width": 0,
+          "min period": 0
+        },
+        "sram_to_sram_slack_ns": 10.52,
+        "cached_to_address_slack_ns": 13.48,
+        "address_paths_slack_ns": 10.52
+      }
+    }
+  },
+  "next_gate": "Preserve the exact validated mapping at physical intake, then compare baseline and candidate placement, clock and hold-repair cost, and global congestion under matched macro/corridor/I/O constraints.",
+  "boundary": "Unchanged Lean/RTL and exact execution schedule; mapped arbitrary-state equivalence, independent macro/pin oracles, complete cell area and cell/SRAM STA. Hold remains negative. No placement, clock tree, wire parasitics, routing or backend promotion."
+}

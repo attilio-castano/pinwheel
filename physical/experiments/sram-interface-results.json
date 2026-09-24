@@ -1,0 +1,400 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "decision": "retain-physical-control-keep-upload-stage-experimental",
+  "retained_physical_tag": "local-slew-route-01",
+  "source_selection": {
+    "path": "physical/experiments/local-slew-results.json",
+    "sha256": "56f201237923dcb8752b6f206e870c42f628c4f282c7fe0b8b3504eee27f96c3"
+  },
+  "receipts": {
+    "geometry": {
+      "path": "build/validation/sram-interface-01/extract-report.json",
+      "sha256": "1cdcc4785b9d33c36d604ea33dfc99d715cacdd639822903c9de5b9cd8bb414c",
+      "recorded_status": "passed",
+      "checked_artifacts": 2,
+      "seconds": 2.586
+    },
+    "pipeline-initial": {
+      "path": "build/storage/upload-pipeline/upload-pipeline-01/report.json",
+      "sha256": "80fe431e4866600e05ab95d488367b9fb4cde32e57c034ba464b089c7e4eb689",
+      "recorded_status": "failed",
+      "checked_artifacts": 23,
+      "seconds": 54.125
+    },
+    "pipeline-incomplete-negative": {
+      "path": "build/storage/upload-pipeline/upload-pipeline-02/report.json",
+      "sha256": "82a580c35a20162f3b79764080702faca00e7b9ce460138753240e0d784c26d7",
+      "recorded_status": "running",
+      "checked_artifacts": 5,
+      "seconds": null
+    },
+    "pipeline-strong-fixture": {
+      "path": "build/storage/upload-pipeline/upload-pipeline-03/report.json",
+      "sha256": "b7585c4ee497209228b903bd1ae7cbebb98bbc0c79d6c8dadcb11472ac9571e7",
+      "recorded_status": "passed",
+      "checked_artifacts": 5,
+      "seconds": 2.263
+    },
+    "final-validation": {
+      "path": "build/validation/sram-interface-01/final-validation/report.json",
+      "sha256": "9c4286bc3cf875f08727290cbab6b90df660aadd0440ada585e1bcbd83ad7e5e",
+      "recorded_status": "passed",
+      "checked_artifacts": 18,
+      "seconds": 16.878
+    },
+    "matched-synthesis": {
+      "path": "build/validation/sram-interface-01/mapping/report.json",
+      "sha256": "a0959bbfaf4102635fdb667c17bb2450b20df7644ea4e298a3afb258708d1f9d",
+      "recorded_status": "passed",
+      "checked_artifacts": 12,
+      "seconds": 11.153
+    }
+  },
+  "geometry": {
+    "analysis": {
+      "path": "build/validation/sram-interface-01/analysis-final.json",
+      "sha256": "fafeaa74eb98476c456aaa8fe1870eb54ee4771c4889c106fb67f459511b35d8"
+    },
+    "database_sha256": "3d21200b80f2dd0f9d60fc863489ee26446268cfc98ea14b9f8555870945c80b",
+    "extraction_seconds": 2.586,
+    "guide_overlap_nets": {
+      "Metal2": {
+        "address": 12,
+        "clock": 11,
+        "control": 4,
+        "return": 135,
+        "static": 410,
+        "transit": 13,
+        "upload": 101
+      },
+      "Metal3": {
+        "address": 6,
+        "clock": 10,
+        "control": 2,
+        "return": 37,
+        "static": 5,
+        "transit": 32,
+        "upload": 76
+      },
+      "Metal4": {
+        "address": 7,
+        "clock": 5,
+        "control": 2,
+        "return": 33,
+        "static": 1,
+        "transit": 31,
+        "upload": 92
+      }
+    },
+    "guide_interior_overlap_nets": {
+      "Metal2": {
+        "clock": 6,
+        "return": 10,
+        "transit": 2,
+        "upload": 48
+      },
+      "Metal3": {
+        "clock": 5,
+        "return": 5,
+        "transit": 2,
+        "upload": 19
+      },
+      "Metal4": {
+        "address": 2,
+        "clock": 1,
+        "return": 8,
+        "transit": 9,
+        "upload": 44
+      }
+    },
+    "blockage": {
+      "memory.storage0": {
+        "Metal2": {
+          "macro_obstruction_fraction": 0.9973764116621944,
+          "with_power_fraction": 0.9973764116621944
+        },
+        "Metal3": {
+          "macro_obstruction_fraction": 1.0,
+          "with_power_fraction": 1.0
+        },
+        "Metal4": {
+          "macro_obstruction_fraction": 0.44853355849280896,
+          "with_power_fraction": 0.5074972648371572
+        }
+      },
+      "memory.storage1": {
+        "Metal2": {
+          "macro_obstruction_fraction": 0.9973764116621944,
+          "with_power_fraction": 0.9973764116621944
+        },
+        "Metal3": {
+          "macro_obstruction_fraction": 1.0,
+          "with_power_fraction": 1.0
+        },
+        "Metal4": {
+          "macro_obstruction_fraction": 0.44853355849280896,
+          "with_power_fraction": 0.5066290383977441
+        }
+      }
+    },
+    "escape_summary": {
+      "pins": 684,
+      "south_clear": 684,
+      "north_clear": 0,
+      "track_fits": 92
+    },
+    "mirror_projections": [
+      {
+        "mirrored": [
+          "memory.storage0"
+        ],
+        "by_role": {
+          "return": {
+            "nets": 64,
+            "before_um": 12368.55,
+            "after_um": 12084.109999999995
+          },
+          "static": {
+            "nets": 205,
+            "before_um": 4124.752499999999,
+            "after_um": 17253.122499999994
+          },
+          "clock": {
+            "nets": 1,
+            "before_um": 102.32,
+            "after_um": 38.22
+          },
+          "upload": {
+            "nets": 64,
+            "before_um": 10828.330000000002,
+            "after_um": 10886.6575
+          },
+          "address": {
+            "nets": 6,
+            "before_um": 2380.295,
+            "after_um": 2380.295
+          },
+          "control": {
+            "nets": 2,
+            "before_um": 854.88,
+            "after_um": 963.915
+          }
+        },
+        "before_um": 30659.1275,
+        "after_um": 43606.319999999985,
+        "change_percent": 42.229487776519356
+      },
+      {
+        "mirrored": [
+          "memory.storage1"
+        ],
+        "by_role": {
+          "return": {
+            "nets": 64,
+            "before_um": 9215.317499999997,
+            "after_um": 13014.982499999998
+          },
+          "static": {
+            "nets": 205,
+            "before_um": 3346.7524999999996,
+            "after_um": 16477.522499999985
+          },
+          "clock": {
+            "nets": 1,
+            "before_um": 40.65,
+            "after_um": 104.75
+          },
+          "upload": {
+            "nets": 64,
+            "before_um": 11422.222500000002,
+            "after_um": 15418.355000000003
+          },
+          "address": {
+            "nets": 6,
+            "before_um": 1147.3625,
+            "after_um": 1275.5625
+          },
+          "control": {
+            "nets": 2,
+            "before_um": 796.4075,
+            "after_um": 924.6075000000001
+          }
+        },
+        "before_um": 25968.712499999998,
+        "after_um": 47215.779999999984,
+        "change_percent": 81.81794727020058
+      },
+      {
+        "mirrored": [
+          "memory.storage0",
+          "memory.storage1"
+        ],
+        "by_role": {
+          "return": {
+            "nets": 128,
+            "before_um": 21583.867500000008,
+            "after_um": 25099.092500000006
+          },
+          "static": {
+            "nets": 410,
+            "before_um": 7471.50499999999,
+            "after_um": 33730.644999999975
+          },
+          "clock": {
+            "nets": 2,
+            "before_um": 142.97,
+            "after_um": 142.97
+          },
+          "upload": {
+            "nets": 73,
+            "before_um": 12771.812500000004,
+            "after_um": 16826.272500000006
+          },
+          "address": {
+            "nets": 12,
+            "before_um": 3527.6575000000003,
+            "after_um": 3655.8575
+          },
+          "control": {
+            "nets": 4,
+            "before_um": 1651.2875,
+            "after_um": 1888.5225
+          }
+        },
+        "before_um": 47149.1,
+        "after_um": 81343.35999999999,
+        "change_percent": 72.52367489517295
+      }
+    ],
+    "capacity_accounting": {
+      "source": "https://github.com/The-OpenROAD-Project/OpenROAD/blob/dcf36133a369abc8f3c5e5738cd4d82e4903c0e0/src/grt/src/fastroute/src/FastRoute.cpp#L1129",
+      "stored_capacity": "remaining capacity + capacity reduction",
+      "stored_usage": "routed usage + capacity reduction, summed over directions",
+      "interpretation": "A nonzero stored capacity is not free routing capacity; equal stored capacity maps do not establish equal obstruction effects."
+    },
+    "saved_grid_overflow": 1309,
+    "flow_overflow": 1310,
+    "limits": [
+      "Guide overlap and geometric area are not routed demand attribution or DRC.",
+      "Buffer-connected traffic classes are structural, not phase-qualified activity.",
+      "Pin escape is a nominal rectangular clearance screen, not a legal via/access proof.",
+      "Mirror projections hold all other terminals fixed; power must be regenerated and independently checked.",
+      "HPWL uses terminal shape-envelope centers and is not actual wire length or delay."
+    ]
+  },
+  "upload_pipeline": {
+    "source": "Pinwheel/Hardware/Storage/UploadPipeline.lean",
+    "added_register_bits": 71,
+    "core_edges": 14200,
+    "chip_edges": 508252,
+    "rtl_sha256": {
+      "core": "d1a048eef5584f479fd8362c145025dcf7a0339fae2de57b696cd5094d5574ee",
+      "chip": "7b37437f9abc39cb47491a3781bd49db28a7bc589b598fb4a1e29cae2b973916"
+    },
+    "priority_mutant": "rejected for SRAM core state mismatch at edge 12494",
+    "proofs": [
+      "enqueue_drains",
+      "reserved_read",
+      "bounded_next",
+      "commit_empty",
+      "view_next",
+      "observer_read_priority"
+    ],
+    "audit": "Pinwheel audit: 14932 declarations, 7573 theorems; standard axioms only.",
+    "pin_trace_reuse": {
+      "edges": 508252,
+      "rtl_sha256": "7b37437f9abc39cb47491a3781bd49db28a7bc589b598fb4a1e29cae2b973916",
+      "report_path": "build/storage/upload-pipeline/upload-pipeline-01/report.json",
+      "report_sha256": "80fe431e4866600e05ab95d488367b9fb4cde32e57c034ba464b089c7e4eb689",
+      "log_sha256": "25c6030175ace5e5adc2c5efc189ac462834f8bdd1e94a0bdd950600528c9264",
+      "checked_inputs_sha256": {
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/storage/macros/RM_IHPSG13_1P_64x64_c2_bm_bist.v": "85b38148ba6a455b22ff93a5290f7bd366395033c33956d0a9e2fd5f16fef59c",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/storage/macros/RM_IHPSG13_1P_core_behavioral_bm_bist.v": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/test/sram_chip.sv": "c60cbca30ddca7f8d1745a328c3e23f4940dcc303e29fbf53392e4558baf790f",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/test/chip_tb.sv": "546e51bc08ad332eb5b0eeba81198b6aa00e842e8402995b4244757955ea9a2f",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/tools/oss-cad-suite/bin/iverilog": "8de905f21f15a875807196b7bd7a29dfc6f5250aa90696e40850370da1677ffd",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/tools/oss-cad-suite/bin/vvp": "0be7cf5374b78d3e8c8044338b3a2b4998f66c07cf8f6075e623b1e0001f596d",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/tools/firtool-1.159.0/bin/circt-opt": "3cd6998f16ca96677d54a1a3e3fe9ce72c668cd856078950c3277822535ea584",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/scripts/chip_oracle.py": "d83456ce38c88bf33795e5291a4ddb2ba76dc42bfcd11d38ae8abc675628191b",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/loader/images.txt": "2d436bd3da92872dfbebdd77ce65135f8081f2de80941ed56f052b654f1ffa5e"
+      },
+      "reason": "Current complete-chip RTL is byte-identical to the positive pin trace. The earlier overall run failed its weaker mutation gate, which this run replaces."
+    },
+    "final_validation_seconds": 16.878,
+    "prior_attempt_disposition": {
+      "upload-pipeline-01": "Positive core/pin traces passed; initial weak mutation fixture failed to reject the mutant. Overall attempt failed and is preserved.",
+      "upload-pipeline-02": "Both commands exited, but the expected rejection returned zero. Failed negative check and incomplete status finalization; the preserved running field is not an active job.",
+      "upload-pipeline-03": "Strengthened poison-bank fixture passed and rejected the first wrapper mutant. Final validation separately rejects the shared-predicate mutant."
+    }
+  },
+  "matched_synthesis": {
+    "seconds": 11.153,
+    "results": {
+      "control": {
+        "area_um2": 393558.317,
+        "flip_flops": 2895,
+        "cells": 15492,
+        "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8"
+      },
+      "pipeline": {
+        "area_um2": 401138.8046,
+        "flip_flops": 2966,
+        "cells": 15994,
+        "rtl_sha256": "7b37437f9abc39cb47491a3781bd49db28a7bc589b598fb4a1e29cae2b973916"
+      }
+    },
+    "area_delta_um2": 7580.4876,
+    "area_delta_percent": 1.9261408722814455,
+    "boundary": "Matched synthesis area of the shared reference hybrid assembly and its upload-stage variant. This is not a comparison against the separately optimized retained physical netlist, and excludes placement, clock/hold repair and wire parasitics."
+  },
+  "next_gate": "Cost a concrete local upload distribution including source and both replica connections, clock, hold, ties and address/return traffic. Preserve the local mapping policy and execution contract before a bounded placement/RC comparison.",
+  "boundary": "Experimental upload RTL and local queue/expression proofs only; no composed whole-chip refinement, new placement/routing, extracted timing, physical benefit or backend promotion. Prior physical control and receipts remain unchanged.",
+  "validation": {
+    "geometry_tests": 10,
+    "prior_receipts": [
+      {
+        "path": "build/validation/electrical-cost-01/report.json",
+        "sha256": "9ff604cb4fa1e97c343a745fc0fd22d72c03351e2c38fe31f18a052c68612f40",
+        "artifacts_unchanged": 120
+      },
+      {
+        "path": "build/validation/local-slew-01/report.json",
+        "sha256": "4347577cdbdb821a05ee59cd92b5587881107ddc86b9a4ce01b930520c40ab8b",
+        "artifacts_unchanged": 531
+      }
+    ],
+    "previous_source_files": 530,
+    "unchanged_previous_source_files": 521,
+    "new_source_files": [
+      "Pinwheel/Hardware/Storage/UploadPipeline.lean",
+      "scripts/check-upload-pipeline.py",
+      "scripts/sram_interface.py",
+      "scripts/upload_pipeline_vectors.py",
+      "test/UploadPipelineEmit.lean",
+      "test/test_sram_interface.py"
+    ],
+    "unchanged_prior_lean_files": 266,
+    "current_lean_files_including_tests": 269,
+    "python_syntax": "passed",
+    "git_diff_check": "passed",
+    "changed_source_files": [
+      "docs/chip-physical-study.md",
+      "docs/fetch-contract-study.md",
+      "Pinwheel.lean",
+      "docs/README.md",
+      "docs/architecture.md",
+      "docs/research/journal.md",
+      "docs/research/results.md",
+      "docs/research/status.md",
+      "docs/validation.md"
+    ]
+  },
+  "report": "build/validation/sram-interface-01/report.json",
+  "report_sha256": "df288d6500c8309b1cb7172e2a6bb33a1a0738fff5f71febfbd630df1cb9559a",
+  "checked_artifacts": 86,
+  "container_termination": {
+    "pinwheel-sram-interface-01": "absent",
+    "pinwheel-local-slew-route-01": "absent"
+  }
+}

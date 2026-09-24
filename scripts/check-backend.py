@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 """Check the composed general backend with preserved artifact identities."""
 import argparse
-import hashlib
 import json
 import re
-import subprocess
 import sys
 import time
 from pathlib import Path
 
+from validation_run import Commands, sha
+
 ROOT = Path(__file__).resolve().parents[1]
 TOP = "pinwheel_atomic_small_dense_cached"
-
-
-def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def readback_identity(receipt, out):
@@ -53,18 +49,11 @@ def main():
     sources = sorted((ROOT / "Pinwheel").rglob("*.lean")) + [ROOT / n for n in (
         "Pinwheel.lean", "test/Backend.lean", "lakefile.toml", "lean-toolchain",
         "scripts/check-backend.py", "scripts/measure-storage-variant.py")]
+    sources += [ROOT / "scripts/validation_run.py", ROOT / "scripts/process_group.py"]
     hashes = {str(f.relative_to(ROOT)): sha(f) for f in sources}
     started = time.monotonic()
 
-    def run(command, label, timeout=300):
-        result = subprocess.run(list(map(str, command)), cwd=ROOT, capture_output=True,
-                                text=True, timeout=timeout)
-        text = result.stdout + result.stderr
-        (out / f"{label}.log").write_text(text)
-        if result.returncode:
-            raise RuntimeError(f"{label} failed:\n{text[-5000:]}")
-        print(label + ": passed", flush=True)
-        return text
+    run = Commands(ROOT, out, None, default_timeout=300)
 
     run(["lake", "build"], "library")
     run(["lake", "env", "lean", "-DwarningAsError=true", "test/ProofAudit.lean"], "axioms")

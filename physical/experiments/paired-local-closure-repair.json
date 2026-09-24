@@ -1,0 +1,41 @@
+{
+  "status_drivers": [
+    {
+      "index": 106,
+      "driver": "_05983_/Y",
+      "net": "_02168_",
+      "location": [
+        579.84,
+        601.02
+      ]
+    },
+    {
+      "index": 107,
+      "driver": "_05994_/Y",
+      "net": "_02179_",
+      "location": [
+        268.8,
+        612.36
+      ]
+    },
+    {
+      "index": 108,
+      "driver": "_08066_/Y",
+      "net": "uo_out[4]",
+      "location": [
+        95.04,
+        487.62
+      ]
+    }
+  ],
+  "hold_endpoint": {
+    "index": 31,
+    "endpoint": "memory.storage/A_DIN[6]",
+    "net": "paired_endpoint_net_26_2",
+    "stages": 3,
+    "location": [
+      322.86,
+      108.0
+    ]
+  }
+}

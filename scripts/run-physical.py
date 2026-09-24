@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the pinned physical core experiment locally; preserve failure evidence."""
+"""Run a frozen core or chip physical experiment; preserve failure evidence."""
 import argparse
 import hashlib
 import json
@@ -9,6 +9,10 @@ import subprocess
 from pathlib import Path
 
 import physical_checkpoint
+import physical_floorplan
+import physical_target
+from mapped_physical import validate_start
+import physical_route_intake
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = ROOT / "build/physical"
@@ -72,10 +76,14 @@ def main():
     parser.add_argument("--tag", default="initial")
     parser.add_argument("--design", default="core",
                         help="Prepared design under build/physical; each holds one frozen RTL identity")
+    parser.add_argument("--pdk-root", type=Path, default=BASE / "pdk",
+                        help="Verified installed PDK, mounted read-only; defaults to build/physical/pdk")
     parser.add_argument("--to", help="Optional LibreLane stopping step; partial runs never establish final fit")
     parser.add_argument("--from-step", help="Resume at a named LibreLane step")
     parser.add_argument("--state", type=Path, help="Completed checkpoint state under build/physical/core")
     parser.add_argument("--checkpoint-manifest", type=Path, help="Previously captured checkpoint artifact manifest; required for resume")
+    parser.add_argument("--repair-selection", type=Path,
+                        help="Validated local repair selection; admits only its frozen ODB to one bounded GlobalRouting step")
     parser.add_argument("--overrides", type=Path, help="JSON implementation-flow controls; preserves RTL, timing boundary and floorplan")
     parser.add_argument("--timeout-seconds", type=int, default=3600,
                         help="Wall-time limit for this attempt; timeout stops only this run's named container")
@@ -100,9 +108,29 @@ def main():
         physical_checkpoint.verify(args.state, args.checkpoint_manifest, design)
     lock = json.loads((ROOT / "tools/physical-toolchain.json").read_text())
     inputs = json.loads((design / "inputs.json").read_text())
-    for name in ["core.json", "core.sdc"]:
-        if sha(design / name) != sha(ROOT / "physical" / name):
+    profile = inputs.get("profile", "core")
+    if profile not in {"core", "chip"}:
+        raise RuntimeError("Unknown physical profile")
+    if inputs.get('physical_target'):
+        physical_target.verify_prepared(design, ROOT)
+    for extension in ([] if inputs.get('physical_target') else ["json", "sdc"]):
+        name = "core." + extension
+        if extension == "json" and any(inputs.get(k) is not None for k in
+                                        ["macro_placement", "placement_exclusions"]):
+            expected = json.loads((ROOT / "physical" / (profile + ".json")).read_text())
+            if inputs.get("macro_placement") is not None:
+                expected = physical_floorplan.apply_placement(expected, inputs["macro_placement"])
+            if inputs.get("placement_exclusions") is not None:
+                expected = physical_floorplan.apply_exclusions(expected, inputs["placement_exclusions"])
+            if json.loads((design / name).read_text()) != expected:
+                raise RuntimeError("Prepared floorplan differs beyond its recorded placements/exclusions")
+            continue
+        if sha(design / name) != sha(ROOT / "physical" / (profile + "." + extension)):
             raise RuntimeError("Physical inputs are stale; rerun prepare-physical.py")
+    for relative, digest in inputs.get("files_sha256", {}).items():
+        path = (design / relative).resolve()
+        if not path.is_relative_to(design.resolve()) or sha(path) != digest:
+            raise RuntimeError(f"Changed prepared physical input: {relative}")
     if sha(design / "design.sv") != inputs["rtl_sha256"]:
         raise RuntimeError("Prepared RTL changed")
     config = json.loads((design / "core.json").read_text())
@@ -111,13 +139,31 @@ def main():
     # timing still comes from extraction of the routed layout.
     allowed = {"MAX_FANOUT_CONSTRAINT", "CTS_SINK_CLUSTERING_SIZE",
                "RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING",
+               "RUN_ANTENNA_REPAIR",
                "LAYERS_RC", "SIGNAL_WIRE_RC_LAYERS",
                "SYNTH_CLOCKGATE_MIN_WIDTH", "SYNTH_CLOCKGATE_POSEDGE_ICG",
                "PL_TARGET_DENSITY_PCT", "GRT_ALLOW_CONGESTION",
-               "PL_RESIZER_HOLD_SLACK_MARGIN", "GRT_RESIZER_HOLD_SLACK_MARGIN"}
+               "PL_RESIZER_HOLD_SLACK_MARGIN", "GRT_RESIZER_HOLD_SLACK_MARGIN",
+               "DRT_SAVE_SNAPSHOTS", "DRT_SAVE_DRC_REPORT_ITERS"}
     if not isinstance(overrides, dict) or set(overrides) - allowed:
         raise RuntimeError("Overrides must contain only the documented implementation-flow controls")
+    for key in ("RUN_POST_GRT_DESIGN_REPAIR", "RUN_POST_GRT_RESIZER_TIMING", "RUN_ANTENNA_REPAIR"):
+        if key in overrides and type(overrides[key]) is not bool:
+            raise RuntimeError(f"{key} must be a boolean")
+    if "DRT_SAVE_SNAPSHOTS" in overrides and type(overrides["DRT_SAVE_SNAPSHOTS"]) is not bool:
+        raise RuntimeError("DRT_SAVE_SNAPSHOTS must be a boolean")
+    if "DRT_SAVE_DRC_REPORT_ITERS" in overrides:
+        interval = overrides["DRT_SAVE_DRC_REPORT_ITERS"]
+        if type(interval) is not int or interval < 1:
+            raise RuntimeError("DRT_SAVE_DRC_REPORT_ITERS must be a positive integer")
     config.update(overrides)
+    repair_admission = None
+    if args.repair_selection:
+        repair_admission = physical_route_intake.validate_repair_route(
+            args.repair_selection, args.state, design, args.from_step, args.to,
+            overrides, args.timeout_seconds, args.pdk_root, ROOT)
+    else:
+        validate_start(inputs, args.state, args.from_step, design)
     image = lock["container_tag"]
     image_info = json.loads(subprocess.check_output(["docker", "image", "inspect", image], text=True))[0]
     image_id = image_info["Id"]
@@ -130,21 +176,25 @@ def main():
             or image_info["RootFS"]["Layers"] != lock["container_rootfs_diff_ids"]
             or runtime_hash != lock["container_runtime_config_sha256"]):
         raise RuntimeError("Local container filesystem/config differs from the pinned ARM64 image")
-    pdk_receipt = json.loads((BASE / "pdk/installed.json").read_text())
+    pdk_root = args.pdk_root.resolve()
+    pdk_receipt = json.loads((pdk_root / "installed.json").read_text())
     if pdk_receipt["tree_sha256"] != lock["pdk_tree_sha256"] or pdk_receipt["revision"] != lock["pdk_revision"]:
         raise RuntimeError("Wrong PDK source identity")
     # Detect edits after installation to all regular files in the selected process.
     for path, expected in pdk_receipt["files_sha256"].items():
-        if sha(BASE / "pdk" / path) != expected:
+        if sha(pdk_root / path) != expected:
             raise RuntimeError(f"Modified installed PDK file: {path}")
     for path, target in pdk_receipt["symlinks"].items():
-        actual = BASE / "pdk" / path
+        actual = pdk_root / path
         if not actual.is_symlink() or os.readlink(actual) != target:
             raise RuntimeError(f"Modified PDK symlink: {path}")
     snapshot.mkdir(parents=True)
     (design / "runs" / args.tag).mkdir(parents=True)
-    for name in ["design.sv", "core.json", "core.sdc", "inputs.json"]:
-        shutil.copyfile(design / name, snapshot / name)
+    snapshot_files = set(inputs.get("files_sha256", {})) | {"design.sv", "core.json", "core.sdc", "inputs.json"}
+    for name in sorted(snapshot_files):
+        destination = snapshot / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(design / name, destination)
     (snapshot / "core.json").write_text(json.dumps(config, indent=2) + "\n")
     (snapshot / "overrides.json").write_text(json.dumps(overrides, indent=2) + "\n")
     checkpoint_receipt = None
@@ -155,9 +205,9 @@ def main():
         checkpoint_mount = ["--mount", f"type=bind,source={snapshot / 'checkpoint'},target={checkpoint_receipt['mount_path']},readonly"]
     container_name = "pinwheel-" + args.tag
     command = [
-        "docker", "run", "--rm", "--name", container_name, "--network", "none", "--cpus", "4", "--memory", "6g",
+        "docker", "run", "--rm", "--pull", "never", "--name", container_name, "--network", "none", "--cpus", "4", "--memory", "6g",
         "--mount", f"type=bind,source={design},target=/work/core",
-        "--mount", f"type=bind,source={BASE / 'pdk'},target=/work/pdk,readonly",
+        "--mount", f"type=bind,source={pdk_root},target=/work/pdk,readonly",
         *checkpoint_mount,
         "--workdir", "/work/core", image_id,
         "python3", "-m", "librelane", "--manual-pdk", "--pdk-root", "/work/pdk",
@@ -180,8 +230,16 @@ def main():
         "overrides": overrides,
         "runner_sha256": sha(Path(__file__).resolve()),
         "checkpoint_helper_sha256": sha(Path(physical_checkpoint.__file__).resolve()),
+        "repair_admission": repair_admission,
+        "route_intake_helper_sha256": sha(Path(physical_route_intake.__file__).resolve()),
+        "floorplan_helper_sha256": sha(Path(physical_floorplan.__file__).resolve()),
+        "macro_placement": inputs.get("macro_placement"),
+        "placement_exclusions": inputs.get("placement_exclusions"),
         "sdc_sha256": sha(design / "core.sdc"),
-        "pdk_receipt_sha256": sha(BASE / "pdk/installed.json"),
+        "pdk_receipt_sha256": sha(pdk_root / "installed.json"),
+        "pdk_root": str(pdk_root),
+        "profile": profile,
+        "snapshot_files_sha256": {name: sha(snapshot / name) for name in sorted(snapshot_files)},
         "boundary": inputs["boundary"],
         "variant": inputs.get("variant", "small-dense-cached"),
         "design": args.design,

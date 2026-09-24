@@ -1,0 +1,281 @@
+{
+  "schema": 1,
+  "date": "2026-09-21",
+  "study": "map-slice-check-01",
+  "decision": "Costed the complete map bit plane and two bounded tile comparisons. Next prove and map one 16-entry tile with local decoding and fixed low address bits; no placement or backend promotion.",
+  "report": "build/validation/map-slice-check-01/report.json",
+  "report_sha256": "ffee1f5c04158c4503f196b6e5b9d484dec3c542f2bbafc4ae1b1470db7987c0",
+  "slice_report": "build/validation/map-slice-check-01/hybrid-map-slices.json",
+  "slice_report_sha256": "79c156cde37cffed3a37ca6d2a5e1b5d803ce3999422354947de49e17b0d77e4",
+  "tests": "build/validation/map-slice-check-01/tests.json",
+  "tests_sha256": "2b8243c431843121bae4355af4ed2632bf9d766c253f600af163baed45692a8e",
+  "focused_tests": 30,
+  "audit": {
+    "declarations": 14484,
+    "theorems": 7393,
+    "standard_axioms_only": true,
+    "log_sha256": "86668708f01d580e7108538df9671432e2b192554286521d5dd9d6c1c32ff1f3"
+  },
+  "source_sha256": {
+    "Pinwheel/Hardware/Storage/SramAssembly.lean": "0b42e1130226a24ca7ccf79aea3c00c952659f796e62a75ed78f16f4e5c28190",
+    "Pinwheel/Hardware/Execution/Memory.lean": "5a8160687b65cf3dcf1f1e9a30e2942586019ab496be47c01e9b7c0cce3b1451",
+    "Pinwheel/Hardware/Loader/Store.lean": "fe85472efb6dafbff4ba7f3b6d918156fabb4e618a11d81cd9bb1f919504d00b",
+    "Pinwheel/Hardware/Loader/Machine.lean": "c39a130a8573118c325b3ba8e71536de44953034b8a832463f60609a3e2dafca",
+    "test/SramChipEmit.lean": "08cbccf6fda8419d0a273086b1c74590a5dcb3af1e10f902680294162a026161",
+    "scripts/report-chip-architecture.py": "489c9586a662eb2a4b26efc7402b48964d22561ceca5c9534cc8eb150c95ae12",
+    "scripts/chip_map_slice.py": "863f8acf7f8554420d10a7f7e675e3ea82fe9ee0b8dcaa7f8d5e06dd93f1680a",
+    "scripts/chip_organization.py": "ffb9c498e377943fe347d83b43f20f155cb6538e624f29af577ad56dbfbd3e0c",
+    "test/test_chip_architecture.py": "8bd60ff89a23661eaef22f7c71118a4100b362a576117cf50418ce9eaba288e3"
+  },
+  "seconds": {
+    "assembly_verification_seconds": 14.827,
+    "analysis_seconds": 2.339,
+    "elapsed_seconds": 17.166
+  },
+  "all_four_mlir_and_rtl_pairs_byte_identical": true,
+  "emitted_artifacts": {
+    "hybrid": {
+      "core": {
+        "mlir_sha256": "9fd47292a7cf31e279fb28c764fb414a14c97a7707ce1437889a3b4d416c5c64",
+        "rtl_sha256": "929a4df603ce8bb7a340e867b3975a8e040ec0afe51ba47c19d093e73999399c"
+      },
+      "chip": {
+        "mlir_sha256": "368610c01824bafd4f63c98d0e903a25a3df2f6771bb156e5b94aa22c106e228",
+        "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8"
+      }
+    },
+    "direct": {
+      "core": {
+        "mlir_sha256": "ba3cb3ffdb4c6beeae72f7a50f3de2191f37c5f517ba7f32a1646947f4651f94",
+        "rtl_sha256": "92b2be616a9901d049d190ff316a4dba2c48b690b458440e7ae0fefed42eaa55"
+      },
+      "chip": {
+        "mlir_sha256": "aa998e5ba1dd3304c3dbcce26eceaab76a4666fe9933bc247cb6c8c6d32cb400",
+        "rtl_sha256": "4a31943cd96a15e6982f10109fcd0f705b4b7d5784f83efa4dab9c0b21a05b29"
+      }
+    }
+  },
+  "mapped_readback_signature_sha256": "bb40d4bf8b3534a33a8222dee60f524e4567a495aeedf6e18dc741cd8a2229d4",
+  "standard_cell_area_reconciled_um2": 292580.0514,
+  "organizations": {
+    "planes": {
+      "slice_count": 5,
+      "selected_group": "bit0",
+      "selected_budget": {
+        "flip_flops": 512,
+        "combinational_cells": 1986,
+        "area_um2": 48576.5532,
+        "incoming_nets": 1073,
+        "outgoing_nets": 2,
+        "internal_nets": 2496
+      },
+      "selected_roles": {
+        "update": {
+          "full_cone_cells": 1957,
+          "owned_cells": 1100,
+          "support_outside_slice": 857
+        },
+        "read0": {
+          "full_cone_cells": 1190,
+          "owned_cells": 380,
+          "support_outside_slice": 810
+        },
+        "read1": {
+          "full_cone_cells": 1349,
+          "owned_cells": 539,
+          "support_outside_slice": 810
+        }
+      },
+      "selected_incoming_roles": {
+        "read0": 220,
+        "read0+read1": 3,
+        "read1": 330,
+        "update": 520
+      },
+      "selected_outgoing_roles": {
+        "read0": 1,
+        "read1": 1
+      },
+      "selected_incoming_broadcast_groups": {
+        "1": 11,
+        "2": 13,
+        "3": 69,
+        "4": 236,
+        "5": 744
+      },
+      "all_slices": {
+        "flip_flops": 2560,
+        "combinational_cells": 9155,
+        "area_um2": 244924.911,
+        "incoming_nets": 5412,
+        "outgoing_nets": 10,
+        "internal_nets": 11705
+      },
+      "shared": {
+        "flip_flops": 0,
+        "combinational_cells": 2046,
+        "area_um2": 17196.7698
+      },
+      "other": {
+        "flip_flops": 335,
+        "combinational_cells": 1392,
+        "area_um2": 30458.3706
+      },
+      "unique_slice_crossing_nets": 1265
+    },
+    "word_tiles": {
+      "slice_count": 32,
+      "selected_group": "bank0_words000",
+      "selected_budget": {
+        "flip_flops": 80,
+        "combinational_cells": 151,
+        "area_um2": 5508.5184,
+        "incoming_nets": 61,
+        "outgoing_nets": 90,
+        "internal_nets": 141
+      },
+      "selected_roles": {
+        "update": {
+          "full_cone_cells": 339,
+          "owned_cells": 141,
+          "support_outside_slice": 198
+        },
+        "read0": {
+          "full_cone_cells": 3017,
+          "owned_cells": 10,
+          "support_outside_slice": 3007
+        },
+        "read1": {
+          "full_cone_cells": 3469,
+          "owned_cells": 0,
+          "support_outside_slice": 3469
+        }
+      },
+      "selected_incoming_roles": {
+        "read0": 10,
+        "update": 51
+      },
+      "selected_outgoing_roles": {
+        "read0": 10,
+        "read0+read1": 70,
+        "read1": 10
+      },
+      "selected_incoming_broadcast_groups": {
+        "1": 1,
+        "2": 20,
+        "3": 16,
+        "4": 2,
+        "5": 2,
+        "6": 2,
+        "7": 2,
+        "8": 1,
+        "9": 1,
+        "10": 14
+      },
+      "all_slices": {
+        "flip_flops": 2560,
+        "combinational_cells": 5874,
+        "area_um2": 183236.8986,
+        "incoming_nets": 2319,
+        "outgoing_nets": 3453,
+        "internal_nets": 4981
+      },
+      "shared": {
+        "flip_flops": 0,
+        "combinational_cells": 5327,
+        "area_um2": 78884.7822
+      },
+      "other": {
+        "flip_flops": 335,
+        "combinational_cells": 1392,
+        "area_um2": 30458.3706
+      },
+      "unique_slice_crossing_nets": 4099
+    },
+    "read_tree_tiles": {
+      "slice_count": 32,
+      "selected_group": "bank0_low000",
+      "selected_budget": {
+        "flip_flops": 80,
+        "combinational_cells": 294,
+        "area_um2": 7662.0978,
+        "incoming_nets": 280,
+        "outgoing_nets": 13,
+        "internal_nets": 361
+      },
+      "selected_roles": {
+        "update": {
+          "full_cone_cells": 417,
+          "owned_cells": 149,
+          "support_outside_slice": 268
+        },
+        "read0": {
+          "full_cone_cells": 3017,
+          "owned_cells": 76,
+          "support_outside_slice": 2941
+        },
+        "read1": {
+          "full_cone_cells": 3469,
+          "owned_cells": 76,
+          "support_outside_slice": 3393
+        }
+      },
+      "selected_incoming_roles": {
+        "read0": 87,
+        "read1": 85,
+        "update": 108
+      },
+      "selected_outgoing_roles": {
+        "read0": 6,
+        "read1": 7
+      },
+      "selected_incoming_broadcast_groups": {
+        "1": 1,
+        "2": 7,
+        "3": 5,
+        "4": 5,
+        "5": 8,
+        "6": 18,
+        "7": 25,
+        "8": 54,
+        "9": 55,
+        "10": 102
+      },
+      "all_slices": {
+        "flip_flops": 2560,
+        "combinational_cells": 9053,
+        "area_um2": 243277.965,
+        "incoming_nets": 8414,
+        "outgoing_nets": 505,
+        "internal_nets": 11108
+      },
+      "shared": {
+        "flip_flops": 0,
+        "combinational_cells": 2148,
+        "area_um2": 18843.7158
+      },
+      "other": {
+        "flip_flops": 335,
+        "combinational_cells": 1392,
+        "area_um2": 30458.3706
+      },
+      "unique_slice_crossing_nets": 1615
+    }
+  },
+  "plan": "physical/experiments/map-tile-plan.json",
+  "plan_sha256": "f4528ebe8f06c3730d4885f794fe5bdbfc1f60d926a18f08bc8741f3196f4ffa",
+  "plan_status": "specified-not-implemented",
+  "preserved_receipts": {
+    "physical/experiments/chip-organization-results.json": "f072a00209ba4f6b1d09b1d74d4b62313e09c15ddd549b9c9644c35bf4f684e7",
+    "build/validation/chip-organization-check-03/report.json": "8872735b6d46cd552d5b5976bcbf18fd0ac42ce84aa24aa35e515f48f28e8cab",
+    "build/validation/map-slice-01/before.json": "f81dbe82b067ef40beb441511dfb9f5e1577431bb3b3c22511faf125f9682d14"
+  },
+  "scope": "All-mode mapped connectivity and retained Liberty area. Bit planes keep both atomic banks; word/read-tree tiles keep all data bits of consecutive/equal-low-bit entries within one bank. Data-bearing gates follow their map support; zero-map-support gates join a slice only when every consumer is local. Remaining shared support is counted once. Clock/constants excluded from net budgets; reset included. These are graph cuts, not placement, wire length, timing or an optimal partition.",
+  "limitations": [
+    "Conservative all-mode dependencies are not timing paths or an independent behavioral proof.",
+    "Area is retained Liberty cell area; shared support is counted once. No whitespace, new buffering or routing area is predicted.",
+    "Graph-cut net counts do not rank actual routed cost; five large planes and 32 small tiles are different granularities.",
+    "The proposed 18 functional input bits and 10 output bits are a future module contract, not a measured reduction from 280 mapped incoming nets.",
+    "No new synthesis, RTL simulation, OpenDB export, placement or routing in this increment. Existing macro/full-package proof boundaries and licensing remain open."
+  ]
+}

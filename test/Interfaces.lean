@@ -1,5 +1,6 @@
 import Pinwheel.Hardware.Reactive.Interface
 import Pinwheel.Hardware.Storage.CacheContract
+import Pinwheel.Hardware.Storage.SramSchedule
 
 open Pinwheel.Hardware
 
@@ -57,4 +58,15 @@ def main : IO Unit := do
   ensure (after[0]?.map Interface.Mismatch.describe == some "cycle 42 after cache.core.pc (8 bits): expected 0, got 1")
     "diagnostic lost cycle, phase, component, width or values"
   for mismatch in after do IO.println mismatch.describe
+  -- The SRAM request interface diagnoses an illegal extra write on the actual
+  -- idle controller's read edge, with the physical boundary and phase named.
+  let ramInput : Values Storage.SramController.Input := Storage.SramController.inputValues {} (fun _ => 0)
+  let ramState : Values Storage.SramController.Register := fun _ => 0
+  let actual : Values Storage.SramController.Port := Storage.SramController.portValues false ramInput ramState
+  let collision : Values Storage.SramController.Port := fun {w} p => match w, p with
+    | _, .write => 1 | _, p => actual p
+  let badAccess := Storage.SramAssembly.requestInterface.differences 7 "sram.request" .before actual collision
+  ensure (badAccess == #[⟨7, .before, "sram.request", "mem_write", 1, 0, 1⟩])
+    "SRAM request interface hid or misattributed a simultaneous write"
+  IO.println "SRAM request interface: conflicting write attributed to the actual typed pre-edge port."
   IO.println "Interfaces: renamed typed lookup, effect order, named cache edges and phase-specific mutations passed."

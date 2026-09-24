@@ -1,0 +1,1023 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "evidence_collection_passed": true,
+  "recorded_at_utc": "2026-09-23T16:59:01.853646+00:00",
+  "decision": "retain-checked-edit-abstraction-reject-route-qualification-diagnose-global-wire-and-clock-coupling",
+  "whole_chip_routing_qualified": false,
+  "physical_closure": false,
+  "whole_chip_route_admitted": true,
+  "further_route_admitted": false,
+  "detailed_route_admitted": false,
+  "extracted_timing_completed": false,
+  "executed_whole_chip_routes": 1,
+  "executed_physical_repairs": 0,
+  "executed_pin_simulations": 0,
+  "source_candidate": {
+    "path": "physical/experiments/paired-locality-results.json",
+    "sha256": "7369bdeff08063bcd0549faac528128750040913e2698b3a1ff425655293c677"
+  },
+  "source_full_route": {
+    "path": "physical/experiments/paired-path-route-results.json",
+    "sha256": "edd25f15fb1f5932bddcd3b6c758c296dd39a658ab8e32d3e08b9a4c9ed2a582"
+  },
+  "selected_local_database": {
+    "path": "build/physical/repair-probes/paired-locality-01/repaired.odb",
+    "sha256": "805e0932d9b16c4ec14d31dfe2f6f08ac28ceebafdd8a87f5327ba6b8009a688"
+  },
+  "routed_database": {
+    "path": "build/physical/target-paired-01/runs/paired-locality-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "cbd36b49f8ebe75aa269ec30dd1753a6aebd032ca493096c76cbd0d00fbfd904"
+  },
+  "routed_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-locality-route-01/implemented.v",
+    "sha256": "47d9f7fcf800cb30d597f46225c262ec3795b30c677f4463f84f911041402430"
+  },
+  "selection": {
+    "path": "physical/experiments/paired-locality-route-selection.json",
+    "sha256": "5e1415a64bae70fe2ea45fdc786ba7e51c5ecebc9b582f39544657c8907b9485"
+  },
+  "edits": {
+    "path": "physical/experiments/paired-locality-edits.json",
+    "sha256": "d7b1134a3ab922b8ad9f2c4cdae3e24a13eea1cffd306f9518d1a5b67354edfa"
+  },
+  "edit_policy": {
+    "path": "physical/experiments/paired-locality-edit-policy.json",
+    "sha256": "038d960c2d514f55986da6cee1d74b6da449ac3ec722ce86e857b7fc895ad101"
+  },
+  "contract": {
+    "path": "physical/experiments/paired-locality-contract.json",
+    "sha256": "666f215076304297c1896f78d8308e46eae395858893a9ece9dd26062a21eaa2"
+  },
+  "admission": {
+    "contract_sha256": "666f215076304297c1896f78d8308e46eae395858893a9ece9dd26062a21eaa2",
+    "covered_connections": 1146,
+    "reserve_fraction": 0.2,
+    "timing_floors_ns": {
+      "nom_fast_1p32V_m40C": {
+        "setup": 8.530533,
+        "hold": 0.07927839
+      },
+      "nom_slow_1p08V_125C": {
+        "setup": 0.3673431,
+        "hold": 0.31582889999999997
+      },
+      "nom_typ_1p20V_25C": {
+        "setup": 5.565105,
+        "hold": 0.1573092
+      }
+    },
+    "cumulative_area_reference_um2": 358297.5456,
+    "max_added_area_fraction": 0.003,
+    "quantitative_gates_recomputed": true,
+    "exact_plan_recomputed": true,
+    "declared_roles_recomputed": true,
+    "helpers_sha256": {
+      "physical_organization_route.py": "32741a81cfe3b03b9837e98647a51165e18df4aaec7bace55f8c4587966441a3",
+      "physical_organization_edits.py": "e60efb122610de904e640c8a3299ab2d138230ef4c05952ca30a851c693d9162",
+      "physical_path_contract.py": "b454f35ee03be9fa46f0d06347125a94c73e5d3acd4d49dd1f362f744de8a01b",
+      "physical_distribution_acceptance.py": "1d399391f37b2ff4cf4cf30aa0de12c654d4398b317b2de5a254a915c68b80cb",
+      "physical_organization.py": "5c9f33b1e7033d2eac47643bbfde2f26710b0dd975136b3d4913c0735066be3f"
+    },
+    "boundary": "Declared local organization admitted to one coarse route; all original budgets remain required afterwards."
+  },
+  "ancestry": {
+    "added_buffers": 1,
+    "prior_added_buffers": 328,
+    "total_added_buffers": 329,
+    "prior_resized_buffers": 170,
+    "pin_edges_reused": 331401
+  },
+  "invocation": {
+    "path": "build/physical/paired-locality-route-01-invocation.json",
+    "sha256": "89b6f8a9b9b012c71b901b4c1f00454280fd417f13f8c0d1efbb0a82be680666"
+  },
+  "physical": {
+    "path": "build/physical/paired-locality-route-01-report.json",
+    "sha256": "3304f31c5140cc3b11cfd9c2e7f09b56ab115248807e53f7a85b895f06949c5e"
+  },
+  "measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-locality-route-01/report.json",
+    "sha256": "b6c97be7df858202105a2147d9002b7dc374d82fe2e56bdcd27a4da7364b3814"
+  },
+  "gates": {
+    "all_connections_within_reserve": false,
+    "whole_chip_timing_floors": false,
+    "whole_chip_violation_counts_zero": false,
+    "measured_electrical_limits_met": false,
+    "measured_paths_positive": true,
+    "added_area_within_budget": true
+  },
+  "distribution": {
+    "covered_connections": 1146,
+    "counts": {
+      "within_trial_reserve": 1142,
+      "failing": 3,
+      "below_trial_reserve": 1
+    },
+    "outside_reserve": [
+      "_02988_",
+      "_03097_",
+      "_03552_",
+      "_04718_"
+    ],
+    "selected_verdicts": {
+      "within_trial_reserve": 15
+    },
+    "added_verdicts": {
+      "within_trial_reserve": 1
+    },
+    "retained_original_targets": {
+      "_02981_": {
+        "capacitance": 0.43703996251840144,
+        "slew": 0.5864701403394252
+      },
+      "_03253_": {
+        "capacitance": 0.5365759418702956,
+        "slew": 0.6704849708313556
+      },
+      "_03380_": {
+        "capacitance": 0.4599878516004859,
+        "slew": 0.6149685482416576
+      },
+      "_04527_": {
+        "capacitance": 0.774637032347852,
+        "slew": 0.8269713843938065
+      },
+      "_04701_": {
+        "capacitance": 0.7279457858821685,
+        "slew": 0.7950180985799427
+      },
+      "net31": {
+        "capacitance": 0.8952663233560136,
+        "slew": 0.8906304346882444
+      }
+    }
+  },
+  "electrical_counts": {
+    "nom_fast_1p32V_m40C": {
+      "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 0,
+      "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 0,
+      "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 4,
+      "design__max_slew_violation__count": 0,
+      "design__max_fanout_violation__count": 0,
+      "design__max_cap_violation__count": 4
+    },
+    "nom_slow_1p08V_125C": {
+      "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 12,
+      "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 0,
+      "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 4,
+      "design__max_slew_violation__count": 12,
+      "design__max_fanout_violation__count": 0,
+      "design__max_cap_violation__count": 4
+    },
+    "nom_typ_1p20V_25C": {
+      "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 0,
+      "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 0,
+      "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 4,
+      "design__max_slew_violation__count": 0,
+      "design__max_fanout_violation__count": 0,
+      "design__max_cap_violation__count": 4
+    }
+  },
+  "capacitance_failures": [
+    {
+      "net": "_02988_",
+      "covered": true,
+      "selected": false,
+      "capacitance_pf": 0.412533,
+      "limit_pf": 0.3,
+      "driver": "_06803_/X",
+      "driver_cell": "sg13cmos5l_buf_1",
+      "consumers": [
+        "_06804_/S1",
+        "_06988_/B1",
+        "_06994_/A",
+        "_07058_/B2",
+        "_07510_/A1",
+        "_07693_/A1",
+        "_07732_/A1",
+        "_07743_/A1"
+      ],
+      "source_owners": [
+        "r_serial_shift"
+      ],
+      "sink_owners": [
+        "r_boot_b0",
+        "r_boot_b1",
+        "r_cursor",
+        "r_idle_b0",
+        "r_idle_b1",
+        "r_result_rejected"
+      ],
+      "source_boundary": [
+        {
+          "kind": "state",
+          "pin": "_10790_/Q",
+          "owner": "r_serial_shift",
+          "bit": 50
+        }
+      ],
+      "semantic_roles": [],
+      "shared": true,
+      "families": [
+        "serial_data",
+        "sram_write_input"
+      ],
+      "package_sinks": [
+        "uo_out[4]"
+      ],
+      "macro_sinks": [
+        "memory.storage/A_ADDR[0]",
+        "memory.storage/A_ADDR[1]",
+        "memory.storage/A_ADDR[2]",
+        "memory.storage/A_ADDR[3]",
+        "memory.storage/A_ADDR[4]",
+        "memory.storage/A_ADDR[5]",
+        "memory.storage/A_ADDR[6]",
+        "memory.storage/A_ADDR[7]",
+        "memory.storage/A_ADDR[8]",
+        "memory.storage/A_WEN"
+      ],
+      "wire_change": {
+        "nom_fast_1p32V_m40C": {
+          "net": "_02988_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.139558539,
+          "route_wire_pf": 0.385413527,
+          "wire_ratio": 2.7616620936394294
+        },
+        "nom_slow_1p08V_125C": {
+          "net": "_02988_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.139558524,
+          "route_wire_pf": 0.385413498,
+          "wire_ratio": 2.761662182669688
+        },
+        "nom_typ_1p20V_25C": {
+          "net": "_02988_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.139558524,
+          "route_wire_pf": 0.385413527,
+          "wire_ratio": 2.7616623904678157
+        }
+      }
+    },
+    {
+      "net": "_03552_",
+      "covered": true,
+      "selected": false,
+      "capacitance_pf": 0.383371,
+      "limit_pf": 0.3,
+      "driver": "_07367_/X",
+      "driver_cell": "sg13cmos5l_buf_1",
+      "consumers": [
+        "_07368_/A",
+        "_07371_/A",
+        "_07482_/S1",
+        "_07543_/A2",
+        "_07718_/A2",
+        "_07773_/S1",
+        "_07859_/A",
+        "_07966_/A"
+      ],
+      "source_owners": [
+        "r_serial_shift"
+      ],
+      "sink_owners": [
+        "r_boot_b0",
+        "r_boot_b1",
+        "r_cursor",
+        "r_idle_b0",
+        "r_idle_b1",
+        "r_result_rejected"
+      ],
+      "source_boundary": [
+        {
+          "kind": "state",
+          "pin": "_10791_/Q",
+          "owner": "r_serial_shift",
+          "bit": 51
+        }
+      ],
+      "semantic_roles": [],
+      "shared": true,
+      "families": [
+        "serial_data",
+        "sram_write_input"
+      ],
+      "package_sinks": [
+        "uo_out[4]"
+      ],
+      "macro_sinks": [
+        "memory.storage/A_ADDR[0]",
+        "memory.storage/A_ADDR[1]",
+        "memory.storage/A_ADDR[2]",
+        "memory.storage/A_ADDR[3]",
+        "memory.storage/A_ADDR[4]",
+        "memory.storage/A_ADDR[5]",
+        "memory.storage/A_ADDR[6]",
+        "memory.storage/A_ADDR[7]",
+        "memory.storage/A_ADDR[8]",
+        "memory.storage/A_WEN"
+      ],
+      "wire_change": {
+        "nom_fast_1p32V_m40C": {
+          "net": "_03552_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.124258325,
+          "route_wire_pf": 0.353225291,
+          "wire_ratio": 2.8426690203654363
+        },
+        "nom_slow_1p08V_125C": {
+          "net": "_03552_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.124258325,
+          "route_wire_pf": 0.353225321,
+          "wire_ratio": 2.8426692617979517
+        },
+        "nom_typ_1p20V_25C": {
+          "net": "_03552_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.124258325,
+          "route_wire_pf": 0.353225291,
+          "wire_ratio": 2.8426690203654363
+        }
+      }
+    },
+    {
+      "net": "_03097_",
+      "covered": true,
+      "selected": false,
+      "capacitance_pf": 0.35406,
+      "limit_pf": 0.3,
+      "driver": "_06912_/X",
+      "driver_cell": "sg13cmos5l_buf_1",
+      "consumers": [
+        "_06928_/A",
+        "_06957_/A1",
+        "_06977_/B",
+        "_07277_/B1",
+        "_07278_/A1",
+        "_07435_/A",
+        "_07466_/A",
+        "_07683_/S"
+      ],
+      "source_owners": [
+        "r_serial_shift"
+      ],
+      "sink_owners": [
+        "r_boot_b0",
+        "r_boot_b1",
+        "r_cursor",
+        "r_idle_b0",
+        "r_idle_b1",
+        "r_result_rejected"
+      ],
+      "source_boundary": [
+        {
+          "kind": "state",
+          "pin": "_10789_/Q",
+          "owner": "r_serial_shift",
+          "bit": 49
+        }
+      ],
+      "semantic_roles": [],
+      "shared": true,
+      "families": [
+        "serial_data",
+        "sram_write_input"
+      ],
+      "package_sinks": [
+        "uo_out[4]"
+      ],
+      "macro_sinks": [
+        "memory.storage/A_ADDR[0]",
+        "memory.storage/A_ADDR[1]",
+        "memory.storage/A_ADDR[2]",
+        "memory.storage/A_ADDR[3]",
+        "memory.storage/A_ADDR[4]",
+        "memory.storage/A_ADDR[5]",
+        "memory.storage/A_ADDR[6]",
+        "memory.storage/A_ADDR[7]",
+        "memory.storage/A_ADDR[8]",
+        "memory.storage/A_WEN"
+      ],
+      "wire_change": {
+        "nom_fast_1p32V_m40C": {
+          "net": "_03097_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.100573815,
+          "route_wire_pf": 0.327698588,
+          "wire_ratio": 3.2582893270977147
+        },
+        "nom_slow_1p08V_125C": {
+          "net": "_03097_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.100573808,
+          "route_wire_pf": 0.327698588,
+          "wire_ratio": 3.258289553876691
+        },
+        "nom_typ_1p20V_25C": {
+          "net": "_03097_",
+          "pin_capacitance_unchanged": true,
+          "local_wire_pf": 0.100573808,
+          "route_wire_pf": 0.327698559,
+          "wire_ratio": 3.2582892655312405
+        }
+      }
+    },
+    {
+      "net": "_01924_",
+      "covered": false,
+      "selected": false,
+      "capacitance_pf": 0.337187,
+      "limit_pf": 0.3,
+      "driver": "_05739_/X",
+      "driver_cell": "sg13cmos5l_buf_1",
+      "consumers": [
+        "_05815_/A1",
+        "_05945_/A",
+        "_05968_/B1",
+        "_05994_/C1",
+        "_06218_/B1",
+        "_06219_/A1",
+        "_06542_/A",
+        "_07759_/A1"
+      ],
+      "source_owners": [
+        "r_active",
+        "r_cursor",
+        "r_mode",
+        "r_pending",
+        "r_pin_second_init",
+        "r_serial_command",
+        "r_serial_fire"
+      ],
+      "sink_owners": [
+        "r_boot_b0",
+        "r_boot_b1",
+        "r_cached",
+        "r_cursor",
+        "r_idle_b0",
+        "r_idle_b1",
+        "r_levels",
+        "r_payload",
+        "r_result_rejected",
+        "r_samples",
+        "r_wait_left"
+      ],
+      "source_boundary": [
+        {
+          "kind": "state",
+          "pin": "_10737_/Q",
+          "owner": "r_serial_command",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_10738_/Q",
+          "owner": "r_serial_command",
+          "bit": 1
+        },
+        {
+          "kind": "state",
+          "pin": "_10739_/Q",
+          "owner": "r_serial_command",
+          "bit": 2
+        },
+        {
+          "kind": "state",
+          "pin": "_10893_/Q",
+          "owner": "r_cursor",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_10894_/Q",
+          "owner": "r_cursor",
+          "bit": 1
+        },
+        {
+          "kind": "state",
+          "pin": "_10895_/Q",
+          "owner": "r_cursor",
+          "bit": 2
+        },
+        {
+          "kind": "state",
+          "pin": "_10896_/Q",
+          "owner": "r_cursor",
+          "bit": 3
+        },
+        {
+          "kind": "state",
+          "pin": "_10897_/Q",
+          "owner": "r_cursor",
+          "bit": 4
+        },
+        {
+          "kind": "state",
+          "pin": "_10898_/Q",
+          "owner": "r_cursor",
+          "bit": 5
+        },
+        {
+          "kind": "state",
+          "pin": "_10899_/Q",
+          "owner": "r_cursor",
+          "bit": 6
+        },
+        {
+          "kind": "state",
+          "pin": "_10900_/Q",
+          "owner": "r_cursor",
+          "bit": 7
+        },
+        {
+          "kind": "state",
+          "pin": "_10901_/Q",
+          "owner": "r_cursor",
+          "bit": 8
+        },
+        {
+          "kind": "state",
+          "pin": "_12254_/Q",
+          "owner": "r_active",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_12256_/Q",
+          "owner": "r_pending",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_12257_/Q",
+          "owner": "r_mode",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_12258_/Q",
+          "owner": "r_mode",
+          "bit": 1
+        },
+        {
+          "kind": "state",
+          "pin": "_12259_/Q",
+          "owner": "r_mode",
+          "bit": 2
+        },
+        {
+          "kind": "state",
+          "pin": "_12261_/Q",
+          "owner": "r_serial_fire",
+          "bit": 0
+        },
+        {
+          "kind": "state",
+          "pin": "_12268_/Q",
+          "owner": "r_pin_second_init",
+          "bit": 0
+        }
+      ],
+      "semantic_roles": [],
+      "shared": true,
+      "families": [],
+      "package_sinks": [
+        "uo_out[4]"
+      ],
+      "macro_sinks": [
+        "memory.storage/A_ADDR[0]",
+        "memory.storage/A_ADDR[1]",
+        "memory.storage/A_ADDR[2]",
+        "memory.storage/A_ADDR[3]",
+        "memory.storage/A_ADDR[4]",
+        "memory.storage/A_ADDR[5]",
+        "memory.storage/A_ADDR[6]",
+        "memory.storage/A_ADDR[7]",
+        "memory.storage/A_ADDR[8]",
+        "memory.storage/A_WEN"
+      ]
+    }
+  ],
+  "timing": {
+    "nom_fast_1p32V_m40C": {
+      "setup": {
+        "actual_ns": 9.15959,
+        "floor_ns": 8.530533,
+        "passed": true
+      },
+      "hold": {
+        "actual_ns": 0.0645505,
+        "floor_ns": 0.07927839,
+        "passed": false
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "setup": {
+        "actual_ns": -0.0558131,
+        "floor_ns": 0.3673431,
+        "passed": false
+      },
+      "hold": {
+        "actual_ns": 0.411633,
+        "floor_ns": 0.31582889999999997,
+        "passed": true
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "setup": {
+        "actual_ns": 5.67786,
+        "floor_ns": 5.565105,
+        "passed": true
+      },
+      "hold": {
+        "actual_ns": 0.178716,
+        "floor_ns": 0.1573092,
+        "passed": true
+      }
+    }
+  },
+  "area": {
+    "source_um2": 358297.5456,
+    "candidate_um2": 359371.6704,
+    "added_um2": 1074.1247999999905,
+    "added_fraction": 0.0029978569855991515,
+    "budget_um2": 1074.8926368
+  },
+  "remaining_area_allowance_um2": 0.7678368000094906,
+  "identity": {
+    "netlist_byte_identical": true,
+    "physical_context_unchanged": true,
+    "clock_connections_retained": 342,
+    "state_flip_flops": 1572
+  },
+  "pin_access": {
+    "counts": {
+      "stdCellPinCnt": 33600,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "clock_rules": {
+    "stored_bindings_unchanged": true,
+    "before_runtime_relaxations": [
+      "clk",
+      "clknet_0_clk_regs"
+    ],
+    "after_logged_runtime_relaxations": [],
+    "boundary": "Stored declarations and logged runtime decisions are separate evidence. Absence of a relaxation message is not independent proof of final routed spacing."
+  },
+  "matched_hold": {
+    "before": {
+      "report": "build/physical/mapped-diagnostics/paired-path-route-01/nom_fast_1p32V_m40C/min.rpt",
+      "startpoint": "ui_in[6]",
+      "endpoint": "_12281_",
+      "data": [
+        {
+          "pin": "ui_in[6]",
+          "edge": "v",
+          "cell": "in",
+          "slew_ns": 0.012142,
+          "delay_ns": 0.003249,
+          "arrival_ns": 0.203249
+        },
+        {
+          "pin": "hold1879/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.012143,
+          "delay_ns": 0.0,
+          "arrival_ns": 0.203249
+        },
+        {
+          "pin": "hold1879/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.02699,
+          "delay_ns": 0.247142,
+          "arrival_ns": 0.450391
+        },
+        {
+          "pin": "input8/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 0.02699,
+          "delay_ns": 0.000141,
+          "arrival_ns": 0.450532
+        },
+        {
+          "pin": "input8/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 0.029444,
+          "delay_ns": 0.055982,
+          "arrival_ns": 0.506514
+        },
+        {
+          "pin": "hold1880/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.02951,
+          "delay_ns": 0.000989,
+          "arrival_ns": 0.507503
+        },
+        {
+          "pin": "hold1880/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.046162,
+          "delay_ns": 0.276584,
+          "arrival_ns": 0.784087
+        },
+        {
+          "pin": "_12281_/D",
+          "edge": "v",
+          "cell": "sg13cmos5l_dfrbpq_1",
+          "slew_ns": 0.046261,
+          "delay_ns": 0.00129,
+          "arrival_ns": 0.785377
+        }
+      ],
+      "data_arrival_ns": 0.785377,
+      "capture_clock_arrival_ns": 0.509116,
+      "required_ns": 0.680991,
+      "slack_ns": 0.104386
+    },
+    "after": {
+      "report": "build/physical/mapped-diagnostics/paired-locality-route-01/nom_fast_1p32V_m40C/min.rpt",
+      "startpoint": "ui_in[6]",
+      "endpoint": "_12281_",
+      "data": [
+        {
+          "pin": "ui_in[6]",
+          "edge": "v",
+          "cell": "in",
+          "slew_ns": 0.012142,
+          "delay_ns": 0.003249,
+          "arrival_ns": 0.203249
+        },
+        {
+          "pin": "hold1879/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.012143,
+          "delay_ns": 0.0,
+          "arrival_ns": 0.203249
+        },
+        {
+          "pin": "hold1879/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.02699,
+          "delay_ns": 0.247142,
+          "arrival_ns": 0.450391
+        },
+        {
+          "pin": "input8/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 0.02699,
+          "delay_ns": 0.000141,
+          "arrival_ns": 0.450532
+        },
+        {
+          "pin": "input8/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 0.029444,
+          "delay_ns": 0.055982,
+          "arrival_ns": 0.506514
+        },
+        {
+          "pin": "hold1880/A",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.02951,
+          "delay_ns": 0.000989,
+          "arrival_ns": 0.507503
+        },
+        {
+          "pin": "hold1880/X",
+          "edge": "v",
+          "cell": "sg13cmos5l_dlygate4sd3_1",
+          "slew_ns": 0.046162,
+          "delay_ns": 0.276584,
+          "arrival_ns": 0.784087
+        },
+        {
+          "pin": "_12281_/D",
+          "edge": "v",
+          "cell": "sg13cmos5l_dfrbpq_1",
+          "slew_ns": 0.046261,
+          "delay_ns": 0.00129,
+          "arrival_ns": 0.785377
+        }
+      ],
+      "data_arrival_ns": 0.785377,
+      "capture_clock_arrival_ns": 0.54895,
+      "required_ns": 0.720826,
+      "slack_ns": 0.064551
+    },
+    "data_path_identical_at_report_precision": true,
+    "capture_clock_delta_ps": 39.83400000000004,
+    "slack_delta_ps": -39.83500000000001,
+    "boundary": "Matched data path and external input delay are unchanged at report precision; later capture-clock arrival explains the observed hold loss. This does not isolate which routing policy caused that clock change."
+  },
+  "setup_path_change": {
+    "before": {
+      "report": "build/physical/mapped-diagnostics/paired-path-route-01/nom_slow_1p08V_125C/max.rpt",
+      "reported_paths": 1000,
+      "startpoint": "memory.storage",
+      "endpoint": "uo_out[4]",
+      "arrival_ns": 15.379616,
+      "required_ns": 15.8,
+      "slack_ns": 0.420384,
+      "matching_mode_to_status_paths": 0
+    },
+    "after": {
+      "report": "build/physical/mapped-diagnostics/paired-locality-route-01/nom_slow_1p08V_125C/max.rpt",
+      "reported_paths": 1000,
+      "startpoint": "_12257_",
+      "endpoint": "uo_out[4]",
+      "arrival_ns": 15.855813,
+      "required_ns": 15.8,
+      "slack_ns": -0.055813,
+      "matching_mode_to_status_paths": 1,
+      "control_net_on_path": "_01924_",
+      "control_arc": [
+        {
+          "pin": "_05739_/A",
+          "edge": "^",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 0.653772,
+          "delay_ns": 0.02262,
+          "arrival_ns": 8.945318
+        },
+        {
+          "pin": "_05739_/X",
+          "edge": "^",
+          "cell": "sg13cmos5l_buf_1",
+          "slew_ns": 2.129233,
+          "delay_ns": 1.503418,
+          "arrival_ns": 10.448736
+        },
+        {
+          "pin": "_06218_/B1",
+          "edge": "^",
+          "cell": "sg13cmos5l_a21oi_1",
+          "slew_ns": 2.261499,
+          "delay_ns": 0.412703,
+          "arrival_ns": 10.861439
+        }
+      ]
+    },
+    "boundary": "The worst setup path changes from SRAM response to mode state. The old top-1000 report has no matching mode-to-status path; subtracting these worst paths cannot isolate clock versus data contributions."
+  },
+  "congestion": {
+    "flow_overflow_by_layer": {
+      "Metal1": 0,
+      "Metal2": 0,
+      "Metal3": 33,
+      "Metal4": 0,
+      "Total": 33
+    },
+    "saved_grid_overflow_by_layer": {
+      "Metal2": 0,
+      "Metal3": 33.0,
+      "Metal4": 0
+    },
+    "fully_reconciled": true,
+    "native_marker_count": 33,
+    "capacity_demand_counts": {
+      "11/12": 10,
+      "10/11": 23
+    },
+    "persistent_hotspots": 2,
+    "zero_capacity_hotspots": 0,
+    "prior_full_route_overflow": 22,
+    "prior_saved_grid_overflow": 21,
+    "prior_marker_grid_discrepancy_resolved": false,
+    "boundary": "Native marker demand reconciles with this saved whole-chip grid and flow total. Crossing attribution is distinct from guide-area overlap and does not prove one net caused the shared overflow."
+  },
+  "containers": {
+    "pinwheel-diagnostic-paired-locality-route-01-export": "absent",
+    "pinwheel-diagnostic-paired-locality-route-01-fresh-sta": "absent",
+    "pinwheel-diagnostic-paired-locality-route-01-geometry": "absent",
+    "pinwheel-diagnostic-paired-locality-route-01-target": "absent",
+    "pinwheel-locality-route-check-connections-01": "absent",
+    "pinwheel-locality-route-check-geometry-01": "absent",
+    "pinwheel-locality-route-check-placement-01": "absent",
+    "pinwheel-locality-route-pin-access-01": "absent",
+    "pinwheel-locality-route-route-markers-01": "absent",
+    "pinwheel-paired-locality-route-01": "absent"
+  },
+  "bounds": {
+    "route_seconds": 600,
+    "route_cpus": 4,
+    "route_memory_gib": 6,
+    "per_connection_or_pin_access_command_seconds": 120,
+    "diagnostic_cpus": 2,
+    "diagnostic_memory_gib": 2
+  },
+  "runtime_seconds": {
+    "flow_reported": 36,
+    "flow_reported_precision_seconds": 1,
+    "diagnostic": 12.696,
+    "connections_and_placement": 71.632,
+    "minimum_pin_access": 4.888
+  },
+  "verification": {
+    "focused_tests": 121,
+    "declared_edit_tests": 11,
+    "actual_admission_negative_controls": 6,
+    "independently_absent_containers": 10,
+    "legacy_recipe_byte_identical": true,
+    "legacy_exact_proof_identical": true,
+    "verified_hash_references_before_sealing": 2469
+  },
+  "preservation": {
+    "initial_identities": 2151,
+    "unchanged_prior_identities": 2141,
+    "modified_prior_files": [
+      "scripts/physical_organization_repair.py",
+      "scripts/physical_route_intake.py",
+      "scripts/physical_added_route.py",
+      "scripts/physical_buffer_repair.py",
+      "docs/architecture.md",
+      "docs/physical-targets.md",
+      "docs/validation.md",
+      "docs/research/status.md",
+      "docs/research/results.md",
+      "docs/research/journal.md"
+    ],
+    "before_snapshots": {
+      "scripts/physical_organization_repair.py": "build/validation/paired-locality-route-01/before/scripts--physical_organization_repair.py",
+      "scripts/physical_route_intake.py": "build/validation/paired-locality-route-01/before/scripts--physical_route_intake.py",
+      "scripts/physical_added_route.py": "build/validation/paired-locality-route-01/before/scripts--physical_added_route.py",
+      "scripts/physical_buffer_repair.py": "build/validation/paired-locality-route-01/before/scripts--physical_buffer_repair.py",
+      "docs/architecture.md": "build/validation/paired-locality-route-01/before/docs--architecture.md",
+      "docs/physical-targets.md": "build/validation/paired-locality-route-01/before/docs--physical-targets.md",
+      "docs/validation.md": "build/validation/paired-locality-route-01/before/docs--validation.md",
+      "docs/research/status.md": "build/validation/paired-locality-route-01/before/docs--research--status.md",
+      "docs/research/results.md": "build/validation/paired-locality-route-01/before/docs--research--results.md",
+      "docs/research/journal.md": "build/validation/paired-locality-route-01/before/docs--research--journal.md"
+    },
+    "earlier_receipts_unchanged": true,
+    "journal_append_only": true
+  },
+  "preserved_harness_notes": [
+    {
+      "path": "build/validation/paired-locality-route-01/negative-controls.log",
+      "reason": "The area-reference mutant was rejected at ancestry before the expected budget diagnostic. The second harness corrected its expected diagnostic; product code was unchanged."
+    },
+    {
+      "path": "build/validation/paired-locality-route-01/preparation-01.log",
+      "reason": "Nonfatal ResourceWarnings from three unclosed text handles are preserved. Written bytes and independent readback outputs were verified."
+    }
+  ],
+  "evidence_boundary": [
+    "Status passed refers to evidence collection. Whole-chip physical qualification is false.",
+    "All measurements use coarse estimated wire RC, not extracted parasitics.",
+    "Original area reference, timing floors and electrical reserve are retained after routing.",
+    "Exact netlist and physical identity preserve behavior; they do not preserve clock arrival or wire loads.",
+    "The six repaired targets pass, while failures migrate to other families and an uncovered shared control net.",
+    "Matched hold reports identify later clock arrival; setup attribution needs the same path queried in both databases.",
+    "New congestion fully reconciles; the older marker/grid mismatch remains unresolved.",
+    "No further physical edit, detailed route, extraction, pipeline/backend change or licensing decision."
+  ],
+  "next_gate": [
+    "Collect the same mode-to-status path and matched input-hold clock paths from both saved databases under identical STA settings; no reroute.",
+    "Inventory the uncovered shared-control transport tree and its passing siblings, keeping whole-chip checks independent of family coverage.",
+    "Compare complete serial-shift bit 49, 50 and 51 families and actual crossing demand on the 33 reconciled Metal3 edges; do not infer causal congestion from guide overlap.",
+    "Check effective clock-rule application before choosing any bounded physical intervention; retain original area, reserve and timing floors."
+  ],
+  "source_sha256": {
+    "scripts/check-mapped-physical.py": "fcbd1896968b6aa4175ea328444fabf1d08a94b9cd3797fe8de02bdf48e2757b",
+    "scripts/physical_added_route.py": "a1f358ccfd49c6295b087cea8ff22823331eec2d02cd2d81d239d00edcbba8dd",
+    "scripts/physical_buffer_repair.py": "b441d1746df823b6526a842c097a1ae32b75a34a575d8a570828e19e9bec85d1",
+    "scripts/physical_checkpoint_sta.py": "5c67008e6302939f8a857db784c35bab453e9198f04ec9abffdcaf3592911e09",
+    "scripts/physical_congestion.py": "138548377eb12927e8de210e93161aad1256a728fe0caa9c975bcac81ab9f967",
+    "scripts/physical_connections.py": "a55853874784fb74d8f02bc4bc7dc6321bbb7848c258b8591185a57b218e0554",
+    "scripts/physical_distribution_acceptance.py": "1d399391f37b2ff4cf4cf30aa0de12c654d4398b317b2de5a254a915c68b80cb",
+    "scripts/physical_organization_edits.py": "e60efb122610de904e640c8a3299ab2d138230ef4c05952ca30a851c693d9162",
+    "scripts/physical_organization_repair.py": "9e57f36f81090af55c1d5fcf0bfde607f4a8929b72685480b3fe190e1d787c7b",
+    "scripts/physical_organization_route.py": "32741a81cfe3b03b9837e98647a51165e18df4aaec7bace55f8c4587966441a3",
+    "scripts/physical_path_contract.py": "b454f35ee03be9fa46f0d06347125a94c73e5d3acd4d49dd1f362f744de8a01b",
+    "scripts/physical_route_intake.py": "f56a27ce11b780f702fc72141b1c7d26eb4f0ef09f5a63c88f71c8e7c1ba6d31",
+    "scripts/report-physical.py": "fcc719ad4ec829860d9afc35874c81794f9690434bca1f2b47470f0659eb7f96",
+    "scripts/run-physical.py": "9ec475a9f935c8d07c37ba0d3b83543d503e214e51541228342f21ae1fbfab86",
+    "test/test_physical_organization_edits.py": "b0ea4fe31c1e3d2ed47221412ce6459f2e712d5a0b8c67ea2dd789e115ff0dd1"
+  },
+  "report": "build/validation/paired-locality-route-01/report.json",
+  "report_sha256": "f6ac1ab10abd8780cfd7ea35563c9e0d963ec3570a7a72fcf09c8be6eb907b02"
+}

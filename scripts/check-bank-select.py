@@ -5,15 +5,16 @@ import importlib.util
 import json
 from pathlib import Path
 import re
-import subprocess
 import sys
 import time
+
+from validation_run import Commands, sha
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("backend_check", ROOT / "scripts/check-backend.py")
 backend = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(backend)
-sha, TOP = backend.sha, backend.TOP
+TOP = backend.TOP
 
 
 def main():
@@ -34,21 +35,12 @@ def main():
                ROOT / "scripts/reactive-core-vectors.py", ROOT / "scripts/execution-vectors.py",
                ROOT / "tools/technology-library.json", ROOT / "tools/hardware-toolchain.json",
                ROOT / "physical/experiments/command-split-results.json", args.readback_report]
+    sources += [ROOT / "scripts/validation_run.py", ROOT / "scripts/process_group.py"]
     hashes = {str(p.resolve().relative_to(ROOT)): sha(p) for p in sources}
     commands = []
     started = time.monotonic()
 
-    def run(command, label, timeout=300):
-        command = list(map(str, command))
-        then = time.monotonic()
-        result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=timeout)
-        text = result.stdout + result.stderr
-        (out / f"{label}.log").write_text(text)
-        commands.append({"argv": command, "exit_code": result.returncode,
-                         "seconds": round(time.monotonic() - then, 3)})
-        if result.returncode: raise RuntimeError(f"{label}: {text[-3000:]}")
-        print(label + ": passed", flush=True)
-        return text
+    run = Commands(ROOT, out, commands, default_timeout=300)
 
     run(["lake", "build", "bank_select_emit"], "build")
     run([ROOT / ".lake/build/bin/bank_select_emit", out, variant], "emit")

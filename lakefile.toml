@@ -39,3 +39,15 @@ root = "test.TwoPort"
 [[lean_exe]]
 name = "chip_emit"
 root = "test.ChipEmit"
+
+[[lean_exe]]
+name = "sram_chip_emit"
+root = "test.SramChipEmit"
+
+[[lean_exe]]
+name = "map_tile_emit"
+root = "test.MapTileEmit"
+
+[[lean_exe]]
+name = "tiled_chip_emit"
+root = "test.TiledChipEmit"

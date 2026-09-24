@@ -12,39 +12,20 @@ then generated without the UART receiver exercise, and the unrestricted vectors
 must be rejected).
 """
 import argparse
-import hashlib
 import json
 import re
 import sys
 import time
 from pathlib import Path
 
-import process_group
+
+from validation_run import Commands, sha
 
 ROOT = Path(__file__).resolve().parents[1]
-TOP = "pinwheel_atomic_small_dense_cached"
-VARIANTS = {
-    "prefetch": dict(exe="prefetch_emit", stem="prefetch", test="test/Prefetch.lean", ready=False,
-                     fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6419), points=(6350, 6354), induction=2,
-                     lean="Decoupled (FetchPolicy) refinement, Backend.Prefetch.netlist_next/netlist_output/"
-                          "completeRefinement, Prefetch.sampled_trace_correct"),
-    # Mapped flip-flop counts are what synthesis keeps, not the register layout (`fields`): it
-    # deletes the constant top bit of each word register and any bit it can show unread. Since
-    # the command-split lift, the sampled two-port mapping keeps bits 3-8 of the cached word,
-    # which it had shown unread before; the other five mappings are unchanged.
-    "twoport": dict(exe="twoport_emit", stem="twoport", test="test/TwoPort.lean", ready=False,
-                    fields=(610, 6425), sampled_fields=(612, 6429), ff=(6415, 6425), points=(6350, 6354), induction=2,
-                    lean="TwoPort (FetchPolicy) refinement, Backend.Policy netlist_next/netlist_output/"
-                         "completeRefinement via Backend.TwoPort.realization, TwoPort.sampled_trace_correct"),
-    "oneport": dict(exe="oneport_emit", stem="oneport", test="test/OnePort.lean", ready=True,
-                    fields=(611, 6426), sampled_fields=(613, 6430), ff=(6416, 6420), points=(6350, 6354), induction=3,
-                    lean="SinglePort (FetchPolicy) rule refinement, Backend.OnePort.netlist_next/netlist_output/"
-                         "completeRefinement, OnePort.sampled_trace_correct, on ready programs"),
-}
+from hardware_targets import CORE_EXPECTATIONS, TARGETS, CORE_TOP
 
-
-def sha(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+TOP = CORE_TOP
+VARIANTS = CORE_EXPECTATIONS
 
 
 def main():
@@ -56,6 +37,9 @@ def main():
     args = parser.parse_args()
     if not re.fullmatch(r"[A-Za-z0-9_-]+", args.tag): parser.error("Invalid tag")
     v = VARIANTS[args.variant]
+    target = TARGETS[args.variant]
+    if (v["exe"], v["test"], v["ready"]) != (target.emitter, target.test, target.readiness):
+        raise RuntimeError("Target and recorded core validation recipe disagree")
     stem = v["stem"]
     ff, sampled_ff = args.ff or v["ff"][0], args.sampled_ff or v["ff"][1]
     out = ROOT / "build" / stem / args.tag
@@ -68,25 +52,12 @@ def main():
                ROOT / "scripts/reactive-core-vectors.py", ROOT / "scripts/execution-vectors.py",
                ROOT / "scripts/uart_rx_oracle.py", ROOT / "tools/hardware-toolchain.json",
                ROOT / "tools/technology-library.json"]
+    sources += [ROOT / "scripts/validation_run.py", ROOT / "scripts/process_group.py",
+                ROOT / "scripts/hardware_targets.py"]
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     commands, started = [], time.monotonic()
 
-    def run(command, label, timeout=900, reject=None):
-        command = list(map(str, command))
-        then = time.monotonic()
-        result = process_group.run_captured(command, cwd=ROOT, timeout=timeout, log_path=out / f"{label}.log")
-        text = result.stdout + result.stderr
-        commands.append({"argv": command, "exit_code": result.returncode, "expected_failure": bool(reject),
-                         "seconds": round(time.monotonic() - then, 3)})
-        if reject:
-            if result.returncode == 0 or reject not in text:
-                raise RuntimeError(f"{label}: expected rejection containing {reject!r}; see {out / (label + '.log')}")
-            print(label + ": corruption rejected", flush=True)
-        elif result.returncode:
-            raise RuntimeError(f"{label}: {text[-3000:]}")
-        else:
-            print(label + ": passed", flush=True)
-        return text
+    run = Commands(ROOT, out, commands, default_timeout=900)
 
     run(["lake", "build", "Pinwheel", v["exe"]], "build", timeout=3600)
     run(["lake", "env", "lean", "-DwarningAsError=true", "test/ProofAudit.lean"], "axioms", timeout=3600)

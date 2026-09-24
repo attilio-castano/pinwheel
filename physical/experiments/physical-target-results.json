@@ -1,0 +1,329 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "status": "passed",
+  "decision": "Retain the paired candidate; diagnose its clock fanout and narrow rejection-status setup margin before routing.",
+  "report": "build/validation/physical-target-01/report.json",
+  "report_sha256": "4d0c0a9189de5ee32ec1b78d8491daf781d977ac29498fb3e83201f96063c0bc",
+  "physical_stage": "OpenROAD.STAMidPNR-2",
+  "comparison": {
+    "physical_stage": "OpenROAD.STAMidPNR-2",
+    "wire_estimation": "placement",
+    "propagated_clocks": true,
+    "common_constraint_keys": 416,
+    "target_specific_config_keys": [
+      "FP_OBSTRUCTIONS",
+      "MACROS",
+      "PDN_MACRO_CONNECTIONS",
+      "VERILOG_DEFINES",
+      "VERILOG_FILES"
+    ],
+    "area_delta_um2": -125314.0928,
+    "area_delta_percent": -26.464375,
+    "signal_electrical_pass": true,
+    "clock_electrical_pass": false,
+    "extracted_timing": false,
+    "detailed_route_admitted": false
+  },
+  "variants": {
+    "control": {
+      "report": {
+        "path": "build/physical/mapped-diagnostics/target-control-cts-02/report.json",
+        "sha256": "ea40edb928b75df643d8ca86badbf081ab77a36fce7cb9b64976c5fd6a74b441"
+      },
+      "selected_step": "25-openroad-stamidpnr-2",
+      "area_um2": 473519.9456,
+      "state_flip_flops": 2895,
+      "macro_count": 2,
+      "path_expected": {
+        "sram_address": true,
+        "entry_state": true,
+        "rejection_status": false,
+        "upload_hold": true
+      },
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 14.416442,
+          "entry_state": 15.616787,
+          "rejection_status": null,
+          "upload_hold": 0.099694
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 6.09608,
+          "entry_state": 9.042105,
+          "rejection_status": null,
+          "upload_hold": 0.484256
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 11.33439,
+          "entry_state": 13.256354,
+          "rejection_status": null,
+          "upload_hold": 0.262619
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 13.0068,
+          "hold_ns": 0.0996939,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 203,
+          "fanout_classes": {
+            "CLOCK": 203
+          },
+          "unused_unannotated_drivers": 182,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 6.09608,
+          "hold_ns": 0.458213,
+          "slew_violations": 5,
+          "cap_violations": 0,
+          "fanout_violations": 203,
+          "fanout_classes": {
+            "CLOCK": 203
+          },
+          "unused_unannotated_drivers": 182,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 11.3344,
+          "hold_ns": 0.257308,
+          "slew_violations": 1,
+          "cap_violations": 0,
+          "fanout_violations": 203,
+          "fanout_classes": {
+            "CLOCK": 203
+          },
+          "unused_unannotated_drivers": 182,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    },
+    "paired": {
+      "report": {
+        "path": "build/physical/mapped-diagnostics/target-paired-cts-02/report.json",
+        "sha256": "7f263f5a8e624e87223a67e96c0fba7dca04ee09e44090e1cc285979de6df5a8"
+      },
+      "selected_step": "17-openroad-stamidpnr-2",
+      "area_um2": 348205.8528,
+      "state_flip_flops": 1572,
+      "macro_count": 1,
+      "path_expected": {
+        "sram_address": true,
+        "entry_state": true,
+        "rejection_status": true,
+        "upload_hold": true
+      },
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 13.517343,
+          "entry_state": 14.544053,
+          "rejection_status": 9.703853,
+          "upload_hold": 0.095552
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 3.79069,
+          "entry_state": 6.185663,
+          "rejection_status": 0.304933,
+          "upload_hold": 0.405227
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 9.952397,
+          "entry_state": 11.489252,
+          "rejection_status": 6.274649,
+          "upload_hold": 0.217763
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 9.70385,
+          "hold_ns": 0.0955521,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 113,
+          "fanout_classes": {
+            "CLOCK": 113
+          },
+          "unused_unannotated_drivers": 94,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 0.304933,
+          "hold_ns": 0.405227,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 113,
+          "fanout_classes": {
+            "CLOCK": 113
+          },
+          "unused_unannotated_drivers": 94,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 6.27465,
+          "hold_ns": 0.217763,
+          "slew_violations": 0,
+          "cap_violations": 0,
+          "fanout_violations": 113,
+          "fanout_classes": {
+            "CLOCK": 113
+          },
+          "unused_unannotated_drivers": 94,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    }
+  },
+  "validation": {
+    "focused_tests": 69,
+    "physical_negative_controls": 5,
+    "containers": {
+      "pinwheel-diagnostic-target-control-cts-01-export": "absent",
+      "pinwheel-diagnostic-target-control-cts-01-fresh-sta": "absent",
+      "pinwheel-diagnostic-target-control-cts-01-geometry": "absent",
+      "pinwheel-diagnostic-target-control-cts-01-target": "absent",
+      "pinwheel-diagnostic-target-control-cts-02-export": "absent",
+      "pinwheel-diagnostic-target-control-cts-02-fresh-sta": "absent",
+      "pinwheel-diagnostic-target-control-cts-02-geometry": "absent",
+      "pinwheel-diagnostic-target-control-cts-02-target": "absent",
+      "pinwheel-diagnostic-target-paired-cts-01-export": "absent",
+      "pinwheel-diagnostic-target-paired-cts-01-fresh-sta": "absent",
+      "pinwheel-diagnostic-target-paired-cts-01-geometry": "absent",
+      "pinwheel-diagnostic-target-paired-cts-01-target": "absent",
+      "pinwheel-diagnostic-target-paired-cts-02-export": "absent",
+      "pinwheel-diagnostic-target-paired-cts-02-fresh-sta": "absent",
+      "pinwheel-diagnostic-target-paired-cts-02-geometry": "absent",
+      "pinwheel-diagnostic-target-paired-cts-02-target": "absent",
+      "pinwheel-mapped-local-place-01": "absent",
+      "pinwheel-mapped-readback-target-control-import-01": "absent",
+      "pinwheel-mapped-readback-target-paired-import-01": "absent",
+      "pinwheel-mapped-readback-target-paired-macro-01": "absent",
+      "pinwheel-mapped-readback-target-paired-macro-readback-02": "absent",
+      "pinwheel-target-control-import-01": "absent",
+      "pinwheel-target-negative-01": "absent",
+      "pinwheel-target-paired-import-01": "absent",
+      "pinwheel-target-paired-macro-01": "absent",
+      "pinwheel-target-paired-place-01": "absent",
+      "pinwheel-target-paired-place-02": "absent"
+    },
+    "preserved_receipts": {
+      "build/validation/paired-controller-02/report.json": {
+        "sha256": "9e2d550a924006e332efb4be15c93c883d7f9f0e6b10965278dd5d9e53e4be0f",
+        "source_hashes": 262,
+        "artifact_hashes": 78
+      },
+      "build/validation/paired-execution-03/report.json": {
+        "sha256": "c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f2e7d4e",
+        "source_hashes": 239,
+        "artifact_hashes": 70
+      }
+    }
+  },
+  "functional_reuse": {
+    "control": {
+      "oracle": {
+        "path": "build/physical/chip-check/mapped-local-oracle-01/report.json",
+        "sha256": "e101bdfd9232c82ec26774be806977ba8422f385385c745826a7c593e4cc946c"
+      },
+      "current_export": {
+        "path": "build/physical/mapped-diagnostics/target-control-cts-02/implemented.v",
+        "sha256": "c068eef3fb28933f263fb62b43ab66c1f96fee338871301cadb4962c98fd397f"
+      },
+      "edges": 508252,
+      "output_mutants_rejected": 1,
+      "exact_export_identity": true,
+      "unchanged_non_script_inputs": true,
+      "changed_helpers_since_historical_check": [
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/scripts/check-chip-physical.py",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/scripts/mapped_physical.py"
+      ],
+      "boundary": "Reuses the observed pin trace only for byte-identical Verilog with unchanged vectors, bench and models; no repeated simulation or universal equivalence claim."
+    },
+    "paired": {
+      "oracle": {
+        "path": "build/physical/chip-check/target-paired-cts-01/report.json",
+        "sha256": "f4c460f211a0efd69e4ade3bf7a430e8883c5938140f7055d9eb5e528fe6408f"
+      },
+      "current_export": {
+        "path": "build/physical/mapped-diagnostics/target-paired-cts-02/implemented.v",
+        "sha256": "91d8fa25976fe9433a2851c45d73f4aa8f71abd12fba08c044eb55792d9a56af"
+      },
+      "edges": 331401,
+      "output_mutants_rejected": 1,
+      "exact_export_identity": true,
+      "unchanged_non_script_inputs": true,
+      "changed_helpers_since_historical_check": [
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/scripts/physical_target.py"
+      ],
+      "boundary": "Reuses the observed pin trace only for byte-identical Verilog with unchanged vectors, bench and models; no repeated simulation or universal equivalence claim."
+    }
+  },
+  "imports": [
+    {
+      "path": "build/physical/target-control-01/checks/target-control-import-01/report.json",
+      "sha256": "f3a3690ee248a70d9e7d60d79f893a21ccfe1ca9b6f296711f4485d9440e3651"
+    },
+    {
+      "path": "build/physical/target-paired-01/checks/target-paired-import-01/report.json",
+      "sha256": "a2d71929730a33c2e0e6ed372b76ef9a369d4e6605c570e8add96daf003e81af"
+    },
+    {
+      "path": "build/physical/target-paired-01/checks/target-paired-macro-readback-02/report.json",
+      "sha256": "de53c90ec97d10169d4d7fb51dc8a57671aed7f9101eaa71f5ce36a81e1bff6e"
+    }
+  ],
+  "prior_attempts": [
+    {
+      "receipt": {
+        "path": "build/physical/target-paired-01/checks/target-paired-macro-01/report.json",
+        "sha256": "40e1d6b45390f274becbf02838397474631170e11936de612ebb5caea2d6dfba"
+      },
+      "reason": "Saved NL added isolated power ports. Final checker verifies declared rails separately in OpenDB and preserves exact signal identity."
+    },
+    {
+      "receipt": {
+        "path": "build/physical/target-paired-place-01-invocation.json",
+        "sha256": "122441774f59e749feb92cffc17be61f461f8883076435aff61b72c89a5336ac"
+      },
+      "reason": "First placement used platform fanout ten; repeated at the retained control's limit eight before comparison."
+    },
+    {
+      "receipt": {
+        "path": "build/physical/mapped-diagnostics/target-control-cts-01/report.json",
+        "sha256": "086866b20bc84522fa496c89e8c64a6f31be2903e4d05efc6139158ff1995b48"
+      },
+      "reason": "Control has no SRAM-to-rejection path. Absence is now derived from the mapped combinational graph and must agree with STA."
+    }
+  ],
+  "caps": {
+    "import_seconds": 120,
+    "placement_seconds": 600,
+    "physical_cpus": 4,
+    "physical_memory_gib": 6,
+    "measurement_command_seconds": 120,
+    "measurement_cpus": 2,
+    "measurement_memory_gib": 2
+  },
+  "evidence_boundary": [
+    "Exact mapped inputs and pinned views; no RTL or Lean change.",
+    "Physical target binds all state owners and semantic timing endpoints; absent roles are checked, not discarded.",
+    "SRAM geometry, power net binding and clear reserved rows checked in actual OpenDB; no routed pin access or power continuity certification.",
+    "Instance area includes SRAM, placement, clock and hold repair at the same stage; control layout reused.",
+    "Wire estimates cover consumed nets; clocks propagated. Fast screen mixes -40 C cells and -55 C SRAM.",
+    "Pin traces apply to exact exported netlists; they do not prove universal behavior or extracted timing.",
+    "No global/detailed routing, antenna closure, final power qualification or default backend promotion in this study."
+  ],
+  "next_gate": {
+    "clock": "Diagnose the 113 remaining clock fanout violations on saved paired clock leaves.",
+    "status_path": "Recover margin on SRAM response through shared parameter/admission logic to rejection status, preserving its interface timing.",
+    "acceptance": "Preserve pin behavior and the area advantage; remeasure complete setup/hold/electrical evidence before deciding on a bounded coarse route.",
+    "detailed_route_admitted": false
+  }
+}

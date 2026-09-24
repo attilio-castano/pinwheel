@@ -1,6 +1,6 @@
 # Competition brief
 
-Sources checked: **2026-09-18** (first read 2026-09-12). This is a curated summary, not an archived copy. Linked pages and branches can change; recheck them before implementation and submission.
+Announcement rechecked: **2026-09-19**; template inventory checked 2026-09-18 (first read 2026-09-12). This is a curated summary, not an archived copy. Linked pages and branches can change; recheck them before implementation and submission.
 
 **Changed since the first read:** the announcement first asked for `8x4` tiles (32 tiles, about 1 mm²). It now sets the maximum at `6x4`; see [the outline](#the-outline-and-the-pinned-files) below.
 
@@ -65,7 +65,8 @@ Checked 2026-09-18 against support commit
   on Metal4 on the top edge between x = 29.76 and 191.04 µm** — the top-left
   corner, 3.84 µm apart — plus the `VPWR`/`VGND` nets. The routed runs so far
   did not apply this template: their 200-odd stand-in ports were placed by the
-  tool around the edge.
+  tool around the edge. This describes the historical core runs; the later
+  [whole-chip SRAM experiment](chip-physical-study.md) now applies the template.
 - `8x4` is absent from the tile table and the DEF inventory, which matches the
   announcement: it is a possibility, not an allocation. The template's
   `info.yaml` comment listing valid sizes stops at `8x2` and is stale.

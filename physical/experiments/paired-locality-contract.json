@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "status": "checked-plan-only",
+  "source_database_sha256": "384f389d9a2eb16866b706df8234f9ce2d4c697ddcdd6daea7b204a0de4102f8",
+  "scope": {
+    "distribution": {
+      "source_owner": "r_serial_shift",
+      "sink_owner": "r_serial_shift",
+      "sink_owner_prefix": "r_parameter_",
+      "macro_inputs": [
+        "memory.storage/A_DIN[0]",
+        "memory.storage/A_DIN[1]",
+        "memory.storage/A_DIN[2]",
+        "memory.storage/A_DIN[3]",
+        "memory.storage/A_DIN[4]",
+        "memory.storage/A_DIN[5]",
+        "memory.storage/A_DIN[6]",
+        "memory.storage/A_DIN[7]",
+        "memory.storage/A_DIN[8]",
+        "memory.storage/A_DIN[9]",
+        "memory.storage/A_DIN[10]",
+        "memory.storage/A_DIN[11]",
+        "memory.storage/A_DIN[12]",
+        "memory.storage/A_DIN[13]",
+        "memory.storage/A_DIN[14]",
+        "memory.storage/A_DIN[15]",
+        "memory.storage/A_DIN[16]",
+        "memory.storage/A_DIN[17]",
+        "memory.storage/A_DIN[18]",
+        "memory.storage/A_DIN[19]",
+        "memory.storage/A_DIN[20]",
+        "memory.storage/A_DIN[21]",
+        "memory.storage/A_DIN[22]",
+        "memory.storage/A_DIN[23]",
+        "memory.storage/A_DIN[24]",
+        "memory.storage/A_DIN[25]",
+        "memory.storage/A_DIN[26]",
+        "memory.storage/A_DIN[27]",
+        "memory.storage/A_DIN[28]",
+        "memory.storage/A_DIN[29]",
+        "memory.storage/A_DIN[30]",
+        "memory.storage/A_DIN[31]",
+        "memory.storage/A_DIN[32]",
+        "memory.storage/A_DIN[33]",
+        "memory.storage/A_DIN[34]",
+        "memory.storage/A_DIN[35]",
+        "memory.storage/A_DIN[36]",
+        "memory.storage/A_DIN[37]",
+        "memory.storage/A_DIN[38]",
+        "memory.storage/A_DIN[39]",
+        "memory.storage/A_DIN[40]",
+        "memory.storage/A_DIN[41]",
+        "memory.storage/A_DIN[42]",
+        "memory.storage/A_DIN[43]",
+        "memory.storage/A_DIN[44]",
+        "memory.storage/A_DIN[45]",
+        "memory.storage/A_DIN[46]",
+        "memory.storage/A_DIN[47]",
+        "memory.storage/A_DIN[48]",
+        "memory.storage/A_DIN[49]",
+        "memory.storage/A_DIN[50]",
+        "memory.storage/A_DIN[51]",
+        "memory.storage/A_DIN[52]",
+        "memory.storage/A_DIN[53]",
+        "memory.storage/A_DIN[54]",
+        "memory.storage/A_DIN[55]",
+        "memory.storage/A_DIN[56]",
+        "memory.storage/A_DIN[57]",
+        "memory.storage/A_DIN[58]",
+        "memory.storage/A_DIN[59]",
+        "memory.storage/A_DIN[60]",
+        "memory.storage/A_DIN[61]",
+        "memory.storage/A_DIN[62]",
+        "memory.storage/A_DIN[63]"
+      ]
+    },
+    "explicit_connections": [
+      "_02486_",
+      "memory.mem_addr0[8]",
+      "memory.mem_write",
+      "net11",
+      "net1851",
+      "net1854",
+      "net1857",
+      "net1859",
+      "net1862",
+      "net1864",
+      "net1868",
+      "net1907",
+      "net1911",
+      "net1920",
+      "net1928",
+      "net1932",
+      "net1939",
+      "net1945",
+      "paired_endpoint_net_11_2"
+    ]
+  },
+  "reserve_fraction": 0.2,
+  "selected_nets": [
+    "_02967_",
+    "_02981_",
+    "_03010_",
+    "_03037_",
+    "_03121_",
+    "_03168_",
+    "_03183_",
+    "_03253_",
+    "_03268_",
+    "_03380_",
+    "_04524_",
+    "_04527_",
+    "_04699_",
+    "_04701_",
+    "net31"
+  ],
+  "max_added_area_fraction": 0.003,
+  "timing_floors_ns": {
+    "nom_fast_1p32V_m40C": {
+      "setup": 8.530533,
+      "hold": 0.07927839
+    },
+    "nom_slow_1p08V_125C": {
+      "setup": 0.3673431,
+      "hold": 0.31582889999999997
+    },
+    "nom_typ_1p20V_25C": {
+      "setup": 5.565105,
+      "hold": 0.1573092
+    }
+  },
+  "area_reference": {
+    "area_um2": 358297.5456,
+    "measurement": {
+      "path": "build/physical/mapped-diagnostics/paired-signal-route-01/report.json",
+      "sha256": "16ed2fcbe6fbe91b762e540819bc795680a7391f00cb870be35a6a12b92fbff2"
+    }
+  },
+  "preserved_budget_contract": {
+    "path": "physical/experiments/paired-distribution-contract.json",
+    "sha256": "e45e6a211adf6212fb4d3ab3b676383f7037a9561a189c3e2637a3fe55aeb2f9"
+  },
+  "acceptance": {
+    "all_connections_including_added_branches": true,
+    "all_chip_electrical_zero": true,
+    "unchanged_timing_floors": true,
+    "unchanged_cumulative_area_cap": true,
+    "original_cells_clocks_and_hold_retained": true,
+    "independent_identity_placement_power": true,
+    "whole_chip_routing_revalidation_required": true
+  },
+  "boundary": "Same full path scope, reserve, timing floors and original cumulative area reference. Source advances to the settled path route; edit selectors include regrouping, resizing, relocation and one receiver. This descriptor does not extend whole-chip route admission.",
+  "parent_path_contract": {
+    "path": "physical/experiments/paired-path-contract.json",
+    "sha256": "bfbde821c882834324c177ac80e6fdc090516680f259614139d0e37da4389010"
+  }
+}

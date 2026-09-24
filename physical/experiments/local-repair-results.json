@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "decision": "local-repair-validated-coarse-routing-still-required",
+  "report": "build/validation/local-repair-01/report.json",
+  "report_sha256": "0b2891234e4cafe1ef0af856caec918154a69fb34224fa960f609aae7b98e98d",
+  "source_selection": {
+    "path": "physical/experiments/clock-sram-results.json",
+    "sha256": "e2edff2661e169aca7fdb9c0c21867569067dcd0f7bd3bbecdad28f54ba56972"
+  },
+  "recipe": {
+    "path": "physical/experiments/local-clock-sram-repair.tcl",
+    "sha256": "6f12cec0cc074a6d1277a0c99dba7ce53d1dfa6cc05777acdd28527ef53fd8b3"
+  },
+  "receipts": {
+    "inspect-01": {
+      "report": "build/physical/local-repair/inspect-01/report.json",
+      "sha256": "13b425a8e100b9f3bac78f44ccb42b08c63393efd75f9c3711a44cbd80a9f92d",
+      "status": "failed"
+    },
+    "inspect-02": {
+      "report": "build/physical/local-repair/inspect-02/report.json",
+      "sha256": "34e15b9883e8c2f6c4f3d71f3a1b136b219764ede74c39bbeb61aade2c71f24d",
+      "status": "failed"
+    },
+    "inspect-03": {
+      "report": "build/physical/local-repair/inspect-03/report.json",
+      "sha256": "d2db7ea462af6b73cd36beb49d982e05b8951b6e1e2c196e21d914ab7ad0f8f1",
+      "status": "passed"
+    },
+    "direct-global-01": {
+      "report": "build/physical/local-repair/direct-global-01/report.json",
+      "sha256": "a6ab5a9b1d8231c90d154b154840d6dbc3a86132b76053b470e4c0f8d52f5b8b",
+      "status": "passed"
+    },
+    "direct-placement-01": {
+      "report": "build/physical/local-repair/direct-placement-01/report.json",
+      "sha256": "de3a14348caa41f584558ba5e31436cc4e701bd756325ac1ebad2b606be2fe05",
+      "status": "passed"
+    },
+    "rc-initialized-01": {
+      "report": "build/physical/local-repair/rc-initialized-01/report.json",
+      "sha256": "0216b2dbfcf9e55bccd794be56e3c5f6aae470ec4dd336fa0a791d8346a07cbe",
+      "status": "passed"
+    },
+    "targeted-01": {
+      "report": "build/physical/local-repair/targeted-01/report.json",
+      "sha256": "c6096065ca943ec07ff07b8cd7271292df2f4f10921e4ff51d7140b02b23e116",
+      "status": "failed"
+    },
+    "targeted-02": {
+      "report": "build/physical/local-repair/targeted-02/report.json",
+      "sha256": "0961b3ae6a2e61e9f62618663b801e3258e882f25cca8e6d92645b53426785a2",
+      "status": "failed"
+    },
+    "targeted-03": {
+      "report": "build/physical/local-repair/targeted-03/report.json",
+      "sha256": "710fe1965f4f4356dfd80ea8fde4f69150dc4bb9f7b1bb7f44390584d730e048",
+      "status": "passed"
+    },
+    "local-measure-01": {
+      "report": "build/physical/local-repair/local-measure-01/report.json",
+      "sha256": "07dfe55164d001aacfaeeb6e634716c694826d82b4847d63e64a463a43c59101",
+      "status": "failed"
+    },
+    "local-measure-02": {
+      "report": "build/physical/local-repair/local-measure-02/report.json",
+      "sha256": "7b065946809305fe9132aae0083dd9b2ae80cf81c2fb1393a00dae4097203cbf",
+      "status": "passed"
+    },
+    "local-measure-03": {
+      "report": "build/physical/local-repair/local-measure-03/report.json",
+      "sha256": "beb3026a30f5fb0684b6ea12103c250c6adeafccb772eeab01ea8bb5d4213262",
+      "status": "passed"
+    },
+    "oracle": {
+      "report": "build/physical/chip-check/local-repair-oracle-01/report.json",
+      "sha256": "4896a3bfcd78c608c6063118612bee2778bbd515868af6f5e15c9c6f8d63946d",
+      "status": "passed"
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 12.9405,
+        "timing__hold__ws": 0.100391,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 6.08918,
+        "timing__hold__ws": 0.29789,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 5
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 11.3299,
+        "timing__hold__ws": 0.165295,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 4,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 1
+      }
+    },
+    "candidate": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 12.979,
+        "timing__hold__ws": 0.0874905,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 5.82912,
+        "timing__hold__ws": 0.375553,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 5
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 11.1656,
+        "timing__hold__ws": 0.214994,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_slew_violation__count": 1
+      }
+    }
+  },
+  "added_buffers": {
+    "sg13cmos5l_buf_2": 1,
+    "sg13cmos5l_buf_4": 4,
+    "sg13cmos5l_buf_8": 6
+  },
+  "added_area_um2": 208.656,
+  "total_instance_area_um2": 483653.3696,
+  "validation": {
+    "focused_tests": 12,
+    "pin_edges": 508252,
+    "mutations_rejected": 1,
+    "lean_sources_unchanged": 267,
+    "prior_manifests_unchanged": 50
+  },
+  "next_gate": "One bounded coarse-routing check of this frozen candidate, with layer RC initialized and no CTS rebuild; remeasure SRAM load, setup/hold and congestion before detailed routing.",
+  "boundary": "Fresh placement-RC and propagated-clock screening of a locally repaired saved checkpoint. No full global routing, detailed routing, antenna closure, extraction or backend promotion. Fast cells -40 C and SRAM -55 C."
+}

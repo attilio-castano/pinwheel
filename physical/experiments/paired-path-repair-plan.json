@@ -1,0 +1,666 @@
+{
+  "schema": 2,
+  "status": "checked-plan-only",
+  "source_database": {
+    "path": "build/physical/target-paired-01/runs/paired-distribution-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "1c425becb4250b4eb4edf8d5b2d253fb2c690f6e80da751d2ba753277a3e0d6d"
+  },
+  "dbu_per_micron": 1000,
+  "buffer_sizes_dbu": {
+    "sg13cmos5l_buf_8": [
+      6240,
+      3780
+    ],
+    "sg13cmos5l_buf_4": [
+      3840,
+      3780
+    ],
+    "sg13cmos5l_buf_1": [
+      1920,
+      3780
+    ]
+  },
+  "routing_policy": {
+    "signal_layers": "Metal2-Metal4",
+    "clock_layers": "Metal2-Metal4",
+    "capacity_adjustment": 0.3,
+    "nondefault_rules": "preserve-bindings-record-effective-router-warnings"
+  },
+  "invariants": {
+    "original_cells_fixed": true,
+    "original_hold_cells_retained": true,
+    "clock_connections_fixed": true,
+    "state_changes": 0,
+    "added_pipeline_cycles": 0
+  },
+  "operations": [
+    {
+      "net": "_02486_",
+      "driver": "_06301_/Y",
+      "consumers": [
+        "_06302_/B1"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_a221oi_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "setup",
+      "stages": [
+        {
+          "instance": "path_guard_0_0",
+          "cell": "sg13cmos5l_buf_8",
+          "new_net": "path_guard_0_0_net",
+          "footprint_dbu": [
+            836440,
+            457380,
+            842680,
+            461160
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_02917_",
+      "driver": "_06732_/Y",
+      "consumers": [
+        "_06741_/A_N",
+        "_08017_/A"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_nand3_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_1_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_1_0_net",
+          "footprint_dbu": [
+            513120,
+            109620,
+            516960,
+            113400
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_03012_",
+      "driver": "_06827_/X",
+      "consumers": [
+        "_06828_/A",
+        "_06853_/A",
+        "_07004_/A",
+        "_07009_/A",
+        "_07208_/S",
+        "_07312_/S",
+        "_07644_/S",
+        "_07833_/S1"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_2_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_2_0_net",
+          "footprint_dbu": [
+            1060320,
+            415800,
+            1064160,
+            419580
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_03116_",
+      "driver": "_06931_/X",
+      "consumers": [
+        "_06934_/S0",
+        "_06960_/S0",
+        "_07259_/B1",
+        "_07343_/A",
+        "_07380_/C",
+        "_07389_/S0",
+        "_07393_/B1",
+        "_07748_/S0"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_3_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_3_0_net",
+          "footprint_dbu": [
+            372010,
+            608580,
+            375850,
+            612360
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_03160_",
+      "driver": "_06975_/X",
+      "consumers": [
+        "_06976_/B2",
+        "_07202_/A1",
+        "_07400_/B1",
+        "_07419_/B1",
+        "_07475_/A1",
+        "_07665_/B2",
+        "_07675_/B2",
+        "_07689_/B2"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_4_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_4_0_net",
+          "footprint_dbu": [
+            1129450,
+            412020,
+            1133290,
+            415800
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_04271_",
+      "driver": "_08114_/X",
+      "consumers": [
+        "_08115_/A0",
+        "_09061_/A0",
+        "_09093_/A0",
+        "_09118_/A0",
+        "_09168_/A0",
+        "_09193_/A0",
+        "_09218_/A0",
+        "_10477_/A0"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_5_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_5_0_net",
+          "footprint_dbu": [
+            1082390,
+            359100,
+            1086230,
+            362880
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_04339_",
+      "driver": "_08221_/X",
+      "consumers": [
+        "_08222_/A1",
+        "_09146_/A1",
+        "_09843_/A1",
+        "_09867_/A1",
+        "_09904_/A1",
+        "_10477_/A1",
+        "_10478_/A1",
+        "_10643_/A1"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_6_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_6_0_net",
+          "footprint_dbu": [
+            410400,
+            374220,
+            414240,
+            378000
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_04512_",
+      "driver": "_08743_/X",
+      "consumers": [
+        "_08744_/S",
+        "_08750_/S",
+        "_08754_/B",
+        "_08755_/A2",
+        "_08757_/S",
+        "_08758_/S",
+        "_08760_/S",
+        "_08761_/S"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_7_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_7_0_net",
+          "footprint_dbu": [
+            478560,
+            604800,
+            482400,
+            608580
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_04519_",
+      "driver": "_08768_/X",
+      "consumers": [
+        "_08769_/S",
+        "_08770_/S",
+        "_08771_/S",
+        "_08776_/S",
+        "_08780_/S",
+        "_08784_/S",
+        "_08785_/S",
+        "_08789_/S"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_8_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_8_0_net",
+          "footprint_dbu": [
+            520800,
+            604800,
+            524640,
+            608580
+          ]
+        }
+      ]
+    },
+    {
+      "net": "_04728_",
+      "driver": "_09571_/X",
+      "consumers": [
+        "_09572_/A1",
+        "_09595_/A1",
+        "_09617_/A1",
+        "_09648_/A1",
+        "_09675_/A1",
+        "_09720_/A1",
+        "_09743_/A1",
+        "_10473_/A1"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "driver",
+      "receiver": null,
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_9_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_9_0_net",
+          "footprint_dbu": [
+            449280,
+            419580,
+            453120,
+            423360
+          ]
+        }
+      ]
+    },
+    {
+      "net": "memory.mem_write",
+      "driver": "_08029_/X",
+      "consumers": [
+        "_08034_/S",
+        "_08035_/S",
+        "_08036_/S",
+        "_08038_/S",
+        "_08040_/S",
+        "_08042_/S",
+        "_10575_/B",
+        "memory.storage/A_WEN"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_1",
+      "mode": "receiver",
+      "receiver": "memory.storage/A_WEN",
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_10_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_10_0_net",
+          "footprint_dbu": [
+            638880,
+            102060,
+            642720,
+            105840
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net11",
+      "driver": "wire11/X",
+      "consumers": [
+        "memory.storage/A_REN"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_buf_2",
+      "mode": "receiver",
+      "receiver": "memory.storage/A_REN",
+      "purpose": "electrical",
+      "stages": [
+        {
+          "instance": "path_guard_11_0",
+          "cell": "sg13cmos5l_buf_4",
+          "new_net": "path_guard_11_0_net",
+          "footprint_dbu": [
+            655200,
+            105840,
+            659040,
+            109620
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1857",
+      "driver": "hold1857/X",
+      "consumers": [
+        "_12263_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12263_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_12_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_12_0_net",
+          "footprint_dbu": [
+            177600,
+            695520,
+            179520,
+            699300
+          ]
+        },
+        {
+          "instance": "path_guard_12_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_12_1_net",
+          "footprint_dbu": [
+            181440,
+            695520,
+            183360,
+            699300
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1868",
+      "driver": "hold1868/X",
+      "consumers": [
+        "_12264_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12264_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_13_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_13_0_net",
+          "footprint_dbu": [
+            224640,
+            699300,
+            226560,
+            703080
+          ]
+        },
+        {
+          "instance": "path_guard_13_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_13_1_net",
+          "footprint_dbu": [
+            226028,
+            703080,
+            227948,
+            706860
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1862",
+      "driver": "hold1862/X",
+      "consumers": [
+        "_12265_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12265_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_14_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_14_0_net",
+          "footprint_dbu": [
+            200160,
+            699300,
+            202080,
+            703080
+          ]
+        },
+        {
+          "instance": "path_guard_14_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_14_1_net",
+          "footprint_dbu": [
+            201548,
+            695520,
+            203468,
+            699300
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1851",
+      "driver": "hold1851/X",
+      "consumers": [
+        "_12266_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12266_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_15_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_15_0_net",
+          "footprint_dbu": [
+            139680,
+            699300,
+            141600,
+            703080
+          ]
+        },
+        {
+          "instance": "path_guard_15_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_15_1_net",
+          "footprint_dbu": [
+            142560,
+            695520,
+            144480,
+            699300
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1854",
+      "driver": "hold1854/X",
+      "consumers": [
+        "_12267_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12267_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_16_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_16_0_net",
+          "footprint_dbu": [
+            144000,
+            691740,
+            145920,
+            695520
+          ]
+        },
+        {
+          "instance": "path_guard_16_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_16_1_net",
+          "footprint_dbu": [
+            145388,
+            687960,
+            147308,
+            691740
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1859",
+      "driver": "hold1859/X",
+      "consumers": [
+        "_12276_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12276_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_17_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_17_0_net",
+          "footprint_dbu": [
+            177600,
+            687960,
+            179520,
+            691740
+          ]
+        },
+        {
+          "instance": "path_guard_17_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_17_1_net",
+          "footprint_dbu": [
+            176212,
+            691740,
+            178132,
+            695520
+          ]
+        }
+      ]
+    },
+    {
+      "net": "net1864",
+      "driver": "hold1864/X",
+      "consumers": [
+        "_12277_/D"
+      ],
+      "ports": [],
+      "driver_cell": "sg13cmos5l_dlygate4sd3_1",
+      "mode": "receiver",
+      "receiver": "_12277_/D",
+      "purpose": "hold",
+      "stages": [
+        {
+          "instance": "path_guard_18_0",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_18_0_net",
+          "footprint_dbu": [
+            128640,
+            699300,
+            130560,
+            703080
+          ]
+        },
+        {
+          "instance": "path_guard_18_1",
+          "cell": "sg13cmos5l_buf_1",
+          "new_net": "path_guard_18_1_net",
+          "footprint_dbu": [
+            127252,
+            695520,
+            129172,
+            699300
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "all_corner_setup_hold_positive": true,
+    "all_corner_electrical_zero": true,
+    "all_consumed_nets_annotated": true,
+    "buffer_contracted_identity": true,
+    "original_geometry_and_power_retained": true,
+    "added_cells_legal_and_power_bound": true,
+    "all_affected_connections_reported": true,
+    "fresh_whole_chip_route_required": true,
+    "detailed_route_admitted": false
+  },
+  "boundary": "Explicit signal buffering only. Stage count and footprint are checked; timing, added input load, legal placement and power require independent measurements."
+}

@@ -1,0 +1,424 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "recorded_at_utc": "2026-09-23T14:02:48.469788+00:00",
+  "decision": "retain-locally-qualified-path-repair-bind-expanded-intake-before-whole-chip-route",
+  "local_path_contract_pass": true,
+  "local_estimated_timing_pass": true,
+  "local_electrical_pass": true,
+  "physical_closure": false,
+  "new_whole_chip_route": false,
+  "new_route_admitted": false,
+  "detailed_route_admitted": false,
+  "extracted_timing_completed": false,
+  "executed_repairs": 1,
+  "source_full_route": {
+    "path": "physical/experiments/paired-distribution-route-results.json",
+    "sha256": "ff48b90d4f5225796aae24e66e44c50ec0adf91f13f0a3cf9e3415e35da36c4f"
+  },
+  "plan": {
+    "path": "physical/experiments/paired-path-repair-plan.json",
+    "sha256": "5d38ac51f31533779cdb3d77e84ac4041674d5bcf3a336fa0df17562ac2bc781"
+  },
+  "contract": {
+    "path": "physical/experiments/paired-path-contract.json",
+    "sha256": "bfbde821c882834324c177ac80e6fdc090516680f259614139d0e37da4389010"
+  },
+  "preserved_budget_contract": {
+    "path": "physical/experiments/paired-distribution-contract.json",
+    "sha256": "e45e6a211adf6212fb4d3ab3b676383f7037a9561a189c3e2637a3fe55aeb2f9"
+  },
+  "producer": {
+    "path": "build/physical/repair-probes/paired-path-repair-01/report.json",
+    "sha256": "0bce17ad17e8c491f876bb1adab4a02adcd36113002a5e7aef97e30836679aba"
+  },
+  "measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-path-repair-01/report.json",
+    "sha256": "44dcba0d8409861048ecd410006f40789d95da9ea94a9ee41e22fcf488e2a254"
+  },
+  "selected_database": {
+    "path": "build/physical/repair-probes/paired-path-repair-01/repaired.odb",
+    "sha256": "fd9980f7bd2570eec2479018fb60d8a2bd32751be94002039b378431bd6970b4"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-path-repair-01/implemented.v",
+    "sha256": "4d4a0cb29e6149e86d8375fe9744755dab149826eea4042675c2337ba167017c"
+  },
+  "selected_recipe": {
+    "path": "build/validation/paired-path-repair-01/candidate.tcl",
+    "sha256": "2d584e1f4deb7300e3fdc1e549d26b033fd1b8bebe3fa91282bdb193933cb0d8"
+  },
+  "changes": {
+    "distribution_driver_buffers": 9,
+    "status_driver_buffers": 1,
+    "sram_enable_receiver_buffers": 2,
+    "input_hold_endpoints": 7,
+    "input_hold_buffers": 14,
+    "total_buffers": 26,
+    "cell_counts": {
+      "sg13cmos5l_buf_8": 1,
+      "sg13cmos5l_buf_4": 11,
+      "sg13cmos5l_buf_1": 14
+    },
+    "resized_original_cells": 0,
+    "moved_original_cells": 0,
+    "new_state_bits": 0,
+    "added_pipeline_cycles": 0
+  },
+  "coverage": {
+    "original_distribution_connections": 1100,
+    "additional_timed_connections": 19,
+    "expanded_before_connections": 1119,
+    "after_connections": 1145,
+    "distribution_after_connections": 1109,
+    "distribution_trees": 211,
+    "macro_write_inputs": 64,
+    "dynamic_non_DIN_macro_inputs": 11,
+    "static_non_DIN_macro_inputs_classified": 208,
+    "clock_macro_inputs_classified": 1,
+    "changed_original_connections": 19,
+    "added_connections": 26,
+    "declared_path_roles_preserved": {
+      "path": "build/validation/paired-path-repair-01/coverage-roles.json",
+      "sha256": "bb8520b4b59b59183db93043b949929112918347e2858d7ef618918779684629"
+    }
+  },
+  "area": {
+    "source_um2": 358297.5456,
+    "candidate_um2": 359360.784,
+    "added_um2": 1063.238399999973,
+    "added_fraction": 0.002967473299934246,
+    "budget_um2": 1074.8926368,
+    "source_full_route_um2": 359075.9232,
+    "this_repair_added_um2": 284.8608,
+    "remaining_cumulative_budget_um2": 11.654236800027093
+  },
+  "gates": {
+    "all_connections_within_reserve": true,
+    "whole_chip_timing_floors": true,
+    "whole_chip_violation_counts_zero": true,
+    "measured_electrical_limits_met": true,
+    "measured_paths_positive": true,
+    "added_area_within_budget": true
+  },
+  "reserve": {
+    "required_fraction": 0.2,
+    "counts": {
+      "within_trial_reserve": 1145
+    },
+    "worst_by_corner": {
+      "nom_fast_1p32V_m40C": {
+        "capacitance": {
+          "net": "_03380_",
+          "pin": "_07195_/X",
+          "limit": 0.300000012,
+          "actual": 0.237356529,
+          "reserve_fraction": 0.20881160164753584,
+          "remaining_budget": 0.06264348299999997
+        },
+        "slew": {
+          "net": "net31",
+          "pin": "memory.storage/A_DIN[14]",
+          "limit": 0.379999995,
+          "actual": 0.257332683,
+          "reserve_fraction": 0.32280872003695676,
+          "remaining_budget": 0.12266731199999997
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "capacitance": {
+          "net": "memory.mem_data[28]",
+          "pin": "_10768_/Q",
+          "limit": 0.300000012,
+          "actual": 0.233885646,
+          "reserve_fraction": 0.22038121118475149,
+          "remaining_budget": 0.06611436599999998
+        },
+        "slew": {
+          "net": "net1890",
+          "pin": "memory.storage/A_DIN[53]",
+          "limit": 0.595200002,
+          "actual": 0.463523358,
+          "reserve_fraction": 0.22123091995554128,
+          "remaining_budget": 0.131676644
+        }
+      },
+      "nom_typ_1p20V_25C": {
+        "capacitance": {
+          "net": "memory.mem_data[28]",
+          "pin": "_10768_/Q",
+          "limit": 0.300000012,
+          "actual": 0.234707549,
+          "reserve_fraction": 0.21764153462767194,
+          "remaining_budget": 0.065292463
+        },
+        "slew": {
+          "net": "net31",
+          "pin": "memory.storage/A_DIN[14]",
+          "limit": 0.476000041,
+          "actual": 0.301945329,
+          "reserve_fraction": 0.365661128167844,
+          "remaining_budget": 0.174054712
+        }
+      }
+    }
+  },
+  "timing": {
+    "before": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.34742,
+        "timing__hold__ws": 0.0414293,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 3
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": -0.074067,
+        "timing__hold__ws": 0.290273,
+        "timing__setup_vio__count": 1,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 1,
+        "design__max_cap_violation__count": 3
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 5.89066,
+        "timing__hold__ws": 0.121309,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 3
+      }
+    },
+    "after": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.50711,
+        "timing__hold__ws": 0.093797,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.436742,
+        "timing__hold__ws": 0.43988,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.21607,
+        "timing__hold__ws": 0.208469,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      }
+    },
+    "floors": {
+      "nom_fast_1p32V_m40C": {
+        "setup": {
+          "actual_ns": 9.50711,
+          "floor_ns": 8.530533,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.093797,
+          "floor_ns": 0.07927839,
+          "passed": true
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "setup": {
+          "actual_ns": 0.436742,
+          "floor_ns": 0.3673431,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.43988,
+          "floor_ns": 0.31582889999999997,
+          "passed": true
+        }
+      },
+      "nom_typ_1p20V_25C": {
+        "setup": {
+          "actual_ns": 6.21607,
+          "floor_ns": 5.565105,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.208469,
+          "floor_ns": 0.1573092,
+          "passed": true
+        }
+      }
+    },
+    "semantic_path_slacks_ns": {
+      "nom_fast_1p32V_m40C": {
+        "sram_address": 13.117064,
+        "entry_state": 14.574104,
+        "rejection_status": 9.507114,
+        "upload_hold": 0.229616
+      },
+      "nom_slow_1p08V_125C": {
+        "sram_address": 3.411186,
+        "entry_state": 6.833427,
+        "rejection_status": 0.436742,
+        "upload_hold": 0.64571
+      },
+      "nom_typ_1p20V_25C": {
+        "sram_address": 9.588637,
+        "entry_state": 11.807533,
+        "rejection_status": 6.216071,
+        "upload_hold": 0.406646
+      }
+    }
+  },
+  "functional": {
+    "identity": {
+      "path": "build/validation/paired-path-repair-01/identity.json",
+      "sha256": "ab18cdcf997cc282aedc0240dee10e00dc53004ec2b3badf9ffab7c4c84a2a56"
+    },
+    "corruption_control": {
+      "status": "rejected",
+      "mutation": "path_guard_12_1/A tied to zero",
+      "reason": "Changed connectivity after buffer contraction"
+    },
+    "pin_trace_edges_reused": 331401,
+    "cumulative_added_buffers": 328,
+    "prior_resizes": 168,
+    "new_pin_simulation": false
+  },
+  "physical_checks": {
+    "original_cells_and_geometry_retained": true,
+    "clock_connections_fixed": 342,
+    "hold_cells_retained": 1682,
+    "corridor_clear": true,
+    "added_power_terminals_bound": true,
+    "independent_placement_check": true,
+    "added_cells_moved_from_plan_hints": [
+      "path_guard_0_0",
+      "path_guard_3_0",
+      "path_guard_4_0",
+      "path_guard_5_0",
+      "path_guard_13_1",
+      "path_guard_14_1",
+      "path_guard_16_1",
+      "path_guard_17_1",
+      "path_guard_18_1"
+    ],
+    "nominal_layer_rc_verified": true,
+    "complete_consumed_net_annotation": true,
+    "changed_guide_rectangle_sets": 36,
+    "guide_changes_outside_declared_connections": 0,
+    "clock_guides_unchanged": true
+  },
+  "congestion": {
+    "source_whole_chip_overflow": 20,
+    "source_layer": "Metal3",
+    "source_report": {
+      "path": "build/validation/paired-distribution-route-01/report.json",
+      "sha256": "e77b07eaf6e08e89d9abe6def32deb354c5ca2926c2132e19ed53284d1a29619"
+    },
+    "local_incremental_saved_grid": {
+      "Metal2": 0,
+      "Metal3": 0,
+      "Metal4": 0
+    },
+    "whole_chip_requalified": false,
+    "boundary": "Incremental zero grid counts and inherited markers do not replace the source full-route capacity/demand result."
+  },
+  "clock_rules": {
+    "stored_bindings_retained": 9,
+    "source_full_route_policy": {
+      "stored_bindings_unchanged": true,
+      "stored_bindings": {
+        "clk": "CTS_NDR_0",
+        "clk_regs": "CTS_NDR_1",
+        "clknet_0_clk": "CTS_NDR_0",
+        "clknet_0_clk_regs": "CTS_NDR_1",
+        "delaynet_0_clk": "CTS_NDR_0",
+        "delaynet_1_clk": "CTS_NDR_0",
+        "delaynet_2_clk": "CTS_NDR_0",
+        "delaynet_3_clk": "CTS_NDR_0",
+        "delaynet_4_clk": "CTS_NDR_0"
+      },
+      "source_runtime_relaxations": [
+        "clknet_0_clk_regs",
+        "delaynet_4_clk",
+        "clk"
+      ],
+      "route_runtime_relaxations": [
+        "clk"
+      ],
+      "boundary": "Only clk is relaxed this time; stored clock policy and cells are unchanged. This comparison does not isolate the timing impact of effective routing-policy changes."
+    },
+    "new_local_relaxation_warnings": [],
+    "effective_whole_chip_policy_requalified": false
+  },
+  "verification": {
+    "focused_tests": 74,
+    "connection_corner_records": 3435,
+    "min_max_path_summaries": 6870,
+    "exact_containers_confirmed_absent": 10,
+    "initial_identities": 1573,
+    "initial_identities_unchanged_before_docs": 1569,
+    "modified_source_originals_archived": [
+      "scripts/physical_repair_plan.py",
+      "scripts/physical_distribution_route.py",
+      "scripts/physical_distribution_acceptance.py"
+    ],
+    "documentation_updates": [
+      "docs/physical-targets.md",
+      "docs/research/status.md",
+      "docs/research/results.md",
+      "docs/research/journal.md",
+      "docs/validation.md"
+    ],
+    "unrelated_edit_preserved": {
+      "path": "README.md",
+      "initial_sha256": "d26ad074190a61a86b3992333915af98f461fa02dfb0b3f863b6b9031cb8eb88",
+      "current_sha256": "95482ef8615f3e99aa07f5d4e0149e086ae911635710548ea5ee3dc965da1e6f",
+      "description": "README changed outside this physical task; observed bytes preserved, exact external diff not reconstructed."
+    },
+    "checked_hashes": 2002
+  },
+  "bounds": {
+    "each_physical_command_seconds": 120,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "runtime_seconds": {
+    "source_additional_read_only_collection": 12.134,
+    "local_repair": 5.739,
+    "independent_geometry_and_STA": 12.434,
+    "complete_connections_geometry_and_placement": 30.897,
+    "physical_total": 61.204,
+    "native_functional_readbacks": 0.9039999999999999
+  },
+  "source_sha256": {
+    "scripts/physical_repair_plan.py": "8661fbfa9f80c2f031161ab7754263182548def9e67cf78e0dd27e5a929161fd",
+    "scripts/physical_distribution_route.py": "fc19c84057a090133d9f425666cd4bcb5e42992f285e70f5d6e89e61c877c35b",
+    "scripts/physical_distribution_acceptance.py": "1d399391f37b2ff4cf4cf30aa0de12c654d4398b317b2de5a254a915c68b80cb",
+    "test/test_physical_path_repair.py": "5cfcdbd649c2f748808b1426ab4d6bac8663a143b4e21ba9dbffb7b5eb7e0e20"
+  },
+  "evidence_boundary": [
+    "One exact local additive repair; no new whole-chip route or detailed route.",
+    "Original reserve, timing floors and cumulative area reference remain fixed.",
+    "All timing uses estimated coarse wires and nominal RC; the fast cell/SRAM screen has mismatched temperatures.",
+    "The 20% reserve remains an experimental budget rather than a universal routing guard band.",
+    "Placement and power pin binding pass; whole-chip pin access and metal power continuity are not newly qualified.",
+    "Buffer-contracted identity reuses the prior pin trace; complete Lean compiler/package refinement remains open.",
+    "No RTL, execution-edge, pipeline, default-backend or licensing change."
+  ],
+  "next_gate": "Extend shared admission to reconstruct the declared path/control scope and every serial buffer stage, bind full ancestry and the original cumulative area/timing budgets, then admit one bounded whole-chip coarse route. Recheck every covered connection, whole-chip timing/electrical limits, native congestion capacity/demand, effective clock rules and minimum pin access. Detailed routing remains unadmitted.",
+  "report": "build/validation/paired-path-repair-01/report.json",
+  "report_sha256": "bd8c280c0d19368043b43741baef7e5c1de3de826616eb0efb5a7fb682433178"
+}

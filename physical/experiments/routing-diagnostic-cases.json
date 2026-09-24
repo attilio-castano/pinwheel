@@ -1,0 +1,127 @@
+{
+  "schema": 1,
+  "routing": [
+    {
+      "name": "pass-0",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "invocation": "build/physical/hybrid-chip-14-invocation.json",
+      "pass": 0,
+      "iteration": 64,
+      "report": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-14/05-openroad-detailedrouting/drt-run-0/tt_um_pinwheel.drc-64.rpt",
+      "context": "build/validation/routing-diagnostics-01/pass-0-v3.json",
+      "fresh_drc": {
+        "receipt": "build/validation/routing-diagnostics-01/resolved-drc-0/report.json",
+        "report": "build/validation/routing-diagnostics-01/resolved-drc-0/drc.rpt",
+        "script": "build/validation/routing-diagnostics-01/resolved-drc-0/probe.tcl"
+      }
+    },
+    {
+      "name": "pass-1",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "invocation": "build/physical/hybrid-chip-14-invocation.json",
+      "pass": 1,
+      "iteration": 64,
+      "report": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-14/05-openroad-detailedrouting/drt-run-1/tt_um_pinwheel.drc-64.rpt",
+      "context": "build/validation/routing-diagnostics-01/pass-1-v3.json",
+      "fresh_drc": {
+        "receipt": "build/validation/routing-diagnostics-01/resolved-drc-1/report.json",
+        "report": "build/validation/routing-diagnostics-01/resolved-drc-1/drc.rpt",
+        "script": "build/validation/routing-diagnostics-01/resolved-drc-1/probe.tcl"
+      }
+    },
+    {
+      "name": "pass-2",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "invocation": "build/physical/hybrid-chip-14-invocation.json",
+      "pass": 2,
+      "iteration": 64,
+      "report": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-14/05-openroad-detailedrouting/drt-run-2/tt_um_pinwheel.drc-64.rpt",
+      "context": "build/validation/routing-diagnostics-01/pass-2-v3.json",
+      "fresh_drc": {
+        "receipt": "build/validation/routing-diagnostics-01/resolved-drc-2/report.json",
+        "report": "build/validation/routing-diagnostics-01/resolved-drc-2/drc.rpt",
+        "script": "build/validation/routing-diagnostics-01/resolved-drc-2/probe.tcl"
+      }
+    },
+    {
+      "name": "pass-3",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "invocation": "build/physical/hybrid-chip-14-invocation.json",
+      "pass": 3,
+      "iteration": 64,
+      "report": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-14/05-openroad-detailedrouting/drt-run-3/tt_um_pinwheel.drc-64.rpt",
+      "context": "build/validation/routing-diagnostics-01/pass-3-v3.json",
+      "fresh_drc": {
+        "receipt": "build/validation/routing-diagnostics-01/resolved-drc-3/report.json",
+        "report": "build/validation/routing-diagnostics-01/resolved-drc-3/drc.rpt",
+        "script": "build/validation/routing-diagnostics-01/resolved-drc-3/probe.tcl"
+      }
+    }
+  ],
+  "global_screens": [
+    {
+      "name": "baseline",
+      "design": "build/physical/hybrid-chip-north",
+      "state": "build/physical/hybrid-chip-north/runs/hybrid-chip-08/39-openroad-globalrouting/state_out.json",
+      "context": "build/physical/hybrid-chip-north/diagnosis/orientation/context-v2.json",
+      "guide": "build/physical/hybrid-chip-north/runs/hybrid-chip-08/39-openroad-globalrouting/after_grt.guide",
+      "timing_state": "build/physical/hybrid-chip-north/runs/hybrid-chip-08/38-openroad-stamidpnr-2/state_out.json"
+    },
+    {
+      "name": "wider-gap",
+      "design": "build/physical/hybrid-chip-widegap",
+      "state": "build/physical/hybrid-chip-widegap/runs/hybrid-chip-10/39-openroad-globalrouting/state_out.json",
+      "context": "build/physical/hybrid-chip-widegap/diagnosis/gap/context.json",
+      "guide": "build/physical/hybrid-chip-widegap/runs/hybrid-chip-10/39-openroad-globalrouting/after_grt.guide",
+      "timing_state": "build/physical/hybrid-chip-widegap/runs/hybrid-chip-10/38-openroad-stamidpnr-2/state_out.json"
+    },
+    {
+      "name": "full-corridor",
+      "design": "build/physical/hybrid-chip-corridor",
+      "state": "build/physical/hybrid-chip-corridor/runs/hybrid-chip-11/39-openroad-globalrouting/state_out.json",
+      "context": "build/physical/hybrid-chip-corridor/diagnosis/corridor/39-openroad-globalrouting.json",
+      "guide": "build/physical/hybrid-chip-corridor/runs/hybrid-chip-11/39-openroad-globalrouting/after_grt.guide",
+      "timing_state": "build/physical/hybrid-chip-corridor/runs/hybrid-chip-11/38-openroad-stamidpnr-2/state_out.json"
+    },
+    {
+      "name": "half-corridor",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "state": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-12/39-openroad-globalrouting/state_out.json",
+      "context": "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/39-openroad-globalrouting.json",
+      "guide": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-12/39-openroad-globalrouting/after_grt.guide",
+      "timing_state": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-12/38-openroad-stamidpnr-2/state_out.json"
+    },
+    {
+      "name": "early-metal4",
+      "design": "build/physical/hybrid-chip-corridor-half",
+      "state": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-15/01-openroad-globalrouting/state_out.json",
+      "context": "build/validation/routing-diagnostics-01/global-15-context.json",
+      "guide": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-15/01-openroad-globalrouting/after_grt.guide",
+      "timing_state": "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-12/37-openroad-resizertimingpostcts/state_out.json"
+    }
+  ],
+  "calibration": [
+    {
+      "baseline": "baseline",
+      "candidate": "wider-gap",
+      "expected": "reject"
+    },
+    {
+      "baseline": "baseline",
+      "candidate": "full-corridor",
+      "expected": "reject"
+    },
+    {
+      "baseline": "baseline",
+      "candidate": "half-corridor",
+      "expected": "eligible_for_bounded_trial"
+    },
+    {
+      "baseline": "half-corridor",
+      "candidate": "early-metal4",
+      "expected": "reject",
+      "minimum_overflow_improvement": 0
+    }
+  ],
+  "calibration_note": "Regression examples calibrated from retained experiments, not an independently validated predictor of detailed-route closure. Timing figures are inherited from explicitly named source states."
+}

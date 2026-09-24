@@ -1,0 +1,32 @@
+{
+  "MAX_FANOUT_CONSTRAINT": 8,
+  "GRT_ALLOW_CONGESTION": true,
+  "CTS_SINK_CLUSTERING_SIZE": 7,
+  "RUN_POST_GRT_DESIGN_REPAIR": false,
+  "RUN_POST_GRT_RESIZER_TIMING": false,
+  "RUN_ANTENNA_REPAIR": false,
+  "LAYERS_RC": {
+    "nom_*": {
+      "Metal1": {
+        "res": 0.00084375,
+        "cap": 6.8784e-05
+      },
+      "Metal2": {
+        "res": 0.000515,
+        "cap": 9.302e-05
+      },
+      "Metal3": {
+        "res": 0.000515,
+        "cap": 9.2e-05
+      },
+      "Metal4": {
+        "res": 0.000515,
+        "cap": 9.1788e-05
+      },
+      "TopMetal1": {
+        "res": 1.2804878048780488e-05,
+        "cap": 0.0001108496
+      }
+    }
+  }
+}

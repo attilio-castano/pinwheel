@@ -1,0 +1,395 @@
+{
+  "schema": 1,
+  "created_utc": "2026-09-21T22:12:38.295483+00:00",
+  "study": "local-decode-03",
+  "status": "proved-and-mapped-experimental-tile",
+  "decision": "Keep the compact tile candidate experimental. Cost buffered shared-input distribution before whole-chip integration; no placement or routing allocation.",
+  "report": "build/storage/map-tile/local-decode-03/report.json",
+  "report_sha256": "3c69d92ca85e0d81030bad2b69c0184218e5f0b0273b5f97446fb2b97ac929e3",
+  "unchanged_chip_report": "build/validation/map-tile-boundary-01/report.json",
+  "unchanged_chip_report_sha256": "58e1acdde31fc838ec692bcc1e6bbf9ec66d7b415831d7d82973905011c6a021",
+  "tests": "build/validation/map-tile-01/tests.json",
+  "tests_sha256": "1c66be0021f82d4253429fcbc38a030835f52570c2df8e114b30e315924f2770",
+  "focused_tests": 36,
+  "audit": {
+    "declarations": 14526,
+    "theorems": 7421,
+    "standard_axioms_only": true,
+    "log_sha256": "d0001486cc29f0d15d11f85d9c4de4392a7c10a6fecb89708db2e62ba6f4a86a"
+  },
+  "source_sha256": {
+    "Pinwheel/Hardware/Storage/MapTile.lean": "67e102f47e8e0343b68e6e3da85cfbf4d2a949f63b8925beb961d6a5a3bfd506",
+    "Pinwheel.lean": "ddc875f5bd5c00358b1fcb48277c6c5063b7b812c8c3f78d2215492fd20dd39d",
+    "lakefile.toml": "593faf83c79aaf6bdbf3790fb1a83eebed6bbacf7ea0c61abcb6b74186bc227b",
+    "test/MapTileEmit.lean": "933879e5b44fe03edd27ef7157aa9021e0c5b2bdf502507a7addfca1bbf736a4",
+    "test/map_tile_oracle.sv": "7dd37ebe9eef89b6cbe522ec84515d817986841edd9df6312c814099d1664b2f",
+    "test/test_map_tile.py": "fba63b8a529b419ed7ff92cb8990237ca03aca0207524135c92357ff984d6557",
+    "scripts/check-map-tile.py": "4ec72fb23ab51a1fb67c005eeb5b7e8b449d34f1700a27cf21d4b0f056f0eb4e"
+  },
+  "variants": {
+    "tile": {
+      "typical": {
+        "state_bits": 80,
+        "cells": 258,
+        "combinational_cells": 178,
+        "cell_types": {
+          "sg13cmos5l_buf_1": 17,
+          "sg13cmos5l_dfrbpq_1": 80,
+          "sg13cmos5l_mux2_1": 92,
+          "sg13cmos5l_mux4_1": 46,
+          "sg13cmos5l_nand2_1": 1,
+          "sg13cmos5l_nand2b_1": 3,
+          "sg13cmos5l_nand3_1": 1,
+          "sg13cmos5l_nand3b_1": 2,
+          "sg13cmos5l_nor2_1": 9,
+          "sg13cmos5l_nor3_1": 6,
+          "sg13cmos5l_nor4_1": 1
+        },
+        "area_um2": 7664.0256,
+        "logic_depth": {
+          "index0": 4,
+          "index1": 4,
+          "next_state": 3
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_hi": 7,
+          "write_data": 7,
+          "read_hi0": 2,
+          "read_hi1": 2
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          1134.99
+        ],
+        "mapped_sha256": "0335e0797cf13d0f1a3428ee12e30e1fcf2c22e859787844a7872642d04f15e7"
+      },
+      "slow": {
+        "state_bits": 80,
+        "cells": 258,
+        "combinational_cells": 178,
+        "cell_types": {
+          "sg13cmos5l_buf_1": 17,
+          "sg13cmos5l_dfrbpq_1": 80,
+          "sg13cmos5l_mux2_1": 92,
+          "sg13cmos5l_mux4_1": 46,
+          "sg13cmos5l_nand2_1": 1,
+          "sg13cmos5l_nand2b_1": 3,
+          "sg13cmos5l_nand3_1": 1,
+          "sg13cmos5l_nand3b_1": 2,
+          "sg13cmos5l_nor2_1": 9,
+          "sg13cmos5l_nor3_1": 6,
+          "sg13cmos5l_nor4_1": 1
+        },
+        "area_um2": 7664.0256,
+        "logic_depth": {
+          "index0": 4,
+          "index1": 4,
+          "next_state": 3
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_hi": 7,
+          "write_data": 7,
+          "read_hi0": 2,
+          "read_hi1": 2
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          1779.68
+        ],
+        "mapped_sha256": "6bf07d7ce20536a21a279d256513661523bf4e5a241b4dcb84cc4a4caf38543e"
+      }
+    },
+    "flat": {
+      "typical": {
+        "state_bits": 2560,
+        "cells": 10078,
+        "combinational_cells": 7518,
+        "cell_types": {
+          "sg13cmos5l_a21o_1": 12,
+          "sg13cmos5l_a21oi_1": 440,
+          "sg13cmos5l_a221oi_1": 68,
+          "sg13cmos5l_a22oi_1": 22,
+          "sg13cmos5l_and2_1": 17,
+          "sg13cmos5l_and3_1": 4,
+          "sg13cmos5l_buf_1": 954,
+          "sg13cmos5l_dfrbpq_1": 2560,
+          "sg13cmos5l_inv_1": 149,
+          "sg13cmos5l_mux2_1": 2698,
+          "sg13cmos5l_mux4_1": 1306,
+          "sg13cmos5l_nand2_1": 154,
+          "sg13cmos5l_nand2b_1": 59,
+          "sg13cmos5l_nand3_1": 406,
+          "sg13cmos5l_nand3b_1": 3,
+          "sg13cmos5l_nand4_1": 1,
+          "sg13cmos5l_nor2_1": 405,
+          "sg13cmos5l_nor2b_1": 31,
+          "sg13cmos5l_nor3_1": 184,
+          "sg13cmos5l_nor4_1": 1,
+          "sg13cmos5l_o21ai_1": 551,
+          "sg13cmos5l_or2_1": 39,
+          "sg13cmos5l_or3_1": 12,
+          "sg13cmos5l_or4_1": 2
+        },
+        "area_um2": 253254.9348,
+        "logic_depth": {
+          "index0": 14,
+          "index1": 13,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_bank": 4,
+          "cursor": 7,
+          "write_data": 1,
+          "read_bank": 1,
+          "pc0": 2,
+          "pc1": 3
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          1936.18
+        ],
+        "mapped_sha256": "bbb3061f40a7bccbd7a98f00566688c135db1c31a8d5fc98e8552ecc274f4503"
+      },
+      "slow": {
+        "state_bits": 2560,
+        "cells": 10078,
+        "combinational_cells": 7518,
+        "cell_types": {
+          "sg13cmos5l_a21o_1": 12,
+          "sg13cmos5l_a21oi_1": 440,
+          "sg13cmos5l_a221oi_1": 68,
+          "sg13cmos5l_a22oi_1": 22,
+          "sg13cmos5l_and2_1": 17,
+          "sg13cmos5l_and3_1": 4,
+          "sg13cmos5l_buf_1": 954,
+          "sg13cmos5l_dfrbpq_1": 2560,
+          "sg13cmos5l_inv_1": 149,
+          "sg13cmos5l_mux2_1": 2698,
+          "sg13cmos5l_mux4_1": 1306,
+          "sg13cmos5l_nand2_1": 154,
+          "sg13cmos5l_nand2b_1": 59,
+          "sg13cmos5l_nand3_1": 406,
+          "sg13cmos5l_nand3b_1": 3,
+          "sg13cmos5l_nand4_1": 1,
+          "sg13cmos5l_nor2_1": 405,
+          "sg13cmos5l_nor2b_1": 31,
+          "sg13cmos5l_nor3_1": 184,
+          "sg13cmos5l_nor4_1": 1,
+          "sg13cmos5l_o21ai_1": 551,
+          "sg13cmos5l_or2_1": 39,
+          "sg13cmos5l_or3_1": 12,
+          "sg13cmos5l_or4_1": 2
+        },
+        "area_um2": 253254.9348,
+        "logic_depth": {
+          "index0": 14,
+          "index1": 13,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 10,
+        "input_maximum_fanout": {
+          "write_enable": 4,
+          "write_bank": 4,
+          "cursor": 7,
+          "write_data": 1,
+          "read_bank": 1,
+          "pc0": 2,
+          "pc1": 3
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          3051.99
+        ],
+        "mapped_sha256": "a87c55a4533c1d79d1b7e943530b6ebc2399ccb3dfe7253193e43224ba934fd7"
+      }
+    },
+    "tiled": {
+      "typical": {
+        "state_bits": 2560,
+        "cells": 8548,
+        "combinational_cells": 5988,
+        "cell_types": {
+          "sg13cmos5l_a21o_1": 1,
+          "sg13cmos5l_a21oi_1": 21,
+          "sg13cmos5l_a221oi_1": 3,
+          "sg13cmos5l_buf_1": 577,
+          "sg13cmos5l_dfrbpq_1": 2560,
+          "sg13cmos5l_inv_1": 15,
+          "sg13cmos5l_mux2_1": 2960,
+          "sg13cmos5l_mux4_1": 1553,
+          "sg13cmos5l_nand2_1": 45,
+          "sg13cmos5l_nand2b_1": 100,
+          "sg13cmos5l_nand3_1": 36,
+          "sg13cmos5l_nand3b_1": 64,
+          "sg13cmos5l_nor2_1": 342,
+          "sg13cmos5l_nor2b_1": 5,
+          "sg13cmos5l_nor3_1": 198,
+          "sg13cmos5l_nor4_1": 32,
+          "sg13cmos5l_o21ai_1": 33,
+          "sg13cmos5l_or2_1": 1,
+          "sg13cmos5l_xnor2_1": 1,
+          "sg13cmos5l_xor2_1": 1
+        },
+        "area_um2": 250189.4304,
+        "logic_depth": {
+          "index0": 9,
+          "index1": 9,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 224,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 224,
+          "write_data": 224,
+          "read_bank": 1,
+          "pc0": 64,
+          "pc1": 64
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          1142.72,
+          1134.99
+        ],
+        "mapped_sha256": "75b9b2d8c2658bf1dc11eece54c2083cab61c6d9abd70bd247172418ab74c6f1",
+        "composition": {
+          "tiles": 32,
+          "tile_area_um2": 7664.0256,
+          "glue_area_um2": 4940.6112,
+          "unique_tile_boundary_nets": 369
+        }
+      },
+      "slow": {
+        "state_bits": 2560,
+        "cells": 8548,
+        "combinational_cells": 5988,
+        "cell_types": {
+          "sg13cmos5l_a21o_1": 1,
+          "sg13cmos5l_a21oi_1": 21,
+          "sg13cmos5l_a221oi_1": 3,
+          "sg13cmos5l_buf_1": 577,
+          "sg13cmos5l_dfrbpq_1": 2560,
+          "sg13cmos5l_inv_1": 15,
+          "sg13cmos5l_mux2_1": 2960,
+          "sg13cmos5l_mux4_1": 1553,
+          "sg13cmos5l_nand2_1": 45,
+          "sg13cmos5l_nand2b_1": 100,
+          "sg13cmos5l_nand3_1": 36,
+          "sg13cmos5l_nand3b_1": 64,
+          "sg13cmos5l_nor2_1": 342,
+          "sg13cmos5l_nor2b_1": 5,
+          "sg13cmos5l_nor3_1": 198,
+          "sg13cmos5l_nor4_1": 32,
+          "sg13cmos5l_o21ai_1": 33,
+          "sg13cmos5l_or2_1": 1,
+          "sg13cmos5l_xnor2_1": 1,
+          "sg13cmos5l_xor2_1": 1
+        },
+        "area_um2": 250189.4304,
+        "logic_depth": {
+          "index0": 9,
+          "index1": 9,
+          "next_state": 8
+        },
+        "maximum_signal_fanout": 224,
+        "input_maximum_fanout": {
+          "write_enable": 2,
+          "write_bank": 2,
+          "cursor": 224,
+          "write_data": 224,
+          "read_bank": 1,
+          "pc0": 64,
+          "pc1": 64
+        },
+        "scope": "Mapped cell area and conservative gate depth/pin fanout; clock excluded. No wire or timing model.",
+        "abc_module_delays_ps": [
+          1793.23,
+          1779.68
+        ],
+        "mapped_sha256": "a100a3f9d93c09b016640e541f1d103cdb60e80d7bfc2954f00bedbc24a136f6",
+        "composition": {
+          "tiles": 32,
+          "tile_area_um2": 7664.0256,
+          "glue_area_um2": 4940.6112,
+          "unique_tile_boundary_nets": 369
+        }
+      }
+    }
+  },
+  "tile_interface": {
+    "functional_input_bits": 18,
+    "output_bits": 10,
+    "clock_bits": 1,
+    "state_bits": 80
+  },
+  "composition_boundary": {
+    "distinct_input_nets": 49,
+    "distinct_output_nets": 320,
+    "unique_signal_nets": 369,
+    "excludes_clock": true
+  },
+  "map_area_difference_um2": -3065.5044,
+  "map_area_reduction_percent": 1.210442,
+  "positive_arbitrary_state_checks": [
+    "tile-rtl-proof",
+    "tile-typical-mapped-proof",
+    "tile-slow-mapped-proof",
+    "flat-rtl-proof",
+    "flat-typical-mapped-proof",
+    "flat-slow-mapped-proof",
+    "tiled-rtl-proof",
+    "tiled-typical-mapped-proof",
+    "tiled-slow-mapped-proof"
+  ],
+  "negative_control": "swapped-reader-negative",
+  "seconds": {
+    "tile_experiment": 77.772,
+    "unchanged_chip_gate": 11.456
+  },
+  "production_chip_all_four_mlir_and_rtl_pairs_byte_identical": true,
+  "production_chip_emitted_artifacts": {
+    "hybrid": {
+      "core": {
+        "mlir_sha256": "9fd47292a7cf31e279fb28c764fb414a14c97a7707ce1437889a3b4d416c5c64",
+        "rtl_sha256": "929a4df603ce8bb7a340e867b3975a8e040ec0afe51ba47c19d093e73999399c"
+      },
+      "chip": {
+        "mlir_sha256": "368610c01824bafd4f63c98d0e903a25a3df2f6771bb156e5b94aa22c106e228",
+        "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8"
+      }
+    },
+    "direct": {
+      "core": {
+        "mlir_sha256": "ba3cb3ffdb4c6beeae72f7a50f3de2191f37c5f517ba7f32a1646947f4651f94",
+        "rtl_sha256": "92b2be616a9901d049d190ff316a4dba2c48b690b458440e7ae0fefed42eaa55"
+      },
+      "chip": {
+        "mlir_sha256": "aa998e5ba1dd3304c3dbcce26eceaab76a4666fe9933bc247cb6c8c6d32cb400",
+        "rtl_sha256": "4a31943cd96a15e6982f10109fcd0f705b4b7d5784f83efa4dab9c0b21a05b29"
+      }
+    }
+  },
+  "preserved_receipts": {
+    "physical/experiments/map-tile-plan.json": "f4528ebe8f06c3730d4885f794fe5bdbfc1f60d926a18f08bc8741f3196f4ffa",
+    "physical/experiments/map-slice-results.json": "ad20007b0af26e1b3212b701d80627030371a90870a08250d56bdcff25a38705",
+    "physical/experiments/chip-organization-results.json": "f072a00209ba4f6b1d09b1d74d4b62313e09c15ddd549b9c9644c35bf4f684e7",
+    "physical/experiments/hybrid-chip-physical-results.json": "450bd47c576e43cdbaee7d2d6cae42d314761e2a6a553d9fcf35cff8325e3f2e"
+  },
+  "prior_attempts": [
+    "build/storage/map-tile/local-decode-01/report.json",
+    "build/storage/map-tile/local-decode-02/report.json"
+  ],
+  "limitations": [
+    "Map-only candidate, not whole-chip integration.",
+    "Per-module ABC load assumptions do not repair composed broadcast fanout.",
+    "Area excludes inter-module distribution repair, physical wires, CTS, placement and routing.",
+    "Gate depth and individual module ABC delays are not extracted timing.",
+    "Independent SAT checks cover arbitrary binary states and matching state projection; not analog or X-state behavior."
+  ]
+}

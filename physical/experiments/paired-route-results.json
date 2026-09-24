@@ -1,0 +1,440 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "status": "passed",
+  "decision": "retain-paired-require-coarse-rc-electrical-and-hold-repair-before-more-routing",
+  "physical_closure": false,
+  "detailed_route_admitted": false,
+  "source_selection": {
+    "path": "physical/experiments/paired-closure-results.json",
+    "sha256": "08bc34f164754fd8277e92db12cbc2437bd672f3f92971929fea47c5c9ac039c"
+  },
+  "control_selection": {
+    "path": "physical/experiments/local-slew-results.json",
+    "sha256": "56f201237923dcb8752b6f206e870c42f628c4f282c7fe0b8b3504eee27f96c3"
+  },
+  "receipts": {
+    "intake": {
+      "path": "build/validation/paired-route-01/admission.json",
+      "sha256": "07ce62e196871c5db337c05a74989aee194397838a6ebfa47ef310cd71053dec"
+    },
+    "invocation": {
+      "path": "build/physical/paired-route-01-invocation.json",
+      "sha256": "6fb207ed6defbcb2490d723f69040a6a208a91eb3ff4d5348849f231f8369fca"
+    },
+    "physical": {
+      "path": "build/physical/paired-route-01-report.json",
+      "sha256": "ad7cc7a4d36b5b4ba0991e13df905b03431e679bde1a623c170368465ef8c5fd"
+    },
+    "measurement": {
+      "path": "build/physical/mapped-diagnostics/paired-route-01/report.json",
+      "sha256": "ceb90b7da8f697235914bca08a1c2883bd06cd8245fc4717e89e4ba16956b217"
+    },
+    "pin_access": {
+      "path": "build/physical/probes/paired-route-access-01/report.json",
+      "sha256": "ba771da9807d0a22681373ef21131a4c1cb2fd80cb264362eb35ce1bb6031ac5"
+    },
+    "guide_overlap": {
+      "path": "build/validation/paired-route-01/guide-overlap.json",
+      "sha256": "b49710d950598acbca375b4449ca59fb107dde5b5be4ee39ec80881e5353b3c4"
+    },
+    "functional": {
+      "path": "build/physical/chip-check/paired-clock-01/report.json",
+      "sha256": "80106fdd68395d24fb2bcfa485b3e024cc4b2146117d0f2a5f7efdc9c4c788db"
+    },
+    "control_measurement": {
+      "path": "build/physical/mapped-diagnostics/local-slew-route-final-01/report.json",
+      "sha256": "f2645030372cf8c8abc9613557c975f08497e19483c6ce2119766d9ea672beb9"
+    }
+  },
+  "selected_database": {
+    "path": "build/physical/target-paired-01/runs/paired-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "71e542af6ec6e8a7bf4f98891f50f3bc097e0ec82ed72f19762a5db8f833ee2e"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-route-01/implemented.v",
+    "sha256": "ebf5a2ade4b320ca7da7ce20e0a4c94984349f5f65c1422d5918e8478d67a621"
+  },
+  "selected_state": {
+    "path": "build/physical/target-paired-01/runs/paired-route-01/01-openroad-globalrouting/state_out.json",
+    "sha256": "9a3390a6e55c9cd9564888e48c17f0175fbc9b05afca08d7d6403d9772a3f663"
+  },
+  "runtime_seconds": 36.283,
+  "measurement_seconds": 12.109,
+  "pin_access_seconds": 2.348,
+  "bounds": {
+    "tag": "paired-route-01",
+    "seconds": 600,
+    "cpus": 4,
+    "memory_gib": 6,
+    "from": "OpenROAD.GlobalRouting",
+    "to": "OpenROAD.GlobalRouting",
+    "cleanup_owner": "scripts/run-physical.py"
+  },
+  "congestion": {
+    "control": {
+      "Metal1": {
+        "resource": 0,
+        "demand": 0,
+        "usage_percent": 0.0,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal2": {
+        "resource": 141531,
+        "demand": 54740,
+        "usage_percent": 38.68,
+        "max_horizontal": 1,
+        "max_vertical": 3,
+        "overflow": 489
+      },
+      "Metal3": {
+        "resource": 172447,
+        "demand": 88232,
+        "usage_percent": 51.16,
+        "max_horizontal": 3,
+        "max_vertical": 1,
+        "overflow": 304
+      },
+      "Metal4": {
+        "resource": 138981,
+        "demand": 4090,
+        "usage_percent": 2.94,
+        "max_horizontal": 1,
+        "max_vertical": 2,
+        "overflow": 517
+      },
+      "Total": {
+        "resource": 452959,
+        "demand": 147062,
+        "usage_percent": 32.47,
+        "max_horizontal": 5,
+        "max_vertical": 6,
+        "overflow": 1310
+      }
+    },
+    "paired": {
+      "Metal1": {
+        "resource": 0,
+        "demand": 0,
+        "usage_percent": 0.0,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal2": {
+        "resource": 132967,
+        "demand": 69599,
+        "usage_percent": 52.34,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal3": {
+        "resource": 162127,
+        "demand": 97348,
+        "usage_percent": 60.04,
+        "max_horizontal": 2,
+        "max_vertical": 0,
+        "overflow": 40
+      },
+      "Metal4": {
+        "resource": 130502,
+        "demand": 24907,
+        "usage_percent": 19.09,
+        "max_horizontal": 1,
+        "max_vertical": 0,
+        "overflow": 1
+      },
+      "Total": {
+        "resource": 425596,
+        "demand": 191854,
+        "usage_percent": 45.08,
+        "max_horizontal": 3,
+        "max_vertical": 0,
+        "overflow": 41
+      }
+    },
+    "reduction_percent": 96.870229
+  },
+  "instance_area_um2": {
+    "placed_paired": 354010.1184,
+    "routed_paired": 354010.1184,
+    "routed_control": 484422.6752
+  },
+  "semantic_path_slacks_ns": {
+    "nom_fast_1p32V_m40C": {
+      "sram_address": 12.009075,
+      "entry_state": 13.968109,
+      "rejection_status": 8.21147,
+      "upload_hold": 0.200687
+    },
+    "nom_slow_1p08V_125C": {
+      "sram_address": 0.91358,
+      "entry_state": 4.982161,
+      "rejection_status": -2.493735,
+      "upload_hold": 0.53221
+    },
+    "nom_typ_1p20V_25C": {
+      "sram_address": 8.057168,
+      "entry_state": 10.770845,
+      "rejection_status": 4.375789,
+      "upload_hold": 0.331532
+    }
+  },
+  "pin_access": {
+    "counts": {
+      "stdCellPinCnt": 32942,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "identity": {
+    "netlist_byte_identical": true,
+    "context_fields_identical": [
+      "schema",
+      "extractor_sha256",
+      "units",
+      "dbu_per_micron",
+      "die",
+      "evidence_helper_sha256",
+      "instances",
+      "nets",
+      "power_shapes",
+      "ports",
+      "macro_pins",
+      "macro_obstructions",
+      "signal_segments",
+      "route_coverage",
+      "routing_obstructions",
+      "layers",
+      "rows",
+      "placement_blockages",
+      "exclusions",
+      "exclusions_sha256",
+      "exclusion_checker_sha256"
+    ],
+    "functional_pin_edges_reused": 331401,
+    "functional_mutants_reused": 1,
+    "simulation_repeated": false,
+    "physical_flip_flops": 1572,
+    "instances": 10935,
+    "corridor_clear": true
+  },
+  "changed_control_configuration_keys": [
+    "FP_OBSTRUCTIONS",
+    "MACROS",
+    "PDN_MACRO_CONNECTIONS",
+    "VERILOG_DEFINES",
+    "VERILOG_FILES"
+  ],
+  "complete_wire_estimates": true,
+  "validation": {
+    "focused_tests": 79,
+    "prior_files_unchanged": 321,
+    "prior_closure_receipt_unchanged": true,
+    "intentionally_extended_prior_helper": [
+      "scripts/physical_route_intake.py"
+    ]
+  },
+  "evidence_boundary": [
+    "One GlobalRouting step; no synthesis, placement, CTS, signal/hold repair, detailed routing or antenna repair.",
+    "Nominal per-layer RC verified in all three fresh global-route measurements; all consumed nets annotated.",
+    "Placement measurements used the retained flow configuration; their difference from this run is not a pure wire-only timing experiment.",
+    "Control and candidate differ in architecture and macro/placement geometry, with otherwise matching normalized flow controls.",
+    "Minimum-one-access-point success does not establish simultaneous legal detailed routing.",
+    "Fast screening mixes -40 C standard cells with -55 C SRAM; no extracted timing or signoff.",
+    "Pin trace transferred through exact exported Verilog identity; no new functional behavior or timing simulation claim."
+  ],
+  "next_gate": "Use this saved coarse-route database for bounded clock/data-distribution and hold repair. Prioritize the long register-clock trunk, input/serial hold paths and loaded logic on the rejection-status cone; require fresh complete timing/electrical checks and functional identity before another routing experiment. Detailed routing remains unadmitted.",
+  "report": "build/validation/paired-route-01/report.json",
+  "report_sha256": "a2a08cfe904cd790b74964d3a708d1f54b95e5972f34d4cb840f5e42636b4726",
+  "timing": {
+    "placed": {
+      "nom_fast_1p32V_m40C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.0998423,
+        "timing__setup__ws": 10.0165,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.418639,
+        "timing__setup__ws": 1.08937,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.225434,
+        "timing__setup__ws": 6.74657,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      }
+    },
+    "routed": {
+      "nom_fast_1p32V_m40C": {
+        "design__max_slew_violation__count": 11,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 70,
+        "timing__hold__ws": -0.659543,
+        "timing__setup__ws": 7.97267,
+        "timing__hold_vio__count": 91,
+        "timing__setup_vio__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "design__max_slew_violation__count": 316,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 68,
+        "timing__hold__ws": -0.491156,
+        "timing__setup__ws": -2.49374,
+        "timing__hold_vio__count": 11,
+        "timing__setup_vio__count": 1
+      },
+      "nom_typ_1p20V_25C": {
+        "design__max_slew_violation__count": 41,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 69,
+        "timing__hold__ws": -0.616964,
+        "timing__setup__ws": 4.27188,
+        "timing__hold_vio__count": 18,
+        "timing__setup_vio__count": 0
+      }
+    },
+    "control": {
+      "nom_fast_1p32V_m40C": {
+        "design__max_slew_violation__count": 3,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 2,
+        "timing__hold__ws": 0.0602609,
+        "timing__setup__ws": 11.8405,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "design__max_slew_violation__count": 22,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 1,
+        "timing__hold__ws": 0.336383,
+        "timing__setup__ws": 5.33932,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "design__max_slew_violation__count": 3,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 2,
+        "timing__hold__ws": 0.16841,
+        "timing__setup__ws": 10.0474,
+        "timing__hold_vio__count": 0,
+        "timing__setup_vio__count": 0
+      }
+    }
+  },
+  "electrical": {
+    "nom_fast_1p32V_m40C": {
+      "max slew": {
+        "pins": 11,
+        "nets": 11
+      },
+      "max capacitance": {
+        "pins": 70,
+        "nets": 70
+      },
+      "max fanout": {
+        "pins": 0,
+        "nets": 0
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "max slew": {
+        "pins": 316,
+        "nets": 58
+      },
+      "max capacitance": {
+        "pins": 68,
+        "nets": 68
+      },
+      "max fanout": {
+        "pins": 0,
+        "nets": 0
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "max slew": {
+        "pins": 41,
+        "nets": 17
+      },
+      "max capacitance": {
+        "pins": 69,
+        "nets": 69
+      },
+      "max fanout": {
+        "pins": 0,
+        "nets": 0
+      }
+    }
+  },
+  "hold_paths": {
+    "nom_fast_1p32V_m40C": {
+      "count": 91,
+      "classes": {
+        "in-reg": 36,
+        "reg-reg": 55
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "count": 11,
+      "classes": {
+        "in-reg": 11
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "count": 18,
+      "classes": {
+        "in-reg": 17,
+        "reg-reg": 1
+      }
+    }
+  },
+  "setup_path_focus": {
+    "memory.storage/A_DOUT[53]": {
+      "fanout": 1,
+      "cap_pf": 0.009471,
+      "slew_ns": 0.075372,
+      "cell_delay_ns": 6.451829,
+      "arrival_ns": 7.600631,
+      "cell": "RM_IHPSG13_1P_512x64_c2_bm_bist"
+    },
+    "_05608_/Y": {
+      "fanout": 2,
+      "cap_pf": 0.226882,
+      "slew_ns": 3.270797,
+      "cell_delay_ns": 2.200929,
+      "arrival_ns": 10.169043,
+      "cell": "sg13cmos5l_nand3_1"
+    },
+    "_06399_/X": {
+      "fanout": 3,
+      "cap_pf": 0.283454,
+      "slew_ns": 1.783126,
+      "cell_delay_ns": 1.218126,
+      "arrival_ns": 14.257854,
+      "cell": "sg13cmos5l_a21o_1"
+    }
+  }
+}

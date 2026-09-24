@@ -1,9 +1,10 @@
-import Pinwheel.Hardware.Storage.Readiness
+import Pinwheel.Hardware.Loader.ProgramImage
+import Pinwheel.Hardware.Storage.Small
 import Pinwheel.Hardware.Loader.Program
 
 /-! The words a host pushes for a program, and what they load.
 
-`Readiness.upload p` is the 322-word stream for an image `p`: the dictionary,
+`Loader.ProgramImage.upload p` is the 322-word stream for an image `p`: the dictionary,
 the address map, the idle pins, the last address. This file shows that the
 stream is what the loader wants and that the bank it leaves *is* the program:
 `upload_holds` (`Machine.Holds p (imageOf ws)`), `upload_good` (every word passes
@@ -11,8 +12,8 @@ the loader's validation at its position) and, for images with at most 32
 distinct records, `upload_fits` (every word passes the small store's capacity
 check). With the upload theorem these give `program_loads`: deliver the stream
 to a stopped machine and the engine is reset on `p`, ready to start. -/
-namespace Pinwheel.Hardware.Storage.Readiness
-open Loader
+namespace Pinwheel.Hardware.Storage.ProgramUpload
+open Loader Loader.ProgramImage
 
 variable {p : Execution.Image} {ws : List (BitVec 64)}
 
@@ -228,4 +229,4 @@ theorem program_loads (A : BitVec 9 → BitVec 64 → Bool) (h : upload p = some
   (Machine.upload_loads A ws (upload_length h) (upload_good h) hA d₀ d₁ history s hidle hd).running p
     (upload_holds h)
 
-end Pinwheel.Hardware.Storage.Readiness
+end Pinwheel.Hardware.Storage.ProgramUpload

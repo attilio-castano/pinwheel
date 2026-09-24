@@ -1,0 +1,1749 @@
+{
+  "date": "2026-09-21",
+  "base_commit": "a256e7847dc3230f90a62cc9e4e9c797e8cd9108",
+  "source_state": "Approved local changes on codex/chip-contract-consolidation; artifact hashes identify the experiment.",
+  "runs": [
+    {
+      "tag": "hybrid-chip-02",
+      "design": "hybrid-chip-02",
+      "flow_exit_code": 2,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "38-openroad-stamidpnr-2",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "2807f65c128fcd251bcdd3939e8d3974d179d63eaac69e444d7d8c6aa3b2d38b",
+      "invocation_sha256": "ed99df1c07a07c0a063c6d6f39383ecf8382a270abe48b7e9a565fb646234c3f",
+      "log_sha256": "178072d7dfe363c0545b5324b558d6aecf772cc60a6b37518f64b8c7c3e413e0",
+      "frozen_input_manifest_sha256": "a044376f0e3fcca9d60d99177a88fb363d4fed97add09aad4af9dfacaaaca7bf",
+      "config_sha256": "8e7f081ff679894cc79fd87c42ac8601411fce99d1ed414002baa8afc3ab67d0",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            228
+          ],
+          "orientation": "N"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            430
+          ],
+          "orientation": "N"
+        }
+      },
+      "density_percent": 60,
+      "horizontal_power_pitch_um": 50,
+      "global_congestion_allowed": false,
+      "final_global_overflow": 3382,
+      "last_reported_detailed_route_iteration": null,
+      "lowest_reported_detailed_route_violations": null,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483866,
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 207,
+        "timing__hold__ws": 0.251075,
+        "timing__setup__ws": 11.1907,
+        "design__instance__utilization": 0.536188,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 9908
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "timeout_seconds": 5400,
+      "resume_step": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "tag": "hybrid-chip-03",
+      "design": "hybrid-chip-03",
+      "flow_exit_code": 2,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "38-openroad-stamidpnr-2",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "55a8e588b29c891cbedf77635f1b1274d6168434daa08bbe716e36c03d837dee",
+      "invocation_sha256": "a4c1dbe72aab318c8a809b6458b3f1e6ff0f0af9484a5538c1abce9f1b734ffe",
+      "log_sha256": "f2dd91ee3ca840343131b550f103397078a1788f694ba88cc06bc6d9550db63d",
+      "frozen_input_manifest_sha256": "ef9e8799db6fc0a49764cb98a8dd4ec89117379f89451827049c0c19d14e6159",
+      "config_sha256": "533dbbf147c117eb14a608e33f027576baf323432100819c0bac019a833b5262",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            228
+          ],
+          "orientation": "N"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            430
+          ],
+          "orientation": "N"
+        }
+      },
+      "density_percent": 50,
+      "horizontal_power_pitch_um": 16,
+      "global_congestion_allowed": false,
+      "final_global_overflow": 5021,
+      "last_reported_detailed_route_iteration": null,
+      "lowest_reported_detailed_route_violations": null,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483256,
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 208,
+        "timing__hold__ws": 0.254263,
+        "timing__setup__ws": 11.2332,
+        "design__instance__utilization": 0.535513,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 0
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "timeout_seconds": 4500,
+      "resume_step": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "tag": "hybrid-chip-04",
+      "design": "hybrid-chip-04",
+      "flow_exit_code": 2,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "38-openroad-stamidpnr-2",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "62af2512c73deae2e7eb452697b2e3cb1aa0adc40f78adc025de15c2a68be22d",
+      "invocation_sha256": "4a34221ffcd653dfd73d9aa337fa58aef2993f150b89df22c203a6e6a49528f5",
+      "log_sha256": "6056c1ce1750c10d554fe3437d9cbdcf60ff40364393fec86ac4bea62a435627",
+      "frozen_input_manifest_sha256": "97dcf826d3ca3e41a2c71cfacaaab1935a9c43eeb4490f8107b497165ae1d129",
+      "config_sha256": "cfcfef2baaeb7d4faacfb68d93ac88cd2d36786bd08637857e54f85a3a8ff026",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "N"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "N"
+        }
+      },
+      "density_percent": 50,
+      "horizontal_power_pitch_um": 16,
+      "global_congestion_allowed": false,
+      "final_global_overflow": 1668,
+      "last_reported_detailed_route_iteration": null,
+      "lowest_reported_detailed_route_violations": null,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483185,
+        "design__max_slew_violation__count": 3,
+        "design__max_fanout_violation__count": 209,
+        "timing__hold__ws": 0.232898,
+        "timing__setup__ws": 11.1958,
+        "design__instance__utilization": 0.535434,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 0
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "timeout_seconds": 3600,
+      "resume_step": null,
+      "checkpoint_sha256": null
+    },
+    {
+      "tag": "hybrid-chip-05",
+      "design": "hybrid-chip-04",
+      "flow_exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "container_termination": {
+        "status": "stopped",
+        "stop_exit_code": 0
+      },
+      "last_completed_step": "05-openroad-stamidpnr-3",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "6af820485c0dde78a373829f367cdca323bda7b61afe77327c8290de35148d4f",
+      "invocation_sha256": "58ae622a4a5f6521f94617353ea1bdb1910918ad2aadc78c647f3585dcb91bd2",
+      "log_sha256": "137193f41a5a93e252bd27f4abdd43dfcbd595eb5fbea9b36e13c61b396c876a",
+      "frozen_input_manifest_sha256": "97dcf826d3ca3e41a2c71cfacaaab1935a9c43eeb4490f8107b497165ae1d129",
+      "config_sha256": "363abc8bb51e0c0db1e7340870c2f0975964595f8cc0ce52553a5efe71a4247e",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "N"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "N"
+        }
+      },
+      "density_percent": 50,
+      "horizontal_power_pitch_um": 16,
+      "global_congestion_allowed": true,
+      "final_global_overflow": 1668,
+      "last_reported_detailed_route_iteration": {
+        "iteration": 58,
+        "violations": 168
+      },
+      "lowest_reported_detailed_route_violations": 168,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483806,
+        "design__max_slew_violation__count": 24,
+        "design__max_fanout_violation__count": 222,
+        "timing__hold__ws": 0.0419088,
+        "timing__setup__ws": 7.57528,
+        "design__instance__utilization": 0.536122,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 0,
+        "antenna__violating__nets": 0
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "timeout_seconds": 2700,
+      "resume_step": "OpenROAD.GlobalRouting",
+      "checkpoint_sha256": "93b6e3ca3d3d28e00b4422dead460b51a20de4b2c0275b03855e99b08eb51871"
+    },
+    {
+      "tag": "hybrid-chip-06",
+      "design": "hybrid-chip-04",
+      "flow_exit_code": 137,
+      "stop_reason": "diagnostic_comparison_complete",
+      "container_termination": {
+        "status": "absent",
+        "evidence": {
+          "path": "build/physical/routing-termination.json",
+          "sha256": "4f250bfa9a4b29a27941af3fc7153bcecdd34ab750ed62faf27c24270c138c6c"
+        }
+      },
+      "last_completed_step": null,
+      "state_origin": "input_checkpoint",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "e9ae69a0781adc6f85baa661947196825207216966cc07ed2749502ef627e161",
+      "invocation_sha256": "2cf7bb7d964d9a800de8d78dbe971a0e74fc72c97b6e29e3c1082858c072a2ee",
+      "log_sha256": "a733883ed997d3906a466b27910623877e6478e56a7ee11c217468fed27a6c0c",
+      "config_sha256": "01a526932aee82afc01e9656cc8fe8f100db65665e3d2877f3d03af9409d0437",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "resume_step": "OpenROAD.DetailedRouting",
+      "checkpoint_sha256": "1940b9ecbfdc4f4257e571a691bbc94c8ec9eeb5fd6d3d06e4c23b00ed98ccf9",
+      "timeout_seconds": 2700,
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "last_reported_detailed_route_iteration": {
+        "iteration": 38,
+        "violations": 196
+      },
+      "lowest_reported_detailed_route_violations": 196,
+      "diagnosis": {
+        "path": "build/physical/diagnosis/baseline-final/report.json",
+        "sha256": "e3947f59477c1ec977e3d3ee7df8381b08411516ead7d16545d27ea9045237b8"
+      },
+      "comparison_iteration": 38,
+      "markers": 196,
+      "by_rule_layer": {
+        "Short / Metal4": 141,
+        "Metal Spacing / Metal4": 55
+      },
+      "markers_intersecting_macro_footprints": 196,
+      "markers_involving_power": 136,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483806,
+        "timing__setup__ws": 7.57528,
+        "timing__hold__ws": 0.0419088,
+        "design__max_slew_violation__count": 24,
+        "design__max_fanout_violation__count": 222
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required."
+    },
+    {
+      "tag": "hybrid-chip-07",
+      "design": "hybrid-chip-04",
+      "flow_exit_code": 137,
+      "stop_reason": "diagnostic_comparison_complete",
+      "container_termination": {
+        "status": "absent",
+        "evidence": {
+          "path": "build/physical/routing-termination.json",
+          "sha256": "4f250bfa9a4b29a27941af3fc7153bcecdd34ab750ed62faf27c24270c138c6c"
+        }
+      },
+      "last_completed_step": "05-openroad-stamidpnr-3",
+      "state_origin": "completed_step",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "report_sha256": "ecc8d6b95a7151624328dca7aa49fc7b37161fbec5a1485ced42168ae75b18ac",
+      "invocation_sha256": "82d26f4bf5fd3b480f8168e3fc11e8886497bbbfbdb02350f081f74b891ff163",
+      "log_sha256": "2a6453ac12d167c516bff32f699ed31c1dcc1bf22a90adce3cdfbd47be7fafe6",
+      "config_sha256": "01a526932aee82afc01e9656cc8fe8f100db65665e3d2877f3d03af9409d0437",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "resume_step": "OpenROAD.GlobalRouting",
+      "checkpoint_sha256": "82dcde75aeb22fad5984399ff59471cb130e8e0baa712ad05f9577c6be5298f1",
+      "timeout_seconds": 2700,
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "last_reported_detailed_route_iteration": {
+        "iteration": 38,
+        "violations": 240
+      },
+      "lowest_reported_detailed_route_violations": 240,
+      "diagnosis": {
+        "path": "build/physical/diagnosis/keepouts-final/report.json",
+        "sha256": "56d29676bc113a1810f1cbb6a7463518bd96bbb97f99321ce269f7d5ea0659b6"
+      },
+      "comparison_iteration": 38,
+      "markers": 240,
+      "by_rule_layer": {
+        "Short / Metal4": 236,
+        "Metal Spacing / Metal4": 4
+      },
+      "markers_intersecting_macro_footprints": 240,
+      "markers_involving_power": 118,
+      "selected_last_state_metrics": {
+        "design__instance__area": 483806,
+        "timing__setup__ws": 7.57528,
+        "timing__hold__ws": 0.0419088,
+        "design__max_slew_violation__count": 24,
+        "design__max_fanout_violation__count": 222
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required."
+    },
+    {
+      "tag": "hybrid-chip-08",
+      "design": "hybrid-chip-north",
+      "flow_exit_code": 0,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "39-openroad-globalrouting",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 1800,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "requested_stop": "OpenROAD.GlobalRouting",
+      "report_sha256": "e948aa3fc0e05c360a883dbd92ab4276b35a72ad6e0f8f3180ae3860e71ed042",
+      "invocation_sha256": "cf37c1e771aa8c9f4f71251b53ea77969a63b3d1c337d690a102dbe885c4e166",
+      "log_sha256": "222cfb89e4677dccfde301df83c7181aa4648ed49a9c9dd2077358c3b7e6d87f",
+      "frozen_input_manifest_sha256": "961e94fb61d0b75f52a0eea8fdf9da219ae2b593d8871387bfbb99865aad4060",
+      "config_sha256": "5562b276b69f20fe49701639b2f4f9ab4f340134d3cfc23c3c269e09e9e298b6",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "FS"
+        }
+      },
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 483417,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 11.023,
+        "timing__hold__ws": 0.250749,
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 210,
+        "design__max_cap_violation__count": 0,
+        "timing__hold_vio__count": 0
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "final_global_overflow": 1255,
+      "metal4_overflow": 208,
+      "metal4_guide_rectangles_overlapping_macros": 129,
+      "guide_screen": {
+        "path": "build/physical/hybrid-chip-north/diagnosis/orientation/screen-comparison.json",
+        "sha256": "51b2cc117aa560143a11148791a7109580f85e695394924426d6d2b47071fef9"
+      }
+    },
+    {
+      "tag": "hybrid-chip-09",
+      "design": "hybrid-chip-north",
+      "flow_exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "container_termination": {
+        "status": "stopped",
+        "stop_exit_code": 0
+      },
+      "last_completed_step": "04-openroad-stamidpnr-3",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 2700,
+      "resume_step": "OpenROAD.CheckAntennas",
+      "checkpoint_sha256": "f309e96844d8ac9df98605674eaa99241e01afee2b391d2590d3c28022c97dd4",
+      "requested_stop": null,
+      "report_sha256": "2936573505709d36425e62e7f8dd8e7adcd27c197e5b154f365ce240870fb9c7",
+      "invocation_sha256": "ad4b57e1db9e4d7864d7ea5a03b87783b0a307c5603f7d050b06851a5528b0e4",
+      "log_sha256": "2584dec2f8c7ec9f5f9ed275ad20f60be35a66fab237cad175a3b34e26f76cd9",
+      "frozen_input_manifest_sha256": "961e94fb61d0b75f52a0eea8fdf9da219ae2b593d8871387bfbb99865aad4060",
+      "config_sha256": "5562b276b69f20fe49701639b2f4f9ab4f340134d3cfc23c3c269e09e9e298b6",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "FS"
+        }
+      },
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 484675,
+        "design__instance__area__class:macro": 100978,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 8.40868,
+        "timing__hold__ws": -0.610613,
+        "design__max_slew_violation__count": 67,
+        "design__max_fanout_violation__count": 229,
+        "design__max_cap_violation__count": 30,
+        "timing__hold_vio__count": 16,
+        "antenna_diodes_count": 231
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "last_reported_detailed_route_iteration": {
+        "iteration": 59,
+        "violations": 126
+      },
+      "lowest_reported_detailed_route_violations": 126,
+      "diagnosis": {
+        "path": "build/physical/diagnosis/orientation-final/report.json",
+        "sha256": "44accc1fdc04d41e20e8a39b2c948d3dbb7b8fdba678cebf1b6141a61a665bd9"
+      },
+      "comparison_iteration": 38,
+      "markers_at_comparison_iteration": 174,
+      "final_logged_markers": 126,
+      "by_rule_layer": {
+        "Metal Spacing / Metal4": 36,
+        "Short / Metal4": 90
+      },
+      "macro_intersections": 126,
+      "involving_power_net": 84,
+      "independent_termination_evidence": {
+        "path": "build/physical/hybrid-chip-north/diagnosis/orientation/termination-confirmation.json",
+        "sha256": "45217a62bfb267b3869ac65a37a763b0e69b110b396f56ac526e3e1d38d585fe"
+      },
+      "snapshot_note": "Reports and snapshots through 61 exist; only completed step-log iterations through 59 are used for the final diagnosis."
+    },
+    {
+      "tag": "hybrid-chip-10",
+      "design": "hybrid-chip-widegap",
+      "flow_exit_code": 0,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "39-openroad-globalrouting",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 1800,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "requested_stop": "OpenROAD.GlobalRouting",
+      "report_sha256": "07bc4abf76fa74f29a4b41ee1495309f014aeafeb2b3f9aca8a2263cad4e3114",
+      "invocation_sha256": "53b1810442248aa0ad52b493a8671992414a878b1ddd294abf97e8b9d21cdf63",
+      "log_sha256": "8815b3b3cc9a1e0c2a76eb3ab146410dec215c2d319453513c693bfe33092441",
+      "frozen_input_manifest_sha256": "d5f9d4cd19fe42cfda1574b86b4f7171179faeb91c9152c795f1e01f302572e8",
+      "config_sha256": "5d178b9b712966344ab7e00fe8cce29984288e9e7125ec823f2631e6a0ccdbdd",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            272
+          ],
+          "orientation": "FS"
+        }
+      },
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 483403,
+        "design__instance__area__class:timing_repair_buffer": 64015.7,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 10.3797,
+        "timing__hold__ws": 0.254143,
+        "design__max_slew_violation__count": 2,
+        "design__max_cap_violation__count": 0,
+        "design__max_fanout_violation__count": 207
+      },
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "final_global_overflow": 1892,
+      "metal4_overflow": 480,
+      "metal4_guide_rectangles_overlapping_macros": 276,
+      "guide_screen": {
+        "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/comparison.json",
+        "sha256": "59fc114c3d5c3cad7ae60a35cc8000c15b195173f4b908f5cbc86ef7b772aadb"
+      },
+      "independent_termination_evidence": {
+        "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/termination-confirmation.json",
+        "sha256": "2bdfa405a04a6f7e8f3e2e72fc1a5a4fb4a2839478057f75cbbbfd8a04522f6a"
+      },
+      "decision": "Reject the separation-only candidate at the global-routing screen; no detailed route is allocated."
+    },
+    {
+      "tag": "hybrid-chip-11",
+      "design": "hybrid-chip-corridor",
+      "flow_exit_code": 0,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "39-openroad-globalrouting",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 1800,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "requested_stop": "OpenROAD.GlobalRouting",
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "report_sha256": "6ac8a8e7dd9577835e812a3f64dd7514987555e844ea0203e6488fc886a37b44",
+      "invocation_sha256": "4a835a8cf0860dad50f54c4d781d98636e84c8a00c861f2f804bf86ee98638eb",
+      "log_sha256": "e1a0c42e9c90a2b960e9f64f008d02fe62b3aba14cff41afe363cf4790dd5d82",
+      "frozen_input_manifest_sha256": "e2cc2efdab73e79da8f530a91a6dc946d3b0f01fb8c065fe9c7d0eaf2a6702d8",
+      "config_sha256": "a90a8600c4683e4c54d14035fe08928cee40e9c23dbf364b3fe08707825b857e",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "FS"
+        }
+      },
+      "placement_exclusions": [
+        [
+          252,
+          94.36,
+          1036.48,
+          144
+        ]
+      ],
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 483526,
+        "design__instance__area__class:timing_repair_buffer": 64286,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 10.765,
+        "timing__hold__ws": 0.254987,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_fanout_violation__count": 209
+      },
+      "independent_termination_evidence": {
+        "path": "build/validation/corridor-cycle-01/termination-confirmation.json",
+        "sha256": "ab69176ef7add74951ce83e21c39e22fde72e151190320f6a8895c04de3223b3"
+      },
+      "final_global_overflow": 1686,
+      "metal4_overflow": 82,
+      "metal4_guide_rectangles_overlapping_macros": 87,
+      "guide_screen": {
+        "path": "build/validation/corridor-cycle-01/screen-comparison.json",
+        "sha256": "361277196d6e3998cda0eaa5a503d331ece41a8c2da385f3ed7978c57fdffb77"
+      },
+      "decision": "Reject full strip: Metal2 congestion raises total overflow."
+    },
+    {
+      "tag": "hybrid-chip-12",
+      "design": "hybrid-chip-corridor-half",
+      "flow_exit_code": 0,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "39-openroad-globalrouting",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 1800,
+      "resume_step": null,
+      "checkpoint_sha256": null,
+      "requested_stop": "OpenROAD.GlobalRouting",
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "report_sha256": "4cc7f1938fdf1cae33b82188f7bff25219cac5444f609a47fc58fc31c0d4beee",
+      "invocation_sha256": "8d4c7288ab4be2f84cf7ea7aea4653987912a12b77714a313592ed2136dcd005",
+      "log_sha256": "761ad49852909e8e2cbc34804c34e5a303129387b4ead12daaca1267c4292948",
+      "frozen_input_manifest_sha256": "7506f174c9dfdeb3ff717a4d7e320b5be81aa142917f7638703b2524c2ba57fe",
+      "config_sha256": "471e5b1e4cf0f64a5b30a5cef3382307d97ea617dad8c149a71aa104e152fc4d",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "FS"
+        }
+      },
+      "placement_exclusions": [
+        [
+          252,
+          94.36,
+          1036.48,
+          119.18
+        ]
+      ],
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 483381,
+        "design__instance__area__class:timing_repair_buffer": 64153.6,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 10.966,
+        "timing__hold__ws": 0.249275,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_fanout_violation__count": 207
+      },
+      "independent_termination_evidence": {
+        "path": "build/validation/corridor-cycle-01/termination-confirmation.json",
+        "sha256": "ab69176ef7add74951ce83e21c39e22fde72e151190320f6a8895c04de3223b3"
+      },
+      "final_global_overflow": 870,
+      "metal4_overflow": 70,
+      "metal4_guide_rectangles_overlapping_macros": 45,
+      "guide_screen": {
+        "path": "build/validation/corridor-cycle-01/screen-comparison.json",
+        "sha256": "361277196d6e3998cda0eaa5a503d331ece41a8c2da385f3ed7978c57fdffb77"
+      },
+      "decision": "Advance half strip to one bounded continuation."
+    },
+    {
+      "tag": "hybrid-chip-13",
+      "design": "hybrid-chip-corridor-half",
+      "flow_exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "container_termination": {
+        "status": "stopped",
+        "stop_exit_code": 0
+      },
+      "last_completed_step": "04-openroad-stamidpnr-3",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 5400,
+      "resume_step": "OpenROAD.CheckAntennas",
+      "checkpoint_sha256": "413a1a896e0708193fb5ceb8748104400e02264cfa6d1c03fdddb108fbf0b5dd",
+      "requested_stop": null,
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "report_sha256": "329a519f6378768f5e92f739a6f48ec503ab93a2d923c7b6df9fb30a227fd852",
+      "invocation_sha256": "f8cc09e683d0ac09d7f8c524df5271afb15da2abea09ad9fde799234e66cfcfb",
+      "log_sha256": "77097111e8e3a880098cf65fc7865243ae875303b17067b7e4b6d841fc319e37",
+      "frozen_input_manifest_sha256": "7506f174c9dfdeb3ff717a4d7e320b5be81aa142917f7638703b2524c2ba57fe",
+      "config_sha256": "471e5b1e4cf0f64a5b30a5cef3382307d97ea617dad8c149a71aa104e152fc4d",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "macro_instances": {
+        "memory.storage0": {
+          "location": [
+            252,
+            30
+          ],
+          "orientation": "FS"
+        },
+        "memory.storage1": {
+          "location": [
+            252,
+            144
+          ],
+          "orientation": "FS"
+        }
+      },
+      "placement_exclusions": [
+        [
+          252,
+          94.36,
+          1036.48,
+          119.18
+        ]
+      ],
+      "overrides": {
+        "GRT_ALLOW_CONGESTION": true,
+        "DRT_SAVE_SNAPSHOTS": true,
+        "DRT_SAVE_DRC_REPORT_ITERS": 1
+      },
+      "selected_last_state_metrics": {
+        "design__instance__area": 484285,
+        "design__instance__area__class:timing_repair_buffer": 64153.6,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 8.51727,
+        "timing__hold__ws": 0.0630042,
+        "design__max_slew_violation__count": 62,
+        "design__max_cap_violation__count": 25,
+        "design__max_fanout_violation__count": 219
+      },
+      "independent_termination_evidence": {
+        "path": "build/validation/corridor-cycle-01/termination-confirmation.json",
+        "sha256": "ab69176ef7add74951ce83e21c39e22fde72e151190320f6a8895c04de3223b3"
+      },
+      "diagnosis": {
+        "path": "build/physical/diagnosis/corridor-final/report.json",
+        "sha256": "e8454e422490098f660a98fe24d861bbdbebb978fd406b79252fe6a04d67f575"
+      },
+      "decision": "Retain the half-height placement exclusion as the better screened candidate; the bounded continuation does not establish routing or antenna closure. At matched first-pass iteration 59, markers fall 126 to 92. Pass 0 ends at 73 markers; its antenna check finds 49 net/55 pin violations. The 90-minute cap interrupts antenna reroute pass 1 after logged iteration 35 with 230 markers. No further physical run is allocated in this cycle.",
+      "inherited_checked_netlist": {
+        "build/physical/hybrid-chip-corridor-half/experiments/hybrid-chip-13/checkpoint/artifacts/99538416c22aa23b887ad73c5bf71010fe65bb7c618a416a7043235798dc8b5c/tt_um_pinwheel.nl.v": "99538416c22aa23b887ad73c5bf71010fe65bb7c618a416a7043235798dc8b5c"
+      },
+      "netlist_validation_boundary": "Zero-delay external-pin simulation of the explicitly identified NL view. A flow state can inherit this view from an earlier stage; it is not necessarily an export of the latest ODB/DEF. No timing simulation, sequential equivalence, power-connectivity proof, or physical closure claim."
+    },
+    {
+      "tag": "hybrid-chip-14",
+      "design": "hybrid-chip-corridor-half",
+      "flow_exit_code": 124,
+      "stop_reason": "wall_time_limit",
+      "container_termination": {
+        "status": "stopped",
+        "stop_exit_code": 0
+      },
+      "last_completed_step": "15-openroad-rcx",
+      "detailed_routing_completed": true,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 10800,
+      "resume_step": "OpenROAD.CheckAntennas",
+      "checkpoint_sha256": "413a1a896e0708193fb5ceb8748104400e02264cfa6d1c03fdddb108fbf0b5dd",
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "report_sha256": "85f312589fc3d05f52fcbae208f5f84ba5be9742f46b8d160f9867bddc97420c",
+      "invocation_sha256": "776a60edcc0b4e715328553808dff31fc4d45b22f7da61dd101c091759434f86",
+      "log_sha256": "60f33db8dac2ac9adb5ebf20daa3ac3359d3b6d41b08c20242e23b04c2ac8c75",
+      "config_sha256": "471e5b1e4cf0f64a5b30a5cef3382307d97ea617dad8c149a71aa104e152fc4d",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "independent_termination": {
+        "path": "build/validation/routing-diagnostics-01/termination.json",
+        "sha256": "d1893082b678f098ae5c65386bc1622307ba6a2fa882adbd1f159070c5aa2b27"
+      },
+      "retained_pass_end_markers": [
+        73,
+        174,
+        283,
+        384
+      ],
+      "fresh_pass_end_markers": [
+        75,
+        103,
+        112,
+        103
+      ],
+      "fresh_completed_route_markers": 103,
+      "final_antenna": {
+        "nets": 3,
+        "pins": 4
+      },
+      "fresh_drc": {
+        "path": "build/validation/routing-diagnostics-01/resolved-final-drc/report.json",
+        "sha256": "56d24c246b5c8c472ba0af6459066fb35c7f33a3f63778b40a8fe49fc8cd8c66"
+      },
+      "decision": "Detailed routing and RC extraction complete; extracted STA does not. Retained markers accumulate across passes. Fresh static router DRC still reports 103 errors; no physical closure."
+    },
+    {
+      "tag": "hybrid-chip-15",
+      "design": "hybrid-chip-corridor-half",
+      "flow_exit_code": 0,
+      "stop_reason": null,
+      "container_termination": null,
+      "last_completed_step": "01-openroad-globalrouting",
+      "detailed_routing_completed": false,
+      "extracted_timing_completed": false,
+      "timeout_seconds": 900,
+      "resume_step": "OpenROAD.GlobalRouting",
+      "checkpoint_sha256": "a61bcf3c015c836939515bd4a59c23097d981b3094f603d55c5640aa7b928a4e",
+      "metrics_note": "Flow states inherit older metrics. Mid-PnR timing may update only typical-corner values; do not interpret inherited fast/slow values as current. Final multi-corner extracted STA is required.",
+      "report_sha256": "b35b460551ce4fd7843363512c73b50a761ee1537e6aa353330d470f65a87454",
+      "invocation_sha256": "47d3b37a796ece0bcf45832ef8844e9f083491ca66f0da9a353ad76351eee01d",
+      "log_sha256": "11895cce38dde41b5dcfdd2c03e87c00e21a443b4da17c8985c0dcd5dc151333",
+      "config_sha256": "471e5b1e4cf0f64a5b30a5cef3382307d97ea617dad8c149a71aa104e152fc4d",
+      "sdc_sha256": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "rtl_sha256": "3b86cc15644c0ede4e48dc179abf8d9acc1dbcc91295973f0b864afb870620d8",
+      "independent_termination": {
+        "path": "build/validation/routing-diagnostics-01/termination.json",
+        "sha256": "d1893082b678f098ae5c65386bc1622307ba6a2fa882adbd1f159070c5aa2b27"
+      },
+      "comparison": {
+        "path": "build/validation/routing-diagnostics-01/candidate-comparison.json",
+        "sha256": "2aa84c64af0af5e7ba73abdce186669470400ec011405fb4a9e912e299a32ba9"
+      },
+      "decision": "Reject before detailed routing: early Metal4 obstruction objects do not change global guides or the saved Metal4 capacity/usage map."
+    }
+  ],
+  "validation_receipts": {
+    "foundation": {
+      "path": "build/validation/integrated-chip-01/report.json",
+      "sha256": "a0a630b089c9d0cb91ec209569ca6144ccf87f45bee099bcfceda35d1b296f12"
+    },
+    "hybrid_demo": {
+      "path": "build/host/integrated-hybrid-03/report.json",
+      "sha256": "a6e599a543ef979e0526cde95959d49eda8a726ec0ec3085ad85f23523e825bf"
+    },
+    "reference_demo": {
+      "path": "build/host/integrated-reference-02/report.json",
+      "sha256": "844acafcd1931fe1edf0fe073d2a855d55cf1b35674b1b6c2c9b961a4db84304"
+    },
+    "custom_image": {
+      "path": "build/host/integrated-custom-02/report.json",
+      "sha256": "b015255c3444f2a217a0e9c743e2e299a59fd5a13d09a85e7d0319d7f69b0ad3"
+    },
+    "chip_twoport": {
+      "path": "build/chip/integrated-twoport-01/report.json",
+      "sha256": "48a828227ba686655c01c4bf74c33e4df4879089c8b2003f53946093b5f54329"
+    },
+    "chip_oneport": {
+      "path": "build/chip/integrated-oneport-01/report.json",
+      "sha256": "47534896430e29e04cc617db061af240cba880abc19dfb77aadb85b94964e986"
+    },
+    "sram_comparison": {
+      "path": "build/storage/sram-chip/integration-02/report.json",
+      "sha256": "535b20efe796f762f218d37a72e82db3fef936e1e4ffaf0c66e8f925551da097"
+    },
+    "sram_timing": {
+      "path": "build/storage/sram-timing/integration-02/report.json",
+      "sha256": "d36d557ddebb7db5925d4cd7e0accc6dfca047b12c276c49ccd265c0bc205d17"
+    },
+    "repaired_netlist": {
+      "path": "build/physical/chip-check/repaired-hybrid-01/report.json",
+      "sha256": "b6807e6ef92f3c64d9311c4e0bdf1178de108da6fe793d1536b1adae9c959ad0"
+    },
+    "replicated_sram_contract": {
+      "path": "build/validation/sram-contract-01/report.json",
+      "sha256": "20360034af6f14736fb38c193863304fc3676f62467f32299b5db8eecb84433c"
+    },
+    "routing_sram_comparison": {
+      "path": "build/storage/sram-chip/routing-03/report.json",
+      "sha256": "c653cb41ffd62b527afb7041611a706eb3cb28a1c9605defa12f604eb5c3b39c"
+    },
+    "routing_repaired_netlist": {
+      "path": "build/physical/chip-check/routing-baseline-02/report.json",
+      "sha256": "408b38e810dfc9523daaf0bde91c293753e0eb2d9ae78687d8e1e8b2604a5ffd"
+    },
+    "routing_python_tests": {
+      "path": "build/validation/routing-python-tests-final.log",
+      "sha256": "dcac5f7bdef1f4446667959eaaabbab660aaf754306463796819fafa23efeb79"
+    },
+    "controller_request_contract": {
+      "path": "build/validation/controller-contract-03/report.json",
+      "sha256": "603d36fc0a2f60684d7996649038153fd17212147d7a040ca95ccb4395de961c"
+    },
+    "orientation_sram_comparison": {
+      "path": "build/storage/sram-chip/orientation-05/report.json",
+      "sha256": "689f826d3ba04628ba486cc9627d16d5816842d65b173d2c16e6e55de651ecec"
+    },
+    "orientation_repaired_netlist": {
+      "path": "build/physical/chip-check/orientation-repaired-03/report.json",
+      "sha256": "95ceda8ca19ea299949bcf3e1da54ac511c2976424fbf69f2c7ae5709588f62a"
+    },
+    "orientation_python_tests": {
+      "path": "build/validation/orientation-python-tests.log",
+      "sha256": "4745f166f76ef1776b614155bc27ed08b02e6b362713007d2abe58a4b6b7da06"
+    },
+    "controller_emission_identity": {
+      "path": "build/storage/controller-library-01/emission-comparison.json",
+      "sha256": "6f7ab45d59ad40c374192b5140127b70145c11249e60d299d9a03e05debbe112"
+    },
+    "sram_upload_coverage": {
+      "path": "build/validation/sram-coverage-01/report.json",
+      "sha256": "d2a72a2ed392b4ec23ca48a9200fc0fbafee00a800f7f1bc7979ce36e4753b8f"
+    },
+    "coverage_emission_identity": {
+      "path": "build/validation/sram-coverage-01/emission-identity.json",
+      "sha256": "0991a0dd06f826e450dc120da6b31039e35fb1584e8aac8d291c0bcaa3565cca"
+    },
+    "widegap_sram_comparison": {
+      "path": "build/storage/sram-chip/widegap-01/report.json",
+      "sha256": "2ba55ffa2d102aa73a46f22538ecc35f3a6d2da126a24d85d46a3acfc1788a9f"
+    },
+    "widegap_repaired_netlist": {
+      "path": "build/physical/chip-check/widegap-repaired-01/report.json",
+      "sha256": "7429a80ef67313f9d40d1ddec5f732627f5a88583516be5884e1ef22bc477f17"
+    },
+    "hybrid_execution_foundation": {
+      "path": "build/validation/sram-execution-02/report.json",
+      "sha256": "96d484981d55068fce5ea09484e178cd847a935ac53ff9fc028baefe40d1250c"
+    },
+    "corridor_sram_comparison": {
+      "path": "build/storage/sram-chip/corridor-02/report.json",
+      "sha256": "e8096258f929b677c578fd733d2a6781a9f70ae7e9797b326307c3ec32ac8353"
+    },
+    "corridor_repaired_netlist": {
+      "path": "build/physical/chip-check/corridor-repaired-01/report.json",
+      "sha256": "c3555b83bb6ef43c0cf5c1e8c02fc8939e07771f503e96c41a74c05a5f5c6a71"
+    },
+    "corridor_emission_identity": {
+      "path": "build/validation/corridor-cycle-01/emission-identity.json",
+      "sha256": "a7fd91b09b00f59d0875bfc5fe4b007319f2773ef6ff5bf7cc3c92d52673b6ef"
+    },
+    "corridor_python_tests": {
+      "path": "build/validation/corridor-cycle-01/python-final.log",
+      "sha256": "677bc6a3768c870a85d9a7faae99f67c10b587e89e6894ffb0c8d9f81e9bfce6"
+    },
+    "corridor_proof_dependencies": {
+      "path": "build/validation/corridor-cycle-01/proof-dependencies.log",
+      "sha256": "4be7d7608abd42f04e5d50a771b494543b0b6e58ae34cd6685b6e5d7004a2587"
+    },
+    "corridor_placement_verification": {
+      "path": "build/validation/corridor-cycle-01/placement-verification.json",
+      "sha256": "6f7977437cdcd881a0e8d3501284da2d7ec5bc2a8c81e587c860aec3321c3bdf"
+    },
+    "corridor_continuation_comparison": {
+      "path": "build/validation/corridor-cycle-01/continuation-comparison.json",
+      "sha256": "7d796547a50ecde1d2a576ae00876e29a272533aff50cbaf5162352f6389dcc8"
+    }
+  },
+  "source_sha256": {
+    "physical/chip.json": "5be52e8831c847fb4fd391f9cdbf98b2fb5404ccfba2de1b8133b8ac28a5e4cd",
+    "physical/chip.sdc": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+    "scripts/prepare-chip-physical.py": "1457215711f55d6cbe1397ce7076567e69433cfbe9424233649488e6b6efbb71",
+    "scripts/run-physical.py": "80ce444de7906d58b9eb28c691d7caae5160aba9d6c8a02c52277a52d8474da4",
+    "scripts/report-physical.py": "05e586f566d7b4b51f3d288cb363beedb6cf36134a91e78dd3c6dd53f4d3d35d",
+    "scripts/check-chip-physical.py": "05bb19304a7e767142fc78d3919dbb627ff1ac1a1d888b52666d34bf05d5600f",
+    "Pinwheel/Hardware/Storage/Sram.lean": "ff4291a5462976e2cafd26a2031c1a0bfb96714367e5c0934d5f897c7fd93ecf",
+    "test/SramChipEmit.lean": "23ae346d2574cd404d5b90d37111082b0c0c50091b6d9e626b99c1293622e99c"
+  },
+  "collector_sha256": "a43fa7f1cf9b5f0538c94bb5aa189fc2260b6ab8de7f44236b11364f4d785e89",
+  "boundary": "Experimental hybrid result chip on the official 6x4 pin template. The initialized array/controller model proof is complete within its documented boundary; full emitted-chip translation and external macro binding remain separate. Mid-PnR states inherit older corner metrics and are not extracted multi-corner signoff. Fast screening mixes -40 C cells and -55 C macro; TopMetal1 SRAM power integration is unqualified for the shuttle. KLayout DRC/XOR remain disabled in the pinned flow. No physical closure, board or licensing claim. Functional checking identifies the exported step-37 netlist, not later layout edits.",
+  "source_sha256_note": "Original first-study source identities are preserved. Diagnostic-phase source identities and decisions are recorded separately below.",
+  "routing_diagnosis": {
+    "comparison_iteration": 38,
+    "baseline_markers": 196,
+    "keepout_markers": 240,
+    "baseline_all_markers_fully_inside_macros": true,
+    "all_markers_metal4": true,
+    "keepouts_promoted": false,
+    "source_sha256": {
+      "Pinwheel/Hardware/Memory/Sram.lean": "5834921d1dac727e203f09ff80c576c79fb6115b5daa1b560d7544369235ae22",
+      "scripts/run-physical.py": "f70e4a9c1ad8da4b7f85e0dae8800e7cae804c8aa5fda4fddb9579854031ceea",
+      "scripts/report-physical.py": "42d913065b296c529c81a23f5de750d2ab5d785473c6da38da59bb1b1e955748",
+      "scripts/check-chip-physical.py": "07138df88d283da093aa3f7ee2e74b6584185699c03a2335e1a7ef2c539cf518",
+      "scripts/routing_context.py": "1b5134d7a2736313c67c63850b028a2db830c2f6ac7353ea87a17976e6d5a951",
+      "scripts/routing_keepouts.py": "a4f5cf4c29a2e01ba09d29fcca5f5ca37db6db35e320b72f50d222a51a69a322",
+      "scripts/diagnose-routing.py": "416d5ea61d634075d32ebc0f9d3644f48ecbd109de787029c476630551e8eec8",
+      "physical/experiments/routing-diagnostics.json": "32e193be43f8181aaa868ad1315a0cc6d47c4a4cfaeb8b323915fa22f0d573e6"
+    },
+    "derivation": {
+      "path": "build/physical/hybrid-chip-04/diagnosis/metal4-keepouts/derivation.json",
+      "sha256": "ccba391ed236a8ace8e539ed47de5e14207c061acb8003e6d9d599ff51b5cce7"
+    },
+    "guide_comparison": {
+      "path": "build/physical/hybrid-chip-04/diagnosis/metal4-keepouts/guide-comparison.json",
+      "sha256": "43643712746f8361fa833bc176ac1b14649b10ddf09ee2d1dc8d9422d7c787ae"
+    },
+    "annotated_layout": {
+      "path": "docs/images/routing-macro-conflicts.png",
+      "sha256": "3bd2970860a3a5b2c0abf3fef88b918a2ad5dc2e17de6906be75d9ffcb34954d"
+    },
+    "global_guides_identical": true,
+    "metal4_guide_rectangles_overlapping_macros": 470,
+    "nets_with_overlapping_guides": 228,
+    "nets_directly_connected_to_macros": 90,
+    "decision": "Reject the keepout-only change. Investigate macro orientation, placement and regenerated global guides before changing storage organization. Signal pins currently face the bottom edge of both macros. No physical closure or full adapter proof."
+  },
+  "collector_sha256_note": "Identity of the original first-study collector; diagnostic-phase additions are separately bound by their report, invocation, derivation and source hashes.",
+  "orientation_experiment": {
+    "source_sha256": {
+      "Pinwheel.lean": "8ef7c7c924396c6c237b83ee76a88c0344269cea8be4ecee8b6c762337d9fd87",
+      "Pinwheel/Hardware/Memory/Sram.lean": "5834921d1dac727e203f09ff80c576c79fb6115b5daa1b560d7544369235ae22",
+      "Pinwheel/Hardware/Storage/Sram.lean": "ff4291a5462976e2cafd26a2031c1a0bfb96714367e5c0934d5f897c7fd93ecf",
+      "Pinwheel/Hardware/Storage/SramController.lean": "0d64144bb525b07003709b43c9e41854f2365945227ae21240d07926ad5121f6",
+      "test/SramChipEmit.lean": "7eb508ca733e1e2ab04b123c1c0067196288bc9844fcc7e6fc0a0b4ebd33dc06",
+      "scripts/physical_floorplan.py": "d1d38df81e88fd639b930174a1564425811095ed927261bba25ef64426f807a9",
+      "scripts/prepare-chip-physical.py": "e83db152945efe53c67597b620c765d89f9fbb33001a9233dcafd92b6704ab09",
+      "scripts/run-physical.py": "2769f0ccc8c37598d53e5684a35d96a700bb0798ada6bbf3ff356767740d48ba",
+      "scripts/report-physical.py": "42d913065b296c529c81a23f5de750d2ab5d785473c6da38da59bb1b1e955748",
+      "scripts/report-routing-guides.py": "b1eae777d6779ab066a9293cc8ce4d9596c5505099e77b30d564ba0913be5037",
+      "scripts/routing_context.py": "48c6d8e8faf5e3dab640d0b8acdc79145d2b99183a204b1bcb4e7abb5312aa5d",
+      "scripts/diagnose-routing.py": "416d5ea61d634075d32ebc0f9d3644f48ecbd109de787029c476630551e8eec8",
+      "scripts/check-chip-physical.py": "07138df88d283da093aa3f7ee2e74b6584185699c03a2335e1a7ef2c539cf518",
+      "physical/chip.json": "5be52e8831c847fb4fd391f9cdbf98b2fb5404ccfba2de1b8133b8ac28a5e4cd",
+      "physical/chip.sdc": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "physical/experiments/sram-pins-north.json": "701d4386dabec2f922f97f2af9f08ce0caa3c0b7f84b0b0fce09872fa0ddd9c5",
+      "physical/experiments/routing-diagnostics.json": "32e193be43f8181aaa868ad1315a0cc6d47c4a4cfaeb8b323915fa22f0d573e6",
+      "test/test_chip_physical_prepare.py": "f6f49b5aae92b3c8a686bbc37ecf7beaf4778b279bae55dbe325007d269ddf89",
+      "test/test_physical_checkpoint.py": "ff930344422714804424638308726252986fd70380c8062a96c0266877392c60",
+      "test/test_routing_guides.py": "6afbec7a5996fa4b8d72e621485a87b940a2bd21b354523e451b3e8951435d60"
+    },
+    "changes": "Only existing SRAM instance orientations N to FS; fixed lower-left locations, official pins, RTL, macro views, power grid and clock constraints. Fresh placement and clock repair.",
+    "base_profile_changed": false,
+    "backend_promoted": false,
+    "screen": {
+      "path": "build/physical/hybrid-chip-north/diagnosis/orientation/screen-comparison.json",
+      "sha256": "51b2cc117aa560143a11148791a7109580f85e695394924426d6d2b47071fef9"
+    },
+    "comparison_iteration": 38,
+    "baseline_markers": 196,
+    "mirrored_markers": 174,
+    "matched_diagnosis": {
+      "path": "build/physical/diagnosis/orientation-38/report.json",
+      "sha256": "586e278ba0ff95920780c6c1f6aa8cd3adeea51316bd25c9a43e992b46066946"
+    },
+    "last_logged_iteration": 59,
+    "last_logged_markers": 126,
+    "final_diagnosis": {
+      "path": "build/physical/diagnosis/orientation-final/report.json",
+      "sha256": "44accc1fdc04d41e20e8a39b2c948d3dbb7b8fdba678cebf1b6141a61a665bd9"
+    },
+    "geometry": {
+      "path": "build/physical/hybrid-chip-north/diagnosis/orientation/final-geometry.json",
+      "sha256": "d2086a20a6dce2c4077a933465cc7ecdf5769aad2a2767c85e47f227a20579be"
+    },
+    "annotated_layout": {
+      "path": "docs/images/sram-orientation-routing.png",
+      "sha256": "5ec0ae029e5a925564c505a09e20034fe0251cfd355e7b45eb6ed53003099bfe"
+    },
+    "annotated_layout_source": {
+      "path": "build/physical/hybrid-chip-north/diagnosis/orientation/final-geometry.svg",
+      "sha256": "ffe028e534dcb63dd429f526f43a70bc5a23b5e99b942a58e335c2cd43c11a46"
+    },
+    "independent_termination_evidence": {
+      "path": "build/physical/hybrid-chip-north/diagnosis/orientation/termination-confirmation.json",
+      "sha256": "45217a62bfb267b3869ac65a37a763b0e69b110b396f56ac526e3e1d38d585fe"
+    },
+    "all_last_logged_markers_fully_inside_macros": true,
+    "gap_height_um": 49.64,
+    "standard_cells_in_gap": 858,
+    "implicated_non_power_nets": 76,
+    "implicated_non_power_nets_with_gap_terminal": 70,
+    "inherited_netlist_sha256": "4921584b1a21528af25b150541445d38e7451a667e7627ab4c5978d05641e63a",
+    "netlist_validation_boundary": "Continuation inherits the exact post-CTS netlist validated by orientation-repaired-03; this does not cover the later diode-insertion/routing databases.",
+    "controller_request_proof": "13 explicit lemmas connect shared hybrid controller expressions to the generic array contract. Complete upload coverage, reachable-response definedness and full emitted composition remain open.",
+    "resident_payload": "Specification only: START data word plus one shift per instruction entry. No ISA, RTL or host protocol change.",
+    "decision": "Increase separation between the two north-facing macros, regenerate placement and global guides, and compare gap occupancy, body-overlapping guides and congestion before another detailed route.",
+    "boundary": "One bounded orientation experiment. Matched iteration-38 markers improve 11.2%; the later iteration-59 count uses more work. No detailed-route completion, extracted timing or final layout checks. Latest typical pre-route hold/electrical estimates violate constraints. Geometry supports a corridor hypothesis, not a unique causal diagnosis."
+  },
+  "gap_experiment": {
+    "source_sha256": {
+      "Pinwheel.lean": "bd2fb8a7913279675bd6243b32b8cdb8a1651dbb3c182f841006034be05c3b05",
+      "Pinwheel/Hardware/Memory/Sram.lean": "e48e3bd69fdc057a2d6d007ec9e04089e941831a14232aea1a9bfd7b474753d3",
+      "Pinwheel/Hardware/Storage/Sram.lean": "ff4291a5462976e2cafd26a2031c1a0bfb96714367e5c0934d5f897c7fd93ecf",
+      "Pinwheel/Hardware/Storage/SramController.lean": "52f53231311d38c2ebefdc5e32fef4ed0b100a776c938c21d4893040e59caa76",
+      "test/SramChipEmit.lean": "7eb508ca733e1e2ab04b123c1c0067196288bc9844fcc7e6fc0a0b4ebd33dc06",
+      "scripts/physical_floorplan.py": "d1d38df81e88fd639b930174a1564425811095ed927261bba25ef64426f807a9",
+      "scripts/prepare-chip-physical.py": "e83db152945efe53c67597b620c765d89f9fbb33001a9233dcafd92b6704ab09",
+      "scripts/run-physical.py": "2769f0ccc8c37598d53e5684a35d96a700bb0798ada6bbf3ff356767740d48ba",
+      "scripts/report-physical.py": "42d913065b296c529c81a23f5de750d2ab5d785473c6da38da59bb1b1e955748",
+      "scripts/report-routing-guides.py": "b1eae777d6779ab066a9293cc8ce4d9596c5505099e77b30d564ba0913be5037",
+      "scripts/routing_context.py": "48c6d8e8faf5e3dab640d0b8acdc79145d2b99183a204b1bcb4e7abb5312aa5d",
+      "scripts/diagnose-routing.py": "416d5ea61d634075d32ebc0f9d3644f48ecbd109de787029c476630551e8eec8",
+      "scripts/check-chip-physical.py": "07138df88d283da093aa3f7ee2e74b6584185699c03a2335e1a7ef2c539cf518",
+      "physical/chip.json": "5be52e8831c847fb4fd391f9cdbf98b2fb5404ccfba2de1b8133b8ac28a5e4cd",
+      "physical/chip.sdc": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "physical/experiments/sram-pins-north.json": "701d4386dabec2f922f97f2af9f08ce0caa3c0b7f84b0b0fce09872fa0ddd9c5",
+      "physical/experiments/routing-diagnostics.json": "32e193be43f8181aaa868ad1315a0cc6d47c4a4cfaeb8b323915fa22f0d573e6",
+      "test/test_chip_physical_prepare.py": "f6f49b5aae92b3c8a686bbc37ecf7beaf4778b279bae55dbe325007d269ddf89",
+      "test/test_physical_checkpoint.py": "ff930344422714804424638308726252986fd70380c8062a96c0266877392c60",
+      "test/test_routing_guides.py": "6afbec7a5996fa4b8d72e621485a87b940a2bd21b354523e451b3e8951435d60",
+      "Pinwheel/Hardware/Storage/SramCoverage.lean": "42cab56ab983e4e84c49cf56cb237ee792556608f7689dc72e74c2f71c2079fa",
+      "physical/experiments/sram-wide-gap.json": "b6a680127140108979ad1d543570b6cf0a7a07e75fe90e4c92a1ce78216f0531"
+    },
+    "source_sha256_note": "Current coverage-proof phase. Historical source identities and decisions in earlier phases are preserved; completed current validation binds the full source set.",
+    "changes": "Only the upper north-facing SRAM moves from (252, 144) to (252, 272) micrometers, eight horizontal power-grid pitches. Both orientations remain FS. RTL, macro views, grid parameters, die, clock, density and 43 official signal-pin shapes are unchanged. Power geometry regenerates around the moved macro.",
+    "base_profile_changed": false,
+    "backend_promoted": false,
+    "screen": {
+      "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/comparison.json",
+      "sha256": "59fc114c3d5c3cad7ae60a35cc8000c15b195173f4b908f5cbc86ef7b772aadb"
+    },
+    "collector": {
+      "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/collect.py",
+      "sha256": "a4024bfa9757458be218782f75513fb4de91bf96fdfcba6bace5c6c30cf9802d"
+    },
+    "annotated_layout": {
+      "path": "docs/images/sram-gap-screen.png",
+      "sha256": "abc1d835f742c64a952bacfc0ab0af5b60d619c821f5be3a132cffa56889e159"
+    },
+    "annotated_layout_source": {
+      "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/gap-screen.svg",
+      "sha256": "59342fe728afa257ffd612a9f30eb7b38dde8c508d54cea2ba6a33ed4238bf24"
+    },
+    "annotated_layout_generator": {
+      "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/draw.py",
+      "sha256": "5c9d71273c252e69859ca1f288d2244fb365a233e0656af81906ccab9f88bbb1"
+    },
+    "independent_termination_evidence": {
+      "path": "build/physical/hybrid-chip-widegap/diagnosis/gap/termination-confirmation.json",
+      "sha256": "2bdfa405a04a6f7e8f3e2e72fc1a5a4fb4a2839478057f75cbbbfd8a04522f6a"
+    },
+    "comparison_stage": "39-openroad-globalrouting for both hybrid-chip-08 and hybrid-chip-10; the later post-antenna state from hybrid-chip-09 is not the comparison baseline.",
+    "narrow": {
+      "tag": "hybrid-chip-08",
+      "overflow": {
+        "Metal1": 0,
+        "Metal2": 785,
+        "Metal3": 262,
+        "Metal4": 208,
+        "Total": 1255
+      },
+      "wirelength_um": 1869386,
+      "guide_overlaps": {
+        "Metal2": {
+          "rectangles": 1520,
+          "nets": 723,
+          "macro_connected_nets": 617
+        },
+        "Metal3": {
+          "rectangles": 433,
+          "nets": 210,
+          "macro_connected_nets": 126
+        },
+        "Metal4": {
+          "rectangles": 129,
+          "nets": 94,
+          "macro_connected_nets": 52
+        }
+      },
+      "gap_bbox_um": [
+        252.0,
+        94.36,
+        1036.48,
+        144.0
+      ],
+      "gap_height_um": 49.64,
+      "standard_cells_fully_in_gap": 825,
+      "gap_cell_footprint_um2": 11982.298,
+      "gap_footprint_occupancy_percent": 30.77,
+      "metrics": {
+        "design__instance__area": 483417,
+        "design__instance__area__class:timing_repair_buffer": 64128.2,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 11.023,
+        "timing__hold__ws": 0.250749,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "design__max_fanout_violation__count": 210
+      }
+    },
+    "wide": {
+      "tag": "hybrid-chip-10",
+      "overflow": {
+        "Metal1": 0,
+        "Metal2": 899,
+        "Metal3": 513,
+        "Metal4": 480,
+        "Total": 1892
+      },
+      "wirelength_um": 2349619,
+      "guide_overlaps": {
+        "Metal2": {
+          "rectangles": 2222,
+          "nets": 899,
+          "macro_connected_nets": 622
+        },
+        "Metal3": {
+          "rectangles": 790,
+          "nets": 388,
+          "macro_connected_nets": 130
+        },
+        "Metal4": {
+          "rectangles": 276,
+          "nets": 198,
+          "macro_connected_nets": 74
+        }
+      },
+      "gap_bbox_um": [
+        252.0,
+        94.36,
+        1036.48,
+        272.0
+      ],
+      "gap_height_um": 177.64,
+      "standard_cells_fully_in_gap": 4201,
+      "gap_cell_footprint_um2": 66160.282,
+      "gap_footprint_occupancy_percent": 47.476,
+      "metrics": {
+        "design__instance__area": 483403,
+        "design__instance__area__class:timing_repair_buffer": 64015.7,
+        "design__power_grid_violation__count": 0,
+        "timing__setup__ws": 10.3797,
+        "timing__hold__ws": 0.254143,
+        "design__max_slew_violation__count": 2,
+        "design__max_cap_violation__count": 0,
+        "design__max_fanout_violation__count": 207
+      }
+    },
+    "validation_receipts": [
+      "sram_upload_coverage",
+      "coverage_emission_identity",
+      "widegap_sram_comparison",
+      "widegap_repaired_netlist"
+    ],
+    "emission_identity_note": "The screen was prepared from the then-current orientation-05 receipt before proof additions. Fresh widegap-01 validation binds the final sources and byte-identical hybrid RTL; the four SRAM MLIR emissions are also unchanged.",
+    "controller_coverage_proof": "The accepted-cursor invariant preserves initialized dictionary words through every loader command history after initialization. Actual control and request/address bridges establish defined partial-model and related physical-copy read responses for valid/commit non-write edges. No cleared memory or equal initial physical copies are assumed.",
+    "remaining_proof": "Program-word correspondence, scheduler/current/branch/start ownership, and actual whole-chip emitted composition remain open. Direct SRAM does not inherit the hybrid request/coverage proof.",
+    "resident_payload": "Specification remains deferred; no ISA, RTL or host protocol change.",
+    "decision": "Reject this separation-only candidate at the screen; allocate no detailed route. More space attracted more cells and increased wirelength, global overflow and macro-body guide overlaps. Investigate placement exclusion for a routing corridor and global-guide allocation before another bounded screen. Occupancy alone does not establish causality.",
+    "next_screen": "Test a bounded placement exclusion that reserves a routing corridor, verify occupancy after placement and repair, then regenerate global guides and compare congestion, macro-body overlaps, wire length and repair cost before any detailed route.",
+    "boundary": "Same completed global-route stage under fixed RTL, die, 43 package signal pins, clock, macro views and power-grid parameters. Power shapes regenerate around moved macros and are not geometrically identical. Fresh placement/clock repair. Gap occupancy counts fully contained standard-cell bounding boxes; it is not flow utilization. No detailed-route or extracted timing result for the wide-gap candidate. Existing post-antenna hold/electrical failures, matched-temperature corner and power-grid qualification remain open.",
+    "inherited_netlist_view": "build/physical/hybrid-chip-widegap/runs/hybrid-chip-10/37-openroad-resizertimingpostcts/tt_um_pinwheel.nl.v",
+    "inherited_netlist_sha256": "5560433b5944db8a77f85e0b8f08a7de7ddfbcc816c51f5795f013b49253ffb0",
+    "netlist_validation_boundary": "Zero-delay external-pin simulation of the explicitly identified NL view. A flow state can inherit this view from an earlier stage; it is not necessarily an export of the latest ODB/DEF. No timing simulation, sequential equivalence, power-connectivity proof, or physical closure claim.",
+    "validation_summary": {
+      "modules": 195,
+      "declarations": 14107,
+      "theorems": 7235,
+      "standard_axioms_only": true,
+      "targeted_memory_regression_seconds": 374.033,
+      "sram_comparison_seconds": 681.941,
+      "comparison_source_files": 218,
+      "chip_edges_per_simulation": 508252,
+      "sram_core_edges": 11840,
+      "consecutive_core_branches": 1000,
+      "repaired_netlist_seconds": 96.458,
+      "repaired_output_mutants_rejected": 1,
+      "full_foundation_rerun": false,
+      "python_suite_rerun": false
+    }
+  },
+  "corridor_experiment": {
+    "collected_at": "2026-09-21T12:27:19.551904+00:00",
+    "cycle_baseline": {
+      "path": "build/validation/corridor-cycle-01/baseline.json",
+      "sha256": "47d1712353f1631744918993d71ef7e1ff9a39690e706e9fb06a079f5fcafbd8"
+    },
+    "physical_budget": {
+      "screens": 2,
+      "seconds_per_screen": 1800,
+      "continuations": 1,
+      "continuation_seconds": 5400,
+      "cpus": 4,
+      "memory_gib": 6
+    },
+    "before_manifest": {
+      "path": "build/validation/corridor-cycle-01/before/physical/experiments/hybrid-chip-physical-results.json",
+      "sha256": "6eeed3f950659f16e80d086074864762adfbac276d2356d27a3f3fdc5628b562"
+    },
+    "collector": {
+      "path": "build/validation/corridor-cycle-01/collect.py",
+      "sha256": "fcab6d30fc5e03f8ed2a679a18289f384f3faa3b63953f9a0ebf625d480f39f6"
+    },
+    "implementation": {
+      "path": "build/validation/corridor-cycle-01/implementation.json",
+      "sha256": "1bb91e4141066a01f7779195039630121c56c7311909c9db899b1d7f553437e3"
+    },
+    "source_sha256": {
+      "Pinwheel.lean": "eb2f4c9663d86ef9cb5990bf3aa203f0afbea3c402b7a0ab93f53af362ee4217",
+      "Pinwheel/Hardware/Memory/Sram.lean": "e48e3bd69fdc057a2d6d007ec9e04089e941831a14232aea1a9bfd7b474753d3",
+      "Pinwheel/Hardware/Storage/Sram.lean": "f66bb94d03b9eee06e97a12f2ecfab137a3cb3af557d2506e064ecb75ce21f60",
+      "Pinwheel/Hardware/Storage/SramContents.lean": "7627a60e693a9eadb4a59fe4d033fff376f0849def240d1f253378cb67e2a5f4",
+      "Pinwheel/Hardware/Storage/SramController.lean": "8cf973432b5718d27e40f4e7619234d2efa461a24939839a4aac780bf11fa8ba",
+      "Pinwheel/Hardware/Storage/SramCoverage.lean": "42cab56ab983e4e84c49cf56cb237ee792556608f7689dc72e74c2f71c2079fa",
+      "Pinwheel/Hardware/Storage/SramExecution.lean": "ca3472140dd27d08aa81be26d55c8a525e44d8d8e0db85a504c2e32e18c0a40d",
+      "physical/chip.json": "5be52e8831c847fb4fd391f9cdbf98b2fb5404ccfba2de1b8133b8ac28a5e4cd",
+      "physical/chip.sdc": "860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1",
+      "physical/experiments/routing-diagnostics.json": "32e193be43f8181aaa868ad1315a0cc6d47c4a4cfaeb8b323915fa22f0d573e6",
+      "physical/experiments/sram-corridor-half.json": "3a592f2e93e03b0a917db45246e442ebeb6e0a7df42f0444dc671ac47ddab271",
+      "physical/experiments/sram-corridor.json": "109f9fbb04d76e7d7a90ccf910a905045894eda398edce31678844d547a29a9b",
+      "physical/experiments/sram-pins-north.json": "701d4386dabec2f922f97f2af9f08ce0caa3c0b7f84b0b0fce09872fa0ddd9c5",
+      "physical/experiments/sram-wide-gap.json": "b6a680127140108979ad1d543570b6cf0a7a07e75fe90e4c92a1ce78216f0531",
+      "scripts/check-chip-physical.py": "07138df88d283da093aa3f7ee2e74b6584185699c03a2335e1a7ef2c539cf518",
+      "scripts/diagnose-routing.py": "416d5ea61d634075d32ebc0f9d3644f48ecbd109de787029c476630551e8eec8",
+      "scripts/physical_checkpoint.py": "d8396748551a1bbb04b6947037c2640c37ed35204e37adc01babf4cd147f0821",
+      "scripts/physical_floorplan.py": "93b69602a72ee1b436de9de4bf4713aa0ae72020a328b0a72ae7464cbd8aaeca",
+      "scripts/prepare-chip-physical.py": "24b5a7c6fd3de684997c8299b7ae3577dbe2e317e0b9327b313572cd5f696c7d",
+      "scripts/report-physical.py": "42d913065b296c529c81a23f5de750d2ab5d785473c6da38da59bb1b1e955748",
+      "scripts/report-routing-guides.py": "b1eae777d6779ab066a9293cc8ce4d9596c5505099e77b30d564ba0913be5037",
+      "scripts/routing_context.py": "fbf561de2b7cb3672ad30a45ba56021cacaccc3cb7be34e8b3bd5315abe3838e",
+      "scripts/run-physical.py": "b20864ae4d2be1dabdee812e21323c195500c53ecea82fc8cfa0459bbc9b151e",
+      "test/SramChipEmit.lean": "7eb508ca733e1e2ab04b123c1c0067196288bc9844fcc7e6fc0a0b4ebd33dc06",
+      "test/test_chip_physical_prepare.py": "9c3ce4fd7c63b4312ab9014280ece1aadedf378b82e84a59a094b062cb932682",
+      "test/test_physical_checkpoint.py": "ff930344422714804424638308726252986fd70380c8062a96c0266877392c60",
+      "test/test_routing_guides.py": "6afbec7a5996fa4b8d72e621485a87b940a2bd21b354523e451b3e8951435d60"
+    },
+    "source_sha256_note": "Current corridor/execution phase; earlier phase hashes and decisions are preserved.",
+    "screen": {
+      "path": "build/validation/corridor-cycle-01/screen-comparison.json",
+      "sha256": "361277196d6e3998cda0eaa5a503d331ece41a8c2da385f3ed7978c57fdffb77"
+    },
+    "candidates": {
+      "hybrid-chip-11": {
+        "design": "hybrid-chip-corridor",
+        "rectangles": [
+          [
+            252,
+            94.36,
+            1036.48,
+            144
+          ]
+        ],
+        "overflow": {
+          "Metal1": 0,
+          "Metal2": 1320,
+          "Metal3": 284,
+          "Metal4": 82,
+          "Total": 1686
+        },
+        "guide_overlaps": {
+          "Metal2": {
+            "rectangles": 1483,
+            "nets": 626,
+            "macro_connected_nets": 617
+          },
+          "Metal3": {
+            "rectangles": 399,
+            "nets": 235,
+            "macro_connected_nets": 226
+          },
+          "Metal4": {
+            "rectangles": 87,
+            "nets": 71,
+            "macro_connected_nets": 70
+          }
+        },
+        "wirelength_um": 1884556,
+        "metrics": {
+          "design__instance__area": 483526,
+          "design__instance__area__class:timing_repair_buffer": 64286,
+          "design__power_grid_violation__count": 0,
+          "timing__setup__ws": 10.765,
+          "timing__hold__ws": 0.254987,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 209
+        },
+        "checks": {
+          "clear_after_repair": true,
+          "overflow": false,
+          "metal4_guides": true,
+          "instance_area": true,
+          "repair_area": true,
+          "wirelength": true,
+          "power": true,
+          "setup_met": true,
+          "hold_met": true,
+          "design__max_slew_violation__count": true,
+          "design__max_cap_violation__count": true,
+          "design__max_fanout_violation__count": true
+        },
+        "advance": false
+      },
+      "hybrid-chip-12": {
+        "design": "hybrid-chip-corridor-half",
+        "rectangles": [
+          [
+            252,
+            94.36,
+            1036.48,
+            119.18
+          ]
+        ],
+        "overflow": {
+          "Metal1": 0,
+          "Metal2": 676,
+          "Metal3": 124,
+          "Metal4": 70,
+          "Total": 870
+        },
+        "guide_overlaps": {
+          "Metal2": {
+            "rectangles": 1198,
+            "nets": 691,
+            "macro_connected_nets": 617
+          },
+          "Metal3": {
+            "rectangles": 238,
+            "nets": 175,
+            "macro_connected_nets": 124
+          },
+          "Metal4": {
+            "rectangles": 45,
+            "nets": 41,
+            "macro_connected_nets": 30
+          }
+        },
+        "wirelength_um": 1836756,
+        "metrics": {
+          "design__instance__area": 483381,
+          "design__instance__area__class:timing_repair_buffer": 64153.6,
+          "design__power_grid_violation__count": 0,
+          "timing__setup__ws": 10.966,
+          "timing__hold__ws": 0.249275,
+          "design__max_slew_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "design__max_fanout_violation__count": 207
+        },
+        "checks": {
+          "clear_after_repair": true,
+          "overflow": true,
+          "metal4_guides": true,
+          "instance_area": true,
+          "repair_area": true,
+          "wirelength": true,
+          "power": true,
+          "setup_met": true,
+          "hold_met": true,
+          "design__max_slew_violation__count": true,
+          "design__max_cap_violation__count": true,
+          "design__max_fanout_violation__count": true
+        },
+        "advance": true
+      }
+    },
+    "timing_gate": "Compare whether same-stage timing constraints are met and electrical violation counts regress. Record positive slack changes separately; positive margin is not routed signoff.",
+    "placement_verification": {
+      "path": "build/validation/corridor-cycle-01/placement-verification.json",
+      "sha256": "6f7977437cdcd881a0e8d3501284da2d7ec5bc2a8c81e587c860aec3321c3bdf"
+    },
+    "annotated_layout": {
+      "path": "docs/images/sram-corridor-screen.png",
+      "sha256": "c1970708baa78cc8307e2960ed3e819c58e26b0ca42b2bd449ba4aea854a8dc1"
+    },
+    "annotated_layout_source": {
+      "path": "build/validation/corridor-cycle-01/corridor-screen.svg",
+      "sha256": "957b9e614a853541fb25c892780513a51c2d499501ee2818adfe5832d2d0aec7"
+    },
+    "annotated_layout_generator": {
+      "path": "build/validation/corridor-cycle-01/draw-corridors.py",
+      "sha256": "b99f43c70a786bbb42455392277a021285c9d379c2eb6b3eb0be9bf26790b538"
+    },
+    "continuation": {
+      "baseline": {
+        "report": {
+          "path": "build/physical/diagnosis/orientation-final/report.json",
+          "sha256": "44accc1fdc04d41e20e8a39b2c948d3dbb7b8fdba678cebf1b6141a61a665bd9"
+        },
+        "routing_pass": 0,
+        "iteration": 59,
+        "marker_count": 126
+      },
+      "matched_improvement_percent": 26.984,
+      "stages": {
+        "matched": {
+          "routing_pass": 0,
+          "iteration": 59,
+          "report": {
+            "path": "build/physical/diagnosis/corridor-59/report.json",
+            "sha256": "e4563368ce92130b1b1229a90b5c498956ff72bb3764b425d34714508d17ce70"
+          },
+          "context": {
+            "path": "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-0-iteration-59.json",
+            "sha256": "ff0386761388a21585cac2342c278470e84de61c908bf9dc58052786c173e12c"
+          },
+          "marker_count": 92,
+          "by_rule_layer": {
+            "Short / Metal4": 83,
+            "Short / Metal3": 2,
+            "Metal Spacing / Metal4": 7
+          },
+          "by_layer": {
+            "Metal4": 90,
+            "Metal3": 2
+          },
+          "involving_power_net": 67,
+          "involving_clock_net": 4,
+          "unrecognized_nets": [],
+          "fully_inside_macros": {
+            "memory.storage0": 41,
+            "memory.storage1": 51
+          },
+          "intersecting_macros": 92,
+          "corridor_clear": true,
+          "gap_cells": 467,
+          "implicated_nonpower_nets": 59,
+          "implicated_nonpower_nets_with_gap_terminals": 46,
+          "instances": 22504,
+          "antenna_cells": 166
+        },
+        "first_pass": {
+          "routing_pass": 0,
+          "iteration": 64,
+          "report": {
+            "path": "build/physical/diagnosis/corridor-pass0-final/report.json",
+            "sha256": "7df2357cd95f6bc9d8616cc071bb958dc8c25a3abbc31d1d71b0be18d8ae8bad"
+          },
+          "context": {
+            "path": "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-0-iteration-64.json",
+            "sha256": "4bf52fe936dd12f780ed974d3dad59e4020149084f2623ac769e05327ba813fa"
+          },
+          "marker_count": 73,
+          "by_rule_layer": {
+            "Short / Metal4": 61,
+            "Short / Metal3": 5,
+            "Metal Spacing / Metal4": 7
+          },
+          "by_layer": {
+            "Metal4": 68,
+            "Metal3": 5
+          },
+          "involving_power_net": 58,
+          "involving_clock_net": 4,
+          "unrecognized_nets": [],
+          "fully_inside_macros": {
+            "memory.storage0": 27,
+            "memory.storage1": 46
+          },
+          "intersecting_macros": 73,
+          "corridor_clear": true,
+          "gap_cells": 467,
+          "implicated_nonpower_nets": 59,
+          "implicated_nonpower_nets_with_gap_terminals": 46,
+          "instances": 22504,
+          "antenna_cells": 166
+        },
+        "last_completed": {
+          "routing_pass": 1,
+          "iteration": 35,
+          "report": {
+            "path": "build/physical/diagnosis/corridor-final/report.json",
+            "sha256": "e8454e422490098f660a98fe24d861bbdbebb978fd406b79252fe6a04d67f575"
+          },
+          "context": {
+            "path": "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-1-iteration-35.json",
+            "sha256": "6b0ddfee4c51d007b25cd60c3b15b8e8665cca730ba9456a61434b7e723d549d"
+          },
+          "marker_count": 230,
+          "by_rule_layer": {
+            "Short / Metal4": 171,
+            "Short / Metal3": 6,
+            "Short / Metal2": 2,
+            "Metal Spacing / Metal4": 50,
+            "Metal Spacing / Metal3": 1
+          },
+          "by_layer": {
+            "Metal4": 221,
+            "Metal3": 7,
+            "Metal2": 2
+          },
+          "involving_power_net": 163,
+          "involving_clock_net": 13,
+          "unrecognized_nets": [],
+          "fully_inside_macros": {
+            "memory.storage0": 60,
+            "memory.storage1": 165
+          },
+          "intersecting_macros": 225,
+          "corridor_clear": true,
+          "gap_cells": 472,
+          "implicated_nonpower_nets": 67,
+          "implicated_nonpower_nets_with_gap_terminals": 52,
+          "instances": 22586,
+          "antenna_cells": 248
+        }
+      },
+      "completed_detailed_routing_passes": 1,
+      "first_pass_antenna": {
+        "violating_nets": 49,
+        "violating_pins": 55
+      },
+      "last_completed_flow_step": "04-openroad-stamidpnr-3",
+      "latest_completed_sta_metrics": {
+        "design__instance__area": 484285,
+        "timing__setup__ws": 8.51727,
+        "timing__hold__ws": 0.0630042,
+        "timing__hold_vio__count": 0,
+        "design__max_slew_violation__count": 62,
+        "design__max_cap_violation__count": 25,
+        "design__max_fanout_violation__count": 219,
+        "design__power_grid_violation__count": 0
+      },
+      "sta_boundary": "This STA precedes detailed routing and the later additional antenna repair. The fast/slow entries in its state are inherited; no extracted multi-corner timing exists.",
+      "inherited_checked_netlist": {
+        "build/physical/hybrid-chip-corridor-half/experiments/hybrid-chip-13/checkpoint/artifacts/99538416c22aa23b887ad73c5bf71010fe65bb7c618a416a7043235798dc8b5c/tt_um_pinwheel.nl.v": "99538416c22aa23b887ad73c5bf71010fe65bb7c618a416a7043235798dc8b5c"
+      },
+      "netlist_validation_boundary": "Zero-delay external-pin simulation of the explicitly identified NL view. A flow state can inherit this view from an earlier stage; it is not necessarily an export of the latest ODB/DEF. No timing simulation, sequential equivalence, power-connectivity proof, or physical closure claim.",
+      "decision": "Retain the half-height placement exclusion as the better screened candidate; the bounded continuation does not establish routing or antenna closure. At matched first-pass iteration 59, markers fall 126 to 92. Pass 0 ends at 73 markers; its antenna check finds 49 net/55 pin violations. The 90-minute cap interrupts antenna reroute pass 1 after logged iteration 35 with 230 markers. No further physical run is allocated in this cycle.",
+      "next_experiment": "Keep the half corridor and derive routing obstructions over the macro interiors before global routing, then regenerate guides from the verified post-CTS checkpoint. Screen Metal4 first, which accounts for 68 of the 73 first-pass residual markers; inspect the five Metal3 macro-obstruction crossings and include that layer only in a separately identified candidate with signal-pin/access checks. Verify the intended routing-resource change, corridor occupancy, per-layer guide overlaps and overflow, wirelength, supply connectivity and timing/electrical cost before any further detailed route. This differs from the failed late keepout experiment that reused existing guides. Preserve the vendor views, official pins, clock, capacity and ISA.",
+      "input_sha256": {
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/validation/corridor-cycle-01/compare-continuation.py": "8e47b78c0ba1190405cc96c7b5832d95b5f801650f221800c36de057ec5ac066",
+        "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/validation/corridor-cycle-01/diagnostic-selection.json": "6babdc8f2a152b1b46ab4c6a01555eb52721a201568eb39e9020c550fb4ece81",
+        "build/physical/chip-check/corridor-repaired-01/report.json": "c3555b83bb6ef43c0cf5c1e8c02fc8939e07771f503e96c41a74c05a5f5c6a71",
+        "build/physical/diagnosis/corridor-59/markers.json": "f6955ce15a27bd4886e7d012b35f59a320932a45af24761534becca501ff6f57",
+        "build/physical/diagnosis/corridor-59/report.json": "e4563368ce92130b1b1229a90b5c498956ff72bb3764b425d34714508d17ce70",
+        "build/physical/diagnosis/corridor-final/markers.json": "3f70e05ebee58432acea0db651f1bd22ab91ab79f68fc2e5467de92a82010452",
+        "build/physical/diagnosis/corridor-final/report.json": "e8454e422490098f660a98fe24d861bbdbebb978fd406b79252fe6a04d67f575",
+        "build/physical/diagnosis/corridor-pass0-final/markers.json": "c29729d5d0820d76ebca6c1acb2527f92943cd86ba4ba1172f035aeef18ea27a",
+        "build/physical/diagnosis/corridor-pass0-final/report.json": "7df2357cd95f6bc9d8616cc071bb958dc8c25a3abbc31d1d71b0be18d8ae8bad",
+        "build/physical/diagnosis/orientation-final/report.json": "44accc1fdc04d41e20e8a39b2c948d3dbb7b8fdba678cebf1b6141a61a665bd9",
+        "build/physical/hybrid-chip-13-report.json": "329a519f6378768f5e92f739a6f48ec503ab93a2d923c7b6df9fb30a227fd852",
+        "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-0-iteration-59.json": "ff0386761388a21585cac2342c278470e84de61c908bf9dc58052786c173e12c",
+        "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-0-iteration-64.json": "4bf52fe936dd12f780ed974d3dad59e4020149084f2623ac769e05327ba813fa",
+        "build/physical/hybrid-chip-corridor-half/diagnosis/corridor/routing-pass-1-iteration-35.json": "6b0ddfee4c51d007b25cd60c3b15b8e8665cca730ba9456a61434b7e723d549d",
+        "build/physical/hybrid-chip-corridor-half/runs/hybrid-chip-13/05-openroad-detailedrouting/openroad-detailedrouting.log": "da3d6ab0c7a44475a9feea9de1a361b880511c0d402217f532035aac042b9d22"
+      },
+      "boundary": "Router markers, not final foundry DRC or independent root causes. Compare the same pass and iteration; the second pass is a distinct antenna-repair workload. All 73 first-pass residuals are inside macros. In the interrupted reroute, 225 of 230 are inside, with five others within 5 micrometres. No routing, antenna or timing signoff."
+    },
+    "validation_receipts": [
+      "hybrid_execution_foundation",
+      "corridor_sram_comparison",
+      "corridor_repaired_netlist",
+      "corridor_emission_identity",
+      "corridor_python_tests",
+      "corridor_proof_dependencies",
+      "corridor_placement_verification",
+      "corridor_continuation_comparison"
+    ],
+    "validation_summary": {
+      "modules": 197,
+      "declarations": 14217,
+      "theorems": 7313,
+      "standard_axioms_only": true,
+      "full_foundation_suites": 31,
+      "foundation_seconds": 1476.691,
+      "python_tests": 105,
+      "python_skips": 2,
+      "sram_comparison_seconds": 740.287,
+      "comparison_source_files": 220,
+      "chip_edges_per_simulation": 508252,
+      "sram_core_edges": 11840,
+      "consecutive_core_branches": 1000,
+      "repaired_netlist_seconds": 108.392,
+      "repaired_output_mutants_rejected": 1
+    },
+    "proof": "SramContents identifies defined dictionary words with the existing loader image. SramExecution composes actual array Q, lookup selection, write holding, commit/start bypass and the shared controller into initialized trace refinement of the capacity-adapted atomic reference. Every controller register matches the shared netlist; arbitrary initial arrays and Q are allowed.",
+    "remaining_proof": "External Verilog macro binding, package-wrapper composition and emitted-chip read-back. Direct SRAM does not inherit the hybrid proof.",
+    "failed_attempts": {
+      "rejected_native_axiom": {
+        "path": "build/validation/sram-execution-01/axioms.log",
+        "sha256": "0110ed323af0b0f8d53f69bf3fbd998e7768e43e1300ce6a994a5021e684f2b9"
+      },
+      "failed_foundation_log": {
+        "path": "build/validation/corridor-cycle-01/foundation.log",
+        "sha256": "bf960e94848ca3aee29872cc0d0ed69eebdfb4bc09bffb37300113af6f41317d"
+      },
+      "interrupted_comparison_log": {
+        "path": "build/validation/corridor-cycle-01/sram-comparison.log",
+        "sha256": "d025fe04cefb8c7eb2ec10762920e3f681c90e12dcab9bc0b0a0c95242a0c482"
+      },
+      "correction": "sram-execution-01 rejected the native bv_decide dependency; write_at now uses bank separation and ordinary arithmetic proofs. The allowed axiom set is unchanged.",
+      "restart": "corridor-01 was intentionally interrupted before source correction; runner PID 18603 and simulator PID 18865 were confirmed absent. corridor-02 binds the corrected sources."
+    },
+    "base_profile_changed": false,
+    "backend_promoted": false,
+    "capacity_records": 32,
+    "clock_period_ns": 20,
+    "emission_identity_note": "Screens used the preceding widegap-01 receipt. Fresh corridor-02 validation binds current sources and byte-identical hybrid RTL and all four SRAM emissions.",
+    "decision": "Retain the half-height placement exclusion as the better screened candidate; the bounded continuation does not establish routing or antenna closure. At matched first-pass iteration 59, markers fall 126 to 92. Pass 0 ends at 73 markers; its antenna check finds 49 net/55 pin violations. The 90-minute cap interrupts antenna reroute pass 1 after logged iteration 35 with 230 markers. No further physical run is allocated in this cycle.",
+    "next_experiment": "Keep the half corridor and derive routing obstructions over the macro interiors before global routing, then regenerate guides from the verified post-CTS checkpoint. Screen Metal4 first, which accounts for 68 of the 73 first-pass residual markers; inspect the five Metal3 macro-obstruction crossings and include that layer only in a separately identified candidate with signal-pin/access checks. Verify the intended routing-resource change, corridor occupancy, per-layer guide overlaps and overflow, wirelength, supply connectivity and timing/electrical cost before any further detailed route. This differs from the failed late keepout experiment that reused existing guides. Preserve the vendor views, official pins, clock, capacity and ISA.",
+    "remaining_gates": "Routing; extracted multi-corner setup/hold/electrical closure; required layout checks; macro power-grid and corner qualification; final layout-netlist regression. Resident payload, default promotion, licensing and publication remain deferred."
+  },
+  "cheap_routing_diagnostics": {
+    "date": "2026-09-21",
+    "completion": "build/validation/routing-diagnostics-01/completion.json",
+    "guide": "docs/routing-diagnostics.md",
+    "limits": {
+      "helper_timeout_seconds": 180,
+      "pin_access_timeout_seconds": 300,
+      "global_screen_timeout_seconds": 900,
+      "max_new_global_screens": 1,
+      "max_new_detailed_routes": 0,
+      "cpus": 4,
+      "memory_gib": 6
+    },
+    "manifest": {
+      "path": "physical/experiments/routing-diagnostic-cases.json",
+      "sha256": "028901a7dbef9e3ff41b3065ae6b2b2047d343f961db5ea1cc1cfd34e73ce314"
+    },
+    "gate": {
+      "path": "build/validation/routing-diagnostics-01/gate-final-02/report.json",
+      "sha256": "987c31834e20875b9cca17bdf207fb62fecea94ed4d99cc3f18cd65530c5075c"
+    },
+    "endpoint_correction": {
+      "path": "build/validation/routing-diagnostics-01/hybrid-chip-13-endpoint.json",
+      "sha256": "c5ccf000de8dff969984945f0ac7c59d43e03930ada5a0b13726d6b4ce874cb7"
+    },
+    "candidate_comparison": {
+      "path": "build/validation/routing-diagnostics-01/candidate-comparison.json",
+      "sha256": "2aa84c64af0af5e7ba73abdce186669470400ec011405fb4a9e912e299a32ba9"
+    },
+    "fresh_completed_route": {
+      "path": "build/validation/routing-diagnostics-01/resolved-final-drc/report.json",
+      "sha256": "56d24c246b5c8c472ba0af6459066fb35c7f33a3f63778b40a8fe49fc8cd8c66"
+    },
+    "pin_access": {
+      "path": "build/validation/routing-diagnostics-01/resolved-pin-comparison.json",
+      "sha256": "aa5b1422546e63cf12e7e001a2b097fe53b2b6d949dbbc83aa1c1e1760c86aac"
+    },
+    "functional_sources": {
+      "path": "build/validation/routing-diagnostics-01/functional-source-check.json",
+      "sha256": "af329bd2358f9c94d0bfffd445b728343849056c5eb23f7812452301cc0a5e77"
+    },
+    "python_tests": {
+      "path": "build/validation/routing-diagnostics-01/python-tests-final.json",
+      "sha256": "da3c1c5ac90290f272dc41dc85571915bd7a43b92d661f5e314b1e80c26e50f9"
+    },
+    "termination": {
+      "path": "build/validation/routing-diagnostics-01/termination.json",
+      "sha256": "d1893082b678f098ae5c65386bc1622307ba6a2fa882adbd1f159070c5aa2b27"
+    },
+    "heartbeat": {
+      "path": "build/validation/routing-diagnostics-01/heartbeat-status.json",
+      "sha256": "56ade04630b61e8e6a24c7610c515a846e46bf9d2d14bde2797f1d4347f35ea9"
+    },
+    "historical_objects_note": "All previous run objects and raw reports are retained. Earlier attempt-13 iteration-35/230 statements describe its shorter log snapshot; the reconciled endpoint is iteration 38/198. Raw attempt-14 retained counts are distinct from fresh static DRC.",
+    "decision": "Keep cheap evidence checks and the half corridor; reject the ineffective early-obstruction mechanism. No new detailed route. Next require explicit regional capacity control to change the resource map and improve the coarse screen.",
+    "boundary": "Pinned router checks and selected exact geometric witnesses; not foundry DRC, complete geometric coverage, emitted-chip equivalence, antenna closure or extracted timing."
+  }
+}

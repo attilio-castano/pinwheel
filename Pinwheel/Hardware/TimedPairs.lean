@@ -44,4 +44,16 @@ theorem Refinement.pairTrace_eq (r : Refinement impl spec) (s : S) (t : T)
     simp only [Component.pairTrace, r.observe i s t h,
       r.observe after _ _ (r.step i s t h), ih _ _ (r.step i s t h)]
 
+/-- Observations through a function: the same edges, each observation mapped. -/
+theorem Component.pairTrace_map {I S O O' : Type} (c : Timed.Component I S O)
+    (c' : Timed.Component I S O') (g : O → O') (hstep : ∀ i s, c'.step i s = c.step i s)
+    (hobserve : ∀ i s, c'.observe i s = g (c.observe i s)) (s : S) (inputs : List (I × I)) :
+    c'.pairTrace s inputs = (c.pairTrace s inputs).map (fun e => (g e.1, g e.2)) := by
+  induction inputs generalizing s with
+  | nil => rfl
+  | cons pair rest ih =>
+    obtain ⟨i, after⟩ := pair
+    simp only [Timed.Component.pairTrace, List.map, hstep, hobserve, ih]
+
+
 end Pinwheel.Hardware.Timed

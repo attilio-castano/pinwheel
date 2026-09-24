@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "name": "control",
+  "source": {
+    "kind": "local-load",
+    "selection": "physical/experiments/local-load-results.json",
+    "sha256": "f726a95f633fb318df5e4757bd3d2e8fd1db790a863410dceabde02337f66878"
+  },
+  "macro": {
+    "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+    "instances": {
+      "memory.storage0": {
+        "location": [
+          252,
+          30
+        ],
+        "orientation": "N"
+      },
+      "memory.storage1": {
+        "location": [
+          252,
+          144
+        ],
+        "orientation": "N"
+      }
+    },
+    "power": {
+      "VPWR": [
+        "VDD!",
+        "VDDARRAY!"
+      ],
+      "VGND": [
+        "VSS!"
+      ]
+    }
+  },
+  "placement_exclusions": [
+    [
+      252,
+      94.36,
+      1036.48,
+      119.18
+    ]
+  ],
+  "entry_state": [
+    "engine.r_cached_word",
+    "engine.r_mode",
+    "engine.r_remaining",
+    "engine.r_wait_left",
+    "engine.r_levels",
+    "engine.r_enabled",
+    "engine.r_sample0",
+    "engine.r_sample1",
+    "engine.r_sample2",
+    "engine.r_sample3",
+    "engine.r_sample4",
+    "engine.r_sample5",
+    "engine.r_sample6",
+    "engine.r_sample7",
+    "engine.r_sample8",
+    "engine.r_sample9",
+    "engine.r_sample10",
+    "engine.r_sample11",
+    "engine.r_sample12",
+    "engine.r_sample13",
+    "engine.r_sample14",
+    "engine.r_sample15"
+  ],
+  "upload_state": [
+    "engine.r_serial_shift"
+  ]
+}

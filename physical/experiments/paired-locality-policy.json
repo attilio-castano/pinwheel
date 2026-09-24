@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "source_database_sha256": "384f389d9a2eb16866b706df8234f9ce2d4c697ddcdd6daea7b204a0de4102f8",
+  "base_policy_sha256": "9691419e39c053819780e0357bcbf08ed2a18bc97ed24697cfe86efbdbfe1916",
+  "relocation": {
+    "instance": "_09463_",
+    "cell": "sg13cmos5l_buf_2",
+    "max_displacement_sites": 10,
+    "row": "same",
+    "orientation": "same"
+  },
+  "exchange": {
+    "objective": "worst_wire_pressure",
+    "max_passes": 16
+  },
+  "boundary": "One named data-buffer move/resize within ten sites on the same row and orientation; all incident signals costed. Rank leaf exchanges by worst branch-specific saved-wire/budget pressure under proportional span scaling. This is a conditional geometric scenario, not an electrical bound or timing proof. Original budgets and protected cells remain unchanged."
+}

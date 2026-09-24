@@ -1,0 +1,17 @@
+{
+  "schema": 3,
+  "status": "passed",
+  "decision": "admit-one-validated-repair-coarse-route",
+  "validation": {
+    "path": "build/validation/paired-closure-01/report.json",
+    "sha256": "6706c3a3f2a0a1629973be204ef6038478e99754a5a2ea3e606e5af03101407f"
+  },
+  "measurement": "paired-status-cone-01",
+  "probe": "paired-status-cone-01",
+  "reference_measurement": "paired-clock-01",
+  "module": "tt_um_pinwheel",
+  "readbacks": {
+    "before": "control-readback.json",
+    "after": "cone-readback.json"
+  }
+}

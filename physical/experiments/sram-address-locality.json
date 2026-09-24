@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "kind": "address-window-projection",
+  "purpose": "Screen moving the last three private address stages toward their SRAM pins while accounting for every incident signal net.",
+  "depth": 3,
+  "windows_um": {
+    "memory.storage0": [540.0, 120.96, 751.68, 132.3],
+    "memory.storage1": [540.0, 219.24, 751.68, 241.92]
+  },
+  "scope": "Analysis-only candidate, not runner overrides or placement constraints. Coordinates use existing rows outside the fixed macros and reserved half corridor. Projection may overlap other cells; it is not legalization. See chip-organization-results.json for the measured disposition."
+}

@@ -1,0 +1,61 @@
+{
+  "DESIGN_NAME": "tt_um_pinwheel",
+  "VERILOG_FILES": ["dir::design.sv", "dir::sram_chip.sv"],
+  "VERILOG_DEFINES": ["SRAM_HYBRID"],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 20,
+  "PNR_SDC_FILE": "dir::core.sdc",
+  "SIGNOFF_SDC_FILE": "dir::core.sdc",
+  "FALLBACK_SDC": "dir::core.sdc",
+  "FP_DEF_TEMPLATE": "dir::tt_block_6x4_pgvdd.def",
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [0, 0, 1289.28, 710.64],
+  "PL_TARGET_DENSITY_PCT": 50,
+  "TOP_MARGIN_MULT": 1,
+  "BOTTOM_MARGIN_MULT": 1,
+  "LEFT_MARGIN_MULT": 6,
+  "RIGHT_MARGIN_MULT": 6,
+  "VDD_PIN": "VPWR",
+  "GND_PIN": "VGND",
+  "RT_MAX_LAYER": "Metal4",
+  "PDN_VPITCH": 50.0,
+  "PDN_VWIDTH": 2.1,
+  "PDN_HPITCH": 16.0,
+  "PDN_MULTILAYER": true,
+  "PDN_MACRO_CONNECTIONS": [
+    "memory\\.storage[01] VPWR VGND VDD! VSS!",
+    "memory\\.storage[01] VPWR VGND VDDARRAY! VSS!"
+  ],
+  "MACROS": {
+    "RM_IHPSG13_1P_64x64_c2_bm_bist": {
+      "instances": {
+        "memory.storage0": {"location": [252, 30], "orientation": "N"},
+        "memory.storage1": {"location": [252, 144], "orientation": "N"}
+      },
+      "gds": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist.gds"],
+      "lef": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist.lef"],
+      "vh": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist.bb.v"],
+      "lib": {
+        "*typ*": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist_typ_1p20V_25C.lib"],
+        "*slow*": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist_slow_1p08V_125C.lib"],
+        "*fast*": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist_fast_1p32V_m55C.lib"]
+      },
+      "spice": ["dir::macro/RM_IHPSG13_1P_64x64_c2_bm_bist.cdl"]
+    }
+  },
+  "STA_MACRO_PRIORITIZE_NL": false,
+  "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": false,
+  "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
+  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+  "RUN_CTS": true,
+  "RUN_KLAYOUT_XOR": false,
+  "RUN_KLAYOUT_DRC": false,
+  "MAGIC_DEF_LABELS": false,
+  "MAGIC_WRITE_LEF_PINONLY": true,
+  "TIMING_VIOLATION_CORNERS": ["*"],
+  "MAX_FANOUT_CONSTRAINT": 10,
+  "CLOCK_UNCERTAINTY_CONSTRAINT": 0.2,
+  "SYNTH_DRIVING_CELL": "sg13cmos5l_buf_2/X",
+  "OUTPUT_CAP_LOAD": 10,
+  "OPENROAD_THREADS": 4
+}

@@ -1,0 +1,369 @@
+{
+  "schema": 1,
+  "date": "2026-09-22",
+  "status": "passed",
+  "decision": "Retain seven-sink clocks and the complete status-cone buffer repair; prepare exact intake for a bounded coarse-routing diagnostic.",
+  "report": "build/validation/paired-closure-01/report.json",
+  "report_sha256": "6706c3a3f2a0a1629973be204ef6038478e99754a5a2ea3e606e5af03101407f",
+  "physical_stage": "Post-CTS and hold repair, followed by local buffer sizing; placement wire estimates only.",
+  "source_selection": {
+    "path": "physical/experiments/physical-target-results.json",
+    "sha256": "9d936d58f8485cb7fabcd4a49e4995f769a4dfcebb4113e63ef79c65575ddb54"
+  },
+  "selected": {
+    "database": {
+      "path": "build/physical/repair-probes/paired-status-cone-01/repaired.odb",
+      "sha256": "e36fd3bcac1da3759edeb088995e5bbeceaa35f487ef922239bfa4e30fb7c47b"
+    },
+    "netlist": {
+      "path": "build/physical/mapped-diagnostics/paired-status-cone-01/implemented.v",
+      "sha256": "ebf5a2ade4b320ca7da7ce20e0a4c94984349f5f65c1422d5918e8478d67a621"
+    },
+    "parent_state": {
+      "path": "build/physical/target-paired-01/runs/paired-clock-01/17-openroad-stamidpnr-2/state_out.json",
+      "sha256": "4de8b44408f0e260bbe61e6c8d085dd626addb4311e3561490ce534031095edd"
+    },
+    "parent_physical_report": {
+      "path": "build/physical/paired-clock-01-report.json",
+      "sha256": "029e0a23598a61d497dfde316f5b054d7ba8fa4adbb09056f6fc4caf76e550ab"
+    }
+  },
+  "comparison": {
+    "final_area_um2": 354010.1184,
+    "delta_from_clock_um2": 1146.7008,
+    "delta_from_clock_percent": 0.32497,
+    "delta_from_initial_percent": 1.666906,
+    "delta_from_old_control_percent": -25.238605
+  },
+  "qualified_variants": {
+    "initial": {
+      "area_um2": 348205.8528,
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 13.517343,
+          "entry_state": 14.544053,
+          "rejection_status": 9.703853,
+          "upload_hold": 0.095552
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 3.79069,
+          "entry_state": 6.185663,
+          "rejection_status": 0.304933,
+          "upload_hold": 0.405227
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 9.952397,
+          "entry_state": 11.489252,
+          "rejection_status": 6.274649,
+          "upload_hold": 0.217763
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 9.70385,
+          "hold_ns": 0.0955521,
+          "fanout_violations": 113,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 0.304933,
+          "hold_ns": 0.405227,
+          "fanout_violations": 113,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 6.27465,
+          "hold_ns": 0.217763,
+          "fanout_violations": 113,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    },
+    "paired-clock-01": {
+      "area_um2": 352863.4176,
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 13.517258,
+          "entry_state": 14.548103,
+          "rejection_status": 9.704696,
+          "upload_hold": 0.099842
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 3.790341,
+          "entry_state": 6.190175,
+          "rejection_status": 0.303624,
+          "upload_hold": 0.418639
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 9.952175,
+          "entry_state": 11.494414,
+          "rejection_status": 6.276174,
+          "upload_hold": 0.225434
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 9.7047,
+          "hold_ns": 0.0998423,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 0.303624,
+          "hold_ns": 0.418639,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 6.27617,
+          "hold_ns": 0.225434,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    },
+    "paired-status-candidate-02": {
+      "area_um2": 352885.1904,
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 13.537835,
+          "entry_state": 14.611214,
+          "rejection_status": 9.704696,
+          "upload_hold": 0.099842
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 3.935677,
+          "entry_state": 6.419483,
+          "rejection_status": 0.312557,
+          "upload_hold": 0.418639
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 10.013615,
+          "entry_state": 11.621569,
+          "rejection_status": 6.276174,
+          "upload_hold": 0.225434
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 9.7047,
+          "hold_ns": 0.0998423,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 0.312557,
+          "hold_ns": 0.418639,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 6.27617,
+          "hold_ns": 0.225434,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    },
+    "paired-status-cone-01": {
+      "area_um2": 354010.1184,
+      "path_slacks_ns": {
+        "nom_fast_1p32V_m40C": {
+          "sram_address": 13.839451,
+          "entry_state": 14.911815,
+          "rejection_status": 10.016524,
+          "upload_hold": 0.099842
+        },
+        "nom_slow_1p08V_125C": {
+          "sram_address": 4.680503,
+          "entry_state": 7.196474,
+          "rejection_status": 1.089368,
+          "upload_hold": 0.418639
+        },
+        "nom_typ_1p20V_25C": {
+          "sram_address": 10.494475,
+          "entry_state": 12.09149,
+          "rejection_status": 6.746565,
+          "upload_hold": 0.225434
+        }
+      },
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 10.0165,
+          "hold_ns": 0.0998423,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 1.08937,
+          "hold_ns": 0.418639,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 6.74657,
+          "hold_ns": 0.225434,
+          "fanout_violations": 0,
+          "slew_violations": 0,
+          "capacitance_violations": 0,
+          "complete_consumed_wire_estimates": true,
+          "partially_unannotated": 0,
+          "consumed_unannotated": 0
+        }
+      }
+    }
+  },
+  "measurement_receipts": {
+    "paired-clock-01": {
+      "path": "build/physical/mapped-diagnostics/paired-clock-01/report.json",
+      "sha256": "cb14a63c1e4ee038f0fc501d8823b01f565a75d09b6e941eb6acb2235fe97037"
+    },
+    "paired-status-control-01": {
+      "path": "build/physical/mapped-diagnostics/paired-status-control-01/report.json",
+      "sha256": "0d5530b433440f383b902988830a149d13d794c89b83cbdbb028e5ebd247484e"
+    },
+    "paired-status-candidate-01": {
+      "path": "build/physical/mapped-diagnostics/paired-status-candidate-01/report.json",
+      "sha256": "35a2ec7c060bbaed4baafe346aabb41cdc520b6c8b093d37e06ae1186732aff8"
+    },
+    "paired-status-candidate-02": {
+      "path": "build/physical/mapped-diagnostics/paired-status-candidate-02/report.json",
+      "sha256": "81296cea5d5651719efe7fe6d1786c5eb6900626d5dc9f03b9a436fbf299861d"
+    },
+    "paired-status-cone-01": {
+      "path": "build/physical/mapped-diagnostics/paired-status-cone-01/report.json",
+      "sha256": "cd0dcf60e5d2c157f447693f134fe758d2acae1e98a7168992f255235199266a"
+    }
+  },
+  "probe_receipts": {
+    "paired-status-01": {
+      "path": "build/physical/repair-probes/paired-status-01/report.json",
+      "sha256": "1909bc1a022427d96e7ca60847109361e1630528ffd078ba878d529d202d3454"
+    },
+    "paired-status-02": {
+      "path": "build/physical/repair-probes/paired-status-02/report.json",
+      "sha256": "6183c296dfac057bf33ceeba20e0d7b1b305d277bb72a3f9138fe8b2e4f2f3c0"
+    },
+    "paired-status-cone-01": {
+      "path": "build/physical/repair-probes/paired-status-cone-01/report.json",
+      "sha256": "d86f8482afafd5262f70eb79e5a16cca23c09172896d54bb0d082dc2de835de5"
+    }
+  },
+  "repair": {
+    "cts_sink_clustering_size": 7,
+    "max_fanout_constraint": 8,
+    "resized_buffer_count": 168,
+    "original_buffer_counts": {
+      "sg13cmos5l_buf_1": 128,
+      "sg13cmos5l_buf_2": 40
+    },
+    "replacement": "sg13cmos5l_buf_4",
+    "selection": "physical/experiments/paired-status-cone.json",
+    "recipe": "physical/experiments/paired-status-cone-repair.tcl",
+    "geometry": {
+      "all_other_instances_fixed": true,
+      "all_net_terminals_identical": true,
+      "macro_pins_identical": true,
+      "corridor_clear": true
+    }
+  },
+  "functional": {
+    "report": {
+      "path": "build/physical/chip-check/paired-clock-01/report.json",
+      "sha256": "80106fdd68395d24fb2bcfa485b3e024cc4b2146117d0f2a5f7efdc9c4c788db"
+    },
+    "edges": 331401,
+    "public_output_mutant_rejected": 1,
+    "transfer": "Exact source export plus independently checked noninverting-buffer contraction; final cone edit did not repeat the pin simulation."
+  },
+  "validation": {
+    "focused_tests": 71,
+    "real_buffer_negative_controls": {
+      "inverter": "Changed original cell: _05626_",
+      "rewire": "Changed connectivity after buffer contraction"
+    },
+    "containers_absent": 26,
+    "preserved_receipts": {
+      "build/validation/paired-controller-02/report.json": {
+        "sha256": "9e2d550a924006e332efb4be15c93c883d7f9f0e6b10965278dd5d9e53e4be0f",
+        "source_hashes": 262,
+        "artifact_hashes": 78
+      },
+      "build/validation/paired-execution-03/report.json": {
+        "sha256": "c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f2e7d4e",
+        "source_hashes": 239,
+        "artifact_hashes": 70
+      }
+    }
+  },
+  "prior_attempts": {
+    "three_cell_disposition": "Only 0.008933 ns slow setup gain with complete estimates; worst path moved to another branch. Superseded by the complete 168-buffer status distribution cone.",
+    "unqualified_measurement_tags": [
+      "paired-status-control-01",
+      "paired-status-candidate-01"
+    ],
+    "rejected_measurement_mode": "Explicit nominal layer RC in the fresh placement initialization produced 308 partially unannotated drivers on both control and three-cell candidate. Those margins are unqualified. Independent final measurement uses the original flow policy with complete consumed-net estimates."
+  },
+  "caps": {
+    "placement_seconds": 600,
+    "placement_cpus": 4,
+    "placement_memory_gib": 6,
+    "probe_seconds": 120,
+    "probe_cpus": 2,
+    "probe_memory_gib": 2,
+    "measurement_seconds": 120
+  },
+  "evidence_boundary": [
+    "No Lean, RTL, state, instruction schedule, package timing or pipeline cycle changes.",
+    "Clock tree clustering changes the physical clock implementation; fresh package-pin trace validates the observed behavior.",
+    "The cone repair changes known buffer strengths and their legal placement only; all other physical instances and all net terminals are fixed.",
+    "Fresh propagated-clock STA uses the original flow placement estimates; consumed-net annotation is complete.",
+    "Fast screening uses -40 C cells with -55 C SRAM, not matched-temperature signoff.",
+    "No routing experiment, antenna closure, extracted timing, power-continuity signoff or default backend promotion in this study."
+  ],
+  "next_gate": "Capture and admit this exact repaired checkpoint, run one bounded coarse-route diagnostic, then remeasure congestion and all timing/electrical/annotation checks. Detailed routing remains unadmitted."
+}

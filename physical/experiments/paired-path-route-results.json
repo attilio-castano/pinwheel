@@ -1,0 +1,1016 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "recorded_at_utc": "2026-09-23T14:35:32.603951+00:00",
+  "decision": "retain-whole-chip-timing-gains-cost-residual-distribution-and-reconcile-congestion-before-repair",
+  "collection_pass": true,
+  "path_contract_pass": false,
+  "setup_hold_pass": true,
+  "timing_retention_pass": true,
+  "electrical_pass": false,
+  "congestion_pass": false,
+  "congestion_reconciliation_pass": false,
+  "physical_closure": false,
+  "detailed_route_admitted": false,
+  "extracted_timing_completed": false,
+  "executed_whole_chip_routes": 1,
+  "executed_repairs": 0,
+  "source_candidate": {
+    "path": "physical/experiments/paired-path-repair-results.json",
+    "sha256": "b9ab1345e20b7a9fc12a9b1f227ae6ec086d3e6eb4b30be509b8c646441ff575"
+  },
+  "source_full_route": {
+    "path": "physical/experiments/paired-distribution-route-results.json",
+    "sha256": "ff48b90d4f5225796aae24e66e44c50ec0adf91f13f0a3cf9e3415e35da36c4f"
+  },
+  "selected_database": {
+    "path": "build/physical/target-paired-01/runs/paired-path-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "384f389d9a2eb16866b706df8234f9ce2d4c697ddcdd6daea7b204a0de4102f8"
+  },
+  "selected_netlist": {
+    "path": "build/physical/mapped-diagnostics/paired-path-route-01/implemented.v",
+    "sha256": "4d4a0cb29e6149e86d8375fe9744755dab149826eea4042675c2337ba167017c"
+  },
+  "selected_state": {
+    "path": "build/physical/target-paired-01/runs/paired-path-route-01/01-openroad-globalrouting/state_out.json",
+    "sha256": "c8db84aea0af46fd70cd60f8fcfd52fbb8d51c73c60b2dc3f4229e0bb745dd4d"
+  },
+  "contract": {
+    "path": "physical/experiments/paired-path-contract.json",
+    "sha256": "bfbde821c882834324c177ac80e6fdc090516680f259614139d0e37da4389010"
+  },
+  "invocation": {
+    "path": "build/physical/paired-path-route-01-invocation.json",
+    "sha256": "926a933c869af9aa3118edda1264a3398252be8287770b6e44a555560ea49bbd"
+  },
+  "physical": {
+    "path": "build/physical/paired-path-route-01-report.json",
+    "sha256": "b068a0c380fe5ceda3b039eacf1dca6f2a7f62444ce19e5db48e86a8ef09d031"
+  },
+  "measurement": {
+    "path": "build/physical/mapped-diagnostics/paired-path-route-01/report.json",
+    "sha256": "739977b3567479c397b2b14354108baa17071181e168ad3712a489eb317bdcbe"
+  },
+  "pin_access_receipt": {
+    "path": "build/physical/probes/paired-path-route-access-01/report.json",
+    "sha256": "dd68762f7a102f8247c57d3be1b0de77865e7b230c3970e309ab022b52e1753b"
+  },
+  "admission": {
+    "contract_sha256": "bfbde821c882834324c177ac80e6fdc090516680f259614139d0e37da4389010",
+    "covered_connections": 1145,
+    "reserve_fraction": 0.2,
+    "timing_floors_ns": {
+      "nom_fast_1p32V_m40C": {
+        "setup": 8.530533,
+        "hold": 0.07927839
+      },
+      "nom_slow_1p08V_125C": {
+        "setup": 0.3673431,
+        "hold": 0.31582889999999997
+      },
+      "nom_typ_1p20V_25C": {
+        "setup": 5.565105,
+        "hold": 0.1573092
+      }
+    },
+    "cumulative_area_reference_um2": 358297.5456,
+    "max_added_area_fraction": 0.003,
+    "quantitative_gates_recomputed": true,
+    "exact_plan_recomputed": true,
+    "declared_roles_recomputed": true,
+    "helper_sha256": "b454f35ee03be9fa46f0d06347125a94c73e5d3acd4d49dd1f362f744de8a01b",
+    "boundary": "Local qualification only; retain the same scope and original budgets after whole-chip routing."
+  },
+  "gates": {
+    "all_connections_within_reserve": false,
+    "whole_chip_timing_floors": true,
+    "whole_chip_violation_counts_zero": false,
+    "measured_electrical_limits_met": false,
+    "measured_paths_positive": true,
+    "added_area_within_budget": true
+  },
+  "area": {
+    "source_um2": 358297.5456,
+    "candidate_um2": 359360.784,
+    "added_um2": 1063.238399999973,
+    "added_fraction": 0.002967473299934246,
+    "budget_um2": 1074.8926368
+  },
+  "remaining_area_allowance_um2": 11.654236800027093,
+  "distribution": {
+    "covered_connections": 1145,
+    "changed_and_added_connections": 45,
+    "distribution_trees": 211,
+    "counts": {
+      "within_trial_reserve": 1139,
+      "below_trial_reserve": 4,
+      "failing": 2
+    },
+    "selected_verdicts": {
+      "within_trial_reserve": 19
+    },
+    "added_verdicts": {
+      "within_trial_reserve": 26
+    },
+    "remaining_below_reserve": [
+      "_02981_",
+      "_03253_",
+      "_03380_",
+      "_04527_",
+      "_04701_",
+      "net31"
+    ],
+    "residual_connections": [
+      {
+        "net": "_02981_",
+        "driver": "_06796_/X",
+        "driver_cell": "sg13cmos5l_buf_1",
+        "families": [
+          "serial_data",
+          "sram_write_input"
+        ],
+        "consumers": [
+          "_06799_/S0",
+          "_06870_/A",
+          "_06987_/S0",
+          "_07037_/S0",
+          "_07059_/S0",
+          "_07094_/S0",
+          "_07557_/S0",
+          "_07558_/S0"
+        ],
+        "verdict": "below_trial_reserve",
+        "local_minimum": {
+          "reserve_fraction": 0.34835943273228936,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "route_minimum": {
+          "reserve_fraction": 0.1912282823508687,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "_02981_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.110207528,
+            "route_wire_pf": 0.157346845,
+            "wire_ratio": 1.427732277961992
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "_02981_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.11020752,
+            "route_wire_pf": 0.157346845,
+            "wire_ratio": 1.427732381601546
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "_02981_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.110207528,
+            "route_wire_pf": 0.157346845,
+            "wire_ratio": 1.427732277961992
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      },
+      {
+        "net": "_03253_",
+        "driver": "_07068_/X",
+        "driver_cell": "sg13cmos5l_buf_1",
+        "families": [
+          "serial_data",
+          "sram_write_input"
+        ],
+        "consumers": [
+          "_07070_/S0",
+          "_07206_/S0",
+          "_07499_/S0",
+          "_07521_/S0",
+          "_07530_/S0",
+          "_07700_/S0",
+          "_07762_/S0",
+          "_07787_/S0"
+        ],
+        "verdict": "failing",
+        "local_minimum": {
+          "reserve_fraction": 0.26794263594896117,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "route_minimum": {
+          "reserve_fraction": -0.38837143113180955,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "_03253_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.125184417,
+            "route_wire_pf": 0.322078615,
+            "wire_ratio": 2.572833126666237
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "_03253_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.125184417,
+            "route_wire_pf": 0.322078615,
+            "wire_ratio": 2.572833126666237
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "_03253_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.125184417,
+            "route_wire_pf": 0.322078645,
+            "wire_ratio": 2.5728333663126777
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      },
+      {
+        "net": "_03380_",
+        "driver": "_07195_/X",
+        "driver_cell": "sg13cmos5l_buf_1",
+        "families": [
+          "serial_data",
+          "sram_write_input"
+        ],
+        "consumers": [
+          "_07196_/S0",
+          "_07511_/S0",
+          "_07629_/S0",
+          "_07678_/S0",
+          "_07745_/S0",
+          "_07761_/S0",
+          "_07763_/S0",
+          "_07764_/S0"
+        ],
+        "verdict": "below_trial_reserve",
+        "local_minimum": {
+          "reserve_fraction": 0.20881160164753584,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "route_minimum": {
+          "reserve_fraction": 0.10647246907443456,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "_03380_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.142923713,
+            "route_wire_pf": 0.173625499,
+            "wire_ratio": 1.2148124013542805
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "_03380_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.142923698,
+            "route_wire_pf": 0.173625469,
+            "wire_ratio": 1.2148123189479747
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "_03380_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.142923698,
+            "route_wire_pf": 0.173625499,
+            "wire_ratio": 1.214812528850184
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      },
+      {
+        "net": "_04527_",
+        "driver": "_08797_/X",
+        "driver_cell": "sg13cmos5l_buf_1",
+        "families": [
+          "parameter_distribution"
+        ],
+        "consumers": [
+          "_08798_/S",
+          "_08799_/B",
+          "_08800_/A2",
+          "_08801_/B",
+          "_08802_/A2",
+          "_08809_/B",
+          "_08810_/A2",
+          "_08826_/S"
+        ],
+        "verdict": "below_trial_reserve",
+        "local_minimum": {
+          "reserve_fraction": 0.527182398912704,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "route_minimum": {
+          "reserve_fraction": 0.025334855653272457,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "_04527_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.104361102,
+            "route_wire_pf": 0.254915357,
+            "wire_ratio": 2.4426280684540878
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "_04527_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.104361102,
+            "route_wire_pf": 0.254915357,
+            "wire_ratio": 2.4426280684540878
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "_04527_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.104361095,
+            "route_wire_pf": 0.254915357,
+            "wire_ratio": 2.4426282322928867
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      },
+      {
+        "net": "_04701_",
+        "driver": "_09463_/X",
+        "driver_cell": "sg13cmos5l_buf_1",
+        "families": [
+          "parameter_distribution"
+        ],
+        "consumers": [
+          "_09464_/S",
+          "_09468_/S",
+          "_09469_/S",
+          "_09470_/S",
+          "_09472_/S",
+          "_09473_/S",
+          "_09474_/S",
+          "_10664_/S"
+        ],
+        "verdict": "failing",
+        "local_minimum": {
+          "reserve_fraction": 0.41840089659729746,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "route_minimum": {
+          "reserve_fraction": -0.045122204861778585,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "capacitance"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "_04701_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.123088866,
+            "route_wire_pf": 0.262145817,
+            "wire_ratio": 2.1297281022964336
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "_04701_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.123088852,
+            "route_wire_pf": 0.262145817,
+            "wire_ratio": 2.129728344529527
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "_04701_",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.123088852,
+            "route_wire_pf": 0.262145817,
+            "wire_ratio": 2.129728344529527
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      },
+      {
+        "net": "net31",
+        "driver": "wire31/X",
+        "driver_cell": "sg13cmos5l_buf_4",
+        "families": [
+          "parameter_distribution",
+          "serial_data",
+          "sram_write_input"
+        ],
+        "consumers": [
+          "_06736_/A",
+          "memory.storage/A_DIN[14]"
+        ],
+        "verdict": "below_trial_reserve",
+        "local_minimum": {
+          "reserve_fraction": 0.32280872003695676,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "slew"
+        },
+        "route_minimum": {
+          "reserve_fraction": 0.07111963514631092,
+          "corner": "nom_fast_1p32V_m40C",
+          "kind": "slew"
+        },
+        "wire_by_corner": {
+          "nom_fast_1p32V_m40C": {
+            "net": "net31",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.131275833,
+            "route_wire_pf": 0.159188032,
+            "wire_ratio": 1.2126225243605957
+          },
+          "nom_slow_1p08V_125C": {
+            "net": "net31",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.131275833,
+            "route_wire_pf": 0.159188032,
+            "wire_ratio": 1.2126225243605957
+          },
+          "nom_typ_1p20V_25C": {
+            "net": "net31",
+            "pin_capacitance_unchanged": true,
+            "local_wire_pf": 0.131275833,
+            "route_wire_pf": 0.159188017,
+            "wire_ratio": 1.2126224100973708
+          }
+        },
+        "source_was_modified": false,
+        "new_buffer_branch": false
+      }
+    ]
+  },
+  "timing": {
+    "source_full_route": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.34742,
+        "timing__hold__ws": 0.0414293,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 3
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": -0.074067,
+        "timing__hold__ws": 0.290273,
+        "timing__setup_vio__count": 1,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 1,
+        "design__max_cap_violation__count": 3
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 5.89066,
+        "timing__hold__ws": 0.121309,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 3
+      }
+    },
+    "local_candidate": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.50711,
+        "timing__hold__ws": 0.093797,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.436742,
+        "timing__hold__ws": 0.43988,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.21607,
+        "timing__hold__ws": 0.208469,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 0
+      }
+    },
+    "whole_chip_route": {
+      "nom_fast_1p32V_m40C": {
+        "timing__setup__ws": 9.54316,
+        "timing__hold__ws": 0.101286,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 2
+      },
+      "nom_slow_1p08V_125C": {
+        "timing__setup__ws": 0.420384,
+        "timing__hold__ws": 0.457194,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 9,
+        "design__max_cap_violation__count": 2
+      },
+      "nom_typ_1p20V_25C": {
+        "timing__setup__ws": 6.21173,
+        "timing__hold__ws": 0.221184,
+        "timing__setup_vio__count": 0,
+        "timing__hold_vio__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_slew_violation__count": 0,
+        "design__max_cap_violation__count": 2
+      }
+    },
+    "floors": {
+      "nom_fast_1p32V_m40C": {
+        "setup": {
+          "actual_ns": 9.54316,
+          "floor_ns": 8.530533,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.101286,
+          "floor_ns": 0.07927839,
+          "passed": true
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "setup": {
+          "actual_ns": 0.420384,
+          "floor_ns": 0.3673431,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.457194,
+          "floor_ns": 0.31582889999999997,
+          "passed": true
+        }
+      },
+      "nom_typ_1p20V_25C": {
+        "setup": {
+          "actual_ns": 6.21173,
+          "floor_ns": 5.565105,
+          "passed": true
+        },
+        "hold": {
+          "actual_ns": 0.221184,
+          "floor_ns": 0.1573092,
+          "passed": true
+        }
+      }
+    },
+    "semantic_path_slacks_ns": {
+      "nom_fast_1p32V_m40C": {
+        "sram_address": 13.079753,
+        "entry_state": 14.62481,
+        "rejection_status": 9.543158,
+        "upload_hold": 0.28977
+      },
+      "nom_slow_1p08V_125C": {
+        "sram_address": 3.276625,
+        "entry_state": 7.005416,
+        "rejection_status": 0.420384,
+        "upload_hold": 0.688274
+      },
+      "nom_typ_1p20V_25C": {
+        "sram_address": 9.483843,
+        "entry_state": 11.856383,
+        "rejection_status": 6.21173,
+        "upload_hold": 0.446224
+      }
+    }
+  },
+  "electrical": {
+    "unique_failing_nets": [
+      "_03253_",
+      "_04701_"
+    ],
+    "all_global_failures_covered": true,
+    "violations": {
+      "nom_fast_1p32V_m40C": {
+        "capacitance": [
+          {
+            "pin": "_07068_/X",
+            "net": "_03253_",
+            "limit": 0.3,
+            "actual": 0.416511,
+            "slack": -0.116511,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_09463_/X",
+            "net": "_04701_",
+            "limit": 0.3,
+            "actual": 0.313537,
+            "slack": -0.013537,
+            "covered": true,
+            "selected": false,
+            "added": false
+          }
+        ],
+        "slew": []
+      },
+      "nom_slow_1p08V_125C": {
+        "capacitance": [
+          {
+            "pin": "_07068_/X",
+            "net": "_03253_",
+            "limit": 0.3,
+            "actual": 0.407749,
+            "slack": -0.107749,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_09463_/X",
+            "net": "_04701_",
+            "limit": 0.3,
+            "actual": 0.306841,
+            "slack": -0.006841,
+            "covered": true,
+            "selected": false,
+            "added": false
+          }
+        ],
+        "slew": [
+          {
+            "pin": "_07070_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.656141,
+            "slack": -0.148741,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07530_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.655668,
+            "slack": -0.148268,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07499_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.572376,
+            "slack": -0.064975,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07521_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.572191,
+            "slack": -0.064791,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07787_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.570251,
+            "slack": -0.062851,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07762_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.56847,
+            "slack": -0.061069,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07206_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.565524,
+            "slack": -0.058124,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07700_/S0",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.564607,
+            "slack": -0.057207,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_07068_/X",
+            "net": "_03253_",
+            "limit": 2.5074,
+            "actual": 2.564417,
+            "slack": -0.057017,
+            "covered": true,
+            "selected": false,
+            "added": false
+          }
+        ]
+      },
+      "nom_typ_1p20V_25C": {
+        "capacitance": [
+          {
+            "pin": "_07068_/X",
+            "net": "_03253_",
+            "limit": 0.3,
+            "actual": 0.411379,
+            "slack": -0.111379,
+            "covered": true,
+            "selected": false,
+            "added": false
+          },
+          {
+            "pin": "_09463_/X",
+            "net": "_04701_",
+            "limit": 0.3,
+            "actual": 0.310111,
+            "slack": -0.010111,
+            "covered": true,
+            "selected": false,
+            "added": false
+          }
+        ],
+        "slew": []
+      }
+    }
+  },
+  "congestion": {
+    "source_overflow": 20,
+    "route_flow_overflow": 22,
+    "route_flow_by_layer": {
+      "Metal1": 0,
+      "Metal2": 0,
+      "Metal3": 21,
+      "Metal4": 1,
+      "Total": 22
+    },
+    "saved_grid_by_layer": {
+      "Metal2": 0,
+      "Metal3": 21.0,
+      "Metal4": 0
+    },
+    "native_marker_count": 22,
+    "reconciled_marker_count": 21,
+    "complete_reconciliation_pass": false,
+    "reconciliation_error": "Duplicate or stale native congestion marker",
+    "unreconciled_native_markers": [
+      {
+        "category": "Horizontal congestion",
+        "marker": {
+          "comment": "capacity:11 usage:12 overflow:1",
+          "visited": "false",
+          "visible": "true",
+          "waived": "false",
+          "shape": [
+            {
+              "type": "box",
+              "points": [
+                {
+                  "x": "511.2000",
+                  "y": "352.8000"
+                },
+                {
+                  "x": "518.4000",
+                  "y": "360.0000"
+                }
+              ]
+            }
+          ],
+          "sources": [
+            {
+              "type": "net",
+              "name": "_01575_"
+            },
+            {
+              "type": "net",
+              "name": "_01776_"
+            },
+            {
+              "type": "net",
+              "name": "_02217_"
+            },
+            {
+              "type": "net",
+              "name": "_03160_"
+            },
+            {
+              "type": "net",
+              "name": "_04190_"
+            },
+            {
+              "type": "net",
+              "name": "_04795_"
+            },
+            {
+              "type": "net",
+              "name": "_04797_"
+            },
+            {
+              "type": "net",
+              "name": "memory.mem_data[17]"
+            },
+            {
+              "type": "net",
+              "name": "memory.mem_data[35]"
+            },
+            {
+              "type": "net",
+              "name": "paired_distribution_0_0_out"
+            },
+            {
+              "type": "net",
+              "name": "net28"
+            },
+            {
+              "type": "net",
+              "name": "clknet_leaf_14_clk_regs"
+            }
+          ]
+        }
+      }
+    ],
+    "matching_subset": {
+      "capacity_demand_counts": {
+        "10/11": 10,
+        "11/12": 11
+      },
+      "zero_capacity_edges": 0,
+      "retained_locations": 2,
+      "crossing_nets": 227,
+      "guide_association_nets": 265
+    },
+    "boundary": "Only the matching marker subset reconciles with the saved grid. The final flow reports 22 overflow and 22 native markers, but the grid exposes 21. Do not infer the missing edge layer or treat this as complete congestion qualification."
+  },
+  "clock_rules": {
+    "stored_bindings_unchanged": true,
+    "stored_bindings": {
+      "clk": "CTS_NDR_0",
+      "clk_regs": "CTS_NDR_1",
+      "clknet_0_clk": "CTS_NDR_0",
+      "clknet_0_clk_regs": "CTS_NDR_1",
+      "delaynet_0_clk": "CTS_NDR_0",
+      "delaynet_1_clk": "CTS_NDR_0",
+      "delaynet_2_clk": "CTS_NDR_0",
+      "delaynet_3_clk": "CTS_NDR_0",
+      "delaynet_4_clk": "CTS_NDR_0"
+    },
+    "source_runtime_relaxations": [
+      "clk"
+    ],
+    "route_runtime_relaxations": [
+      "clk",
+      "clknet_0_clk_regs"
+    ],
+    "boundary": "Runtime relaxation adds clknet_0_clk_regs to clk, despite nine unchanged stored bindings. Timing gains survive this route but it does not isolate the clock-policy contribution."
+  },
+  "pin_access": {
+    "counts": {
+      "stdCellPinCnt": 33598,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "identity": {
+    "netlist_byte_identical": true,
+    "unchanged_context_fields": [
+      "dbu_per_micron",
+      "die",
+      "evidence_helper_sha256",
+      "exclusion_checker_sha256",
+      "exclusions",
+      "exclusions_sha256",
+      "extractor_sha256",
+      "instances",
+      "layers",
+      "macro_obstructions",
+      "macro_pins",
+      "nets",
+      "placement_blockages",
+      "ports",
+      "power_shapes",
+      "route_coverage",
+      "routing_obstructions",
+      "rows",
+      "schema",
+      "signal_segments",
+      "units"
+    ],
+    "retained_state_flip_flops": 1572,
+    "retained_clock_nets": 342,
+    "original_pin_edges_reused": 331401,
+    "cumulative_buffer_additions": 328,
+    "prior_buffer_resizes": 168,
+    "new_pin_simulation": false,
+    "saved_placement_check": true,
+    "power_bindings_unchanged": true
+  },
+  "bounds": {
+    "route_seconds": 600,
+    "route_cpus": 4,
+    "route_memory_gib": 6,
+    "read_only_command_seconds": 120,
+    "read_only_cpus": 2,
+    "read_only_memory_gib": 2,
+    "pin_access_seconds": 120,
+    "pin_access_cpus": 4,
+    "pin_access_memory_gib": 6
+  },
+  "runtime_seconds": {
+    "route": 92.059,
+    "independent_whole_chip_measurement": 13.371,
+    "inventory_and_saved_placement": 31.52,
+    "pin_access": 2.515,
+    "marker_read": 0.616,
+    "grid_api_read": 0.544
+  },
+  "verification": {
+    "focused_tests": 90,
+    "connection_corner_records": 3435,
+    "min_max_path_summaries": 6870,
+    "exact_containers_confirmed_absent": 11,
+    "prior_identities": 1797,
+    "prior_identities_unchanged_before_docs": 1796,
+    "changed_prior_sources": [
+      "scripts/physical_added_route.py"
+    ],
+    "archived_original_helper": {
+      "path": "build/validation/paired-path-route-01/physical_added_route-before.py",
+      "sha256": "3fe164c7a99eae296d2ba4f54bed4029663912a1c1d28822670d2952f3589ef0"
+    },
+    "complete_consumed_wire_annotation": true,
+    "nominal_layer_rc_verified": true,
+    "checked_hashes": 2099
+  },
+  "preserved_rejections": [
+    {
+      "path": "build/validation/paired-path-route-01/intake-tests.log",
+      "reason": "Initial overlapping-family role propagation failed one new unit test; corrected before admission."
+    },
+    {
+      "path": "build/validation/paired-path-route-01/functional-preparation-rejected",
+      "reason": "Wrong prior manifest chosen during preparation; identity rejected the purported edit before any route."
+    },
+    {
+      "path": "build/validation/paired-path-route-01/congestion.json",
+      "reason": "Complete native marker/grid reconciliation rejected; retain only the explicitly matched subset."
+    }
+  ],
+  "source_sha256": {
+    "scripts/physical_added_route.py": "32783a7e4b1da2e6890e9281610d345f07669b7d143e3d42c7dbbd5eee5ba657",
+    "scripts/physical_path_contract.py": "b454f35ee03be9fa46f0d06347125a94c73e5d3acd4d49dd1f362f744de8a01b",
+    "test/test_physical_path_contract.py": "6701f7a7259627e46fe70381ba5be6871cd7701c01c71456934a7c1f861183e5",
+    "physical/experiments/paired-path-route-selection.json": "a846d09f06b0be03ff7cc3ff82b457b9294e11a55a4eed2d0da72fcdcc3507b9"
+  },
+  "evidence_boundary": [
+    "One whole-chip coarse route; no repair, cell/placement/clock-topology change or automatic repair.",
+    "All original timing floors and all 45 repaired/new connection reserves pass; full electrical/reserve and congestion qualification fail.",
+    "Whole-chip electrical violations are fully covered: two capacitance nets; nine slow slew pins share one of those nets.",
+    "Complete nominal coarse-wire estimates, without extracted timing; fast cell/SRAM temperature mismatch remains.",
+    "Twenty-one native markers reconcile; one additional marker and the flow Metal4 overflow are not reconciled with the saved grid.",
+    "Minimum pin access passes; simultaneous detailed routability, antenna closure and physical power continuity remain open.",
+    "No RTL, pipeline, execution-edge, default-backend, licensing or publication change."
+  ],
+  "next_gate": "Use saved evidence to cost the complete six-connection residual neighborhood, including three serial bit-53 branches, two parameter branches and SRAM DIN14. Compare redistribution or selective sizing against the fixed 11.6542 um2 remaining area allowance before choosing any further local repair. Independently resolve the extra native congestion marker and final flow/grid discrepancy before location-specific congestion changes. Require complete local qualification, followed by separately admitted whole-chip revalidation; no further route or detailed route is admitted here.",
+  "report": "build/validation/paired-path-route-01/report.json",
+  "report_sha256": "a6e2493a0b50a63066f7a174da3c6fef371f8b9986ad164669a646d11670a5d3"
+}

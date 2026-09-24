@@ -1,0 +1,462 @@
+{
+  "schema": 1,
+  "status": "complete",
+  "decision": "retain-validated-chip-investigate-sram-interface-geometry",
+  "experiment_status": "local-repair-failed-no-candidate-adopted",
+  "source_selection": {
+    "path": "physical/experiments/local-slew-results.json",
+    "sha256": "56f201237923dcb8752b6f206e870c42f628c4f282c7fe0b8b3504eee27f96c3"
+  },
+  "retained_physical_tag": "local-slew-route-01",
+  "receipts": {
+    "intake": {
+      "path": "build/physical/mapped-diagnostics/electrical-intake-01/report.json",
+      "sha256": "18cf20e682e5341b549d9df420d995ce3fadaa402e39bc240eced892c12a247f",
+      "status": "passed"
+    },
+    "probe": {
+      "path": "build/physical/repair-probes/electrical-buffer-01/report.json",
+      "sha256": "be3cde3967f946e90dae759593bdec0a5bd3b7650d48edbd25112ffb6b8ce8ad",
+      "status": "failed"
+    },
+    "grid": {
+      "path": "build/validation/electrical-cost-01/grid-report.json",
+      "sha256": "01b44114ecb474431448b0c6f51067c714f3e2f70dbb499da8cf5b805cc1a6eb",
+      "status": "passed"
+    }
+  },
+  "elapsed_seconds": {
+    "intake": 17.484,
+    "local_probe": 17.801,
+    "grid": 0.641
+  },
+  "classification": [
+    {
+      "net": "_00470_",
+      "driver": "_08127_/Y",
+      "cell": "sg13cmos5l_o21ai_1",
+      "owner": "execution/fetch combinational logic",
+      "role": "Long shared logic connection, with few sinks",
+      "loads": 4,
+      "slow_wire_fraction": 0.9396963326325625,
+      "pin_half_perimeter_um_rounded": 680,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "_00558_",
+      "driver": "_08215_/Y",
+      "cell": "sg13cmos5l_o21ai_1",
+      "owner": "execution/fetch combinational logic",
+      "role": "Long shared logic connection, with few sinks",
+      "loads": 2,
+      "slow_wire_fraction": 0.9647448831044118,
+      "pin_half_perimeter_um_rounded": 529,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "_00576_",
+      "driver": "_08235_/Y",
+      "cell": "sg13cmos5l_o21ai_1",
+      "owner": "execution/fetch combinational logic",
+      "role": "Long shared logic connection, with few sinks",
+      "loads": 4,
+      "slow_wire_fraction": 0.9377309140986707,
+      "pin_half_perimeter_um_rounded": 677,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "memory.mem_q0[36]",
+      "driver": "memory.storage0/A_DOUT[36]",
+      "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+      "owner": "SRAM return interface",
+      "role": "Fixed macro driver with a 0.064 pF load limit",
+      "loads": 2,
+      "slow_wire_fraction": 0.9143736494008251,
+      "pin_half_perimeter_um_rounded": 231,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "memory.mem_q0[50]",
+      "driver": "memory.storage0/A_DOUT[50]",
+      "cell": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+      "owner": "SRAM return interface",
+      "role": "Fixed macro driver with a 0.064 pF load limit",
+      "loads": 2,
+      "slow_wire_fraction": 0.8976146099268564,
+      "pin_half_perimeter_um_rounded": 105,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "net3401",
+      "driver": "hold3401/X",
+      "cell": "sg13cmos5l_dlygate4sd3_1",
+      "owner": "upload data distribution",
+      "role": "Hold-delay output also drives both SRAM replicas",
+      "loads": 4,
+      "slow_wire_fraction": 0.8340308440519614,
+      "pin_half_perimeter_um_rounded": 171,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "net3426",
+      "driver": "hold3426/X",
+      "cell": "sg13cmos5l_dlygate4sd3_1",
+      "owner": "upload data distribution",
+      "role": "Hold-delay output also drives both SRAM replicas",
+      "loads": 4,
+      "slow_wire_fraction": 0.8331317238894324,
+      "pin_half_perimeter_um_rounded": 170,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "net3446",
+      "driver": "hold3446/X",
+      "cell": "sg13cmos5l_dlygate4sd3_1",
+      "owner": "upload data distribution",
+      "role": "Hold-delay output also drives both SRAM replicas",
+      "loads": 4,
+      "slow_wire_fraction": 0.8240792240385267,
+      "pin_half_perimeter_um_rounded": 186,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "net3533",
+      "driver": "hold3533/X",
+      "cell": "sg13cmos5l_dlygate4sd3_1",
+      "owner": "upload data distribution",
+      "role": "Hold-delay output also drives both SRAM replicas",
+      "loads": 2,
+      "slow_wire_fraction": 0.9367723841106329,
+      "pin_half_perimeter_um_rounded": 143,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    },
+    {
+      "net": "net6365",
+      "driver": "wire6365/X",
+      "cell": "sg13cmos5l_buf_8",
+      "owner": "SRAM address delivery",
+      "role": "Added buffer serves widely separated branches",
+      "loads": 2,
+      "slow_wire_fraction": 0.9540869523531785,
+      "pin_half_perimeter_um_rounded": 673,
+      "proposed_mechanism": "Insert known noninverting buffers to isolate the original driver from wire/sink load; preserve original cells and hold delays.",
+      "unresolved": "Actual repair placement and routed detours must be measured; wire dominance alone does not establish route feasibility."
+    }
+  ],
+  "congestion": {
+    "schema": 1,
+    "status": "passed",
+    "runs": [
+      {
+        "tag": "local-route-01",
+        "grid_overflow": 1298.0,
+        "flow_report": {
+          "Metal2": {
+            "resource": 141531,
+            "demand": 53954,
+            "usage_percent": 38.12,
+            "max_h": 2,
+            "max_v": 3,
+            "overflow": 355
+          },
+          "Metal3": {
+            "resource": 172447,
+            "demand": 87936,
+            "usage_percent": 50.99,
+            "max_h": 4,
+            "max_v": 1,
+            "overflow": 269
+          },
+          "Metal4": {
+            "resource": 138981,
+            "demand": 4316,
+            "usage_percent": 3.11,
+            "max_h": 1,
+            "max_v": 3,
+            "overflow": 678
+          },
+          "Total": {
+            "resource": 452959,
+            "demand": 146206,
+            "usage_percent": 32.28,
+            "max_h": 7,
+            "max_v": 7,
+            "overflow": 1302
+          }
+        },
+        "flow_minus_grid": 4.0,
+        "regions": {
+          "memory.storage0 body": 1034.0,
+          "below SRAM0": 74.0,
+          "memory.storage1 body": 147.0,
+          "unreserved gap": 18.0,
+          "reserved corridor": 25.0
+        },
+        "layers": {
+          "Metal2": {
+            "saved_grid_overflow": 352.0,
+            "flow_report_overflow": 355,
+            "flow_minus_grid": 3.0,
+            "overfull_cells": 274,
+            "regions": {
+              "memory.storage0 body": 310.0,
+              "below SRAM0": 3.0,
+              "memory.storage1 body": 38.0,
+              "unreserved gap": 1.0
+            }
+          },
+          "Metal3": {
+            "saved_grid_overflow": 269.0,
+            "flow_report_overflow": 269,
+            "flow_minus_grid": 0.0,
+            "overfull_cells": 236,
+            "regions": {
+              "below SRAM0": 71.0,
+              "memory.storage0 body": 135.0,
+              "reserved corridor": 25.0,
+              "memory.storage1 body": 21.0,
+              "unreserved gap": 17.0
+            }
+          },
+          "Metal4": {
+            "saved_grid_overflow": 677.0,
+            "flow_report_overflow": 678,
+            "flow_minus_grid": 1.0,
+            "overfull_cells": 458,
+            "regions": {
+              "memory.storage0 body": 589.0,
+              "memory.storage1 body": 88.0
+            }
+          }
+        },
+        "macro_body_fraction": 0.9098613251155624,
+        "hotspot_centers_bbox_um": [
+          255.6,
+          3.6,
+          1033.2,
+          198.0
+        ],
+        "all_recorded_hotspots_in_sram_strip": true
+      },
+      {
+        "tag": "local-slew-route-01",
+        "grid_overflow": 1309.0,
+        "flow_report": {
+          "Metal2": {
+            "resource": 141531,
+            "demand": 54740,
+            "usage_percent": 38.68,
+            "max_h": 1,
+            "max_v": 3,
+            "overflow": 489
+          },
+          "Metal3": {
+            "resource": 172447,
+            "demand": 88232,
+            "usage_percent": 51.16,
+            "max_h": 3,
+            "max_v": 1,
+            "overflow": 304
+          },
+          "Metal4": {
+            "resource": 138981,
+            "demand": 4090,
+            "usage_percent": 2.94,
+            "max_h": 1,
+            "max_v": 2,
+            "overflow": 517
+          },
+          "Total": {
+            "resource": 452959,
+            "demand": 147062,
+            "usage_percent": 32.47,
+            "max_h": 5,
+            "max_v": 6,
+            "overflow": 1310
+          }
+        },
+        "flow_minus_grid": 1.0,
+        "regions": {
+          "memory.storage0 body": 1046.0,
+          "memory.storage1 body": 132.0,
+          "below SRAM0": 72.0,
+          "reserved corridor": 29.0,
+          "unreserved gap": 30.0
+        },
+        "layers": {
+          "Metal2": {
+            "saved_grid_overflow": 488.0,
+            "flow_report_overflow": 489,
+            "flow_minus_grid": 1.0,
+            "overfull_cells": 352,
+            "regions": {
+              "memory.storage0 body": 468.0,
+              "memory.storage1 body": 20.0
+            }
+          },
+          "Metal3": {
+            "saved_grid_overflow": 304.0,
+            "flow_report_overflow": 304,
+            "flow_minus_grid": 0.0,
+            "overfull_cells": 258,
+            "regions": {
+              "below SRAM0": 72.0,
+              "memory.storage0 body": 151.0,
+              "reserved corridor": 29.0,
+              "unreserved gap": 30.0,
+              "memory.storage1 body": 22.0
+            }
+          },
+          "Metal4": {
+            "saved_grid_overflow": 517.0,
+            "flow_report_overflow": 517,
+            "flow_minus_grid": 0.0,
+            "overfull_cells": 417,
+            "regions": {
+              "memory.storage0 body": 427.0,
+              "memory.storage1 body": 90.0
+            }
+          }
+        },
+        "macro_body_fraction": 0.8999236058059588,
+        "hotspot_centers_bbox_um": [
+          255.6,
+          3.6,
+          1033.2,
+          198.0
+        ],
+        "all_recorded_hotspots_in_sram_strip": true
+      }
+    ],
+    "same_grid_and_capacity": true,
+    "macro_body_boxes_dbu": {
+      "memory.storage0": [
+        252000,
+        30000,
+        1036480,
+        94360
+      ],
+      "memory.storage1": [
+        252000,
+        144000,
+        1036480,
+        208360
+      ]
+    },
+    "reserved_corridor_dbu": [
+      252000,
+      94360,
+      1036480,
+      119180
+    ],
+    "overlapping_guides": {
+      "prior": {
+        "Metal2": {
+          "rectangles": 990,
+          "nets": 672,
+          "macro_connected_nets": 617
+        },
+        "Metal3": {
+          "rectangles": 530,
+          "nets": 156,
+          "macro_connected_nets": 75
+        },
+        "Metal4": {
+          "rectangles": 334,
+          "nets": 174,
+          "macro_connected_nets": 81
+        }
+      },
+      "current": {
+        "Metal2": {
+          "rectangles": 1042,
+          "nets": 686,
+          "macro_connected_nets": 629
+        },
+        "Metal3": {
+          "rectangles": 565,
+          "nets": 168,
+          "macro_connected_nets": 82
+        },
+        "Metal4": {
+          "rectangles": 331,
+          "nets": 171,
+          "macro_connected_nets": 79
+        }
+      }
+    },
+    "decision": "Investigate SRAM pin escape and surrounding communication geometry before another broad repair cycle. Keep the current storage/fetch contract and validated checkpoint as control.",
+    "evidence_limits": [
+      "Saved-grid overflow differs from the flow report by four units on the prior route and one on the current route; keep both counters and do not silently substitute them.",
+      "Hotspot membership uses GCell centers and macro bounding boxes, not an exact detailed-track obstruction test.",
+      "Guide/body overlap is a spatial screen, not a DRC violation or proof of why a route is congested.",
+      "The failed incremental repair is a tool failure, not evidence that this microarchitecture cannot fit."
+    ],
+    "inputs_sha256": {
+      "build/validation/electrical-cost-01/congestion.py": "2645890eb3ceb12b59e6208ae68cf225406f10567f49d4687b15bc1b381c293d",
+      "build/validation/electrical-cost-01/grid.json": "ecc821667c102bb0bd113b2873fbdd2dc1195e56bb3be326edebf335ab29d48f",
+      "build/validation/electrical-cost-01/grid-report.json": "01b44114ecb474431448b0c6f51067c714f3e2f70dbb499da8cf5b805cc1a6eb",
+      "build/physical/mapped-diagnostics/electrical-intake-01/context.json": "6a1b35aa9a559638b4cd1a3fe37f3b0a2d675f630536e299f0ab525fd3c8fb41",
+      "build/physical/mapped-local-01/runs/local-route-01/01-openroad-globalrouting/openroad-globalrouting.log": "61834fac01c6a8652a416539f0f269bcf4c1f6767d1e13f8cfa0093dc48c16bf",
+      "build/physical/mapped-local-01/runs/local-slew-route-01/01-openroad-globalrouting/openroad-globalrouting.log": "e4353e62021113e93a376084f03409186bf8ac33311c6e2dd4fb55fa95c145c4",
+      "build/validation/electrical-cost-01/guides-prior.json": "8ce3bdb666d38d1e3a591c9130930c8ef18965f33aa88fb60be721cdaf5033e6",
+      "build/validation/electrical-cost-01/guides-current.json": "6bc566579492cd6877afb48dc8e87c60bcf6175107df18a5ef9fa675305265be"
+    }
+  },
+  "probe": {
+    "status": "failed-experiment-recorded",
+    "report": "build/physical/repair-probes/electrical-buffer-01/report.json",
+    "seconds": 17.801,
+    "error": "GRT-0183: Net net6399: heap underflow during 3D maze routing",
+    "timeout": false,
+    "last_progress_report": {
+      "buffers": 7,
+      "nets_repaired": 4,
+      "resized": 0
+    },
+    "progress_is_validated_change": false,
+    "repaired_database_saved": false,
+    "source_unchanged": true,
+    "source_netlist_confirmed_before_probe": true,
+    "outcome": "No candidate accepted. Stop the one-probe study; do not launch independent routing, pin simulation, or a second repair cycle.",
+    "boundary": "Failure occurred inside the repair command while its global-route estimator was updating. This does not establish the tool root cause, physical impossibility, or the effect of the unsaved partial edit.",
+    "prepared_but_not_executed": [
+      "validate.py",
+      "oracle.py"
+    ]
+  },
+  "validation": {
+    "checked_artifacts": 120,
+    "prior_checked_artifacts_unchanged": 531,
+    "lean_sources_unchanged": 267,
+    "prior_experiment_files_unchanged": 55,
+    "prior_receipts_unchanged": 13,
+    "new_routing_runs": 0,
+    "new_functional_simulations": 0,
+    "new_candidate_adopted": false,
+    "previously_validated_netlist_reconfirmed": true,
+    "complete_corner_annotations": true
+  },
+  "next_investigation": {
+    "objective": "Explain and reduce communication pressure at the actual SRAM pin boundaries while preserving the current storage/fetch execution contract.",
+    "read_only_first": [
+      "Bind pin geometries, macro obstructions, power routes and saved capacity on each routing layer to the same checkpoint.",
+      "Separate upload broadcast, address delivery, SRAM returns and unrelated transit near the macros; include complete incident connections of any proposed cell group.",
+      "Measure which legal escape paths and driver/consumer locations reduce demand through the crowded region, including their earliest/latest arrival obligations."
+    ],
+    "admission": "One physical-organization candidate needs a measurable change in the targeted geometry or capacity and preserved pin access, plus a cost estimate of all incident wires. The previous address-only projection and unchanged-capacity screen remain rejected.",
+    "stop": "No further generic repair loop or detailed-route launch from this study. A new storage/fetch organization requires separate schedule, area and whole-chip evidence."
+  },
+  "boundary": "Fresh measurements and saved GCell/guide geometry locate electrical load and routing pressure. The local probe failed inside OpenROAD before saving a candidate; no improved circuit, routing closure, extracted timing or backend promotion is claimed. Grid and flow overflow totals remain separately reported.",
+  "report": "build/validation/electrical-cost-01/report.json",
+  "report_sha256": "9ff604cb4fa1e97c343a745fc0fd22d72c03351e2c38fe31f18a052c68612f40"
+}

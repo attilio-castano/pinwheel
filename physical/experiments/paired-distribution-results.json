@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "recorded_at_utc": "2026-09-23T12:26:41.276079+00:00",
+  "decision": "checked-family-distribution-plan-ready-for-one-bounded-local-probe",
+  "scope": "Saved-checkpoint measurement and checked unexecuted plan.",
+  "source_result": {
+    "path": "physical/experiments/paired-signal-route-results.json",
+    "sha256": "3016d3b59e2a5c58c191e9df11eefbf2d6ceb2be8fd630caa6233a06694839ab"
+  },
+  "source_database": {
+    "path": "build/physical/target-paired-01/runs/paired-signal-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb",
+    "sha256": "bbb671ea60fd2be55d9745467526c8bcb0bc13df1511c2238a2f1ef28673e4e1"
+  },
+  "inventory": {
+    "connections": 1067,
+    "trees": 211,
+    "seed_nets": 808,
+    "macro_input_pins": 64,
+    "family_memberships": {
+      "parameter_distribution": 616,
+      "serial_data": 753,
+      "sram_write_input": 641,
+      "serial_control": 139
+    },
+    "family_memberships_are_overlapping": true,
+    "existing_hold_cells": 124
+  },
+  "measurements": {
+    "checkpoints": 2,
+    "corners_per_checkpoint": 3,
+    "connection_corner_records": 6402,
+    "min_max_path_summaries": 12804,
+    "elapsed_seconds": 57.258,
+    "bounds": {
+      "seconds_per_command": 120,
+      "cpus": 2,
+      "memory_gib": 2
+    },
+    "global_metrics_reproduced": true,
+    "complete_consumed_net_annotation": true,
+    "explicit_nominal_rc_verified": true,
+    "terminal_geometry_and_pin_loads_unchanged": true
+  },
+  "assessment": {
+    "counts": {
+      "within_trial_reserve": 1034,
+      "below_trial_reserve": 18,
+      "failing": 15
+    },
+    "trial_reserve_fraction": 0.2,
+    "sensitivity": {
+      "0.05": {
+        "within_trial_reserve": 1047,
+        "failing": 15,
+        "below_trial_reserve": 5
+      },
+      "0.1": {
+        "within_trial_reserve": 1040,
+        "below_trial_reserve": 12,
+        "failing": 15
+      },
+      "0.15": {
+        "within_trial_reserve": 1038,
+        "below_trial_reserve": 14,
+        "failing": 15
+      },
+      "0.2": {
+        "within_trial_reserve": 1034,
+        "below_trial_reserve": 18,
+        "failing": 15
+      },
+      "0.25": {
+        "within_trial_reserve": 1033,
+        "below_trial_reserve": 19,
+        "failing": 15
+      }
+    },
+    "below_reserve_but_passing": [
+      "_02962_",
+      "_03150_",
+      "_04332_",
+      "_04335_",
+      "_04352_",
+      "_04377_",
+      "_04393_",
+      "_04413_",
+      "_04423_",
+      "_04450_",
+      "_04491_",
+      "_04579_",
+      "_04710_",
+      "_04733_",
+      "_05205_",
+      "_05208_",
+      "_05211_",
+      "net1876"
+    ]
+  },
+  "candidate": {
+    "operations": {
+      "driver": 31,
+      "receiver": 2
+    },
+    "added_buffers": 33,
+    "driver_cells": {
+      "sg13cmos5l_buf_1": 26,
+      "sg13cmos5l_nand2_1": 3,
+      "sg13cmos5l_nor2_1": 2,
+      "sg13cmos5l_dlygate4sd3_1": 2
+    },
+    "receiver_pins": [
+      "memory.storage/A_DIN[50]",
+      "memory.storage/A_DIN[51]"
+    ],
+    "predicted_affected_connections": 66,
+    "predicted_recheck_connections": 1100,
+    "validation": {
+      "covered_connections": 1067,
+      "selected_connections": 33,
+      "added_area_um2": 778.3776,
+      "source_area_um2": 358297.5456,
+      "added_area_fraction": 0.002172433525037242,
+      "area_budget_um2": 1074.8926368,
+      "timing_floors_ns": {
+        "nom_fast_1p32V_m40C": {
+          "setup": 8.530533,
+          "hold": 0.07927839
+        },
+        "nom_slow_1p08V_125C": {
+          "setup": 0.3673431,
+          "hold": 0.31582889999999997
+        },
+        "nom_typ_1p20V_25C": {
+          "setup": 5.565105,
+          "hold": 0.1573092
+        }
+      },
+      "scope": "Checked unexecuted plan; proposed budgets still require measurements after the edit."
+    },
+    "contract": {
+      "path": "physical/experiments/paired-distribution-contract.json",
+      "sha256": "e45e6a211adf6212fb4d3ab3b676383f7037a9561a189c3e2637a3fe55aeb2f9"
+    },
+    "plan": {
+      "path": "physical/experiments/paired-distribution-repair-plan.json",
+      "sha256": "193124dedb4a0fef2567454f2a743999c8f63af55d7058136ac500a08e0833db"
+    },
+    "recipe": {
+      "path": "build/validation/paired-distribution-plan-01/candidate.tcl",
+      "sha256": "ce64b511f5407c5571b70ef241870fc98608f4e21f391dfa3b3a09fa7699c489"
+    }
+  },
+  "congestion": {
+    "associations": {
+      "total_hotspots": 21,
+      "with_inventory_guides": 20,
+      "with_selected_guides": 5
+    },
+    "source_overflow": 21,
+    "macro_edge_guide": {
+      "path": "build/validation/paired-distribution-plan-01/macro-edge-guide.json",
+      "sha256": "27163c266b3fae2fa438ebc408e8041bcb9dfe1002b423fe874ce133bdd88d67"
+    },
+    "evidence": "Source guide association only; no new capacity or routing result."
+  },
+  "validation": {
+    "focused_tests": 54,
+    "recipe_syntax_only": true,
+    "prior_identities_preserved_before_docs": 986,
+    "changed_prior_sources": [
+      "scripts/physical_repair_plan.py",
+      "test/test_physical_repair_plan.py"
+    ],
+    "containers": {
+      "pinwheel-distribution-inventory-geometry-01": "absent",
+      "pinwheel-distribution-inventory-local-01": "absent",
+      "pinwheel-distribution-inventory-route-01": "absent"
+    }
+  },
+  "executed_repairs": 0,
+  "additional_routes": 0,
+  "detailed_route_admitted": false,
+  "physical_closure": false,
+  "evidence": {
+    "inventory": {
+      "path": "build/validation/paired-distribution-plan-01/inventory.json",
+      "sha256": "3c89a0be1ffba8f391ad5403d08bc5000c02429a69a277ea748872a6fff56622"
+    },
+    "measurement": {
+      "path": "build/validation/paired-distribution-plan-01/measurements/collection.json",
+      "sha256": "d95180f1a3255b4240615c75262d7b372bbb9cbb3346227b5349a0659f008b3d"
+    },
+    "parsed_measurements": {
+      "path": "build/validation/paired-distribution-plan-01/measurements.json",
+      "sha256": "c41a0c2ea978804cfd4ebbc32f0551c0464872c62417eba2f4f5a9bb27138d9b"
+    },
+    "quality": {
+      "path": "build/validation/paired-distribution-plan-01/measurement-quality.json",
+      "sha256": "ef6c5b0023a9d49fbb3666e2f5d5741e8889667d2a9ad3663ecb0b3ff73757a7"
+    },
+    "assessment": {
+      "path": "build/validation/paired-distribution-plan-01/assessment.json",
+      "sha256": "fded7bd5038e92717b8e98ae40f6b368f94d3228b0829e6e3b5ecd8785cad3ab"
+    },
+    "sensitivity": {
+      "path": "build/validation/paired-distribution-plan-01/sensitivity.json",
+      "sha256": "4151a25d6402cfbaf488af9d568242b8d0e00168701c6b4fa73a886e86405a24"
+    },
+    "contract": {
+      "path": "build/validation/paired-distribution-plan-01/contract.json",
+      "sha256": "e45e6a211adf6212fb4d3ab3b676383f7037a9561a189c3e2637a3fe55aeb2f9"
+    },
+    "plan": {
+      "path": "build/validation/paired-distribution-plan-01/repair-plan.json",
+      "sha256": "193124dedb4a0fef2567454f2a743999c8f63af55d7058136ac500a08e0833db"
+    },
+    "plan_validation": {
+      "path": "build/validation/paired-distribution-plan-01/plan-validation.json",
+      "sha256": "7ad178c0bd3c8569497334a8c968f82297585836f5eb21c49926a30b04e211cf"
+    },
+    "congestion": {
+      "path": "build/validation/paired-distribution-plan-01/congestion-associations.json",
+      "sha256": "e5d9ae70b22231cd7471cbe38cb03e702999c434a9b5b61d639df259c5bdb911"
+    },
+    "containers": {
+      "path": "build/validation/paired-distribution-plan-01/containers.json",
+      "sha256": "04750ea3b30298898a2b540a92dfdb61eb7bac39e4a3bd55dade64217ec7fac6"
+    },
+    "tests": {
+      "path": "build/validation/paired-distribution-plan-01/test-commands.json",
+      "sha256": "79d87f48c5149b24cb12c8435ae585d2cbbf61c51e1d6b2975bd7e1e8762f7dc"
+    },
+    "recipe_syntax": {
+      "path": "build/validation/paired-distribution-plan-01/recipe-syntax-commands.json",
+      "sha256": "e964ec6ed1d43e9d43abf2f1f1aa4fd9cf6182a74ebd53ec99593e70f724abe5"
+    }
+  },
+  "new_source_sha256": {
+    "scripts/physical_distribution.py": "f5c864ffbfa5d979e0465192bcd402d11fd85140c7c72a8af302fed4d2314e9a",
+    "scripts/physical_repair_plan.py": "0316d3239192f833d32af6319e074685eb68641885c5b19706af5e4773b4865f",
+    "test/test_physical_distribution.py": "a4ada919b60bdbb8fd0c129ddc5cf8b72870559414ad3f8751af86c36d34deca",
+    "test/test_physical_repair_plan.py": "0ddbfc5da67c93e2934add47f6e706194e0f6d255ead4eb64c4da03f8f134147"
+  },
+  "evidence_boundary": [
+    "The 20% reserve, 0.3% area cap and 10% maximum slack regression are experimental gates, not certified wire bounds.",
+    "Family coverage follows stated owner predicates and explicit macro inputs; shared memberships are not exclusive physical partitions.",
+    "Free-row rectangles are hints requiring actual placement, power binding and fresh timing/electrical checks.",
+    "The exact additive edit needs independent readback and measurements of the rebuilt inventory plus all added branches.",
+    "Coarse estimates and mismatched fast cell/SRAM temperatures remain; no physical repair, route, extracted timing or behavioral change occurs."
+  ],
+  "next_gate": "Execute this exact 33-buffer plan once in the existing local probe with a 120-second, two-CPU, 2 GiB cap. Independently check buffer identity, original geometry/clocks/hold chains and new placement/power. Rebuild the inventory and remeasure all covered/new connections and all-chip timing/electrical counts; require the saved numeric gates. Diagnose the separate macro-edge and migrating congestion before allocating a full route.",
+  "report": "build/validation/paired-distribution-plan-01/report.json",
+  "report_sha256": "41ef9eab35ec182f42fe724fa438f66f11c4d738367314b1e03b4a017fc576c9"
+}
