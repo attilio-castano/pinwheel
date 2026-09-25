@@ -6,7 +6,7 @@ does to UART, SPI and I²C, and the I²C contract revision it called for, now ma
 in both reference controllers and all three compiled programs. The protocol results are
 Lean proofs and executions; one RTL simulation closes the I²C loop around the
 sampled hardware. No place-and-route runs. The
-[external interface contract](external-interface.md) owns the digital boundary;
+[external interface contract](engine/external-interface.md) owns the digital boundary;
 [research status](research/status.md) owns allocation.
 
 ## Question
@@ -121,7 +121,7 @@ the existing `qualify` instruction — the one at address 0 — so:
 | Counted write, `Compile/I2CLoop.lean` | Template 13 likewise | Fetch equality and complete-state equality with the explicit program |
 | Register read, `Compile/I2CRead.lean` | Address 153 likewise | `I2CReadProofs.lean` correspondence |
 
-The serialized write images shrink by two bytes ([713 and 203](binary-images.md));
+The serialized write images shrink by two bytes ([713 and 203](storage/binary-images.md));
 the emitted RTL is byte-identical, because programs are loaded, not synthesized.
 
 **What changed for `d = 0`.** Under the former contract any low observation during

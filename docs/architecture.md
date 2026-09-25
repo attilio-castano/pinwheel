@@ -11,7 +11,7 @@ progress updates and speculative file inventory.
 Build a programmable protocol engine whose instruction semantics make precise pin
 timing explicit. Lean specifies behavior, executes reference models, and proves
 properties that constrain circuit design. The [competition brief](competition.md)
-owns external requirements; [processor verification](processor-verification.md)
+owns external requirements; [processor verification](engine/processor-verification.md)
 owns the evidence needed across the implementation boundaries.
 
 Hardware generation produces the circuit that would be fabricated. Protocol
@@ -27,8 +27,8 @@ provide independent behavioral references for the shared engine.
 | Machine and program compiler | Define instruction semantics, bounded state, loading, and execution on each edge; compile supported protocols into programs. | Invariants and correspondence between compiled execution and protocol behavior under stated assumptions. |
 | Circuit implementation | Realize the machine with encoded registers, combinational logic, memory ports, and loading control. | Circuit-to-engine refinement, separate generated-artifact validation, and mapping/physical measurements. |
 
-The [original engine design](shared-engine.md) explains the UART/SPI-derived timed
-Action/Halt model. The [reactive engine](reactive-engine.md) adds drive/release,
+The [original engine design](engine/shared-engine.md) explains the UART/SPI-derived timed
+Action/Halt model. The [reactive engine](engine/reactive-engine.md) adds drive/release,
 observed-input waits, guarded timing, and conditional control needed by I²C.
 These have distinct capacity and encoding contracts; a later backend does not
 silently redefine the original baseline.
@@ -39,25 +39,25 @@ discharge the receiver's start/data/stop premises and compose through both
 compilers. This environment relation belongs beside the protocol; it leaves a
 concrete physical sampler responsible for meeting the assumed observation bound.
 
-The [continuous UART receive model](uart-stream.md) separates reception from
+The [continuous UART receive model](protocols/uart-stream.md) separates reception from
 consumer ownership. A one-entry buffer preserves the oldest unread result,
 supports simultaneous consumption and arrival, and makes overrun and reset
 flushes explicit. A Lean supervisor composes automatic rearm with the existing
 compiled RX program. Its ideal finite-stream theorem includes time to rearm
-between frames. The [continuous clock contract](uart-stream-clocks.md) extends
+between frames. The [continuous clock contract](protocols/uart-stream-clocks.md) extends
 that result to unequal clocks and varying bounded observation age. It reserves
 two additional RX ticks beyond the one-frame bound, establishes agreement with
 the continuous wire, and preserves the timing conditions after each rearm.
 A circuit implementation of this supervisor remains a separate refinement
 obligation.
 
-The chip's [host result mailbox](whole-chip.md#host-result-interface-version-1)
+The chip's [host result mailbox](engine/whole-chip.md#host-result-interface-version-1)
 uses the same oldest-unread ownership convention for one-shot programs of any
 protocol. It snapshots the 16 capture slots and engine outcome and exposes them
 through the chip pins. It does not implement the UART supervisor's automatic
 rearm or finite-stream theorem.
 
-The [timed component contract](timed-components.md) defines input-dependent
+The [timed component contract](engine/timed-components.md) defines input-dependent
 observations before and after each edge and composable refinement between
 implementations. Checked signal interfaces give typed identities and complete
 named observations. These abstractions describe digital behavior; they do not
@@ -72,10 +72,10 @@ defined order, including uninterrupted one-cycle branches and self branches.
 
 The implementation must supply each instruction by that edge. Register-backed
 combinational reads and synchronous memories have different contracts; SRAM
-replacement needs a proved availability/buffering schedule. See [fetch contracts](timed-components.md)
+replacement needs a proved availability/buffering schedule. See [fetch contracts](engine/timed-components.md)
 and [storage primitives](storage-primitives.md) for those obligations.
 
-The [atomic loader](atomic-loader.md) owns staging, validation, bank selection,
+The [atomic loader](storage/atomic-loader.md) owns staging, validation, bank selection,
 commit, and busy-write rejection. Account for the old and staged images together.
 Reset behavior, invalid programs, initialization, and public observations belong
 to the contract. Serialized transport, synchronization, and package pins require
@@ -94,20 +94,20 @@ Lean protocol compiler -> load image / execution records -> writable engine memo
 
 The circuit path uses a restricted width-indexed language with explicit register
 and combinational semantics; it does not synthesize arbitrary Lean functions.
-Emitters write ordinary CIRCT hardware dialects. [PWL images](binary-images.md)
-represent serialized programs, while [E64 records](execution-records.md) describe
+Emitters write ordinary CIRCT hardware dialects. [PWL images](storage/binary-images.md)
+represent serialized programs, while [E64 records](storage/execution-records.md) describe
 literal execution words. Counted load images can be expanded before execution;
-the [bounded repetition prototype](storage-study.md#bounded-runtime-repetition)
+the [bounded repetition prototype](storage/storage-study.md#bounded-runtime-repetition)
 separately investigates reconstruction at runtime. Load-image byte counts and
 allocated hardware storage are different measurements.
 
-The [composed dense cached backend](hardware-closure.md#composed-backend) uses
+The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
 definition. Its netlist semantics evaluates all bindings from the same pre-edge
 register state. The generic serializer consumes that proved netlist; the legacy
-emitter remains the comparison baseline. The [external timing contract](external-interface.md)
+emitter remains the comparison baseline. The [external timing contract](engine/external-interface.md)
 separately defines the proposed sampled-pin delay and open-drain interpretation.
-The [full-backend read-back](hardware-closure.md#full-backend-rtl-read-back) checks
+The [full-backend read-back](engine/hardware-closure.md#full-backend-rtl-read-back) checks
 the actual emitted RTL against that netlist and composes its initialized trace
 refinement. Source/MLIR matching and solver queries only suggest proof boundaries;
 Lean must check every accepted equality.
@@ -120,7 +120,7 @@ must cross to another block before a particular edge. These boundaries need not
 coincide. The current `Netlist` binds shared expressions in one emitted module;
 typed interfaces do not yet preserve a physical partition through synthesis.
 
-The [chip architecture comparison](chip-architecture-study.md) supplies a concrete
+The [chip architecture comparison](physical/chip-architecture-study.md) supplies a concrete
 starting point: two existing SRAM organizations, complete state/port budgets and
 their worst-case schedule. Both macro responses feed both address ports, so the
 execution/fetch feedback must be considered together. Direct's upload scratch
@@ -147,7 +147,7 @@ cuts, hybrid branch
 availability, response timing, commit/start ownership and broadcast writes to
 the existing controller/array model. These additions preserve RTL bytes.
 
-Typed bank/word coordinates also support the [map-slice census](map-slice-study.md).
+Typed bank/word coordinates also support the [map-slice census](physical/map-slice-study.md).
 `chip_map_slice.py` traces stored-bit dependencies, owns control logic only when
 all consumers are local, and keeps remaining shared support explicit. Bit planes
 and tiles following the actual read-tree order expose different cuts in the
@@ -155,7 +155,7 @@ same circuit. Smaller private area can mean that more computation sits outside
 the block; compare full shared support and every input/output boundary before
 turning a grouping into an implementation interface.
 
-The [local-decoding tile experiment](map-tile-study.md) reuses the existing
+The [local-decoding tile experiment](physical/map-tile-study.md) reuses the existing
 `Memory.Flops` circuit rather than defining another memory. `Storage.MapTile`
 proves its projection onto actual controller reads and updates. A separate
 map-only probe preserves 32 tile boundaries and accounts for their glue;
@@ -181,7 +181,7 @@ depth advantage: a longest address path has twenty engine gates and ten map
 gates. Shared cursor bits drive eight engine pins plus seven map pins, exceeding
 the map-internal budget. Keep stored-word ownership explicit while choosing
 combinational optimization boundaries from complete dependencies and aggregate
-loads. The [combined controller/selection follow-up](map-tile-study.md#combined-controller-and-selection--september-22)
+loads. The [combined controller/selection follow-up](physical/map-tile-study.md#combined-controller-and-selection--september-22)
 retains the 32 storage tiles and fixes aggregate fanout to ten. It saves about
 1.08% of standard-cell area versus the baseline, but address depth remains 30/29.
 The [fetch contract study](fetch-contract-study.md) now separates that structural
@@ -358,7 +358,7 @@ path-specific clock-delivery contract, rather than a blanket rule that every
 clock shift or longer wire has the same effect. The proposed next inventory
 adds the shared-control tree's six branches while retaining global checks.
 
-The [timing and communication study](physical-organization-study.md) now joins
+The [timing and communication study](physical/physical-organization-study.md) now joins
 those measurements to explicit same-edge observations, conditional clock-shift
 bounds and alternative distribution costs. `physical_organization_study.py`
 owns the small timing/replication calculations; the existing planner still owns
@@ -370,7 +370,7 @@ study result bypasses the independent physical route intake.
 
 ## Proof and validation boundaries
 
-[Processor verification](processor-verification.md#the-chain-of-evidence) defines
+[Processor verification](engine/processor-verification.md#the-chain-of-evidence) defines
 the state relation and acceptance gates. Its central requirement is exact modeled
 observation preservation for the supported programs, input histories, and initial
 states. Proofs must disclose assumptions and contain no unfinished proof placeholders.

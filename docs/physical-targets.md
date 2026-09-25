@@ -19,7 +19,7 @@ ten absent-container checks pass. Area remains **359,371.6704 µm²**, cumulativ
 now separates the mechanisms: mode/status loses **2.318 ns**, almost entirely
 in data; SRAM/status loses **0.307 ns**, mostly in its launch clock; input hold
 loses **39.835 ps** through capture-clock delay. The subsequent
-[organization study](physical-organization-study.md) completes a 4.112-second
+[organization study](physical/physical-organization-study.md) completes a 4.112-second
 saved-chip screen: twelve consumer swaps have no complete conditional pass, and
 two proposed decoder copies exceed the remaining incremental area allowance.
 Clock-environment replay still leaves both setup paths below their retained
@@ -533,8 +533,9 @@ units**, one in each of 22 Metal3 grid cells. **Seventeen lie north of SRAM**;
 the other five form a column at x=259.2 µm. One cell overlaps the macro and one
 the reserved corridor. Only **seven** overlap coarse guides of the 27 failing
 nets; the other **15** require separate traffic diagnosis. The coordinate and
-guide-candidate lists are in
-[`congestion.json`](../build/validation/paired-repair-plan-01/congestion.json).
+guide-candidate lists are in the ignored local artifact
+`build/validation/paired-repair-plan-01/congestion.json`, identified by the
+tracked [preparation manifest](../physical/experiments/paired-repair-plan-results.json).
 Guide overlap does not assign blame to a net or establish detailed DRC. Saved
 grid totals include capacity reductions in usage and are not free-track counts.
 
@@ -550,8 +551,8 @@ Added cell-footprint area is **636.8544 µm² (0.178061%)**. The rectangles are
 placement hints; site alignment, legalization, power binding, pin access and
 timing have not been established for the candidate.
 
-This applies the [interface and timing-contract lessons](timed-components.md#sources-and-next-application)
-and the [separation of hardware allocation from scheduling](chip-architecture-study.md#the-structural-next-step):
+This applies the [interface and timing-contract lessons](engine/timed-components.md#sources-and-next-application)
+and the [separation of hardware allocation from scheduling](physical/chip-architecture-study.md#the-structural-next-step):
 one checked description connects semantic owners to concrete pins and defines
 the obligations a physical implementation must retain. These Python checks are
 not Lean proofs of placement, routing or timing.
@@ -636,8 +637,10 @@ native readback takes another 0.865 seconds. All **eight exact containers** are
 independently absent, **616 prior source/evidence identities** remain unchanged,
 and five documentation pages are updated separately. The
 [signal-repair manifest](../physical/experiments/paired-signal-repair-results.json)
-binds the candidate, measurement, complete functional ancestry and
-[connection reports](../build/validation/paired-signal-repair-01/connections.json).
+binds the candidate, measurement and complete functional ancestry. The local
+connection reports reside at
+`build/validation/paired-signal-repair-01/connections.json`; this generated
+artifact requires the matching local run or reproduction.
 
 **Decision:** retain this locally qualified candidate. Bind its exact source and
 complete ancestry through routing intake, account for the saved congestion
@@ -952,7 +955,8 @@ Saved paths make the next diagnosis concrete:
 
 - **Status setup:** the worst output path changes from SRAM bit 51 to bit 53,
   both ending at `uo_out[4]`. An exact matching bit-53 path prefix in the old
-  reports shows `_06301_/Y → _06302_/B1` growing **0.068197 → 0.113368 pF**.
+  reports shows net `_02486_` (`_06301_/Y → _06302_/B1`) growing
+  **0.068197 → 0.113368 pF**.
   Its gate delay grows **1.117685 → 1.732932 ns**, adding **0.615247 ns**.
   This one-receiver link is outside the branching-family inventory. The prefix
   comparison is valid; the differing worst output paths are not a same-path

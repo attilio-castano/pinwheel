@@ -1,20 +1,20 @@
 # From the experimental chip to submission
 
-Updated 2026-09-21. [Research status](research/status.md) owns priorities; this
-page owns the implementation sequence and acceptance gates. Completed pieces
-are distinguished from the remaining work; [validation](validation.md) defines
-the local merge gate.
+Implementation sequence recorded 2026-09-21; navigation clarified 2026-09-24.
+[Research status](research/status.md) owns current priorities. This page retains
+the earlier hybrid-SRAM sequence and the submission acceptance gates;
+[validation](validation.md) defines the local merge gate. Dated next steps below
+describe that phase and are not the current work queue.
 
 The sequence below records the earlier hybrid-SRAM implementation. The later
-paired controller is now the active experimental architecture; consult
-[research status](research/status.md) and the
-[integration guide](branch-integration.md) for its current disposition and
-remaining correspondence and physical gates. The earlier hybrid selection
-below does not supersede that newer decision.
+paired controller is the active experimental architecture in the
+[research status](research/status.md). The [integration record](history/branch-integration.md)
+explains its correspondence and physical boundaries at consolidation. The
+earlier hybrid selection below does not supersede that newer decision.
 
 ## Starting point
 
-The [whole-chip model](whole-chip.md) connects serial pins to a committed program
+The [whole-chip model](engine/whole-chip.md) connects serial pins to a committed program
 and subsequent reference-machine execution. The one-port core has one
 command-split routed sample with +0.602 ns slow setup, passing hold and layout
 checks, and remaining slew/fanout violations. The new result-enabled chip has
@@ -38,7 +38,7 @@ decoding. The result-enabled one-port circuit uses its proved readiness gate.
 `HostResult` provides a 16-bit retained result and outcome, paged host reads,
 consumption, overflow and sticky command rejection. Its step/output proofs and
 core noninterference theorem bind the structural observer to that contract.
-The [version-1 interface](whole-chip.md#host-result-interface-version-1) specifies
+The [version-1 interface](engine/whole-chip.md#host-result-interface-version-1) specifies
 reset, stop, replacement and simultaneous consume/arrival. UART remains one-shot
 on this interface; the continuous-RX supervisor has no composed chip circuit.
 
@@ -48,7 +48,7 @@ advance before selecting the final memory implementation.
 
 ## Use the bounded SRAM study to choose storage/fetch
 
-**Candidate selected:** [the complete-chip comparison](storage-primitives.md#complete-chip-comparison-2026-09-19)
+**Candidate selected for this phase:** [the complete-chip comparison](storage-primitives.md#complete-chip-comparison-2026-09-19)
 favors hybrid dictionary SRAM with two reads. Its complete mapped chip occupies
 393,558 µm², versus 479,596 for direct SRAM and 622,897 for the matched flip-flop
 reference. Both SRAM prototypes pass independent external-pin and core-edge
@@ -68,8 +68,9 @@ duration rule. Both retain the small dictionary's capacity check. The current
 UART receiver violates the one-port rule even at a slower baud, so rejection
 does not constitute receiver support.
 
-The selected hybrid keeps the small dictionary's capacity contract and adds no
-duration restriction; retain the current UART compiler and timing contract.
+The hybrid selected in this phase keeps the small dictionary's capacity contract
+and adds no duration restriction; retain the current UART compiler and timing
+contract.
 The closed-loop hybrid array/controller model now refines the capacity-adapted
 atomic reference after initialization, including uploaded word correspondence,
 actual lookup addresses, held Q and commit/start bypass. Every controller
@@ -125,9 +126,12 @@ violations and the budget expires during the second routing pass, after
 iteration 35 with 230 markers. These passes must be reported separately.
 The corridor survives both repair stages. The
 [physical study](chip-physical-study.md#corridor-continuation-2026-09-21) retains
-the exact geometry and comparison boundaries. Next test macro-body routing
-obstructions before generating global guides, with a bounded screen first.
-No physical closure or backend promotion follows yet.
+the exact geometry and comparison boundaries. Its proposed macro-body
+obstruction screen was subsequently
+[tested and rejected](routing-diagnostics.md#the-one-new-screen-and-its-disposition).
+The later [paired physical comparison](physical-targets.md) owns the current
+physical evidence. Neither phase established physical closure or backend
+promotion.
 
 **Remaining:** qualify the macro power grid and mixed-temperature fast screen,
 close routing and electrical limits, then validate the implemented chip netlist

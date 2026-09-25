@@ -7,7 +7,7 @@ The [technical catalog](README.md) routes the milestone-specific checks below;
 [research status](research/status.md) owns the current evidence and next decision.
 For research work, follow the [bounded workflow](research/README.md) and complete
 its evidence writeback. The later core has synchronous atomic loading and routed
-experiments. The [whole chip](whole-chip.md) adds serial loading in Lean and
+experiments. The [whole chip](engine/whole-chip.md) adds serial loading in Lean and
 emitted RTL; independent validation of that RTL, host result readback, and
 whole-chip physical closure remain open. The [submission plan](submission-plan.md)
 records the remaining gates. No editor extension is required for this workflow.
@@ -114,11 +114,11 @@ These results establish the setup example's proof and executable behavior in Lea
 
 ## UART milestone
 
-The pure Lean portion of the [UART plan](uart-experiment.md) is implemented; see the [model record](uart-model.md) for its contract and verification. The UART-only milestone did not install hardware tools. The later authorized hardware batch installed the pinned local tools documented below.
+The pure Lean portion of the [UART plan](history/uart-experiment.md) is implemented; see the [model record](protocols/uart-model.md) for its contract and verification. The UART-only milestone did not install hardware tools. The later authorized hardware batch installed the pinned local tools documented below.
 
 ## SPI milestone
 
-The [SPI model record](spi-model.md) documents the implemented mode-0 controller, proofs, 1,792 passing executable transfers, independent CSV check, and rejected early-completion claim. No additional dependency was needed. `lake build` completed with seven jobs, including both protocol libraries. The existing UART regression also passed.
+The [SPI model record](protocols/spi-model.md) documents the implemented mode-0 controller, proofs, 1,792 passing executable transfers, independent CSV check, and rejected early-completion claim. No additional dependency was needed. `lake build` completed with seven jobs, including both protocol libraries. The existing UART regression also passed.
 
 To reproduce the main SPI axiom checks, place these commands in an ignored scratch `.lean` file after `import Pinwheel`, then compile it with `lake env lean -DwarningAsError=true`:
 
@@ -133,9 +133,9 @@ All four reported `[propext, Classical.choice, Quot.sound]`, with no unfinished-
 
 ## Shared engine milestone
 
-The later [I²C reference experiment](i2c-model.md) remains separate from this engine; it motivates the next abstract-machine extension.
+The later [I²C reference experiment](protocols/i2c-model.md) remains separate from this engine; it motivates the next abstract-machine extension.
 
-The [engine model record](engine-model.md) documents the implemented 32-slot machine, atomic loading, typed compilers, and proof coverage. The full `lake build` completed with 12 jobs. No dependency was added.
+The [engine model record](engine/engine-model.md) documents the implemented 32-slot machine, atomic loading, typed compilers, and proof coverage. The full `lake build` completed with 12 jobs. No dependency was added.
 
 The engine suite passed 2,560 compiled protocol transfers plus mixed-duration, entry-capture, overwrite, halt/fault, reset/restart, busy loading, and UART → SPI → UART cases. The fixed UART and SPI suites also passed. Independent CSV comparison matched the engine's UART trace to all 42 reference rows and its SPI trace to every common field in all 70 reference rows.
 
@@ -160,7 +160,7 @@ Binary instruction encoding and the countdown RTL slice were added after this en
 
 ## Hardware milestones 1 and 2
 
-The later [hardware closure batch](hardware-closure.md) extends the countdown
+The later [hardware closure batch](engine/hardware-closure.md) extends the countdown
 runner with actual-RTL read-back proofs and generic-gate equivalence. Run
 `python3 scripts/check-backend-readback.py --tag first-readback` with pinned
 CIRCT/Yosys/Z3 to check the full backend's emitted RTL in Lean. With the technology
@@ -176,7 +176,7 @@ the optional native `backend_emit` Lake target, generates both comparison design
 and retains each run under its fresh tag. The historical results below describe
 the original slice; current acceptance boundaries live in the closure record.
 
-The [program-bank experiment](bank-selection-study.md) adds the optional
+The [program-bank experiment](storage/bank-selection-study.md) adds the optional
 `bank_select_emit` executable. Select `--variant command-split` or
 `--variant late-bank` in `check-backend-readback.py`, then pass the receipt to
 `check-bank-select.py --readback-report PATH --tag NAME`. Both variants retain
@@ -184,14 +184,14 @@ the existing state/port contract and have complete Lean refinements. The study
 records focused bank-switch regressions, mapped cone analysis and the decision
 gate for a fresh physical comparison.
 
-The [cache-enable experiment](cache-enable-study.md) uses the same executable and
+The [cache-enable experiment](storage/cache-enable-study.md) uses the same executable and
 receipt gate with `--variant enable-split`. It factors the cache update decision
 while preserving the shared instruction read and complete register transition.
 Its focused regression checks exact cache contents on stopped and running edges;
 the source dependency report distinguishes direct control paths from paths
 through the shared read.
 
-The [processor verification plan](processor-verification.md)'s first batch is implemented. The [hardware baseline](hardware-baseline.md) records the binary format and core contract; the [countdown record](countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
+The [processor verification plan](engine/processor-verification.md)'s first batch is implemented. The [hardware baseline](engine/hardware-baseline.md) records the binary format and core contract; the [countdown record](engine/countdown-hardware.md) records circuit proofs, artifact identities, and the remaining translation/physical boundaries.
 
 On Apple Silicon macOS with Python 3.12+:
 
@@ -234,13 +234,13 @@ Run the full core experiment with the same installed tools:
 python3 scripts/check-core.py
 ```
 
-It builds the 24-job library, audits 16 selected theorem dependencies, exports the actual compiled images, checks every raw decoder word, compares 71,703 independent expected edges in Lean and RTL, rejects three faulty RTL variants, and synthesizes the full core. The [core record](core-hardware.md) documents the 1,032-transfer coverage matrix, 1,907 generic cells, 543 flip-flop bits, and remaining proof boundaries. Full reports and hashes are under `build/core/`; this remains separate from the timer's `build/hardware/` receipt.
+It builds the 24-job library, audits 16 selected theorem dependencies, exports the actual compiled images, checks every raw decoder word, compares 71,703 independent expected edges in Lean and RTL, rejects three faulty RTL variants, and synthesizes the full core. The [core record](engine/core-hardware.md) documents the 1,032-transfer coverage matrix, 1,907 generic cells, 543 flip-flop bits, and remaining proof boundaries. Full reports and hashes are under `build/core/`; this remains separate from the timer's `build/hardware/` receipt.
 
 The generic emitter sets CIRCT's supported-output options and the runner adds `--hw-legalize-modules` before `--export-verilog`. That required pass removes packed-array constructs unsupported by the selected tools. The earlier timer uses no such array read path. Common-expression sharing changed the timer's emitted formatting; its reset-priority mutation fixture was updated and the timer suite rerun. Its original published hashes identify the earlier implementation, not newly generated files.
 
 ## I²C reference milestone
 
-The [I²C model record](i2c-model.md) documents single-controller address-plus-byte writes, ACK/NACK, open-drain bus resolution, clock stretching, and abort behavior. No Lean dependency or hardware tool is added. Reproduce its build, 19-theorem axiom audit, bus tests, and negative cases with:
+The [I²C model record](protocols/i2c-model.md) documents single-controller address-plus-byte writes, ACK/NACK, open-drain bus resolution, clock stretching, and abort behavior. No Lean dependency or hardware tool is added. Reproduce its build, 19-theorem axiom audit, bus tests, and negative cases with:
 
 ```sh
 python3 scripts/check-i2c.py
@@ -252,7 +252,7 @@ The library build passed with 28 jobs. The suite passed 4,224 transactions acros
 
 ## Candidate reactive-engine milestone
 
-The [candidate-engine record](reactive-engine.md) documents drive enables, two observed inputs, selected capture, and observation-anchored timed continuation. The old engine and structural hardware remain intact. Reproduce using the existing Lean toolchain and Python:
+The [candidate-engine record](engine/reactive-engine.md) documents drive enables, two observed inputs, selected capture, and observation-anchored timed continuation. The old engine and structural hardware remain intact. Reproduce using the existing Lean toolchain and Python:
 
 ```sh
 python3 scripts/check-reactive.py
@@ -262,7 +262,7 @@ The 32-job library build and all 30 named theorem audits passed. The executable 
 
 ## Compiled I²C milestone
 
-The later [compiled-I²C record](compiled-i2c.md) adds masked guards, terminal capture/branching, qualification, and a 79-instruction write program. The candidate now uses 128 slots with per-program execution limits; the old encoded core remains unchanged. Reproduce:
+The later [compiled-I²C record](protocols/compiled-i2c.md) adds masked guards, terminal capture/branching, qualification, and a 79-instruction write program. The candidate now uses 128 slots with per-program execution limits; the old encoded core remains unchanged. Reproduce:
 
 ```sh
 python3 scripts/check-compiled-i2c.py
@@ -287,7 +287,7 @@ The first Core invocation emits circuits and protocol images; the Python step de
 
 ## Counted byte-loop comparison
 
-The [loop comparison](looped-i2c.md) adds a bounded instruction-store frontend that reuses 15 templates for the explicit image's 79 execution addresses. The two byte values are separate data. The format permits two nested loops, at most eight iterations each, 128 execution slots, and 64 syntax nodes. This write uses 31 nodes in total. No new tool or dependency is required.
+The [loop comparison](protocols/looped-i2c.md) adds a bounded instruction-store frontend that reuses 15 templates for the explicit image's 79 execution addresses. The two byte values are separate data. The format permits two nested loops, at most eight iterations each, 128 execution slots, and 64 syntax nodes. This write uses 31 nodes in total. No new tool or dependency is required.
 
 ```sh
 python3 scripts/check-compiled-i2c.py --looped
@@ -301,7 +301,7 @@ The universal fetch/state proofs cover every configuration, request, and input h
 
 ## PWL V0 binary-image milestone
 
-The [binary-image record](binary-images.md) specifies byte-aligned headers, fields, instruction records, and preorder layouts. Universal prefix/whole-image/native-byte round trips compose with decoded execution and abstract loading. No new dependency is required.
+The [binary-image record](storage/binary-images.md) specifies byte-aligned headers, fields, instruction records, and preorder layouts. Universal prefix/whole-image/native-byte round trips compose with decoded execution and abstract loading. No new dependency is required.
 
 ```sh
 python3 scripts/check-binary.py
@@ -316,9 +316,9 @@ The decoder reconstructs typed programs before execution. It does not yet define
 
 ## Combined I²C read and E64 frontends
 
-The [read experiment](i2c-register-read.md) uses 256 addresses and 16 capture slots on the same parameterized reactive semantics. Its 24 public compiler theorems and 4,468-transaction wire matrix require only Lean and Python. Existing 128-address/eight-sample defaults and PWL V0 remain intact.
+The [read experiment](protocols/i2c-register-read.md) uses 256 addresses and 16 capture slots on the same parameterized reactive semantics. Its 24 public compiler theorems and 4,468-transaction wire matrix require only Lean and Python. Existing 128-address/eight-sample defaults and PWL V0 remain intact.
 
-The [E64 record](execution-records.md) adds fixed-width literal encoding and certified indexed lowering. The [hardware record](execution-hardware.md) documents the writable decoder/store ports, 21-theorem audit, RTL vector and mutation checks, and comparable generic synthesis results. The full frontend runner uses the existing pinned hardware tools; no new dependency is needed.
+The [E64 record](storage/execution-records.md) adds fixed-width literal encoding and certified indexed lowering. The [hardware record](storage/execution-hardware.md) documents the writable decoder/store ports, 21-theorem audit, RTL vector and mutation checks, and comparable generic synthesis results. The full frontend runner uses the existing pinned hardware tools; no new dependency is needed.
 
 ```sh
 python3 scripts/check-binary.py
@@ -336,14 +336,14 @@ The Lean-only frontend commands are `lake env lean -DwarningAsError=true --run t
 python3 scripts/check-reactive-core.py
 ```
 
-The [integrated-core record](reactive-core-hardware.md) documents the 69-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
+The [integrated-core record](engine/reactive-core-hardware.md) documents the 69-theorem audit, complete-machine proof premises, raw setup interface, UART/SPI/I²C vectors, RTL mutations, and generic synthesis. Outputs and the success receipt live under ignored `build/reactive-core/`. This runner needs the existing pinned Lean/CIRCT/OSS CAD tools and no prior binary fixtures.
 
 For Lean-only validation, run `lake build`, `lake env lean test/ReactiveCoreAxioms.lean`, `lake env lean --run test/ReactiveCore.lean`, `python3 scripts/reactive-core-vectors.py`, and `lake env lean --run test/ReactiveCore.lean check`. The last command evaluates structural scheduler and store-read components using the named bindings also used during export. Existing `check-core.py` and `check-execution.py` retain the original complete-core and standalone frontend regressions.
 
 
 ## Atomic loader and early technology mapping
 
-The [atomic-loader record](atomic-loader.md) defines the synchronous word-level
+The [atomic-loader record](storage/atomic-loader.md) defines the synchronous word-level
 interface, double-bank storage, initialization, commit, and proof boundaries.
 Use the existing pinned Lean and hardware tools:
 
@@ -369,6 +369,6 @@ The first command needs network access only when files are absent. Both commands
 verify the hashes in `tools/technology-library.json`. The mapping runner re-emits
 the designs and writes `build/technology/report.json` after all four mappings
 pass; it does not install a complete PDK or run placement/routing. See
-[technology mapping](technology-mapping.md) for exact constraints and the area
+[technology mapping](physical/technology-mapping.md) for exact constraints and the area
 result, which makes the current double-bank register implementation unsuitable
 for the nominal allocation.

@@ -21,7 +21,7 @@ the SRAM return path, actual load budgets and minimum delays guide the work.
 
 The [selected receipt](../physical/experiments/fetch-contract-results.json)
 links the immutable timing, distribution and validation reports. The
-[tile study](map-tile-study.md) owns the earlier mappings;
+[tile study](physical/map-tile-study.md) owns the earlier mappings;
 [research status](research/status.md) owns the next allocation.
 
 ## Availability and deadlines in the existing loop

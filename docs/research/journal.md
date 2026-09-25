@@ -1,13 +1,49 @@
 # Research journal
 
-Concise reconstruction index. [Results](results.md) owns interpretations and
+Dated reconstruction record. [Results](results.md) owns interpretations and
 [status](status.md) owns current priorities. Detailed commands and hashes stay
 with the technical study and run artifacts. Append decisive receipts; do not
 replace a failed attempt with its successful retry.
 
+## Find a receipt
+
+Choose a topic or date to jump to the sequence of attempts, including failed
+or interrupted work.
+
+### By topic
+
+| Topic | Entry points |
+| --- | --- |
+| Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
+| Artifact proof and composition | [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
+| Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
+| Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
+| Physical correlation and placement | [Estimate/extraction diagnosis](#2026-09-17-estimateextraction-correlation-diagnosis), [placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution), [exact mapping and hold repair](#2026-09-22--preserve-the-mapping-through-placement-and-hold-repair) |
+| Repair and admission | [Whole-chip signal repair](#2026-09-23--whole-chip-qualification-of-the-27-buffer-signal-repair), [rejected shared-edit route](#2026-09-23--shared-physical-edits-and-a-rejected-whole-chip-qualification), [timing and organization comparison](#2026-09-23--timing-obligations-and-complete-organization-comparison) |
+
+### By date
+
+| Date | Start of that day's entries | Main threads |
+| --- | --- | --- |
+| 2026-09-15 | [UART stream clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks) | Protocols, compilers, decoder and backend screens |
+| 2026-09-17 | [Physical correlation](#2026-09-17-estimateextraction-correlation-diagnosis) | Sampler, structural timing, input latency, memory policies |
+| 2026-09-18 | [Fetch organizations](#2026-09-18-fetch-organizations-as-a-parameter-the-one-port-backend) | One/two-port backends and whole-chip composition |
+| 2026-09-19 | [Branch review](#2026-09-19-local-branch-review-and-submission-plan) | SRAM comparison, integration and routing diagnosis |
+| 2026-09-21 | [Placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) | Closed-loop SRAM, hybrid/direct costs and tile boundaries |
+| 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
+| 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
+
+## Future receipt shape
+
+Record the actual date, study/run identity, source commit or candidate digest,
+evidence location and digest, completion/interruption state, concise result,
+resource accounting when available, and link to the result or current status.
+For outside research, link the source interpretation and adoption decision in the
+owning study. Interpretation-only updates need no fabricated run identity.
+
 ## 2026-09-15 — Continuous UART reception with unequal clocks
 
-Closed the [continuous clock milestone](../uart-stream-clocks.md), based on
+Closed the [continuous clock milestone](../protocols/uart-stream-clocks.md), based on
 `c133af9` plus the previously validated receive/link/buffered-stream work.
 The strengthened sufficient bound reserves two additional RX ticks for rearm
 and an idle-high observation between adjacent frames. It preserves the entire
@@ -50,7 +86,7 @@ uncommitted work; ignored receipts are not a durable backup.
 
 ## 2026-09-15 — Continuous UART receive and result ownership
 
-Closed the [continuous receive milestone](../uart-stream.md), based on `c133af9`
+Closed the [continuous receive milestone](../protocols/uart-stream.md), based on `c133af9`
 plus the previously validated receive/link work. The one-entry buffer retains
 the oldest unread outcome, supports same-edge consumption and arrival, reports
 sticky overrun, and explicitly flushes on reset. Automatic rearm is independent
@@ -110,7 +146,7 @@ historical evidence for their own source snapshot.
 
 ## 2026-09-15 — One-byte UART receive
 
-Added the [digital receive contract and compiler](../uart-receive.md) in the
+Added the [digital receive contract and compiler](../protocols/uart-receive.md) in the
 working tree based on `c133af9`; validation identities are source hashes rather
 than an implementation commit. The receiver confirms start, samples eight bits
 and stop, and retains either a byte or a framing error. Existing reactive
@@ -156,15 +192,15 @@ and receipt identities, not a fresh execution of their experiments.
 
 | Commit date / identity | Milestone and outcome | Reconstruction path |
 | --- | --- | --- |
-| 2026-09-13 / `145ce99`, `034915a` | Counted I²C equivalence and binary-image comparison completed | [Loop study](../looped-i2c.md), [binary record](../binary-images.md); `build/binary/`, `build/binary-explicit/`, `build/binary-looped/` |
-| 2026-09-13 / `1ef8196`, `f8d557d`, `8c20d44` | Bounded register reads, E64 lowering, and frontend hardware comparison | [Read record](../i2c-register-read.md), [E64 decision](../execution-records.md), [frontend record](../execution-hardware.md) |
-| 2026-09-14 / `696a6d6`, `a493b06`, `2780f1d` | Integrated reactive core, atomic loader, and mapped area pressure | [Core](../reactive-core-hardware.md), [loader](../atomic-loader.md), [mapping](../technology-mapping.md); `build/reactive-core/report.json`, `build/loader/report.json`, `build/technology/report.json` |
-| 2026-09-14 / `2dacc2a`, `7a66c08`, `fd6db7d`, `c368fac`, `4a8a06a` | Smaller store, cache, dense records, bounded repetition, and primitive review completed | [Storage study](../storage-study.md), [primitive review](../storage-primitives.md); `build/storage/` and its candidate-specific receipts |
-| 2026-09-14 / `a0e2fb9`, `7dcd064` | Initial routed baseline; timing fails, DRC/LVS evidence retained | [Physical record](../physical-validation.md); `build/physical/core/runs/routed4/` |
-| 2026-09-14 / `2946f20`, `e3bfbbb`, `6aac575`, `ae61ff2` | Timed refinement and checked interfaces; baseline emission preserved | [Contract record](../timed-components.md); `build/contracts/` is regenerable and may now describe a later source snapshot; recover the historical source with these commits |
-| 2026-09-14 / `d9d76d2`, `820187c` | Two architectural screens and both final flow controls completed; no timing closure or promoted architectural candidate | [Fetch study](../successor-fetch-study.md), [committed result manifest](../../physical/experiments/fetch-results.json) |
-| 2026-09-14 / `5c0b03c` | Unaffected-command predicate proved; decoder follow-up identified | [Study rationale](../successor-fetch-study.md#command-decoder-experiment); `Pinwheel/Hardware/Storage/Small.lean` at that commit |
-| 2026-09-15 / `2aa281c` | Targeted STA shows protocol and loader paths remain nearly tied; decoder-only cleanup cannot establish closure | [Timing study](../successor-fetch-study.md#targeted-launch-family-timing), [pinned launch-family receipts](../../physical/experiments/fetch-launch-families.json) |
+| 2026-09-13 / `145ce99`, `034915a` | Counted I²C equivalence and binary-image comparison completed | [Loop study](../protocols/looped-i2c.md), [binary record](../storage/binary-images.md); `build/binary/`, `build/binary-explicit/`, `build/binary-looped/` |
+| 2026-09-13 / `1ef8196`, `f8d557d`, `8c20d44` | Bounded register reads, E64 lowering, and frontend hardware comparison | [Read record](../protocols/i2c-register-read.md), [E64 decision](../storage/execution-records.md), [frontend record](../storage/execution-hardware.md) |
+| 2026-09-14 / `696a6d6`, `a493b06`, `2780f1d` | Integrated reactive core, atomic loader, and mapped area pressure | [Core](../engine/reactive-core-hardware.md), [loader](../storage/atomic-loader.md), [mapping](../physical/technology-mapping.md); `build/reactive-core/report.json`, `build/loader/report.json`, `build/technology/report.json` |
+| 2026-09-14 / `2dacc2a`, `7a66c08`, `fd6db7d`, `c368fac`, `4a8a06a` | Smaller store, cache, dense records, bounded repetition, and primitive review completed | [Storage study](../storage/storage-study.md), [primitive review](../storage-primitives.md); `build/storage/` and its candidate-specific receipts |
+| 2026-09-14 / `a0e2fb9`, `7dcd064` | Initial routed baseline; timing fails, DRC/LVS evidence retained | [Physical record](../physical/physical-validation.md); `build/physical/core/runs/routed4/` |
+| 2026-09-14 / `2946f20`, `e3bfbbb`, `6aac575`, `ae61ff2` | Timed refinement and checked interfaces; baseline emission preserved | [Contract record](../engine/timed-components.md); `build/contracts/` is regenerable and may now describe a later source snapshot; recover the historical source with these commits |
+| 2026-09-14 / `d9d76d2`, `820187c` | Two architectural screens and both final flow controls completed; no timing closure or promoted architectural candidate | [Fetch study](../storage/successor-fetch-study.md), [committed result manifest](../../physical/experiments/fetch-results.json) |
+| 2026-09-14 / `5c0b03c` | Unaffected-command predicate proved; decoder follow-up identified | [Study rationale](../storage/successor-fetch-study.md#command-decoder-experiment); `Pinwheel/Hardware/Storage/Small.lean` at that commit |
+| 2026-09-15 / `2aa281c` | Targeted STA shows protocol and loader paths remain nearly tied; decoder-only cleanup cannot establish closure | [Timing study](../storage/successor-fetch-study.md#targeted-launch-family-timing), [pinned launch-family receipts](../../physical/experiments/fetch-launch-families.json) |
 
 Earlier UART/SPI and I²C foundations remain indexed by the [technical catalog](../README.md)
 and their original study records; this table is a milestone index, not a complete
@@ -200,7 +236,7 @@ it does not rerun the experiment or replace the earlier reconstruction snapshot.
   matched physical comparison within the applicable task authority. The candidate
   is not routed or promoted. The −4.928 ns protocol slack belongs to the previously
   routed F2 implementation, so decoder isolation alone does not establish closure.
-- **Evidence:** [detailed closeout](../successor-fetch-study.md#command-decoder-experiment)
+- **Evidence:** [detailed closeout](../storage/successor-fetch-study.md#command-decoder-experiment)
   and [committed manifest](../../physical/experiments/command-split-results.json),
   with retained source/artifact hashes under `build/successor-fetch/command-split-screen/`.
   The manifest pins the screen, connectivity, and contract-audit receipts.
@@ -246,9 +282,9 @@ The physical candidate remains the previously validated RTL from `1a0c960`.
   final extracted STA. OpenROAD routing/antenna checks report zero violations;
   Magic DRC, LVS and later checks are incomplete. No default promotion follows.
 
-[Hardware closure](../hardware-closure.md) owns exact proofs, trusted boundaries,
+[Hardware closure](../engine/hardware-closure.md) owns exact proofs, trusted boundaries,
 suite counts, current receipt hashes and elapsed validation times.
-[The matched physical study](../successor-fetch-study.md#matched-command-split-physical-comparison)
+[The matched physical study](../storage/successor-fetch-study.md#matched-command-split-physical-comparison)
 owns the extracted comparison and final flow receipt. The new candidate-specific
 physical staging rejects wrong artifact hashes and reused preparations; the
 runner bounds the named offline container to four CPUs, 6 GiB and one hour.
@@ -300,7 +336,7 @@ byte-identical MLIR/RTL and passes all 6,315 / 6,309 equivalence points plus the
 The library audit alone passes 9,194 declarations / 4,690 theorems. All current
 source hashes match the receipts; no reference execution semantics changed.
 
-[Full-backend read-back](../hardware-closure.md#full-backend-rtl-read-back) owns the
+[Full-backend read-back](../engine/hardware-closure.md#full-backend-rtl-read-back) owns the
 reproduction commands, exact receipts and remaining trusted frontend/adapter
 boundary. Technology-mapped sequential equivalence, external integration and the
 separate failed physical-timing comparison retain their own obligations.
@@ -330,7 +366,7 @@ the existing restricted RTL read-back method checks both actual emitted artifact
 - **Disposition:** the candidate misses the useful slow-corner improvement gate.
   Retain it and stop before routing; no default promotion. None of the conditional
   two-run allocation (four CPUs / 6 GiB / one hour per run) was used.
-- **Evidence:** [study](../bank-selection-study.md) and
+- **Evidence:** [study](../storage/bank-selection-study.md) and
   [manifest](../../physical/experiments/bank-selection-results.json), SHA-256
   `67edb492f0f4067912dc5a89b03c7d492ea3b2c813cde14f989d2f335ea820bc`.
   The manifest pins both proof/check receipts, initial/final focused cases and
@@ -380,7 +416,7 @@ fixed. The late bank-selection candidate is not combined with this change.
 - **Disposition and identity:** retain the verified experimental variant; the
   matched screen supports a fresh physical comparison, with a modest slow gain.
   No new physical run or default promotion occurs. The
-  [study](../cache-enable-study.md) and
+  [study](../storage/cache-enable-study.md) and
   [manifest](../../physical/experiments/cache-enable-results.json), SHA-256
   `31db9ddf62ce3bb257f624a8f8f06145a5abb9e457554a10e0eeb1238a1913a8`,
   pin eight completed receipts and 914 verified source/artifact hash entries.
@@ -563,7 +599,7 @@ external interface integration retain their separate contracts.
   equal to extracted slack, deepest endpoint the cached word. Loop stages from
   registers (gate levels): address 22, successor 50, next address 91, enable 99,
   cached word 101. Recirculating bits 6,172 of 6,233.
-- **Disposition:** the [study](../structural-timing.md) owns the model, its
+- **Disposition:** the [study](../engine/structural-timing.md) owns the model, its
   boundary and the suggested abstractions. One early version of the report
   repeated wire evaluation inside a launch function and did not finish in ten
   minutes; wire arrivals are now computed as values first.
@@ -582,7 +618,7 @@ external interface integration retain their separate contracts.
   29,062 oracle edges with 18,079,584 storage observations, reject 132/132 and
   1,160/1,160 stuck-enable mutants, and map to 546,149 / 497,263 / 457,577 µm²
   (typical) with slow ABC delay 9.964 / 9.974 / 9.970 ns.
-- **Disposition:** the [study](../register-enables.md) owns the construction,
+- **Disposition:** the [study](../physical/register-enables.md) owns the construction,
   boundary and open physical questions. A `clockgate` selection converted
   nothing in the pinned Yosys; the step unmaps the enables of unplanned registers
   instead. An empty-plan control first failed on an invalid `select -none`
@@ -919,7 +955,7 @@ external interface integration retain their separate contracts.
   to meet setup at all corners with clock gating, in one run; the two-port
   organization does not route on the test rectangle under this overlay. Both
   conclusions are about the test boundary — a core rectangle with stand-in
-  pins — and the [whole chip](../whole-chip.md) is now a Lean object whose
+  pins — and the [whole chip](../engine/whole-chip.md) is now a Lean object whose
   routed run has not been made.
 
 ## 2026-09-18: the whole chip in Lean — feeders, serial loader, upload theorem
@@ -969,7 +1005,7 @@ external interface integration retain their separate contracts.
   chip 562,152 µm², ABC 5,364 ps (test-boundary core behind the sampler
   557,736); two-port chip 614,555 µm², 5,391 ps (628,939).
   `check-foundation --tag whole-chip-01`: 183 modules, 13,322 declarations, 6,873 theorems, 30 suites, untrusted axiom rejected, 1,423 s.
-- **Disposition:** [the whole chip](../whole-chip.md) owns the stack, the
+- **Disposition:** [the whole chip](../engine/whole-chip.md) owns the stack, the
   theorems and the boundary. The proved object is now the chip's netlist, from
   a host's serial session to the instruction-level engine running the uploaded
   program. The emitted RTL of that netlist has no independent check yet and no
@@ -999,7 +1035,7 @@ external interface integration retain their separate contracts.
   two-port one is not (75.2%, did not route), so a UART receiver inside the
   one-port rule is required, not optional. [Competition brief](../competition.md#the-outline-and-the-pinned-files),
   [status](status.md#the-official-outline-2026-09-18) and
-  [the whole chip](../whole-chip.md#the-outline) updated;
+  [the whole chip](../engine/whole-chip.md#the-outline) updated;
   `tools/physical-toolchain.json` records the allocation. Older studies keep
   their wording about an 8×4 outline as written at the time.
 
@@ -1082,7 +1118,7 @@ external interface integration retain their separate contracts.
   experiment is the complete direct wrapper, compared with the hybrid's lower
   area estimate. Physical SRAM views are not integrated; no SRAM backend or
   final storage choice follows. UART timing is unchanged. The [whole-chip
-  record](../whole-chip.md#independent-result-chip-checks-2026-09-19) owns the
+  record](../engine/whole-chip.md#independent-result-chip-checks-2026-09-19) owns the
   result-interface validation; actual RTL read-back and the official-template
   physical experiment remain separate gates. No new physical run or default
   promotion occurred.
@@ -1554,7 +1590,7 @@ same 21 response bits per macro in the union. Direct saves 113,189 µm² of mapp
 standard cells and adds 199,227 µm² of macros. Preserve both candidates: this
 identifies a structural trade, not a routed winner or a routing-failure cause.
 
-The [architecture study](../chip-architecture-study.md) owns state diagrams,
+The [architecture study](../physical/chip-architecture-study.md) owns state diagrams,
 the complete upload/execution schedule, communication/area tables, source
 interpretation and the next assembly-description increment. Its selected
 measurements are in `physical/experiments/chip-architecture-results.json`.
@@ -1608,7 +1644,7 @@ earlier routing and architecture receipts remain unchanged. No new synthesis,
 RTL simulation, placement or routing was run; the full foundation regression
 was not rerun for this byte-identical hardware refactor.
 
-The [assembly study](../chip-architecture-study.md#checked-assembly-and-edge-obligations)
+The [assembly study](../physical/chip-architecture-study.md#checked-assembly-and-edge-obligations)
 and `physical/experiments/sram-assembly-results.json` own the new interpretation
 and selected receipt. The remaining structural increment is combinational
 producer/consumer ownership and a mapped locality hypothesis. State names and
@@ -1699,7 +1735,7 @@ ten output bits and the existing clock, without new pipeline state. This is an
 unimplemented interface target, not a measured reduction from 280 inputs.
 Prove its two reads and all updates against the existing projection, map the
 block with its boundary intact, and measure decoder duplication and remaining
-map glue before allocating placement. The [slice study](../map-slice-study.md)
+map glue before allocating placement. The [slice study](../physical/map-slice-study.md)
 owns the interpretation; `physical/experiments/map-slice-results.json` owns
 selected measurements.
 
@@ -1758,7 +1794,7 @@ Failed attempts are preserved: `local-decode-01` stopped at the axiom audit
 and led to replacing native certificate evaluation with kernel arithmetic;
 `local-decode-02` stopped when its negative control did not reject and led to
 correcting both the mutated JSON port and its same-named net binding. Only
-`local-decode-03` is selected. The [tile study](../map-tile-study.md) owns the
+`local-decode-03` is selected. The [tile study](../physical/map-tile-study.md) owns the
 interpretation and `physical/experiments/map-tile-results.json` pins the result.
 Earlier physical receipts and the original tile plan are unchanged. Next cost
 bounded buffer distribution before whole-chip integration or physical work.
@@ -1797,7 +1833,7 @@ emission or physical run was needed.
 
 `distributed-01` stopped before export because generated cell and wire names
 collided in Yosys. Distinct names and a regression resolve that checker defect;
-both attempts are preserved. The [tile study](../map-tile-study.md) owns the
+both attempts are preserved. The [tile study](../physical/map-tile-study.md) owns the
 interpretation and `physical/experiments/map-distribution-results.json` pins the
 selected result. All 43 earlier experiment manifests remain unchanged.
 
@@ -1871,7 +1907,7 @@ mapped pruning and arbitrary-reference-state relation described above.
 `build/validation/tiled-chip-01` preserves initial work and its pre-edit snapshot;
 `tiled-chip-02` preserves the continuation snapshot, proof work, focused tests,
 projection check and diagnostics. All 44 prior experiment manifests remain
-unchanged. The [tile study](../map-tile-study.md) owns interpretation;
+unchanged. The [tile study](../physical/map-tile-study.md) owns interpretation;
 `physical/experiments/tiled-chip-results.json` pins the selected result.
 
 Retain this candidate as verified evidence and defer timing/physical allocation.
@@ -1881,17 +1917,9 @@ Require another bounded full-chip mapping/equivalence screen before allocating
 physical work. The production baseline, previous physical receipts, macro
 locations and half-height corridor are preserved; licensing remains pending.
 
-## Future receipt shape
-
-Record the actual date, study/run identity, source commit or candidate digest,
-evidence location and digest, completion/interruption state, concise result,
-resource accounting when available, and link to the result or current status.
-For outside research, link the source interpretation and adoption decision in the
-owning study. Interpretation-only updates need no fabricated run identity.
-
 ## 2026-09-22 — Combined controller/selection mapping and complete load budget
 
-Completed the [combined boundary comparison](../map-tile-study.md#combined-controller-and-selection--september-22)
+Completed the [combined boundary comparison](../physical/map-tile-study.md#combined-controller-and-selection--september-22)
 without changing Lean definitions, RTL, SRAMs or the execution schedule. An opt-in
 synthesis mode retains 32 storage tiles and combines the surrounding logic.
 The distribution helper counts controller, tile and fixed macro loads, preserves
@@ -2467,7 +2495,7 @@ binds this study; the 43-buffer chip remains the physical control.
 
 ## 2026-09-22 — Bounded compact execution decision
 
-Completed the approved [PIO/PRU-inspired comparison](../compact-execution-study.md)
+Completed the approved [PIO/PRU-inspired comparison](../storage/compact-execution-study.md)
 against one concrete paired-successor machine. One 64×64 single-port SRAM holds
 two atomic 32-row images; each row contains two 32-bit possible successors.
 The selected old response supplies the next row address before the edge, so
@@ -2505,7 +2533,7 @@ binds the decision and exact counterexamples.
 ## 2026-09-22 — Reopened paired execution with full capacity and measured lookup cost
 
 The user challenged abandoning the organization after one encoding failed.
-Completed one [full-capacity revision](../compact-execution-study.md#full-capacity-follow-up):
+Completed one [full-capacity revision](../storage/compact-execution-study.md#full-capacity-follow-up):
 one 512×64 single-port SRAM, two 256-row atomic images, two 32×20-bit FF parameter
 tables and two boot tokens. The parameter projection restores canonical E64
 operations and the 256-position/32-record capacity without assuming recovered
@@ -2552,7 +2580,7 @@ binds report SHA-256 `c6c2087046223e30786f9eafbcb2c325a5e33681a8ca0cb5b4e936a32f
 
 ## 2026-09-22 — Complete paired controller, exact mapped replay and macro timing
 
-Completed the [full-controller gate](../compact-execution-study.md#complete-controller-and-macro-timing)
+Completed the [full-controller gate](../storage/compact-execution-study.md#complete-controller-and-macro-timing)
 in `build/validation/paired-controller-02/report.json`. The opt-in
 `PairedController.lean` emits both banks, two parameter reads, atomic admission,
 boot/current/cached state, counters, captures and resident payload through the
@@ -3064,7 +3092,7 @@ cell/SRAM temperature mismatch remain explicit. Extracted timing, detailed DRC,
 antenna closure and physical power qualification are still open. No RTL,
 pipeline, protocol, backend-default or licensing change occurred.
 
-### 2026-09-23 — Whole-chip qualification of the 27-buffer signal repair
+## 2026-09-23 — Whole-chip qualification of the 27-buffer signal repair
 
 Executed the approved **single** `OpenROAD.GlobalRouting` step as
 `paired-signal-route-01`, with a 600-second/four-CPU/6 GiB cap and all automatic
@@ -3127,7 +3155,7 @@ wire estimates and the fast cell/SRAM temperature mismatch remain explicit.
 No RTL, pipeline, protocol, default-backend or licensing change occurred.
 
 
-### 2026-09-23 — Measured distribution contract and checked family repair plan
+## 2026-09-23 — Measured distribution contract and checked family repair plan
 
 Completed the approved saved-evidence inventory and plan preparation without
 executing another repair or route. The shared `physical_distribution.py` helper
@@ -3808,7 +3836,7 @@ local one-off study scripts remain under ignored `build/`; committing their
 selected summaries does not distribute the raw artifacts. Previous receipts
 and this journal's initial prefix are preserved.
 
-The [integration guide](../branch-integration.md) now distinguishes retained
+The [integration guide](../history/branch-integration.md) now distinguishes retained
 interfaces, references, experimental implementations and open proof/physical
 obligations. The technical index routes readers to current owners instead of
 repeating an obsolete sequence of next steps. The submission plan explicitly
@@ -3871,7 +3899,7 @@ area, clock and shared-capacity budgets. Obtain the two missing parent-net
 measurements and opposite timing checks before selecting a physical candidate.
 Keep the prior admission contract and all numerical budgets intact; any separate
 budget must be declared before execution. No coarse/detailed route is admitted.
-The [study](../physical-organization-study.md) owns interpretation and the
+The [study](../physical/physical-organization-study.md) owns interpretation and the
 [manifest](../../physical/experiments/paired-organization-study-results.json)
 binds the selected report and checks. Supporting receipts are under
 `build/validation/paired-organization-study-01/`.

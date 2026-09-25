@@ -95,7 +95,7 @@ and reconsideration of affected results, not relabeling the old measurements.
 Record the question, primary source and revision/access date when known, relevant
 idea, assumptions, applicability, and adoption decision in the owning study. Name
 what we implemented versus what merely inspired it, and what evidence could
-justify further work. The [timed-component sources](../timed-components.md#sources-and-next-application)
+justify further work. The [timed-component sources](../engine/timed-components.md#sources-and-next-application)
 and [storage primitive review](../storage-primitives.md) are existing examples.
 Do not fabricate missing historical access dates or imply that a source was
 rechecked online during a documentation consolidation.

@@ -1,7 +1,7 @@
 # SRAM and latch feasibility
 
 This records primitive feasibility, scheduling and complete experimental SRAM
-chips for the [storage study](storage-study.md). The emitted flip-flop
+chips for the [storage study](storage/storage-study.md). The emitted flip-flop
 implementations remain the proved references. The hybrid now has a closed-loop
 array/controller refinement in Lean, plus independent RTL/mapped-cell checks
 and pre-layout timing. Full chip translation/binding and physical closure remain
@@ -232,7 +232,7 @@ the schedule above. `test/sram_chip.sv` connects each controller to two instance
 of the actual pinned macro model, with independent reads and broadcast writes.
 This comparison did not promote the experimental backend or add a refinement
 claim. Subsequent proof and ownership work is recorded below and in the
-[assembly study](chip-architecture-study.md#checked-assembly-and-edge-obligations).
+[assembly study](physical/chip-architecture-study.md#checked-assembly-and-edge-obligations).
 
 All three chips include the same serial transport, pin samplers, admission and
 result mailbox. The SRAM cases retain both program banks and all buffering,

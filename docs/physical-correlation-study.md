@@ -9,7 +9,7 @@ discriminators below.
 
 ## Question
 
-The [matched command-split comparison](successor-fetch-study.md#matched-command-split-physical-comparison)
+The [matched command-split comparison](storage/successor-fetch-study.md#matched-command-split-physical-comparison)
 misses 20 ns by 5.049 ns after F2 missed by 5.055 ns. Its worst path contains
 13.704 ns of logic-cell delay and 9.813 ns of buffer delay. Logic alone would fit
 the period. Is the limit the circuit's logic structure, or what the
@@ -207,7 +207,7 @@ are outstanding.
 
 The remaining worst path starts at the `incoming[1]` **input port** and ends in
 the current-word cache, so it includes the 4 ns external input-delay budget. The
-proposed [two-register input pipeline](external-interface.md) would launch that
+proposed [two-register input pipeline](engine/external-interface.md) would launch that
 path from a register instead; whether that closes the family must be measured on
 a design that contains the pipeline, with its latency composed into the protocol
 bounds.
