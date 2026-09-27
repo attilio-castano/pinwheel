@@ -1,0 +1,335 @@
+{
+  "schema": 1,
+  "date": "2026-09-26",
+  "status": "bounded-physical-screen-complete-reference-not-accepted",
+  "decision": "Do not spend the second A full-route attempt on either failed calibrated candidate. Next, prove and test specialization of upload validation away from the execution lookup.",
+  "complete_design_iteration": false,
+  "milestones": {
+    "0_acceptance_audit": "completed",
+    "1_physical_A": "bounded diagnosis completed; A not accepted",
+    "2_correspondence_A": "image/dispatch theorem and host/final-netlist checks complete; timed controller, loader/package and emitted-circuit chain remain incomplete",
+    "3_capacity_B": "not started; reference A is not accepted",
+    "4_clean_replay": "not complete"
+  },
+  "reports": {
+    "audit": {
+      "path": "build/validation/design-iteration-01/audit.json",
+      "sha256": "af5f63557c38d549557a489f75fec28068cc2649c316f0b71e197d656c6c4b9b"
+    },
+    "generation_at_audit": {
+      "path": "build/validation/design-iteration-01/current-source/report.json",
+      "sha256": "edd3d1234892ca8ddbc0a17bc017ca151ed3ce79e19c7905f170060b4f54da4d"
+    },
+    "first_full_attempt": {
+      "path": "build/validation/design-iteration-01/route-run-receipt.json",
+      "sha256": "e9580ef60014cd344bb99eaf299dde566a2278fbd8eababc7d435e948f0cdb4a"
+    },
+    "flat_drc_control": {
+      "path": "build/validation/design-iteration-01/drc-flat-receipt.json",
+      "sha256": "451855e5d7c41b1c36ecedc45711cba5a7a4b2a00ba6fcb00ba523b0aee226c8"
+    },
+    "drc_classification": {
+      "path": "build/validation/design-iteration-01/drc-classification.json",
+      "sha256": "aaa2b6d67a486569cca58c8c66736612a61904d9826f69ff403d8095c3f301c9"
+    },
+    "wire_fit": {
+      "path": "build/validation/design-iteration-01/wire-rc-fit.json",
+      "sha256": "850148cf0a28760889226a64d11c51365a844eb42ea9e4d38e6e19296d297c86"
+    },
+    "wire_fit_crosscheck": {
+      "path": "build/validation/design-iteration-01/wire-fit-reconciliation.json",
+      "sha256": "7e83a5780b2c4f6689afb875379c50bcbb1a39c727a908ffd69935bffff77e10"
+    },
+    "extraction_diagnosis": {
+      "path": "build/validation/design-iteration-01/extraction-comparison.json",
+      "sha256": "75886d6ee9e24877e7e403da32a03d3cc5012f4d38127e39121865d07f2d06b1"
+    },
+    "failed_calibrated_screen": {
+      "path": "build/validation/design-iteration-01/calibrated-receipt.json",
+      "sha256": "889c52e0d62f29b44c7202378c1e796595f53c1311631139cf6202c79a967a07"
+    },
+    "protected_input_screen": {
+      "path": "build/validation/design-iteration-01/calibrated-02-receipt.json",
+      "sha256": "8cd7316d3c5b964d910ea1d8f0775d5aa86b4515e362861ebc06d0617049b5df"
+    },
+    "protected_input_timing": {
+      "path": "build/validation/design-iteration-01/calibrated-timing/report.json",
+      "sha256": "2300921a2e5a850f585c9ef92e14ca18a849ec69ffd6f18f2a70590ba9314ccb"
+    },
+    "protected_input_verification": {
+      "path": "build/validation/design-iteration-01/calibrated-verification-02/report.json",
+      "sha256": "65c8fb20ec797c3a74ad18fba96e8356d8d6742c479dd8265af94f9c333f3585"
+    },
+    "editable_input_screen": {
+      "path": "build/validation/design-iteration-01/calibrated-03-receipt.json",
+      "sha256": "04f6553939cbe707a5e431e26effa7745c3ef65cc93a2b8bb5f5b3a901ec1f5f"
+    },
+    "editable_input_timing": {
+      "path": "build/validation/design-iteration-01/calibrated-timing-03/report.json",
+      "sha256": "bfa294132a2cf04e58d0dccc5c509847144c25e8a952be0225b54499245ed809"
+    },
+    "editable_input_verification": {
+      "path": "build/validation/design-iteration-01/calibrated-verification-03/report.json",
+      "sha256": "1f9f070d871555a1628846f39eacca566b4f49da69b2059e01f0a922ea35fc1e"
+    },
+    "initial_final_netlist_check": {
+      "path": "build/validation/design-iteration-01/post-route-check/report.json",
+      "sha256": "bbeca2fd875da537b2cbcda5885a3cc9393c4e820f14194bfbe27561a91341f9"
+    },
+    "final_netlist_check": {
+      "path": "build/validation/design-iteration-01/post-route-check-02/report.json",
+      "sha256": "c58d6a4baae1c91024dd44c21b5bf64286f373c7a452fa6a31ece5094f5a941e"
+    },
+    "next_architecture_diagnosis": {
+      "path": "build/validation/design-iteration-01/rejection-cone-diagnosis.json",
+      "sha256": "31ea2fcbea11f20a3713538a3c639a076e0f3533dfb7528b51f824a6b999c034"
+    },
+    "paired_image_gate": {
+      "path": "build/validation/paired-image-02/report.json",
+      "sha256": "897fa4cfef15e1c9b1b35e52f8c71510a16bdbce731e3969932bd2947baab2a0"
+    },
+    "paired_host_demo": {
+      "path": "build/host/design-iteration-paired-01/report.json",
+      "sha256": "22cd438a96bf333798513efd8acb63fe1f5a6b1c5637105dc960f502bfa0febf"
+    },
+    "foundation": {
+      "path": "build/validation/design-iteration-foundation-01/report.json",
+      "sha256": "edc0580456b68f1cb416a6eed7964780544a9edf4ff982e2fc006a98f871f5c9"
+    }
+  },
+  "artifacts": {
+    "starting_odb": {
+      "path": "build/validation/route-import-fix-01/candidate/repaired.odb",
+      "sha256": "ea546b4e6a159d56e26e02329afcc8f18d54b69152e20097b2d39977b405cbd6"
+    },
+    "routed_odb": {
+      "path": "build/validation/design-iteration-01/a-route-01/10-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "3806ebf3cec21c0f71d7b6fc3b412f6033ae79d4ea78fc20e35b43bcc2073c9f"
+    },
+    "final_netlist": {
+      "path": "build/validation/design-iteration-01/a-route-01/09-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "aefc6d71ddd518a0e242ab79f7f27b59eb5b921365f31a35f4764e02127d3cdf"
+    },
+    "final_gds": {
+      "path": "build/validation/design-iteration-01/a-route-01/15-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "b303011a054439cc3e905ff5b438f7d95b9e822f48d4f672d487b7f33cbba30c"
+    },
+    "final_spef": {
+      "path": "build/validation/design-iteration-01/a-route-01/11-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "a5e41ae2110aa1779faea4ca9f3aa581965e3c421c88cd218ae0c45a95b37c91"
+    },
+    "flat_drc": {
+      "path": "build/validation/design-iteration-01/drc-flat/report.json",
+      "sha256": "7534db157e50e6f6b76e4900a82b006167de4bb2ebaff6fc060b96b24cce963c"
+    },
+    "host_rtl": {
+      "path": "build/host/design-iteration-paired-01/design.sv",
+      "sha256": "132bbaf52de2cdca298734160e451580da767252fe7c4db438a4f4c970510aa7"
+    }
+  },
+  "physical_A": {
+    "detailed_route_drc_errors": 0,
+    "antenna_errors": 0,
+    "critical_disconnections": 0,
+    "noncritical_disconnected_unused_inputs": 8,
+    "lvs": "circuits match uniquely",
+    "hierarchical_magic_markers": 230225,
+    "flat_import_magic_errors": 0,
+    "slow_setup_ns": -3.190857446360406,
+    "fast_screen_hold_ns": 0.15123425162472817,
+    "max_electrical_violations": {
+      "cap": 34,
+      "slew": 94,
+      "fanout": 66
+    },
+    "functional_area_um2": 362419.8624,
+    "full_flow_exit": "failed; separate same-GDS DRC control resolves import artifact, not timing",
+    "qualified_fast_corner": false
+  },
+  "screened_candidates": {
+    "protected_inputs": {
+      "admitted_to_full_route": false,
+      "physical_qualification": false,
+      "timing_model": "chip-fitted coarse estimates; not final extraction",
+      "slow_setup_ns": -2.63215,
+      "fast_screen_hold_ns": 0.161329,
+      "slow_electrical": {
+        "cap": 1,
+        "slew": 9,
+        "fanout": 2
+      },
+      "reported_overflow": 201,
+      "area_um2": 367832.2176,
+      "added_cells": 284,
+      "resized_cells": 3,
+      "moved_original_cells": 236,
+      "protected_geometry_and_signal_function_checks": "passed"
+    },
+    "editable_signal_inputs": {
+      "admitted_to_full_route": false,
+      "physical_qualification": false,
+      "timing_model": "chip-fitted coarse estimates; not final extraction",
+      "slow_setup_ns": -2.57173,
+      "fast_screen_hold_ns": 0.155004,
+      "slow_electrical": {
+        "cap": 0,
+        "slew": 4,
+        "fanout": 0
+      },
+      "reported_overflow": 202,
+      "area_um2": 368178.768,
+      "added_cells": 305,
+      "resized_cells": 6,
+      "moved_original_cells": 271,
+      "protected_geometry_and_signal_function_checks": "passed"
+    }
+  },
+  "software_validation": {
+    "python_tests": 510,
+    "python_skips": 2,
+    "python_log_sha256": "722fb7fae638b31361940f27f13c06ec033344e63e45b693d841db0c353837c8",
+    "image_positive_cases": 6,
+    "image_kernel_proved_rejections": 10,
+    "host_certified_uploads": 8,
+    "host_rtl_sha256": "132bbaf52de2cdca298734160e451580da767252fe7c4db438a4f4c970510aa7",
+    "final_netlist_edges": 331401,
+    "final_netlist_frames": 1517,
+    "foundation_modules": 207,
+    "foundation_suites": 32,
+    "audited_declarations": 15471,
+    "audited_theorems": 7733
+  },
+  "allocation": {
+    "cad_seconds_charged": 2640.603,
+    "cad_seconds_limit": 28800,
+    "full_flow_attempts_used": 1,
+    "full_flow_attempts_limit": 4,
+    "A_full_flow_attempts_used": 1,
+    "A_full_flow_attempts_limit": 2,
+    "A_configurations_used": 3,
+    "A_configuration_limit": 3,
+    "all_owned_containers_absent": true,
+    "ledger": [
+      {
+        "path": "build/validation/design-iteration-01/calibrated-02-receipt.json",
+        "sha256": "8cd7316d3c5b964d910ea1d8f0775d5aa86b4515e362861ebc06d0617049b5df",
+        "cad_seconds": 114.569,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-03-receipt.json",
+        "sha256": "04f6553939cbe707a5e431e26effa7745c3ef65cc93a2b8bb5f5b3a901ec1f5f",
+        "cad_seconds": 110.074,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-receipt.json",
+        "sha256": "889c52e0d62f29b44c7202378c1e796595f53c1311631139cf6202c79a967a07",
+        "cad_seconds": 67.185,
+        "status": "failed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-timing-03-receipt.json",
+        "sha256": "78bf6e1935241fbb04da047b025b301eebbe6be024b27c704a48760c78586273",
+        "cad_seconds": 7.859,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-timing-receipt.json",
+        "sha256": "22c74dbe4d3e2ca51263d138bf6586a86ef86526b9a31eb5d5fbb8d1c7e82c31",
+        "cad_seconds": 7.842,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/drc-flat-receipt.json",
+        "sha256": "451855e5d7c41b1c36ecedc45711cba5a7a4b2a00ba6fcb00ba523b0aee226c8",
+        "cad_seconds": 54.52,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/route-preflight-receipt.json",
+        "sha256": "6f63ff30145734bf5417ce0d4cc19c548c129592bf030e3188643af5b6809167",
+        "cad_seconds": 0,
+        "status": "completed",
+        "container_state": "absent",
+        "full_flow_attempts": 0
+      },
+      {
+        "path": "build/validation/design-iteration-01/route-run-receipt.json",
+        "sha256": "e9580ef60014cd344bb99eaf299dde566a2278fbd8eababc7d435e948f0cdb4a",
+        "cad_seconds": 2122.352,
+        "status": "failed",
+        "container_state": "absent",
+        "full_flow_attempts": 1
+      },
+      {
+        "path": "build/validation/design-iteration-01/current-source/report.json",
+        "sha256": "edd3d1234892ca8ddbc0a17bc017ca151ed3ce79e19c7905f170060b4f54da4d",
+        "cad_seconds": 1.969,
+        "status": "passed",
+        "full_flow_attempts": 0,
+        "accounting": "recorded CAD/check duration"
+      },
+      {
+        "path": "build/validation/design-iteration-01/post-route-check/report.json",
+        "sha256": "bbeca2fd875da537b2cbcda5885a3cc9393c4e820f14194bfbe27561a91341f9",
+        "cad_seconds": 1.571,
+        "status": "failed",
+        "full_flow_attempts": 0,
+        "accounting": "recorded CAD/check duration"
+      },
+      {
+        "path": "build/validation/design-iteration-01/post-route-check-02/report.json",
+        "sha256": "c58d6a4baae1c91024dd44c21b5bf64286f373c7a452fa6a31ece5094f5a941e",
+        "cad_seconds": 41.829,
+        "status": "passed",
+        "full_flow_attempts": 0,
+        "accounting": "recorded CAD/check duration"
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-verification-02/report.json",
+        "sha256": "65c8fb20ec797c3a74ad18fba96e8356d8d6742c479dd8265af94f9c333f3585",
+        "cad_seconds": 2.788,
+        "status": "passed",
+        "full_flow_attempts": 0,
+        "accounting": "recorded CAD/check duration"
+      },
+      {
+        "path": "build/validation/design-iteration-01/calibrated-verification-03/report.json",
+        "sha256": "1f9f070d871555a1628846f39eacca566b4f49da69b2059e01f0a922ea35fc1e",
+        "cad_seconds": 2.948,
+        "status": "passed",
+        "full_flow_attempts": 0,
+        "accounting": "recorded CAD/check duration"
+      },
+      {
+        "path": "build/host/design-iteration-paired-01/report.json",
+        "sha256": "22cd438a96bf333798513efd8acb63fe1f5a6b1c5637105dc960f502bfa0febf",
+        "cad_seconds": 105.097,
+        "status": "completed",
+        "full_flow_attempts": 0,
+        "accounting": "entire host demonstration, including Lean checks, conservatively charged as CAD"
+      }
+    ]
+  },
+  "boundaries": [
+    "Image certificate covers canonical bytes, exact paired upload and every finite successor-choice history; not timed controller/loader/package/emitter refinement.",
+    "Post-route functional simulation uses pinned functional cell and SRAM models; no SDF and no silicon evidence.",
+    "Fast corner mixes cells at -40 C with SRAM at -55 C, both 1.32 V; no qualified conservative bound.",
+    "Magic full DRC passes on exact GDS under flat import; no rule waiver or macro blackbox. KLayout DRC/XOR and flow EQY were disabled.",
+    "Inherited prepared design/tool/PDK dependencies are explicit read-only worktree paths; no clean-source physical replay claimed.",
+    "No B capacity implementation or accepted complete iteration."
+  ]
+}

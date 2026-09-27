@@ -1,0 +1,336 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "fixture-qualified-chip-intake-prepared",
+  "study": "docs/physical/live-closure-results.md",
+  "protocol": {
+    "path": "docs/physical/live-closure-experiment.md",
+    "sha256": "8ad16cb55ca31e007074a7f17431a1699dd49010d5c309def52a8db79d05093b"
+  },
+  "predecessor": {
+    "path": "physical/experiments/protection-closure-results.json",
+    "sha256": "fdad80939061f74afc524fa6fce082825c7108fcde15b091160201a003b02879"
+  },
+  "fixture_qualified": true,
+  "chip_physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "new_chip_candidate": false,
+  "new_chip_detailed_route": false,
+  "decision": "Qualify exact-chip native runtime repair coverage and explicit protection groups before another A attempt.",
+  "fixture": {
+    "recipe": {
+      "path": "build/validation/live-closure-01/fixture-06/fixture.tcl",
+      "sha256": "ba01f8a22ebf9bd18018c66d4c5be657f23cfd22f7ab2fa7d5e19c295b9145b2"
+    },
+    "independent_check": {
+      "path": "build/validation/live-closure-01/checks-03/receipt.json",
+      "sha256": "8dd9ac607986e7c8bed069b5e52bc0735eeaae1f60779646ff91bc41e9f8c937"
+    },
+    "source_cells": 18,
+    "final_cells": 23,
+    "added_cell_area_um2": 43.5456,
+    "identity": {
+      "original_cells": 18,
+      "added_buffers": {
+        "sg13cmos5l_buf_1": 4,
+        "sg13cmos5l_buf_4": 1
+      },
+      "added_instances": [
+        "owned_branch",
+        "wire1",
+        "wire2",
+        "wire3",
+        "wire4"
+      ],
+      "buffer_contracted_connectivity": true
+    },
+    "corners": {
+      "fast": {
+        "hold_ns": 0.044568378,
+        "setup_ns": 16.38908577,
+        "cap_pf": 0.092448458,
+        "cap_limit_pf": 0.300000012,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0,
+        "timed_endpoints": 12
+      },
+      "typ": {
+        "hold_ns": 0.127188802,
+        "setup_ns": 15.478431702,
+        "cap_pf": 0.092146114,
+        "cap_limit_pf": 0.300000012,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0,
+        "timed_endpoints": 12
+      },
+      "slow": {
+        "hold_ns": 0.093724996,
+        "setup_ns": 14.107366562,
+        "cap_pf": 0.091901883,
+        "cap_limit_pf": 0.300000012,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0,
+        "timed_endpoints": 12
+      }
+    },
+    "protection_pairs_preserved": true,
+    "original_geometry_preserved": true,
+    "clock_routes_preserved": true,
+    "noedit_runtime_repeatability": true,
+    "native_drc_violations": 0,
+    "antenna_violations": 0,
+    "grid_overflow": 0,
+    "fresh_extraction": true,
+    "complete_signal_route_coverage": true,
+    "power_terminal_bindings": true,
+    "negative_controls": {
+      "actual_native_ownership_failure": "Separated diode and protected receiver: 2",
+      "actual_native_capacitance_failure": "Electrical violations remain",
+      "changed_clock": "Changed connectivity after buffer contraction",
+      "missing_parasitics": "Incomplete extracted parasitics",
+      "source_spef_rejected_for_new_nets": true
+    },
+    "limits": "Sparse standard-cell fixture, explicit pair contract and SDC. No chip PDN, SRAM, full-rule DRC/LVS or silicon result."
+  },
+  "chip_intake": {
+    "path": "build/validation/live-closure-01/chip-intake.json",
+    "sha256": "bbe4dc80453c7c09d96d5cf7a99c958c06d5e5a7d5febf0038c3566f37ad39e5"
+  },
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 5663.37,
+    "this_continuation_seconds": 26.259,
+    "cumulative_cad_seconds": 5689.629,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "reports": {
+    "checks-01/receipt.json": {
+      "path": "build/validation/live-closure-01/checks-01/receipt.json",
+      "sha256": "4525f93ed76331dbced3e6425807e1a4c2d5bfd762f2167c92ad856e47808fa7"
+    },
+    "checks-02/receipt.json": {
+      "path": "build/validation/live-closure-01/checks-02/receipt.json",
+      "sha256": "0b5afa57153e9b5e55b99c3891eed4bb9f91bd07d4c2f2b15157babe7e0196ee"
+    },
+    "checks-03/receipt.json": {
+      "path": "build/validation/live-closure-01/checks-03/receipt.json",
+      "sha256": "8dd9ac607986e7c8bed069b5e52bc0735eeaae1f60779646ff91bc41e9f8c937"
+    },
+    "fixture-01/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-01/receipt.json",
+      "sha256": "d452ad9c98ec61c7455f7630311a031452e5570b2fac45281ad29e42dd5fffa5"
+    },
+    "fixture-02/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-02/receipt.json",
+      "sha256": "2efe3f2380fe9ba4125a902e20cff53511b86d57a2d001330925420c0e376167"
+    },
+    "fixture-03/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-03/receipt.json",
+      "sha256": "6080db110fe4cb8340911a9231845e0ee01fb647a9d0964424b8c6f100b4b0fc"
+    },
+    "fixture-04/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-04/receipt.json",
+      "sha256": "866770bd52a6db135c404af96d4e0d78d2c33f1195a70cb81d3d182a56f08589"
+    },
+    "fixture-05/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-05/receipt.json",
+      "sha256": "1892de00935775f113c4da63e9439665511bc6e405b6a33a4adfe57bee33c6cd"
+    },
+    "fixture-06/receipt.json": {
+      "path": "build/validation/live-closure-01/fixture-06/receipt.json",
+      "sha256": "f1aa5011ef20a944a9dd17c027f956443e09a9a87e1d6bb5662fa89ac968a6b6"
+    },
+    "inspect/receipt.json": {
+      "path": "build/validation/live-closure-01/inspect/receipt.json",
+      "sha256": "ff1ac66873b101b90158eddfda8492f3d1484783d8ac57c096469dbcb2880102"
+    },
+    "readback-01/receipt.json": {
+      "path": "build/validation/live-closure-01/readback-01/receipt.json",
+      "sha256": "7e913b161e89943c35db73d0b93d9fc994cfd77a96fb948907c8da234f1fce99"
+    },
+    "check-fixture-02.py": {
+      "path": "build/validation/live-closure-01/check-fixture-02.py",
+      "sha256": "5da5f87bed96594713040940a0fc4ffb4e108005a217965c62996f1594ff564d"
+    },
+    "check-fixture-03.py": {
+      "path": "build/validation/live-closure-01/check-fixture-03.py",
+      "sha256": "3971bc42834078b86e1c358e8f2ca4713952d9b3d9d7c26689ee0e0e6bc3ace4"
+    },
+    "check-fixture.py": {
+      "path": "build/validation/live-closure-01/check-fixture.py",
+      "sha256": "11a18c6376cd536661c9f7c4c803dc92a30a328964a10eb89b847417bbd250de"
+    },
+    "launch.py": {
+      "path": "build/validation/live-closure-01/launch.py",
+      "sha256": "afb41c3b1bbc056d309f46d966b212079f18de10cfe855f3ba67b6380bdbc60e"
+    },
+    "prepare-chip-intake.py": {
+      "path": "build/validation/live-closure-01/prepare-chip-intake.py",
+      "sha256": "95145ce608e715a9e6de1cb2756f45d265fd068317a306947fd0fb07fe7b4f4e"
+    },
+    "publish-record.py": {
+      "path": "build/validation/live-closure-01/publish-record.py",
+      "sha256": "852045d2f95aaab6bcb2b89e83f1094e856783b44366a5356aef23aada9c1be5"
+    },
+    "chip-intake.json": {
+      "path": "build/validation/live-closure-01/chip-intake.json",
+      "sha256": "bbe4dc80453c7c09d96d5cf7a99c958c06d5e5a7d5febf0038c3566f37ad39e5"
+    },
+    "readback-01/worker.py": {
+      "path": "build/validation/live-closure-01/readback-01/worker.py",
+      "sha256": "db4fb07357b1da2139f5ab421463c7452c566479674328521723247079dffc37"
+    },
+    "readback-01/readback.py": {
+      "path": "build/validation/live-closure-01/readback-01/readback.py",
+      "sha256": "ebf91b1297ddb34780527f6130c404072a56b854ce9708a8989949d996aaf146"
+    },
+    "inspect/worker.py": {
+      "path": "build/validation/live-closure-01/inspect/worker.py",
+      "sha256": "235b04b0da9d939a443e0ea889f9ea281652eba14200531c662c7fd743f3a214"
+    },
+    "inspect/grt.tcl": {
+      "path": "build/validation/live-closure-01/inspect/grt.tcl",
+      "sha256": "55b64e4725fb0e58e8ca56945f2858e6f0c88c0a183252c682b63f6675e22681"
+    },
+    "inspect/dpl.tcl": {
+      "path": "build/validation/live-closure-01/inspect/dpl.tcl",
+      "sha256": "4ffaf3a19cbc8bb4bd0bdd933a688defdc343027ee75a7c48645dc1e60750403"
+    },
+    "inspect/inspect.tcl": {
+      "path": "build/validation/live-closure-01/inspect/inspect.tcl",
+      "sha256": "fdc4bf7d2be04474f4be5d1944ef0086aa30b96d9235fe93a346a013e42912fd"
+    },
+    "fixture-02/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-02/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-02/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-02/fixture.tcl",
+      "sha256": "6255556770222c1d2b19dc6e47626bf7f8f04d38a4dd2eeee90837ee6e1f7dfe"
+    },
+    "fixture-02/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-02/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-02/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-02/readback.py",
+      "sha256": "b33e8600ae65f33dfc063e8782a4026e48deec62c2fa34d40dc714fdd05a7e5c"
+    },
+    "fixture-05/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-05/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-05/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-05/fixture.tcl",
+      "sha256": "360390a070122d0bb83d173f40e59e0352cc2e48fa59205c35a86fdc8cb684bc"
+    },
+    "fixture-05/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-05/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-05/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-05/readback.py",
+      "sha256": "516baee3015370c026c9cbc80aeb12460ea175a97a2adabef5b2c940cefd3066"
+    },
+    "fixture-04/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-04/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-04/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-04/fixture.tcl",
+      "sha256": "32731d4fbf36e360aa20a92a6eb139677bf02f300950d40dd951c6ad5774cad1"
+    },
+    "fixture-04/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-04/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-04/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-04/readback.py",
+      "sha256": "516baee3015370c026c9cbc80aeb12460ea175a97a2adabef5b2c940cefd3066"
+    },
+    "fixture-03/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-03/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-03/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-03/fixture.tcl",
+      "sha256": "7d55a156a087673c24b45ca25291355e6b9a4d6c53dc2c8e03665ed60623396b"
+    },
+    "fixture-03/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-03/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-03/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-03/readback.py",
+      "sha256": "516baee3015370c026c9cbc80aeb12460ea175a97a2adabef5b2c940cefd3066"
+    },
+    "fixture-06/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-06/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-06/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-06/fixture.tcl",
+      "sha256": "ba01f8a22ebf9bd18018c66d4c5be657f23cfd22f7ab2fa7d5e19c295b9145b2"
+    },
+    "fixture-06/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-06/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-06/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-06/readback.py",
+      "sha256": "516baee3015370c026c9cbc80aeb12460ea175a97a2adabef5b2c940cefd3066"
+    },
+    "fixture-01/worker.py": {
+      "path": "build/validation/live-closure-01/fixture-01/worker.py",
+      "sha256": "301782255e8f17228de632033373de4b13a29bb9d07e21a3cc0dd09e7ae4f364"
+    },
+    "fixture-01/fixture.tcl": {
+      "path": "build/validation/live-closure-01/fixture-01/fixture.tcl",
+      "sha256": "37f4a1f18aa3637cf98e3e1b739b822dae4ab42e2738a3eb6ddad944b9201cbd"
+    },
+    "fixture-01/fixture.v": {
+      "path": "build/validation/live-closure-01/fixture-01/fixture.v",
+      "sha256": "3edbbb49946d2398d0f215b819981da92e0f5435d5d06062993a83247d97cb90"
+    },
+    "fixture-01/readback.py": {
+      "path": "build/validation/live-closure-01/fixture-01/readback.py",
+      "sha256": "66707454c8d17b477629c689e96216ac26d601b2179d8943e066d19479a4e72a"
+    },
+    "fixture-06/output/source.odb": {
+      "path": "build/validation/live-closure-01/fixture-06/output/source.odb",
+      "sha256": "b5f904bfb2235b195695f2b8db5423b159f902e834b6e4700c59e0ba29b6f931"
+    },
+    "fixture-06/output/control.odb": {
+      "path": "build/validation/live-closure-01/fixture-06/output/control.odb",
+      "sha256": "1eedc44705dd4e8ba7840c55de311886ed9f564bf897ad65613d910493531789"
+    },
+    "fixture-06/output/repaired.odb": {
+      "path": "build/validation/live-closure-01/fixture-06/output/repaired.odb",
+      "sha256": "c4125d610c24afcf40128ca5ef986c9709e51c34539fe22bb2ecbc8964c36b65"
+    },
+    "fixture-06/output/final.odb": {
+      "path": "build/validation/live-closure-01/fixture-06/output/final.odb",
+      "sha256": "de16df0b485482bba39d5dd31b088dbe8f0fbc05b3d2703b0f0142bafd32adff"
+    },
+    "fixture-06/output/final.v": {
+      "path": "build/validation/live-closure-01/fixture-06/output/final.v",
+      "sha256": "b926fde62972b7c223d64a35689282ba0a43b1970a58cf60c839a608b81176e2"
+    },
+    "fixture-06/output/repaired.spef": {
+      "path": "build/validation/live-closure-01/fixture-06/output/repaired.spef",
+      "sha256": "63718fcb6d787db87d3e55343a2fcde6d3b5d348969ca50bf1a40888a8dd74d2"
+    }
+  },
+  "remaining_gates": [
+    "Exact-chip routing-state/repair-tree and protection-group integration control.",
+    "Concrete admitted candidate before any additional A full-flow allocation.",
+    "Five electrical failures in the third chip layout remain unchanged.",
+    "Compatible fast standard-cell/SRAM characterization or a conservative bound.",
+    "Complete paired timed controller/loading/package refinement, accepted A, B and clean-source replay."
+  ]
+}

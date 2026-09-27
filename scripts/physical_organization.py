@@ -76,7 +76,21 @@ class Library:
                 ranges = re.findall(r'\bpin\s*\(\s*'+re.escape(base)+r'\[(\d+):(\d+)\]\s*\)', bus)
                 if len(ranges) != 1 or not min(map(int,ranges[0])) <= int(index) <= max(map(int,ranges[0])):
                     raise ValueError('Unresolved bus pin range')
-                header = _header(bus)
+                # A bus supplies defaults; range and individual-bit groups can
+                # override them. SRAM address pins use different capacitances
+                # per bit, even though a common range owns their timing tables.
+                headers = [_header(bus), _header(_group(body, 'pin',
+                    f'{base}[{ranges[0][0]}:{ranges[0][1]}]'))]
+                if re.search(r'\bpin\s*\(\s*"?'+re.escape(pin)+r'"?\s*\)',bus):
+                    headers.append(_header(_group(bus,'pin',pin)))
+                attributes = {}
+                for source in headers:
+                    seen = set()
+                    for match in re.finditer(r'\b([A-Za-z_]\w*)\s*(?::[^;]+|\([^{};]*\))\s*;',source):
+                        attribute = match[1]
+                        if attribute in seen:raise ValueError('Ambiguous inherited pin attribute')
+                        seen.add(attribute);attributes[attribute] = match[0]
+                header = '\n'.join(attributes.values())
             else:
                 header = _header(_group(body, 'pin', pin))
             self.pins[key] = header

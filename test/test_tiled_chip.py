@@ -32,6 +32,13 @@ class FanoutBudgetChecks(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertIn('requires the combined boundary', result.stderr)
 
+    def test_flat_comparison_requires_aggregate_organization(self):
+        result = subprocess.run([sys.executable, '-B', str(ROOT / 'scripts/check-tiled-chip.py'),
+                                 '--tag', 'invalid-flat-comparison', '--compare-flat'],
+                                cwd=ROOT, capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('requires the combined organization', result.stderr)
+
 
 def cell(kind, pins, outputs):
     return {'type': kind, 'connections': deepcopy(pins),

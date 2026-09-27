@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "assessment-completed-native-restart-rejected",
+  "study": "docs/physical/protection-closure-results.md",
+  "protocol": {
+    "path": "docs/physical/protection-closure-experiment.md",
+    "sha256": "4a5b82deac3095190bbe26dd39228e5647afa1118926390e02b43638f310cc6a"
+  },
+  "predecessor": {
+    "path": "physical/experiments/transport-split-results.json",
+    "sha256": "b2caf796124739d5c450d73437053afaae32b689756ae509424afceac64f086c"
+  },
+  "physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "candidate_emitted": false,
+  "new_detailed_route": false,
+  "decision": "Defer blanket reserve insertion. Prefer qualifying electrical repair while native routing state is live, with a small control before any further whole-chip route. The attempted checkpoint restart is rejected.",
+  "source_database": {
+    "path": "build/validation/transport-detailed-01/a-route-03/05-odb-reportdisconnectedpins/tt_um_pinwheel.odb",
+    "sha256": "43eb960eb037aab867453f10437388d16d671fb2568aa9a67df56b1b551d53f4"
+  },
+  "source_spef": {
+    "path": "build/validation/transport-detailed-01/a-route-03/final/spef/nom/tt_um_pinwheel.nom.spef",
+    "sha256": "52cb33331e4030e3bacbbb71b2fa2241725a9ea658212d8c6c2203e7e04f5888"
+  },
+  "source_geometry_and_signal_identity": true,
+  "source_electrical_failures_reproduced": {
+    "nom_fast_1p32V_m40C": {
+      "fanout": {
+        "paired_balanced_100_21/X": {
+          "limit": 8.0,
+          "actual": 12.0
+        },
+        "paired_balanced_133_4/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_140_0/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_19_5/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        }
+      },
+      "capacitance_pf": 0.303477138,
+      "slew_violations": 0
+    },
+    "nom_slow_1p08V_125C": {
+      "fanout": {
+        "paired_balanced_100_21/X": {
+          "limit": 8.0,
+          "actual": 12.0
+        },
+        "paired_balanced_133_4/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_140_0/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_19_5/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        }
+      },
+      "capacitance_pf": 0.301837444,
+      "slew_violations": 0
+    },
+    "nom_typ_1p20V_25C": {
+      "fanout": {
+        "paired_balanced_100_21/X": {
+          "limit": 8.0,
+          "actual": 12.0
+        },
+        "paired_balanced_133_4/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_140_0/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        },
+        "paired_balanced_19_5/X": {
+          "limit": 8.0,
+          "actual": 9.0
+        }
+      },
+      "capacitance_pf": 0.302570105,
+      "slew_violations": 0
+    }
+  },
+  "native_probe_status": "native-restart-rejected",
+  "native_signal": 11,
+  "diagnosis": "The detailed-routing estimator mode requests the global-router net/pin map. The restart reads ODB and SPEF but does not initialize that runtime map; the pinned lookup dereferences the missing net. This diagnoses the attempted initialization sequence, not the feasibility of a live-process repair.",
+  "stack": [
+    "grt::GlobalRouter::getPinGridPositions",
+    "rsz::Resizer::makeBufferedNetGroute",
+    "rsz::RepairDesign::repairNet"
+  ],
+  "reserve_policy_costs": {
+    "7": {
+      "maximum_functional_inputs": 7,
+      "reserve_under_limit_eight": 1,
+      "affected_nets": 905,
+      "minimum_added_buffers": 905,
+      "minimum_buf1_area_um2": 6568.128,
+      "buf4_area_at_minimum_count_um2": 13136.256,
+      "minimum_added_area_percent": 1.75020937510864
+    },
+    "4": {
+      "maximum_functional_inputs": 4,
+      "reserve_under_limit_eight": 4,
+      "affected_nets": 1044,
+      "minimum_added_buffers": 1949,
+      "minimum_buf1_area_um2": 14145.0624,
+      "buf4_area_at_minimum_count_um2": 28290.1248,
+      "minimum_added_area_percent": 3.7692354387698774
+    },
+    "3": {
+      "maximum_functional_inputs": 3,
+      "reserve_under_limit_eight": 5,
+      "affected_nets": 2266,
+      "minimum_added_buffers": 4143,
+      "minimum_buf1_area_um2": 30068.2368,
+      "buf4_area_at_minimum_count_um2": 60136.4736,
+      "minimum_added_area_percent": 8.012284465276348
+    },
+    "2": {
+      "maximum_functional_inputs": 2,
+      "reserve_under_limit_eight": 6,
+      "affected_nets": 2760,
+      "minimum_added_buffers": 8880,
+      "minimum_buf1_area_um2": 64447.488,
+      "buf4_area_at_minimum_count_um2": 128894.976,
+      "minimum_added_area_percent": 17.173325139187536
+    }
+  },
+  "reports": {
+    "analysis.json": {
+      "path": "build/validation/protection-closure-01/analysis.json",
+      "sha256": "ca68fda664e289be6669bbd9d6d56445f3d01087f61ded88837b5fd78f6e4588"
+    },
+    "analyze.py": {
+      "path": "build/validation/protection-closure-01/analyze.py",
+      "sha256": "5d869b99a98570097092c5e56f3f5f58f4ef09f8dd1dcaf8f6fe73e468cd0934"
+    },
+    "launch-02.py": {
+      "path": "build/validation/protection-closure-01/launch-02.py",
+      "sha256": "8eb44843fdc96723cd23479327aef454f9e9bbd5a41865579030f42fcd66c77f"
+    },
+    "launch.py": {
+      "path": "build/validation/protection-closure-01/launch.py",
+      "sha256": "7b459f581cfb62d952aea4d9c30b5268faf061d99552f8e8b33d6734416d6b17"
+    },
+    "native-02-receipt.json": {
+      "path": "build/validation/protection-closure-01/native-02-receipt.json",
+      "sha256": "65f868ee9f6134c642e0da69857de1dae199603aa5da33e840a388a09e69b281"
+    },
+    "native-02.tcl": {
+      "path": "build/validation/protection-closure-01/native-02.tcl",
+      "sha256": "a1fa3413141a83783855ed4584cc63b8de914a6d39ea9fb5df50c4b85c169249"
+    },
+    "native-receipt.json": {
+      "path": "build/validation/protection-closure-01/native-receipt.json",
+      "sha256": "03fcb4345e15b0762077eda800265bec4799170a9ba163623770534a5a63af96"
+    },
+    "native.tcl": {
+      "path": "build/validation/protection-closure-01/native.tcl",
+      "sha256": "38b9b91cbd92bf2f5c67f8fec558181f217bae19e1b3a09d9fd31e92a649988d"
+    },
+    "prepare-probe.py": {
+      "path": "build/validation/protection-closure-01/prepare-probe.py",
+      "sha256": "db23f4ec393347957ebb8a10161d4f2d4fefb4ad41de34bb47d1e1585d4eab1b"
+    },
+    "prepare.py": {
+      "path": "build/validation/protection-closure-01/prepare.py",
+      "sha256": "5573f448aa5ff9f6926a995921e6d4bf0660f2563ad31e79753292ee05cf3efa"
+    },
+    "probe-request-02.json": {
+      "path": "build/validation/protection-closure-01/probe-request-02.json",
+      "sha256": "c4e275727cb847a0721e1f0cf4161de55a74e6532b8d4466b72231e8d835808e"
+    },
+    "probe-request.json": {
+      "path": "build/validation/protection-closure-01/probe-request.json",
+      "sha256": "7eec0eb7afb238dd0ce86b954999bb30b4f713a610efeacdc1f53b209d343780"
+    },
+    "publish-record.py": {
+      "path": "build/validation/protection-closure-01/publish-record.py",
+      "sha256": "219cc4f5a2e3f3df8fb9e21dde7e257b7afd73a6b963629520c1ffc24e630c86"
+    },
+    "request.json": {
+      "path": "build/validation/protection-closure-01/request.json",
+      "sha256": "f947175339dfa247cb5edb8e0b18061f99a03654400f4bcb17ef2e91a8d36d5e"
+    },
+    "reserve-costs.json": {
+      "path": "build/validation/protection-closure-01/reserve-costs.json",
+      "sha256": "17e847bf75ab58230c540d92aa367fb4c694316369d7dda1dbb994c612d80126"
+    },
+    "worker-02.py": {
+      "path": "build/validation/protection-closure-01/worker-02.py",
+      "sha256": "d0ebc2db80c06ed5a368a42f850c07aa153fe3294adb1169a16562a05b19b39b"
+    },
+    "worker.py": {
+      "path": "build/validation/protection-closure-01/worker.py",
+      "sha256": "044b7324d11007405099904544696684f1497cf5ebb478557ebafad5744967b2"
+    },
+    "native/report.json": {
+      "path": "build/validation/protection-closure-01/native/report.json",
+      "sha256": "9dc1bec91f5fc56e9dd8fe4b701f8da44f66ab68a971f787c40a93db8810e6bb"
+    },
+    "native/source-context.json": {
+      "path": "build/validation/protection-closure-01/native/source-context.json",
+      "sha256": "6e927581eefda0d3151c31d526a77398f6f35ef9e7e68b252990c42af18ba985"
+    },
+    "native/repair/source.odb": {
+      "path": "build/validation/protection-closure-01/native/repair/source.odb",
+      "sha256": "99b8cdd6d1e06d00e23a86f56af7ac0707fb8d2545e77eacf993b7c546edf176"
+    },
+    "native/repair/source.v": {
+      "path": "build/validation/protection-closure-01/native/repair/source.v",
+      "sha256": "95f6ac177cff9b174ed61471358edf02be56056ee3cec7ce84c40ed8318e55c4"
+    },
+    "native/repair/openroad-resizertimingpostgrt.log": {
+      "path": "build/validation/protection-closure-01/native/repair/openroad-resizertimingpostgrt.log",
+      "sha256": "5f129ab21805a49c92f0347f3391bcefe51ee854170d585cab183ace083f5ec6"
+    },
+    "native-02/report.json": {
+      "path": "build/validation/protection-closure-01/native-02/report.json",
+      "sha256": "16321e838d94a2169df0c7614f5a18e4bef23ddc2a107b45851c1dbc71946352"
+    },
+    "native-02/source-context.json": {
+      "path": "build/validation/protection-closure-01/native-02/source-context.json",
+      "sha256": "5c52c46d0dcadee44252a407fe9f2be1a0a1acfae3d49d25c03eb220a09e6243"
+    },
+    "native-02/repair/source.odb": {
+      "path": "build/validation/protection-closure-01/native-02/repair/source.odb",
+      "sha256": "99b8cdd6d1e06d00e23a86f56af7ac0707fb8d2545e77eacf993b7c546edf176"
+    },
+    "native-02/repair/source.v": {
+      "path": "build/validation/protection-closure-01/native-02/repair/source.v",
+      "sha256": "95f6ac177cff9b174ed61471358edf02be56056ee3cec7ce84c40ed8318e55c4"
+    },
+    "native-02/repair/openroad-resizertimingpostgrt.log": {
+      "path": "build/validation/protection-closure-01/native-02/repair/openroad-resizertimingpostgrt.log",
+      "sha256": "58d1cd3c7d9a16c33de1374a5f7bb8aa4cfa71ecb97452a73c090ec8192963ad"
+    },
+    "native-02/tool-source/common/io.tcl": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/common/io.tcl",
+      "sha256": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f"
+    },
+    "native-02/tool-source/common/resizer.tcl": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/common/resizer.tcl",
+      "sha256": "3a18e9571c3ff083b1e419a1dbf821fc4207c4a697f38352dfb39ff5195c869c"
+    },
+    "native-02/tool-source/common/set_rc.tcl": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/common/set_rc.tcl",
+      "sha256": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece"
+    },
+    "native-02/tool-source/drt.tcl": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/drt.tcl",
+      "sha256": "e7e4e4984dff976e96fdf42561b185000bc2a9a3a21553b9bc781cfaef94447f"
+    },
+    "native-02/tool-source/repair_design_postgrt.tcl": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/repair_design_postgrt.tcl",
+      "sha256": "b045dd15f1f695efaad2081cb161a0091f86085cb33ddc64e0fdd16725829e92"
+    },
+    "native-02/tool-source/ResizerTimingPostGRT.py": {
+      "path": "build/validation/protection-closure-01/native-02/tool-source/ResizerTimingPostGRT.py",
+      "sha256": "99d15de20ee9cacb5937bfd4200659dd24338b0449677546ce364a40b4d7d6fd"
+    }
+  },
+  "next_control_requirements": [
+    "Retain or explicitly initialize native routing state and verify net/pin/resource inventory before repair.",
+    "Exercise an unchanged control and a real buffer edit on a small routed fixture first; preserve antenna ownership and clock routes.",
+    "Discard old parasitics on changed nets; reroute and extract before timing/antenna/electrical admission.",
+    "Use the shared complete-network electrical gate after every protection insertion, with a bounded closure loop and explicit stop on nonconvergence.",
+    "Allocate a new A full-flow slot only after the integration control and concrete candidate are reviewable."
+  ],
+  "candidate_checks_not_run": [
+    "candidate circuit equivalence",
+    "candidate pin replay",
+    "candidate placement admission",
+    "new extraction",
+    "detailed rerouting",
+    "final antenna/DRC/LVS"
+  ],
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 5652.722,
+    "this_continuation_seconds": 10.648,
+    "cumulative_cad_seconds": 5663.37,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2,
+    "additional_full_flow_attempts": 0,
+    "native_probes_used": 2
+  },
+  "remaining_gates": [
+    "Five existing final electrical failures remain unchanged.",
+    "Qualify a native routing-state-preserving repair integration before further full routing.",
+    "Compatible fast standard-cell/SRAM characterization or an established conservative bound.",
+    "Complete paired timed controller/loading/package refinement.",
+    "Accepted A, 64-record B and clean-source physical replay."
+  ]
+}

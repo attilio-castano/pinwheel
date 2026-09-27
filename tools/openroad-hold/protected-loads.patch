@@ -1,0 +1,12 @@
+--- a/src/rsz/src/RepairHold.cc
++++ b/src/rsz/src/RepairHold.cc
+@@ -574,7 +574,8 @@
+             if (pred.searchTo(fanout) && pred.searchThru(edge)) {
+               sta::Slack fanout_hold_slack = sta_->vertexSlack(fanout, min_);
+               sta::Pin* load_pin = fanout->pin();
+-              if (fanout_hold_slack < hold_margin) {
++              if (fanout_hold_slack < hold_margin
++                  && !resizer_->dontTouch(load_pin)) {
+                 load_pins.push_back(load_pin);
+                 Slacks fanout_slacks;
+                 sta_->vertexSlacks(fanout, fanout_slacks);

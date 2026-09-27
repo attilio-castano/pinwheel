@@ -1,0 +1,202 @@
+{
+  "schema": 1,
+  "date": "2026-09-25",
+  "status": "verified-mapped-hierarchy-comparison",
+  "decision": "Retain explicit hierarchy policies and checked flat views. No physical winner or backend promotion.",
+  "report": "build/storage/tiled-chip/hierarchy-policy-02/report.json",
+  "report_sha256": "dea7ab71cdb6171f92407d87ad39ac64d2641d43507616ad76c5706ad55f5f2d",
+  "validation": {
+    "report": "build/validation/hierarchy-policy-01/report.json",
+    "report_sha256": "da5e88794b4c8e3bfeac0f8e1531854b8719a7bd6d09a6f75acaebf6a3036588",
+    "python_tests_passed": 448,
+    "python_tests_skipped": 2
+  },
+  "comparison": {
+    "organization": "combined",
+    "candidate_fanout_limit": 8,
+    "same_rtl_variants": [
+      "tiled",
+      "tiled-flat"
+    ],
+    "policies": {
+      "tiled": "storage-tiles",
+      "tiled-flat": "flat"
+    },
+    "controls": "Identical RTL, tools, corner libraries, macro views, ABC recipe and aggregate sink budget. Distribution accounts for the resulting hierarchy in each variant.",
+    "unchanged_emissions": {
+      "production_hybrid_chip_and_core": true,
+      "original_map": true
+    }
+  },
+  "corners": {
+    "typical": {
+      "variants": {
+        "tiled": {
+          "cells": 11467,
+          "flip_flops": 2895,
+          "macros": 2,
+          "standard_cell_area_um2": 290943.954,
+          "macro_area_um2": 100978.2656,
+          "macro_address_depth": {
+            "memory.storage0": 31,
+            "memory.storage1": 29
+          },
+          "next_state_depth": 25,
+          "maximum_signal_fanout": 8
+        },
+        "tiled-flat": {
+          "cells": 14584,
+          "flip_flops": 2895,
+          "macros": 2,
+          "standard_cell_area_um2": 296947.1232,
+          "macro_area_um2": 100978.2656,
+          "macro_address_depth": {
+            "memory.storage0": 30,
+            "memory.storage1": 29
+          },
+          "next_state_depth": 27,
+          "maximum_signal_fanout": 8
+        }
+      },
+      "matched_hierarchy": {
+        "retained_minus_flat_area_um2": -6003.1692,
+        "retained_minus_flat_area_percent": -2.021629,
+        "retained_macro_address_depth": {
+          "memory.storage0": 31,
+          "memory.storage1": 29
+        },
+        "flat_macro_address_depth": {
+          "memory.storage0": 30,
+          "memory.storage1": 29
+        },
+        "retained_maximum_signal_fanout": 8,
+        "flat_maximum_signal_fanout": 8,
+        "physical_winner_established": false
+      }
+    },
+    "slow": {
+      "variants": {
+        "tiled": {
+          "cells": 11467,
+          "flip_flops": 2895,
+          "macros": 2,
+          "standard_cell_area_um2": 290943.954,
+          "macro_area_um2": 100978.2656,
+          "macro_address_depth": {
+            "memory.storage0": 31,
+            "memory.storage1": 29
+          },
+          "next_state_depth": 26,
+          "maximum_signal_fanout": 8
+        },
+        "tiled-flat": {
+          "cells": 14584,
+          "flip_flops": 2895,
+          "macros": 2,
+          "standard_cell_area_um2": 296947.1232,
+          "macro_area_um2": 100978.2656,
+          "macro_address_depth": {
+            "memory.storage0": 31,
+            "memory.storage1": 30
+          },
+          "next_state_depth": 27,
+          "maximum_signal_fanout": 8
+        }
+      },
+      "matched_hierarchy": {
+        "retained_minus_flat_area_um2": -6003.1692,
+        "retained_minus_flat_area_percent": -2.021629,
+        "retained_macro_address_depth": {
+          "memory.storage0": 31,
+          "memory.storage1": 29
+        },
+        "flat_macro_address_depth": {
+          "memory.storage0": 31,
+          "memory.storage1": 30
+        },
+        "retained_maximum_signal_fanout": 8,
+        "flat_maximum_signal_fanout": 8,
+        "physical_winner_established": false
+      }
+    }
+  },
+  "hierarchy_identity": {
+    "baseline-typical": {
+      "retained_instances": 0,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 15490
+    },
+    "tiled-typical": {
+      "retained_instances": 32,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 11467
+    },
+    "tiled-flat-typical": {
+      "retained_instances": 0,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 14584
+    },
+    "baseline-slow": {
+      "retained_instances": 0,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 15490
+    },
+    "tiled-slow": {
+      "retained_instances": 32,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 11467
+    },
+    "tiled-flat-slow": {
+      "retained_instances": 0,
+      "flat_and_export_connections_verified": true,
+      "mapped_leaf_cells": 14584
+    }
+  },
+  "checks": {
+    "lean_build_and_standard_axiom_audit": true,
+    "sat_proofs": [
+      "core-rtl-proof",
+      "chip-rtl-proof",
+      "tiled-typical-proof",
+      "tiled-flat-typical-proof",
+      "tiled-slow-proof",
+      "tiled-flat-slow-proof"
+    ],
+    "rejected_mutations": [
+      "joined-address-negative",
+      "tiled-typical-inverted-buffer-negative"
+    ],
+    "pin_oracles": {
+      "core-rtl-oracle": 11840,
+      "chip-rtl-oracle": 508252,
+      "typical-gates-oracle": 508252,
+      "slow-gates-oracle": 508252,
+      "typical-flat-gates-oracle": 508252,
+      "slow-flat-gates-oracle": 508252
+    },
+    "independent_simulated_edges": 2553100
+  },
+  "earlier_comparison": {
+    "report": "build/storage/tiled-chip/hierarchy-policy-01/report.json",
+    "report_sha256": "dbb8ec510b13d12505089269b326a6c46c2204bc7c707e4ff61c236fc0956481",
+    "status": "passed",
+    "scope": "Completed original comparison with JSON flatten identity; final selected run also checks emitted Verilog identity."
+  },
+  "resources": {
+    "selected_elapsed_seconds": 559.885,
+    "earlier_elapsed_seconds": 498.102,
+    "comparison_elapsed_seconds_sum": 1057.987,
+    "per_command_timeout_seconds": 180,
+    "longest_selected_command_seconds": 84.247,
+    "historical_cumulative_cad_use": "unknown",
+    "placement_or_routing_launched": false
+  },
+  "sources_sha256": {
+    "scripts/check-tiled-chip.py": "acb03b2902a2ee7ca3a3b359ac7475c823641631953e80e95dc8b8538129e5e8",
+    "scripts/synthesis_hierarchy.py": "249be1b3e38586577ec2f8dd99975454fbf8e8d85566bb33657b67a3d756e2fe",
+    "scripts/mapped_physical.py": "fb7aaadc5bce94a17b454266244e114ec9f6981be88a2ea98f453cf84c7f7266",
+    "test/test_synthesis_hierarchy.py": "28c3cd2d13fae7132fd5f94a5ef9a2a493cb20361c6adf18017ac9a76d61f3cd",
+    "test/test_tiled_chip.py": "adc38491c83bb8a13b067fed817d850ba4ca18015dedecf29e500f01c09c9e78"
+  },
+  "scope": "Exact module and named leaf/package connection checks are Python validation, not a Lean theorem. SAT covers the existing binary output and surviving-next-state contract. Pin simulations are finite regressions. Cell area, gate depth and sink counts exclude wire and clock costs; no placement, routed timing or silicon claim."
+}

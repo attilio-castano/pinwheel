@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "date": "2026-09-26",
+  "status": "coarse-electrical-screen-passed",
+  "decision": "Admit the independently checked candidate to the second allocated diagnostic A detailed-layout attempt. Physical acceptance and fast-corner qualification remain open.",
+  "physical_qualification": false,
+  "complete_design_iteration": false,
+  "study": "docs/physical/balanced-electrical-experiment.md",
+  "predecessor": {
+    "path": "physical/experiments/buffer-balance-results.json",
+    "sha256": "47529b6eaa0a1cc200ff80c6e1d018559028dd7b899d345201dbdcef9ea1cc7e"
+  },
+  "source_database_sha256": "0bfe41e1e3ceabc1376160410ea45aa59ccf08a3a0e4c96d85e748aedd3a4ecc",
+  "candidate_database": {
+    "path": "build/validation/balanced-electrical-01/candidate/route/tt_um_pinwheel.odb",
+    "sha256": "b3fe6ddfb5adc46306f7ea1c7e04cda370ee382145d25125141b5249eec32854"
+  },
+  "reports": {
+    "request.json": {
+      "path": "build/validation/balanced-electrical-01/request.json",
+      "sha256": "4b742f5842899ccdec3d2ada0b7a3b32eb1f9910f714cc0adeb3a92fa0f36761"
+    },
+    "buffer-plan.json": {
+      "path": "build/validation/balanced-electrical-01/buffer-plan.json",
+      "sha256": "0e9a9fa57e13feb503014c062e3c1eecfb5d2e8743e7b16b6d21528e85c5ee5d"
+    },
+    "control-receipt.json": {
+      "path": "build/validation/balanced-electrical-01/control-receipt.json",
+      "sha256": "b73b609a52d5b67c785156617a68fa651f100bc8e6564ad8cc6c69fdc286e053"
+    },
+    "control-02-receipt.json": {
+      "path": "build/validation/balanced-electrical-01/control-02-receipt.json",
+      "sha256": "879e7c32ce9a695036d45d568b310601866c284c9e909b4c7496784e425fc069"
+    },
+    "strict-control-rejection.json": {
+      "path": "build/validation/balanced-electrical-01/strict-control-rejection.json",
+      "sha256": "2cef0c4fc7c038ce5bac70f065e6767e27804e8f4e633563230470eadd67b621"
+    },
+    "control-verification.json": {
+      "path": "build/validation/balanced-electrical-01/control-verification.json",
+      "sha256": "86b712ef66fdabbe0405ce983a2c04b3de7c18d8ce0bfb387dd3939d57c3173a"
+    },
+    "edit-revert-receipt.json": {
+      "path": "build/validation/balanced-electrical-01/edit-revert-receipt.json",
+      "sha256": "03add7de4df110b292ac1f33746e3526594531e592cec803e95232f0172b5b8e"
+    },
+    "revert-comparison-correction.json": {
+      "path": "build/validation/balanced-electrical-01/revert-comparison-correction.json",
+      "sha256": "295816f4bf34154706f4ab3a6c254c06ffb6a764d1b10128a60635a5c828f58c"
+    },
+    "edit-revert-verification.json": {
+      "path": "build/validation/balanced-electrical-01/edit-revert-verification.json",
+      "sha256": "ed1d87f8bd709ae19abf7152d4240ba17320ef0ae1d247500e6dc98e53b0da53"
+    },
+    "candidate-receipt.json": {
+      "path": "build/validation/balanced-electrical-01/candidate-receipt.json",
+      "sha256": "768e5ca757a1514949ef5181cf1b7418a5cab070c07c6834589f62d92b60d41c"
+    },
+    "candidate-verification.json": {
+      "path": "build/validation/balanced-electrical-01/candidate-verification.json",
+      "sha256": "5870f73980cbb9f21254099ec204cdd76b2fa7d0be72c40c4eccb00fc1452290"
+    },
+    "candidate-implemented-check/report.json": {
+      "path": "build/validation/balanced-electrical-01/candidate-implemented-check/report.json",
+      "sha256": "dee4c245b83a298d99b4dbea934c3e8616881970201926289b690a93ddf8ec77"
+    }
+  },
+  "corners": {
+    "nom_fast_1p32V_m40C": {
+      "setup_ns": 9.968,
+      "hold_ns": 0.0401861,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 0,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.100717768,
+      "write_54_hold_ns": {
+        "before": 0.764382124,
+        "after": 0.668778837
+      },
+      "path_slacks_ns": {
+        "sram_address": 16.611183,
+        "entry_state": 12.370161,
+        "rejection_status": null,
+        "upload_hold": 0.100718
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "setup_ns": 0.845816,
+      "hold_ns": 0.326675,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 0,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.506850123,
+      "write_54_hold_ns": {
+        "before": 2.275886297,
+        "after": 2.030596972
+      },
+      "path_slacks_ns": {
+        "sram_address": 11.544356,
+        "entry_state": 0.845816,
+        "rejection_status": null,
+        "upload_hold": 0.50685
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "setup_ns": 6.80981,
+      "hold_ns": 0.135776,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 0,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.262792587,
+      "write_54_hold_ns": {
+        "before": 1.285157204,
+        "after": 1.154741526
+      },
+      "path_slacks_ns": {
+        "sram_address": 14.782808,
+        "entry_state": 8.170525,
+        "rejection_status": null,
+        "upload_hold": 0.262793
+      }
+    }
+  },
+  "geometry": {
+    "area_um2": {
+      "before": 374556.384,
+      "after": 374652.5472,
+      "added": 96.1632
+    },
+    "instances": {
+      "before": 12182,
+      "after": 12189
+    },
+    "original_cells_and_placements_fixed": true,
+    "clock_routes_fixed": 340,
+    "changed_signal_routes": [
+      "_02466_",
+      "_04528_",
+      "_05122_",
+      "_05584_",
+      "balanced_electrical_net_0",
+      "balanced_electrical_net_1",
+      "balanced_electrical_net_2",
+      "balanced_electrical_net_3",
+      "balanced_electrical_net_4",
+      "balanced_electrical_net_5",
+      "balanced_electrical_net_6",
+      "controller.r_cursor[3]",
+      "net1918",
+      "paired_balanced_31_2_out"
+    ],
+    "native_resource_entries": 174035,
+    "native_overflow": 0,
+    "saved_grid_overflow": 0,
+    "conservative_overflow": 0
+  },
+  "strict_import_qualification": false,
+  "conservative_unattributed_reservation": {
+    "layer": "Metal3",
+    "index": [
+      21,
+      72
+    ],
+    "extra_usage": 1,
+    "native_edge": [
+      3,
+      "H",
+      3,
+      21,
+      72
+    ],
+    "native_capacity": 11,
+    "native_usage": 9,
+    "rule": "Every candidate retains the extra unit for overflow assessment and must have zero old/new edited-route demand at this resource"
+  },
+  "functional": {
+    "equivalent": true,
+    "state_cut": {
+      "state_outputs": 1636,
+      "observed_state_inputs": 5000,
+      "flip_flops": 1572,
+      "macros": 1
+    },
+    "coverage": {
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+    },
+    "negative_controls_passed": true
+  },
+  "resources": {
+    "phase_cad_seconds": 90.057,
+    "prior_campaign_cad_seconds": 4357.451,
+    "cumulative_cad_seconds": 4447.508,
+    "budget_seconds": 28800,
+    "stages": [
+      {
+        "stage": "candidate-receipt",
+        "cad_seconds": 22.186
+      },
+      {
+        "stage": "control-02-receipt",
+        "cad_seconds": 21.396
+      },
+      {
+        "stage": "control-receipt",
+        "cad_seconds": 1.376
+      },
+      {
+        "stage": "edit-revert-receipt",
+        "cad_seconds": 3.234
+      },
+      {
+        "stage": "candidate-implemented-check",
+        "cad_seconds": 41.865
+      }
+    ],
+    "A_full_flow_attempts_used_in_phase": 0,
+    "A_full_flow_attempts_remaining_at_checkpoint": 1
+  },
+  "corner_qualification": {
+    "path": "build/validation/fast-corner-audit-01/qualification.json",
+    "sha256": "be88aa8004ebe919bf771cff909d4ebe57d3dcaffa75a3bb555ad16461348bfd",
+    "status": "blocked_missing_qualified_fast_pair"
+  },
+  "recipes_sha256": {
+    "build/validation/balanced-electrical-01/candidate.tcl": "ec3d7568eb343e53fbae6dd5958e4b6241e380fb42c57b07a9e443dbe423fc0b",
+    "build/validation/balanced-electrical-01/control.tcl": "deeed1230175ba4c1cbe73c0dcf890609ee9d66bfdb1dc40e95ac467434988a3",
+    "build/validation/balanced-electrical-01/edit-revert.tcl": "c15b5aaf3fac2a648f142cfea29b14406aa6f01881077313bc57f6304ec69e3d",
+    "build/validation/balanced-electrical-01/implemented-check.py": "8c5c6c2a1a7a7ff2b4a0a330d4b78c17995cc3d450e7c93b18fd4c2459a295f6",
+    "build/validation/balanced-electrical-01/inspect.py": "10a8bd0da39d6eb4d8e3ef2728f9086b7905aa3fc389d4c21509e0a78e344a37",
+    "build/validation/balanced-electrical-01/launch-02.py": "770ab3d4b9837b564eb017c3159162b5d883ad2dca1b6a7632af89447c562d81",
+    "build/validation/balanced-electrical-01/launch.py": "9cb4ad148f93344a81dca779ddd4e7bb47c12f68faa1d3c6f7f3c12386d7e7d1",
+    "build/validation/balanced-electrical-01/make-plan.py": "4ffac823ac4649d842bade5a8871949b5bf5c963249debb5136762aaa35c9558",
+    "build/validation/balanced-electrical-01/physical-inspect.py": "cbcaacdec2a1ebfa3215410c8a3797c029471452e4f58a037014ddce4a75453d",
+    "build/validation/balanced-electrical-01/verify-candidate.py": "25add922f7f2ff3c9aa01a1c605cb44aacf9ebfaf46e2e877f69639ff9596e35",
+    "build/validation/balanced-electrical-01/verify-control-02.py": "98e088dd07a85df8b749be92803015e9cb01e17da3b239256bba8b7122c9f726",
+    "build/validation/balanced-electrical-01/verify-control.py": "68b52362370311aa192301a88c80d6cc200803d8b17924d2fed1b8754c820e1d",
+    "build/validation/balanced-electrical-01/verify-edit-revert-02.py": "651734ce17301112b128efa45d5dbf5471c122e3cda3ece708e1865d8f019511",
+    "build/validation/balanced-electrical-01/verify-edit-revert.py": "69cbd3d04f4bfe515428ebf935808b04c5db68b04701084b1b804447975c90e6",
+    "build/validation/balanced-electrical-01/worker-02.py": "1da6db0bc9fbdef0217ce2e91b7dac2ebd5ef024681c57d55dea120a7b42bd94",
+    "build/validation/balanced-electrical-01/worker.py": "b8ac016c9ee4763b97c0ffc2cf49217de001810b8c1bd377a164d5237860141f"
+  },
+  "boundary": "Conservative coarse-route screen only. The one-unit saved-grid discrepancy remains explicit. Fast cell/SRAM temperatures are unmatched. Detailed routing, extraction, final layout checks and complete formal correspondence remain separate."
+}

@@ -1,0 +1,989 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "coarse-admitted-final-electrical-rejection",
+  "study": "docs/physical/transport-split-results.md",
+  "protocol": {
+    "path": "docs/physical/transport-split-experiment.md",
+    "sha256": "a0fd94de1f0ccce5e1a144307c707eec8f176b6258fb33590031e8a7e3895dad"
+  },
+  "predecessor": {
+    "path": "physical/experiments/antenna-load-results.json",
+    "sha256": "9edd49e881965bd4334505140a147510af2a3471ffd5482e8ce5d58d4b520cd6"
+  },
+  "previous_detailed": {
+    "path": "physical/experiments/balanced-detailed-results.json",
+    "sha256": "2a93b522e236cfa67385b654eb083a0a2ce9da64c89bcb644da7bffc625dd7be"
+  },
+  "physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "decision": "Retain the two transport repairs and measured final layout as research evidence. Reject A acceptance; all three A attempts are used. Plan complete-network protection and wire-load closure before another routing allocation.",
+  "coarse_artifacts": {
+    "database": {
+      "path": "build/validation/transport-split-01/candidate/route/tt_um_pinwheel.odb",
+      "sha256": "5e59cfccf55ee60cb25d2d061cafb62320762d31488e1e4d2d38c253512cb4aa"
+    },
+    "netlist": {
+      "path": "build/validation/transport-split-01/candidate/implemented.v",
+      "sha256": "64ce24080a913ac27cb397b6b6f2dfbba9369930e14609797ac6f714085a4e36"
+    },
+    "context": {
+      "path": "build/validation/transport-split-01/candidate/context.json",
+      "sha256": "6daa2ff22ff7e05ece42ec0b1a7a44f1ff92eef8e0b455d32712260045661a91"
+    }
+  },
+  "artifacts": {
+    "database": {
+      "path": "build/validation/transport-detailed-01/a-route-03/final/odb/tt_um_pinwheel.odb",
+      "sha256": "a74f4a35aa1c2baf1a37c86df55081c94873106afac64ea2679329d04c6c1ad1"
+    },
+    "gds": {
+      "path": "build/validation/transport-detailed-01/a-route-03/final/gds/tt_um_pinwheel.gds",
+      "sha256": "e1decb4f9ea5a73692effd6da2d517e28708e4630bdfa9192d2b2f8a8a578455"
+    },
+    "netlist": {
+      "path": "build/validation/transport-detailed-01/a-route-03/final/nl/tt_um_pinwheel.nl.v",
+      "sha256": "3c9e93948530355644bf31a97532752a76aa7b507dbfea256c933fee81566854"
+    },
+    "spef": {
+      "path": "build/validation/transport-detailed-01/a-route-03/final/spef/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "52cb33331e4030e3bacbbb71b2fa2241725a9ea658212d8c6c2203e7e04f5888"
+    },
+    "metrics": {
+      "path": "build/validation/transport-detailed-01/a-route-03/final/metrics.json",
+      "sha256": "3e8d350b361f67eed071e57467b0764e5e60972478c106fe6b486421e23d29b0"
+    }
+  },
+  "coarse_reports": {
+    "buffer-plan.json": {
+      "path": "build/validation/transport-split-01/buffer-plan.json",
+      "sha256": "e0b2465dfb5b9c2e167c468e322dba4292b097baacb03e994bcfc425178a14c3"
+    },
+    "candidate-receipt.json": {
+      "path": "build/validation/transport-split-01/candidate-receipt.json",
+      "sha256": "e37a5cce3efe223f9fadca8f1bc48f6ba01bdd6d11b5d342fdd8669db0d5f204"
+    },
+    "candidate-stage.json": {
+      "path": "build/validation/transport-split-01/candidate-stage.json",
+      "sha256": "effa236d4a0f9b060b8adde6477bbb2446efd3e87c17434c4f095c4d991e9776"
+    },
+    "candidate-verification.json": {
+      "path": "build/validation/transport-split-01/candidate-verification.json",
+      "sha256": "e762713960964b1257a6de5695cb56d9bebcea9be378bff845b32e8356708079"
+    },
+    "candidate.tcl": {
+      "path": "build/validation/transport-split-01/candidate.tcl",
+      "sha256": "3634eacd785262075a2b119b87e76207d793e613be54c7a424ae6ef7c4a6eab3"
+    },
+    "control-02-receipt.json": {
+      "path": "build/validation/transport-split-01/control-02-receipt.json",
+      "sha256": "0812faa6c72d5b87d80b6b27705d0c97c5282318b7c1a4b40cee9162253b0b06"
+    },
+    "control-02-stage.json": {
+      "path": "build/validation/transport-split-01/control-02-stage.json",
+      "sha256": "e09674fdedcac1e41cffe50f182148bae08f4fecb2c2377402d03cb891057357"
+    },
+    "control-verification.json": {
+      "path": "build/validation/transport-split-01/control-verification.json",
+      "sha256": "7c3dd10a496184d124e972c65955c6584cea3388983f869fd6e4e77d0a09b81a"
+    },
+    "control.tcl": {
+      "path": "build/validation/transport-split-01/control.tcl",
+      "sha256": "0c8e262ce38b203d4803108adb2331952cdefd98273c8417890b9a294b6c9365"
+    },
+    "cut-selection.json": {
+      "path": "build/validation/transport-split-01/cut-selection.json",
+      "sha256": "5563d08a9c945dece1c8d8c09e486b9217406b7544a8ac18132f5d6f025a17e2"
+    },
+    "edit-revert-receipt.json": {
+      "path": "build/validation/transport-split-01/edit-revert-receipt.json",
+      "sha256": "28faa66bb59f328af975fa27dc38ad5bd0d398d95ac73d7fdcb8e8188cfeffb4"
+    },
+    "edit-revert-stage.json": {
+      "path": "build/validation/transport-split-01/edit-revert-stage.json",
+      "sha256": "a01bb6bbbb3dddcc1ec0c47aaacf52be326d6b4198f7e6d1cb89231019b60e52"
+    },
+    "edit-revert-verification.json": {
+      "path": "build/validation/transport-split-01/edit-revert-verification.json",
+      "sha256": "1fb37af623d72601055479a0c8f9f187467223ee3d9c7cc3beaa4446cad27b5c"
+    },
+    "edit-revert.tcl": {
+      "path": "build/validation/transport-split-01/edit-revert.tcl",
+      "sha256": "3026223c9ee9b38ea3c4dfecac524c0a563dd1e13b78442e2c1fb57e90ee5e8b"
+    },
+    "implemented-check.py": {
+      "path": "build/validation/transport-split-01/implemented-check.py",
+      "sha256": "8c5c6c2a1a7a7ff2b4a0a330d4b78c17995cc3d450e7c93b18fd4c2459a295f6"
+    },
+    "launch-02.py": {
+      "path": "build/validation/transport-split-01/launch-02.py",
+      "sha256": "ef6c7db57e115e851d0faf1ef3bd774460edb5b49adb0211c75be4424501b13f"
+    },
+    "physical-inspect.py": {
+      "path": "build/validation/transport-split-01/physical-inspect.py",
+      "sha256": "cbcaacdec2a1ebfa3215410c8a3797c029471452e4f58a037014ddce4a75453d"
+    },
+    "prepare.py": {
+      "path": "build/validation/transport-split-01/prepare.py",
+      "sha256": "8d751c357b0bebf9935f1c300e28cb759e1a468a04b884943aabbb5b6907faaf"
+    },
+    "request.json": {
+      "path": "build/validation/transport-split-01/request.json",
+      "sha256": "fb4d0b167e22702ea1ae1d7b77b991d4f1cbb69416516da93b33b3758d50e6f2"
+    },
+    "verify-candidate.py": {
+      "path": "build/validation/transport-split-01/verify-candidate.py",
+      "sha256": "8a2f379534f4116e4bfe50d08e401aaff128302fe02094818f59758073d1dcd0"
+    },
+    "verify-control.py": {
+      "path": "build/validation/transport-split-01/verify-control.py",
+      "sha256": "c98f5aac2e1fcda0b0a3023d18909fb07d0b081cc5cec3c23430fe839688c0cf"
+    },
+    "verify-edit-revert.py": {
+      "path": "build/validation/transport-split-01/verify-edit-revert.py",
+      "sha256": "651734ce17301112b128efa45d5dbf5471c122e3cda3ece708e1865d8f019511"
+    },
+    "worker-02.py": {
+      "path": "build/validation/transport-split-01/worker-02.py",
+      "sha256": "354f8e5ef475c94bac85edced33cf66ae8badd34ee967507c20d0bf912d54aa6"
+    },
+    "candidate-implemented-check/report.json": {
+      "path": "build/validation/transport-split-01/candidate-implemented-check/report.json",
+      "sha256": "8d13611e7dfe280457bc56f8fe0f449d9c3072be91c5630f9e0bb48e07492dd6"
+    }
+  },
+  "reports": {
+    "analyze-final.py": {
+      "path": "build/validation/transport-detailed-01/analyze-final.py",
+      "sha256": "c44dbcbb17bb5e72a7c226fc261c1d68b80421c6c3e9ad73b0fee5c71a9c9d58"
+    },
+    "check-post-route.py": {
+      "path": "build/validation/transport-detailed-01/check-post-route.py",
+      "sha256": "28e0337fd78b2da85289821279d979c0cc2f96ad6435e01f112be0094f631bbf"
+    },
+    "closure-diagnosis.json": {
+      "path": "build/validation/transport-detailed-01/closure-diagnosis.json",
+      "sha256": "6ab8de65d94e9dbd84039a857104fe377a597fed8cf4314f5a8cc61ac4f98b3e"
+    },
+    "final-analysis.json": {
+      "path": "build/validation/transport-detailed-01/final-analysis.json",
+      "sha256": "cbadac326de77eb99b4b988a08764839cfacbff9c2e2cc1e27c6b4d152a7141d"
+    },
+    "inspection-launch.py": {
+      "path": "build/validation/transport-detailed-01/inspection-launch.py",
+      "sha256": "119bafb06e086fbeac5ec2fc6997b2103b096b4238e6404877bc0638ba6c9169"
+    },
+    "inspection-receipt.json": {
+      "path": "build/validation/transport-detailed-01/inspection-receipt.json",
+      "sha256": "3f4f26864fbf848df42c3cb3ec9ddb3a860ce4736006b91e8b8bd6774942c6ea"
+    },
+    "inspection-request.json": {
+      "path": "build/validation/transport-detailed-01/inspection-request.json",
+      "sha256": "a1ca992be60e1e0aa50922c908836d6384f8dbd5e0dd7d07c7755152ba141739"
+    },
+    "inspection-worker.py": {
+      "path": "build/validation/transport-detailed-01/inspection-worker.py",
+      "sha256": "3c97ee170d8bbf9b464a0972a44d4e54f6f48fb94a396261ca77a6729cf637d8"
+    },
+    "prepare-inspection.py": {
+      "path": "build/validation/transport-detailed-01/prepare-inspection.py",
+      "sha256": "2b68391f29d9419844ebf1fd387bcda15e128737e94ee9bd14f02c19b34c14dc"
+    },
+    "prepare.py": {
+      "path": "build/validation/transport-detailed-01/prepare.py",
+      "sha256": "3426de17484bf02da4b947d670e085269e208b02ce88cd25aae5e6c0eca14229"
+    },
+    "publish-record.py": {
+      "path": "build/validation/transport-detailed-01/publish-record.py",
+      "sha256": "5561c5dceb264d2b040aab878d2f292890dfab0d0590ade5de5103021398908b"
+    },
+    "route-launch.py": {
+      "path": "build/validation/transport-detailed-01/route-launch.py",
+      "sha256": "6636b4fb2b35d6d6039b319d1758c164ffe916406face1131c84e46bed1aef9b"
+    },
+    "route-preflight-receipt.json": {
+      "path": "build/validation/transport-detailed-01/route-preflight-receipt.json",
+      "sha256": "7bde56b616ca66837ccadade926a9d8b913d0999121b7f34762f902b80d35526"
+    },
+    "route-request.json": {
+      "path": "build/validation/transport-detailed-01/route-request.json",
+      "sha256": "7de95a0d037d32e7f47e38cb1d7a48c0d2ac3af2346b4ae2ad0112ad579b2af0"
+    },
+    "route-run-receipt.json": {
+      "path": "build/validation/transport-detailed-01/route-run-receipt.json",
+      "sha256": "788cd690531312065e341997afa013a959dda71a4d46cb21d57a962915a0b19f"
+    },
+    "route-worker.py": {
+      "path": "build/validation/transport-detailed-01/route-worker.py",
+      "sha256": "f67b6ea4a1193c9167137c9f4e8282a489ced2f689db2f39e8b029b7d9f8e29d"
+    },
+    "post-route-check/report.json": {
+      "path": "build/validation/transport-detailed-01/post-route-check/report.json",
+      "sha256": "130f6b61be504ba3dc58124886e2acd72b5ff0b205abdab4a2f5c9bd120c0a37"
+    },
+    "post-route-timing/report.json": {
+      "path": "build/validation/transport-detailed-01/post-route-timing/report.json",
+      "sha256": "e24eaa1038fabfef7c9d81d5969310e2cab756c4c54b902fa67ec3e21ba32ab6"
+    },
+    "post-route-geometry/context.json": {
+      "path": "build/validation/transport-detailed-01/post-route-geometry/context.json",
+      "sha256": "b4cfd8ecb5c04fce7dd993fe737569285cc57c7b67a0324f57ecc01df7337b46"
+    },
+    "post-route-geometry/intake.json": {
+      "path": "build/validation/transport-detailed-01/post-route-geometry/intake.json",
+      "sha256": "ef056dce36aaa185c3c71437b888756c6a9400d7bdf487d6e6ee14be76b53e9d"
+    },
+    "post-route-geometry/power.json": {
+      "path": "build/validation/transport-detailed-01/post-route-geometry/power.json",
+      "sha256": "e2bba30ce0997971f41983fc20b14b498b8037549d955a9879d9ef441a5b33cb"
+    },
+    "route-preflight/report.json": {
+      "path": "build/validation/transport-detailed-01/route-preflight/report.json",
+      "sha256": "fb9efb5b05a7604b2944001db81c6127470e2e390df7c31083a4aa7518803308"
+    }
+  },
+  "coarse_acceptance": {
+    "status": "passed",
+    "corners": {
+      "nom_fast_1p32V_m40C": {
+        "setup_ns": 9.968,
+        "hold_ns": 0.0401861,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_ns": 0.845953,
+        "hold_ns": 0.326675,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "setup_ns": 6.81485,
+        "hold_ns": 0.135776,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      }
+    },
+    "failures": [],
+    "boundary": "Requires separately validated artifact, parasitics and corner definitions; no layout or physical qualification."
+  },
+  "final_acceptance": {
+    "status": "rejected",
+    "corners": {
+      "nom_fast_1p32V_m40C": {
+        "setup_ns": 10.303861167050933,
+        "hold_ns": 0.026968261720430514,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 1,
+        "slew_violations": 0,
+        "fanout_violations": 4
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_ns": 1.2290275811603586,
+        "hold_ns": 0.3029160341633398,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 1,
+        "slew_violations": 0,
+        "fanout_violations": 4
+      },
+      "nom_typ_1p20V_25C": {
+        "setup_ns": 7.311548018423929,
+        "hold_ns": 0.11911788559351248,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 1,
+        "slew_violations": 0,
+        "fanout_violations": 4
+      }
+    },
+    "failures": [
+      {
+        "corner": "nom_fast_1p32V_m40C",
+        "measure": "capacitance_violations",
+        "value": 1
+      },
+      {
+        "corner": "nom_fast_1p32V_m40C",
+        "measure": "fanout_violations",
+        "value": 4
+      },
+      {
+        "corner": "nom_slow_1p08V_125C",
+        "measure": "capacitance_violations",
+        "value": 1
+      },
+      {
+        "corner": "nom_slow_1p08V_125C",
+        "measure": "fanout_violations",
+        "value": 4
+      },
+      {
+        "corner": "nom_typ_1p20V_25C",
+        "measure": "capacitance_violations",
+        "value": 1
+      },
+      {
+        "corner": "nom_typ_1p20V_25C",
+        "measure": "fanout_violations",
+        "value": 4
+      }
+    ],
+    "boundary": "Requires separately validated artifact, parasitics and corner definitions; no layout or physical qualification."
+  },
+  "coarse_transport_headroom_passed": true,
+  "extracted_transport_headroom_passed": true,
+  "corners": {
+    "nom_fast_1p32V_m40C": {
+      "setup_ns": 10.303861167050933,
+      "hold_ns": 0.026968261720430514,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 4,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.303477,
+          "slack_pf": -0.003477
+        }
+      ],
+      "fanout": [
+        {
+          "pin": "paired_balanced_100_21/X",
+          "net": "paired_balanced_100_21_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 12.0
+        },
+        {
+          "pin": "paired_balanced_133_4/X",
+          "net": "paired_balanced_133_4_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_140_0/X",
+          "net": "paired_balanced_140_0_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_19_5/X",
+          "net": "paired_balanced_19_5_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        }
+      ],
+      "remaining_loads": {
+        "paired_balanced_5_4_out": {
+          "pin_cap_pf": [
+            0.01047186,
+            0.01301595
+          ],
+          "wire_cap_pf": [
+            0.290461183,
+            0.290461212
+          ],
+          "total_cap_pf": [
+            0.300933033,
+            0.303477168
+          ],
+          "loads": 3
+        },
+        "paired_balanced_100_21_out": {
+          "pin_cap_pf": [
+            0.018489966,
+            0.02798056
+          ],
+          "wire_cap_pf": [
+            0.135499269,
+            0.135499269
+          ],
+          "total_cap_pf": [
+            0.153989241,
+            0.16347982
+          ],
+          "loads": 12
+        },
+        "paired_balanced_133_4_out": {
+          "pin_cap_pf": [
+            0.021565372,
+            0.029206011
+          ],
+          "wire_cap_pf": [
+            0.066928409,
+            0.066928409
+          ],
+          "total_cap_pf": [
+            0.088493779,
+            0.096134417
+          ],
+          "loads": 9
+        },
+        "paired_balanced_140_0_out": {
+          "pin_cap_pf": [
+            0.021140292,
+            0.028791972
+          ],
+          "wire_cap_pf": [
+            0.156192094,
+            0.156192124
+          ],
+          "total_cap_pf": [
+            0.177332386,
+            0.184984088
+          ],
+          "loads": 9
+        },
+        "paired_balanced_19_5_out": {
+          "pin_cap_pf": [
+            0.026289409,
+            0.04316416
+          ],
+          "wire_cap_pf": [
+            0.116268218,
+            0.116268218
+          ],
+          "total_cap_pf": [
+            0.142557621,
+            0.159432381
+          ],
+          "loads": 9
+        }
+      },
+      "minimum_write_hold_ns": 0.112675093,
+      "write_54_hold_ns": 0.791296482
+    },
+    "nom_slow_1p08V_125C": {
+      "setup_ns": 1.2290275811603586,
+      "hold_ns": 0.3029160341633398,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 4,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.301837,
+          "slack_pf": -0.001837
+        }
+      ],
+      "fanout": [
+        {
+          "pin": "paired_balanced_100_21/X",
+          "net": "paired_balanced_100_21_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 12.0
+        },
+        {
+          "pin": "paired_balanced_133_4/X",
+          "net": "paired_balanced_133_4_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_140_0/X",
+          "net": "paired_balanced_140_0_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_19_5/X",
+          "net": "paired_balanced_19_5_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        }
+      ],
+      "remaining_loads": {
+        "paired_balanced_5_4_out": {
+          "pin_cap_pf": [
+            0.00929088,
+            0.01137624
+          ],
+          "wire_cap_pf": [
+            0.290461183,
+            0.290461212
+          ],
+          "total_cap_pf": [
+            0.299752057,
+            0.301837444
+          ],
+          "loads": 3
+        },
+        "paired_balanced_100_21_out": {
+          "pin_cap_pf": [
+            0.016209431,
+            0.025426921
+          ],
+          "wire_cap_pf": [
+            0.135499269,
+            0.135499284
+          ],
+          "total_cap_pf": [
+            0.151708692,
+            0.160926208
+          ],
+          "loads": 12
+        },
+        "paired_balanced_133_4_out": {
+          "pin_cap_pf": [
+            0.01925526,
+            0.025161499
+          ],
+          "wire_cap_pf": [
+            0.066928409,
+            0.066928416
+          ],
+          "total_cap_pf": [
+            0.086183675,
+            0.092089914
+          ],
+          "loads": 9
+        },
+        "paired_balanced_140_0_out": {
+          "pin_cap_pf": [
+            0.018656777,
+            0.0247539
+          ],
+          "wire_cap_pf": [
+            0.156192109,
+            0.156192109
+          ],
+          "total_cap_pf": [
+            0.174848884,
+            0.180945992
+          ],
+          "loads": 9
+        },
+        "paired_balanced_19_5_out": {
+          "pin_cap_pf": [
+            0.023501659,
+            0.037799839
+          ],
+          "wire_cap_pf": [
+            0.116268225,
+            0.116268225
+          ],
+          "total_cap_pf": [
+            0.139769882,
+            0.154068068
+          ],
+          "loads": 9
+        }
+      },
+      "minimum_write_hold_ns": 0.457889527,
+      "write_54_hold_ns": 2.281850815
+    },
+    "nom_typ_1p20V_25C": {
+      "setup_ns": 7.311548018423929,
+      "hold_ns": 0.11911788559351248,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 4,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.30257,
+          "slack_pf": -0.00257
+        }
+      ],
+      "fanout": [
+        {
+          "pin": "paired_balanced_100_21/X",
+          "net": "paired_balanced_100_21_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 12.0
+        },
+        {
+          "pin": "paired_balanced_133_4/X",
+          "net": "paired_balanced_133_4_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_140_0/X",
+          "net": "paired_balanced_140_0_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        },
+        {
+          "pin": "paired_balanced_19_5/X",
+          "net": "paired_balanced_19_5_out",
+          "kind": "SIGNAL",
+          "limit": 8.0,
+          "fanout": 9.0
+        }
+      ],
+      "remaining_loads": {
+        "paired_balanced_5_4_out": {
+          "pin_cap_pf": [
+            0.00984825,
+            0.01210893
+          ],
+          "wire_cap_pf": [
+            0.290461183,
+            0.290461212
+          ],
+          "total_cap_pf": [
+            0.300309449,
+            0.302570105
+          ],
+          "loads": 3
+        },
+        "paired_balanced_100_21_out": {
+          "pin_cap_pf": [
+            0.017338315,
+            0.026386764
+          ],
+          "wire_cap_pf": [
+            0.135499269,
+            0.135499269
+          ],
+          "total_cap_pf": [
+            0.152837589,
+            0.161886021
+          ],
+          "loads": 12
+        },
+        "paired_balanced_133_4_out": {
+          "pin_cap_pf": [
+            0.02026644,
+            0.027070051
+          ],
+          "wire_cap_pf": [
+            0.066928409,
+            0.066928409
+          ],
+          "total_cap_pf": [
+            0.087194845,
+            0.093998462
+          ],
+          "loads": 9
+        },
+        "paired_balanced_140_0_out": {
+          "pin_cap_pf": [
+            0.0198416,
+            0.026660409
+          ],
+          "wire_cap_pf": [
+            0.156192094,
+            0.156192109
+          ],
+          "total_cap_pf": [
+            0.176033691,
+            0.182852507
+          ],
+          "loads": 9
+        },
+        "paired_balanced_19_5_out": {
+          "pin_cap_pf": [
+            0.024689561,
+            0.040132008
+          ],
+          "wire_cap_pf": [
+            0.116268218,
+            0.11626824
+          ],
+          "total_cap_pf": [
+            0.140957773,
+            0.156400263
+          ],
+          "loads": 9
+        }
+      },
+      "minimum_write_hold_ns": 0.251517266,
+      "write_54_hold_ns": 1.314855456
+    }
+  },
+  "comparison_to_previous_detailed_layout": {
+    "nom_fast_1p32V_m40C": {
+      "previous_setup_ns": 10.220580226993986,
+      "current_setup_ns": 10.303861167050933,
+      "previous_hold_ns": 0.02074174224417602,
+      "current_hold_ns": 0.026968261720430514,
+      "previous_fanout_failures": 14,
+      "current_fanout_failures": 4,
+      "eliminated_fanout_nets": [
+        "_02185_",
+        "_03354_",
+        "net3552",
+        "net52",
+        "paired_balanced_108_15_out",
+        "paired_balanced_133_5_out",
+        "paired_balanced_139_2_out",
+        "paired_balanced_142_4_out",
+        "paired_balanced_144_4_out",
+        "paired_balanced_147_12_out",
+        "paired_balanced_148_17_out",
+        "paired_balanced_157_16_out",
+        "paired_balanced_17_3_out",
+        "paired_balanced_25_3_out"
+      ],
+      "new_fanout_nets": [
+        "paired_balanced_100_21_out",
+        "paired_balanced_133_4_out",
+        "paired_balanced_140_0_out",
+        "paired_balanced_19_5_out"
+      ],
+      "previous_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.307562,
+          "slack_pf": -0.007562,
+          "added_diodes": 0
+        }
+      ],
+      "current_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.303477,
+          "slack_pf": -0.003477
+        }
+      ]
+    },
+    "nom_slow_1p08V_125C": {
+      "previous_setup_ns": 1.4513368695417965,
+      "current_setup_ns": 1.2290275811603586,
+      "previous_hold_ns": 0.30187642129367853,
+      "current_hold_ns": 0.3029160341633398,
+      "previous_fanout_failures": 14,
+      "current_fanout_failures": 4,
+      "eliminated_fanout_nets": [
+        "_02185_",
+        "_03354_",
+        "net3552",
+        "net52",
+        "paired_balanced_108_15_out",
+        "paired_balanced_133_5_out",
+        "paired_balanced_139_2_out",
+        "paired_balanced_142_4_out",
+        "paired_balanced_144_4_out",
+        "paired_balanced_147_12_out",
+        "paired_balanced_148_17_out",
+        "paired_balanced_157_16_out",
+        "paired_balanced_17_3_out",
+        "paired_balanced_25_3_out"
+      ],
+      "new_fanout_nets": [
+        "paired_balanced_100_21_out",
+        "paired_balanced_133_4_out",
+        "paired_balanced_140_0_out",
+        "paired_balanced_19_5_out"
+      ],
+      "previous_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.30266,
+          "slack_pf": -0.00266,
+          "added_diodes": 0
+        }
+      ],
+      "current_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.301837,
+          "slack_pf": -0.001837
+        }
+      ]
+    },
+    "nom_typ_1p20V_25C": {
+      "previous_setup_ns": 7.3082724163194355,
+      "current_setup_ns": 7.311548018423929,
+      "previous_hold_ns": 0.11779366704343937,
+      "current_hold_ns": 0.11911788559351248,
+      "previous_fanout_failures": 14,
+      "current_fanout_failures": 4,
+      "eliminated_fanout_nets": [
+        "_02185_",
+        "_03354_",
+        "net3552",
+        "net52",
+        "paired_balanced_108_15_out",
+        "paired_balanced_133_5_out",
+        "paired_balanced_139_2_out",
+        "paired_balanced_142_4_out",
+        "paired_balanced_144_4_out",
+        "paired_balanced_147_12_out",
+        "paired_balanced_148_17_out",
+        "paired_balanced_157_16_out",
+        "paired_balanced_17_3_out",
+        "paired_balanced_25_3_out"
+      ],
+      "new_fanout_nets": [
+        "paired_balanced_100_21_out",
+        "paired_balanced_133_4_out",
+        "paired_balanced_140_0_out",
+        "paired_balanced_19_5_out"
+      ],
+      "previous_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.304679,
+          "slack_pf": -0.004679,
+          "added_diodes": 0
+        }
+      ],
+      "current_capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.30257,
+          "slack_pf": -0.00257
+        }
+      ]
+    }
+  },
+  "layout_checks": {
+    "route__drc_errors": 0,
+    "magic__drc_error__count": 0,
+    "route__antenna_violation__count": 0,
+    "design__critical_disconnected_pin__count": 0,
+    "design__lvs_device_difference__count": 0,
+    "design__lvs_net_difference__count": 0,
+    "design__lvs_property_fail__count": 0,
+    "design__lvs_error__count": 0,
+    "design__lvs_unmatched_device__count": 0,
+    "design__lvs_unmatched_net__count": 0,
+    "design__lvs_unmatched_pin__count": 0
+  },
+  "power_connectivity": true,
+  "fresh_extracted_metrics_equal_to_flow": true,
+  "fixed_original_geometry": true,
+  "original_instances": 12232,
+  "final_instances": 58234,
+  "coarse_added_buffers": 2,
+  "inherited_antenna_headroom_buffers": 41,
+  "coarse_changed_signal_routes": 4,
+  "coarse_clock_routes_unchanged": 340,
+  "conservative_extra_usage_retained": 1,
+  "coarse_conservative_overflow": 0,
+  "final_additions": {
+    "antenna": 97,
+    "power_only": 45905,
+    "power_only_by_type": {
+      "sg13cmos5l_decap_8": 35355,
+      "sg13cmos5l_fill_2": 3616,
+      "sg13cmos5l_fill_1": 3871,
+      "sg13cmos5l_decap_4": 3063
+    }
+  },
+  "area_um2": {
+    "before": 375276.7008,
+    "signal_and_macro_and_antenna": 375804.6912,
+    "antenna": 527.9904,
+    "fill_and_decap": 491412.096,
+    "total_placed": 867216.7872
+  },
+  "historical_comparison": {
+    "allowance_um2": 359372.4382368,
+    "overage_um2": 16432.25296319998,
+    "overage_percent": 4.57248559289134
+  },
+  "die_um": [
+    1289.28,
+    710.64
+  ],
+  "state_cut": {
+    "state_outputs": 1636,
+    "observed_state_inputs": 5000,
+    "flip_flops": 1572,
+    "macros": 1
+  },
+  "final_signal_identity_and_pin_replay": true,
+  "final_corruption_controls_passed": true,
+  "pin_replay": {
+    "edges": 331401,
+    "frames": 1517,
+    "cases": [
+      {
+        "name": "resident-uart",
+        "edge": 812
+      },
+      {
+        "name": "resident-spi",
+        "edge": 66301
+      },
+      {
+        "name": "captures",
+        "edge": 130476
+      },
+      {
+        "name": "serial-branch",
+        "edge": 194673
+      },
+      {
+        "name": "uart-rx",
+        "edge": 259427
+      }
+    ],
+    "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+  },
+  "native_cap_and_slew_checker_corners": [
+    "*"
+  ],
+  "native_flow_status": "failed",
+  "disabled_checks": [
+    "RUN_KLAYOUT_DRC",
+    "RUN_KLAYOUT_XOR",
+    "RUN_EQY"
+  ],
+  "antenna_risk_inventory": {
+    "path": "build/validation/transport-detailed-01/closure-diagnosis.json",
+    "sha256": "6ab8de65d94e9dbd84039a857104fe377a597fed8cf4314f5a8cc61ac4f98b3e"
+  },
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 5052.68,
+    "coarse_phase_seconds": 90.88,
+    "detailed_phase_seconds": 509.162,
+    "this_continuation_seconds": 600.042,
+    "cumulative_cad_seconds": 5652.722,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "remaining_gates": [
+    "One extracted capacitance and four antenna-induced fanout failures in every measured corner.",
+    "Compatible fast cell/SRAM characterization or an established conservative bound.",
+    "Complete paired timed controller, loading and package refinement for this implementation.",
+    "Accepted A before the 64-record B comparison and clean-source physical replay.",
+    "A new explicit full-flow allocation before further A routing; all three slots are consumed.",
+    "Competition pin/template admission and silicon measurements remain separate."
+  ]
+}

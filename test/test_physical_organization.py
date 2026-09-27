@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import sys
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 from physical_connections import connection_terminals
@@ -93,6 +94,26 @@ class Organization(unittest.TestCase):
         self.assertEqual(p.reconcile_pins({'root','left','right'}),6)
         args[3]['slow']['left']['pin_cap_pf'][1]=.05
         with self.assertRaisesRegex(ValueError,'saved STA'):p.reconcile_pins({'left'})
+
+    def test_bus_bit_capacitance_overrides_inherited_default(self):
+        text='''capacitive_load_unit (1,pf); cell (memory) {
+          bus(A_ADDR) { direction : input; capacitance : .0069;
+            pin(A_ADDR[4]) { capacitance : .0048; }
+            pin(A_ADDR[3]) { capacitance : .0072; }
+            pin(A_ADDR[8:0]) { related_power_pin : VDD; }
+          } }'''
+        lib=Library({'fast':[text]})
+        self.assertEqual(lib.capacitance('fast','memory','A_ADDR[4]'),[.0048,.0048])
+        self.assertEqual(lib.capacitance('fast','memory','A_ADDR[3]'),[.0072,.0072])
+        self.assertEqual(lib.capacitance('fast','memory','A_ADDR[8]'),[.0069,.0069])
+        pins=['A_ADDR[4]','A_ADDR[3]','A_ADDR[8]']
+        headers={pin:lib.pin('fast','memory',pin) for pin in pins}
+        with patch.object(lib,'cell',side_effect=ValueError('Unexpected bus-pin reparsing')):
+            for pin in reversed(pins):
+                self.assertEqual(lib.pin('fast','memory',pin),headers[pin])
+        for wrong in [text.replace('capacitance : .0048;','capacitance : .0048; capacitance : .1;'),
+                      text.replace('pin(A_ADDR[4])','pin(A_ADDR[3])')]:
+            with self.assertRaises(ValueError):Library({'fast':[wrong]}).capacitance('fast','memory','A_ADDR[3]' if wrong.count('pin(A_ADDR[3])')==2 else 'A_ADDR[4]')
 
     def test_pin_loads_sum_with_common_rise_or_fall_before_taking_the_maximum(self):
         args=fixture();p=Planner(*args)

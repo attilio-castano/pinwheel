@@ -45,6 +45,30 @@ there is no requirement to invent a campaign, trial, or implementation task.
 Local edits and commits, remote execution, publication, and changes to defaults
 retain their actual task authority. A record describes permission; it cannot issue it.
 
+## Exploration with temporary size overages
+
+User direction on **2026-09-25** permits temporary size/area overages while
+exploring architectural ideas, provided they are recorded. An early candidate
+may exceed a repair experiment's area allowance or the eventual chip size target.
+Size alone should not eliminate an idea before its benefit can be understood;
+the first useful implementation may become smaller through later optimization.
+
+For such an experiment, record the idea being tested, the original target and
+reference, candidate size, and the absolute and percentage overage. Distinguish
+estimates from measurements; mark unknown costs until measured. Record the
+observed benefit, other regressions, and possible reductions or the next
+optimization question. A complete shrinking plan is not required in advance.
+Keep a reproducible baseline and the original acceptance results alongside the
+exploratory result. If the floorplan or other comparison conditions change,
+record those changes as well.
+
+An oversized candidate can establish a useful architectural result while still
+failing final size qualification. Final acceptance retains its applicable size,
+behavioral and physical requirements. This standing direction removes size-only
+approval stops within the authorized exploratory work; CAD runtime and resource
+budgets remain separately recorded. Progress is judged by what the experiment
+teaches and whether further development is justified.
+
 ## Experiment record
 
 Use this small template in the owning study or a retained run-local brief. Link it

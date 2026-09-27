@@ -1,0 +1,492 @@
+{
+  "schema": 1,
+  "date": "2026-09-26",
+  "status": "detailed-layout-completed-A-not-accepted",
+  "decision": "Retain the measured layout and its diagnosis. Both allocated A full-flow attempts are used. Further physical work needs an explicit allocation; the compatible fast view and full paired refinement remain open.",
+  "physical_qualification": false,
+  "complete_design_iteration": false,
+  "study": "docs/physical/balanced-detailed-experiment.md",
+  "predecessor": {
+    "path": "physical/experiments/balanced-electrical-results.json",
+    "sha256": "0811c2a7fca7a570319ca038eea60c1a05cd62ba0bdeccc6e45a165dca994f1f"
+  },
+  "source_database_sha256": "b3fe6ddfb5adc46306f7ea1c7e04cda370ee382145d25125141b5249eec32854",
+  "artifacts": {
+    "database": {
+      "path": "build/validation/balanced-detailed-01/a-route-02/final/odb/tt_um_pinwheel.odb",
+      "sha256": "9c4ef974bd865b875efa8dd356a96fa9bf4b3819667519fa204be1a37ac2aca3"
+    },
+    "gds": {
+      "path": "build/validation/balanced-detailed-01/a-route-02/final/gds/tt_um_pinwheel.gds",
+      "sha256": "3ebb74dda57202b0caf2c73e310fa6a985705dd04a04727852fdd8fefd970fe3"
+    },
+    "netlist": {
+      "path": "build/validation/balanced-detailed-01/a-route-02/final/nl/tt_um_pinwheel.nl.v",
+      "sha256": "33402eae251e6c93105d387c52e43646071603786cfeb82a1abeb90b2322718e"
+    },
+    "spef": {
+      "path": "build/validation/balanced-detailed-01/a-route-02/final/spef/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "76c108e9a2b88265d26b21998cea4f7664df6ee5e3f8809fefc4e4dfbb562c0a"
+    }
+  },
+  "reports": {
+    "route-request.json": {
+      "path": "build/validation/balanced-detailed-01/route-request.json",
+      "sha256": "2b13d2652465fa99f8694404eaac5682bd7526352bdefc6c4050d6998ebcb8c9"
+    },
+    "route-preflight-receipt.json": {
+      "path": "build/validation/balanced-detailed-01/route-preflight-receipt.json",
+      "sha256": "6e052855a8f05006ab89ac3d94aafa35af1d474007c31c4901cf88af884c8b79"
+    },
+    "preflight-qualification.json": {
+      "path": "build/validation/balanced-detailed-01/preflight-qualification.json",
+      "sha256": "81d2daa708147cea9ef0fb015a8a02875df7711e13a546a01dc884b9764741f1"
+    },
+    "route-run-receipt.json": {
+      "path": "build/validation/balanced-detailed-01/route-run-receipt.json",
+      "sha256": "321c39fbcd2320b5fedb5264fb373fc86d9b64dfa7a713e07cd486869d7b3720"
+    },
+    "post-route-check/report.json": {
+      "path": "build/validation/balanced-detailed-01/post-route-check/report.json",
+      "sha256": "94000cd5abb8785df682157f996f5d07ba5d80d72b26c03ea12f7224bfb7368f"
+    },
+    "inspection-receipt.json": {
+      "path": "build/validation/balanced-detailed-01/inspection-receipt.json",
+      "sha256": "47dc86f9d2c28ba77d2e020b9380ed5992643ba68a1a54cdb066ec1b7009d230"
+    },
+    "inspection-02-receipt.json": {
+      "path": "build/validation/balanced-detailed-01/inspection-02-receipt.json",
+      "sha256": "94fee3be543ac055f803d5e4c09845b529a0e4f4b5c0dd97a70cea03cce55226"
+    },
+    "final-analysis.json": {
+      "path": "build/validation/balanced-detailed-01/final-analysis.json",
+      "sha256": "3c5ef54d3265964ae4b6e236b8a62804eb213633da5c77e3cf404f4885bc0823"
+    },
+    "post-route-timing-02/report.json": {
+      "path": "build/validation/balanced-detailed-01/post-route-timing-02/report.json",
+      "sha256": "a68866b979deb3ab6502a77011095a9dbd171a8c8c4767e956e740f1e7dbb7ed"
+    },
+    "post-route-geometry/power.json": {
+      "path": "build/validation/balanced-detailed-01/post-route-geometry/power.json",
+      "sha256": "6581a2287be22f9801e3948ac98afee0c02e3d3c2155e570eb7dc02176295cb7"
+    }
+  },
+  "corners": {
+    "nom_fast_1p32V_m40C": {
+      "setup_ns": 10.220580226993986,
+      "hold_ns": 0.02074174224417602,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 14,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.307562,
+          "slack_pf": -0.007562,
+          "added_diodes": 0
+        }
+      ],
+      "minimum_write_hold_ns": 0.118523419,
+      "write_54_hold_ns": 0.763870776,
+      "path_slacks_ns": {
+        "sram_address": 16.668591,
+        "entry_state": 12.630898,
+        "rejection_status": null,
+        "upload_hold": 0.118523
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "setup_ns": 1.4513368695417965,
+      "hold_ns": 0.30187642129367853,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 14,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.30266,
+          "slack_pf": -0.00266,
+          "added_diodes": 0
+        }
+      ],
+      "minimum_write_hold_ns": 0.477860212,
+      "write_54_hold_ns": 2.210361958,
+      "path_slacks_ns": {
+        "sram_address": 11.685484,
+        "entry_state": 1.451337,
+        "rejection_status": null,
+        "upload_hold": 0.47786
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "setup_ns": 7.3082724163194355,
+      "hold_ns": 0.11779366704343937,
+      "setup_violations": 0,
+      "hold_violations": 0,
+      "capacitance_violations": 1,
+      "slew_violations": 0,
+      "fanout_violations": 14,
+      "capacitance": [
+        {
+          "pin": "paired_balanced_5_4/X",
+          "net": "paired_balanced_5_4_out",
+          "limit_pf": 0.3,
+          "actual_pf": 0.304679,
+          "slack_pf": -0.004679,
+          "added_diodes": 0
+        }
+      ],
+      "minimum_write_hold_ns": 0.262550771,
+      "write_54_hold_ns": 1.273823977,
+      "path_slacks_ns": {
+        "sram_address": 14.874606,
+        "entry_state": 8.549269,
+        "rejection_status": null,
+        "upload_hold": 0.262551
+      }
+    }
+  },
+  "all_fanout_failures_explained_by_added_antenna": true,
+  "fanout_failures": [
+    {
+      "pin": "paired_balanced_142_4/X",
+      "net": "paired_balanced_142_4_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 13.0,
+      "original_loads": 8,
+      "added_antenna_loads": 5,
+      "added_antenna_instances": [
+        "ANTENNA_117",
+        "ANTENNA_49",
+        "ANTENNA_50",
+        "ANTENNA_51",
+        "ANTENNA_52"
+      ]
+    },
+    {
+      "pin": "paired_balanced_144_4/X",
+      "net": "paired_balanced_144_4_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 12.0,
+      "original_loads": 8,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_53",
+        "ANTENNA_54",
+        "ANTENNA_55",
+        "ANTENNA_56"
+      ]
+    },
+    {
+      "pin": "paired_balanced_25_3/X",
+      "net": "paired_balanced_25_3_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 12.0,
+      "original_loads": 8,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_66",
+        "ANTENNA_67",
+        "ANTENNA_68",
+        "ANTENNA_69"
+      ]
+    },
+    {
+      "pin": "paired_balanced_108_15/X",
+      "net": "paired_balanced_108_15_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 11.0,
+      "original_loads": 8,
+      "added_antenna_loads": 3,
+      "added_antenna_instances": [
+        "ANTENNA_114",
+        "ANTENNA_115",
+        "ANTENNA_116"
+      ]
+    },
+    {
+      "pin": "paired_balanced_148_17/X",
+      "net": "paired_balanced_148_17_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 11.0,
+      "original_loads": 8,
+      "added_antenna_loads": 3,
+      "added_antenna_instances": [
+        "ANTENNA_58",
+        "ANTENNA_59",
+        "ANTENNA_60"
+      ]
+    },
+    {
+      "pin": "paired_balanced_157_16/X",
+      "net": "paired_balanced_157_16_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 11.0,
+      "original_loads": 7,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_61",
+        "ANTENNA_62",
+        "ANTENNA_63",
+        "ANTENNA_64"
+      ]
+    },
+    {
+      "pin": "wire52/X",
+      "net": "net52",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 11.0,
+      "original_loads": 5,
+      "added_antenna_loads": 6,
+      "added_antenna_instances": [
+        "ANTENNA_71",
+        "ANTENNA_72",
+        "ANTENNA_73",
+        "ANTENNA_74",
+        "ANTENNA_75",
+        "ANTENNA_76"
+      ]
+    },
+    {
+      "pin": "_06769_/Y",
+      "net": "_02185_",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 10.0,
+      "original_loads": 6,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_3",
+        "ANTENNA_4",
+        "ANTENNA_5",
+        "ANTENNA_6"
+      ]
+    },
+    {
+      "pin": "wire3552/X",
+      "net": "net3552",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 10.0,
+      "original_loads": 6,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_88",
+        "ANTENNA_89",
+        "ANTENNA_90",
+        "ANTENNA_91"
+      ]
+    },
+    {
+      "pin": "_07915_/Y",
+      "net": "_03354_",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 9.0,
+      "original_loads": 5,
+      "added_antenna_loads": 4,
+      "added_antenna_instances": [
+        "ANTENNA_12",
+        "ANTENNA_13",
+        "ANTENNA_14",
+        "ANTENNA_15"
+      ]
+    },
+    {
+      "pin": "paired_balanced_133_5/X",
+      "net": "paired_balanced_133_5_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 9.0,
+      "original_loads": 8,
+      "added_antenna_loads": 1,
+      "added_antenna_instances": [
+        "ANTENNA_47"
+      ]
+    },
+    {
+      "pin": "paired_balanced_139_2/X",
+      "net": "paired_balanced_139_2_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 9.0,
+      "original_loads": 8,
+      "added_antenna_loads": 1,
+      "added_antenna_instances": [
+        "ANTENNA_48"
+      ]
+    },
+    {
+      "pin": "paired_balanced_147_12/X",
+      "net": "paired_balanced_147_12_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 9.0,
+      "original_loads": 8,
+      "added_antenna_loads": 1,
+      "added_antenna_instances": [
+        "ANTENNA_57"
+      ]
+    },
+    {
+      "pin": "paired_balanced_17_3/X",
+      "net": "paired_balanced_17_3_out",
+      "kind": "SIGNAL",
+      "limit": 8.0,
+      "fanout": 9.0,
+      "original_loads": 8,
+      "added_antenna_loads": 1,
+      "added_antenna_instances": [
+        "ANTENNA_65"
+      ]
+    }
+  ],
+  "layout_checks": {
+    "route__drc_errors": 0,
+    "magic__drc_error__count": 0,
+    "route__antenna_violation__count": 0,
+    "design__critical_disconnected_pin__count": 0,
+    "design__lvs_device_difference__count": 0,
+    "design__lvs_net_difference__count": 0,
+    "design__lvs_property_fail__count": 0,
+    "design__lvs_error__count": 0,
+    "design__lvs_unmatched_device__count": 0,
+    "design__lvs_unmatched_net__count": 0,
+    "design__lvs_unmatched_pin__count": 0
+  },
+  "power_connectivity": true,
+  "original_geometry_preserved": true,
+  "additions": {
+    "antenna": 118,
+    "power_only": 45931,
+    "power_only_by_type": {
+      "sg13cmos5l_decap_8": 35406,
+      "sg13cmos5l_fill_2": 3610,
+      "sg13cmos5l_fill_1": 3867,
+      "sg13cmos5l_decap_4": 3048
+    }
+  },
+  "area_um2": {
+    "before": 374652.5472,
+    "signal_and_macro_and_antenna": 375294.8448,
+    "antenna": 642.2976,
+    "fill_and_decap": 491921.9424,
+    "total_placed": 867216.7872
+  },
+  "functional": {
+    "exact_original_signal_identity": true,
+    "corruption_controls_passed": true,
+    "coverage": {
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+    }
+  },
+  "flow_exit_is_not_acceptance": {
+    "flow_status": "completed",
+    "max_cap_and_slew_checker_corners": [
+      ""
+    ],
+    "independent_gate": "scripts/physical_timing_acceptance.py",
+    "tests": 5
+  },
+  "disabled_checks": [
+    "RUN_KLAYOUT_DRC",
+    "RUN_KLAYOUT_XOR",
+    "RUN_EQY"
+  ],
+  "fast_corner_qualified": false,
+  "resources": {
+    "phase_cad_seconds": 478.773,
+    "continuation_including_electrical_seconds": 568.83,
+    "prior_campaign_cad_seconds": 4447.508,
+    "cumulative_cad_seconds": 4926.281,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 2,
+    "A_full_flow_attempts_remaining": 0,
+    "B_full_flow_attempts_remaining": 2,
+    "B_admitted": false,
+    "stages": [
+      {
+        "stage": "inspection-02-receipt",
+        "cad_seconds": 16.227
+      },
+      {
+        "stage": "inspection-receipt",
+        "cad_seconds": 3.421
+      },
+      {
+        "stage": "route-preflight-receipt",
+        "cad_seconds": 4.786
+      },
+      {
+        "stage": "route-run-receipt",
+        "cad_seconds": 413.996
+      },
+      {
+        "stage": "post-route-check",
+        "cad_seconds": 40.343
+      }
+    ]
+  },
+  "recipes_sha256": {
+    "build/validation/balanced-detailed-01/analyze-final.py": "be2e05c9c416bb5bc09e1a06dee50db9368e1a916e73b8979a4b55fe1bda5325",
+    "build/validation/balanced-detailed-01/check-post-route.py": "9cf05310e6f999a858fb734d8d643183481c56b3bc038bdf2d9e18449112fe35",
+    "build/validation/balanced-detailed-01/inspection-launch-02.py": "a5e1df767572385ed6d408d226290d188da9daf2ebec9977763bad5b6c56283e",
+    "build/validation/balanced-detailed-01/inspection-launch.py": "a7b5cd327a9626e2fa3be4d10183826607f49f0704c333ad57b9f0005e34b25b",
+    "build/validation/balanced-detailed-01/inspection-worker-02.py": "523ac82ecd9b037ee4ee0803510875c4c06f166f6a5c8bf5381648d337cc0215",
+    "build/validation/balanced-detailed-01/inspection-worker.py": "d698e95e1728c188314add32de2a1359ef8b04d297647a74b1d00db1a0df5a1b",
+    "build/validation/balanced-detailed-01/route-launch.py": "44181321a1c6d802cc030dad421a3f4f40d57e43c1c6b09e3e6bd7af475da485",
+    "build/validation/balanced-detailed-01/route-worker.py": "e1eae289aae009652a57012f3ad8541e368f9a96f7ae6169fe5b9e8f46a38b50"
+  },
+  "shared_acceptance_sha256": {
+    "scripts/physical_timing_acceptance.py": "ddb68191a580800ff44d216972b8337eca55d0e0071c027c1fd7352606028cc8",
+    "test/test_physical_timing_acceptance.py": "b768ada86b27e70fc4d2ee8be274f6cacb95906e3314fb05cf3f57a7ca9d5d04"
+  },
+  "fast_corner_audit_sha256": {
+    "build/validation/fast-corner-audit-01/README.md": "4329f4c9612d269d1fd8a8ff110851efdc8300bb659f5aaa8059d9c7e8b0be7a",
+    "build/validation/fast-corner-audit-01/RM_IHPSG13_1P_512x64_c2_bm_bist.txt": "025261a4c465f3c736331e28faace815a5653be4c66f81c996e2d5afc1f65e2f",
+    "build/validation/fast-corner-audit-01/documentation-sources.json": "9176e80e6489da8ecc3d77380ebb4a1bf378b55c8072cbe5581bc29bea62b2aa",
+    "build/validation/fast-corner-audit-01/qualification.json": "be88aa8004ebe919bf771cff909d4ebe57d3dcaffa75a3bb555ad16461348bfd",
+    "build/validation/fast-corner-audit-01/upstream-inventory.json": "4ba9ef6c9e3a58faf271bebd24a967c15c025e623248148088be042f1692b1bc",
+    "build/validation/fast-corner-audit-01/upstream-tree.json": "3ae0d4e54088a4733c147c5d123acc923589ee4e33e506dbcdc96ca2676346fd"
+  },
+  "boundary": "One final allocated A attempt completed. Clean layout checks and positive extracted timing do not waive the electrical failures, unmatched fast characterization or incomplete formal correspondence. No B, clean-source replay, competition admission or silicon result."
+}

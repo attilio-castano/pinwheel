@@ -1,0 +1,266 @@
+{
+  "schema": 1,
+  "status": "completed",
+  "experiment": "incremental-repair-01",
+  "date": "2026-09-26",
+  "study": "docs/physical/incremental-routing-import-experiment.md",
+  "report": {
+    "path": "build/validation/incremental-repair-01/report.json",
+    "sha256": "2fc57afea2642eb214a06dc75265bea2c4e33ee4bc7648e27555205fcf3215f6"
+  },
+  "source": {
+    "path": "build/validation/hold-repair-01/candidate/repaired.odb",
+    "sha256": "596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114"
+  },
+  "predecessor": {
+    "path": "build/validation/routing-grid-01/report.json",
+    "sha256": "0d0090d5cba39aa820cf790d135c9514ad727fd32fe0b9987b3e32406d3a2360"
+  },
+  "decision": {
+    "retain": "hold-repair-01/candidate",
+    "import_admitted": false,
+    "signal_candidate_attempted": false,
+    "physical_qualification": false,
+    "backend_promotion": false,
+    "reason": "All routes, cell geometry, independent netlist and fresh measurements reproduce, but neither no-edit import preserves the complete routing resource state.",
+    "next_gate": "Repair and regression-test saved-route import, preserving effective NDR costs and macro access capacity exactly once, then test no-edit and edit/revert resource accounting before one bounded signal-distribution edit. Qualify dirty-route removal and both 2-D and 3-D resource state."
+  },
+  "measurements": {
+    "measured_connections": 10990,
+    "pin_corner_checks": 32970,
+    "selected_path_checks": 132,
+    "interface_path_checks": 384,
+    "global_metrics": {
+      "nom_fast_1p32V_m40C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.143801,
+        "timing__setup__ws": 9.32177
+      },
+      "nom_slow_1p08V_125C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.570068,
+        "timing__setup__ws": 0.382789
+      },
+      "nom_typ_1p20V_25C": {
+        "design__max_slew_violation__count": 0,
+        "design__max_fanout_violation__count": 0,
+        "design__max_cap_violation__count": 0,
+        "timing__hold__ws": 0.32959,
+        "timing__setup__ws": 6.13235
+      }
+    },
+    "electrical_reserve_counts": {
+      "within_reserve": 9195,
+      "below_reserve": 5,
+      "constant_without_reported_timing_limits": 1790
+    },
+    "below_reserve": [
+      {
+        "net": "_01876_",
+        "reserve": 0.07895150201712768,
+        "verdict": "below_reserve"
+      },
+      {
+        "net": "_02877_",
+        "reserve": 0.170972239827777,
+        "verdict": "below_reserve"
+      },
+      {
+        "net": "_04215_",
+        "reserve": 0.16970916442947684,
+        "verdict": "below_reserve"
+      },
+      {
+        "net": "_04597_",
+        "reserve": 0.19540492885046945,
+        "verdict": "below_reserve"
+      },
+      {
+        "net": "_05213_",
+        "reserve": 0.14061122437555093,
+        "verdict": "below_reserve"
+      }
+    ],
+    "area_um2": 361583.424,
+    "over_historical_allowance_um2": 2210.985763200035,
+    "total_percent_above_reference": 0.9170809123175916,
+    "minimum_sram_write_hold_ns": 0.145047083
+  },
+  "validation": {
+    "focused_tests": 65,
+    "launch_guards": 6
+  },
+  "resource_accounting": {
+    "cad_stages": 5,
+    "cad_seconds": 168.145,
+    "prior_cumulative_cad_seconds": 4656.154,
+    "cumulative_cad_seconds": 4824.299,
+    "full_routes": 0,
+    "incremental_controls": 2,
+    "signal_candidates": 0,
+    "added_cells": 0,
+    "area_delta_um2": 0,
+    "total_cad_cap_seconds": 1800,
+    "timeouts": 0,
+    "containers": "all absent"
+  },
+  "controls": {
+    "control": {
+      "route_identity": {
+        "equal": true,
+        "source_nets": 11342,
+        "imported_nets": 11342,
+        "source_segments": 126729,
+        "clock_nets": 342,
+        "changed_nets": [],
+        "changed_clock_nets": []
+      },
+      "grid_delta": {
+        "Metal2": {
+          "capacity": 0,
+          "usage": 11544
+        },
+        "Metal3": {
+          "capacity": 0,
+          "usage": 11434
+        },
+        "Metal4": {
+          "capacity": 0,
+          "usage": 7643
+        }
+      },
+      "router": {
+        "Metal1": {
+          "resource": 0,
+          "demand": 0,
+          "overflow": 0
+        },
+        "Metal2": {
+          "resource": 132967,
+          "demand": 0,
+          "overflow": 0
+        },
+        "Metal3": {
+          "resource": 162127,
+          "demand": 0,
+          "overflow": 0
+        },
+        "Metal4": {
+          "resource": 130502,
+          "demand": 0,
+          "overflow": 0
+        }
+      },
+      "marker_reconciliation": "rejected"
+    },
+    "control-02": {
+      "route_identity": {
+        "equal": true,
+        "source_nets": 11342,
+        "imported_nets": 11342,
+        "source_segments": 126729,
+        "clock_nets": 342,
+        "changed_nets": [],
+        "changed_clock_nets": []
+      },
+      "grid_delta": {
+        "Metal2": {
+          "capacity": 79,
+          "usage": 129
+        },
+        "Metal3": {
+          "capacity": 0,
+          "usage": 42
+        },
+        "Metal4": {
+          "capacity": 0,
+          "usage": 0
+        }
+      },
+      "router": {
+        "Metal1": {
+          "resource": 0,
+          "demand": 0,
+          "overflow": 0
+        },
+        "Metal2": {
+          "resource": 133315,
+          "demand": 66930,
+          "overflow": 0
+        },
+        "Metal3": {
+          "resource": 162127,
+          "demand": 98016,
+          "overflow": 25
+        },
+        "Metal4": {
+          "resource": 130502,
+          "demand": 24590,
+          "overflow": 0
+        }
+      },
+      "marker_reconciliation": "passed"
+    }
+  },
+  "diagnosis": {
+    "runtime_disabled_ndr_nets": [
+      "clk",
+      "clknet_0_clk_regs",
+      "delaynet_3_clk"
+    ],
+    "active_ndr_nets": [
+      "clk_regs",
+      "clknet_0_clk",
+      "delaynet_0_clk",
+      "delaynet_1_clk",
+      "delaynet_2_clk",
+      "delaynet_4_clk"
+    ],
+    "extra_clock_track_edges_by_net": {
+      "clk_regs": {
+        "Metal2": 1
+      },
+      "clknet_0_clk": {
+        "Metal3": 1
+      },
+      "delaynet_0_clk": {
+        "Metal3": 10,
+        "Metal2": 14
+      },
+      "delaynet_1_clk": {
+        "Metal2": 16,
+        "Metal3": 10
+      },
+      "delaynet_2_clk": {
+        "Metal3": 11,
+        "Metal2": 9
+      },
+      "delaynet_4_clk": {
+        "Metal3": 10,
+        "Metal2": 1
+      }
+    },
+    "missing_routed_demand_by_layer": {
+      "Metal2": 41,
+      "Metal3": 42,
+      "Metal4": 0
+    },
+    "missing_clock_demand_total": 83,
+    "capacity_resource_change": {
+      "Metal2": 348,
+      "Metal3": 0,
+      "Metal4": 0
+    },
+    "source_analysis": "The first initialization resets imported usage. Reversing the order invokes initNetlist and addResourcesForPinAccess twice. Imported segments increment 3-D usage by one, without the effective clock NDR costs. The latter omission matches all 83 missing demand units. The repeated macro access initialization explains the capacity changes at the SRAM south edge; no patched native counterfactual has been run.",
+    "continuation_risk": "Saved guide import also does not rebuild FastRoute per-net route trees; dirty-route removal and 2-D/3-D consistency need qualification before a real edit."
+  },
+  "sources_sha256": {
+    "scripts/physical_route_import.py": "bd9f69982b2bd315e1d229ff1b77974dbedb6da53805131d44e3936144562619",
+    "test/test_physical_route_import.py": "8764d3b20f7f7eb7f8472c287dff03805b0da6d9918f9b1732de1e59cef78683"
+  },
+  "boundary": "Retained source measurements are unchanged. Matching timing and overflow totals do not qualify a restarted incremental router. No signal candidate or new full route was run. Ignored build artifacts are not recreated by this manifest."
+}

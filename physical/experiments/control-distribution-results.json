@@ -1,0 +1,939 @@
+{
+  "schema": 1,
+  "status": "experiment-completed",
+  "recorded_at_utc": "2026-09-26T12:03:12.511474+00:00",
+  "study": "docs/physical/control-distribution-experiment.md",
+  "decision": "Retain the preceding 34-buffer complete-route design as the physical starting point. Reject both new variants for qualification: the four-buffer whole-chip route regresses setup, capacitance and congestion; the seven-buffer local variant clears electrical limits but misses setup and has no complete-route result. Next compare the complete status/decode region with coordinated physical placement and distribution.",
+  "predecessor": {
+    "path": "physical/experiments/sram-distribution-results.json",
+    "sha256": "0ae836fd37291d5d7dd37deac707b5d0f6a4d3fb32a633f920a70530c19d8f7b"
+  },
+  "predecessor_report": {
+    "path": "build/validation/sram-distribution-01/report-02.json",
+    "sha256": "e8e27a51df68bf84e1f7ad4a6a06bb96b0ffdf7c764bc32cd623495f66aa4b30"
+  },
+  "retained_physical_database": {
+    "path": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-distribution-01/coarse/repaired.odb",
+    "sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6"
+  },
+  "source_database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "area_reference": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359776.2816,
+    "historical_limit_um2": 359372.43823679996,
+    "size_overage_allowed_for_exploration": true
+  },
+  "timing_floors_ns": {
+    "slow_setup": 0.3673431,
+    "fast_hold": 0.07927839
+  },
+  "bounds": {
+    "total_cad_seconds": 1800,
+    "measurement_seconds": 180,
+    "edit_seconds": 120,
+    "coarse_route_seconds": 300,
+    "max_candidate_variants": 2,
+    "max_coarse_routes": 3,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "variants": {
+    "baseline": {
+      "status": "passed",
+      "label": "baseline",
+      "database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+      "measured_connections": 1298,
+      "pin_corner_checks": 3894,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.321638
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.14136
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1294,
+        "below_reserve": 3,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02877_",
+          "reserve": 0.1914673456746395,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02966_",
+          "reserve": 0.19891142204354303,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.712602615,
+        "mode_status_endpoints_max": 1.992297888,
+        "sram_status_matched_max": 1.20015645,
+        "sram_status_endpoints_max": 0.321637839,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.902013779,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_matched_max": 1.750064135,
+        "bit_status_endpoints_max": 0.704092801,
+        "write_hold_matched_max": 18.73601532,
+        "write_hold_endpoints_max": 18.59217453,
+        "critical_read_matched_max": 0.321637839,
+        "critical_read_endpoints_max": 0.321637839,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "control-timing": {
+      "status": "passed",
+      "label": "control-timing",
+      "database_sha256": "0c38b5593c7e44fa8879536c62a4640d15c79a31731a8f80553e3d1ad3213509",
+      "measured_connections": 1298,
+      "pin_corner_checks": 3894,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.321638
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.14136
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1294,
+        "below_reserve": 3,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02877_",
+          "reserve": 0.1914673456746395,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02966_",
+          "reserve": 0.19891142204354303,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.712602615,
+        "mode_status_endpoints_max": 1.992297888,
+        "sram_status_matched_max": 1.20015645,
+        "sram_status_endpoints_max": 0.321637839,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.902013779,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_matched_max": 1.750064135,
+        "bit_status_endpoints_max": 0.704092801,
+        "write_hold_matched_max": 18.73601532,
+        "write_hold_endpoints_max": 18.59217453,
+        "critical_read_matched_max": 0.321637839,
+        "critical_read_endpoints_max": 0.321637839,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "buffered-timing": {
+      "status": "passed",
+      "label": "buffered-timing",
+      "database_sha256": "d0693d726a86d68d91234fdd863da63c47aebda781295df38058b34d4de9da8f",
+      "measured_connections": 1302,
+      "pin_corner_checks": 3906,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.556623
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.25846
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1302
+      },
+      "below_reserve": [],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359861.5584,
+      "added_area_um2": 85.27679999999236,
+      "over_historical_allowance_um2": 489.12016320001567,
+      "total_percent_above_reference": 0.436512284051771,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.712602615,
+        "mode_status_endpoints_max": 1.992595434,
+        "sram_status_matched_max": 1.20015645,
+        "sram_status_endpoints_max": 0.55662322,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.902013779,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_matched_max": 1.750361681,
+        "bit_status_endpoints_max": 0.796088576,
+        "write_hold_matched_max": 18.73601532,
+        "write_hold_endpoints_max": 18.59217453,
+        "critical_read_matched_max": 1.430525064,
+        "critical_read_endpoints_max": 0.55662322,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": true,
+        "fast_hold": true
+      }
+    },
+    "coarse-timing": {
+      "status": "passed",
+      "label": "coarse-timing",
+      "database_sha256": "14a9acb927e8ea6cf6b0e92aaba80bb521b26f6986440ef9af8594be2cea39aa",
+      "measured_connections": 1302,
+      "pin_corner_checks": 3906,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.101286,
+          "timing__setup__ws": 9.20946
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.512117,
+          "timing__setup__ws": 0.0634071
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.258951,
+          "timing__setup__ws": 5.8899
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1300,
+        "failing": 2
+      },
+      "below_reserve": [
+        {
+          "net": "_02974_",
+          "reserve": -0.2688522025792453,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03131_",
+          "reserve": -0.10773509235726313,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359861.5584,
+      "added_area_um2": 85.27679999999236,
+      "over_historical_allowance_um2": 489.12016320001567,
+      "total_percent_above_reference": 0.436512284051771,
+      "minimum_write_hold_ns": 0.125640273,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.543766975,
+        "mode_status_endpoints_max": 1.747399569,
+        "sram_status_matched_max": 0.910698235,
+        "sram_status_endpoints_max": 0.063407056,
+        "input_hold_matched_max": 15.119649887,
+        "input_hold_endpoints_max": 15.119649887,
+        "parameter_hold_matched_max": 18.902355194,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_matched_max": 1.363996029,
+        "bit_status_endpoints_max": 0.262577534,
+        "write_hold_matched_max": 18.841077805,
+        "write_hold_endpoints_max": 18.697237015,
+        "critical_read_matched_max": 0.89396584,
+        "critical_read_endpoints_max": 0.063407056,
+        "critical_hold_matched_max": 18.01915741,
+        "critical_hold_endpoints_max": 17.673810959
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "extended": {
+      "status": "passed",
+      "label": "extended",
+      "database_sha256": "14a9acb927e8ea6cf6b0e92aaba80bb521b26f6986440ef9af8594be2cea39aa",
+      "measured_connections": 1316,
+      "pin_corner_checks": 3948,
+      "selected_path_checks": 120,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.101286,
+          "timing__setup__ws": 9.20946
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.512117,
+          "timing__setup__ws": 0.0634071
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.258951,
+          "timing__setup__ws": 5.8899
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1314,
+        "failing": 2
+      },
+      "below_reserve": [
+        {
+          "net": "_02974_",
+          "reserve": -0.2688522025792453,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03131_",
+          "reserve": -0.10773509235726313,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359861.5584,
+      "added_area_um2": 85.27679999999236,
+      "over_historical_allowance_um2": 489.12016320001567,
+      "total_percent_above_reference": 0.436512284051771,
+      "minimum_write_hold_ns": 0.125640273,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.543766975,
+        "mode_status_endpoints_max": 1.747399569,
+        "sram_status_matched_max": 0.910698235,
+        "sram_status_endpoints_max": 0.063407056,
+        "input_hold_matched_max": 15.119649887,
+        "input_hold_endpoints_max": 15.119649887,
+        "parameter_hold_matched_max": 18.902355194,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_matched_max": 1.363996029,
+        "bit_status_endpoints_max": 0.262577534,
+        "write_hold_matched_max": 18.841077805,
+        "write_hold_endpoints_max": 18.697237015,
+        "critical_read_matched_max": 0.89396584,
+        "critical_read_endpoints_max": 0.063407056,
+        "critical_hold_matched_max": 18.01915741,
+        "critical_hold_endpoints_max": 17.673810959,
+        "alternate_read_matched_max": 0.063407056,
+        "alternate_read_endpoints_max": 0.063407056,
+        "alternate_bit_matched_max": 0.262577534,
+        "alternate_bit_endpoints_max": 0.262577534
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "balanced-timing": {
+      "status": "passed",
+      "label": "balanced-timing",
+      "database_sha256": "7324224a0a283effcd1b4b0765e194b1f35525e5f7d28e9dfd472868b49da069",
+      "measured_connections": 1319,
+      "pin_corner_checks": 3957,
+      "selected_path_checks": 120,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.101286,
+          "timing__setup__ws": 9.20946
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.512117,
+          "timing__setup__ws": 0.116998
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.258951,
+          "timing__setup__ws": 5.959
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1319
+      },
+      "below_reserve": [],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359923.248,
+      "added_area_um2": 146.9664000000339,
+      "over_historical_allowance_um2": 550.8097632000572,
+      "total_percent_above_reference": 0.45372970592851836,
+      "minimum_write_hold_ns": 0.125640273,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.543766975,
+        "mode_status_endpoints_max": 1.764851451,
+        "sram_status_matched_max": 0.910698235,
+        "sram_status_endpoints_max": 0.116997972,
+        "input_hold_matched_max": 15.119649887,
+        "input_hold_endpoints_max": 15.119649887,
+        "parameter_hold_matched_max": 18.902355194,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_matched_max": 1.405763507,
+        "bit_status_endpoints_max": 0.577703238,
+        "write_hold_matched_max": 18.841077805,
+        "write_hold_endpoints_max": 18.697237015,
+        "critical_read_matched_max": 0.89553076,
+        "critical_read_endpoints_max": 0.116997972,
+        "critical_hold_matched_max": 18.01915741,
+        "critical_hold_endpoints_max": 17.673810959,
+        "alternate_read_matched_max": 1.43372345,
+        "alternate_read_endpoints_max": 0.116997972,
+        "alternate_bit_matched_max": 1.655521989,
+        "alternate_bit_endpoints_max": 0.577703238
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    }
+  },
+  "initial_connections": 1298,
+  "inherited_watchlist_connections": 1252,
+  "final_local_connections": 1319,
+  "complete_families": {
+    "_01797_": {
+      "connections": 44,
+      "logic_leaves": 289,
+      "all_branches_measured": true
+    },
+    "_01810_": {
+      "connections": 13,
+      "logic_leaves": 81,
+      "all_branches_measured": true
+    },
+    "_02877_": {
+      "connections": 2,
+      "logic_leaves": 3,
+      "all_branches_measured": true
+    },
+    "_04753_": {
+      "connections": 4,
+      "logic_leaves": 21,
+      "all_branches_measured": true
+    },
+    "_05202_": {
+      "connections": 10,
+      "logic_leaves": 44,
+      "all_branches_measured": true
+    },
+    "memory.mem_data[51]": {
+      "connections": 91,
+      "logic_leaves": 434,
+      "all_branches_measured": true
+    },
+    "memory.mem_data[53]": {
+      "connections": 44,
+      "logic_leaves": 200,
+      "all_branches_measured": true
+    },
+    "_02605_": {
+      "connections": 2,
+      "logic_leaves": 3,
+      "all_branches_measured": true
+    },
+    "_02973_": {
+      "connections": 8,
+      "logic_leaves": 41,
+      "all_branches_measured": true
+    },
+    "_02999_": {
+      "connections": 16,
+      "logic_leaves": 93,
+      "all_branches_measured": true
+    }
+  },
+  "pin_corner_checks": 23505,
+  "selected_path_checks": 624,
+  "interface_path_checks": 2304,
+  "matched_local_clock_comparisons": 108,
+  "unchanged_control_reproduced_all_measurements_paths_and_grid": true,
+  "scope_extension_reproduced_all_prior_measurements": true,
+  "congestion": {
+    "baseline": {
+      "router_overflow": 16,
+      "stored_grid_overflow": 15.0,
+      "native_2d_overflow": 16,
+      "native_marker_count": 16,
+      "unmatched_2d_markers": [
+        {
+          "direction": "HORIZONTAL",
+          "index": [
+            71,
+            71
+          ],
+          "bbox_dbu": [
+            511200,
+            511200,
+            518400,
+            518400
+          ],
+          "available_capacity": 10,
+          "routed_demand": 11,
+          "overflow": 1,
+          "matching_saved_layers": [],
+          "crossing_nets": [
+            "_02007_",
+            "_02035_",
+            "_02131_",
+            "_02136_",
+            "_02393_",
+            "_02401_",
+            "_02990_",
+            "_02997_",
+            "_03024_",
+            "_03095_",
+            "controller.r_parameter_b1_w11[8]"
+          ],
+          "saved": {
+            "Metal2": {
+              "capacity": 15.0,
+              "usage": 13.0
+            },
+            "Metal3": {
+              "capacity": 17.0,
+              "usage": 17.0
+            },
+            "Metal4": {
+              "capacity": 15.0,
+              "usage": 13.0
+            }
+          }
+        }
+      ]
+    },
+    "control": {
+      "router_overflow": 16,
+      "stored_grid_overflow": 15.0,
+      "native_2d_overflow": 16,
+      "native_marker_count": 16,
+      "unmatched_2d_markers": [
+        {
+          "direction": "HORIZONTAL",
+          "index": [
+            71,
+            71
+          ],
+          "bbox_dbu": [
+            511200,
+            511200,
+            518400,
+            518400
+          ],
+          "available_capacity": 10,
+          "routed_demand": 11,
+          "overflow": 1,
+          "matching_saved_layers": [],
+          "crossing_nets": [
+            "_02007_",
+            "_02035_",
+            "_02131_",
+            "_02136_",
+            "_02393_",
+            "_02401_",
+            "_02990_",
+            "_02997_",
+            "_03024_",
+            "_03095_",
+            "controller.r_parameter_b1_w11[8]"
+          ],
+          "saved": {
+            "Metal2": {
+              "capacity": 15.0,
+              "usage": 13.0
+            },
+            "Metal3": {
+              "capacity": 17.0,
+              "usage": 17.0
+            },
+            "Metal4": {
+              "capacity": 15.0,
+              "usage": 13.0
+            }
+          }
+        }
+      ]
+    },
+    "coarse": {
+      "router_overflow": 20,
+      "stored_grid_overflow": 20.0,
+      "native_2d_overflow": 20,
+      "native_marker_count": 20,
+      "unmatched_2d_markers": []
+    }
+  },
+  "congestion_boundary": "These quantities need not agree. The baseline 16/15 discrepancy is reproduced, with one unmatched 2-D marker at [71,71]; it is not established that this marker identifies the extra Metal4 3-D edge. The first candidate has 20/20 and passes exact native/grid/flow reconciliation, but still has congestion.",
+  "minimum_pin_access_of_four_buffer_coarse_candidate": {
+    "database_sha256": "14a9acb927e8ea6cf6b0e92aaba80bb521b26f6986440ef9af8594be2cea39aa",
+    "signal_layers": "Metal2-Metal4",
+    "clock_layers": "Metal2-Metal4",
+    "source_unchanged": true,
+    "counts": {
+      "stdCellPinCnt": 33686,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "physical_qualification": false,
+  "detailed_route_executed": false,
+  "production_admission_changed": false,
+  "rtl_changed": false,
+  "new_lean_theorems": 0,
+  "added_pipeline_cycles": 0,
+  "tests": {
+    "tests_run": 473,
+    "passed": 471,
+    "skipped": 2,
+    "receipt": {
+      "path": "build/validation/control-distribution-01/python-tests-final.json",
+      "sha256": "d621648603533fb4ba82589b03ac77f6b9b6c1aa7278cc4e685d9708e2151720"
+    },
+    "missing_stage_guard_rejections": 2
+  },
+  "execution": {
+    "cad_attempts": 12,
+    "completed_cad_attempts": 11,
+    "incremental_routes": 2,
+    "complete_routes": 2,
+    "interrupted_repeat_controls": 1,
+    "cad_container_seconds": 419.64,
+    "previous_container_seconds": 599.633,
+    "combined_container_seconds": 1019.273,
+    "timeouts": 0,
+    "containers": {
+      "pinwheel-control-01-geometry": "absent",
+      "pinwheel-control-01-baseline": "absent",
+      "pinwheel-control-01-control": "absent",
+      "pinwheel-control-01-balanced": "absent",
+      "pinwheel-control-01-buffered": "absent",
+      "pinwheel-control-01-balanced-timing": "absent",
+      "pinwheel-control-01-extended": "absent",
+      "pinwheel-control-01-control-timing": "absent",
+      "pinwheel-control-01-buffered-timing": "absent",
+      "pinwheel-control-01-coarse-timing": "absent",
+      "pinwheel-control-01-final": "absent",
+      "pinwheel-control-01-coarse": "absent"
+    }
+  },
+  "aborted_control": {
+    "status": "recorded-and-guarded",
+    "reason": "Caller continued after the final local timing gate failed. Without a candidate source stage, the earlier runner defaulted to the original baseline; this unnecessary repeat control was explicitly stopped.",
+    "intended_candidate_not_routed": true,
+    "local_setup_ns": 0.116998,
+    "required_setup_floor_ns": 0.3673431,
+    "actual_source_database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+    "cad_receipt": "final-receipt.json",
+    "cad_receipt_sha256": "98d590c9c8966d109ec3c7adc3314f2e409ee3eaefa1d4fea215c6c0848db4da",
+    "source_unchanged": true,
+    "containers": {
+      "pinwheel-control-01-final": "absent"
+    },
+    "elapsed_seconds": 20.567,
+    "runner_sha256": "1e419f628cb93c7dc7d90029218654a976cba42dbc7544c93ad88a5be9bbd19c",
+    "regression_checks": [
+      {
+        "label": "missing-route-stage",
+        "mode": "route",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/control-distribution-01/run.py\", line 21, in <module>\n    raise ValueError('Explicit source stage required for candidate edit or route')\nValueError: Explicit source stage required for candidate edit or route\n",
+        "no_output_directory": true,
+        "no_container_receipt": true
+      },
+      {
+        "label": "missing-edit-stage",
+        "mode": "edit",
+        "exit_code": 1,
+        "stderr": "Traceback (most recent call last):\n  File \"/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/control-distribution-01/run.py\", line 21, in <module>\n    raise ValueError('Explicit source stage required for candidate edit or route')\nValueError: Explicit source stage required for candidate edit or route\n",
+        "no_output_directory": true,
+        "no_container_receipt": true
+      }
+    ]
+  },
+  "evidence_boundary": [
+    "Global-route wire estimates at three corners with a 20 ns constraint; fast standard cells remain -40C versus SRAM -55C.",
+    "Incremental grids are partial. Only the four-buffer candidate has a completed whole-chip route and pin-access probe; the seven-buffer variant is a local result.",
+    "The aborted final-labelled run used the unchanged original baseline, not the second candidate. It contributes no completed route or physical result. Its time and failed receipt remain retained.",
+    "Native congestion markers are 2-D and cannot independently locate the extra Metal4 3-D overflow. The first complete candidate has 20 matching router/grid/native units and still fails qualification.",
+    "Buffer-contracted actual Verilog and exact database readbacks preserve original logic, state, clocks and placements under the pinned cell interpretations. No new Lean theorem or complete paired package refinement follows."
+  ],
+  "evidence": {
+    "request.json": {
+      "path": "build/validation/control-distribution-01/request.json",
+      "sha256": "8a16f9429e57aa694837c214adbc8eee03749d647f157fd90aeceaa900ea8dce"
+    },
+    "scope-extension.json": {
+      "path": "build/validation/control-distribution-01/scope-extension.json",
+      "sha256": "12e74376cc811a72e4b1ba33d81c8cf7e8cbbbae0060c535d937afd2275173a3"
+    },
+    "buffered-plan.json": {
+      "path": "build/validation/control-distribution-01/buffered-plan.json",
+      "sha256": "c2169325ef83cda129dc8397310afecac7c7368d233177f5450be00a000db173"
+    },
+    "balanced-plan.json": {
+      "path": "build/validation/control-distribution-01/balanced-plan.json",
+      "sha256": "b56e7b24bfa837cd07a1690dc5cd96b395432db942d449f230ccb4a1a7cfe2d0"
+    },
+    "congestion-analysis.json": {
+      "path": "build/validation/control-distribution-01/congestion-analysis.json",
+      "sha256": "7c0e7c4d7e4fe4b313ea1c1459f61a7c5c0936f9c1014caa14953eb26cb3cdb9"
+    },
+    "aborted-control-and-guard.json": {
+      "path": "build/validation/control-distribution-01/aborted-control-and-guard.json",
+      "sha256": "ce5070a14cbd8dae863502a9619ad6c7e38e7864980b74a575ecdd40a78c8bc6"
+    },
+    "baseline-analysis.json": {
+      "path": "build/validation/control-distribution-01/baseline-analysis.json",
+      "sha256": "df88eea7dd61d0b48525524717f21c63612ecd3894eaed3f8206a39e378a0fb6"
+    },
+    "control-timing-analysis.json": {
+      "path": "build/validation/control-distribution-01/control-timing-analysis.json",
+      "sha256": "03fa3c7a60cbca760cf75a36269474fccd010f86f0fa417646b2ffe5011d8301"
+    },
+    "buffered-timing-analysis.json": {
+      "path": "build/validation/control-distribution-01/buffered-timing-analysis.json",
+      "sha256": "061d8079cc535049f1ce78da72e89aba00324c19a4f74f5ee9018c41b23a9e4a"
+    },
+    "coarse-timing-analysis.json": {
+      "path": "build/validation/control-distribution-01/coarse-timing-analysis.json",
+      "sha256": "e9e8e1213effa49da748aa22bf1b3a94e12868fb09cf6b12900799989070a1f1"
+    },
+    "extended-analysis.json": {
+      "path": "build/validation/control-distribution-01/extended-analysis.json",
+      "sha256": "6e1bceac0ac6cc87e7775ede74c7972be0ef9fb9381a60b38978468eb09d876a"
+    },
+    "balanced-timing-analysis.json": {
+      "path": "build/validation/control-distribution-01/balanced-timing-analysis.json",
+      "sha256": "fd4c93c9dbedb68b3b4234b36d5a829d26fe291848cc0dd7cb5df335d934fa4f"
+    },
+    "control-verification-01.json": {
+      "path": "build/validation/control-distribution-01/control-verification-01.json",
+      "sha256": "04b777e0edfd78137b239524521d35641f67953f0dc81a2307cd188cd07cf218"
+    },
+    "buffered-verification-01.json": {
+      "path": "build/validation/control-distribution-01/buffered-verification-01.json",
+      "sha256": "08516759186994d19d9f612ddce2eb20b4348d8a4c8da13c461181045646ac4f"
+    },
+    "coarse-verification-01.json": {
+      "path": "build/validation/control-distribution-01/coarse-verification-01.json",
+      "sha256": "8db75ef6c8a7fa20c926df713993d26827424d631f42b13470c7f281e6176abd"
+    },
+    "balanced-verification-01.json": {
+      "path": "build/validation/control-distribution-01/balanced-verification-01.json",
+      "sha256": "d005d64180ebf81c2031bf317e7edaad1c52c08762724457bfa658d7940daa6b"
+    }
+  },
+  "source_sha256": {
+    "scripts/physical_signal_buffering.py": "9dbd6acdc2304639936a854e6af2f679f3c8bf61b499014abb0e24cfa6fa7567",
+    "scripts/physical_connections.py": "874d448fc9e5b26ed0a81cbd1062557252f340ecec09a9ef668f78a368e88094",
+    "scripts/physical_organization.py": "5bfaebe9bd57dbbc3015ec1564aedb72c25930d6f49c033a38f12f5651b5aca9",
+    "scripts/physical_congestion.py": "138548377eb12927e8de210e93161aad1256a728fe0caa9c975bcac81ab9f967"
+  },
+  "report": "build/validation/control-distribution-01/report.json",
+  "report_sha256": "e09f10703140902cb23b825584d2918ba1a7327e7881a7470a995c8ccf9b4188",
+  "source_versions_checked": 2003,
+  "artifact_count": 2311
+}

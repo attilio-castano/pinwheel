@@ -19,7 +19,7 @@ or interrupted work.
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
 | Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
 | Physical correlation and placement | [Estimate/extraction diagnosis](#2026-09-17-estimateextraction-correlation-diagnosis), [placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution), [exact mapping and hold repair](#2026-09-22--preserve-the-mapping-through-placement-and-hold-repair) |
-| Repair and admission | [Whole-chip signal repair](#2026-09-23--whole-chip-qualification-of-the-27-buffer-signal-repair), [rejected shared-edit route](#2026-09-23--shared-physical-edits-and-a-rejected-whole-chip-qualification), [timing and organization comparison](#2026-09-23--timing-obligations-and-complete-organization-comparison) |
+| Repair and admission | [Whole-chip signal repair](#2026-09-23--whole-chip-qualification-of-the-27-buffer-signal-repair), [rejected shared-edit route](#2026-09-23--shared-physical-edits-and-a-rejected-whole-chip-qualification), [timing and organization comparison](#2026-09-23--timing-obligations-and-complete-organization-comparison), [saved-route import controls](#2026-09-26--saved-route-import-controls) |
 
 ### By date
 
@@ -32,6 +32,7 @@ or interrupted work.
 | 2026-09-21 | [Placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) | Closed-loop SRAM, hybrid/direct costs and tile boundaries |
 | 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
 | 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
+| 2026-09-26 | [SRAM distribution and write timing](#2026-09-26--sram-distribution-and-write-timing), [competing read paths](#2026-09-26--control-distribution-and-competing-read-paths), [coordinated placement](#2026-09-26--coordinated-status-and-decode-placement) | Complete watchlist, matched coarse routes, rejected regional placement and clock/hold diagnosis |
 
 ## Future receipt shape
 
@@ -3903,3 +3904,993 @@ The [study](../physical/physical-organization-study.md) owns interpretation and 
 [manifest](../../physical/experiments/paired-organization-study-results.json)
 binds the selected report and checks. Supporting receipts are under
 `build/validation/paired-organization-study-01/`.
+
+## 2026-09-25 — explicit hierarchy policies and matched flat control
+
+Implemented the bounded [hierarchy comparison](../physical/map-tile-study.md#explicit-hierarchy-comparison--september-25)
+around the existing tiled chip. The checker names its synthesis boundaries,
+requires their exact instances after mapping and distribution, and binds every
+flat leaf to its original module through JSON flattening and Verilog read-back.
+`--compare-flat` maps the identical candidate RTL with the same recipe and load
+budget while removing the storage-tile boundaries. Existing synthesis defaults
+remain available; no Lean circuit or RTL generator changes.
+
+Selected `hierarchy-policy-02` passes in **559.885 s**, longest command **84.247 s**
+against the existing 180 s cap. Six SAT proofs, two rejected mutations,
+**2,553,100** independently simulated edges, the Lean build and standard-axiom
+audit pass. Portable validation records **448 passed / 2 skipped**. The
+[tracked receipt](../../physical/experiments/hierarchy-policy-results.json)
+pins the full report, 259 inputs, 178 artifacts, validation and source hashes.
+
+Both corners reproduce the 2.021629% standard-cell saving from retaining the
+32 tiles, with mixed address-depth effects; the study owns the measurements.
+The first complete comparison, `hierarchy-policy-01`, also passed and remains
+intact. An intermediate export probe exposed private-name encoding in Yosys;
+the final run checks that exact conversion and rejects collisions or arbitrary
+renaming. Two full runs total **1,057.987 s** elapsed, excluding the small probes
+and unit tests. Historical cumulative CAD use remains unknown.
+
+**Allocation:** retain the explicit policies and checked flat views for future
+architecture comparisons. No timing, placement, routing or Docker run was
+launched. This mapping result does not promote a physical candidate or close
+the separate Lean interpretation obligation.
+
+## 2026-09-25 — temporary size overages permitted for exploration
+
+The user clarified that architectural exploration may temporarily exceed size
+constraints when the overage is recorded; new ideas can be optimized afterward.
+The [research workflow](README.md#exploration-with-temporary-size-overages) and
+[active status](status.md) now carry this direction. Record the original target,
+candidate size and overage, observed benefit, other regressions and the next
+optimization question. A complete plan to recover the area is not a prerequisite
+for trying an idea. The old 0.3% repair allowance remains a historical comparison,
+and final qualification retains its applicable requirements. This is a policy
+update; no hardware, acceptance checker, historical receipt or measured result
+changed, and no new CAD run was launched.
+
+## 2026-09-25 — regional decode copies, input distribution and coarse reroute
+
+Completed the authorized [regional-decoding experiment](../physical/regional-decoding-experiment.md)
+from the saved `paired-locality-route-01` checkpoint. The two missing parent nets
+and opposite setup/hold checks were collected first. Two spatial gate copies
+improve the local mode/status path by **0.656426 ns**, but add two fanout
+violations. A second variant adds two shared input buffers, removes both new
+violations and retains the timing gain with unchanged matched clock paths.
+
+The buffered candidate adds **39.9168 µm²**, **0.011141%** of the original
+reference area. Its total **359,411.5872 µm²** exceeds the historical repair cap
+by **39.148963 µm²**. This overage is explicitly exploratory. Actual Verilog and
+ODB readbacks pass identical-gate folding, buffer contraction, exact terminals,
+all original cell placements, clock connections and power bindings. There is
+no added state, pipeline cycle, RTL change or new Lean theorem.
+
+One **88.946-second** coarse-route container retains the selected mode/status
+gain (**+1.798552 ns** slack) and reduces global capacitance violations **4 → 1**
+and complete-grid overflow **33 → 19**. Whole-chip qualification still fails:
+worst slow setup is **−0.113646 ns** from SRAM output bit 51 to status; worst fast
+hold is **+0.049847 ns** from `r_serial_shift[43]` into SRAM. SRAM input bit 35
+has a fast slew violation. These replace the earlier critical paths without
+meeting the retained setup/hold floors. The incremental probes' partial grid
+snapshots cannot support a zero-overflow claim.
+
+The final report reconciles **1,494 net/corner pin loads** and **192 timing
+witnesses**, with complete consumed-net wire estimates. The original global
+metrics reproduce. The new collection covers up to **126 connections**, including
+all five selected families and both sides of added cells; the full 1,152-net
+qualification watchlist remains a later obligation. The portable suite records
+**463 passed / 2 skipped**, including fourteen decoder-copy tests and the blank
+fanout-slack parser regression exposed by this experiment.
+
+Nine CAD container attempts total **169.993 seconds** against the declared
+1,200-second budget, with two local variants and one coarse reroute. All
+containers are absent; no timeout or detailed route occurred. Preserved failed
+attempts document the initial supply-port expectation for signal-only Verilog,
+a geometry reader launched without OpenDB's runtime, and the fanout parsing
+reconciliation. They required no repeated physical edit or coarse route.
+The [manifest](../../physical/experiments/regional-decoding-results.json) binds
+`build/validation/regional-organization-01/report.json`, 335 retained source
+versions and 508 artifacts.
+
+**Decision:** retain regional decoding as a measured implementation technique;
+do not promote the physical candidate. Next compare the complete bit-51
+distribution with the SRAM write-input timing environment. Keep the Lean
+semantic reference and its open paired compiler/admission/package obligations.
+This bounded prototype used existing generated circuitry and required no
+Hardcaml migration.
+
+## 2026-09-26 — SRAM distribution and write timing
+
+Completed the authorized [SRAM follow-up](../physical/sram-distribution-experiment.md)
+to the September 25 regional experiment, preserving its original evidence. Two
+local variants add 20 then 34 noninverting buffers, with exact ODB and independent
+Verilog readbacks. All original cells, placements and state remain; no cycles or
+RTL changes are introduced. The final local variant clears both retained timing
+floors and all 1,252 measured connections' 20% electrical reserve.
+
+- **Complete-route comparison:** an unchanged reroute reproduces all baseline
+  measurements and the stored grid. The candidate improves worst slow setup
+  **−0.113646 → +0.321638 ns** and fast hold **+0.049847 → +0.089025 ns**. Global
+  slew and fanout violations are zero. Every SRAM write-data hold check has at
+  least **+0.161179 ns** margin; global hold now limits a different state path.
+- **Failed qualification:** setup misses the retained +0.367343 ns floor by
+  **45.705 ps**. `_04754_` now exceeds its 0.3 pF capacitance limit, while
+  `_02966_` and `_05207_` miss reserve. Router overflow is **16**, versus 19 for
+  the control; the saved grid exposes **15**. The extra Metal4 unit remains
+  unresolved after two read-only API probes. No detailed routing or promotion.
+- **Size:** 34 buffers add **364.6944 µm²**. Total placed area is
+  **359,776.2816 µm²**, or **0.412712%** above the original reference and
+  **403.843363 µm²** above the historical allowance. The die is unchanged; the
+  overage is recorded under the approved exploration policy.
+- **Evidence:** the complete inherited 1,152-connection watchlist plus additional
+  read-path and new branches; **18,534** pin/corner reconciliations, **360**
+  selected-path witnesses, and **1,920** write-interface witnesses. All **72**
+  local matched clock comparisons are unchanged. Minimum pin access passes,
+  with zero standard-cell/macro no-access counts.
+- **Validation:** **471 passed / 2 skipped** portable tests. Regression coverage
+  includes per-bit SRAM address capacitance overrides, explicitly absent macro
+  fanout limits, malformed report-section rejection, and six signal-branch
+  identity/geometry tests. Initial analysis rejections, a premature verification
+  startup and the router/grid consistency rejection remain recorded.
+  Final review reproduces and fixes a bus-pin cache-key regression; all five
+  comparisons reproduce with the corrected reader, without another CAD run.
+- **Resources:** twelve settled CAD containers, **429.640 seconds**, under the
+  1,500-second cumulative bound; two incremental variants and two complete
+  reroutes, two CPUs and 2 GiB. The preceding **169.993 seconds** remain recorded,
+  for **599.633 seconds** combined. No timeout; all containers are absent.
+
+The [manifest](../../physical/experiments/sram-distribution-results.json) binds
+`build/validation/sram-distribution-01/report-02.json`, **1,943** retained source
+versions and **2,240** artifacts. Report SHA-256:
+`e8e27a51df68bf84e1f7ad4a6a06bb96b0ffdf7c764bc32cd623495f66aa4b30`.
+The original `report.json` and its first manifest remain retained; the amended
+report adds final-reader regression and reproduction evidence.
+
+**Decision:** retain the improved candidate and the joint read/write timing
+method; address the newly weak control families and fresh bit-53 setup path
+before another qualification attempt. Global-route estimates, minimum pin
+access, Lean interpretation and final layout remain separate evidence layers.
+The fast-corner cell/SRAM temperature mismatch is unchanged.
+
+## 2026-09-26 — Control distribution and competing read paths
+
+Completed the authorized [control-distribution follow-up](../physical/control-distribution-experiment.md).
+The initial scope expands the preceding 1,252 connections to 1,298, including
+complete affected families and fresh read-path wires. An unchanged complete
+reroute reproduces every baseline measurement, selected/write-interface path,
+and stored routing-grid value.
+
+- **Four added buffers:** local setup improves **+0.321638 → +0.556623 ns**,
+  all **1,302** connections meet the 20% reserve, and global electrical counts
+  are zero. Complete routing falls to **+0.063407 ns setup**, creates two
+  capacitance failures and raises router overflow **16 → 20**. Hold improves
+  to **+0.101286 ns**. The original targeted wires retain their margins.
+- **Seven added buffers:** a fourteen-connection/two-path supplementary
+  collection precedes three further edits. All **1,319** local connections pass
+  reserve, but setup reaches only **+0.116998 ns**, below +0.367343 ns. The
+  exact newly targeted bit-53 path improves **+0.063407 → +1.433723 ns**;
+  another mux output driving two consumers about 800 µm away becomes limiting.
+  This variant has no complete-route result.
+- **Size and identity:** additions cost **85.2768 / 146.9664 µm²**, with
+  historical allowance overages **489.120163 / 550.809763 µm²**. Original logic,
+  state, cell placements, clock/hold cells and macro/power bindings survive
+  actual database and independent Verilog readback checks.
+- **Evidence:** **23,505** load reconciliations, **624** selected-path witnesses,
+  **2,304** write-interface witnesses and **108** unchanged matched local clock
+  comparisons. All 64 SRAM write-data inputs retain the hold floor. Minimum pin
+  access passes for the completed four-buffer route. **471 tests pass / 2 skip**.
+- **Congestion:** the new complete candidate's **20/20** router/grid totals and
+  twenty native markers reconcile exactly. The baseline's **16/15** difference
+  remains: pinned source shows that saved grids combine directional usage while
+  router overflow is directional and native markers are 2-D. An unmatched 2-D
+  marker cannot establish the precise extra Metal4 3-D edge.
+- **Execution error and repair:** a failed local timing gate was followed by
+  an erroneous repeat control launch using the original baseline. It was stopped
+  after **20.567 seconds** with no final database and unchanged source. Its
+  failed receipt is preserved. A run-local guard now rejects missing candidate
+  stages before output creation or Docker; both edit/route rejection checks pass.
+- **Resources:** twelve attempts, eleven successful and one interrupted repeat
+  control, consume **419.640 seconds** of the 1,800-second bound. Two local
+  variants and two complete coarse routes finish. All containers are absent;
+  no timeout, detailed route or backend promotion. Cumulative regional/SRAM/control
+  CAD time is **1,019.273 seconds**.
+
+The [manifest](../../physical/experiments/control-distribution-results.json) binds
+`build/validation/control-distribution-01/report.json`, **2,003** retained source
+versions and **2,311** artifacts. Report SHA-256:
+`e09f10703140902cb23b825584d2918ba1a7327e7881a7470a995c8ccf9b4188`.
+
+**Decision:** retain the preceding 34-buffer SRAM design as the physical
+starting point. Reject qualification of these two variants. Compare coordinated
+placement and distribution of the status/decode region, measuring competing
+paths and clock delivery together. The placement hypothesis is untested; formal
+interpretation, coarse-route estimates and final layout remain distinct.
+
+## 2026-09-26 — Coordinated status and decode placement
+
+Completed the authorized [regional placement experiment](../physical/status-region-placement-experiment.md).
+It permits **1,226 combinational cells** to move together while fixing the other
+10,076 instances. The inventory expands to **4,199 connections / 2,190 complete
+transport families**. An unchanged full reroute reproduces baseline measurements,
+paths and routing grid. Both completed candidates preserve independently checked
+cell/connectivity identity, row definitions and placement statuses.
+
+- **Local versus complete routing:** coordinated placement improves local slow
+  setup **+0.321638 → +1.195870 ns**, with unchanged +0.089025 ns hold and no
+  added area. Complete routing regresses to **+0.181782 / −0.082617 ns**,
+  creates **four hold and four capacitance violations**, and raises router/grid
+  overflow **16/15 → 20/19**. Three capacitance failures are in scope; the fourth
+  is SRAM output bit 11. The limited first placement pass also fails its
+  complete-route setup comparison at +0.299410 ns.
+- **Mechanism:** the new worst hold path's cells never move. An exact comparison
+  attributes **180.005 ps** of its **232.458 ps** margin loss to changed launch
+  and capture clocks. The original read path's local-to-full-route loss instead
+  comes mainly from data delay. Minimum pin access passes on both full candidates;
+  all SRAM write-data inputs retain their hold floor.
+- **Evidence:** **75,582** load reconciliations, **576** selected-path checks,
+  **2,304** SRAM write-interface checks, **90** targeted branch witnesses,
+  **six** new exact hold witnesses and **96** unchanged matched local clock-pair
+  comparisons. The **2,304** unrestricted regional witness records include
+  repeated paths. The complete portable suite passes **478 tests / 2 skips**.
+- **Execution and resources:** eighteen CAD attempts, fifteen successful and
+  three rejected/failed, consume **927.689 seconds** of the unchanged
+  1,800-second bound. Four edit attempts produce two candidates; three full
+  routes complete. The input-hash rejection, two native placer failures and
+  empty-row checker correction retain their original evidence and recoveries.
+  All eighteen containers are absent; no timeout occurs. Cumulative regional,
+  SRAM, control and placement CAD time is **1,946.962 seconds**.
+
+The [manifest](../../physical/experiments/status-region-placement-results.json)
+binds **3,473 artifacts / 2,904 retained source versions** and
+`build/validation/status-region-placement-01/report.json`, SHA-256
+`b841063f537ad665c35165d8f1b9f46be54e871f00953212e5469ba28ae881dd`.
+
+**Decision:** reject both placement candidates; retain the preceding 34-buffer
+SRAM design. Area stays **359,776.2816 µm²**, including the recorded
+**403.843363 µm²** historical-allowance overage. Next test placement, routing
+and timing/electrical repair together, with explicit clock and hold treatment.
+That comparison remains untested. No RTL change, new Lean theorem, detailed
+route, extracted timing closure or backend promotion follows.
+
+## 2026-09-26 — Coupled placement, routing and native repair
+
+Completed the authorized [coupled-flow comparison](../physical/routed-repair-experiment.md)
+on the retained 34-buffer reference and coordinated placement. Both use
+legalization, a complete route, native all-corner electrical/setup/hold repair,
+legalization and another complete route. The saved flow had both post-GRT
+repair flags disabled; the experiment uses a separate recorded recipe.
+
+- **Result:** coordinated repair reaches **+0.571241 ns setup / −0.018681 ns
+  hold**, with zero reported capacitance/slew/fanout violations and **13/12**
+  router/grid overflow. Two hold violations and six timed-net reserve
+  shortfalls remain. The same flow on the reference yields **+0.178522 /
+  −0.022618 ns**, three capacitance failures and **27/27** overflow.
+- **Attribution:** initial legalization flips 3,410 / 3,000 original cell
+  orientations without moving their coordinates. Prepared setup is +0.148800 /
+  +0.460087 ns, so the final improvement cannot be attributed only to added
+  buffers. The coordinated repair fixes the old hold witness to +0.462381 ns;
+  two other paths become limiting after full routing.
+- **Actual changes:** reference repair adds five buffers and resizes three
+  gates, +127.0080 µm². Coordinated repair adds six buffers and two delays,
+  +174.1824 µm², with no gate resizing. Its total **359,950.4640 µm²** is
+  **578.025763 µm²** above the historical allowance. Independent signal,
+  all-corner function, geometry, row/status and power checks pass. Clock
+  topology remains fixed; runtime clock-rule relaxation and changed routed
+  delays remain explicit. Both minimum pin-access checks pass.
+- **Tool boundary:** a +0.20 ns hold-target continuation fails with an empty
+  insertion-load set on `ui_in[6]`. One recorded recovery skips nets with only
+  protected loads, but the failure recurs on `_12274_/Q`, whose source net has
+  protected and editable consumers. The pinned implementation filters
+  protected loads after selecting a timing subset. Neither attempt produces a
+  final candidate; partial optimizer output supplies no success claim.
+- **Evidence:** four three-corner collections, **130,671** load reconciliations,
+  **432** selected-path checks, **1,536** SRAM write-interface checks and **72**
+  targeted branch witnesses. Constant ties are separately counted without
+  claiming absent limits pass. The portable suite passes **485 tests / 2 skips**,
+  plus four run-local inventory tests and seven launch guards.
+- **Resources:** twelve CAD attempts, ten passed and two failed, consume
+  **1,427.573 seconds** of the unchanged 2,400-second cap. Four edit attempts
+  produce two first-pass candidates and no completed continuation. Six full
+  routes finish; eight reservations conservatively count both failures.
+  All twelve containers are absent; no timeout occurs. Combined retained
+  regional/SRAM/control/placement/repair CAD time is **3,374.535 seconds**.
+
+The [manifest](../../physical/experiments/routed-repair-results.json) binds
+**2,229 artifacts / 2,122 retained source versions** and
+`build/validation/routed-repair-01/report.json`, SHA-256
+`56b5475fa26511822828d745e5b6486ad2db18e3df0fd2c1fb1453be427cc5b5`.
+Earlier manifests and reports remain unchanged.
+
+**Decision:** retain the coordinated repaired checkpoint as the leading
+experiment and the 34-buffer source as reference; reject physical
+qualification. Fix and test the pinned empty-load hold-insertion behavior
+before a bounded hold/clock-aware continuation and final complete-route
+remeasurement. Nonzero congestion and the 13/12 discrepancy also remain open.
+No RTL change, new Lean theorem, extra pipeline cycle, complete compiler/package
+refinement, detailed route, extraction or backend promotion follows.
+
+## 2026-09-26 — Tested native hold fix and coordinated continuation
+
+Completed the authorized [hold-fix continuation](../physical/hold-repair-experiment.md)
+from the preceding coordinated repaired checkpoint. A one-condition patch
+excludes protected pins when selecting failing hold loads, before slack/load
+calculation and insertion. An isolated extension uses the exact pinned
+OpenROAD revision and resident objects; the default image is unchanged.
+
+- **Native evidence:** 12 checked executions cover all-protected loads, mixed
+  passing/failing branches and an unprotected control. The original executable
+  and unchanged extension reproduce six empty-load failures; the patch
+  preserves protected connections, repairs the editable branch and produces
+  an identical control netlist, geometry and timing. Failed fixture setup and
+  compiler configuration attempts remain in the evidence lineage.
+- **Result:** final setup/hold is **+0.382789 / +0.143801 ns**, clearing both
+  retained floors, with zero reported capacitance, slew or fanout violations
+  at all three corners. Both preceding negative hold paths clear and all 64
+  SRAM write inputs retain their hold floor, minimum **+0.145047083 ns**.
+- **Remaining gates:** five timed nets miss 20% reserve; **25/25** router/grid
+  overflow remains. All 25 native markers reconcile strictly, improving the
+  accounting boundary without removing congestion. The preceding checkpoint
+  has lower congestion, at 13/12, but negative hold. Setup cushion above its
+  retained floor is only **15.446 ps**.
+- **Actual changes:** 90 delays and six buffers, no original resizing,
+  **+1,632.9600 µm²** relative to the input. Total area is **361,583.4240 µm²**,
+  including a **2,210.9857632 µm²** historical-allowance overage. Independent
+  checks preserve all 11,310 originals, 3,732 protected cells, clock/power
+  topology and final placement statuses; 125 original cells move legally.
+  The optimizer's rollback-reset counter reports 37 hold buffers, so actual
+  readback supplies the count and insertion-budget check.
+- **Attribution:** the initial unchanged-circuit reroute already reaches
+  **+0.518838 / +0.100468 ns**, but introduces two capacitance failures at every
+  corner, two slow-corner slew failures and 25 overflow. Repair and final
+  routing clear those electrical failures, add 43.333 ps hold cushion and
+  spend 136.049 ps setup. Neither the patch nor new buffers alone explain
+  the complete before/after timing gain.
+- **Checks/resources:** two fresh three-corner collections, **65,652** load
+  reconciliations, **264** selected-path checks and **768** SRAM write checks.
+  **486 portable tests / 2 skips**, eight focused repair tests included, and
+  four launch guards pass. Four CAD stages take **604.601 seconds**, producing
+  one candidate and two full routes; no timeout and all containers absent.
+  Combined retained CAD time is **3,979.136 seconds**. Compiler invocations
+  total 20.542 seconds and native fixtures 8.234 seconds, separately recorded.
+
+The [manifest](../../physical/experiments/hold-repair-results.json) binds
+**17,343 artifacts / 1,002 retained source versions**, including the exact
+dependency headers, binaries, failed checker and `buf_16` support revision.
+Report `build/validation/hold-repair-01/report.json` has SHA-256
+`7616001e95b92b3139519132d56f4527ac97cd181ab39985f49c42c3a365a691`.
+Earlier reports and manifests retain their hashes.
+
+**Decision:** keep the new result as the timing reference and retain the
+preceding coordinated layout as the lower-congestion comparison. Next
+diagnose and reduce the 25 reconciled Metal3 markers and five reserve
+shortfalls while preserving both timing floors, protected cells and SRAM
+write timing. Physical qualification remains open; no RTL/Lean change,
+pipeline cycle, detailed routing, extraction or backend promotion follows.
+
+## 2026-09-26 — Reject routing-policy changes and retain the saved hold repair
+
+Completed the authorized [routing-policy follow-up](../physical/routing-policy-experiment.md)
+from saved ODB `596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114`.
+All 11,406 cells, placement/status, connectivity and area remain unchanged.
+
+- An unchanged-policy complete reroute yields **+0.451521 ns setup /
+  +0.151566 ns hold**, **29** reconciled congestion units, one capacitance
+  violation per corner and seven slow-corner slew violations. Four of the
+  original five weak nets recover reserve, but a different net fails and
+  `_05213_` falls to 1.240% reserve. `_04558_` wire load grows from
+  0.155683 to 0.335212 pF with unchanged pin loading.
+- The proposed half-tile grid offset only translates **124,888 guide
+  rectangles**; saved grid coordinates, capacity and usage stay identical.
+  The pinned source applies this option when saving guides. Reject this
+  discriminator without claiming true grid realignment cannot help; omit
+  fresh shifted-checkpoint STA.
+- A pre-recorded one-variant continuation gives worst-slack 30% routing
+  priority. It yields **+0.376218 / +0.160825 ns**, **40** reconciled congestion
+  units and the same electrical violation counts. Six nets miss reserve and
+  one fails. It preserves both timing floors and all 64 SRAM write hold floors,
+  but leaves only **8.875 ps** setup cushion. The router additionally disables
+  the clock input's special routing rule during execution.
+- Two three-corner collections reconcile **65,940** loads, **264** selected
+  paths and **768** SRAM write-interface paths. Constant ties without reported
+  limits remain separate from timed passes. Minimum pin access, **53 focused
+  tests**, four launch guards and independent readbacks pass. Two helper setup
+  failures and their corrections remain recorded.
+- Eight CAD stages take **677.018 seconds**, including all three complete
+  routes, with no timeout and all containers absent. The recorded continuation
+  increases the route allowance from two to three while keeping the total
+  CAD cap at 1,700 seconds. Cumulative recorded CAD time is **4,656.154 seconds**.
+  Area stays **361,583.4240 µm²**, **2,210.9857632 µm²** above the historical
+  allowance.
+
+Reject the routing policies and retain the preceding hold-repair checkpoint
+with zero electrical violations and 25 congestion units. Next establish an
+unchanged import/incremental-routing control, then a bounded local signal
+repair preserving successful clock routing. A partial incremental grid cannot
+stand in for whole-chip congestion accounting. No detailed routing, tool-default
+change or backend promotion.
+
+The [manifest](../../physical/experiments/routing-policy-results.json) binds
+`build/validation/routing-grid-01/report.json`, SHA-256
+`0d0090d5cba39aa820cf790d135c9514ad727fd32fe0b9987b3e32406d3a2360`,
+with **1,606 artifacts / 1,521 retained source bindings**. Manifest SHA-256:
+`e23109cbb5dd9b4645f8f7d06fa34286aaece1971dffe0c64ce884b627c408b9`.
+Earlier reports and manifests retain their hashes and verdicts.
+
+Independent post-seal audit `build/validation/routing-grid-audit-02.json` passes
+**5,867 hash references / 1,616 unique files**, including seven historical
+reports. Its initial helper assumed only the newer object-shaped report
+reference; the revision also reads older explicit path/hash fields. Neither
+attempt changes any sealed artifact. Updated local links and `git diff --check`
+pass.
+
+
+## 2026-09-26 — Saved-route import controls
+
+Completed `incremental-repair-01` from the retained hold-repair checkpoint,
+ODB SHA-256 `596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114`.
+The [study](../physical/incremental-routing-import-experiment.md) and
+[manifest](../../physical/experiments/incremental-routing-import-results.json)
+record a failed prerequisite; no signal candidate was attempted.
+
+- Importing before incremental initialization preserves routes but erases
+  demand: router/grid overflow falsely becomes 0/0 while 25 stale native markers
+  remain. Reversing the order restores 25/25/25 overflow with strict marker
+  reconciliation, but changes 79 Metal2 capacity entries and loses 83 units of
+  clock-rule demand. Both controls preserve all 11,342 routed nets, 342 clock
+  routes and every original instance/placement.
+- Fresh measurements on the second control reproduce every parsed connection
+  and selected/write path record: **+0.382789 / +0.143801 ns**, zero electrical
+  violations, five reserve shortfalls and all 64 SRAM write hold floors passing.
+  Coverage is **32,970** load checks, **132** selected paths and **384** write
+  checks. The 1,790 constant ties remain separately counted.
+- Added complete-grid and native-segment identity checks with 12 regressions;
+  **65 focused tests** and **six launch guards** pass. The first analysis failed
+  on stale markers; its retained successor records the rejection explicitly.
+  No native patch, default tool change, Lean/RTL edit or added area follows.
+- Five CAD stages use **168.145 seconds** under the 1,800-second allocation:
+  two incremental controls, zero full routes/candidates/timeouts. All five
+  containers are absent. Cumulative CAD time is **4,824.299 seconds**.
+- Sealed report: `build/validation/incremental-repair-01/report.json`, SHA-256
+  `2fc57afea2642eb214a06dc75265bea2c4e33ee4bc7648e27555205fcf3215f6`;
+  **1,057 artifacts / 1,071 source bindings**. Prior reports remain unchanged.
+
+Retain the prior checkpoint. Repair effective clock-rule costs and repeated
+macro-access initialization, and qualify old-route removal through an edit/revert
+control before the local signal repair. This is a tool-state finding, not a new
+physical improvement or chip qualification.
+
+
+## 2026-09-26 — Qualified route import and a preserved-clock signal repair
+
+Completed `route-import-fix-01` from the retained hold-repair database,
+SHA-256 `596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114`.
+The [study](../physical/route-import-fix-experiment.md) and
+[manifest](../../physical/experiments/route-import-fix-results.json) retain the
+one-buffer candidate as the next experimental checkpoint.
+
+- The pinned native adapter restores effective clock-rule costs and per-net
+  removal records without repeating macro-access capacity. Exact no-edit and
+  actual buffer edit/revert controls preserve all 11,342 source routes,
+  126,729 segments, 342 clock nets and 174,035 checked 2-D/3-D resource edges.
+  Ordinary, active-NDR and relaxed-NDR removal controls pass. The second native
+  build corrects a stale derived overflow scalar; its two repeated controls
+  reproduce the measured candidate's intermediate circuit and resource state.
+- One `buf_4` beside `_08031_` changes only `_04215_` and its new branch.
+  All 11,406 old cells, positions, row/status records, clock routes and capacities
+  remain fixed. Slow target slew improves **2.081871 → 0.355251 ns**; weak
+  connections fall **5 → 4**. Global setup/hold remains
+  **+0.382789/+0.143801 ns**, with zero reported electrical violations and all
+  64 SRAM write hold floors passing. Local hold falls **0.395976 → 0.210800 ns**,
+  still positive; local slow setup gains **1.246193 ns**.
+- The complete 10,991-net inventory yields **32,973 load, 132 selected path and
+  384 write checks**. Constant ties remain separately counted. All **25**
+  congestion units reconcile across native accounting, saved grids and markers;
+  minimum pin access passes. Added area is **14.5152 µm²**, total area
+  **361,597.9392 µm²**, historical allowance overage **2,225.5009632 µm²**.
+- **79 focused tests / ten launcher checks** pass. Eleven CAD stages consume
+  **336.314 seconds**; two native builds consume **6.100 seconds**. Cumulative
+  CAD time is **5,160.613 seconds**. No full reroute or CAD timeout occurs;
+  all thirteen containers are absent. The first comparison's overly strict
+  identical-slew assumption is rejected and retained; its successor checks six
+  propagated downstream slew changes. A sealer list/dictionary handling error
+  is retained with its recovery before any final report was produced.
+- Sealed report: `build/validation/route-import-fix-01/report.json`, SHA-256
+  `50ba42ec4cc7830fa3cd898b1843c188082befdf64936153fcf2476337c76cdb`; **2,542 artifacts / 2,409 retained source bindings**.
+  Manifest SHA-256: `2df8e2f3a66d81a1469afec1a718d5d1413326a06301f52d3f2960fbdf79b75b`.
+  Candidate ODB SHA-256: `ea546b4e6a159d56e26e02329afcc8f18d54b69152e20097b2d39977b405cbd6`.
+  The sealed parent source/header bundle is checked across **16,227 files**.
+
+Retain this candidate and the prior hold-repair reference. The next bounded
+question is a consumer partition for the weakest remaining signal `_01876_`.
+Four reserve shortfalls, coarse congestion, detailed routing and final layout
+checks remain open; no Lean theorem, RTL change or backend promotion follows.
+
+Independent post-seal audit `build/validation/route-import-fix-audit-01.json`
+passes **26,223 hash references / 18,785 unique files**, including all
+16,227 external dependency files and nine historical reports. The report and
+manifest retain their sealed hashes; prior receipts and verdicts are unchanged.
+Updated documentation file links and `git diff --check` pass.
+
+## 2026-09-26 — Complete iteration: routed A, checked images, bounded timing failure
+
+The [plan](complete-design-iteration.md) moved through its initial audit and
+bounded physical allocation. The [layout study](../physical/design-iteration-experiment.md)
+and [image certificate](../storage/paired-image-certificate.md) own details.
+**Reference A is not accepted; B and clean-source physical replay remain open.**
+
+- The audit checks 3,551 unique inputs and regenerates the retained RTL. One
+  2,122.352-second full-flow continuation completes detailed routing, extraction,
+  antenna/connectivity and LVS. Extracted slow setup is −3.190857 ns; maximum
+  cap/slew/fanout violations are 34/94/66.
+- Magic initially reports 230,225 markers, all inside the SRAM rectangle. A
+  54.520-second control imports the exact same GDS flat and passes all original
+  full DRC rules with zero errors. No geometry edit, macro blackbox or waiver.
+- Fresh wire-capacitance analysis explains the failed transfer from coarse
+  estimates. The first calibrated repair fails on a protected-load insertion;
+  its control and the final editable-signal-input configuration complete. Both
+  pass independent function/geometry checks but fail physical admission. The
+  last has −2.571731 ns slow setup, four slew violations and 202 coarse overflow.
+  It adds 305 cells/resizes six, for 368,178.7680 µm² total functional area.
+- Final routed-netlist readback preserves original signal logic after explicitly
+  accounting for 151 antenna and 46,659 signal-free fill/decap cells. The actual
+  netlist passes 331,401 package-pin edges. The initial antenna-only census
+  rejection is retained separately.
+- New Lean image/dispatch theorems check exact canonical source bytes and
+  290-word uploads, preserving every finite successor-choice history. Six
+  positives and ten kernel-proved corruptions pass. The paired host adds eight
+  certified uploads on byte-identical A RTL, including pin-only protocol peers
+  and malformed-upload recovery; each upload costs 85,285 modeled chip edges.
+- Foundation: 207 modules, 15,471 declarations / 7,733 theorems, standard axioms
+  only, 32 executable suites, 1,414.395 seconds. Python: 510 tests pass with two
+  skips. The image gate takes 248.470 seconds; the host demo takes 105.097 seconds.
+- Charged CAD/check time is **2,640.603 seconds**, including failed work and
+  conservatively the entire host demo. Three configurations and one A full-flow
+  attempt are used. All owned containers are absent; the second A route is
+  preserved. No commit, publication, paid compute or fabrication occurs.
+
+Campaign manifest: `physical/experiments/design-iteration-results.json`, SHA-256
+`bb03efe9b71d1ea9e82f17dcf1b69b39c1f39428029cd703bfcaac5545d213ab`. It binds 21 reports, final artifact identities and the resource
+ledger. Proof of timed controller/loading/package/RTL correspondence and a
+qualified fast corner remain missing. The next hypothesis is to specialize
+upload-validation parameter lookup away from execution lookup, prove its exact
+equivalence, then check removal of SRAM Q from the rejection cone. That change
+and a timing exception have not been implemented.
+
+Closeout audit `build/validation/design-iteration-01/closeout-audit.json`,
+SHA-256 `7989c18cfaf169e4649d3ee49bd3728b81d152a665ca163117ca4e175583c9cc`, passes 28 top-level bindings,
+652 physical artifact references, 216/224/284 current image/host/foundation
+source bindings and 616 local document links. A final Docker inventory finds
+no campaign containers; `git diff --check` passes.
+
+## 2026-09-26 — Validation isolation: equivalent circuit, rejected coarse layout
+
+The separately approved [architecture experiment](../physical/validation-isolation-experiment.md)
+adds an opt-in upload-only inactive-bank lookup. The old controller remains the
+comparison and default. The 290-word image, 32-record capacity, state, package,
+20 ns clock and execution edges are unchanged. No timing exception is added.
+
+- `PairedValidation.isolatedPush_correct` proves the changed local expression
+  under the original upstream equations. The foundation build/audit passes
+  **15,556 declarations / 7,794 theorems**, standard axioms only. Four state-intake
+  corruption tests pass. Whole-graph/emitter/closed-paired refinement remains open.
+- `paired-validation-check-06` passes baseline byte reproduction, complete
+  core/package arbitrary-state SAT, both mapped corners, 173,359 core edges and
+  331,401 package edges / 1,517 frames on both RTL and mapped cells. SRAM-to-rejection
+  reachability is absent. Typical mapped area rises **18,502.7976 µm² / 6.1219%**
+  to 320,742.0360 µm²; slow cell-only setup improves **+3.93 → +7.99 ns**.
+  The five failed checker attempts and their causes remain recorded.
+- Exact physical import, macro placement and power checks pass. Placement, CTS
+  and initial hold repair finish. Strict routing is stopped; the congestion-retaining
+  retry times out at 600 seconds. Pinned source inspection corrects the runtime
+  explanation: soft NDR relaxation restarts the routing iteration counter, and
+  allowing congestion does not suppress those restarts.
+- A fresh control removes exactly ten clock-width rules while preserving the
+  exported circuit and all placement/package/power context. Its first coarse
+  route completes with **8,911 overflow**. Subsequent repair is stopped; the
+  completed first route is the sole selected checkpoint, not an optimized result.
+- Independent fresh corners report slow setup **−9.286980 ns**, fast-screen hold
+  **−0.409959 ns**, and maximum corner cap/slew/fanout violations **224/1,103/0**.
+  All consumed nets have wire estimates; 198 unused unannotated drivers per
+  corner are reconciled. The fast temperature mismatch remains unqualified.
+- The actual saved circuit passes SAT over all original **1,572 FFs / one SRAM**,
+  all 5,000 sequential input bits including clocks/resets, and package outputs.
+  Hidden-state and inverted-clock controls fail as intended. It also passes
+  **331,401 external-pin edges / 1,517 frames**. Fresh OpenDB target and geometry
+  checks pass. SRAM-to-rejection is absent in both the graph and timing reports.
+- The new worst slow path runs from `r_active[0]` to `r_cached[10]` through nine
+  small buffers already in the mapped source. This motivates a matched physical
+  control-distribution comparison. It does not prove lookup duplication alone
+  caused every regression, or that the architecture cannot be implemented.
+- Placed cell/SRAM area is **376,176.6432 µm²** in the unchanged 6×4 outline,
+  **16,804.2049632 µm²** above the historical experimental cell-area allowance.
+  Charged CAD/check time reaches **4,080.913 seconds**, including all failed
+  work and the earlier phase. This extension uses **1,440.310 seconds**.
+  All owned containers are absent; no new full-flow attempt is used.
+
+Manifest: `physical/experiments/validation-isolation-results.json`, SHA-256
+`294eee4f27152f7a7074ee6f556e68794fe5b2bb5f3524e1ca844d8c3e1887fb`.
+Retain the architectural proof and circuit. Do not admit this unrepaired coarse
+layout to the remaining A full route. A/B acceptance, complete refinement and
+clean-source physical replay remain unfinished.
+
+Closeout audit `build/validation/paired-validation-isolation-01/closeout-audit.json`,
+SHA-256 `4cb13d43eb7c6cb58099a6ec3156da2d2309a43a88113f93fbb41f5aa4645709`,
+passes 1,624 hash references / 1,250 unique files and 618 local document links.
+The resource ledger reconciles; a final Docker inventory finds no owned
+containers, and `git diff --check` passes.
+
+
+## 2026-09-26 — Balanced distribution clears coarse congestion
+
+Completed the approved [control-distribution experiment](../physical/buffer-balance-experiment.md)
+on the same verified isolated-validation RTL and nonbuffer mapped logic.
+Maximum positive-buffer tree depth falls **8 → 2**, with 105 additional buffers
+and **762.0480 µm² / 0.2376%** mapped area. The actual placement coordinates from
+the preceding failed layout guide spatial leaf grouping; fresh placement and
+CTS determine the new implementation.
+
+- Both mapped-corner SAT comparisons, an inverted-buffer negative and 331,401
+  package-pin edges pass. Five new balancing tests and twelve existing
+  distribution tests pass; no Lean source or default-backend change.
+- Matched initial-route comparison: overflow **8,911 → 0**; slow setup
+  **−9.286980 → −0.982379 ns**; slow cap/slew/fanout **217/1,103/0 → 23/90/0**.
+  The prior post-route repair was stopped and remains a separate result.
+- The new repair **completes**, adding 92 buffers and eleven hold delays,
+  resizing one gate, and moving 145 original cells within checked legal sites.
+  Whole-chip slow setup/hold becomes **+0.820730/+0.326675 ns**; fast-screen hold
+  is **+0.040186 ns**. Coarse overflow remains zero. Four cap and 23 slow slew
+  violations remain on seven nets.
+- Independent checks reconcile both saved routing grids, require complete wire
+  estimates for consumed nets and preserve package/macro/power geometry and
+  clock topology. Both actual circuit exports pass FF/SRAM-input/package-output
+  SAT and 331,401 pin edges each. Hidden-state and inverted-control mutations
+  fail. SRAM-to-rejection reachability stays absent.
+- Final area is **374,556.3840 µm²**, **15,183.9457632 µm² / 4.2251%** above the
+  historical cell-area allowance, on the original 6×4 outline. That comparison
+  allowance is not a competition die limit. Fast cell/SRAM temperatures remain
+  mismatched; no new detailed routing, extraction or layout signoff is claimed.
+
+The first intake rejects the non-allowlisted clock-rule override before CAD.
+Its failed receipt remains. The corrected standard intake reaches CTS, followed
+by the independently checked ten-rule clock-width-only copy used for the matched
+comparison. The mapping/guidance policy, physical recipes, both saved stages,
+actual checks and failed intake are hash-bound in
+`physical/experiments/buffer-balance-results.json`, SHA-256
+`47529b6eaa0a1cc200ff80c6e1d018559028dd7b899d345201dbdcef9ea1cc7e`.
+
+Initial database:
+`f7ce06f4360cc999d166cec8fe20178c163178f232a19afb2ae3dc44b6545c39`.
+Completed repaired database:
+`0bfe41e1e3ceabc1376160410ea45aa59ccf08a3a0e4c96d85e748aedd3a4ecc`.
+The phase conservatively charges **276.538 CAD seconds**, for **4,357.451
+seconds** cumulative. One A full-flow attempt remains unused. Retain the balanced
+candidate, then address the seven measured electrical nets while preserving
+clock topology and SRAM write hold. The native resizer already loads the
+requested corners; a default-corner label change is not an established fix.
+A, B and complete paired correspondence remain open.
+
+
+## 2026-09-26 — Electrical screen closes; second A layout has positive extracted timing
+
+Completed the authorized continuation through [seven-net electrical
+repair](../physical/balanced-electrical-experiment.md) and the
+[second allocated A detailed layout](../physical/balanced-detailed-experiment.md).
+
+- Six buf_4 cells and one buf_2 add **96.1632 µm²**, clear all four cap and 23
+  slow slew failures, and preserve original placement plus all 340 coarse clock
+  routes. Slow setup is **+0.845816 ns**, fast-screen hold **+0.040186 ns** and
+  conservative coarse overflow zero. Independent actual-netlist SAT, corruption
+  controls, 331,401 pin edges and every SRAM write hold pass.
+- The source-specific import loses one unit of saved usage at Metal3 `[21,72]`,
+  with no capacity, circuit, route-segment or timing change. The strict rejection
+  is retained. The admitted scoped screen counts that extra unit and prevents
+  edited routes from using it; both native and conservative overflow remain zero.
+  Removal/replay and actual edit/revert controls cover 174,035 resource entries.
+  Terminal ordering alone required a corrected identity comparison.
+- Detailed routing adds **118 antenna cells** and **45,931 power-only cells**.
+  Full-rule Magic DRC, routing DRC, LVS, antenna and both power-grid connectivity
+  checks pass. Original cells, placement and protected geometry are unchanged.
+  Actual final signal identity, hidden-state/changed-clock rejections and
+  **331,401 pin edges** pass.
+- Fresh final-netlist/SPEF STA reproduces **+1.451337 ns slow setup** and
+  **+0.020742 ns fast-screen hold**, with no slew violations. All 64 SRAM write
+  holds pass; the fast-screen write minimum is **+0.118523 ns**. The SRAM-to-
+  rejection path remains absent. The first A layout had −3.190857 ns extracted
+  setup; this improvement reflects the combined architecture/distribution work.
+- **A remains unaccepted.** All 14 fanout failures reconcile exactly to antenna
+  inputs added to previously legal nets. The separate `paired_balanced_5_4_out`
+  has no added diodes and reaches **0.307562 pF** against 0.300000 pF. All seven
+  repaired nets remain clear. Fast views are still −40°C cells / −55°C SRAM;
+  current upstream inventory and the macro datasheet do not close that bound.
+- The flow exits successfully because its cap/slew enforcement defaults select
+  no corners. The new `physical_timing_acceptance.py` requires every requested
+  corner and rejects this final result. Five tests pass, including 21 distinct
+  failed-corner/metric cases. Actual coarse receipts pass the same gate.
+
+Retain the initial Python-module-shadowing failure, strict import rejection,
+list-order comparison correction and failed fresh-STA `nom` SPEF mapping. The
+latter is corrected to the flow's original `nom_*` key using the same extracted
+file; its successful geometry readback and 3.421-second charge remain. Preflight
+invocation accounting is corrected separately without omitting its elapsed time.
+No native CAD code, PDK or Lean source changes in this continuation.
+
+The electrical manifest is `physical/experiments/balanced-electrical-results.json`,
+SHA-256 `0811c2a7fca7a570319ca038eea60c1a05cd62ba0bdeccc6e45a165dca994f1f`.
+The detailed manifest is `physical/experiments/balanced-detailed-results.json`,
+SHA-256 `2a93b522e236cfa67385b654eb083a0a2ce9da64c89bcb644da7bffc625dd7be`.
+Final database: `9c4ef974bd865b875efa8dd356a96fa9bf4b3819667519fa204be1a37ac2aca3`.
+Final GDS: `3ebb74dda57202b0caf2c73e310fa6a985705dd04a04727852fdd8fefd970fe3`.
+Signal-cell/SRAM/antenna area is **375,294.8448 µm²**, with the historical
+4.4306% overage recorded separately from the unchanged die and physical fill.
+
+The full flow takes **413.996 seconds**. This continuation charges **568.830 CAD
+seconds**, including controls, failures, final checks and fresh measurements,
+for **4,926.281 seconds cumulative**. Both A full-flow attempts are now used.
+Further physical work needs an explicit allocation; the next hypothesis should
+account for antenna load before accepting a distribution repair. Fast-library
+qualification and full paired refinement remain open; B is not admitted.
+
+## 2026-09-27 — Antenna headroom loses to connecting wire capacitance
+
+Approved one coordinated antenna-load plan and one additional A full-flow slot,
+retaining the original two used A attempts, two reserved B attempts and eight-hour
+aggregate limit. The [frozen protocol](../physical/antenna-load-experiment.md) and
+[result](../physical/antenna-load-results.md) keep scope and outcome separate.
+The [manifest](../../physical/experiments/antenna-load-results.json) binds all receipts.
+
+The 41-buffer / 595.1232 µm² edit leaves at most three functional loads per parent
+and leaf. Fifteen release/replay controls, exact edit/revert and readback pass;
+all original placements and 340 coarse clock routes remain fixed. Arbitrary-state
+SAT, hidden-state/control negative tests and 331,401 package-pin edges pass.
+Zero conservative overflow, positive all-corner setup/hold and zero slew/fanout
+failures survive the screen, but two new capacitance failures reject the candidate.
+
+Fresh load measurements reproduce the calibrated-source and candidate metrics.
+`paired_balanced_148_17_out` and `_03354_` have lower pin capacitance but wire
+capacitance alone exceeds 0.300 pF; their routes grow by 475.2 and 511.2 µm.
+The detailed-flow preparer refuses the rejected receipt before starting CAD.
+No detailed layout or final antenna-effect measurement follows.
+
+The nominal-RC diagnostic rejection and a subsequent worker syntax error are
+retained and charged before the corrected calibrated comparison. Follow-up cost
+is 126.399 CAD seconds; cumulative cost is 5,052.680 seconds / 84.21 minutes.
+The additional A full-flow slot remains unused. Candidate allocation closes with
+wire-aware transport placement as the next hypothesis, and unchanged fast-view,
+formal-composition, A/B acceptance and clean-source replay obligations.
+
+## 2026-09-27 — Transport repair survives extraction; remaining loads need a wider scope
+
+Completed the approved [transport refinement](../physical/transport-split-results.md)
+and existing third A full-flow slot. The [protocol](../physical/transport-split-experiment.md)
+is frozen separately from the result. Two `buf_4` cells, selected from measured
+routing trees, split `_03354_` and `paired_balanced_148_17_out` for
+**29.0304 µm²**. All original cells and placements, the preceding 41 buffers and
+340 coarse clock routes remain fixed; only four signal routes change.
+
+Import/removal/replay and actual edit/revert controls pass. All 174,035 resource
+entries reconcile with the inherited one-unit conservative reservation and zero
+overflow. Arbitrary-state equivalence, hidden-state/control corruption checks,
+331,401 pin edges / 1,517 frames, all-corner timing/electrical, all 64 SRAM write
+holds and minimum pin access pass. Parent/child capacitance is below 0.240 pF
+at every coarse corner, admitting the candidate without a second placement.
+
+The final layout preserves all 12,232 source cells and adds 97 antenna and
+45,905 power-only fill/decap cells. Independent final signal identity, negative
+controls and the same package-pin replay pass. Fresh extracted STA reproduces
+flow metrics exactly. Slow setup is **+1.229028 ns**, fast-screen hold
+**+0.026968 ns**; all 64 write holds pass, with minimum fast-screen
+**+0.112675 ns**. Routing/full-rule Magic DRC, all seven LVS counts, final antenna,
+critical connectivity and power checks pass. KLayout DRC/XOR and flow EQY are
+disabled and not counted as passes.
+
+Both transport repairs remain below 0.240 pF after extraction. All preceding
+14 fanout failures clear, but four different branches acquire protection inputs:
+`paired_balanced_100_21_out` has 8+4=12; `paired_balanced_133_4_out`,
+`paired_balanced_140_0_out` and `paired_balanced_19_5_out` each have 8+1=9,
+against eight. The separate `paired_balanced_5_4_out` has no antenna inputs and
+still reaches **0.303477 pF**, including **0.290461 pF** of wire capacitance.
+Every corner reports **1 cap / 0 slew / 4 fanout** failures. Explicit native
+all-corner cap/slew enforcement now makes the flow return failed after saving
+the final views; the shared gate independently rejects cap and fanout.
+
+The read-only inventory counts 905 signal nets with eight physical inputs
+before protection; precisely the four new failures acquire antenna inputs in
+this run. This supports comparing complete-network load reservation with bounded
+repair after antenna insertion. It does not predict that all 905 require edits
+or bound future antenna demand. Include connecting-wire load in the next scope.
+
+Signal-cell/SRAM/antenna area is **375,804.6912 µm²**, with **491,412.0960 µm²**
+fill/decap recorded separately. The useful-area comparison overage is
+**16,432.2529632 µm² / 4.5725%**; the outline is unchanged. Against the preceding
+detailed layout, useful area increases 509.8464 µm² and slow setup loses
+0.222309 ns, while fast-screen hold improves 0.006227 ns.
+
+The full route charges 444.182 seconds. Controls, circuit replay and final
+inspection bring this continuation to **600.042 CAD seconds** and the campaign
+to **5,652.722 seconds / 94.21 minutes**. All scoped containers are absent.
+All three A full-flow slots are consumed; two B slots remain reserved behind
+accepted A. No new routing slot or physical qualification follows. Fast-view
+qualification, complete paired refinement and clean-source A/B replay remain open.
+
+Manifest: `physical/experiments/transport-split-results.json`, SHA-256
+`b2caf796124739d5c450d73437053afaae32b689756ae509424afceac64f086c`.
+Final database: `a74f4a35aa1c2baf1a37c86df55081c94873106afac64ea2679329d04c6c1ad1`.
+Final GDS: `e1decb4f9ea5a73692effd6da2d517e28708e4630bdfa9192d2b2f8a8a578455`.
+The manifest binds both candidate stages, independent final checks, all receipts
+and the full load inventory. No Lean, PDK or native CAD code changes in this turn.
+
+## 2026-09-27 — Closure policy costs and the native restart boundary
+
+Completed the authorized [protection/electrical assessment](../physical/protection-closure-results.md)
+under a [separate frozen protocol](../physical/protection-closure-experiment.md).
+The current third-A layout and all preceding artifacts remain unchanged.
+
+An explicit additive policy keeping at most four functional receivers per driver
+would affect 1,044 signal nets and require at least 1,949 buffers / 14,145.0624 µm²
+using the smallest admitted buffer. A three-receiver policy affects 2,266 nets
+and requires at least 4,143 buffers / 30,068.2368 µm². These are count/area lower
+bounds with original cells retained, not layouts, optimal remappings or guarantees
+of future antenna demand. Defer blanket insertion while qualifying repair after
+actual protection is present.
+
+The native probe uses the third layout before fill, with unchanged extracted
+SPEF and libraries. Readback matches all 12,329 source cells, original placements,
+signal connectivity and fixed geometry to the final layout, excluding its 45,905
+power-only fill/decap cells. The first invocation rejects an unsupported
+`report_worst_slack -corner` flag before repair and charges 6.006 seconds.
+
+The corrected invocation reproduces the same four fanout failures and one cap
+failure in all three corners with zero slew failures. It then crashes with
+signal 11 in `GlobalRouter::getPinGridPositions`, reached through
+`Resizer::makeBufferedNetGroute` and `RepairDesign::repairNet`. Matching pinned
+source shows that the selected detailed-routing estimator uses the global-router
+net/pin map, which this database/SPEF restart did not initialize. Its 4.642-second
+receipt and pre-edit readback are retained. No candidate database/netlist is
+emitted, so no candidate circuit, routing or timing checks are counted as passes.
+
+The next proposed integration test keeps native routing state live and starts
+with a small routed fixture, an unchanged control and an actual buffer edit.
+Protect antenna ownership and clocks, verify circuit/resource changes, then
+reroute and re-extract before all final gates. An additional whole-chip attempt
+remains conditional on that control and a new explicit allocation.
+
+This assessment charges **10.648 CAD seconds**, bringing the campaign to
+**5,663.370 seconds / 94.39 minutes**. Both scoped containers are absent and
+input/artifact hashes verify. All three A slots remain consumed; two B slots
+remain reserved. No full route, tool/PDK patch, Lean theorem or accepted A follows.
+
+Manifest: `physical/experiments/protection-closure-results.json`, SHA-256
+`fdad80939061f74afc524fa6fce082825c7108fcde15b091160201a003b02879`.
+The full reserve inventory and failed native recipes are retained under
+`build/validation/protection-closure-01/`.
+
+
+## 2026-09-27: live protection/electrical fixture qualifies
+
+Completed the authorized [live repair experiment](../physical/live-closure-results.md)
+under its [frozen protocol](../physical/live-closure-experiment.md). The final
+18-cell IHP fixture gains one explicitly grouped `buf_4` and four native wire
+repeaters, adding 43.5456 µm². Its initial 12-against-8 fanout and fast extracted
+0.366837472 pF against 0.300000012 pF both clear after rerouting and fresh RCX.
+All three corners have zero cap/slew/fanout failures; worst fixture setup is
++14.107367 ns and worst hold +0.044568 ns. All 12 timed endpoints are covered
+for minimum and maximum paths in every corner.
+
+Independent readbacks pass known-buffer circuit contraction, original cell
+geometry, four declared diode/receiver pairs, exact clock routes against the
+no-edit DRT and extracted controls, every new power binding, complete signal
+route/SPEF coverage, native routing DRC, antennas and zero grid overflow. Native
+no-edit initialization is repeatable after its first detailed-wire accounting
+conversion. A diode-locked native repair aborts; releasing locks produces a
+logically equivalent candidate that breaks two declared pairs. That candidate's
+antenna check passes, so this is a grouping-contract rejection, not an observed
+antenna violation. Cap-only repair also leaves the measured failure; the
+1,000 µm wire-length target creates actual repeaters. These search parameters
+remain fixture-specific.
+
+Retained failed controls include both decoder-interface fixes, a checker that
+compared pre/post-RCX encoding, and a checker that caught missing new-buffer
+power bindings. The final recipe reapplies global connections. The final
+checker rejects actual ownership/capacitance failures, changed FF clocks,
+missing parasitics and stale SPEF. No full-rule Magic DRC/LVS, SRAM or chip
+physical qualification follows from this sparse fixture.
+
+The prepared chip intake binds the exact third pre-fill layout/SPEF, five failing
+nets, 97 antenna cells and 340 clock nets. Historical receiver ownership is not
+inferred from numbered diode names or geometric proximity. Next qualify complete
+runtime repair-tree coverage and an explicit grouping contract on the chip,
+then a concrete candidate before another full route. No chip edit, fourth A
+attempt or new Lean theorem occurred. Three A attempts remain used; two B slots
+remain reserved; fast-view/refinement/A/B/clean-replay gates remain open.
+
+All attempted CAD work and independent Yosys reads charge **26.259 seconds**,
+bringing the campaign to **5,689.629 seconds / 94.83 minutes**. All scoped
+containers are absent. Evidence: `build/validation/live-closure-01/`; qualified
+recipe `fixture-06/`, independent receipt `checks-03/receipt.json`.
+
+Manifest: `physical/experiments/live-closure-results.json`, SHA-256
+`fb44d38a3d2284e623fe64dadf899fa27c9cb79e1863aabe49bf198a910ece2b`.
+
+## 2026-09-27 — Checked electrical repair on the actual chip
+
+The [chip integration](../physical/chip-closure-results.md) transfers the fixture
+controls to the saved third A layout. Five buffers and one declared diode clear
+capacitance/slew/fanout in all corners after fresh extraction; native DRC/antenna
+are zero. Slow setup is +1.242753 ns and fast-screen hold +0.026979 ns.
+All original placements and 97 antenna bindings remain, with 340 exact clock
+wires through detailed routing, complete consumed-net parasitics, and 331,401
+passing package-pin edges. Added area is 78.0192 µm².
+
+The independent route check rejects an actual control with three missing clock
+wires despite zero native violation counts. The final recipe invalidates only
+the five declared signal parents, keeps the incremental pin-access callback
+inactive during editing, and rebuilds resources from retained detailed wires.
+Every failed recipe and wrapper error is retained in the
+[manifest](../../physical/experiments/chip-closure-results.json).
+
+This continuation costs 634.894 CAD seconds; cumulative charge is 6,324.523
+seconds / 105.41 minutes of eight hours. Three A full-flow attempts remain used,
+two B attempts reserved, no fourth A allocation. Final fill/streamout/full-rule
+DRC/LVS, power/final extraction, fast-view qualification and complete paired
+refinement remain. This is local chip integration, not accepted A or a new Lean theorem.
+
+## 2026-09-27 — Final layout checks expose the SRAM extraction boundary
+
+The [finalization](../physical/chip-finalization-results.md) adds 45,901 signal-free
+filler/decap cells while preserving all 12,335 original instances, every original
+wire encoding, 340 clocks and all 98 antenna bindings. Fresh extracted timing
+remains +1.242753 ns slow setup and +0.026979 ns fast-screen hold, with zero
+electrical violations. Full-rule Magic GDS DRC, antenna, power connectivity,
+independent circuit readback and 331,401 package-pin edges pass.
+
+**Final GDS signoff is rejected.** Switching extraction from DEF/LEF to the
+actual GDS exposes 24 illegal overlap markers and failed LVS. The pre-repair
+chip reproduces the same failures, and standalone extraction of the unchanged
+SRAM reproduces every overlap after translation by its placement offset. The
+standalone interface has 351 declared pins after spelling normalization;
+in-chip extraction exposes an extra internal ground terminal. No error or pin
+is waived. Native malformed JSON stops LibreLane, independently of its failing
+text LVS result. The current DEF-based LVS control still passes.
+
+Retain the filled repair and qualify the SRAM extraction/interface before
+repeating GDS LVS. Fast characterization and complete timed Lean refinement
+remain open. This continuation charges **387.202 CAD seconds**, including the
+failed finishing/inspection attempts and all controls; cumulative charge is
+**6,711.725 seconds / 111.86 minutes**. All scoped containers are absent. Three A
+full-routing attempts remain used and two B slots reserved; no new A slot.
+
+Manifest: `physical/experiments/chip-finalization-results.json`, SHA-256
+`e7402496649dce51c91ec663c01e8333687fbfc93b973186f5b70049d02e25f1`.
+
+## 2026-09-27 — SRAM interface passes; internal qualification remains open
+
+The [bounded SRAM continuation](../physical/sram-extraction-results.md) leaves
+the chip and PDK unchanged. Control-hierarchy import removes the extra SRAM
+ground terminal; raw merge evidence already places it on VGND and declared VSS.
+A bijective adapter changes 338 bus spellings across the complete 351-pin
+interface. Native chip LVS reports a unique match and zero differences. Both
+address-to-ground and ground-to-power mutations fail native pin matching; four
+invalid interface inventories are also rejected. The schematic SRAM remains a
+blackbox.
+
+All 32 layers and 754,685 labels of the supplied macro are retained exactly in
+the chip GDS. All 1,024 full-flat device warnings locate on the two grounded
+edge-device gates in each of 512 cells. Full flattening clears isolated overlap
+and conversion errors but chip extraction times out at 600 seconds. The practical
+control import leaves two overlaps and 438 conversion diagnostics; original
+reports had 24 and 522. No remaining error is waived.
+
+Strict independent KLayout SRAM LVS fails. Native readback records 23 matches,
+two nonmatches, five schematic-only mismatches and a skipped top comparison.
+The diagnostics include a metal-resistor/LVSRES model disagreement and absent
+NMOS extraction in a word-line driver. Flat-mode extraction times out at 400
+seconds without a comparison result. Preserve these controls and use small
+context fixtures before further chip routing.
+
+All ten CAD invocations, including audit/API failures and timeouts, cost
+**1,316.754 seconds / 21.95 minutes**. Campaign total: **8,028.479 seconds /
+133.81 minutes**. All containers are absent, source identities retained; three A
+slots used, two B reserved, no fourth A. Full signoff, SRAM internals, fast views,
+complete refinement, accepted A/B and replay remain unqualified.
+
+Manifest: `physical/experiments/sram-extraction-results.json`, SHA-256
+`9fe2ebdc978c2c5d46070c7c0d33f1e8c22bcb37bcbe3bb897c5033cb6720392`.

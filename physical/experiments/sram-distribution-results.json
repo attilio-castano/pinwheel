@@ -1,0 +1,822 @@
+{
+  "schema": 1,
+  "status": "experiment-completed",
+  "recorded_at_utc": "2026-09-26T11:01:06.920946+00:00",
+  "study": "docs/physical/sram-distribution-experiment.md",
+  "decision": "Retain the 34-buffer candidate as an improved physical starting point. Full routing retains the hold margin and removes slew violations, but misses the retained setup floor and creates a capacitance violation plus two reserve shortfalls. Detailed routing and backend promotion remain unadmitted.",
+  "predecessor": {
+    "path": "physical/experiments/regional-decoding-results.json",
+    "sha256": "00d5786ba69bf5b47e98bbc1e5d87dd463dff9a571e63e42c9cb7af8f1165a94"
+  },
+  "predecessor_report": {
+    "path": "build/validation/regional-organization-01/report.json",
+    "sha256": "9e734ee3dd38ff6a11a12fe9b11a959fdcef6a512cd50732386505914826ec42"
+  },
+  "source_database_sha256": "889945e9e88fd051fb5dd328af22fe85a4e356a4f3996d41560b8e85be0c9586",
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "bounds": {
+    "total_cad_seconds": 1500,
+    "measurement_seconds": 180,
+    "edit_seconds": 120,
+    "coarse_route_seconds": 300,
+    "max_candidate_variants": 2,
+    "max_coarse_routes": 2,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "area_reference": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359411.5872,
+    "historical_limit_um2": 359372.43823679996,
+    "size_overage_allowed_for_exploration": true
+  },
+  "variants": {
+    "baseline": {
+      "status": "passed",
+      "label": "baseline",
+      "database_sha256": "889945e9e88fd051fb5dd328af22fe85a4e356a4f3996d41560b8e85be0c9586",
+      "measured_connections": 1218,
+      "pin_corner_checks": 3654,
+      "selected_path_checks": 72,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 1,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0498467,
+          "timing__setup__ws": 9.1611
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 9,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.370135,
+          "timing__setup__ws": -0.113646
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.171615,
+          "timing__setup__ws": 5.75473
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1212,
+        "failing": 2,
+        "below_reserve": 4
+      },
+      "below_reserve": [
+        {
+          "net": "_02970_",
+          "reserve": -0.3847763779422782,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02983_",
+          "reserve": 0.18428886262844546,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_03013_",
+          "reserve": 0.1505603339775866,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "memory.mem_data[28]",
+          "reserve": 0.16085564356577414,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "net1890",
+          "reserve": 0.12332413265012056,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "net1946",
+          "reserve": -0.01032077908316824,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359411.5872,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 39.14896320004482,
+      "total_percent_above_reference": 0.31092638330370015,
+      "stored_grid_overflow": 19.0,
+      "router_reported_overflow": 19.0,
+      "minimum_write_hold_ns": 0.049846683,
+      "selected_slow_setup_ns": {
+        "mode_status_endpoints_max": 1.798551559,
+        "sram_status_endpoints_max": 0.187622368,
+        "input_hold_endpoints_max": 15.103989601,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_endpoints_max": -0.113645986,
+        "write_hold_endpoints_max": 18.903104782
+      }
+    },
+    "buffered-timing": {
+      "status": "passed",
+      "label": "buffered-timing",
+      "database_sha256": "3f93b1315df8812463d0e5bf12d716839b94551969645cdf843af800b8ddf199",
+      "measured_connections": 1238,
+      "pin_corner_checks": 3714,
+      "selected_path_checks": 72,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.0652357,
+          "timing__setup__ws": 9.30027
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.410965,
+          "timing__setup__ws": 0.314767
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.194605,
+          "timing__setup__ws": 6.02245
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1238
+      },
+      "below_reserve": [],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359660.16,
+      "added_area_um2": 248.57279999996535,
+      "over_historical_allowance_um2": 287.7217632000102,
+      "total_percent_above_reference": 0.38030246557176905,
+      "minimum_write_hold_ns": 0.065235704,
+      "selected_slow_setup_ns": {
+        "mode_status_endpoints_max": 1.799414873,
+        "sram_status_endpoints_max": 0.314766884,
+        "input_hold_endpoints_max": 15.103989601,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_endpoints_max": 0.343412429,
+        "write_hold_endpoints_max": 18.862726212
+      }
+    },
+    "balanced-timing": {
+      "status": "passed",
+      "label": "balanced-timing",
+      "database_sha256": "3e3602a7dee64ea1df73a014b82363189118dd56b9e0a5b62fa53791e927ab00",
+      "measured_connections": 1252,
+      "pin_corner_checks": 3756,
+      "selected_path_checks": 72,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.0988771,
+          "timing__setup__ws": 9.42633
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.510185,
+          "timing__setup__ws": 0.4061
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.256594,
+          "timing__setup__ws": 6.15615
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1252
+      },
+      "below_reserve": [],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 364.6943999999785,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.098877132,
+      "selected_slow_setup_ns": {
+        "mode_status_endpoints_max": 1.801340461,
+        "sram_status_endpoints_max": 0.406100065,
+        "input_hold_endpoints_max": 15.103989601,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_endpoints_max": 0.510421932,
+        "write_hold_endpoints_max": 18.773664474
+      }
+    },
+    "control-timing": {
+      "status": "passed",
+      "label": "control-timing",
+      "database_sha256": "f259c39c773f1ba67fb9165dec979dd7b9281ebc51fefd3db8babba8b018d406",
+      "measured_connections": 1218,
+      "pin_corner_checks": 3654,
+      "selected_path_checks": 72,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 1,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0498467,
+          "timing__setup__ws": 9.1611
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 9,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.370135,
+          "timing__setup__ws": -0.113646
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.171615,
+          "timing__setup__ws": 5.75473
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1212,
+        "failing": 2,
+        "below_reserve": 4
+      },
+      "below_reserve": [
+        {
+          "net": "_02970_",
+          "reserve": -0.3847763779422782,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02983_",
+          "reserve": 0.18428886262844546,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_03013_",
+          "reserve": 0.1505603339775866,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "memory.mem_data[28]",
+          "reserve": 0.16085564356577414,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "net1890",
+          "reserve": 0.12332413265012056,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "net1946",
+          "reserve": -0.01032077908316824,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359411.5872,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 39.14896320004482,
+      "total_percent_above_reference": 0.31092638330370015,
+      "stored_grid_overflow": 19.0,
+      "router_reported_overflow": 19,
+      "minimum_write_hold_ns": 0.049846683,
+      "selected_slow_setup_ns": {
+        "mode_status_endpoints_max": 1.798551559,
+        "sram_status_endpoints_max": 0.187622368,
+        "input_hold_endpoints_max": 15.103989601,
+        "parameter_hold_endpoints_max": 18.866800308,
+        "bit_status_endpoints_max": -0.113645986,
+        "write_hold_endpoints_max": 18.903104782
+      }
+    },
+    "coarse-timing": {
+      "status": "passed",
+      "label": "coarse-timing",
+      "database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+      "measured_connections": 1252,
+      "pin_corner_checks": 3756,
+      "selected_path_checks": 72,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.321638
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.14136
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 1249,
+        "below_reserve": 2,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02966_",
+          "reserve": 0.19891142204354303,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 364.6943999999785,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "stored_grid_overflow": 15.0,
+      "router_reported_overflow": 16,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_slow_setup_ns": {
+        "mode_status_endpoints_max": 1.992297888,
+        "sram_status_endpoints_max": 0.321637839,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_endpoints_max": 0.704092801,
+        "write_hold_endpoints_max": 18.59217453
+      }
+    }
+  },
+  "complete_watchlist_connections": 1152,
+  "final_measured_connections": 1252,
+  "final_transport_trees": {
+    "memory.mem_data[51]": {
+      "connections": 91,
+      "transport_instances": 90,
+      "logic_leaves": 434,
+      "complete_measurement": true
+    },
+    "_01810_": {
+      "connections": 13,
+      "transport_instances": 12,
+      "logic_leaves": 81,
+      "complete_measurement": true
+    }
+  },
+  "pin_corner_checks": 18534,
+  "selected_path_checks": 360,
+  "interface_path_checks": 1920,
+  "matched_local_clock_comparisons": 72,
+  "unchanged_reroute_reproduced_all_measurements_and_paths": true,
+  "minimum_pin_access": {
+    "database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+    "signal_layers": "Metal2-Metal4",
+    "clock_layers": "Metal2-Metal4",
+    "source_unchanged": true,
+    "counts": {
+      "stdCellPinCnt": 33678,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "route_consistency": {
+    "baseline": {
+      "router_by_layer": {
+        "Metal2": 0,
+        "Metal3": 19.0,
+        "Metal4": 0
+      },
+      "stored_grid_by_layer": {
+        "Metal2": 0,
+        "Metal3": 19.0,
+        "Metal4": 0
+      },
+      "unreconciled_difference": {},
+      "reconciled": true
+    },
+    "control": {
+      "router_by_layer": {
+        "Metal1": 0,
+        "Metal2": 0,
+        "Metal3": 19,
+        "Metal4": 0
+      },
+      "stored_grid_by_layer": {
+        "Metal2": 0,
+        "Metal3": 19.0,
+        "Metal4": 0
+      },
+      "unreconciled_difference": {},
+      "reconciled": true
+    },
+    "coarse": {
+      "router_by_layer": {
+        "Metal1": 0,
+        "Metal2": 0,
+        "Metal3": 15,
+        "Metal4": 1
+      },
+      "stored_grid_by_layer": {
+        "Metal2": 0,
+        "Metal3": 15.0,
+        "Metal4": 0
+      },
+      "unreconciled_difference": {
+        "Metal4": 1
+      },
+      "reconciled": false
+    }
+  },
+  "remaining_weak_connections": [
+    {
+      "net": "_02966_",
+      "reserve": 0.19891142204354303,
+      "verdict": "below_reserve",
+      "driver": "_06781_/X",
+      "source_owners": [
+        "r_serial_shift"
+      ],
+      "sink_owners": [
+        "r_boot_b0",
+        "r_boot_b1",
+        "r_cursor",
+        "r_idle_b0",
+        "r_idle_b1",
+        "r_result_rejected"
+      ],
+      "before_max_cap_pf": 0.186077327,
+      "after_max_cap_pf": 0.240326583
+    },
+    {
+      "net": "_04754_",
+      "reserve": -0.15638480041127475,
+      "verdict": "failing",
+      "driver": "_09664_/X",
+      "source_owners": [
+        "r_active",
+        "r_cursor",
+        "r_mode",
+        "r_pending",
+        "r_pin_second_init",
+        "r_serial_command",
+        "r_serial_fire",
+        "r_serial_shift"
+      ],
+      "sink_owners": [
+        "r_parameter_b1_w23"
+      ],
+      "before_max_cap_pf": 0.184852406,
+      "after_max_cap_pf": 0.346915454
+    },
+    {
+      "net": "_05207_",
+      "reserve": 0.1671221799817794,
+      "verdict": "below_reserve",
+      "driver": "_10405_/X",
+      "source_owners": [
+        "r_pin_second_csn",
+        "r_pin_second_init",
+        "r_pin_second_sck",
+        "r_serial_sck_prev"
+      ],
+      "sink_owners": [
+        "r_serial_shift"
+      ],
+      "before_max_cap_pf": 0.188305676,
+      "after_max_cap_pf": 0.249863356
+    }
+  ],
+  "timing_floors_ns": {
+    "slow_setup": 0.3673431,
+    "fast_hold": 0.07927839
+  },
+  "final_timing_floor_pass": {
+    "slow_setup": false,
+    "fast_hold": true
+  },
+  "physical_qualification": false,
+  "detailed_route_executed": false,
+  "production_admission_changed": false,
+  "rtl_changed": false,
+  "new_lean_theorems": 0,
+  "added_pipeline_cycles": 0,
+  "tests": {
+    "tests_run": 473,
+    "passed": 471,
+    "skipped": 2,
+    "receipt": {
+      "path": "build/validation/sram-distribution-01/python-tests-review-02.json",
+      "sha256": "43bcd5c5e2760babbc9d143e655a91c723a3ec2f43d48d9907536ee221eaf252"
+    }
+  },
+  "execution": {
+    "cad_attempts": 12,
+    "cad_container_seconds": 429.64,
+    "incremental_routes": 2,
+    "whole_chip_routes": 2,
+    "previous_regional_container_seconds": 169.993,
+    "combined_container_seconds": 599.633,
+    "timeouts": 0,
+    "containers": {
+      "pinwheel-sram-01-geometry": "absent",
+      "pinwheel-sram-01-baseline": "absent",
+      "pinwheel-sram-01-grid-directional": "absent",
+      "pinwheel-sram-01-control": "absent",
+      "pinwheel-sram-01-balanced": "absent",
+      "pinwheel-sram-01-buffered": "absent",
+      "pinwheel-sram-01-balanced-timing": "absent",
+      "pinwheel-sram-01-control-timing": "absent",
+      "pinwheel-sram-01-grid-api": "absent",
+      "pinwheel-sram-01-buffered-timing": "absent",
+      "pinwheel-sram-01-coarse-timing": "absent",
+      "pinwheel-sram-01-coarse": "absent"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "path": "build/validation/sram-distribution-01/analysis-attempt-01.json",
+      "sha256": "97d8cd080374b92254449536e6a616920210e6c1b9cafd1809a0d9d4dad84fdf"
+    },
+    {
+      "path": "build/validation/sram-distribution-01/analysis-attempt-02.json",
+      "sha256": "92b97e0743ba6c725fa36e18c6f040c02ba86a363c629b19328db41d35a230eb"
+    },
+    {
+      "path": "build/validation/sram-distribution-01/verification-startup-attempt-01.json",
+      "sha256": "502f047b4a475901f5229bc482e931c0bd56d9e24afc9622da46f159c961014f"
+    },
+    {
+      "path": "build/validation/sram-distribution-01/sealing-attempt-01.json",
+      "sha256": "1a309220520bf3fbd9dd27293a3843fc93ab3ba87b01934f9dad11f260390e6a"
+    },
+    {
+      "path": "build/validation/sram-distribution-01/python-tests-review-before.json",
+      "sha256": "12f891b9d946e659e6ba42bebe702c0e8fc22754baf3158dc66fca9e6739cdac"
+    }
+  ],
+  "evidence_boundary": [
+    "Global-route RC estimates under the same 20 ns constraints and three corners. Fast cells remain -40C and SRAM -55C.",
+    "Exploratory area is 359776.2816 um2: 364.6944 above this experiment source and 403.8433632 above the historical repair allowance. Die outline is unchanged.",
+    "The complete inherited watchlist and all added branches are measured; this result rejects qualification rather than claiming layout closure.",
+    "Two macro output fanout limits are absent from the reports and retained as unknown. Capacitance, slew and actual pin counts are reconciled independently.",
+    "Incremental route grids are partial and are not used as whole-chip congestion evidence.",
+    "The candidate router reports 16 overflow units (15 Metal3, 1 Metal4); the stored grid exposes 15 on Metal3. The extra Metal4 unit is unreconciled. Two read-only API probes found opaque native matrix views, without resolving it. Both quantities remain explicit and qualification is denied.",
+    "Minimum pin access does not prove simultaneous routability, extracted timing, antenna, layout or power signoff.",
+    "Actual Verilog buffer contraction and exact ODB readbacks preserve the circuit under pinned cell interpretations; no new Lean theorem or complete paired package refinement is claimed.",
+    "Final review corrected bus-pin cache-key shadowing. The regression fails before the fix; the final suite passes and all five saved physical comparisons reproduce exactly. The original sealed report and manifest remain retained."
+  ],
+  "source_sha256": {
+    "scripts/physical_signal_buffering.py": "9dbd6acdc2304639936a854e6af2f679f3c8bf61b499014abb0e24cfa6fa7567",
+    "scripts/physical_connections.py": "874d448fc9e5b26ed0a81cbd1062557252f340ecec09a9ef668f78a368e88094",
+    "scripts/physical_organization.py": "5bfaebe9bd57dbbc3015ec1564aedb72c25930d6f49c033a38f12f5651b5aca9",
+    "test/test_physical_signal_buffering.py": "fa23baa4406b25454e8abbf44ccfb0501c27cfb697a1a4f8a613fb7321524b34",
+    "test/test_physical_connections.py": "91a61ba1092809b7847783ef9da3f08a68009adfc716c9007432e812e9a37786",
+    "test/test_physical_organization.py": "275d754e3a41bfb5b5348db89613ae9338f6452605e43bdf6b7abc0e31b43239"
+  },
+  "ownership": {
+    "path": "/Users/attiliocastano/.codex/worktrees/33a5/pinwheel/build/physical/target-paired-01/state-ownership.json",
+    "sha256": "a11624166b3ae8d2f3592b6d43e2dc616f993408ed651cc84fa1ced4698d7754"
+  },
+  "evidence": {
+    "request.json": {
+      "path": "build/validation/sram-distribution-01/request.json",
+      "sha256": "64860a358ca3f40a028acdecdeb5e0d5f9c4bdd69c473e11cefc01682dda57d2"
+    },
+    "buffered-plan.json": {
+      "path": "build/validation/sram-distribution-01/buffered-plan.json",
+      "sha256": "5398d91654f5a1b51d3c24eaa983bec19efa5caa407b1432876c2bd4436a3f49"
+    },
+    "balanced-plan.json": {
+      "path": "build/validation/sram-distribution-01/balanced-plan.json",
+      "sha256": "55782a3b0b4ce6ef0d557c191419e5646bf99811fac1afae39fb7e9a3ef4fd14"
+    },
+    "geometry.json": {
+      "path": "build/validation/sram-distribution-01/geometry/geometry.json",
+      "sha256": "f6de93f445fd3ac2e5789f4123fedb9f5375052489b6d7b7765f81d05e57ae74"
+    },
+    "pin-access.json": {
+      "path": "build/validation/sram-distribution-01/geometry/pin-access.json",
+      "sha256": "4a11f0d80aab89b4f31876d339db27cb4bb80c8f7acd50936d6700c44fb55cef"
+    },
+    "baseline-analysis.json": {
+      "path": "build/validation/sram-distribution-01/baseline-analysis.json",
+      "sha256": "24ef25dc7e27363c541bdb3e9a330a3a819265a971f370b7f8ac9589e7a9e1f0"
+    },
+    "buffered-timing-analysis.json": {
+      "path": "build/validation/sram-distribution-01/buffered-timing-analysis.json",
+      "sha256": "d4a8f13593393ff88736fe8de4190f0f554918534940f6fb69839044fb91327b"
+    },
+    "balanced-timing-analysis.json": {
+      "path": "build/validation/sram-distribution-01/balanced-timing-analysis.json",
+      "sha256": "b3d1e32870cc219f3d73aa0001b969ae2c652aa2d2b94b3f56ec2851333aa8ab"
+    },
+    "control-timing-analysis.json": {
+      "path": "build/validation/sram-distribution-01/control-timing-analysis.json",
+      "sha256": "45ee50d81e3f82836b67a2ec122e6e580aa3b447fffcaaf877f07e577f2ee870"
+    },
+    "coarse-timing-analysis.json": {
+      "path": "build/validation/sram-distribution-01/coarse-timing-analysis.json",
+      "sha256": "856320f78f7f136a71876976fe16e2f8bd3660d090587b59306be99a942c4bf7"
+    },
+    "buffered-verification-01.json": {
+      "path": "build/validation/sram-distribution-01/buffered-verification-01.json",
+      "sha256": "b7d95b096e3bb7ec8419b266af4a6f3d1f020ecb949f662b9f905f606060de8b"
+    },
+    "balanced-verification-01.json": {
+      "path": "build/validation/sram-distribution-01/balanced-verification-01.json",
+      "sha256": "170f170fa62cc3f59e74aab335cffdc0b1ea7271c0f0b57043b5a29ac457e79b"
+    },
+    "control-verification-01.json": {
+      "path": "build/validation/sram-distribution-01/control-verification-01.json",
+      "sha256": "8cdc65e8411c19122c9b125b5040eba88a86353c36bae45b040b7c1a95102358"
+    },
+    "coarse-verification-01.json": {
+      "path": "build/validation/sram-distribution-01/coarse-verification-01.json",
+      "sha256": "7cb38287eda78e46d066eb41292b91042ce939650c72caddacb12a3d09494a36"
+    },
+    "baseline-reanalysis.json": {
+      "path": "build/validation/sram-distribution-01/baseline-reanalysis.json",
+      "sha256": "b505e4dbe7600e6875df6fb4a530275dbeded1e039b98a21b89608d2f568b903"
+    },
+    "buffered-timing-reanalysis.json": {
+      "path": "build/validation/sram-distribution-01/buffered-timing-reanalysis.json",
+      "sha256": "d63fa74e5eba3b9042049c1d6091eba369ceedb94f62bad2dc8ef0c229e9f3c1"
+    },
+    "balanced-timing-reanalysis.json": {
+      "path": "build/validation/sram-distribution-01/balanced-timing-reanalysis.json",
+      "sha256": "5b8bdf7551578e4dae165eb9688c2103cff4ed07d9bfc5823c91e109dc828043"
+    },
+    "baseline-reanalysis-review-02.json": {
+      "path": "build/validation/sram-distribution-01/baseline-reanalysis-review-02.json",
+      "sha256": "41ba55a6074f9b78bd4c2297ec5d7f9a55511aeaed56be208ebd1a6fbd8be238"
+    },
+    "buffered-timing-reanalysis-review-02.json": {
+      "path": "build/validation/sram-distribution-01/buffered-timing-reanalysis-review-02.json",
+      "sha256": "ae8ca9ec0b030e9f640aeedde740b61e87f4569c12427ac626bc378cdf8d86dc"
+    },
+    "balanced-timing-reanalysis-review-02.json": {
+      "path": "build/validation/sram-distribution-01/balanced-timing-reanalysis-review-02.json",
+      "sha256": "192974b0ff2d24b23eac76aa67e64d2d2d1a4b546871edc89e1dd2db09210688"
+    },
+    "control-timing-reanalysis-review-02.json": {
+      "path": "build/validation/sram-distribution-01/control-timing-reanalysis-review-02.json",
+      "sha256": "9f22be929d4ada13b1cb50aa708e2c20508daf7e05693552e9d441040cae3b35"
+    },
+    "coarse-timing-reanalysis-review-02.json": {
+      "path": "build/validation/sram-distribution-01/coarse-timing-reanalysis-review-02.json",
+      "sha256": "5bdf18469e8470e77388556a2260b77b6ef917ae8114604eb1029f3eea1d390d"
+    },
+    "review-seal.py": {
+      "path": "build/validation/sram-distribution-01/review-seal.py",
+      "sha256": "3043ed9fcaeb23a7a3d24e6d6d52cc2397856c9d696cac464c1dd982dc562acc"
+    }
+  },
+  "previous_report": {
+    "path": "build/validation/sram-distribution-01/report.json",
+    "sha256": "d834862f1dae95d9eaf0558c885f2a0857aaca112d6e655146bab65407091341"
+  },
+  "previous_manifest": {
+    "path": "build/validation/sram-distribution-01/review-before/physical/experiments/sram-distribution-results.json",
+    "sha256": "bb1b105a2b82a856717a5cff04d10f6ea1e6e2e6b87be560e419898d1da02816"
+  },
+  "review": {
+    "change": "Separate inherited attribute names from the bus-pin cache key; cached pins remain independently addressable.",
+    "regression_reproduced": {
+      "path": "build/validation/sram-distribution-01/python-tests-review-before.json",
+      "sha256": "12f891b9d946e659e6ba42bebe702c0e8fc22754baf3158dc66fca9e6739cdac"
+    },
+    "corrected_suite": {
+      "path": "build/validation/sram-distribution-01/python-tests-review-02.json",
+      "sha256": "43bcd5c5e2760babbc9d143e655a91c723a3ec2f43d48d9907536ee221eaf252"
+    },
+    "all_five_comparisons_reproduced": true,
+    "additional_cad_runs": 0,
+    "reanalysis": {
+      "baseline": {
+        "path": "build/validation/sram-distribution-01/baseline-reanalysis-review-02.json",
+        "sha256": "41ba55a6074f9b78bd4c2297ec5d7f9a55511aeaed56be208ebd1a6fbd8be238"
+      },
+      "buffered-timing": {
+        "path": "build/validation/sram-distribution-01/buffered-timing-reanalysis-review-02.json",
+        "sha256": "ae8ca9ec0b030e9f640aeedde740b61e87f4569c12427ac626bc378cdf8d86dc"
+      },
+      "balanced-timing": {
+        "path": "build/validation/sram-distribution-01/balanced-timing-reanalysis-review-02.json",
+        "sha256": "192974b0ff2d24b23eac76aa67e64d2d2d1a4b546871edc89e1dd2db09210688"
+      },
+      "control-timing": {
+        "path": "build/validation/sram-distribution-01/control-timing-reanalysis-review-02.json",
+        "sha256": "9f22be929d4ada13b1cb50aa708e2c20508daf7e05693552e9d441040cae3b35"
+      },
+      "coarse-timing": {
+        "path": "build/validation/sram-distribution-01/coarse-timing-reanalysis-review-02.json",
+        "sha256": "5bdf18469e8470e77388556a2260b77b6ef917ae8114604eb1029f3eea1d390d"
+      }
+    }
+  },
+  "report": "build/validation/sram-distribution-01/report-02.json",
+  "report_sha256": "e8e27a51df68bf84e1f7ad4a6a06bb96b0ffdf7c764bc32cd623495f66aa4b30",
+  "source_versions_checked": 1943,
+  "artifact_count": 2240
+}

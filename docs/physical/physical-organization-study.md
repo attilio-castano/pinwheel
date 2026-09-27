@@ -7,6 +7,12 @@ the existing area allowance or an explicitly separate comparison budget.
 Physical qualification remains open; no circuit, timing constraint or backend
 default changes in this study.
 
+**September 25 follow-up:** the [regional-decoding experiment](regional-decoding-experiment.md)
+completes the missing measurements and tests both gate copies and a buffered
+variant in actual layouts. It records a local timing gain, the temporary area
+overage and the remaining whole-chip failures after one coarse reroute. The
+September 23 screen and its original area-cap verdict below remain historical.
+
 The [specification](../../physical/experiments/paired-organization-study.json) binds
 the [matched diagnosis](../physical-targets.md#matched-clock-control-and-capacity-diagnosis),
 semantic sources and original exchange policy. The
@@ -168,6 +174,13 @@ Only a qualifying candidate should advance to bounded placement and coarse
 routing. No current organization passes that gate; detailed routing stays closed.
 
 ## Reproduce the saved-chip study
+
+**September 25 exploration update:** the user permits temporary size overages
+when they are recorded. The area-cap rejection above remains the result of the
+September 23 experiment; it does not eliminate regional decoding from future
+exploration. Apply the [current exploration policy](../research/README.md#exploration-with-temporary-size-overages)
+when comparing new organizations, reporting the overage, benefit and optimization
+questions alongside the original bounds. Final physical qualification remains open.
 
 With the bound local artifacts and pinned libraries available:
 

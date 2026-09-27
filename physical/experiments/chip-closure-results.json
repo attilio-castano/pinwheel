@@ -1,0 +1,498 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "local-chip-integration-qualified",
+  "study": "docs/physical/chip-closure-results.md",
+  "protocol": {
+    "path": "docs/physical/chip-closure-experiment.md",
+    "sha256": "7a86e1e043a9ee0061db1e5757da198649288b741a1e94831e14f7eee49a1673"
+  },
+  "predecessor": {
+    "path": "physical/experiments/live-closure-results.json",
+    "sha256": "fb44d38a3d2284e623fe64dadf899fa27c9cb79e1863aabe49bf198a910ece2b"
+  },
+  "physical_source": {
+    "path": "physical/experiments/transport-split-results.json",
+    "sha256": "b2caf796124739d5c450d73437053afaae32b689756ae509424afceac64f086c"
+  },
+  "local_chip_integration_qualified": true,
+  "chip_physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "new_chip_candidate": true,
+  "new_chip_detailed_route": true,
+  "additional_A_full_flow_attempts": 0,
+  "decision": "Retain the checked electrical repair and finish final layout checks on this exact candidate before A acceptance.",
+  "candidate": {
+    "database": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/native/final.odb",
+      "sha256": "c6979df0deb6be55efe9ef4a5014dd0a05f4a5ffc7c2562bafd4aecb3d699177"
+    },
+    "netlist": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/native/final.v",
+      "sha256": "f02c20a2b7e99f68ba1f091008eec73cf934dfd3b693852265c2ba7c1e33dae8"
+    },
+    "spef": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/native/repaired.spef",
+      "sha256": "bc26fbcade1d8b598d6d2554f554f9f524713a816ee6de96e893299f214fd5c5"
+    },
+    "independent_analysis": {
+      "path": "build/validation/chip-closure-01/candidate-05-analysis.json",
+      "sha256": "dc0aaed6aee458108e2fad597d8e825b547fb7e2cbd9be4d6a93c17341dfcfc0"
+    },
+    "original_instances": 12329,
+    "final_instances": 12335,
+    "added_buffers": 5,
+    "added_antenna_cells": 1,
+    "added_area_um2": 78.0192,
+    "signal_sram_antenna_area_um2": 375882.7104,
+    "historical_comparison_allowance_um2": 359372.4382368,
+    "historical_comparison_overage_percent": 4.594195438082238,
+    "corners": {
+      "nom_fast_1p32V_m40C": {
+        "setup_ns": 10.304850597838461,
+        "hold_ns": 0.026978697817157143,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_ns": 1.2427534908465996,
+        "hold_ns": 0.30293257648687455,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "setup_ns": 7.309177470154706,
+        "hold_ns": 0.11912976498021194,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      }
+    },
+    "native_routing_drc": 0,
+    "antenna_violations": 0,
+    "original_placements_preserved": true,
+    "existing_antenna_bindings_preserved": 97,
+    "clock_routes_preserved": 340,
+    "clock_route_comparison_stage": "Exact full wire encoding before extraction, after independently checked status-only preparation",
+    "changed_neighbor_signal_wires": [
+      "_06034_",
+      "controller.r_parameter_b0_w7[19]",
+      "controller.r_parameter_b1_w3[13]",
+      "paired_balanced_0_2_out",
+      "paired_balanced_100_14_out",
+      "paired_balanced_109_7_out",
+      "paired_balanced_15_3_out",
+      "paired_balanced_17_1_out",
+      "paired_balanced_18_3_out",
+      "paired_balanced_80_0_out",
+      "paired_balanced_94_1_out",
+      "paired_balanced_96_1_out",
+      "net3561",
+      "net3587"
+    ],
+    "connected_nets_with_detailed_wires": 12191,
+    "complete_consumed_net_parasitic_coverage": true,
+    "grid_overflow": {
+      "control_initialized2": 0.0,
+      "edited": 0.0,
+      "final_initialized": 0.0
+    },
+    "pin_coverage": {
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+    }
+  },
+  "rejected_controls": {
+    "five_buffer_candidate": "Electrical and functional checks pass, but one antenna failure and two clock route changes remain.",
+    "fixed_clock_candidate": "Three clock wires are deleted by the active pin-access/global-routing callback despite zero native electrical/antenna/DRC counts.",
+    "missing_wire_negative_control": {
+      "path": "build/validation/chip-closure-01/clock-verification-01/output/report.json",
+      "sha256": "8b079d90accb8d524d1ce524adc80b127cfb4f6d7e81d4b51dc1da3f43b8063d"
+    }
+  },
+  "attempts": [
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-01-receipt.json",
+        "sha256": "547813515ded1c60ea18f96abc7ea656e97515731772d0b336a48556bb6bf26e"
+      },
+      "status": "failed",
+      "cad_seconds": 47.125
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-02-check/report.json",
+        "sha256": "5cf4ba162e60c034333f63e2805282a170a3d66f0e4b210e813d88c1f720373c"
+      },
+      "status": "passed",
+      "cad_seconds": 41.671
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-02-receipt.json",
+        "sha256": "a5090e2bc57f42ccbdb312afabd161036cd3fef10a12fde22d4069d2f76a01e9"
+      },
+      "status": "failed",
+      "cad_seconds": 96.201
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-03-receipt.json",
+        "sha256": "223bb530e69dbc9071601b6978b80fc1b7e19228b31fcb13c076c81d95e55d5d"
+      },
+      "status": "failed",
+      "cad_seconds": 140.504
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-04-receipt.json",
+        "sha256": "63ca9b96eb8bbf333b9cba1a3c8ce47a4156241fae33d5f88647c4bd03708001"
+      },
+      "status": "failed",
+      "cad_seconds": 109.264
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-05-check/report.json",
+        "sha256": "ee61ea5c1079a8dbef6660039173b1b5d40eb57987218fe8b71917dd03ecbc28"
+      },
+      "status": "passed",
+      "cad_seconds": 43.352
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/candidate-05-receipt.json",
+        "sha256": "b09c2f8204d25e4f501701b5b0ba82b1501d26ed7e5322e8bb8f4860ae06c35a"
+      },
+      "status": "completed",
+      "cad_seconds": 133.451
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/clock-lock-01-receipt.json",
+        "sha256": "175c6ff97b9894f53e69f9be18ac26a6974c015c8bbd06fcbaa350fc56ef2dae"
+      },
+      "status": "failed",
+      "cad_seconds": 3.191
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/clock-lock-02-receipt.json",
+        "sha256": "46f566823e5a6eb6964d8a8bfcf5190f3fb97666e6e9b626c67590e52f8eb7f4"
+      },
+      "status": "failed",
+      "cad_seconds": 0.46
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/clock-lock-03-receipt.json",
+        "sha256": "d1e69a0e29f710611d59667cdafeea9d36fb9722927ab271ecf98ac118d6a27c"
+      },
+      "status": "completed",
+      "cad_seconds": 0.899
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/clock-verification-01-receipt.json",
+        "sha256": "bb06415ae76f797d042b13fce9c4286c642c0fda303394123dfd4f71ce50ebe4"
+      },
+      "status": "completed",
+      "cad_seconds": 6.526
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/control-01-receipt.json",
+        "sha256": "21c0debcabfb01e7670e45b6aebadd7d90b13f18113538d94de99002c71b426b"
+      },
+      "status": "completed",
+      "cad_seconds": 11.729
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-closure-01/inspect-01-receipt.json",
+        "sha256": "adfd07be8ad05cd887766a6cae13d4fe361cac91f4a2d00156637061f3f34408"
+      },
+      "status": "completed",
+      "cad_seconds": 0.521
+    }
+  ],
+  "reports": {
+    "candidate-01-receipt.json": {
+      "path": "build/validation/chip-closure-01/candidate-01-receipt.json",
+      "sha256": "547813515ded1c60ea18f96abc7ea656e97515731772d0b336a48556bb6bf26e"
+    },
+    "candidate-02-check-report.json": {
+      "path": "build/validation/chip-closure-01/candidate-02-check/report.json",
+      "sha256": "5cf4ba162e60c034333f63e2805282a170a3d66f0e4b210e813d88c1f720373c"
+    },
+    "candidate-02-receipt.json": {
+      "path": "build/validation/chip-closure-01/candidate-02-receipt.json",
+      "sha256": "a5090e2bc57f42ccbdb312afabd161036cd3fef10a12fde22d4069d2f76a01e9"
+    },
+    "candidate-03-receipt.json": {
+      "path": "build/validation/chip-closure-01/candidate-03-receipt.json",
+      "sha256": "223bb530e69dbc9071601b6978b80fc1b7e19228b31fcb13c076c81d95e55d5d"
+    },
+    "candidate-04-receipt.json": {
+      "path": "build/validation/chip-closure-01/candidate-04-receipt.json",
+      "sha256": "63ca9b96eb8bbf333b9cba1a3c8ce47a4156241fae33d5f88647c4bd03708001"
+    },
+    "candidate-05-check-report.json": {
+      "path": "build/validation/chip-closure-01/candidate-05-check/report.json",
+      "sha256": "ee61ea5c1079a8dbef6660039173b1b5d40eb57987218fe8b71917dd03ecbc28"
+    },
+    "candidate-05-receipt.json": {
+      "path": "build/validation/chip-closure-01/candidate-05-receipt.json",
+      "sha256": "b09c2f8204d25e4f501701b5b0ba82b1501d26ed7e5322e8bb8f4860ae06c35a"
+    },
+    "clock-lock-01-receipt.json": {
+      "path": "build/validation/chip-closure-01/clock-lock-01-receipt.json",
+      "sha256": "175c6ff97b9894f53e69f9be18ac26a6974c015c8bbd06fcbaa350fc56ef2dae"
+    },
+    "clock-lock-02-receipt.json": {
+      "path": "build/validation/chip-closure-01/clock-lock-02-receipt.json",
+      "sha256": "46f566823e5a6eb6964d8a8bfcf5190f3fb97666e6e9b626c67590e52f8eb7f4"
+    },
+    "clock-lock-03-receipt.json": {
+      "path": "build/validation/chip-closure-01/clock-lock-03-receipt.json",
+      "sha256": "d1e69a0e29f710611d59667cdafeea9d36fb9722927ab271ecf98ac118d6a27c"
+    },
+    "clock-verification-01-receipt.json": {
+      "path": "build/validation/chip-closure-01/clock-verification-01-receipt.json",
+      "sha256": "bb06415ae76f797d042b13fce9c4286c642c0fda303394123dfd4f71ce50ebe4"
+    },
+    "control-01-receipt.json": {
+      "path": "build/validation/chip-closure-01/control-01-receipt.json",
+      "sha256": "21c0debcabfb01e7670e45b6aebadd7d90b13f18113538d94de99002c71b426b"
+    },
+    "inspect-01-receipt.json": {
+      "path": "build/validation/chip-closure-01/inspect-01-receipt.json",
+      "sha256": "adfd07be8ad05cd887766a6cae13d4fe361cac91f4a2d00156637061f3f34408"
+    },
+    "control-verification.json": {
+      "path": "build/validation/chip-closure-01/control-verification.json",
+      "sha256": "68c61a043f5eb1fcad9e0fb345ca906b68fd05dba64159569085db4f3433cbd3"
+    },
+    "candidate-05-analysis.json": {
+      "path": "build/validation/chip-closure-01/candidate-05-analysis.json",
+      "sha256": "dc0aaed6aee458108e2fad597d8e825b547fb7e2cbd9be4d6a93c17341dfcfc0"
+    },
+    "clock-verification-01-output-report.json": {
+      "path": "build/validation/chip-closure-01/clock-verification-01/output/report.json",
+      "sha256": "8b079d90accb8d524d1ce524adc80b127cfb4f6d7e81d4b51dc1da3f43b8063d"
+    },
+    "clock-lock-03-output-verification.json": {
+      "path": "build/validation/chip-closure-01/clock-lock-03/output/verification.json",
+      "sha256": "4a688d0264542ec16cba88db7d4b6bc91a17303bfc89de67364fd2a6ded7f602"
+    },
+    "candidate-05-output-clock-lock-verification.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/clock-lock-verification.json",
+      "sha256": "4a688d0264542ec16cba88db7d4b6bc91a17303bfc89de67364fd2a6ded7f602"
+    },
+    "candidate-05-output-control-timing.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/control-timing.json",
+      "sha256": "8829d6247b05b36b53c9743bfb0e01826e6f6b9332621ddfb90b74badcbec805"
+    },
+    "candidate-05-output-final-timing.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/output/final-timing.json",
+      "sha256": "9ab6ee6eb65cf5b416210fdd42b2ace238c78d64ebf6960b58236fb4d5e23b31"
+    }
+  },
+  "recipes": {
+    "chip_contract.py": {
+      "path": "build/validation/chip-closure-01/chip_contract.py",
+      "sha256": "b2480e046d832827d3f45a9ca83669f68714b112773f8825eeda5ae35eb219d2"
+    },
+    "launch-02.py": {
+      "path": "build/validation/chip-closure-01/launch-02.py",
+      "sha256": "e52fd2a0f01ae96755494437127c1e46af887a020f4d9f586ffb7000ce887ddc"
+    },
+    "analyze-02.py": {
+      "path": "build/validation/chip-closure-01/analyze-02.py",
+      "sha256": "abbb282e3dca6560c1fa4aed91d287afd8b22637f38278c68655b68d9e2c4258"
+    },
+    "audit-record.py": {
+      "path": "build/validation/chip-closure-01/audit-record.py",
+      "sha256": "702a1af0a53c60b757e2de3a5e53c0ebd9914763247c78ca9e9d36e4ab0bf224"
+    },
+    "check-circuit-02.py": {
+      "path": "build/validation/chip-closure-01/check-circuit-02.py",
+      "sha256": "e44c4a0a98d7fb62897c75e099201abac8a03c1932c5b4b07b4916e1cc9c7057"
+    },
+    "launch.py": {
+      "path": "build/validation/chip-closure-01/launch.py",
+      "sha256": "4412ab3648bf8466f31b68a865355d699b8c78265f4f4d1020bade66f8e28e5e"
+    },
+    "prepare-candidate.py": {
+      "path": "build/validation/chip-closure-01/prepare-candidate.py",
+      "sha256": "7ec8016ee12079467ee398205c8390e868e6443b1ddc2c0309b56c24d0c9f67e"
+    },
+    "check-circuit.py": {
+      "path": "build/validation/chip-closure-01/check-circuit.py",
+      "sha256": "5b0997ccb49bfa36cf7ecab35c238b038790ecbcf6d13ea7cf7a6d22ca3a2f8b"
+    },
+    "publish-record.py": {
+      "path": "build/validation/chip-closure-01/publish-record.py",
+      "sha256": "97653d2087f83682ea78addb890766ef12fa8290fd9bc8b5484f208c7f328ebf"
+    },
+    "analyze.py": {
+      "path": "build/validation/chip-closure-01/analyze.py",
+      "sha256": "cd43fbf4c00fdeb5c68bfc507e6121284dd361803ddbe2bcfe3117acd02e118a"
+    },
+    "candidate-05/worker.py": {
+      "path": "build/validation/chip-closure-01/candidate-05/worker.py",
+      "sha256": "2e6d05a51345e0028b88012e3b82a499328b725d0fdcac25d48247d311195c85"
+    },
+    "candidate-05/preservation-contract.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/preservation-contract.json",
+      "sha256": "27ff12c53e52095131961ec74a4a99a533b21a08a185832a14a8229b1d58e5d7"
+    },
+    "candidate-05/protection-plan.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/protection-plan.json",
+      "sha256": "9a6b04728161f2ff58b35e3bd4e534e876dcc89f90283de07e9efb2769717a52"
+    },
+    "candidate-05/placement-selection.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/placement-selection.json",
+      "sha256": "202e917e262293d36bd4d68e9de0078055f71a3a3d389350b53c515498423f97"
+    },
+    "candidate-05/edit.tcl": {
+      "path": "build/validation/chip-closure-01/candidate-05/edit.tcl",
+      "sha256": "1a30f5e00bccb99d8e51b1fc8081a904c0d563204c339db156990c184a5bf9e5"
+    },
+    "candidate-05/buffer-plan.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/buffer-plan.json",
+      "sha256": "8b52e3f929fd252f77242af887868a11dee34a71c6da8af33373f1f2f0bf2bc2"
+    },
+    "candidate-05/dbWireOpcode.h": {
+      "path": "build/validation/chip-closure-01/candidate-05/dbWireOpcode.h",
+      "sha256": "10d67bbc05ea58be52df54603d9e6fb7b859fa799ab9c5ffbc31e2cd54f5743a"
+    },
+    "candidate-05/candidate.tcl": {
+      "path": "build/validation/chip-closure-01/candidate-05/candidate.tcl",
+      "sha256": "f19a3d5f3ddcfe8dff5ff1d9632ed1ad2fcf02e07f39fc94586626b49f263fde"
+    },
+    "candidate-05/dbWireCodec.h": {
+      "path": "build/validation/chip-closure-01/candidate-05/dbWireCodec.h",
+      "sha256": "15a507c9f1381b21c4d4d595df6ad2807e7f29284a57ecbd0094c0e125bba474"
+    },
+    "candidate-05/runtime-guard.tcl": {
+      "path": "build/validation/chip-closure-01/candidate-05/runtime-guard.tcl",
+      "sha256": "b8a013d3d22d59b64a3bacf358528115788ee53b401a30278577d3863fd8af92"
+    },
+    "candidate-05/control-verification.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/control-verification.json",
+      "sha256": "68c61a043f5eb1fcad9e0fb345ca906b68fd05dba64159569085db4f3433cbd3"
+    },
+    "candidate-05/source-context.json": {
+      "path": "build/validation/chip-closure-01/candidate-05/source-context.json",
+      "sha256": "c4b2d91e08df3030b5729b10b7ae797ded11851fe12e2500e23722b8fed814fa"
+    },
+    "candidate-05/lock.py": {
+      "path": "build/validation/chip-closure-01/candidate-05/lock.py",
+      "sha256": "66e03f986f1f708fdf1dddf4999463551a7e4e04c8659322e3471aece6ab5e41"
+    },
+    "candidate-05/readback.py": {
+      "path": "build/validation/chip-closure-01/candidate-05/readback.py",
+      "sha256": "38da1b51811160f1ec22a54944191d78e0096c2ba86f7b7f71f2dab58fcb3de9"
+    },
+    "candidate-05/control-rcx.tcl": {
+      "path": "build/validation/chip-closure-01/candidate-05/control-rcx.tcl",
+      "sha256": "a1bcb53bc4f8db067f52b1194fc90eaeb94588169ef005a720a658c29128965f"
+    },
+    "candidate-05/dbWireCodec.cpp": {
+      "path": "build/validation/chip-closure-01/candidate-05/dbWireCodec.cpp",
+      "sha256": "d748d0398c2b5062b528300fccf1810bb6d88ab0c3b227b370ed0db127629bdf"
+    },
+    "candidate-05/GlobalRouter.cpp": {
+      "path": "build/validation/chip-closure-01/candidate-05/GlobalRouter.cpp",
+      "sha256": "71befc6541b5d2b0d22ec021e8c7f2d3edcd2c0dcf4575b0fb28ad21f5e5af83"
+    }
+  },
+  "supporting_sources": {
+    "dbNet.cpp": {
+      "path": "build/validation/chip-closure-01/tool-source/dbNet.cpp",
+      "sha256": "5105f249925c773cc16eabbf438381451cfb8dd50fe66c520bc3ed4218637e28"
+    },
+    "dbWireOpcode.h": {
+      "path": "build/validation/chip-closure-01/tool-source/dbWireOpcode.h",
+      "sha256": "10d67bbc05ea58be52df54603d9e6fb7b859fa799ab9c5ffbc31e2cd54f5743a"
+    },
+    "dbWireCodec.h": {
+      "path": "build/validation/chip-closure-01/tool-source/dbWireCodec.h",
+      "sha256": "15a507c9f1381b21c4d4d595df6ad2807e7f29284a57ecbd0094c0e125bba474"
+    },
+    "defin.cpp": {
+      "path": "build/validation/chip-closure-01/tool-source/defin.cpp",
+      "sha256": "25ef5475916a8b42e1394fd2dc75f608bf68e1f628ba7e9dde683b886d00ac85"
+    },
+    "dbWireCodec.cpp": {
+      "path": "build/validation/chip-closure-01/tool-source/dbWireCodec.cpp",
+      "sha256": "d748d0398c2b5062b528300fccf1810bb6d88ab0c3b227b370ed0db127629bdf"
+    }
+  },
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-closure-01",
+    "/source": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/transport-detailed-01",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk",
+    "/baseline": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/paired-buffer-balance-01",
+    "/scripts": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/scripts"
+  },
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 5689.629,
+    "this_continuation_seconds": 634.894,
+    "cumulative_cad_seconds": 6324.523,
+    "campaign_limit_seconds": 28800,
+    "integration_limit_seconds": 1800,
+    "per_native_invocation_seconds": 600,
+    "cpus": 4,
+    "memory_gib": 6,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "remaining_gates": [
+    "Final fill/streamout/full-rule DRC/LVS and extracted timing/power checks on this candidate",
+    "Compatible fast standard-cell/SRAM characterization or justified conservative bound",
+    "Complete timed paired-controller/loading/package refinement",
+    "Accepted A before capacity-change B and clean-source replay"
+  ],
+  "boundaries": [
+    "No final fill/streamout/full-rule DRC/LVS or final power signoff on this candidate",
+    "Fast standard-cell/SRAM temperatures remain unmatched",
+    "No new Lean theorem or complete paired timed refinement",
+    "No arbitrary native repair-tree or portable clean-source replay qualification"
+  ],
+  "evidence_root": "build/validation/chip-closure-01"
+}

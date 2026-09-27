@@ -43,6 +43,7 @@ examples provide context without replacing the [current decision](research/statu
 | --- | --- |
 | [Competition brief](competition.md) | Official constraints and source links, which must be rechecked before relying on a live external rule. |
 | [Architecture and ownership](architecture.md) | The design layers, Lean's role, module map, and boundaries between proof and implementation. |
+| [Complete design iteration](research/complete-design-iteration.md) | The planned path to one physically validated, formally connected reference and a second capacity variant through the same workflow. |
 | [Processor verification obligations](engine/processor-verification.md) | The acceptance gates from protocol semantics to a physically feasible chip. |
 | [Submission plan](submission-plan.md) | The dated hybrid implementation sequence and durable acceptance gates; use research status for the current work queue. |
 | [Chip-contract integration record](history/branch-integration.md) | A dated account of how retained interfaces and experimental branches were reviewed together. |
@@ -109,6 +110,7 @@ experimental SRAM/paired formats distinct.
 | [Successor-fetch experiments](storage/successor-fetch-study.md) | The measured input-to-cache path and controlled fetch alternatives with exact-cycle preservation. |
 | [Fetch deadlines and upload pipeline](fetch-contract-study.md) | The existing loop's availability deadlines, electrical cost, and a separate upload-pipeline experiment. |
 | [Paired-successor execution](storage/compact-execution-study.md) | The rejected restricted encoding and the later full-capacity paired controller with its proof and physical gates. |
+| [Paired image certificates](storage/paired-image-certificate.md) | Kernel-checked canonical source bytes, 290-word uploads and successor histories, integrated with the paired host. |
 | [Program-bank selection experiment](storage/bank-selection-study.md) | Why a proved and RTL-checked parallel-bank candidate did not pass its mapping advance gate. |
 | [Cache-update enable experiment](storage/cache-enable-study.md) | A matched screen with mapping gains, but no physical run or default promotion. |
 
@@ -128,6 +130,27 @@ remain separate gates; a useful diagnosis is not whole-chip closure.
 | [First whole-chip SRAM physical experiment](chip-physical-study.md) | Pin-template integration, SRAM geometry, routing failures, and bounded layout screens. |
 | [Physical correlation study](physical-correlation-study.md) | The gap between estimated and extracted wire cost, and the routed cost of clock gating. |
 | [Physical targets and paired comparison](physical-targets.md) | Checked state-to-pin ownership and the staged local, route, and electrical gates. |
+| [Seven-net electrical repair](physical/balanced-electrical-experiment.md) | Seven buffers clear the complete coarse electrical screen; original placements, clock routes and all SRAM write holds are preserved. |
+| [SRAM interface and internal qualification](physical/sram-extraction-results.md) | Passing 351-pin GDS boundary LVS and wiring-fault rejection; unchanged macro geometry; remaining internal extraction/model failures and bounded controls. Includes the [frozen protocol](physical/sram-extraction-experiment.md). |
+| [Final layout checks and SRAM extraction](physical/chip-finalization-results.md) | The repair survives finishing, full-rule GDS DRC, fresh timing and circuit/pin checks. Exported-GDS LVS fails; matched controls isolate the SRAM extraction/interface boundary. Includes the [frozen protocol](physical/chip-finalization-experiment.md), failed receipts and next gate. |
+| [Chip electrical integration](physical/chip-closure-results.md) | The actual chip clears electrical failures after fresh routing/extraction while preserving all clock wires and original placements. Includes failed controls, costs, the [frozen protocol](physical/chip-closure-experiment.md), and remaining final-signoff gates. |
+| [Live protection/electrical repair](physical/live-closure-results.md) | A small routed fixture completes checked repair, rerouting and extraction; establishes protection-group and routing-state controls before transfer to the chip. Includes the [frozen protocol](physical/live-closure-experiment.md). |
+| [Protection and electrical closure](physical/protection-closure-results.md) | Costs blanket reserve and identifies the native router-state requirement for repair after antenna insertion. The restart probe is rejected; the live fixture above owns the subsequent integration result. Includes the [frozen protocol](physical/protection-closure-experiment.md). |
+| [Transport repair and third detailed layout](physical/transport-split-results.md) | Both long-route repairs survive extraction; all previous 14 fanout failures clear, but four different nets and one capacitance outlier still fail. Includes the [frozen protocol](physical/transport-split-experiment.md). |
+| [Antenna-aware branch placement](physical/antenna-load-results.md) | Reject the coarse candidate: fanout headroom preserves function and timing, but two parent wires exceed capacitance. Includes the [frozen protocol](physical/antenna-load-experiment.md). |
+| [Balanced detailed layout](physical/balanced-detailed-experiment.md) | Positive extracted timing and passing stated layout/circuit checks; antenna-induced fanout and one capacitance failure remain. Both A attempts used. |
+| [Balanced signal distribution](physical/buffer-balance-experiment.md) | Shallow mapped buffer trees clear coarse congestion; completed repair passes screening timing, with seven electrical nets still open. |
+| [Upload-validation lookup isolation](physical/validation-isolation-experiment.md) | Opt-in circuit equivalence, explicit area cost and a fresh physical screen of the SRAM-to-rejection dependency. |
+| [Design A detailed layout](physical/design-iteration-experiment.md) | Completed routing, DRC import diagnosis, LVS and extracted timing under the complete-design-iteration plan. |
+| [Coordinated status/decode placement](physical/status-region-placement-experiment.md) | Joint placement improves local timing without added area; complete routing creates new clock, hold, electrical and congestion failures. |
+| [Placement, routing and repair](physical/routed-repair-experiment.md) | A matched native repair flow clears electrical violations and improves setup on the coordinated layout; hold, reserve and routing gates remain separate. |
+| [Protected-load hold repair](physical/hold-repair-experiment.md) | A tested native fix completes the continuation and passes retained setup/hold and reported electrical limits; reserve, area and congestion remain explicit. |
+| [Route import repair and one signal buffer](physical/route-import-fix-experiment.md) | Exact import and real edit/revert accounting pass; one buffer removes a reserve shortfall with unchanged global timing/clocks. Four shortfalls and 25 overflow units remain. |
+| [Saved-route import controls](physical/incremental-routing-import-experiment.md) | Unchanged routes and timing conceal lost demand and capacity drift; a failed control blocks the local signal edit. |
+| [Routing policy and reserve](physical/routing-policy-experiment.md) | An ineffective grid option and matched timing-priority reroute expose route-dependent electrical failures; retain the saved hold-repair checkpoint. |
+| [Control distribution and competing read paths](physical/control-distribution-experiment.md) | Two further variants fail qualification; complete-route regressions, changing critical paths and distinct congestion measures motivate a regional placement comparison. |
+| [SRAM distribution and write timing](physical/sram-distribution-experiment.md) | Full-watchlist timing, two buffer variants, matched coarse routes and the remaining qualification gaps. |
+| [Regional decoding](physical/regional-decoding-experiment.md) | Actual combinational copies, input distribution, area overage and their measured timing effect. |
 | [Timing and communication organization](physical/physical-organization-study.md) | A saved-chip screen, directional timing obligations, and the cost of regional decoding. |
 | [Routing diagnostics](routing-diagnostics.md) | Cheap saved-layout checks before a new search or route. |
 | [Structural timing](engine/structural-timing.md) | Lean-level combinational reach/depth related to emitted, mapped, and routed evidence. |

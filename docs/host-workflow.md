@@ -15,6 +15,7 @@ For the hybrid, first install the hash-checked models with
 ```sh
 python3 scripts/pinwheel-host.py demo --backend hybrid --tag demo-hybrid
 python3 scripts/pinwheel-host.py demo --backend reference --tag demo-reference
+python3 scripts/pinwheel-host.py demo --backend paired --tag demo-paired
 ```
 
 Each command builds its dependencies, compiles the examples, emits one chip and
@@ -22,6 +23,13 @@ keeps one Icarus process alive through all uploads. It exports reusable program
 JSON, command logs and a receipt in `build/host/<tag>/`. The receipt binds source,
 tool, compiler-image, MLIR, RTL and macro-model identities. The reference is the
 unrestricted two-port flip-flop chip; the one-port chip cannot run this RX program.
+
+The experimental paired backend uses one 512×64 SRAM and a 290-word image.
+It also [kernel-checks each valid upload image](storage/paired-image-certificate.md)
+before sending it. Its receipt includes the concrete Lean certificates. This
+proves image/dispatch correspondence; complete timed-controller refinement and
+physical timing remain separate gates. The pinned macro models are required
+for both SRAM backends.
 
 Each run retains the exact compiler output as `compiler-images.txt`; custom
 `run` inputs are captured as `program.json` before building or executing hardware.
@@ -59,15 +67,22 @@ the raw mailbox.
 the interactive RTL transport. A future board transport must establish the same
 clock, sampling, voltage and drive/release assumptions separately.
 
-`Program` holds 1–256 unsigned E64 records, the last executable address and three
-idle levels/enables. It deduplicates the full padded image, rejects more than 32
+`Program` holds 1–256 unsigned E64 records, the last executable address, three
+idle levels/enables and an explicit target image format. The default legacy
+format deduplicates the full padded image, rejects more than 32
 distinct records before I/O, and produces the existing 322-word upload. Canonical
 record validation remains in the chip: a rejected push aborts staging before
 commit. Uploading does not consume an older result. Starting with an unread
 result is refused, and readback preserves overflow/rejection flags.
 
-Exported JSON has exactly `format: "pinwheel-e64-v1"`, `words`, `last`,
-`idle_levels`, and `idle_enabled`. This is a host-side E64 interchange format,
+Exported JSON has exactly `format`, `words`, `last`, `idle_levels`, and
+`idle_enabled`. The format is `pinwheel-e64-v1` for the reference/hybrid, or
+`pinwheel-paired32-v1` for the paired backend. The latter validates canonical
+E64 before I/O, checks record and parameter capacity, and compiles parameters,
+successor pairs, boot and idle into 290 words. The selected host rejects a
+mismatched format before touching the chip. Backend identity is an explicit
+configuration assumption; current status pins do not identify it automatically.
+These are host-side E64 interchange formats,
 separate from the [PWL binary format](storage/binary-images.md). For example:
 
 ```sh
@@ -82,8 +97,9 @@ does not reset the engine or consume a result.
 
 ## What this says about the next data path
 
-One full upload costs 94,629 chip edges at the demonstrated minimum serial phase,
-including client status operations: 1.89258 ms at the **assumed** 20 ns period.
+One legacy upload costs 94,629 chip edges at the demonstrated minimum serial
+phase, including client status operations: 1.89258 ms at the **assumed** 20 ns
+period. The paired upload costs 85,285 edges, or 1.7057 ms at that same period.
 The TX example executes for 40 edges, or 0.8 µs on that same assumption. These
 are modeled edge counts, not measured board throughput or signed-off rates.
 

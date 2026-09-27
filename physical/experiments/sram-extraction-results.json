@@ -1,0 +1,1065 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "macro-interface-passed-internal-qualification-rejected",
+  "study": "docs/physical/sram-extraction-results.md",
+  "protocol": {
+    "path": "docs/physical/sram-extraction-experiment.md",
+    "sha256": "2d0d8217eb16c49edd64fb946696a630febc8fac23406039afbe982c15ee6189"
+  },
+  "predecessor": {
+    "path": "physical/experiments/chip-finalization-results.json",
+    "sha256": "e7402496649dce51c91ec663c01e8333687fbfc93b973186f5b70049d02e25f1"
+  },
+  "full_gds_signoff": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "chip_geometry_changed": false,
+  "PDK_changed": false,
+  "decision": "Retain the filled chip and qualified pin spelling adapter. Resolve internal SRAM/PDK extraction with a small context fixture before signoff or another chip route.",
+  "macro_interface": {
+    "pins": 351,
+    "native_result": "Circuits match uniquely.",
+    "metrics": {
+      "design__lvs_device_difference__count": 0,
+      "design__lvs_net_difference__count": 0,
+      "design__lvs_property_fail__count": 0,
+      "design__lvs_error__count": 0,
+      "design__lvs_unmatched_device__count": 0,
+      "design__lvs_unmatched_net__count": 0,
+      "design__lvs_unmatched_pin__count": 0
+    },
+    "changed_pin_spellings": 338,
+    "rejected_interface_controls": [
+      "missing",
+      "duplicate",
+      "unknown",
+      "alias_collision"
+    ],
+    "native_fault_controls": {
+      "address-to-ground": {
+        "status": "failed",
+        "mutation": {
+          "pin": "A_ADDR[0]",
+          "original_net": "sg13cmos5l_dlygate4sd3_1_118/X",
+          "mutated_net": "VGND"
+        },
+        "spice_sha256": "38953c27e1ac1986917d79797504d1a08bf7a1091350f0683490e9ee1f57489c",
+        "error": "JSONDecodeError: Invalid \\escape: line 2457 column 53 (char 44590)",
+        "native_final_result": "Top level cell failed pin matching."
+      },
+      "ground-to-power": {
+        "status": "failed",
+        "mutation": {
+          "pin": "VSS",
+          "original_net": "VGND",
+          "mutated_net": "VPWR"
+        },
+        "spice_sha256": "220bc33f1c033518ceb9efcd4da8c153249266f5295d32e5886d4a8ea163eea5",
+        "error": "JSONDecodeError: Invalid \\escape: line 2489 column 53 (char 46355)",
+        "native_final_result": "Top level cell failed pin matching."
+      }
+    },
+    "schematic_SRAM_blackboxed": true,
+    "SRAM_internal_claim": false
+  },
+  "magic": {
+    "original_overlaps": 24,
+    "flat_standalone_overlaps": 0,
+    "control_flat_overlaps": 2,
+    "full_flat_chip_timed_out": true,
+    "conversion_errors": {
+      "original_standalone": 522,
+      "original_chip": 522,
+      "flat_standalone": 0,
+      "control_flat_standalone": 438,
+      "control_flat_chip": 438
+    },
+    "flattened_control_cells": 120,
+    "preserved_array_cells": 19
+  },
+  "geometry": {
+    "all_macro_geometry_and_text_equal": true,
+    "layers": 32,
+    "missing_terminal_warnings": 1024,
+    "edge_instances": 512,
+    "warning_gate_hit_counts": {
+      "1": 1024
+    },
+    "edge_local_boxes": {
+      "(-1145,-320;-845,-190)": 512,
+      "(-1145,190;-845,320)": 512
+    }
+  },
+  "internal_lvs": {
+    "internal-01": {
+      "invocation_status": "completed",
+      "native_match": false,
+      "native_mismatch": true,
+      "accepted": false,
+      "cross_reference": {
+        "source_sha256": "d9146f073fd21acee91911698dd78a054aef04995d0b44771a8ad32c403ef83d",
+        "circuit_status_counts": {
+          "Mismatch": 5,
+          "Skipped": 1,
+          "Match": 23,
+          "NoMatch": 2
+        },
+        "circuits": [
+          {
+            "layout": null,
+            "schematic": "RSC_IHPSG13_CBUFX8",
+            "status": "Mismatch",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 2,
+              "sg13_lv_nmos": 2
+            }
+          },
+          {
+            "layout": null,
+            "schematic": "RSC_IHPSG13_CINVX2",
+            "status": "Mismatch",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": null,
+            "schematic": "RSC_IHPSG13_CINVX8",
+            "status": "Mismatch",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": null,
+            "schematic": "RSC_IHPSG13_FILLCAP4",
+            "status": "Mismatch",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": null,
+            "schematic": "RSC_IHPSG13_FILLCAP8",
+            "status": "Mismatch",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+            "schematic": "RM_IHPSG13_1P_512X64_C2_BM_BIST",
+            "status": "Skipped",
+            "device_status_counts": {},
+            "net_status_counts": {},
+            "pin_status_counts": {},
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 136261,
+              "sg13_lv_pmos": 70277,
+              "res_metal3": 33152,
+              "res_metal2": 33040
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 133184,
+              "sg13_lv_pmos": 67712,
+              "LVSRES": 66192
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_AND2X2",
+            "schematic": "RSC_IHPSG13_AND2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 6
+            },
+            "net_status_counts": {
+              "Match": 7
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CBUFX2",
+            "schematic": "RSC_IHPSG13_CBUFX2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 4
+            },
+            "net_status_counts": {
+              "Match": 5
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CDLYX1",
+            "schematic": "RSC_IHPSG13_CDLYX1",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 8
+            },
+            "net_status_counts": {
+              "Match": 9
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 4,
+              "sg13_lv_pmos": 4
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 4,
+              "sg13_lv_pmos": 4
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+            "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+            "status": "NoMatch",
+            "device_status_counts": {
+              "Mismatch": 2,
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Mismatch": 4,
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Mismatch": 4,
+              "Match": 2
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1,
+              "res_metal1": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1,
+              "LVSRES": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CDLYX2",
+            "schematic": "RSC_IHPSG13_CDLYX2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 6
+            },
+            "net_status_counts": {
+              "Match": 7
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CGATEPX4",
+            "schematic": "RSC_IHPSG13_CGATEPX4",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 18
+            },
+            "net_status_counts": {
+              "Match": 14
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 9,
+              "sg13_lv_pmos": 9
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 9,
+              "sg13_lv_pmos": 9
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CINVX4",
+            "schematic": "RSC_IHPSG13_CINVX4",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CINVX4_WN",
+            "schematic": "RSC_IHPSG13_CINVX4_WN",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_CNAND2X2",
+            "schematic": "RSC_IHPSG13_CNAND2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 4
+            },
+            "net_status_counts": {
+              "Match": 6
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_DFNQMX2IX1",
+            "schematic": "RSC_IHPSG13_DFNQMX2IX1",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 32
+            },
+            "net_status_counts": {
+              "Match": 25
+            },
+            "pin_status_counts": {
+              "Match": 8
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 16,
+              "sg13_lv_pmos": 16
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 16,
+              "sg13_lv_pmos": 16
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_DFNQX2",
+            "schematic": "RSC_IHPSG13_DFNQX2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 24
+            },
+            "net_status_counts": {
+              "Match": 18
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 12,
+              "sg13_lv_pmos": 12
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 12,
+              "sg13_lv_pmos": 12
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_INVX2",
+            "schematic": "RSC_IHPSG13_INVX2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_INVX4",
+            "schematic": "RSC_IHPSG13_INVX4",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 4
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_LHPQX2",
+            "schematic": "RSC_IHPSG13_LHPQX2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 14
+            },
+            "net_status_counts": {
+              "Match": 12
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 7,
+              "sg13_lv_pmos": 7
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 7,
+              "sg13_lv_pmos": 7
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_MX2IX1",
+            "schematic": "RSC_IHPSG13_MX2IX1",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 10
+            },
+            "net_status_counts": {
+              "Match": 11
+            },
+            "pin_status_counts": {
+              "Match": 6
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 5,
+              "sg13_lv_pmos": 5
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 5,
+              "sg13_lv_nmos": 5
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_MX2X2",
+            "schematic": "RSC_IHPSG13_MX2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 12
+            },
+            "net_status_counts": {
+              "Match": 12
+            },
+            "pin_status_counts": {
+              "Match": 6
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 6,
+              "sg13_lv_pmos": 6
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 6,
+              "sg13_lv_nmos": 6
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_NAND2X2",
+            "schematic": "RSC_IHPSG13_NAND2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 4
+            },
+            "net_status_counts": {
+              "Match": 6
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 2,
+              "sg13_lv_nmos": 2
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_NAND3X2",
+            "schematic": "RSC_IHPSG13_NAND3X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 6
+            },
+            "net_status_counts": {
+              "Match": 8
+            },
+            "pin_status_counts": {
+              "Match": 6
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 3,
+              "sg13_lv_nmos": 3
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_NOR2X2",
+            "schematic": "RSC_IHPSG13_NOR2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 4
+            },
+            "net_status_counts": {
+              "Match": 6
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 2,
+              "sg13_lv_nmos": 2
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_NOR3X2",
+            "schematic": "RSC_IHPSG13_NOR3X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 6
+            },
+            "net_status_counts": {
+              "Match": 8
+            },
+            "pin_status_counts": {
+              "Match": 6
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 3,
+              "sg13_lv_pmos": 3
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 3,
+              "sg13_lv_nmos": 3
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_OA12X1",
+            "schematic": "RSC_IHPSG13_OA12X1",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 8
+            },
+            "net_status_counts": {
+              "Match": 9
+            },
+            "pin_status_counts": {
+              "Match": 6
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 4,
+              "sg13_lv_pmos": 4
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 4,
+              "sg13_lv_pmos": 4
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_TIEH",
+            "schematic": "RSC_IHPSG13_TIEH",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 3
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_TIEL",
+            "schematic": "RSC_IHPSG13_TIEL",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Match": 4
+            },
+            "pin_status_counts": {
+              "Match": 3
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 1,
+              "sg13_lv_pmos": 1
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_WLDRVX8",
+            "schematic": "RSC_IHPSG13_WLDRVX8",
+            "status": "NoMatch",
+            "device_status_counts": {
+              "Mismatch": 2,
+              "Match": 2
+            },
+            "net_status_counts": {
+              "Mismatch": 4,
+              "Match": 1
+            },
+            "pin_status_counts": {
+              "Mismatch": 2,
+              "Match": 3
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_pmos": 2
+            },
+            "schematic_device_classes": {
+              "sg13_lv_nmos": 2,
+              "sg13_lv_pmos": 2
+            }
+          },
+          {
+            "layout": "RSC_IHPSG13_XOR2X2",
+            "schematic": "RSC_IHPSG13_XOR2X2",
+            "status": "Match",
+            "device_status_counts": {
+              "Match": 12
+            },
+            "net_status_counts": {
+              "Match": 9
+            },
+            "pin_status_counts": {
+              "Match": 5
+            },
+            "subcircuit_status_counts": {},
+            "layout_device_classes": {
+              "sg13_lv_nmos": 6,
+              "sg13_lv_pmos": 6
+            },
+            "schematic_device_classes": {
+              "sg13_lv_pmos": 6,
+              "sg13_lv_nmos": 6
+            }
+          }
+        ]
+      }
+    },
+    "internal-02": {
+      "invocation_status": "failed",
+      "native_match": false,
+      "native_mismatch": false,
+      "accepted": false,
+      "cross_reference": {
+        "status": "missing native database"
+      }
+    }
+  },
+  "ground_evidence": {
+    "extra_terminal": "RM_IHPSG13_1P_512x64_c2_bm_bist_0/RM_IHPSG13_1P_COLDRV13_FILL4C2_1[2]/RSC_IHPSG13_FILLCAP4_1/VSS!",
+    "ground_class_size": 169408,
+    "connected_to_declared_VSS_and_VGND": true,
+    "connected_to_VPWR": false,
+    "extra_terminal_disappears_in_control_flat_import": true,
+    "terminal_deleted_or_aliased": false
+  },
+  "resource_ledger": {
+    "this_continuation_seconds": 1316.754,
+    "prior_campaign_seconds": 6711.725,
+    "cumulative_cad_seconds": 8028.479,
+    "continuation_limit_seconds": 1800,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "attempts": [
+    {
+      "label": "flat-01",
+      "status": "failed",
+      "cad_seconds": 604.162,
+      "receipt_sha256": "133fea962acd8dc858317437c78a7611e5962ab335813cbda2c58e75ca4c015c"
+    },
+    {
+      "label": "flat-02",
+      "status": "completed",
+      "cad_seconds": 168.214,
+      "receipt_sha256": "e7e649a08f09fdbca6192b43e1fe979b82cd0f0087009664f0b1b538fc4a7865"
+    },
+    {
+      "label": "geometry-01",
+      "status": "failed",
+      "cad_seconds": 25.204,
+      "receipt_sha256": "26c1d231f491fd41fe00b29f4e8db6625b79ee9e4da6ac5170a5a50b33216dd7"
+    },
+    {
+      "label": "geometry-02",
+      "status": "failed",
+      "cad_seconds": 24.921,
+      "receipt_sha256": "eda96696376cf162304d10dc3b1784601a851fa2233a5795b312849aba2ec6ab"
+    },
+    {
+      "label": "geometry-03",
+      "status": "completed",
+      "cad_seconds": 25.628,
+      "receipt_sha256": "4ea8849fb4ab06d1a7822b20dde652f75f12da9260befb45e2fcc9aaddd1d6a7"
+    },
+    {
+      "label": "interface-01",
+      "status": "completed",
+      "cad_seconds": 7.93,
+      "receipt_sha256": "1cadfea5e6fb5001232fd8c6a80a431abb727d2ee59c2330a5a6b7d372042d77"
+    },
+    {
+      "label": "internal-01",
+      "status": "completed",
+      "cad_seconds": 37.059,
+      "receipt_sha256": "517aa5d6c9f936b121b2956e2b11b4b16295ef1f117c10af8cbff356cb138fe7"
+    },
+    {
+      "label": "internal-02",
+      "status": "failed",
+      "cad_seconds": 404.238,
+      "receipt_sha256": "d45a33b0d5524e8daa1eeacfb8c00c915bcb3fdbbab9dbe19e8b27bb412e39c8"
+    },
+    {
+      "label": "lvs-readback-01",
+      "status": "failed",
+      "cad_seconds": 9.444,
+      "receipt_sha256": "97da53d88cc583fa7845b55a28b7daf675ecefb842aaedb3d42c11986236a6f0"
+    },
+    {
+      "label": "lvs-readback-02",
+      "status": "completed",
+      "cad_seconds": 9.954,
+      "receipt_sha256": "f356bbbea955b4290c49b0b529a228c73e024aad961b51b27303d9f5d371183c"
+    }
+  ],
+  "reports": {
+    "flat-01-receipt.json": {
+      "path": "build/validation/sram-extraction-01/flat-01-receipt.json",
+      "sha256": "133fea962acd8dc858317437c78a7611e5962ab335813cbda2c58e75ca4c015c"
+    },
+    "flat-02-receipt.json": {
+      "path": "build/validation/sram-extraction-01/flat-02-receipt.json",
+      "sha256": "e7e649a08f09fdbca6192b43e1fe979b82cd0f0087009664f0b1b538fc4a7865"
+    },
+    "geometry-01-receipt.json": {
+      "path": "build/validation/sram-extraction-01/geometry-01-receipt.json",
+      "sha256": "26c1d231f491fd41fe00b29f4e8db6625b79ee9e4da6ac5170a5a50b33216dd7"
+    },
+    "geometry-02-receipt.json": {
+      "path": "build/validation/sram-extraction-01/geometry-02-receipt.json",
+      "sha256": "eda96696376cf162304d10dc3b1784601a851fa2233a5795b312849aba2ec6ab"
+    },
+    "geometry-03-receipt.json": {
+      "path": "build/validation/sram-extraction-01/geometry-03-receipt.json",
+      "sha256": "4ea8849fb4ab06d1a7822b20dde652f75f12da9260befb45e2fcc9aaddd1d6a7"
+    },
+    "interface-01-receipt.json": {
+      "path": "build/validation/sram-extraction-01/interface-01-receipt.json",
+      "sha256": "1cadfea5e6fb5001232fd8c6a80a431abb727d2ee59c2330a5a6b7d372042d77"
+    },
+    "internal-01-receipt.json": {
+      "path": "build/validation/sram-extraction-01/internal-01-receipt.json",
+      "sha256": "517aa5d6c9f936b121b2956e2b11b4b16295ef1f117c10af8cbff356cb138fe7"
+    },
+    "internal-02-receipt.json": {
+      "path": "build/validation/sram-extraction-01/internal-02-receipt.json",
+      "sha256": "d45a33b0d5524e8daa1eeacfb8c00c915bcb3fdbbab9dbe19e8b27bb412e39c8"
+    },
+    "lvs-readback-01-receipt.json": {
+      "path": "build/validation/sram-extraction-01/lvs-readback-01-receipt.json",
+      "sha256": "97da53d88cc583fa7845b55a28b7daf675ecefb842aaedb3d42c11986236a6f0"
+    },
+    "lvs-readback-02-receipt.json": {
+      "path": "build/validation/sram-extraction-01/lvs-readback-02-receipt.json",
+      "sha256": "f356bbbea955b4290c49b0b529a228c73e024aad961b51b27303d9f5d371183c"
+    },
+    "analysis.json": {
+      "path": "build/validation/sram-extraction-01/analysis.json",
+      "sha256": "3738378a955828cff73da0aaed4bd657d540342a82ec8d5324e96673af872a64"
+    },
+    "ground-evidence.json": {
+      "path": "build/validation/sram-extraction-01/ground-evidence.json",
+      "sha256": "02791309cc42be210bba732e060bd9ce3825e38cace094c06d46bcdd1ea34b03"
+    },
+    "flat-01/output/report.json": {
+      "path": "build/validation/sram-extraction-01/flat-01/output/report.json",
+      "sha256": "69c65d48c13220acdc7e07f07a44d202fe1b69dc4402a2e4d5193db96d86f832"
+    },
+    "flat-02/output/report.json": {
+      "path": "build/validation/sram-extraction-01/flat-02/output/report.json",
+      "sha256": "f88f9889318d03e356365663d17eb6dc17ddb805acac63cfb4003a0b2bb048c1"
+    },
+    "interface-01/output/report.json": {
+      "path": "build/validation/sram-extraction-01/interface-01/output/report.json",
+      "sha256": "854340daaa8a3bf89c04a9c464db076bce1adcdae5d3bc8378ae74b63858508b"
+    },
+    "geometry-03/output/report.json": {
+      "path": "build/validation/sram-extraction-01/geometry-03/output/report.json",
+      "sha256": "4c252408b595e0c920783e17c1d7f1e42f84c434c52d071fde50a6b55449f0ea"
+    },
+    "lvs-readback-02/output/report.json": {
+      "path": "build/validation/sram-extraction-01/lvs-readback-02/output/report.json",
+      "sha256": "6260e09ffabb8c0195c3f7f9ef86a2389780dc33cf15bada51af04a736f02af6"
+    },
+    "internal-01/output/report.json": {
+      "path": "build/validation/sram-extraction-01/internal-01/output/report.json",
+      "sha256": "e24401f400ad7e93cea045b6155a557c2d8863c15b6053444aa549641a71fb29"
+    }
+  },
+  "recipes": {
+    "analyze.py": {
+      "path": "build/validation/sram-extraction-01/analyze.py",
+      "sha256": "8103bd0722ca9034c93d00bbb2708bbda4420c215a66fc57092ba3d11e21ca6b"
+    },
+    "audit-record.py": {
+      "path": "build/validation/sram-extraction-01/audit-record.py",
+      "sha256": "02ccde374de842a8c18483b8401699586cb1281b11bca7c853a8d86861b7107f"
+    },
+    "ground-evidence.py": {
+      "path": "build/validation/sram-extraction-01/ground-evidence.py",
+      "sha256": "3b00276380891c0df1ce8137ccb2556e754b411e58fc726ffc495beade09752a"
+    },
+    "launch.py": {
+      "path": "build/validation/sram-extraction-01/launch.py",
+      "sha256": "0746f8e7ad2d18b321955e4b271f9c5788aea2c5700756cd3e58f5cd32ab58b9"
+    },
+    "prepare.py": {
+      "path": "build/validation/sram-extraction-01/prepare.py",
+      "sha256": "ef57c083e2efa1a3b375379c2bb1660e25aec4d41ba9d5edc5f6058f4884f49f"
+    },
+    "publish-record.py": {
+      "path": "build/validation/sram-extraction-01/publish-record.py",
+      "sha256": "a849cf7424ff1e184c1fffb359275f7884c18f58772f43f3f0727d89f1f6252d"
+    },
+    "flat-01/worker.py": {
+      "path": "build/validation/sram-extraction-01/flat-01/worker.py",
+      "sha256": "99ebc9c5ce797d784254f4235e437d9c94dfe74262fa8f6082987dd175316f99"
+    },
+    "flat-02/worker.py": {
+      "path": "build/validation/sram-extraction-01/flat-02/worker.py",
+      "sha256": "4bce39281ca3eeac51c7e485a4d5ac55b52a712ef371dd28538d1af372453ce9"
+    },
+    "geometry-01/worker.py": {
+      "path": "build/validation/sram-extraction-01/geometry-01/worker.py",
+      "sha256": "baca8ada551978a30dbc18d24c472ad5ac3a20dbabb4e0a56466a52c97f1c5ff"
+    },
+    "geometry-02/worker.py": {
+      "path": "build/validation/sram-extraction-01/geometry-02/worker.py",
+      "sha256": "27afa8a451610ba4747e1764cf8e2b2e45f38574da32a2005ebb094aac3ab560"
+    },
+    "geometry-03/worker.py": {
+      "path": "build/validation/sram-extraction-01/geometry-03/worker.py",
+      "sha256": "6defdbc11cf6aa70abf74b5cc1df2385011113f23218835a373534d72d833689"
+    },
+    "interface-01/worker.py": {
+      "path": "build/validation/sram-extraction-01/interface-01/worker.py",
+      "sha256": "6debc57aa1b86dbcb224b4febd551b07c6c34722f9bad7e2b3e70d7679864c75"
+    },
+    "internal-01/worker.py": {
+      "path": "build/validation/sram-extraction-01/internal-01/worker.py",
+      "sha256": "5714c6d657ffc86f39b91e606be15efe1985dbfee3d46eeaf9a6d1af32ff4b59"
+    },
+    "internal-02/worker.py": {
+      "path": "build/validation/sram-extraction-01/internal-02/worker.py",
+      "sha256": "e5b3f449f3f5b00559a58da861e24fd7ef05fd628029dfb2a958d17edb0dbc3c"
+    },
+    "lvs-readback-01/worker.py": {
+      "path": "build/validation/sram-extraction-01/lvs-readback-01/worker.py",
+      "sha256": "d071b88f205b2088bfce0c9ee5312e359f8d4de64b0a8988a92f443d574228c3"
+    },
+    "lvs-readback-02/worker.py": {
+      "path": "build/validation/sram-extraction-01/lvs-readback-02/worker.py",
+      "sha256": "17a342e5c6672eea675bd35a3b01e2160d7ac991c66a277b1e601bf8093f560f"
+    }
+  },
+  "intake": {
+    "path": "build/validation/sram-extraction-01/request.json",
+    "sha256": "dd2e7c8685447ae67f8c9b7b61cc1a2813d889ef1f38248689f8692598a73402"
+  },
+  "local_evidence_root": "build/validation/sram-extraction-01",
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-extraction-01",
+    "/finalization": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-finalization-01",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk",
+    "/source": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/transport-detailed-01",
+    "/closure": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-closure-01",
+    "/baseline": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/paired-buffer-balance-01",
+    "/scripts": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/scripts"
+  },
+  "unchanged_open_gates": [
+    "fast logic/SRAM temperature compatibility",
+    "complete timed Lean refinement",
+    "accepted A and capacity-change B",
+    "clean-source replay",
+    "competition admission"
+  ],
+  "boundary": "Passing chip interface comparison blackboxes the SRAM schematic. Remaining extraction and internal LVS failures are not waived."
+}

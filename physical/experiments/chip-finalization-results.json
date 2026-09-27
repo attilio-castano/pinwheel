@@ -1,0 +1,463 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "final-gds-signoff-rejected",
+  "study": "docs/physical/chip-finalization-results.md",
+  "protocol": {
+    "path": "docs/physical/chip-finalization-experiment.md",
+    "sha256": "4e2da947b4a10455e7fdab55f0e93949e85c44be423d64e6a862830f68d77922"
+  },
+  "predecessor": {
+    "path": "physical/experiments/chip-closure-results.json",
+    "sha256": "786f8d1a904403e23d7c71133c925787650a7a5f146a8836feeca3995d6541aa"
+  },
+  "final_layout_gate_passed": false,
+  "chip_physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "new_chip_logic": false,
+  "new_chip_detailed_route": false,
+  "additional_A_full_flow_attempts": 0,
+  "decision": "Retain the repaired filled circuit. Qualify the supplied SRAM GDS extraction/interface before claiming final GDS LVS.",
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "passed_checks": {
+    "original_instances": 12335,
+    "final_instances": 58236,
+    "added_fill_cells": 45901,
+    "fill_cells_by_master": {
+      "sg13cmos5l_fill_2": 3616,
+      "sg13cmos5l_fill_1": 3872,
+      "sg13cmos5l_decap_8": 35347,
+      "sg13cmos5l_decap_4": 3066
+    },
+    "fill_decap_area_um2": 491334.0768,
+    "signal_sram_antenna_area_um2": 375882.7104,
+    "total_instance_area_um2": 867216.7872,
+    "all_existing_instances_and_connections_unchanged": true,
+    "all_existing_wire_encodings_unchanged": true,
+    "original_clock_routes_preserved": 340,
+    "all_98_antenna_bindings_preserved": true,
+    "complete_connected_wires": 12191,
+    "power_geometry_and_all_terminal_bindings_preserved": true,
+    "power_terminals": {
+      "VPWR": 58237,
+      "VGND": 58236
+    },
+    "grid_overflow": 0,
+    "full_rule_magic_gds_drc": 0,
+    "antenna_violations": 0,
+    "critical_disconnected_pins": 0,
+    "unused_package_inputs": 8,
+    "acceptance": {
+      "status": "passed",
+      "corners": {
+        "nom_fast_1p32V_m40C": {
+          "setup_ns": 10.304850597838461,
+          "hold_ns": 0.026978697817157143,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "capacitance_violations": 0,
+          "slew_violations": 0,
+          "fanout_violations": 0
+        },
+        "nom_slow_1p08V_125C": {
+          "setup_ns": 1.2427534908465996,
+          "hold_ns": 0.30293257648687455,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "capacitance_violations": 0,
+          "slew_violations": 0,
+          "fanout_violations": 0
+        },
+        "nom_typ_1p20V_25C": {
+          "setup_ns": 7.309177470154706,
+          "hold_ns": 0.11912976498021194,
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "capacitance_violations": 0,
+          "slew_violations": 0,
+          "fanout_violations": 0
+        }
+      },
+      "failures": [],
+      "boundary": "Requires separately validated artifact, parasitics and corner definitions; no layout or physical qualification."
+    },
+    "exact_signal_circuit_and_functional_replay": {
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+    },
+    "negative_controls": {
+      "hidden_state_rejected": true,
+      "changed_clock_rejected": true,
+      "changed_antenna_binding_rejected": true
+    }
+  },
+  "rejected_gds_gate": {
+    "status": "rejected",
+    "native_result": "Top level cell failed pin matching",
+    "illegal_overlaps": 24,
+    "all_overlap_boxes_inside_sram": true,
+    "old_and_repaired_overlap_boxes_identical": true,
+    "standalone_sram_overlap_boxes_identical_after_translation": true,
+    "old_and_repaired_macro_extraction_identical": true,
+    "standalone_declared_ports": 351,
+    "in_chip_extracted_macro_ports": 352,
+    "spelling_differences": "GDS uses angle-bracket bus indices and VDD/VDDARRAY/VSS; LEF/logical model uses square brackets and ! power names.",
+    "extra_in_chip_extracted_pin": "RM_IHPSG13_1P_COLDRV13_FILL4C2_1[2]/RSC_IHPSG13_FILLCAP4_1/VSS",
+    "native_json_report_error": "Invalid \\escape: line 3872 column 53 (char 84266)",
+    "topology_repair_attempted": false,
+    "scope": "Existing SRAM extraction/interface failure reproduced without the six-cell chip repair. Physical versus extraction origin remains unqualified."
+  },
+  "candidate_def_lvs_control": {
+    "magic__illegal_overlap__count": 0,
+    "design__lvs_device_difference__count": 0,
+    "design__lvs_net_difference__count": 0,
+    "design__lvs_property_fail__count": 0,
+    "design__lvs_error__count": 0,
+    "design__lvs_unmatched_device__count": 0,
+    "design__lvs_unmatched_net__count": 0,
+    "design__lvs_unmatched_pin__count": 0
+  },
+  "limits": {
+    "fast_characterization_qualified": false,
+    "complete_lean_refinement": false,
+    "sram_internal_lvs_proven": false,
+    "power_ir_drop_manufacturing_qualified": false,
+    "power_ir_drop_reason": "Default voltage-source placement and modeled activity; no declared package-source locations.",
+    "disabled_checks": [
+      "RUN_KLAYOUT_XOR",
+      "RUN_KLAYOUT_DRC",
+      "RUN_EQY"
+    ]
+  },
+  "attempts": [
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/final-check/report.json",
+        "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+      },
+      "status": "passed",
+      "cad_seconds": 41.498
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/finalize-01-receipt.json",
+        "sha256": "cdeeb5b6b2ff10e550d1f43722e4ad03c7297455370a8927b6b4a13de22f7a6e"
+      },
+      "status": "failed",
+      "cad_seconds": 215.186
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/gds-control-01-receipt.json",
+        "sha256": "7b1c24380ffe60a1af2e3c84a12dd07392e3a204029f254fe9aef89e5a10d5b6"
+      },
+      "status": "completed",
+      "cad_seconds": 79.479
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/inspect-01-receipt.json",
+        "sha256": "1d179697296af9a8b1039174d344e92d511581a5bd39640ac107035345da4619"
+      },
+      "status": "failed",
+      "cad_seconds": 2.166
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/inspect-02-receipt.json",
+        "sha256": "93700a10c0f3bc6bca0e2938ba55eff92006e8d5027ec561602c5f8df547f2ec"
+      },
+      "status": "completed",
+      "cad_seconds": 26.28
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/preflight-01-receipt.json",
+        "sha256": "478e4ae70193568b9a4aa8a2747bb709e775dcb75fc6b50795520020b886ce32"
+      },
+      "status": "completed",
+      "cad_seconds": 1.639
+    },
+    {
+      "receipt": {
+        "path": "build/validation/chip-finalization-01/sram-control-01-receipt.json",
+        "sha256": "c348b80ca06d3dd2a3998a6999ed51394239688d78e3147db4f0b405575ab27d"
+      },
+      "status": "completed",
+      "cad_seconds": 20.954
+    }
+  ],
+  "reports": {
+    "final-check/report.json": {
+      "path": "build/validation/chip-finalization-01/final-check/report.json",
+      "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+    },
+    "finalize-01-receipt.json": {
+      "path": "build/validation/chip-finalization-01/finalize-01-receipt.json",
+      "sha256": "cdeeb5b6b2ff10e550d1f43722e4ad03c7297455370a8927b6b4a13de22f7a6e"
+    },
+    "gds-control-01-receipt.json": {
+      "path": "build/validation/chip-finalization-01/gds-control-01-receipt.json",
+      "sha256": "7b1c24380ffe60a1af2e3c84a12dd07392e3a204029f254fe9aef89e5a10d5b6"
+    },
+    "inspect-01-receipt.json": {
+      "path": "build/validation/chip-finalization-01/inspect-01-receipt.json",
+      "sha256": "1d179697296af9a8b1039174d344e92d511581a5bd39640ac107035345da4619"
+    },
+    "inspect-02-receipt.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02-receipt.json",
+      "sha256": "93700a10c0f3bc6bca0e2938ba55eff92006e8d5027ec561602c5f8df547f2ec"
+    },
+    "preflight-01-receipt.json": {
+      "path": "build/validation/chip-finalization-01/preflight-01-receipt.json",
+      "sha256": "478e4ae70193568b9a4aa8a2747bb709e775dcb75fc6b50795520020b886ce32"
+    },
+    "sram-control-01-receipt.json": {
+      "path": "build/validation/chip-finalization-01/sram-control-01-receipt.json",
+      "sha256": "c348b80ca06d3dd2a3998a6999ed51394239688d78e3147db4f0b405575ab27d"
+    },
+    "analysis.json": {
+      "path": "build/validation/chip-finalization-01/analysis.json",
+      "sha256": "0d8dbfe90de117e04970661066f00145261af571cf4cc791e7534b0330d8a7ad"
+    },
+    "preflight-01/output/report.json": {
+      "path": "build/validation/chip-finalization-01/preflight-01/output/report.json",
+      "sha256": "d12772e8e5f92fc8de678576abe88ba04e0c114b6b53316a72df68725170f972"
+    },
+    "gds-control-01/output/report.json": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/output/report.json",
+      "sha256": "740efc01e62ee850b009975cf515b4641e6e5a090ab19ee59d8bde9f17cfa0a8"
+    },
+    "sram-control-01/output/report.json": {
+      "path": "build/validation/chip-finalization-01/sram-control-01/output/report.json",
+      "sha256": "cc2a19032a16f9e7a7380e9097a97b6766b520273214b500ad920d0ada8dc827"
+    },
+    "inspect-02/output/timing.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/output/timing.json",
+      "sha256": "249ac02745b7f9fc34101e61d54e524e334a88413711836826635ade87344564"
+    },
+    "inspect-02/output/native-checks.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/output/native-checks.json",
+      "sha256": "2be15cef1265b6cf93db97d748cc9c8140a2eb144852151abf0387202e8e7ef1"
+    },
+    "inspect-02/output/intake.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/output/intake.json",
+      "sha256": "2f52fed79b546daefbc1dcb6794842063231f139d743deabeab3c03c8b049218"
+    },
+    "inspect-02/output/power.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/output/power.json",
+      "sha256": "4195b29022b66d8db08d2de08f403c244198c508a47b3896193fae7f56de4b04"
+    }
+  },
+  "recipes": {
+    "prepare-inspection.py": {
+      "path": "build/validation/chip-finalization-01/prepare-inspection.py",
+      "sha256": "b765a20837359678f0c82455aa8aeda3868eaa6692f4a79e35215235d4b3d6d7"
+    },
+    "launch-02.py": {
+      "path": "build/validation/chip-finalization-01/launch-02.py",
+      "sha256": "e1405b19a06fdd5b55bc08ea74eddb35e44ec218f044ecb56265435821098958"
+    },
+    "audit-record.py": {
+      "path": "build/validation/chip-finalization-01/audit-record.py",
+      "sha256": "f2badd5cc4b4fa0d1f518c16f9105e8a56000bd683bdcdadeb81139730f06efc"
+    },
+    "launch.py": {
+      "path": "build/validation/chip-finalization-01/launch.py",
+      "sha256": "405d97c9225f9614048160e86590587cb301cc473d24619bc57c634b696a4ec3"
+    },
+    "prepare-controls.py": {
+      "path": "build/validation/chip-finalization-01/prepare-controls.py",
+      "sha256": "00b9830f057bed41bb8f70655c2bdafd59465cb21e554075f85eba9cb7df52d9"
+    },
+    "check-circuit.py": {
+      "path": "build/validation/chip-finalization-01/check-circuit.py",
+      "sha256": "03744e639d78a3fff3248a4452568b8028d839844deadf8aa55bfe570b4cc8d0"
+    },
+    "publish-record.py": {
+      "path": "build/validation/chip-finalization-01/publish-record.py",
+      "sha256": "a8368d76d918f0008860c5aab9c679ad49ffe3c5d0c0f3743f17c7b56578096c"
+    },
+    "prepare.py": {
+      "path": "build/validation/chip-finalization-01/prepare.py",
+      "sha256": "5c20681dae4d2078fcf7d0efc71f54ad911219a35d225b205f32f3b752424e45"
+    },
+    "analyze.py": {
+      "path": "build/validation/chip-finalization-01/analyze.py",
+      "sha256": "99395ff90f6f4ccdac93c8376a6ab445f53e6aa84a63d57b131695bd8a6cb118"
+    },
+    "preflight-01/worker.py": {
+      "path": "build/validation/chip-finalization-01/preflight-01/worker.py",
+      "sha256": "ba6a7895718f348a28629baf55309177d24391ad112efbb2070c432358e41270"
+    },
+    "finalize-01/worker.py": {
+      "path": "build/validation/chip-finalization-01/finalize-01/worker.py",
+      "sha256": "ac5e45c72d2df824cabedf150a12b91f5ec7b4ace0100bb0d77df5022e1d9b85"
+    },
+    "gds-control-01/worker.py": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/worker.py",
+      "sha256": "a37f46b89a133291b0447bd774d225fdffe1baa4254a8a37aafcb11a1af03ca0"
+    },
+    "gds-control-01/inputs.json": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/inputs.json",
+      "sha256": "781bc7a8910a42c65ab5dbcf74c335346eaa440d26131b3e4474e780152f1df5"
+    },
+    "gds-control-01/container-inputs.json": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/container-inputs.json",
+      "sha256": "75e54ba05c96999a31ad061e929d89197f26755256ff538e8fad86cca09100ec"
+    },
+    "inspect-01/intake.py": {
+      "path": "build/validation/chip-finalization-01/inspect-01/intake.py",
+      "sha256": "61b47313c149218eed4fed01c736f534f156928241909036489568e16459e30e"
+    },
+    "inspect-01/worker.py": {
+      "path": "build/validation/chip-finalization-01/inspect-01/worker.py",
+      "sha256": "d1699153666bd1beca8a811301c15fa6b7d063f83afdb1abc58d85452e72ca57"
+    },
+    "inspect-01/inputs.json": {
+      "path": "build/validation/chip-finalization-01/inspect-01/inputs.json",
+      "sha256": "2106bf7f7ac464fa673ebf86737f82e762bc4fc74a2047800bcd9bef19a810aa"
+    },
+    "inspect-01/container-inputs.json": {
+      "path": "build/validation/chip-finalization-01/inspect-01/container-inputs.json",
+      "sha256": "e508d583199bc8425187124470419e36356aa87af89b1e729390548a27e80e16"
+    },
+    "inspect-02/intake.py": {
+      "path": "build/validation/chip-finalization-01/inspect-02/intake.py",
+      "sha256": "61b47313c149218eed4fed01c736f534f156928241909036489568e16459e30e"
+    },
+    "inspect-02/worker.py": {
+      "path": "build/validation/chip-finalization-01/inspect-02/worker.py",
+      "sha256": "7da5238a31871b1b885d9af0ffc769c535ca8da699e8b4d916bb59033d944827"
+    },
+    "inspect-02/inputs.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/inputs.json",
+      "sha256": "2106bf7f7ac464fa673ebf86737f82e762bc4fc74a2047800bcd9bef19a810aa"
+    },
+    "inspect-02/container-inputs.json": {
+      "path": "build/validation/chip-finalization-01/inspect-02/container-inputs.json",
+      "sha256": "e508d583199bc8425187124470419e36356aa87af89b1e729390548a27e80e16"
+    },
+    "sram-control-01/worker.py": {
+      "path": "build/validation/chip-finalization-01/sram-control-01/worker.py",
+      "sha256": "bb64a6ef7e7a0c8f93cbb65810f7db0222deeff6045be77f365a731bd077c70d"
+    }
+  },
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 6324.523,
+    "this_continuation_seconds": 387.202,
+    "cumulative_cad_seconds": 6711.725,
+    "continuation_limit_seconds": 1800,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "remaining_gates": [
+    "SRAM GDS extraction/interface qualification and passing actual exported-layout LVS",
+    "Compatible fast logic/SRAM characterization or justified conservative bound",
+    "Complete timed paired-controller/loading/package refinement",
+    "Accepted A before B and clean-source physical replay"
+  ],
+  "retained_native_failures": {
+    "finalize-01/output/flow/13-magic-spiceextraction/feedback.txt": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/feedback.txt",
+      "sha256": "192195c781c4d5b0e9244bfd549a214dc81436dbafed15049058a4e842f3fa51"
+    },
+    "finalize-01/output/flow/15-netgen-lvs/reports/lvs.netgen.rpt": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/15-netgen-lvs/reports/lvs.netgen.rpt",
+      "sha256": "b71aefa267871e25ffe6794c1f33297c2c3a9d64c050cb1e80e46c5face98974"
+    },
+    "finalize-01/output/flow/15-netgen-lvs/reports/lvs.netgen.json": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/15-netgen-lvs/reports/lvs.netgen.json",
+      "sha256": "f417da96a7e34c5a682c329f4c4f26d9c4435f5abeabc78ef2481bbd117b3130"
+    },
+    "gds-control-01/output/old-gds/extract/feedback.txt": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/output/old-gds/extract/feedback.txt",
+      "sha256": "32a3173252395b4bc9471c07ee512e02db8479bd26ab9769d325e19933c711eb"
+    },
+    "gds-control-01/output/old-gds/lvs/reports/lvs.netgen.rpt": {
+      "path": "build/validation/chip-finalization-01/gds-control-01/output/old-gds/lvs/reports/lvs.netgen.rpt",
+      "sha256": "d7ea3e70e5524edfe9233b1f3cc7ea624598eb15019454ec0d4bcd5052738e83"
+    },
+    "sram-control-01/output/extract/feedback.txt": {
+      "path": "build/validation/chip-finalization-01/sram-control-01/output/extract/feedback.txt",
+      "sha256": "7d25f20904bc426b6bfa369a26771ce7541c633b6009f8bc41377aa49c1f4c00"
+    }
+  },
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-finalization-01",
+    "/closure": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-closure-01",
+    "/source": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/transport-detailed-01",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk",
+    "/baseline": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/paired-buffer-balance-01",
+    "/scripts": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/scripts"
+  },
+  "boundaries": [
+    "No passing exported-GDS LVS or complete physical qualification",
+    "SRAM internal LVS remains unproved; no naming, terminal or overlap waiver",
+    "Native report JSON parsing fails in addition to the already failing text LVS result",
+    "Fast logic/SRAM views remain unmatched; complete timed Lean refinement remains open",
+    "Power grid continuity does not qualify manufacturing IR drop with default source placement",
+    "KLayout DRC, streamout XOR and whole-flow EQY disabled, not passed",
+    "Actual stage artifacts retained after failed flow; no successful final snapshot or clean-source replay"
+  ],
+  "evidence_root": "build/validation/chip-finalization-01"
+}

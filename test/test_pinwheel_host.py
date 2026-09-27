@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
-from pinwheel_host import Host, Pins, Program
+from pinwheel_host import Host, Pins, Program, LEGACY_FORMAT, PAIRED_FORMAT
 
 
 class Transport:
@@ -22,6 +22,29 @@ class Transport:
 
 
 class HostTests(unittest.TestCase):
+    def test_formats_cannot_be_cross_uploaded(self):
+        for target, supplied in [(LEGACY_FORMAT, PAIRED_FORMAT), (PAIRED_FORMAT, LEGACY_FORMAT)]:
+            transport = Transport()
+            with self.subTest(target=target), self.assertRaisesRegex(ValueError, 'format'):
+                Host(transport, image_format=target).upload(Program((4,), 0, image_format=supplied))
+            self.assertEqual(transport.edges, 0)
+
+    def test_paired_format_is_explicit_and_rejects_noncanonical_source(self):
+        program = Program((4,), 0, 5, 3, PAIRED_FORMAT)
+        stream = program.upload_words()
+        self.assertEqual(len(stream), 290)
+        self.assertEqual(stream[-2:], (4, 29))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp)/'paired.json'
+            program.write(path)
+            self.assertEqual(json.loads(path.read_text())['format'], PAIRED_FORMAT)
+            self.assertEqual(Program.read(path), program)
+        transport = Transport()
+        with self.assertRaisesRegex(ValueError, 'E64 grammar'):
+            Host(transport, image_format=PAIRED_FORMAT).upload(
+                Program((1 << 63, 4), 1, image_format=PAIRED_FORMAT))
+        self.assertEqual(transport.edges, 0)
+
     def test_program_padding_is_included_in_capacity(self):
         # 31 distinct records plus the padding halt fill all 32 dictionary slots.
         words = tuple(k << 9 for k in range(31))

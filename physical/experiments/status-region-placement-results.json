@@ -1,0 +1,889 @@
+{
+  "schema": 1,
+  "status": "experiment-completed",
+  "recorded_at_utc": "2026-09-26T13:22:05.358156+00:00",
+  "study": "docs/physical/status-region-placement-experiment.md",
+  "decision": {
+    "retain_baseline": true,
+    "retained_database": "build/validation/sram-distribution-01/coarse/repaired.odb",
+    "retained_database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+    "qualification": "reject both placement candidates",
+    "conclusion": "Coordinated placement improves local setup without adding area, but the complete route regresses setup, creates four capacitance and four hold violations, and increases congestion. Keep the previous 34-buffer design as the physical starting point.",
+    "next_hypothesis": "Test placement and routing as one timing/electrical feedback loop, including explicit clock/hold treatment after global routing. The new hold failure is on unmoved cells and is dominated by altered clock delivery; isolated data placement against old routes is not a sufficient discriminator.",
+    "next_hypothesis_tested": false,
+    "scope": "No additional placement or buffer candidates in this experiment."
+  },
+  "predecessor": {
+    "path": "physical/experiments/control-distribution-results.json",
+    "sha256": "6402d5445a864d15293d466b36eb3cae7edb58b489c419148e8cc0045ffc6226"
+  },
+  "predecessor_report": {
+    "path": "build/validation/control-distribution-01/report.json",
+    "sha256": "e09f10703140902cb23b825584d2918ba1a7327e7881a7470a995c8ccf9b4188"
+  },
+  "source_database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "area_reference": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359776.2816,
+    "historical_limit_um2": 359372.43823679996,
+    "size_overage_allowed_for_exploration": true
+  },
+  "timing_floors_ns": {
+    "slow_setup": 0.3673431,
+    "fast_hold": 0.07927839
+  },
+  "bounds": {
+    "total_cad_seconds": 1800,
+    "measurement_seconds": 180,
+    "edit_seconds": 240,
+    "geometry_seconds": 120,
+    "coarse_route_seconds": 300,
+    "max_candidate_variants": 2,
+    "max_coarse_routes": 3,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "recovery_bounds": {
+    "max_edit_attempts": 4,
+    "max_completed_candidates": 2,
+    "failures_count_toward_original_time": true
+  },
+  "variants": {
+    "baseline": {
+      "status": "passed",
+      "label": "baseline",
+      "database_sha256": "0a3afe1bc5add8c4324f6a5d47098c51b6fc64e2908dc44fb674d5670f3bcab6",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.321638
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.14136
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4195,
+        "below_reserve": 3,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02877_",
+          "reserve": 0.1914673456746395,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02966_",
+          "reserve": 0.19891142204354303,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.712602615,
+        "mode_status_endpoints_max": 1.992297888,
+        "sram_status_matched_max": 1.20015645,
+        "sram_status_endpoints_max": 0.321637839,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.902013779,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_matched_max": 1.750064135,
+        "bit_status_endpoints_max": 0.704092801,
+        "write_hold_matched_max": 18.73601532,
+        "write_hold_endpoints_max": 18.59217453,
+        "critical_read_matched_max": 0.321637839,
+        "critical_read_endpoints_max": 0.321637839,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "control-timing": {
+      "status": "passed",
+      "label": "control-timing",
+      "database_sha256": "0c38b5593c7e44fa8879536c62a4640d15c79a31731a8f80553e3d1ad3213509",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.43084
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.321638
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.258956,
+          "timing__setup__ws": 6.14136
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4195,
+        "below_reserve": 3,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02877_",
+          "reserve": 0.1914673456746395,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02966_",
+          "reserve": 0.19891142204354303,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.161178738,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.712602615,
+        "mode_status_endpoints_max": 1.992297888,
+        "sram_status_matched_max": 1.20015645,
+        "sram_status_endpoints_max": 0.321637839,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.902013779,
+        "parameter_hold_endpoints_max": 18.866733551,
+        "bit_status_matched_max": 1.750064135,
+        "bit_status_endpoints_max": 0.704092801,
+        "write_hold_matched_max": 18.73601532,
+        "write_hold_endpoints_max": 18.59217453,
+        "critical_read_matched_max": 0.321637839,
+        "critical_read_endpoints_max": 0.321637839,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "wirelength-repeat": {
+      "status": "passed",
+      "label": "wirelength-repeat",
+      "database_sha256": "dd4f0e91545cda105db3a5e420936c8941a017590cdc21495c15e494e27d25ce",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.5045
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 0.580231
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.255358,
+          "timing__setup__ws": 6.27866
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4196,
+        "below_reserve": 2,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_02877_",
+          "reserve": 0.1913852423445902,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.160646841,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 4.118270397,
+        "mode_status_endpoints_max": 3.086717606,
+        "sram_status_matched_max": 1.306118846,
+        "sram_status_endpoints_max": 0.580231011,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.908184052,
+        "parameter_hold_endpoints_max": 18.874095917,
+        "bit_status_matched_max": 1.972644329,
+        "bit_status_endpoints_max": 0.708226383,
+        "write_hold_matched_max": 18.735654831,
+        "write_hold_endpoints_max": 18.591873169,
+        "critical_read_matched_max": 0.580231011,
+        "critical_read_endpoints_max": 0.580231011,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": true,
+        "fast_hold": true
+      }
+    },
+    "coordinated-02-timing": {
+      "status": "passed",
+      "label": "coordinated-02-timing",
+      "database_sha256": "fe36a7fc72dc146f5abe708ff23ada47ab9e5e4ec55a62731b137c93aebd9644",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0890245,
+          "timing__setup__ws": 9.87547
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.505169,
+          "timing__setup__ws": 1.19587
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.25697,
+          "timing__setup__ws": 6.69821
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4197,
+        "failing": 1,
+        "below_reserve": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_04754_",
+          "reserve": -0.15638480041127475,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.1671221799817794,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.123397186,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 4.829603672,
+        "mode_status_endpoints_max": 4.028940678,
+        "sram_status_matched_max": 1.39425981,
+        "sram_status_endpoints_max": 1.352058053,
+        "input_hold_matched_max": 15.126957893,
+        "input_hold_endpoints_max": 15.126957893,
+        "parameter_hold_matched_max": 18.905422211,
+        "parameter_hold_endpoints_max": 18.870803833,
+        "bit_status_matched_max": 2.218859911,
+        "bit_status_endpoints_max": 1.195869207,
+        "write_hold_matched_max": 18.735162735,
+        "write_hold_endpoints_max": 18.591464996,
+        "critical_read_matched_max": 1.681066871,
+        "critical_read_endpoints_max": 1.352058053,
+        "critical_hold_matched_max": 18.275457382,
+        "critical_hold_endpoints_max": 17.929550171
+      },
+      "timing_floor_pass": {
+        "slow_setup": true,
+        "fast_hold": true
+      }
+    },
+    "wirelength-coarse-timing": {
+      "status": "passed",
+      "label": "wirelength-coarse-timing",
+      "database_sha256": "5cee4b949e214fc3280f1cc9286023f471efc40099b088a32176192518a14a95",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.10501,
+          "timing__setup__ws": 9.49018
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 9,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.478266,
+          "timing__setup__ws": 0.29941
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.245714,
+          "timing__setup__ws": 6.14062
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4196,
+        "below_reserve": 2,
+        "failing": 1
+      },
+      "below_reserve": [
+        {
+          "net": "_01776_",
+          "reserve": 0.1660682272559399,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02353_",
+          "reserve": 0.15079964730134746,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04455_",
+          "reserve": -0.32342848063993573,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.23012282,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 2.882543087,
+        "mode_status_endpoints_max": 2.051165581,
+        "sram_status_matched_max": 1.240730166,
+        "sram_status_endpoints_max": 0.536667585,
+        "input_hold_matched_max": 15.153923035,
+        "input_hold_endpoints_max": 15.153923035,
+        "parameter_hold_matched_max": 18.750009537,
+        "parameter_hold_endpoints_max": 18.691827774,
+        "bit_status_matched_max": 1.549461007,
+        "bit_status_endpoints_max": 0.299410284,
+        "write_hold_matched_max": 18.649200439,
+        "write_hold_endpoints_max": 18.505418777,
+        "critical_read_matched_max": 0.603547454,
+        "critical_read_endpoints_max": 0.536667585,
+        "critical_hold_matched_max": 17.915687561,
+        "critical_hold_endpoints_max": 17.567012787
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": true
+      }
+    },
+    "coordinated-coarse-timing": {
+      "status": "passed",
+      "label": "coordinated-coarse-timing",
+      "database_sha256": "1aa237d2236266b7611f8d1335509002eb72a837738a0c0b080a6fc4e9ec8e4f",
+      "measured_connections": 4199,
+      "pin_corner_checks": 12597,
+      "selected_path_checks": 96,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": -0.0826165,
+          "timing__setup__ws": 9.37407
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.330731,
+          "timing__setup__ws": 0.181782
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.0670417,
+          "timing__setup__ws": 6.04261
+        }
+      },
+      "unreported_macro_fanout_limits": {
+        "nom_fast_1p32V_m40C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_slow_1p08V_125C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ],
+        "nom_typ_1p20V_25C": [
+          "memory.mem_q0[51]",
+          "memory.mem_q0[53]"
+        ]
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 4193,
+        "below_reserve": 3,
+        "failing": 3
+      },
+      "below_reserve": [
+        {
+          "net": "_01776_",
+          "reserve": 0.07812596561676045,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02292_",
+          "reserve": -0.025001762333262952,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02353_",
+          "reserve": 0.018105902609097144,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04508_",
+          "reserve": -0.16244768350209277,
+          "verdict": "failing"
+        },
+        {
+          "net": "_04567_",
+          "reserve": -0.10370244251856907,
+          "verdict": "failing"
+        },
+        {
+          "net": "path_guard_1_0_net",
+          "reserve": 0.045801963927227074,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359776.2816,
+      "added_area_um2": 0.0,
+      "over_historical_allowance_um2": 403.8433632000233,
+      "total_percent_above_reference": 0.41271173028096797,
+      "minimum_write_hold_ns": 0.192793339,
+      "selected_setup_slacks_ns": {
+        "mode_status_matched_max": 3.282049417,
+        "mode_status_endpoints_max": 1.767297506,
+        "sram_status_matched_max": 1.06291151,
+        "sram_status_endpoints_max": 0.181781709,
+        "input_hold_matched_max": 15.133790016,
+        "input_hold_endpoints_max": 15.133790016,
+        "parameter_hold_matched_max": 18.905973434,
+        "parameter_hold_endpoints_max": 18.870985031,
+        "bit_status_matched_max": 1.440555215,
+        "bit_status_endpoints_max": 0.359026611,
+        "write_hold_matched_max": 18.759681702,
+        "write_hold_endpoints_max": 18.615983963,
+        "critical_read_matched_max": 0.622733891,
+        "critical_read_endpoints_max": 0.181781709,
+        "critical_hold_matched_max": 18.397821426,
+        "critical_hold_endpoints_max": 18.052755356
+      },
+      "timing_floor_pass": {
+        "slow_setup": false,
+        "fast_hold": false
+      }
+    }
+  },
+  "actual_placement_changes": {
+    "wirelength": {
+      "allowed_instances": 1226,
+      "moved_instances": 1012,
+      "maximum_displacement_um": 15.24,
+      "added_area_um2": 0,
+      "exact_connectivity": true,
+      "protected_instances_fixed": true,
+      "cell_types_and_dimensions_unchanged": true,
+      "power_bindings_retained": true,
+      "independent_row_definitions_and_placement_statuses_retained": true
+    },
+    "coordinated-02": {
+      "allowed_instances": 1226,
+      "moved_instances": 1183,
+      "maximum_displacement_um": 354.0,
+      "added_area_um2": 0,
+      "exact_connectivity": true,
+      "protected_instances_fixed": true,
+      "cell_types_and_dimensions_unchanged": true,
+      "power_bindings_retained": true,
+      "independent_row_definitions_and_placement_statuses_retained": true
+    }
+  },
+  "pin_corner_checks": 75582,
+  "selected_path_checks": 576,
+  "interface_path_checks": 2304,
+  "unrestricted_regional_witness_records": 2304,
+  "new_hold_matched_witnesses": 6,
+  "new_hold_failure_decomposition": {
+    "slack_ns": -0.232458167,
+    "launch_clock_ns": -0.07097584099999998,
+    "capture_clock_ns": 0.10902941200000005,
+    "data_delay_ns": -0.041231452,
+    "other_required_ns": 0.011221408999999904
+  },
+  "complete_route_capacitance_violations_outside_inventory": [
+    {
+      "pin": "memory.storage/A_DOUT[11]",
+      "net": "memory.mem_q0[11]",
+      "limit_pf": 0.064,
+      "actual_pf": 0.070019,
+      "slack_pf": -0.006019,
+      "in_scoped_inventory": false
+    }
+  ],
+  "complete_route_hold_violation_count": 4,
+  "targeted_branch_witnesses": 90,
+  "matched_local_clock_pairs_unchanged": 96,
+  "unchanged_control_reproduced_all_measurements_paths_and_grid": true,
+  "congestion": {
+    "baseline": {
+      "router_overflow": 16,
+      "stored_grid_overflow": 15.0,
+      "native_2d_overflow": 16,
+      "strict_reconciliation": {
+        "status": "rejected",
+        "reason": "Duplicate or stale native congestion marker"
+      }
+    },
+    "control": {
+      "router_overflow": 16,
+      "stored_grid_overflow": 15.0,
+      "native_2d_overflow": 16,
+      "strict_reconciliation": {
+        "status": "rejected",
+        "reason": "Duplicate or stale native congestion marker"
+      }
+    },
+    "wirelength-coarse": {
+      "router_overflow": 17,
+      "stored_grid_overflow": 16.0,
+      "native_2d_overflow": 17,
+      "strict_reconciliation": {
+        "status": "rejected",
+        "reason": "Duplicate or stale native congestion marker"
+      }
+    },
+    "coordinated-coarse": {
+      "router_overflow": 20,
+      "stored_grid_overflow": 19.0,
+      "native_2d_overflow": 20,
+      "strict_reconciliation": {
+        "status": "rejected",
+        "reason": "Duplicate or stale native congestion marker"
+      }
+    }
+  },
+  "minimum_pin_access": {
+    "wirelength-coarse": {
+      "database_sha256": "5cee4b949e214fc3280f1cc9286023f471efc40099b088a32176192518a14a95",
+      "signal_layers": "Metal2-Metal4",
+      "clock_layers": "Metal2-Metal4",
+      "source_unchanged": true,
+      "counts": {
+        "stdCellPinCnt": 33678,
+        "stdCellPinNoAp": 0,
+        "macroGenAp": 498,
+        "macroValidPlanarAp": 348,
+        "macroValidViaAp": 0,
+        "macroNoAp": 0
+      },
+      "decision": "pass",
+      "off_grid_warnings": 0,
+      "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+    },
+    "coordinated-coarse": {
+      "database_sha256": "1aa237d2236266b7611f8d1335509002eb72a837738a0c0b080a6fc4e9ec8e4f",
+      "signal_layers": "Metal2-Metal4",
+      "clock_layers": "Metal2-Metal4",
+      "source_unchanged": true,
+      "counts": {
+        "stdCellPinCnt": 33678,
+        "stdCellPinNoAp": 0,
+        "macroGenAp": 498,
+        "macroValidPlanarAp": 348,
+        "macroValidViaAp": 0,
+        "macroNoAp": 0
+      },
+      "decision": "pass",
+      "off_grid_warnings": 0,
+      "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+    }
+  },
+  "physical_qualification": false,
+  "detailed_route_executed": false,
+  "production_admission_changed": false,
+  "rtl_changed": false,
+  "new_lean_theorems": 0,
+  "added_pipeline_cycles": 0,
+  "tests": {
+    "tests_run": 480,
+    "passed": 478,
+    "skipped": 2,
+    "receipt": {
+      "path": "build/validation/status-region-placement-01/python-tests-final-02.json",
+      "sha256": "fdc21482c03bbba3173ac217b8179f19df1042264bbf129834891020a5cfb98a"
+    },
+    "launch_guards": {
+      "path": "build/validation/status-region-placement-01/launch-guards-03.json",
+      "sha256": "1e2123168c0b2833981229a36e35686177744431705d7e158313f668c9652b26"
+    }
+  },
+  "execution": {
+    "cad_attempts": 18,
+    "completed_cad_attempts": 15,
+    "rejected_input_hash_collections": 1,
+    "failed_native_placement_attempts": 2,
+    "edit_attempts": 4,
+    "completed_placement_candidates": 2,
+    "complete_routes": 3,
+    "cad_container_seconds": 927.689,
+    "previous_container_seconds": 1019.273,
+    "combined_container_seconds": 1946.962,
+    "timeouts": 0,
+    "containers": {
+      "pinwheel-region-01-geometry": "absent",
+      "pinwheel-region-01-wirelength-repeat": "absent",
+      "pinwheel-region-01-baseline": "absent",
+      "pinwheel-region-01-coordinated-coarse": "absent",
+      "pinwheel-region-01-wirelength-coarse-timing": "absent",
+      "pinwheel-region-01-control": "absent",
+      "pinwheel-region-01-coordinated-coarse-timing": "absent",
+      "pinwheel-region-01-wirelength-access": "absent",
+      "pinwheel-region-01-wirelength-timing": "absent",
+      "pinwheel-region-01-wirelength": "absent",
+      "pinwheel-region-01-coordinated-02-timing": "absent",
+      "pinwheel-region-01-control-timing": "absent",
+      "pinwheel-region-01-hold-diagnosis": "absent",
+      "pinwheel-region-01-wirelength-coarse": "absent",
+      "pinwheel-region-01-coordinated": "absent",
+      "pinwheel-region-01-coordinated-02": "absent",
+      "pinwheel-region-01-timed": "absent",
+      "pinwheel-region-01-local-geometry": "absent"
+    }
+  },
+  "evidence_boundary": [
+    "Placement and exact mapped connection identity, with global-route estimates at three corners. Fast standard cells remain -40C versus SRAM -55C.",
+    "Only the two completed full candidates have whole-chip grids and pin-access evidence; incremental grids are partial.",
+    "One unused-recipe hash change rejects a timing collection; its full repeat supplies evidence. Two failed placer attempts produce no candidate. A row-check limitation is corrected using actual OpenDB definitions with a lineage-linked support freeze.",
+    "Repeated near-critical reports are not independent paths. The data paths are deduplicated in regional summaries, and explicit branch selectors measure the three competing decode branches.",
+    "No new Lean theorem, compiler/package refinement, detailed routing, extracted closure, antenna, power-grid qualification or backend promotion follows."
+  ],
+  "evidence": {
+    "request.json": {
+      "path": "build/validation/status-region-placement-01/request.json",
+      "sha256": "51707ab0dcdb1c420d0e5fc156060659c6a3bbba72b2bf49c7d1792ff228c447"
+    },
+    "policy.json": {
+      "path": "build/validation/status-region-placement-01/policy.json",
+      "sha256": "62bfcb964582ba396e2f4182f4d693eab415b2301731eb1e501a7158252d841a"
+    },
+    "mechanism.json": {
+      "path": "build/validation/status-region-placement-01/mechanism.json",
+      "sha256": "4b97902486dd4c068ac5c7c604094cae997ca1445ec85263889019cf6663e8d9"
+    },
+    "congestion-analysis.json": {
+      "path": "build/validation/status-region-placement-01/congestion-analysis.json",
+      "sha256": "45c4f60d41cd846949c8af32a952550a0b11d813ba0779b1d78583737643bc7c"
+    },
+    "hold-analysis.json": {
+      "path": "build/validation/status-region-placement-01/hold-analysis.json",
+      "sha256": "d9fbacadb3b67253c835e0d81f631ceb01f891f618c0c8b567c83c933da9652c"
+    },
+    "global-electrical.json": {
+      "path": "build/validation/status-region-placement-01/global-electrical.json",
+      "sha256": "1cbdd8e768ffcfbe541d76251a7a121407c1a86256fd9e33479108ce8525ab75"
+    },
+    "support-revision.json": {
+      "path": "build/validation/status-region-placement-01/support-revision.json",
+      "sha256": "e083b8e0263869fa3aac46f076f47687a8aef80aba8ab009fa88c17472bbd786"
+    },
+    "recovery.json": {
+      "path": "build/validation/status-region-placement-01/recovery.json",
+      "sha256": "bd1a8f0f5058319070914ab08f71b30050a361869549ac9a162af6966c3635a2"
+    },
+    "recovery-02.json": {
+      "path": "build/validation/status-region-placement-01/recovery-02.json",
+      "sha256": "5cc335882d1154baf46451be07442383e23a596b2c864036ce03e3d7e484620c"
+    },
+    "rejected-input-guard.json": {
+      "path": "build/validation/status-region-placement-01/rejected-input-guard.json",
+      "sha256": "d2835f71de1b8f44e614e59dffcc6c0e96be2a715476808ece29659cf3f41211"
+    }
+  },
+  "source_sha256": {
+    "scripts/physical_region_placement.py": "6d8ef5eee266f9a23441d737ec7b8466074225aa5b8979c32b1860576ff3ab89",
+    "test/test_physical_region_placement.py": "2dd3960e1d43b47c3e636fa2a3ca7016bace3d92a9e7574fe9fd30054eb15ecf"
+  },
+  "report": "build/validation/status-region-placement-01/report.json",
+  "report_sha256": "b841063f537ad665c35165d8f1b9f46be54e871f00953212e5469ba28ae881dd",
+  "source_versions_checked": 2904,
+  "artifact_count": 3473,
+  "region": {
+    "movable_cells": 1226,
+    "incident_nets": 2502,
+    "complete_cone_cells": 2722
+  },
+  "complete_transport_families": 2190
+}

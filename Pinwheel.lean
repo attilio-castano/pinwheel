@@ -90,6 +90,8 @@ import Pinwheel.Hardware.Storage.MapTile
 import Pinwheel.Hardware.Storage.TiledController
 import Pinwheel.Hardware.Storage.FetchContract
 import Pinwheel.Hardware.Storage.PairedController
+import Pinwheel.Hardware.Storage.PairedValidation
+import Pinwheel.Hardware.Storage.PairedImage
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
