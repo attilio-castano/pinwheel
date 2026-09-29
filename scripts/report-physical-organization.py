@@ -15,8 +15,8 @@ from pathlib import Path
 import re
 import time
 
-from physical_connections import connection_terminals, parse_measurements
-from physical_organization import Library, Planner, mechanism_screen, screen_exchange_identity
+from physical_connections import connection_terminals
+from physical_organization import Library, Planner, mechanism_screen, screen_exchange_identity, parse_diagnostic_measurements
 from physical_organization_study import timing_budget, replication_cost
 from validation_run import fresh_directory, sha
 
@@ -112,11 +112,6 @@ def main():
         if connection_terminals(context, row['net']) != {k: row[k] for k in ('driver', 'consumers', 'ports')}:
             raise ValueError('Inherited coverage changed endpoints')
     rows = {r['net']: r for r in families['connections']}
-    for label in ('before', 'after'):
-        for corner, data in saved[label].items():
-            path = source_path.parent / 'measurements' / label / corner / 'connections.rpt'
-            if parse_measurements(text(path, analysis['inputs_sha256'][str(path)]), set(rows)) != data:
-                raise ValueError('Measurement differs from raw connection report')
     coverage = dict(source_database_sha256=context['database_sha256'], connections=list(rows.values()),
                     components=[dict(root=f['root'], nets=f['nets'], families=[seed])
                                 for seed, f in families['families'].items()])
@@ -126,7 +121,7 @@ def main():
 
     resolved = read(design / 'runs' / tag / 'resolved.json', request['checkpoints']['after']['config_sha256'])
     sdc = design / 'experiments' / tag / 'core.sdc'
-    text(sdc, invocation['snapshot_files_sha256']['core.sdc'])
+    sdc_text = text(sdc, invocation['snapshot_files_sha256']['core.sdc'])
     current_sdc = next(ref for ref in study['semantic_sources'] if ref['path'] == 'physical/chip.sdc')
     if sha(sdc) != current_sdc['sha256']:
         raise ValueError('Current timing assumptions differ from the measured chip')
@@ -155,6 +150,12 @@ def main():
                 raise ValueError('Unbound library location')
             library_texts[corner].append(text(path, digest))
     library = Library(library_texts)
+    for label in ('before', 'after'):
+        for corner, data in saved[label].items():
+            path = source_path.parent / 'measurements' / label / corner / 'connections.rpt'
+            raw = text(path, analysis['inputs_sha256'][str(path)])
+            if parse_diagnostic_measurements(raw, rows, context, library, corner, sdc_text) != data:
+                raise ValueError('Measurement differs from raw connection report')
     policy = reference(study['exchange_policy'])
     policy = deepcopy(policy)
     policy['source_database_sha256'] = context['database_sha256']
@@ -228,14 +229,16 @@ def main():
         raise ValueError('Require settled parent-net measurements')
     if set(full_measurements) != set(planner.corners):
         raise ValueError('Incomplete parent measurement corners')
+    parent_missing_fanout = {}
     for corner in planner.corners:
         relative = 'after/' + corner + '/connections.rpt'
         raw = text(Path(collection_ref['path']).parent / relative, collection['artifacts_sha256'][relative])
         parts = re.split(r'^PINWHEEL_CONNECTION (\S+)\n', raw, flags=re.M)
         selected = ''.join('PINWHEEL_CONNECTION '+name+'\n'+body
                            for name, body in zip(parts[1::2], parts[2::2]) if name in parent_names)
-        if parse_measurements(selected, parent_names) != {n: full_measurements[corner][n] for n in parent_names}:
+        if parse_diagnostic_measurements(selected, parent_names, context, library, corner, sdc_text) != {n: full_measurements[corner][n] for n in parent_names}:
             raise ValueError('Parent measurement differs from raw report')
+        parent_missing_fanout[corner] = sorted(n for n in parent_names if full_measurements[corner][n]['fanout'] is None)
 
     replications = []
     for instance in study['replicated_decoders']:
@@ -293,6 +296,9 @@ def main():
                   timing_assumptions=dict(clock_period_ns=resolved['CLOCK_PERIOD'],
                       sdc=dict(path=str(sdc), sha256=sha(sdc)), current_sdc_matches=True),
                   inherited_coverage_connections=len(complete), independent_pin_corner_checks=pins_checked,
+                  unreported_macro_fanout_limits={label: {corner: sorted(n for n, row in data.items()
+                      if row['fanout'] is None) for corner, data in corners.items()} for label, corners in saved.items()},
+                  parent_unreported_macro_fanout_limits=parent_missing_fanout,
                   area=dict(reference_um2=contract['area_reference']['area_um2'], current_um2=planner.current_area,
                             limit_um2=planner.area_limit, remaining_um2=planner.area_limit-planner.current_area),
                   regional_exchange=dict(affected_families=len(affected),

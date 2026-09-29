@@ -65,6 +65,8 @@ def qualify_candidate(contract, before, after, plan, measurements, timing,
             margins = {}
             for kind in ['capacitance','slew','fanout']:
                 value = row[kind]
+                if value is None:
+                    raise ValueError('Missing required electrical bound: '+name+' '+corner+' '+kind)
                 if (any(not finite(value[k]) for k in ['actual','limit','slack']) or
                         value['actual'] < 0 or value['limit'] <= 0 or
                         value['verdict'] not in {'MET','VIOLATED'}):

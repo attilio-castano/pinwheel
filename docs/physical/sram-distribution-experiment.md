@@ -162,3 +162,10 @@ antenna, power-grid or final layout qualification follows. The experiment uses
 the existing Lean-generated circuit. Its formalization lesson is concrete:
 transparent signal distribution preserves logical behavior, while physical
 planning must satisfy both minimum and maximum delay contracts.
+
+The [committed connection replay command](connection-replay.md) now supports
+rechecking these raw reports against their saved measurements. It derives
+per-corner absent fanout bounds from the physical driver, pinned libraries and
+reviewed comparison constraints, and preserves them as unknown. This replaces
+the local analyzer's broad macro exception for diagnostic replay; the original
+sealed artifacts remain unchanged and physical admission remains strict.
