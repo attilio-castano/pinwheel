@@ -1,0 +1,402 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "status": "sensitivity_complete_qualification_open",
+  "study": "docs/physical/power-boundary-results.md",
+  "study_identity": {
+    "path": "docs/physical/power-boundary-results.md",
+    "sha256": "8209a79c73b3915cf04c0647fad049d065838d0893074350b75ba01cde7c327f"
+  },
+  "protocol": {
+    "path": "docs/physical/power-boundary-experiment.md",
+    "sha256": "6b11a4c91dcf9d0d51650f1911081bf14ebe1eaf59a612521c3980cc5a54b8d0"
+  },
+  "reproduction": "physical/fixtures/power-boundary/README.md",
+  "report": {
+    "path": "build/validation/power-boundary-01/report.json",
+    "sha256": "68ddba30e6132cd46591691601767eceea587dcbcd47d2dbd1dc9b004caf93e8"
+  },
+  "replay": {
+    "path": "build/validation/power-boundary-01/replay.json",
+    "sha256": "68ddba30e6132cd46591691601767eceea587dcbcd47d2dbd1dc9b004caf93e8"
+  },
+  "replay_byte_identical": true,
+  "A_accepted": false,
+  "B_admitted": false,
+  "complete_design_iteration": false,
+  "blockers": [
+    "sram_qualification",
+    "timing_conditions",
+    "package_power"
+  ],
+  "new_qualification_evidence": false,
+  "predecessor": {
+    "path": "physical/experiments/physical-qualification-results.json",
+    "sha256": "a4b7e8fbda69a99dff04f47506262f3c797e8c73a353c9b62688cd1967fbcccd"
+  },
+  "acceptance": {
+    "path": "physical/experiments/design-acceptance-readback-results.json",
+    "sha256": "54b1ca809f61e9da33cf632861fb7de5ceab2f5e188c860924a3ecfff5fa0f19"
+  },
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "request": {
+    "path": "build/validation/power-boundary-01/request.json",
+    "sha256": "9cb0d9fe1eeed526137f58e6ffe337b47459d8dfdb8decb0e3f967c6969d2e48"
+  },
+  "contact_geometry": {
+    "path": "build/validation/power-boundary-01/contact-audit.json",
+    "sha256": "97999a6d05826bdb6139b16cbdb0348ead8363c8b01c458a8a813c283714f1a6"
+  },
+  "waveform_audit": {
+    "path": "build/validation/power-boundary-01/traces-03/waveform-audit.json",
+    "sha256": "ee4b49b8ef6a9c092987018a758a43856c4a425435dbaf523df6d689a951731e"
+  },
+  "unknown_bit_audit": {
+    "path": "build/validation/power-boundary-01/traces-03/unknown-bit-audit.json",
+    "sha256": "b096fdb12f393e547c1535656fabc21f2afbf5489f5f58919095432b8c859c78"
+  },
+  "circuit_readback": {
+    "path": "build/validation/chip-finalization-01/final-check/final.json",
+    "sha256": "c1d53d32e0454c5455b0e16f7a0c9e12dda44c4abc3bfec17de36df2130d3197"
+  },
+  "circuit_readback_receipt": {
+    "path": "build/validation/chip-finalization-01/final-check/report.json",
+    "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+  },
+  "measured_cases": [
+    {
+      "case": "baseline-03",
+      "power_mw": 9.119424038,
+      "macro_power_mw": 0.28603296959999996,
+      "resistance_ohm_per_source_node": 0,
+      "activity": "default vectorless",
+      "VPWR_source_nodes": 7912,
+      "VPWR_worst_drop_mv": 0.256722,
+      "VGND_source_nodes": 7832,
+      "VGND_worst_drop_mv": 0.285071,
+      "conservative_rail_loss_mv": 0.5417930000000001,
+      "conservative_local_differential_v": 1.199458207
+    },
+    {
+      "case": "contacts-ideal-01",
+      "power_mw": 9.119424038,
+      "macro_power_mw": 0.28603296959999996,
+      "resistance_ohm_per_source_node": 0,
+      "activity": "default vectorless",
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 4.33113,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 4.30536,
+      "conservative_rail_loss_mv": 8.63649,
+      "conservative_local_differential_v": 1.19136351
+    },
+    {
+      "case": "contacts-r1-01",
+      "power_mw": 9.119424038,
+      "macro_power_mw": 0.28603296959999996,
+      "resistance_ohm_per_source_node": 1,
+      "activity": "default vectorless",
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 6.32265,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 6.31214,
+      "conservative_rail_loss_mv": 12.63479,
+      "conservative_local_differential_v": 1.18736521
+    },
+    {
+      "case": "contacts-r10-01",
+      "power_mw": 9.119424038,
+      "macro_power_mw": 0.28603296959999996,
+      "resistance_ohm_per_source_node": 10,
+      "activity": "default vectorless",
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 23.6042,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 23.6203,
+      "conservative_rail_loss_mv": 47.224500000000006,
+      "conservative_local_differential_v": 1.1527755
+    },
+    {
+      "case": "activity-idle-02",
+      "power_mw": 6.817497779,
+      "macro_power_mw": 0.0003960309982,
+      "resistance_ohm_per_source_node": 0,
+      "annotated_signal_pins": 38497,
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 3.3070399999999998,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 3.29556,
+      "conservative_rail_loss_mv": 6.6026,
+      "conservative_local_differential_v": 1.1933974
+    },
+    {
+      "case": "activity-replacement-02",
+      "power_mw": 7.028775755,
+      "macro_power_mw": 0.01449074261,
+      "resistance_ohm_per_source_node": 0,
+      "annotated_signal_pins": 38497,
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 3.40923,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 3.41655,
+      "conservative_rail_loss_mv": 6.82578,
+      "conservative_local_differential_v": 1.19317422
+    },
+    {
+      "case": "activity-execution-02",
+      "power_mw": 6.835192908,
+      "macro_power_mw": 0.01808103116,
+      "resistance_ohm_per_source_node": 0,
+      "annotated_signal_pins": 38497,
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 3.3165199999999997,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 3.30284,
+      "conservative_rail_loss_mv": 6.6193599999999995,
+      "conservative_local_differential_v": 1.19338064
+    },
+    {
+      "case": "combined-01",
+      "power_mw": 7.028775755,
+      "macro_power_mw": 0.01449074261,
+      "resistance_ohm_per_source_node": 10,
+      "annotated_signal_pins": 38497,
+      "VPWR_source_nodes": 4,
+      "VPWR_worst_drop_mv": 18.2947,
+      "VGND_source_nodes": 4,
+      "VGND_worst_drop_mv": 18.3254,
+      "conservative_rail_loss_mv": 36.6201,
+      "conservative_local_differential_v": 1.1633799
+    }
+  ],
+  "receipts": [
+    {
+      "path": "build/validation/power-boundary-01/activity-execution-01-receipt.json",
+      "sha256": "2a93c3e22fc6589b0905a5038309c7dce9b9c5713e684a71b0f35c089e0e7891"
+    },
+    {
+      "path": "build/validation/power-boundary-01/activity-execution-02-receipt.json",
+      "sha256": "d3efab494cf0eaf9893ba67b18817c17299e3eacf2629701f4b0d0c578b172d9"
+    },
+    {
+      "path": "build/validation/power-boundary-01/activity-idle-01-receipt.json",
+      "sha256": "f860724ce075174b1312cfb47a37b797d010811fdd12bcab8edc9bb1e2513bf4"
+    },
+    {
+      "path": "build/validation/power-boundary-01/activity-idle-02-receipt.json",
+      "sha256": "f3c02feb7b98bf9ec9ce7993c27c64cbd3d9d56b6db9af435983134d7f5a2e92"
+    },
+    {
+      "path": "build/validation/power-boundary-01/activity-replacement-01-receipt.json",
+      "sha256": "827e063a3ce939ceb8d8d3695db7123a288558c29e4fea80a2af53c9a9577a4a"
+    },
+    {
+      "path": "build/validation/power-boundary-01/activity-replacement-02-receipt.json",
+      "sha256": "6a92da3d0672452ca90f92b7106d4ca31abc126c7547567ba50b127c362b9623"
+    },
+    {
+      "path": "build/validation/power-boundary-01/baseline-01-receipt.json",
+      "sha256": "ab47ef5252b61b1d37a958c63089bb8f5341a407709df70ed379416cfdd81a13"
+    },
+    {
+      "path": "build/validation/power-boundary-01/baseline-02-receipt.json",
+      "sha256": "699c26cd7d5a51043ea9da4e01e7b1c48056c25997a9767e8eb5f46a33117e4a"
+    },
+    {
+      "path": "build/validation/power-boundary-01/baseline-03-receipt.json",
+      "sha256": "11601f35f684f32bdac064eb35553b2fb3f7a4bfaaa9cd224292fef9fa7665eb"
+    },
+    {
+      "path": "build/validation/power-boundary-01/combined-01-receipt.json",
+      "sha256": "a0d1a76e8de373010df46dee0dc3ac6acdc6631656ff6d2dc404c5ed14936afb"
+    },
+    {
+      "path": "build/validation/power-boundary-01/contacts-ideal-01-receipt.json",
+      "sha256": "c53298043062a1cc201833a6c1a92add8e663dd075f88705609341720a51f273"
+    },
+    {
+      "path": "build/validation/power-boundary-01/contacts-r1-01-receipt.json",
+      "sha256": "c19b1cfd47063bd4800a21a748e6e229b75a0547b252d75235f1bcd92ebbafae"
+    },
+    {
+      "path": "build/validation/power-boundary-01/contacts-r10-01-receipt.json",
+      "sha256": "ce100d5de310d9c92fa578fc6a57e1a25f4f34e702a48db8ea444c6eef7dc304"
+    },
+    {
+      "path": "build/validation/power-boundary-01/traces-01-receipt.json",
+      "sha256": "df44471659f6f97f3f5359ef602a014c547a46030e3a5e2908c3de362443ecec"
+    },
+    {
+      "path": "build/validation/power-boundary-01/traces-02-receipt.json",
+      "sha256": "f929aafe81594b305203b074844424467ed4192e79d04c013905caa192a954a9"
+    },
+    {
+      "path": "build/validation/power-boundary-01/traces-03-receipt.json",
+      "sha256": "3faff84366a3736348b0e0dec52441b636f7308d52110b1234c168287aa79d0a"
+    }
+  ],
+  "recipes": [
+    {
+      "path": "build/validation/power-boundary-01/fetch-vcd-source.py",
+      "sha256": "26d6c08331c8c455c946470474c168465423abb40df1ce8ec21226dfd4f98a0d"
+    },
+    {
+      "path": "build/validation/power-boundary-01/make-manifest.py",
+      "sha256": "9abd574e58f5bcc2a28676eda4fa24c54c66cf534f5fea13302b97d199357d4d"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-activity-02.py",
+      "sha256": "2684536423964cf9998a48b9b12a98f2d7619a223156a6b87a7bc2110b8a535b"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-activity.py",
+      "sha256": "148f2aa819b672a95c135f2b6ed4b12b8eb7fa2f63c81501836b55f522092d34"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-cases.py",
+      "sha256": "e28ec73aec7a0ac8dd5cc962ae81db44460838e9172714a9f77addefd6bc2231"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-traces-02.py",
+      "sha256": "9b529926b86a4fa6dff412b258602aede44689a9f0aeb4f71bcd7749e7488897"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-traces-03.py",
+      "sha256": "4e08d7ae03ec16d8f2cf150c4b78f258067ca973b1b668bfa16d7566da8acb7d"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare-traces.py",
+      "sha256": "afa8bc228de2b6e130d4ba49fcada31f82a24484f1fc7a4daa417c9b417f71ef"
+    },
+    {
+      "path": "build/validation/power-boundary-01/prepare.py",
+      "sha256": "5556cead956e8606fc6552b80dfea39934edc935fd19d73abf89b76843d43b46"
+    },
+    {
+      "path": "build/validation/power-boundary-01/validate.py",
+      "sha256": "64c6715b066d9f9a987484ac6fea2b9a0a5b3ae09b49d43f95a5d6416f86adc5"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/README.md",
+      "sha256": "1c7390d4e99f235eb61a6ad1fb1a5cf436533df58fa7be3f61094a7b882f4050"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/analyze.py",
+      "sha256": "d55aebda8c6645e266a167b301d123512df07fcee08309fc2cd1c7968519adfd"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/audit-unknowns.py",
+      "sha256": "3c03fa8cb1bf7f66689f61c49f982eda7043360a89a25247dcdfed40c5042ec6"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/launch.py",
+      "sha256": "0f2c1cfb938b815878cf4ff4e4117363a859dcb02022e36ae01bd710299971e7"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/native.py",
+      "sha256": "899a14bb81fbc678b507421ca7a99c23c0d0459b849b8c62f916c7039aa7b25c"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/normalize-vcd.py",
+      "sha256": "e5ba15c9129e313d2aeb695d3094ae969072b1c8a0c27763c4132d4dc428caf9"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/power_tb.sv",
+      "sha256": "42390a0c522d19eb369f040b5b8eba5705d09f6f1b1047936a337f5bc44a00a3"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/run-case.py",
+      "sha256": "40484611b34ba05660d89fde310bcb473d24ac4b7402ecd44d5cc752729e5cdc"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/run.py",
+      "sha256": "5a806680c7a5bee1f4efa51d2ba605c7dd669d4932750073d5fabd465b9f7306"
+    },
+    {
+      "path": "physical/fixtures/power-boundary/summarize.py",
+      "sha256": "41b8604f3b221841352dd477fe1d8a2643eaa6cbde1b68c08089872ec93162b9"
+    }
+  ],
+  "tool_sources": [
+    {
+      "path": "build/validation/power-boundary-01/tool-sources/VcdReader.cc",
+      "sha256": "99582b0ceef67d8dfac86121de2ddb13458a17e9402a6e8a660143ee2923e894"
+    },
+    {
+      "path": "build/validation/power-boundary-01/tool-sources/receipt.json",
+      "sha256": "80c9553d177e39f01834726c2eebcd06752550885d9f66602bd6bb641eb9d6be"
+    }
+  ],
+  "waveform_windows": {
+    "path": "build/validation/power-boundary-01/traces-03/windows.json",
+    "sha256": "9de2c0a594ff271d6dc7483103994e4dfb743f22b59fa5500afd491f89627043"
+  },
+  "resource_accounting": {
+    "continuation_cad_seconds": 430.957,
+    "campaign_cad_seconds": 8843.12,
+    "continuation_cap_seconds": 900,
+    "campaign_cap_seconds": 28800,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2,
+    "full_routes_added": 0
+  },
+  "required_integration_evidence": [
+    "exact parent connection geometry on both rails",
+    "source voltage tolerance and qualified operating conditions",
+    "external impedance including return path",
+    "applicable activity envelope and qualified macro power model",
+    "local-rail voltage budget tied to valid timing/behavior"
+  ],
+  "boundary": "Static nominal-grid sensitivity; finite zero-delay functional activity. No supply tolerance, package/transient model, universal activity bound or physical qualification.",
+  "validation": {
+    "path": "build/validation/power-boundary-01/validation.json",
+    "sha256": "2f29fd4fb746cda6ec14fb3adcc0aa1636433bc3a0fde796b9f5440c1d039f8b"
+  },
+  "validation_recipe": {
+    "path": "build/validation/power-boundary-01/validate.py",
+    "sha256": "64c6715b066d9f9a987484ac6fea2b9a0a5b3ae09b49d43f95a5d6416f86adc5"
+  },
+  "controls": [
+    {
+      "path": "build/validation/power-boundary-01/controls/unknown-reset.json",
+      "sha256": "9c1f8d9cc7cd30f0869cb59974ecd18aa1746f0b894872f84bede18503fb46e4"
+    },
+    {
+      "path": "build/validation/power-boundary-01/controls/unknown-reset.vcd",
+      "sha256": "364b21aca19e965d33d9e604577449bd86e3f2068c252f48e4935ec9376493e3"
+    }
+  ]
+}

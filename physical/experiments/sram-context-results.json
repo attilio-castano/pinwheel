@@ -1,0 +1,2394 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "failures-isolated-local-correspondence-qualified-with-limits",
+  "study": "docs/physical/sram-context-results.md",
+  "protocol": {
+    "path": "docs/physical/sram-context-experiment.md",
+    "sha256": "b4eabefd463aee3486997020fede4ac234b65679a8c5d146d4ed6bdcf996df23"
+  },
+  "predecessor": {
+    "path": "physical/experiments/sram-extraction-results.json",
+    "sha256": "9fe2ebdc978c2c5d46070c7c0d33f1e8c22bcb37bcbe3bb897c5033cb6720392"
+  },
+  "full_sram_qualification": false,
+  "full_gds_signoff": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "chip_geometry_changed": false,
+  "PDK_changed": false,
+  "decision": "Retain the small complete-neighborhood fixtures. Qualify consistent hierarchy ownership, dimensional resistor combination and connected-port checks before any broader SRAM comparison.",
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "source_macro": {
+    "/work/core/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.gds": "5ea60dd194594f6587906683e5ca44759d6e847297b99085a4cb889e046cce03",
+    "/work/core/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl": "825b831a246e1158fd4409501533874c21bc39f0f82369b2128947ffa2632999"
+  },
+  "fixture_instances": {
+    "RSC_IHPSG13_CDLYX1_DUMMY": {
+      "source_occurrences": 12,
+      "first": {
+        "transform": "m0 397340,21300",
+        "bbox_dbu": [
+          396830,
+          16575,
+          400400,
+          21600
+        ],
+        "path": [
+          {
+            "parent": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+            "child": "RM_IHPSG13_1P_DLY_2",
+            "instance": 10,
+            "array_index": 0,
+            "transform": "r0 384590,17100"
+          },
+          {
+            "parent": "RM_IHPSG13_1P_DLY_2",
+            "child": "RSC_IHPSG13_CDLYX1_DUMMY",
+            "instance": 0,
+            "array_index": 0,
+            "transform": "m0 12750,4200"
+          }
+        ]
+      }
+    },
+    "RSC_IHPSG13_WLDRVX8": {
+      "source_occurrences": 256,
+      "first": {
+        "transform": "r0 406520,46500",
+        "bbox_dbu": [
+          406010,
+          46200,
+          410600,
+          51225
+        ],
+        "path": [
+          {
+            "parent": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+            "child": "RM_IHPSG13_1P_WLDRV16X8",
+            "instance": 4,
+            "array_index": 0,
+            "transform": "r0 406520,46500"
+          },
+          {
+            "parent": "RM_IHPSG13_1P_WLDRV16X8",
+            "child": "RSC_IHPSG13_WLDRVX8",
+            "instance": 55,
+            "array_index": 0,
+            "transform": "r0 0,0"
+          }
+        ]
+      }
+    }
+  },
+  "geometry": {
+    "driver": {
+      "layout_cell": "RSC_IHPSG13_WLDRVX8",
+      "schematic_cell": "RSC_IHPSG13_WLDRVX8",
+      "selected_schematic_cells": [
+        "RSC_IHPSG13_WLDRVX8"
+      ],
+      "geometry": [
+        {
+          "layer": "6/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 37,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 7,
+          "source_texts": 0
+        },
+        {
+          "layer": "5/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 2,
+          "source_texts": 0
+        },
+        {
+          "layer": "1/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 5,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "63/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "31/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 1,
+          "source_texts": 0
+        },
+        {
+          "layer": "14/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 2,
+          "source_texts": 0
+        },
+        {
+          "layer": "19/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "25/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "16/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 1,
+          "source_texts": 0
+        },
+        {
+          "layer": "29/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 4,
+          "source_texts": 4
+        },
+        {
+          "layer": "49/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "189/4",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        }
+      ],
+      "boundary_name_only_adapter": false,
+      "bbox_dbu": "(-510,-300;4080,4725)",
+      "gds_sha256": "2b3d6aeac70421c7395b6114fe0a22d97af911a3f92ec5f43cfab5ef7e807cdd",
+      "cdl_sha256": "322b9676e26a40ec1bef10ac1cc8bb1b7f2987e2c791ed2200c685ce22884256"
+    },
+    "driver_parent": {
+      "layout_cell": "RM_IHPSG13_1P_WLDRV16X8",
+      "schematic_cell": "RM_IHPSG13_512x64_c2_1P_WLDRV16X8",
+      "selected_schematic_cells": [
+        "RM_IHPSG13_512x64_c2_1P_WLDRV16X8",
+        "RSC_IHPSG13_WLDRVX8"
+      ],
+      "geometry": [
+        {
+          "layer": "6/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 592,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 154,
+          "source_texts": 0
+        },
+        {
+          "layer": "5/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 32,
+          "source_texts": 0
+        },
+        {
+          "layer": "1/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 80,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 126,
+          "source_texts": 0
+        },
+        {
+          "layer": "63/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "31/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 16,
+          "source_texts": 0
+        },
+        {
+          "layer": "14/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 32,
+          "source_texts": 0
+        },
+        {
+          "layer": "19/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 100,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 85,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 32,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "25/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "16/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 16,
+          "source_texts": 0
+        },
+        {
+          "layer": "29/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 78,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 32
+        },
+        {
+          "layer": "8/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 66,
+          "source_texts": 66
+        },
+        {
+          "layer": "49/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 21,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 4,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "189/4",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        }
+      ],
+      "boundary_name_only_adapter": true,
+      "bbox_dbu": "(-510,-300;15925,17860)",
+      "gds_sha256": "01adac9a48379dddb4968761209fe44b1b556429222de5754742043d5c3f952e",
+      "cdl_sha256": "45cbb8e0c03eeb8a431d39f38faf3f91a4e642ccf2c7f6ed55de4803f24552f7"
+    },
+    "delay": {
+      "layout_cell": "RSC_IHPSG13_CDLYX1_DUMMY",
+      "schematic_cell": "RSC_IHPSG13_CDLYX1_DUMMY",
+      "selected_schematic_cells": [
+        "RSC_IHPSG13_CDLYX1_DUMMY"
+      ],
+      "geometry": [
+        {
+          "layer": "6/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 20,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 12,
+          "source_texts": 0
+        },
+        {
+          "layer": "5/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 2,
+          "source_texts": 0
+        },
+        {
+          "layer": "1/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 4,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "63/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 2
+        },
+        {
+          "layer": "31/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 1,
+          "source_texts": 0
+        },
+        {
+          "layer": "14/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 2,
+          "source_texts": 0
+        },
+        {
+          "layer": "19/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "25/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "16/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 1,
+          "source_texts": 0
+        },
+        {
+          "layer": "29/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 6,
+          "source_texts": 2
+        },
+        {
+          "layer": "49/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 1,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 2
+        },
+        {
+          "layer": "189/4",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        }
+      ],
+      "boundary_name_only_adapter": false,
+      "bbox_dbu": "(-510,-300;3060,4725)",
+      "gds_sha256": "0fea90b58366e131dc291d62bb12764689a4ee55d344cb265e2431ab40df9ca0",
+      "cdl_sha256": "37560fd512573fcc76fc9e4eb7db67bf624f14b63c34666510ad93221e95671c"
+    },
+    "delay_parent": {
+      "layout_cell": "RM_IHPSG13_1P_DLY_2",
+      "schematic_cell": "RM_IHPSG13_512x64_c2_1P_DLY_pcell_2",
+      "selected_schematic_cells": [
+        "RM_IHPSG13_512x64_c2_1P_DLY_pcell_2",
+        "RSC_IHPSG13_CDLYX1",
+        "RSC_IHPSG13_CDLYX1_DUMMY"
+      ],
+      "geometry": [
+        {
+          "layer": "6/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 156,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 91,
+          "source_texts": 0
+        },
+        {
+          "layer": "5/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 16,
+          "source_texts": 0
+        },
+        {
+          "layer": "1/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 32,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "63/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 12
+        },
+        {
+          "layer": "31/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 8,
+          "source_texts": 0
+        },
+        {
+          "layer": "14/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 16,
+          "source_texts": 0
+        },
+        {
+          "layer": "19/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "25/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "16/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 8,
+          "source_texts": 0
+        },
+        {
+          "layer": "29/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "10/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "30/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 48,
+          "source_texts": 12
+        },
+        {
+          "layer": "49/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/0",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/29",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 6,
+          "source_texts": 0
+        },
+        {
+          "layer": "8/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 24
+        },
+        {
+          "layer": "189/4",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 2,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/2",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        },
+        {
+          "layer": "50/25",
+          "xor_empty": true,
+          "texts_equal": true,
+          "source_polygons": 0,
+          "source_texts": 0
+        }
+      ],
+      "boundary_name_only_adapter": true,
+      "bbox_dbu": "(-510,-525;20910,4500)",
+      "gds_sha256": "a63d2cad89003c2930e66bc60b9564e37562b3422725349243cde3b5a3121ee8",
+      "cdl_sha256": "da814f99c82508851b116d741543e24143a8c8fbdd331cdc18151f5eeddb6eaf"
+    }
+  },
+  "native_comparisons": {
+    "fixtures-02/driver_deep": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_WLDRVX8",
+          "schematic": "RSC_IHPSG13_WLDRVX8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 2,
+            "sg13_lv_pmos": 2
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 2,
+            "sg13_lv_pmos": 2
+          },
+          "device_status_counts": {
+            "Match": 4
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 5
+          }
+        }
+      ]
+    },
+    "fixtures-02/driver_flat": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_WLDRVX8",
+          "schematic": "RSC_IHPSG13_WLDRVX8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 2,
+            "sg13_lv_pmos": 2
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 2,
+            "sg13_lv_pmos": 2
+          },
+          "device_status_counts": {
+            "Match": 4
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 5
+          }
+        }
+      ]
+    },
+    "fixtures-02/driver_parent_deep": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "NoMatch": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32
+          },
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_WLDRVX8",
+          "schematic": "RSC_IHPSG13_WLDRVX8",
+          "layout_device_counts": {
+            "sg13_lv_pmos": 2
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 2,
+            "sg13_lv_pmos": 2
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 2,
+            "Match": 3
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 1
+          }
+        }
+      ]
+    },
+    "fixtures-02/driver_parent_flat": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "device_status_counts": {
+            "Match": 64
+          },
+          "pin_status_counts": {
+            "Match": 34
+          },
+          "net_status_counts": {
+            "Match": 50
+          }
+        }
+      ]
+    },
+    "fixtures-02/delay_deep": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "LVSRES": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Match": 6
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "fixtures-02/delay_flat": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "LVSRES": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Match": 6
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "fixtures-02/delay_parent_deep": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "LVSRES": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 4,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "fixtures-02/delay_parent_flat": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": null,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 14,
+            "sg13_lv_pmos": 14,
+            "res_metal1": 6
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 14,
+            "sg13_lv_pmos": 14,
+            "LVSRES": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 7,
+            "Match": 28
+          },
+          "pin_status_counts": {
+            "Match": 12
+          },
+          "net_status_counts": {
+            "Mismatch": 8,
+            "Match": 20,
+            "MatchWithWarning": 6
+          }
+        }
+      ]
+    },
+    "controls-01/delay_deep": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Match": 3
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 6
+          }
+        }
+      ]
+    },
+    "controls-01/delay_flat": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Match": 3
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 6
+          }
+        }
+      ]
+    },
+    "controls-01/delay_parent_deep": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 3
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 11
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Match": 3
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 6
+          }
+        }
+      ]
+    },
+    "controls-01/delay_parent_flat": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 14,
+            "sg13_lv_pmos": 14,
+            "res_metal1": 6
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 14,
+            "sg13_lv_pmos": 14,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 7,
+            "Match": 28
+          },
+          "pin_status_counts": {
+            "Match": 12
+          },
+          "net_status_counts": {
+            "Mismatch": 8,
+            "Match": 20,
+            "MatchWithWarning": 6
+          }
+        }
+      ]
+    },
+    "controls-02/delay_parent_deep": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 3
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 11
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Match": 3
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 6
+          }
+        }
+      ]
+    },
+    "controls-02/driver_open": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "device_status_counts": {
+            "Match": 64
+          },
+          "pin_status_counts": {
+            "Match": 34
+          },
+          "net_status_counts": {
+            "Match": 50
+          }
+        }
+      ]
+    },
+    "controls-02/driver_short": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "device_status_counts": {
+            "Match": 62,
+            "Mismatch": 2
+          },
+          "pin_status_counts": {
+            "Match": 34
+          },
+          "net_status_counts": {
+            "Mismatch": 3,
+            "Match": 47
+          }
+        }
+      ]
+    },
+    "controls-02/driver_missing_nmos": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 16,
+            "sg13_lv_pmos": 32
+          },
+          "device_status_counts": {
+            "Mismatch": 48,
+            "Match": 32
+          },
+          "pin_status_counts": {
+            "Match": 50
+          },
+          "net_status_counts": {
+            "Mismatch": 49,
+            "Match": 17
+          }
+        }
+      ]
+    },
+    "controls-02/delay_wrong_width": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 4,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "controls-02/delay_wrong_length": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 4,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "controls-02/delay_same_ratio_wrong_dimensions": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 4,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 4,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "controls-02/delay_physical_open": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 1,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 2,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "controls-02/delay_physical_short": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 1,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 2,
+            "Match": 2
+          },
+          "net_status_counts": {
+            "Mismatch": 2,
+            "Match": 4
+          }
+        }
+      ]
+    },
+    "controls-02/delay_physical_missing_nmos": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "Skipped": 1,
+        "Match": 1,
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "Skipped",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {},
+          "net_status_counts": {}
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "NoMatch",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Mismatch": 1,
+            "Match": 2
+          },
+          "pin_status_counts": {
+            "Mismatch": 1,
+            "Match": 3
+          },
+          "net_status_counts": {
+            "Mismatch": 3,
+            "Match": 3
+          }
+        }
+      ]
+    },
+    "controls-03/driver_internal_open": {
+      "exit_code": 0,
+      "match": false,
+      "status_counts": {
+        "NoMatch": 1
+      },
+      "expected_match": false,
+      "circuits": [
+        {
+          "status": "NoMatch",
+          "layout": "RM_IHPSG13_1P_WLDRV16X8",
+          "schematic": "RM_IHPSG13_1P_WLDRV16X8",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 32,
+            "sg13_lv_pmos": 32
+          },
+          "device_status_counts": {
+            "Match": 32,
+            "Mismatch": 32
+          },
+          "pin_status_counts": {
+            "Match": 50
+          },
+          "net_status_counts": {
+            "Mismatch": 64,
+            "Match": 18
+          }
+        }
+      ]
+    },
+    "controls-03/delay_physical_control_baseline": {
+      "exit_code": 0,
+      "match": true,
+      "status_counts": {
+        "Match": 3
+      },
+      "expected_match": true,
+      "circuits": [
+        {
+          "status": "Match",
+          "layout": "RM_IHPSG13_1P_DLY_2",
+          "schematic": "RM_IHPSG13_1P_DLY_2",
+          "layout_device_counts": {},
+          "schematic_device_counts": {},
+          "device_status_counts": {},
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 11
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1",
+          "schematic": "RSC_IHPSG13_CDLYX1",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 4,
+            "sg13_lv_pmos": 4
+          },
+          "device_status_counts": {
+            "Match": 8
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 9
+          }
+        },
+        {
+          "status": "Match",
+          "layout": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "schematic": "RSC_IHPSG13_CDLYX1_DUMMY",
+          "layout_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "res_metal1": 1
+          },
+          "schematic_device_counts": {
+            "sg13_lv_nmos": 1,
+            "sg13_lv_pmos": 1,
+            "RES_METAL1": 1
+          },
+          "device_status_counts": {
+            "Match": 3
+          },
+          "pin_status_counts": {
+            "Match": 4
+          },
+          "net_status_counts": {
+            "Match": 6
+          }
+        }
+      ]
+    }
+  },
+  "driver": {
+    "isolated_mos": 4,
+    "neighborhood_mos": 64,
+    "deep_parent_nmos": 32,
+    "deep_child_pmos": 2,
+    "flat_parent_match": true,
+    "open_short_device_controls_rejected": true,
+    "native_disconnected_output_false_positive_preserved": true,
+    "explicit_disconnected_output_refusal": "Disconnected declared ports: Z<0>"
+  },
+  "delay": {
+    "marker_layer": "8/29",
+    "length_um": 0.6,
+    "width_um": 0.26,
+    "original_model": "lvsres",
+    "comparison_model": "res_metal1",
+    "nodes_and_dimensions_unchanged": true,
+    "deep_parent_match": true,
+    "flat_parent_match": false,
+    "flat_layout_resistors": 6,
+    "flat_schematic_resistors": 1,
+    "length_width_controls_rejected": 3,
+    "physical_fault_controls_rejected": 3,
+    "physical_control_carrier_match": true,
+    "adapter_refusal_controls": {
+      "unknown_model": "Unknown resistor identity, terminals or model",
+      "missing_width": "Missing or extra resistor dimensions",
+      "duplicate_width": "Missing or duplicate resistor dimensions",
+      "missing_resistor": "Expected one declared resistor",
+      "changed_width": "Source dimensions disagree with marker geometry",
+      "changed_length": "Source dimensions disagree with marker geometry",
+      "changed_terminal": "Unknown resistor identity, terminals or model"
+    }
+  },
+  "resource_ledger": {
+    "this_continuation_seconds": 39.179,
+    "prior_campaign_seconds": 8028.479,
+    "cumulative_cad_seconds": 8067.658,
+    "continuation_limit_seconds": 1800,
+    "campaign_limit_seconds": 28800,
+    "native_comparisons": 24,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2
+  },
+  "attempts": [
+    {
+      "label": "controls-01",
+      "status": "failed",
+      "cad_seconds": 5.91,
+      "receipt_sha256": "6e488e1a91de56cbd894ad54ee0a8df4df718349e3e651e08dbf6a151ede935f",
+      "error": "RuntimeError: controls-01: delay_deep {'Match': 1} expected True\ndelay_flat {'Match': 1} expected True\ndelay_parent_deep {'Match': 3} expected True\nTraceback (most recent call last):\n  File \"/probe/controls-01/worker.py\", line 84, in <module>\n    for mode in ['deep','flat']:run(label+'_'+mode,BASE/label/(top+'.gds'),adapted,top,mode,True)\n                                ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/probe/controls-01/worker.py\", line 77, in run\n    require(row['match']==expected_match,'Unexpected native result: '+label)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/probe/controls-01/helpers.py\", line 6, in require\n    if not ok:raise RuntimeError(msg)\n              ^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Unexpected native result: delay_parent_flat\n; see /Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-context-01/controls-01.log"
+    },
+    {
+      "label": "controls-02",
+      "status": "failed",
+      "cad_seconds": 14.706,
+      "receipt_sha256": "b550a5f443b546ea1c0390b643b0c53c50e7632f35122379715f8edaf1ece67f",
+      "error": "RuntimeError: controls-02: delay_parent_deep {'Match': 3} expected True\ndriver_open {'Match': 1} expected False\ndriver_short {'NoMatch': 1} expected False\ndriver_missing_nmos {'NoMatch': 1} expected False\ndelay_wrong_width {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\ndelay_wrong_length {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\ndelay_same_ratio_wrong_dimensions {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\ndelay_physical_open {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\ndelay_physical_short {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\ndelay_physical_missing_nmos {'Skipped': 1, 'Match': 1, 'NoMatch': 1} expected False\nTraceback (most recent call last):\n  File \"/probe/controls-02/worker.py\", line 130, in <module>\n    require(report['status']=='completed','Some controls did not reject; see retained report')\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/probe/controls-02/helpers.py\", line 6, in require\n    if not ok:raise RuntimeError(msg)\n              ^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Some controls did not reject; see retained report\n; see /Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-context-01/controls-02.log"
+    },
+    {
+      "label": "controls-03",
+      "status": "completed",
+      "cad_seconds": 3.406,
+      "receipt_sha256": "11e29e2142acb889334fc4902da5961c9165cc379ae81949c8c4b0fb62e4c0f6",
+      "error": null
+    },
+    {
+      "label": "fixtures-01",
+      "status": "failed",
+      "cad_seconds": 1.489,
+      "receipt_sha256": "bc6f0ab95b984bd4ae3118a52012fd251790a2d6b82fdcf7a1f05cf80f1cfcc4",
+      "error": "RuntimeError: fixtures-01: Traceback (most recent call last):\n  File \"/probe/fixtures-01/worker.py\", line 71, in <module>\n    geometry=compare_geometry(layout.cell(gds_name),check.cell(gds_name))\n  File \"/probe/fixtures-01/worker.py\", line 32, in compare_geometry\n    require(row['xor_empty'] and row['texts_equal'],'Geometry or text changed: '+str(info))\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/probe/fixtures-01/worker.py\", line 17, in require\n    if not ok:raise RuntimeError(msg)\n              ^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Geometry or text changed: 10/0\n; see /Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-context-01/fixtures-01.log"
+    },
+    {
+      "label": "fixtures-02",
+      "status": "completed",
+      "cad_seconds": 12.096,
+      "receipt_sha256": "96f4147402c9623001491b84cf65dc023acc6a37b6560a3e74a540a1f0c0f2c5",
+      "error": null
+    },
+    {
+      "label": "inventory-01",
+      "status": "completed",
+      "cad_seconds": 1.572,
+      "receipt_sha256": "798a5b2ca925e80b86336b4df6ae7cc362d183f3bb315ef2ed745fab84006c79",
+      "error": null
+    }
+  ],
+  "reports": {
+    "controls-01-receipt.json": {
+      "path": "build/validation/sram-context-01/controls-01-receipt.json",
+      "sha256": "6e488e1a91de56cbd894ad54ee0a8df4df718349e3e651e08dbf6a151ede935f"
+    },
+    "controls-02-receipt.json": {
+      "path": "build/validation/sram-context-01/controls-02-receipt.json",
+      "sha256": "b550a5f443b546ea1c0390b643b0c53c50e7632f35122379715f8edaf1ece67f"
+    },
+    "controls-03-receipt.json": {
+      "path": "build/validation/sram-context-01/controls-03-receipt.json",
+      "sha256": "11e29e2142acb889334fc4902da5961c9165cc379ae81949c8c4b0fb62e4c0f6"
+    },
+    "fixtures-01-receipt.json": {
+      "path": "build/validation/sram-context-01/fixtures-01-receipt.json",
+      "sha256": "bc6f0ab95b984bd4ae3118a52012fd251790a2d6b82fdcf7a1f05cf80f1cfcc4"
+    },
+    "fixtures-02-receipt.json": {
+      "path": "build/validation/sram-context-01/fixtures-02-receipt.json",
+      "sha256": "96f4147402c9623001491b84cf65dc023acc6a37b6560a3e74a540a1f0c0f2c5"
+    },
+    "inventory-01-receipt.json": {
+      "path": "build/validation/sram-context-01/inventory-01-receipt.json",
+      "sha256": "798a5b2ca925e80b86336b4df6ae7cc362d183f3bb315ef2ed745fab84006c79"
+    },
+    "controls-01/output/report.json": {
+      "path": "build/validation/sram-context-01/controls-01/output/report.json",
+      "sha256": "fceb74f81c0a2d83d46c392383a2765d6336de6d87dcbf9844b8effee4f88b59"
+    },
+    "controls-02/output/report.json": {
+      "path": "build/validation/sram-context-01/controls-02/output/report.json",
+      "sha256": "4e543d10d739f1a84cc107dbf87a6081c254f06044c57cb636b6fb107793403c"
+    },
+    "controls-03/output/report.json": {
+      "path": "build/validation/sram-context-01/controls-03/output/report.json",
+      "sha256": "107236f91070db33702d8dc83285ca2b5d7be8a9e57899e9166f7ae776b63a39"
+    },
+    "fixtures-02/output/report.json": {
+      "path": "build/validation/sram-context-01/fixtures-02/output/report.json",
+      "sha256": "f14934324897696a5fef6e4006bfb7e81680526ecfb777a653d4508c901e8fdd"
+    },
+    "inventory-01/output/report.json": {
+      "path": "build/validation/sram-context-01/inventory-01/output/report.json",
+      "sha256": "165736044d7a5f0eb7de4ee5e2e8e8a5c75ce1ef50de56f5ab1ca61382a3a2ea"
+    }
+  },
+  "recipes": {
+    "controls-01/helpers.py": {
+      "path": "build/validation/sram-context-01/controls-01/helpers.py",
+      "sha256": "a8b90ad071eb53f1e8708e36593c673c33c40614a3f6c35231bd59bb86dc89be"
+    },
+    "controls-01/worker.py": {
+      "path": "build/validation/sram-context-01/controls-01/worker.py",
+      "sha256": "a11958886c0182bd91f08006aa9a5992a901de2e746cfd06296fd4ad8c80d988"
+    },
+    "controls-02/helpers.py": {
+      "path": "build/validation/sram-context-01/controls-02/helpers.py",
+      "sha256": "a8b90ad071eb53f1e8708e36593c673c33c40614a3f6c35231bd59bb86dc89be"
+    },
+    "controls-02/worker.py": {
+      "path": "build/validation/sram-context-01/controls-02/worker.py",
+      "sha256": "5c53ed97eab25ff8463a32a01387728a051b19180ce951c6bee695f52a64109a"
+    },
+    "controls-03/helpers.py": {
+      "path": "build/validation/sram-context-01/controls-03/helpers.py",
+      "sha256": "a8b90ad071eb53f1e8708e36593c673c33c40614a3f6c35231bd59bb86dc89be"
+    },
+    "controls-03/worker.py": {
+      "path": "build/validation/sram-context-01/controls-03/worker.py",
+      "sha256": "280ff9ab014a8fb9c3c1945ddb2b1a7e736cd4a2d0bfbc082c7e11000341ed59"
+    },
+    "fixtures-01/worker.py": {
+      "path": "build/validation/sram-context-01/fixtures-01/worker.py",
+      "sha256": "3985cfa7212775f837c8370218c2949ec88e8c16e9f2195c211861e055c24b99"
+    },
+    "fixtures-02/worker.py": {
+      "path": "build/validation/sram-context-01/fixtures-02/worker.py",
+      "sha256": "cdb883888fea5c441b7663524a35ae2cafbdd9beb3bbdd4b20da50c8bb375c66"
+    },
+    "inventory-01/worker.py": {
+      "path": "build/validation/sram-context-01/inventory-01/worker.py",
+      "sha256": "481a651aee0c8c060cce54394d34e80a9d9eaa5981053efa8fec5a25af7b9213"
+    },
+    "launch.py": {
+      "path": "build/validation/sram-context-01/launch.py",
+      "sha256": "322ad156ec90bb5be40e52cbb5e998edb5549993688ad79d1fe3abb7092e6df9"
+    },
+    "package.py": {
+      "path": "build/validation/sram-context-01/package.py",
+      "sha256": "57d6e38fc55001a1e060df51749a037f85b619fb4b692592793f352bbe589fe4"
+    },
+    "publish-record.py": {
+      "path": "build/validation/sram-context-01/publish-record.py",
+      "sha256": "78147ebd8fe93b018ef095e53ed7b4f72ebb966e34198081c38b6a07fbfc3a99"
+    }
+  },
+  "intake": {
+    "path": "build/validation/sram-context-01/request.json",
+    "sha256": "3a1cdf8507a2735243791bcbc54c77753bf1c74182daed2e77888ccc10866005"
+  },
+  "fixture_bundle": {
+    "NOTICE": {
+      "path": "physical/fixtures/sram-context/NOTICE",
+      "sha256": "8d8f241d08d627575b48b24936637f7bc2d8fa1658f86727afc85dd2f23b06c3"
+    },
+    "README.md": {
+      "path": "physical/fixtures/sram-context/README.md",
+      "sha256": "608b0091f32e507c7d85e4629e4c5b3ab04396d1721dbcfca24bfd3d5a858d2a"
+    },
+    "RM_IHPSG13_1P_DLY_2.cdl": {
+      "path": "physical/fixtures/sram-context/RM_IHPSG13_1P_DLY_2.cdl",
+      "sha256": "f8ed0e0b59a872f2e4b9b5e765ed9c5c828208eb035a4675127d5d506b078ea7"
+    },
+    "RM_IHPSG13_1P_DLY_2.gds": {
+      "path": "physical/fixtures/sram-context/RM_IHPSG13_1P_DLY_2.gds",
+      "sha256": "a63d2cad89003c2930e66bc60b9564e37562b3422725349243cde3b5a3121ee8"
+    },
+    "RM_IHPSG13_1P_DLY_2.metal1.cdl": {
+      "path": "physical/fixtures/sram-context/RM_IHPSG13_1P_DLY_2.metal1.cdl",
+      "sha256": "2bc3982bb0a27c2cc8595ee2b7946c4fe5b9922f0be9260d3c1e8d9fd249a271"
+    },
+    "RM_IHPSG13_1P_WLDRV16X8.cdl": {
+      "path": "physical/fixtures/sram-context/RM_IHPSG13_1P_WLDRV16X8.cdl",
+      "sha256": "b49f573f480cfc5d941dd87f7afb8afbb76e4bec355ad0a1d69ac517e80ba5fd"
+    },
+    "RM_IHPSG13_1P_WLDRV16X8.gds": {
+      "path": "physical/fixtures/sram-context/RM_IHPSG13_1P_WLDRV16X8.gds",
+      "sha256": "01adac9a48379dddb4968761209fe44b1b556429222de5754742043d5c3f952e"
+    },
+    "RSC_IHPSG13_CDLYX1_DUMMY.cdl": {
+      "path": "physical/fixtures/sram-context/RSC_IHPSG13_CDLYX1_DUMMY.cdl",
+      "sha256": "93a31685498de38b852cecf7c099e23bb45189858e92de6a34b4d4756e61d389"
+    },
+    "RSC_IHPSG13_CDLYX1_DUMMY.gds": {
+      "path": "physical/fixtures/sram-context/RSC_IHPSG13_CDLYX1_DUMMY.gds",
+      "sha256": "0fea90b58366e131dc291d62bb12764689a4ee55d344cb265e2431ab40df9ca0"
+    },
+    "RSC_IHPSG13_CDLYX1_DUMMY.metal1.cdl": {
+      "path": "physical/fixtures/sram-context/RSC_IHPSG13_CDLYX1_DUMMY.metal1.cdl",
+      "sha256": "330d98eecde1395db377e3cdc4e7eec3672aacc08479f644152ad12bc23628d3"
+    },
+    "RSC_IHPSG13_WLDRVX8.cdl": {
+      "path": "physical/fixtures/sram-context/RSC_IHPSG13_WLDRVX8.cdl",
+      "sha256": "d5e37d7f17dcb3d13676a39f45261cb53e712eb761db57cb9b3bf0564cb020ac"
+    },
+    "RSC_IHPSG13_WLDRVX8.gds": {
+      "path": "physical/fixtures/sram-context/RSC_IHPSG13_WLDRVX8.gds",
+      "sha256": "2b3d6aeac70421c7395b6114fe0a22d97af911a3f92ec5f43cfab5ef7e807cdd"
+    },
+    "check_inputs.py": {
+      "path": "physical/fixtures/sram-context/check_inputs.py",
+      "sha256": "2c90865ef563c0215d025882d7a216ca71f2b1b59da6e4df4accf06e714bae70"
+    },
+    "inputs.json": {
+      "path": "physical/fixtures/sram-context/inputs.json",
+      "sha256": "375e76f42d67259690542a5557748d498ea1d61ef5d44e7b2af6dc93b3b4f844"
+    }
+  },
+  "local_evidence_root": "build/validation/sram-context-01",
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-context-01",
+    "/finalization": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-finalization-01",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk",
+    "/source": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/transport-detailed-01",
+    "/closure": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/chip-closure-01",
+    "/baseline": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/paired-buffer-balance-01",
+    "/scripts": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/scripts",
+    "/prior": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-extraction-01"
+  },
+  "unchanged_open_gates": [
+    "full SRAM and exported-GDS qualification",
+    "fast logic/SRAM temperature compatibility",
+    "complete timed Lean refinement",
+    "accepted A and capacity-change B",
+    "clean-source replay",
+    "competition admission"
+  ],
+  "boundary": "Native fixture comparisons establish local device/dimension/connectivity correspondence in the stated mode only. The full SRAM remains unqualified; the flat resistor-combination failure and discarded-output false positive are retained."
+}

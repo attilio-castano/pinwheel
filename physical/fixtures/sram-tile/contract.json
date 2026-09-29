@@ -1,0 +1,56 @@
+{
+  "tops": {
+    "RM_IHPSG13_1P_BITKIT_16x2_SRAM": {
+      "ports": [
+        "A_BLC_BOT<1>",
+        "A_BLC_BOT<0>",
+        "A_BLC_TOP<1>",
+        "A_BLC_TOP<0>",
+        "A_BLT_BOT<1>",
+        "A_BLT_BOT<0>",
+        "A_BLT_TOP<1>",
+        "A_BLT_TOP<0>",
+        "A_LWL<15>",
+        "A_LWL<14>",
+        "A_LWL<13>",
+        "A_LWL<12>",
+        "A_LWL<11>",
+        "A_LWL<10>",
+        "A_LWL<9>",
+        "A_LWL<8>",
+        "A_LWL<7>",
+        "A_LWL<6>",
+        "A_LWL<5>",
+        "A_LWL<4>",
+        "A_LWL<3>",
+        "A_LWL<2>",
+        "A_LWL<1>",
+        "A_LWL<0>",
+        "A_RWL<15>",
+        "A_RWL<14>",
+        "A_RWL<13>",
+        "A_RWL<12>",
+        "A_RWL<11>",
+        "A_RWL<10>",
+        "A_RWL<9>",
+        "A_RWL<8>",
+        "A_RWL<7>",
+        "A_RWL<6>",
+        "A_RWL<5>",
+        "A_RWL<4>",
+        "A_RWL<3>",
+        "A_RWL<2>",
+        "A_RWL<1>",
+        "A_RWL<0>",
+        "VDD_CORE",
+        "VSS"
+      ]
+    }
+  },
+  "allowed_models": [
+    "sg13_lv_nmos",
+    "sg13_lv_pmos",
+    "res_metal2",
+    "res_metal3"
+  ]
+}

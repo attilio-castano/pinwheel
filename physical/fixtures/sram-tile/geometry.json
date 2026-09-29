@@ -1,0 +1,120 @@
+{
+  "top": "RM_IHPSG13_1P_BITKIT_16x2_SRAM",
+  "source_cell": "RM_IHPSG13_512x64_c2_1P_BITKIT_CELL",
+  "physical_cell": "RM_IHPSG13_1P_BITKIT_CELL",
+  "dbu": 0.001,
+  "markers": {
+    "10/29": [
+      {
+        "bbox_dbu": [
+          400,
+          -300,
+          600,
+          300
+        ],
+        "rectangular": true,
+        "width_um": 0.2,
+        "length_um": 0.6,
+        "fully_on_conductor": true
+      },
+      {
+        "bbox_dbu": [
+          -600,
+          -300,
+          -400,
+          300
+        ],
+        "rectangular": true,
+        "width_um": 0.2,
+        "length_um": 0.6,
+        "fully_on_conductor": true
+      }
+    ],
+    "30/29": [
+      {
+        "bbox_dbu": [
+          -300,
+          -100,
+          300,
+          100
+        ],
+        "rectangular": true,
+        "width_um": 0.2,
+        "length_um": 0.6,
+        "fully_on_conductor": true
+      }
+    ]
+  },
+  "native_resistors": [
+    {
+      "name": "",
+      "model": "res_metal2",
+      "parameters": {
+        "R": 0.264,
+        "L": 0.6,
+        "W": 0.2,
+        "A": 0.12,
+        "P": 1.6
+      },
+      "terminals": {
+        "A": {
+          "name": "BLT_BOT",
+          "cluster": 9
+        },
+        "B": {
+          "name": "BLT_TOP",
+          "cluster": 10
+        }
+      }
+    },
+    {
+      "name": "",
+      "model": "res_metal2",
+      "parameters": {
+        "R": 0.264,
+        "L": 0.6,
+        "W": 0.2,
+        "A": 0.12,
+        "P": 1.6
+      },
+      "terminals": {
+        "A": {
+          "name": "BLC_BOT",
+          "cluster": 4
+        },
+        "B": {
+          "name": "BLC_TOP",
+          "cluster": 5
+        }
+      }
+    },
+    {
+      "name": "",
+      "model": "res_metal3",
+      "parameters": {
+        "R": 0.264,
+        "L": 0.6,
+        "W": 0.2,
+        "A": 0.12,
+        "P": 1.6
+      },
+      "terminals": {
+        "A": {
+          "name": "LWL",
+          "cluster": 1
+        },
+        "B": {
+          "name": "RWL",
+          "cluster": 2
+        }
+      }
+    }
+  ],
+  "source_width_um": 0.26,
+  "source_length_um": 0.6,
+  "physical_width_um": 0.2,
+  "physical_length_um": 0.6,
+  "source_admission": false,
+  "source_macro_gds_sha256": "5ea60dd194594f6587906683e5ca44759d6e847297b99085a4cb889e046cce03",
+  "source_macro_cdl_sha256": "825b831a246e1158fd4409501533874c21bc39f0f82369b2128947ffa2632999"
+}

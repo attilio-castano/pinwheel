@@ -1,0 +1,1486 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "diagnostic_complete_source_still_refused",
+  "study": "docs/physical/sram-tile-results.md",
+  "protocol": {
+    "path": "docs/physical/sram-tile-experiment.md",
+    "sha256": "533a7fd0bf2791e59cddb966168ab983e4e37de5e0df263b7a30fda674c14919"
+  },
+  "predecessor": {
+    "path": "physical/experiments/sram-integration-results.json",
+    "sha256": "5370a251b97dc192e152d8c62696aa8a0b6f93a3819dc84e89e0d5ab669ba707"
+  },
+  "supplied_tile_qualification": false,
+  "full_sram_qualification": false,
+  "full_gds_signoff": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "chip_geometry_changed": false,
+  "installed_PDK_changed": false,
+  "decision": "Resolve the supplied 0.260 um versus physical 0.200 um width contract before admitting this tile or generalizing its resistor interpretation.",
+  "geometry": {
+    "top": "RM_IHPSG13_1P_BITKIT_16x2_SRAM",
+    "source_reference": "RM_IHPSG13_512x64_c2_1P_BITKIT_16x2_SRAM",
+    "selected_definitions": [
+      "RM_IHPSG13_512x64_c2_1P_BITKIT_16x2_SRAM",
+      "RM_IHPSG13_512x64_c2_1P_BITKIT_CELL"
+    ],
+    "source_layers": [
+      {
+        "layer": "1/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 476,
+        "labels": 0
+      },
+      {
+        "layer": "10/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 340,
+        "labels": 0
+      },
+      {
+        "layer": "10/2",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 360,
+        "labels": 0
+      },
+      {
+        "layer": "10/25",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 232
+      },
+      {
+        "layer": "10/29",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 64,
+        "labels": 0
+      },
+      {
+        "layer": "14/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 72,
+        "labels": 0
+      },
+      {
+        "layer": "16/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 36,
+        "labels": 0
+      },
+      {
+        "layer": "189/4",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "19/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 300,
+        "labels": 0
+      },
+      {
+        "layer": "25/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 36,
+        "labels": 0
+      },
+      {
+        "layer": "29/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 128,
+        "labels": 0
+      },
+      {
+        "layer": "30/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 112,
+        "labels": 0
+      },
+      {
+        "layer": "30/2",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 162,
+        "labels": 0
+      },
+      {
+        "layer": "30/25",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 98
+      },
+      {
+        "layer": "30/29",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 32,
+        "labels": 0
+      },
+      {
+        "layer": "31/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 68,
+        "labels": 0
+      },
+      {
+        "layer": "49/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "5/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 384,
+        "labels": 0
+      },
+      {
+        "layer": "50/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "50/2",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "50/25",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "6/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 528,
+        "labels": 0
+      },
+      {
+        "layer": "63/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 386
+      },
+      {
+        "layer": "8/0",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 796,
+        "labels": 0
+      },
+      {
+        "layer": "8/2",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "8/25",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      },
+      {
+        "layer": "8/29",
+        "xor_empty": true,
+        "texts_equal": true,
+        "polygons": 0,
+        "labels": 0
+      }
+    ],
+    "dbu_um": 0.001,
+    "bbox_dbu": "(-150,-1435;5770,17485)",
+    "bit_cells": 32,
+    "tap_instances": 4,
+    "resistor_witness": {
+      "top": "RM_IHPSG13_1P_BITKIT_16x2_SRAM",
+      "source_cell": "RM_IHPSG13_512x64_c2_1P_BITKIT_CELL",
+      "physical_cell": "RM_IHPSG13_1P_BITKIT_CELL",
+      "dbu": 0.001,
+      "markers": {
+        "10/29": [
+          {
+            "bbox_dbu": [
+              400,
+              -300,
+              600,
+              300
+            ],
+            "rectangular": true,
+            "width_um": 0.2,
+            "length_um": 0.6,
+            "fully_on_conductor": true
+          },
+          {
+            "bbox_dbu": [
+              -600,
+              -300,
+              -400,
+              300
+            ],
+            "rectangular": true,
+            "width_um": 0.2,
+            "length_um": 0.6,
+            "fully_on_conductor": true
+          }
+        ],
+        "30/29": [
+          {
+            "bbox_dbu": [
+              -300,
+              -100,
+              300,
+              100
+            ],
+            "rectangular": true,
+            "width_um": 0.2,
+            "length_um": 0.6,
+            "fully_on_conductor": true
+          }
+        ]
+      },
+      "native_resistors": [
+        {
+          "name": "",
+          "model": "res_metal2",
+          "parameters": {
+            "R": 0.264,
+            "L": 0.6,
+            "W": 0.2,
+            "A": 0.12,
+            "P": 1.6
+          },
+          "terminals": {
+            "A": {
+              "name": "BLT_BOT",
+              "cluster": 9
+            },
+            "B": {
+              "name": "BLT_TOP",
+              "cluster": 10
+            }
+          }
+        },
+        {
+          "name": "",
+          "model": "res_metal2",
+          "parameters": {
+            "R": 0.264,
+            "L": 0.6,
+            "W": 0.2,
+            "A": 0.12,
+            "P": 1.6
+          },
+          "terminals": {
+            "A": {
+              "name": "BLC_BOT",
+              "cluster": 4
+            },
+            "B": {
+              "name": "BLC_TOP",
+              "cluster": 5
+            }
+          }
+        },
+        {
+          "name": "",
+          "model": "res_metal3",
+          "parameters": {
+            "R": 0.264,
+            "L": 0.6,
+            "W": 0.2,
+            "A": 0.12,
+            "P": 1.6
+          },
+          "terminals": {
+            "A": {
+              "name": "LWL",
+              "cluster": 1
+            },
+            "B": {
+              "name": "RWL",
+              "cluster": 2
+            }
+          }
+        }
+      ],
+      "source_width_um": 0.26,
+      "source_length_um": 0.6,
+      "physical_width_um": 0.2,
+      "physical_length_um": 0.6,
+      "source_admission": false,
+      "source_macro_gds_sha256": "5ea60dd194594f6587906683e5ca44759d6e847297b99085a4cb889e046cce03",
+      "source_macro_cdl_sha256": "825b831a246e1158fd4409501533874c21bc39f0f82369b2128947ffa2632999"
+    }
+  },
+  "inventory": {
+    "nmos": 128,
+    "pmos": 64,
+    "metal2_resistors": 64,
+    "metal3_resistors": 32,
+    "ports": 42,
+    "source_resistor_model": "lvsres",
+    "physical_port_labels": {
+      "metal2": 8,
+      "metal3": 34
+    },
+    "supply_spelling": {
+      "VDD!": "VDD_CORE",
+      "VSS!": "VSS"
+    }
+  },
+  "causal_experiment": {
+    "source_refusal": "SOURCE_GEOMETRY_DIMENSION_MISMATCH: R1",
+    "width_tokens_changed": 3,
+    "expanded_resistors_affected": 96,
+    "source_width_um": 0.26,
+    "physical_width_um": 0.2,
+    "unchanged_length_um": 0.6,
+    "source_admission": false,
+    "counterfactual_only": true,
+    "counterfactual_cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+    "model_translation": {
+      "R1": [
+        "BLC_BOT",
+        "BLC_TOP",
+        "res_metal2",
+        "10/29"
+      ],
+      "R0": [
+        "BLT_BOT",
+        "BLT_TOP",
+        "res_metal2",
+        "10/29"
+      ],
+      "R2": [
+        "RWL",
+        "LWL",
+        "res_metal3",
+        "30/29"
+      ]
+    },
+    "counterfactual_deep_and_flat_pass": true,
+    "restored_original_widths_deep_and_flat_fail": true,
+    "matched_device_pairs": 288,
+    "matched_net_pairs": 182,
+    "matched_pin_pairs": 42,
+    "ambiguous_pairs": 0,
+    "analog_or_resistance_value_qualification": false
+  },
+  "controls": {
+    "comparisons": {
+      "counterfactual_deep": {
+        "expected_positive_counterfactual": true,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "matched",
+        "database_match": true,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "Match": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/counterfactual_deep/native.log",
+          "sha256": "ee261969d35c1fff202a0e9836b49e2f19281c578541c827700aec261df17508"
+        }
+      },
+      "counterfactual_flat": {
+        "expected_positive_counterfactual": true,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "matched",
+        "database_match": true,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "Match": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/counterfactual_flat/native.log",
+          "sha256": "4820762cfb44ea307702d2646407aa7380b1508a3a59b30b1c00d275e908ba89"
+        }
+      },
+      "one_bit_internal_open_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "a51166311a0b1ba8dca934cfef93ae91d5934cd5f8dc64147a9c9e6e3a50ccf4",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_internal_open_deep/native.log",
+          "sha256": "1d331a8653224792e72ef8fa843e57001a74b417496f2e3c421430461e719832"
+        }
+      },
+      "one_bit_internal_open_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "a51166311a0b1ba8dca934cfef93ae91d5934cd5f8dc64147a9c9e6e3a50ccf4",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_internal_open_flat/native.log",
+          "sha256": "689f66ad2410a6487b3013f109f17b5af21bb09ac263885f2601f9f0ef110a59"
+        }
+      },
+      "one_bit_internal_short_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "42224688e8f71bea62604cba170ee0bfecc103f4e689a76334c648cd84740897",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_internal_short_deep/native.log",
+          "sha256": "2f125146b4d62f7102cf2e4ca1ee6bcd17730a923a9c87d6a531ca3e4c1ddd49"
+        }
+      },
+      "one_bit_internal_short_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "42224688e8f71bea62604cba170ee0bfecc103f4e689a76334c648cd84740897",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_internal_short_flat/native.log",
+          "sha256": "ffdfed9995882483cc4e1ff7e430f3cb001690bcba533586aece07793db16a9f"
+        }
+      },
+      "one_bit_missing_nmos_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "f4d1224c77e7de7ac91b48fec135881d0da9ba618d86897df924845203da924a",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_missing_nmos_deep/native.log",
+          "sha256": "57fe2d3a99ba509bfa80807f96d4bc90069b344af0e0ce03b6292622821a01e1"
+        }
+      },
+      "one_bit_missing_nmos_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "f4d1224c77e7de7ac91b48fec135881d0da9ba618d86897df924845203da924a",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_missing_nmos_flat/native.log",
+          "sha256": "cb2224fa5f3f516fca137c899da643aa805d72964bdaef863644a4c76e4c0271"
+        }
+      },
+      "one_bit_missing_resistor_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "c8dbddf458e44f20ad319b83493787f651e0c2f3ec8726beb320c890a67f618c",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_missing_resistor_deep/native.log",
+          "sha256": "4c8dbc491627b8b5673a61ded83b7be16e0d8f87d6b5497c6968620eccf4e30b"
+        }
+      },
+      "one_bit_missing_resistor_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "c8dbddf458e44f20ad319b83493787f651e0c2f3ec8726beb320c890a67f618c",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_missing_resistor_flat/native.log",
+          "sha256": "b66aa96b1515b3746dc1318324161a8ee0268584e9a7932b3906a83c74de0035"
+        }
+      },
+      "one_bit_wrong_metal_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "aa8200544358e4cd7c50fac932794af91bfed7d07d360c1b7778b56ac54b9931",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_wrong_metal_deep/native.log",
+          "sha256": "48721bc8cbdb0f59ce9445d3aa68d67a1fe2fd50e14af400714a08e576b18d29"
+        }
+      },
+      "one_bit_wrong_metal_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "aa8200544358e4cd7c50fac932794af91bfed7d07d360c1b7778b56ac54b9931",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_wrong_metal_flat/native.log",
+          "sha256": "8b7721d6e414984906390a2eade1322767b24b5ce139e74af57dd2fe0b6774e3"
+        }
+      },
+      "one_bit_unknown_model_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Unsupported active model lvsres",
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "79b39aeaa8a821657a2d414e93a2343a098df135f8e02f7bc141140e5b509182",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_unknown_model_deep/native.log",
+          "sha256": "82436e04f638b3f540df10a526606dc530058c5b913e7ffd63c99e8d0fb53205"
+        }
+      },
+      "one_bit_unknown_model_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Unsupported active model lvsres",
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "79b39aeaa8a821657a2d414e93a2343a098df135f8e02f7bc141140e5b509182",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_unknown_model_flat/native.log",
+          "sha256": "d5a25ce637a24b3aed03e605bf15bc892ce456da285b1a045a267b19f483db8a"
+        }
+      },
+      "one_bit_metal2_width_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "231026e0c4ea336282249f2e4adaa5060d46e7799fa4b0748e31e4c324bf89a3",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_width_deep/native.log",
+          "sha256": "fc186e13244b58c80baced3dfe14b023308da1dc7787554142c9906e5c3e51de"
+        }
+      },
+      "one_bit_metal2_width_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "231026e0c4ea336282249f2e4adaa5060d46e7799fa4b0748e31e4c324bf89a3",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_width_flat/native.log",
+          "sha256": "aeaa11730e97e530099ae43b5ca090f5ca3effb80f5b83c757ea25f272d8cdcb"
+        }
+      },
+      "one_bit_metal2_length_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "55fe676ec2d86d30edd862453dfd90bab90c2b124d499e65e04b5e92a83813aa",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_length_deep/native.log",
+          "sha256": "bb1a7a62fe6ba9cf5399d07fe01428ff2de2399118630e99597be452636cecc7"
+        }
+      },
+      "one_bit_metal2_length_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "55fe676ec2d86d30edd862453dfd90bab90c2b124d499e65e04b5e92a83813aa",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_length_flat/native.log",
+          "sha256": "7b0d426e2c018ae28a868d22ceac509bd0bc090351afe4c7c3151ca8f4228c24"
+        }
+      },
+      "one_bit_metal2_equal_ratio_dimensions_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "f0de479e2b305e0dfb1461737cb5be358a0f51357a1bb5db6d4f67bdc2e4f9a2",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_equal_ratio_dimensions_deep/native.log",
+          "sha256": "cd81e0ef69abbbd4cc916f205daf0259530c9173ef5b50714ae15182e169117b"
+        }
+      },
+      "one_bit_metal2_equal_ratio_dimensions_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "f0de479e2b305e0dfb1461737cb5be358a0f51357a1bb5db6d4f67bdc2e4f9a2",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal2_equal_ratio_dimensions_flat/native.log",
+          "sha256": "162d0753ed77f09c066026ddc7bb73b3f8c6533b8c1c98c319f68acc0a3c26e6"
+        }
+      },
+      "one_bit_metal3_width_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "7eff126e8a2363e444848e11ce1dd46d4ceaa202ba47967490bb55ea4e57d1dd",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_width_deep/native.log",
+          "sha256": "45efe11bd57d0ed5f5735cf132ea32ac88b2162acfcd6f6fb19d8f5a03624634"
+        }
+      },
+      "one_bit_metal3_width_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "7eff126e8a2363e444848e11ce1dd46d4ceaa202ba47967490bb55ea4e57d1dd",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_width_flat/native.log",
+          "sha256": "2f48bad9918a3a49283e39d95d3450820c274be934100443c51c112dfc5c2f58"
+        }
+      },
+      "one_bit_metal3_length_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "ab3697d0ffa09be0d2eeb511861a4d36f576ad02215c2eb2bd2b285413a03db9",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_length_deep/native.log",
+          "sha256": "b8330dea29b218416c63d1e6177343cb3373b61edb6b520c2f32b10ab26eedb7"
+        }
+      },
+      "one_bit_metal3_length_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "ab3697d0ffa09be0d2eeb511861a4d36f576ad02215c2eb2bd2b285413a03db9",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_length_flat/native.log",
+          "sha256": "d4551441ba23bb87f7a7139cf5cb6c1352a569a62ec26c96c36192902dd09a1a"
+        }
+      },
+      "one_bit_metal3_equal_ratio_dimensions_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "dcb491094b2585b1b6aa14d233475c351b5efa54852530ee469028bb48010e14",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_equal_ratio_dimensions_deep/native.log",
+          "sha256": "e5ca159a035440fa466eb37a789f46bbaf16a9572907938bdd3bc05e19269209"
+        }
+      },
+      "one_bit_metal3_equal_ratio_dimensions_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "dcb491094b2585b1b6aa14d233475c351b5efa54852530ee469028bb48010e14",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/one_bit_metal3_equal_ratio_dimensions_flat/native.log",
+          "sha256": "7ff5a10c95b6f3341dd073496a41a2a1ac3b801760b082377906799678d716ae"
+        }
+      },
+      "original_widths_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "d1f81ddf14a8d447eace022423a328511b7453eabed3c6555c69741bc3ec3674",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/original_widths_deep/native.log",
+          "sha256": "8b891b19368e4b5af96cfcf6742f72434c6c56e75d7f06457129a9c8d726535e"
+        }
+      },
+      "original_widths_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "d1f81ddf14a8d447eace022423a328511b7453eabed3c6555c69741bc3ec3674",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/original_widths_flat/native.log",
+          "sha256": "cdb012af71807f15b3a5178bc6421fd95dd20cac13771595b3112032a7be7795"
+        }
+      },
+      "declared_port_missing_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Declared port identity/order changed",
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "828d4d91db6dac7620155f5223b1bb3ece84b6e35950718234b3150dd4fe307c",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/declared_port_missing_deep/native.log",
+          "sha256": "b1f340b7b1da46c31c4f68941bd360bd52f53cd87066148cb8b0437a055797f8"
+        }
+      },
+      "declared_port_missing_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Declared port identity/order changed",
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "828d4d91db6dac7620155f5223b1bb3ece84b6e35950718234b3150dd4fe307c",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/declared_port_missing_flat/native.log",
+          "sha256": "cda171c5eedee4a05442fcd00957d11a78e3a881aaf7f9c92eca643d7e1c3342"
+        }
+      },
+      "wordline_swap_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "24b063ea3412e34e1866a91b2b4a531bace3c4affb51deb7fda6133cd8aee6dc",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/wordline_swap_deep/native.log",
+          "sha256": "9a0afd8918430b3ceb7d7aeed81c1f051ce6fdcb90a41b8f0c4a0e960c081d70"
+        }
+      },
+      "wordline_swap_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be",
+        "cdl_sha256": "24b063ea3412e34e1866a91b2b4a531bace3c4affb51deb7fda6133cd8aee6dc",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/wordline_swap_flat/native.log",
+          "sha256": "a7ab32edc82c5bff989cb5665b14e016719770bf63d761344ad32056ed316f6d"
+        }
+      },
+      "unchanged_carrier_deep": {
+        "expected_positive_counterfactual": true,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "matched",
+        "database_match": true,
+        "policy_refusal": null,
+        "gds_sha256": "0156396b227d6d00304a6712b9f4fd587518760df045cf81a5266c38877d39ed",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "Match": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/unchanged_carrier_deep/native.log",
+          "sha256": "733d2ef682b9373d8864f9d0c2b527bf20dd79f5b1b5901a7e67e095f6d617d2"
+        }
+      },
+      "unchanged_carrier_flat": {
+        "expected_positive_counterfactual": true,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "matched",
+        "database_match": true,
+        "policy_refusal": null,
+        "gds_sha256": "0156396b227d6d00304a6712b9f4fd587518760df045cf81a5266c38877d39ed",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "Match": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/unchanged_carrier_flat/native.log",
+          "sha256": "a2f7103a8160430fd0fd1358ac727617fa6ca3c68681c771ac65c692ed2ff814"
+        }
+      },
+      "physical_metal_open_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Flattening lost physical port A_BLC_BOT<1>",
+        "gds_sha256": "9376539123f359d5332fb13eebbdbdb2b231d2b4a561a5abd82446f2d9e7c8ce",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_metal_open_deep/native.log",
+          "sha256": "85092d6929ee97d13e05f12aecdb8fe35f480137b208c2feab669448aa2cab91"
+        }
+      },
+      "physical_metal_open_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Disconnected physical port A_BLC_TOP<0>",
+        "gds_sha256": "9376539123f359d5332fb13eebbdbdb2b231d2b4a561a5abd82446f2d9e7c8ce",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_metal_open_flat/native.log",
+          "sha256": "f01670093126e7ff3bcd1d357da3ea2336d3c85f6ecc09e09cbb54603423ef7b"
+        }
+      },
+      "physical_metal_bridge_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Two physical ports probe the same net",
+        "gds_sha256": "9cb110e3d753e2cbc0fc0780175e302697829b92247685239cf24985f2b1913b",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_metal_bridge_deep/native.log",
+          "sha256": "b2d52dc1229a91797ab8b55e29a91e54d026523dd57efdc2b6bdf68cff44bfe2"
+        }
+      },
+      "physical_metal_bridge_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Two physical ports probe the same net",
+        "gds_sha256": "9cb110e3d753e2cbc0fc0780175e302697829b92247685239cf24985f2b1913b",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_metal_bridge_flat/native.log",
+          "sha256": "bef31d7ef4a0006a6b3d5d4d841abd1ab017af871a61e85e9dc514e94ac43202"
+        }
+      },
+      "physical_missing_nmos_gate_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "98a7547b7627484f444e50ac31a7b8666626b97a3fe0ea539a9d19825fa4102e",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_missing_nmos_gate_deep/native.log",
+          "sha256": "b5ccb80bac2defec9cbbbe8a472b74d3043bafcfc56268528faf4e5aa6fc2922"
+        }
+      },
+      "physical_missing_nmos_gate_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "98a7547b7627484f444e50ac31a7b8666626b97a3fe0ea539a9d19825fa4102e",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_missing_nmos_gate_flat/native.log",
+          "sha256": "ba04d5d5562d93f1d4a61a257f5209f46a4d99b9dee736c40158d9e360019a16"
+        }
+      },
+      "physical_port_missing_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Physical boundary labels missing, duplicated, extra or renamed",
+        "gds_sha256": "49dde6b4b39b40f53dcef1284cfe45919d434d299c6f362b1f2faf46d2b06a31",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_port_missing_deep/native.log",
+          "sha256": "e93f214899fd1bb75a0120854cf1bbd9fe9c0f44a72eb5b207c18e797ca713b9"
+        }
+      },
+      "physical_port_missing_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Physical boundary labels missing, duplicated, extra or renamed",
+        "gds_sha256": "49dde6b4b39b40f53dcef1284cfe45919d434d299c6f362b1f2faf46d2b06a31",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_port_missing_flat/native.log",
+          "sha256": "bf5871a5984b9378cdc46cf980ba0247d02d445476664f00a9da86ce3426b86c"
+        }
+      },
+      "physical_ports_swapped_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "1f1835b0772f15922061408ce48bd4877141d7638a66002c3ad8d276e3e96eb9",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_ports_swapped_deep/native.log",
+          "sha256": "b9cb50ab62bc19a6e16d2e62487ac1ed54c1cc055ee5d9a681630b68d1b81cd0"
+        }
+      },
+      "physical_ports_swapped_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 0,
+        "native_status": "no_match",
+        "database_match": false,
+        "policy_refusal": null,
+        "gds_sha256": "1f1835b0772f15922061408ce48bd4877141d7638a66002c3ad8d276e3e96eb9",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {
+          "NoMatch": 1
+        },
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_ports_swapped_flat/native.log",
+          "sha256": "2858f7d7286bebe8805a5638a9fcf05dfeae761e0fbba542e2ba636e02d5c999"
+        }
+      },
+      "physical_port_off_metal_deep": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Boundary label does not probe a top net: A_LWL<0>",
+        "gds_sha256": "7f0947420c6a52b27099a155faf0a49b4ed762c3c3a4bbb43eadfe3f141b554c",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_port_off_metal_deep/native.log",
+          "sha256": "5b101ba8073d4159462248e20cab1be339b4034cfbdcf5b0c1298b16a6cc3aa5"
+        }
+      },
+      "physical_port_off_metal_flat": {
+        "expected_positive_counterfactual": false,
+        "expected_result_observed": true,
+        "exit_code": 1,
+        "native_status": "rejected",
+        "database_match": null,
+        "policy_refusal": "Boundary label does not probe a top net: A_LWL<0>",
+        "gds_sha256": "7f0947420c6a52b27099a155faf0a49b4ed762c3c3a4bbb43eadfe3f141b554c",
+        "cdl_sha256": "cfa590b91e76770da8a01c86951bd3b9a8d53e4a71e097a74c73cafc067b7766",
+        "circuit_pair_statuses": {},
+        "log": {
+          "path": "build/validation/sram-tile-01/controls-01/output/physical_port_off_metal_flat/native.log",
+          "sha256": "f9bff5a15e5b9861a1bea19c76684eb8024f72f09bed8f690a0abc54fba8a875"
+        }
+      }
+    },
+    "census": {
+      "counterfactual_positive": 4,
+      "native_negative": 30,
+      "policy_negative": 12
+    },
+    "evidence_refusals": [
+      "absent_audit",
+      "missing_stage",
+      "missing_witness",
+      "native_failure",
+      "database_failure",
+      "process_failure",
+      "missing_final_log"
+    ],
+    "adapter_refusals": {
+      "original_widths": "SOURCE_GEOMETRY_DIMENSION_MISMATCH: R1",
+      "unknown_nodes": "Unknown resistor nodes/model/parameters",
+      "unknown_model": "Unknown resistor nodes/model/parameters",
+      "missing_resistor": "Unknown resistor inventory",
+      "duplicate_resistor": "Unknown resistor inventory",
+      "extra_parameter": "Unknown resistor nodes/model/parameters",
+      "missing_dimension": "Unknown resistor nodes/model/parameters",
+      "duplicate_dimension": "Missing or duplicate dimension",
+      "wrong_marker_width": "Unsupported physical marker geometry",
+      "marker_off_conductor": "Unsupported physical marker geometry",
+      "wrong_native_width": "Ambiguous physical resistor correspondence",
+      "wrong_native_terminal": "Ambiguous physical resistor correspondence",
+      "missing_cell_definition": "Missing or duplicate bit-cell source"
+    },
+    "physical_fault_geometry": {
+      "physical_metal_open": {
+        "layer": [
+          10,
+          0
+        ],
+        "bit_cell_area_dbu2": 8000,
+        "whole_tile_area_dbu2": 256000,
+        "dbu_um": 0.001,
+        "historical_local_area_field": 0,
+        "historical_local_area_field_valid": false
+      },
+      "physical_metal_bridge": {
+        "layer": [
+          10,
+          0
+        ],
+        "bit_cell_area_dbu2": 12000,
+        "whole_tile_area_dbu2": 384000,
+        "dbu_um": 0.001,
+        "historical_local_area_field": 0,
+        "historical_local_area_field_valid": false
+      },
+      "physical_missing_nmos_gate": {
+        "layer": [
+          5,
+          0
+        ],
+        "bit_cell_area_dbu2": 39000,
+        "whole_tile_area_dbu2": 1248000,
+        "dbu_um": 0.001,
+        "historical_local_area_field": 0,
+        "historical_local_area_field_valid": false
+      }
+    },
+    "raw_physical_checks": {
+      "physical_metal_open": {
+        "layer": [
+          10,
+          0
+        ],
+        "changed_area_dbu2": 0,
+        "edited_bit_cell_occurrences": 32,
+        "whole_tile_changed_area_dbu2": {
+          "10/0": 256000
+        }
+      },
+      "physical_metal_bridge": {
+        "layer": [
+          10,
+          0
+        ],
+        "changed_area_dbu2": 0,
+        "edited_bit_cell_occurrences": 32,
+        "whole_tile_changed_area_dbu2": {
+          "10/0": 384000
+        }
+      },
+      "physical_missing_nmos_gate": {
+        "layer": [
+          5,
+          0
+        ],
+        "changed_area_dbu2": 0,
+        "edited_bit_cell_occurrences": 32,
+        "whole_tile_changed_area_dbu2": {
+          "5/0": 1248000
+        }
+      },
+      "physical_port_missing": {
+        "changed_labels": 1,
+        "polygons_changed": false,
+        "whole_tile_changed_area_dbu2": {}
+      },
+      "physical_ports_swapped": {
+        "changed_labels": 2,
+        "polygons_changed": false,
+        "whole_tile_changed_area_dbu2": {}
+      },
+      "physical_port_off_metal": {
+        "changed_labels": 1,
+        "polygons_changed": false,
+        "whole_tile_changed_area_dbu2": {}
+      }
+    },
+    "correction": "The raw local changed_area_dbu2 field is invalid because it used a live geometry view after mutation. Independently reloaded GDS confirms the raw whole-tile XOR and supplies corrected local areas. No acceptance decision uses the invalid field."
+  },
+  "resource_ledger": {
+    "starting_campaign_cad_seconds": 8303.929,
+    "continuation_cad_seconds": 86.455,
+    "cumulative_campaign_cad_seconds": 8390.384,
+    "allocated_continuation_seconds": 1800,
+    "campaign_budget_seconds": 28800,
+    "bounded_invocations": 4,
+    "native_LVS_invocations": 52,
+    "A_full_routing_attempts_used": 3,
+    "B_full_routing_attempts_reserved": 2,
+    "additional_full_routing_attempts": 0
+  },
+  "attempts": [
+    {
+      "name": "inventory-01",
+      "status": "completed",
+      "cad_seconds": 5.584,
+      "limits": {
+        "seconds": 240,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-tile-01/inventory-01-receipt.json",
+        "sha256": "694bfff2113a45498dfc49014f1101c96d2138186915a8326797f9640d93b593"
+      }
+    },
+    {
+      "name": "dimensions-01",
+      "status": "completed",
+      "cad_seconds": 6.751,
+      "limits": {
+        "seconds": 420,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-tile-01/dimensions-01-receipt.json",
+        "sha256": "e0c8ab904fe74a5769b2bad107258254d61e2a13b0b3137114874465ede90e06"
+      }
+    },
+    {
+      "name": "controls-01",
+      "status": "completed",
+      "cad_seconds": 72.531,
+      "limits": {
+        "seconds": 600,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-tile-01/controls-01-receipt.json",
+        "sha256": "f529c0c44831696e1b78e4634b7bc1c9eee6989611d6aae88102b8f33b989d57"
+      }
+    },
+    {
+      "name": "audit-01",
+      "status": "completed",
+      "cad_seconds": 1.589,
+      "limits": {
+        "seconds": 90,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-tile-01/audit-01-receipt.json",
+        "sha256": "77ca1fea76d826ed06fcbf5f92682ae4613251f34f8fcf15f71c809ff9a0fe1b"
+      }
+    }
+  ],
+  "intake": {
+    "path": "build/validation/sram-tile-01/request.json",
+    "sha256": "e0089c7c82172fb1ea266658f4a04ffb039fe4276f5987320fd069f22acb9e1d"
+  },
+  "launcher": {
+    "path": "build/validation/sram-tile-01/launch.py",
+    "sha256": "584298a1da95f00ca0b6568bfef8ab0a4a4210fdfaf80312981ecdfeb1d8bc65"
+  },
+  "record_recipe": {
+    "path": "build/validation/sram-tile-01/record.py",
+    "sha256": "a8434e79c1398b2f54770c0efd56a139b64cf2df936534596c774908a0648e08"
+  },
+  "record_audit": {
+    "path": "build/validation/sram-tile-01/record-audit.json",
+    "sha256": "e8abed15983bc82b632c011bc1ff3f6eea2fb201f8069feae64a8397586956eb"
+  },
+  "reports": {
+    "inventory-01": {
+      "path": "build/validation/sram-tile-01/inventory-01/output/report.json",
+      "sha256": "0574bab5bfc176812621dc498d515198de0e2eb2d353e52db56657ea66841fcf"
+    },
+    "dimensions-01": {
+      "path": "build/validation/sram-tile-01/dimensions-01/output/report.json",
+      "sha256": "7e6792bf774fb36de8d0b92d7a56955f81fd68031d793a3b4da99286edf4f626"
+    },
+    "controls-01": {
+      "path": "build/validation/sram-tile-01/controls-01/output/report.json",
+      "sha256": "4ab4f29cc5887bd52271f075e0d4cfacd6755b86d44fce85f4e39359245ef6f2"
+    },
+    "audit-01": {
+      "path": "build/validation/sram-tile-01/audit-01/output/report.json",
+      "sha256": "0e851653ca538f09e0da0391c01b682ecfd8c44c9f1e26785668b4f80c4aae9b"
+    }
+  },
+  "raw_inventory": {
+    "deep": {
+      "path": "build/validation/sram-tile-01/inventory-01/output/deep/inventory.json",
+      "sha256": "4a1b5eedca6e03385efbda2559f4a6e4b01b5b9f13c351aae5baed42a7f56cdf"
+    },
+    "flat": {
+      "path": "build/validation/sram-tile-01/inventory-01/output/flat/inventory.json",
+      "sha256": "6abcd33916e87abdac47d6f544385f31364eae69fdb86c8ac66370a2c542cbbd"
+    }
+  },
+  "diagnostic_bundle": {
+    "NOTICE": {
+      "path": "physical/fixtures/sram-tile/NOTICE",
+      "sha256": "8d8f241d08d627575b48b24936637f7bc2d8fa1658f86727afc85dd2f23b06c3"
+    },
+    "README.md": {
+      "path": "physical/fixtures/sram-tile/README.md",
+      "sha256": "f822a55299169980757ff11d86ab064954a02d87d41892e96d6787e621599544"
+    },
+    "RM_IHPSG13_1P_BITKIT_16x2_SRAM.cdl": {
+      "path": "physical/fixtures/sram-tile/RM_IHPSG13_1P_BITKIT_16x2_SRAM.cdl",
+      "sha256": "fe8c85cccdc247a0d000cc694be9b3df8404f81e08c60e83cd55b13fef1cd219"
+    },
+    "RM_IHPSG13_1P_BITKIT_16x2_SRAM.gds": {
+      "path": "physical/fixtures/sram-tile/RM_IHPSG13_1P_BITKIT_16x2_SRAM.gds",
+      "sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be"
+    },
+    "audit_controls.py": {
+      "path": "physical/fixtures/sram-tile/audit_controls.py",
+      "sha256": "cfd04c171bec0bc53aec3746d9870c689f0200afb9f843a73ec6b7f3d63ffee5"
+    },
+    "check_inputs.py": {
+      "path": "physical/fixtures/sram-tile/check_inputs.py",
+      "sha256": "993b974b2bd97d60081500b8adc8f8c44e7e150c0de9d9cadde8c4b8850d166c"
+    },
+    "contract.json": {
+      "path": "physical/fixtures/sram-tile/contract.json",
+      "sha256": "55249140d54cee97be19a616f8cc6841eb983df46b37938cd3adbde247a24d1b"
+    },
+    "geometry.json": {
+      "path": "physical/fixtures/sram-tile/geometry.json",
+      "sha256": "ed7678fdace4c1a138edc9cc0d2e578290973ee210cc674cde397c4c38c77374"
+    },
+    "inputs.json": {
+      "path": "physical/fixtures/sram-tile/inputs.json",
+      "sha256": "d54c4d2d42771b599e5ca4d011767655d1877f8a20c55726f10118acb2b98f7d"
+    },
+    "policy.rb": {
+      "path": "physical/fixtures/sram-tile/policy.rb",
+      "sha256": "29e6841b38dce803f7ca874ce3df90347d531d409b20a1c16138d2ce7a7ede8a"
+    },
+    "run.py": {
+      "path": "physical/fixtures/sram-tile/run.py",
+      "sha256": "633d23d3e9803b381aaea03df93605f704b61c64956030924be249a2abad83a6"
+    }
+  },
+  "reference_material": {
+    "derivation": {
+      "path": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk/ihp-sg13g2/libs.tech/klayout/tech/lvs/rule_decks/res_derivations.lvs",
+      "sha256": "3c32e371d71ddbb7190769db6aac4676d65f75eff1ca994fbf720ceb06255754"
+    },
+    "extraction": {
+      "path": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk/ihp-sg13g2/libs.tech/klayout/tech/lvs/rule_decks/res_extraction.lvs",
+      "sha256": "f3913114d4eafc36f6baf8c47a5de4867270e41955572af7f25c5f498ccec4b1"
+    },
+    "magic_documentation": {
+      "path": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.tech/magic/README.md",
+      "sha256": "0462e7f1aa8261b15eedc4fdbea4f67a6baf7a30caab00d35df5bffe8921b5e4"
+    },
+    "netgen_setup": {
+      "path": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk/ihp-sg13cmos5l/libs.tech/netgen/ihp-sg13cmos5l_setup.tcl",
+      "sha256": "1d46fb0844f236d79059f078f35e0301dcbca74fb24389a47a5854ea270352b5"
+    },
+    "general_IHP_documentation": "https://ihp-open-pdk-docs.readthedocs.io/en/latest/verification/lvs/04_05_res.html#lvsres",
+    "documentation_scope": "General SG13G2 LVS documentation; not a version-specific SG13CMOS5L SRAM width interpretation.",
+    "accepted_width_normalization": null
+  },
+  "local_evidence_root": "build/validation/sram-tile-01",
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-tile-01",
+    "/prior": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-integration-01",
+    "/fixtures": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/physical/fixtures/sram-context",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk"
+  },
+  "unchanged_open_gates": [
+    "supplied tile width contract",
+    "remaining array-edge and control contexts",
+    "macro positive comparison and cross-block fault sensitivity",
+    "prior Magic diagnostics",
+    "full SRAM/GDS signoff",
+    "compatible fast views",
+    "timed Lean controller/loading/package refinement",
+    "accepted A/B",
+    "clean-source replay"
+  ],
+  "boundary": "Only the explicitly modified diagnostic passes. The supplied tile, complete SRAM and chip remain unqualified. No physical or installed-PDK edit, added full route or publication."
+}
