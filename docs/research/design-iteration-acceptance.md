@@ -6,6 +6,12 @@ complete; **design A is not yet accepted**. This page binds the requirements to
 the retained paired implementation and separates missing evidence from extra
 optimization preferences. [Status](status.md) owns subsequent allocation.
 
+The subsequent [combined acceptance report](implementation-acceptance.md)
+reproduces the current evidence intake, including the now-passing
+[retained RTL interpretation](../storage/paired-rtl-interpretation.md). SRAM, fast
+conditions and package power remain blocked. The tables and
+measurements below preserve the original September 26 audit.
+
 **Execution follow-up:** the [second A layout](../physical/balanced-detailed-experiment.md)
 now has positive extracted setup/hold and passing routing/full-rule Magic DRC,
 LVS, antenna, power-connectivity and final-circuit checks. **A is not accepted:**

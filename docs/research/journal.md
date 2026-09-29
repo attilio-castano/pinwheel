@@ -15,7 +15,7 @@ or interrupted work.
 | Topic | Entry points |
 | --- | --- |
 | Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
-| Artifact proof and composition | [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
+| Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
 | Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
 | Physical correlation and placement | [Estimate/extraction diagnosis](#2026-09-17-estimateextraction-correlation-diagnosis), [placement corridors](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution), [exact mapping and hold repair](#2026-09-22--preserve-the-mapping-through-placement-and-hold-repair) |
@@ -4894,3 +4894,770 @@ complete refinement, accepted A/B and replay remain unqualified.
 
 Manifest: `physical/experiments/sram-extraction-results.json`, SHA-256
 `9fe2ebdc978c2c5d46070c7c0d33f1e8c22bcb37bcbe3bb897c5033cb6720392`.
+
+
+## 2026-09-27 — SRAM failures isolated with neighboring geometry
+
+The [context-fixture study](../physical/sram-context-results.md) retains the two
+failing cells and their complete parent blocks as four tracked GDS fixtures.
+Every exported polygon, label and internal transform is preserved. The source
+inventory locates 256 word-line drivers and 12 delay dummies.
+
+The 16-driver parent contains all 64 expected MOS devices and matches flat.
+Deep extraction places its 32 NMOS devices in the parent while retaining the
+PMOS devices in child circuits, reproducing the previous child-level failure.
+The complete delay parent matches deep after translating only the dummy R0
+model to metal1, retaining its original nodes and 0.600 × 0.260 µm dimensions.
+Width, length and equal-ratio dimension mutations all fail, as do physical metal
+opens, bridges and NMOS-gate removal. The unchanged mutation carrier passes.
+Seven malformed or unsupported adapter inputs are refused.
+
+Two limitations remain explicit. Flat delay comparison combines six schematic
+resistors into one while retaining six layout resistors. Native simplification
+also discards a disconnected declared output and incorrectly matches that
+driver control. The new fixture pin-use guard rejects the exact counterexample;
+a separate internal-open control fails native LVS, along with output-short and
+missing-NMOS controls. No existing failure or check is waived.
+
+Six bounded invocations contain 24 native comparisons. Three failed receipts
+retain an absent-layer export-check bug, the flat delay mismatch, and the native
+false positive. Total cost including failures and cleanup: **39.179 CAD seconds**;
+campaign **8,067.658 seconds / 134.46 minutes**. Input hashes remain unchanged,
+all receipted containers are absent, and no chip, installed PDK or routing
+allocation changed. Three A attempts remain used and two B attempts reserved.
+Full SRAM/GDS qualification, compatible fast views, timed Lean refinement,
+accepted A/B and clean-source replay remain open.
+
+Next qualify consistent hierarchy ownership, dimensional resistor combination
+and connected-port handling on the small fixtures before a larger SRAM block.
+
+Manifest: `physical/experiments/sram-context-results.json`, SHA-256
+`dbeb1f8e0c79e62a52de75001cbd3b083b901f78e9305f6185f149f75440a52e`.
+
+## 2026-09-27 — SRAM comparison policy qualifies the local fixtures
+
+The [comparison-policy study](../physical/sram-comparison-results.md) qualifies
+the four unchanged context fixtures in both extraction modes. The packaged
+[recipe](../../physical/fixtures/sram-comparison/README.md) binds ports from
+top-owned source labels and extracted metal, flattens only the small netlists,
+aligns dimensional resistor classes and preserves each resistor and declared
+port through preparation. Only one file in a private 183-file deck copy changes;
+source GDS, installed PDK and chip remain unchanged.
+
+**Correction to the preceding entry:** six of its nine database matches fail
+the final native port check. The isolated drivers, flat driver parent, adapted
+isolated dummies and original discarded-output control were not full native
+passes. The complete adapted delay parent (two runs) and its unchanged carrier
+were the three actual native passes. All 24 original logs and raw receipts are
+preserved, and the new manifest records the corrected interpretation.
+
+Final packaged replay: **52 invocations**. Eight original fixture comparisons
+and two unchanged physical carriers pass. All **42 deliberate defects** reject:
+20 native mismatches and 22 explicit interface/model/dimension refusals. All
+devices and declared pins match on positive inputs. Each complete delay result
+retains six ambiguous internal dummy-net pairs; it does not prove a unique
+instance-name mapping for those nets. Eight incomplete-evidence controls and
+the seven existing source-translation refusal controls pass.
+
+Ablations reproduce the unreconciled driver hierarchy failure and, with valid
+physical ports but interface safeguards removed, establish a real final-native
+pass for the disconnected-output defect. Removing global legacy-label support
+preserves all eight positive fixtures, so the final recipe leaves general label
+rules unchanged. Removing the non-combination settings produces a native pass:
+both dimensional classes combine six resistors to one 0.260 × 3.600 µm device.
+The rejected expectation remains recorded; retaining six separate resistors is
+the stronger selected contract, not a claim that those flags alone fix LVS.
+
+Ten bounded invocations consume **198.128 CAD seconds**, including all failures
+and cleanup. Four receipts complete and six retain failed expectations/recipes:
+missing or combined port labels, Ruby proxy identity, earlier physical-open
+guard rejection than expected, an ablation syntax error and the disproved
+combination expectation. Campaign total: **8,265.786 seconds / 137.76 minutes**.
+The final audit checks **7,670 source/artifact files**, verifies exact packaged
+recipe identity, and confirms all frozen sources unchanged and receipted
+containers absent. No extra A routing attempt; three A used and two B reserved.
+
+Next scope a bounded hierarchical macro integration with changes limited to the
+two affected direct-child block types, complete port accounting and faults
+crossing those boundaries. Preserve array hierarchy. Full SRAM/GDS signoff,
+the earlier Magic diagnostics, compatible fast views, timed Lean refinement,
+accepted A/B and clean-source replay remain open. Changes remain local.
+
+Manifest: `physical/experiments/sram-comparison-results.json`, SHA-256
+`e27dd920505df8fa6eec9c8dc35ebe78fe6c298c6ad9a8e647e971ee8e46e7ee`.
+
+## 2026-09-27 — Hierarchical SRAM integration locates the remaining failures
+
+The [bounded integration](../physical/sram-integration-results.md) inventories
+the supplied macro before comparison preparation. Extraction retains 140 layout
+definitions and a device-free macro top; 62 of 145 schematic definitions are
+reachable. The prior near-flat macro arose during unmatched-name alignment.
+The new [diagnostic recipe](../../physical/fixtures/sram-integration/README.md)
+sets 22 explicit circuit-name pairs and expands only the admitted driver/delay
+families. The private deck changes one comparison file; source GDS, installed
+PDK and chip remain unchanged.
+
+All **548 physical label positions** bind consistently to **351 distinct macro
+ports**, retained through alignment, preparation and comparison. Repeated supply
+labels probe one connected net per supply. Both sides retain two matrices,
+128 columns, 1,024 tiles and 32,768 cells. Scoped expansion preserves every
+device/parameter; native finger combination yields **140,639 NMOS and 75,167
+PMOS** on each side. Twelve qualified dummy metal1 resistors remain separate;
+the other **98,704** resistors retain their unresolved metal2/metal3 versus
+`LVSRES` representations.
+
+Native comparison still fails: **23 matching types, eight nonmatches and
+19 skipped parents**, including the macro. The failures are the bit cell, array
+edge, bit-line driver and five buffer/inverter/fill-cap types. Recorded parent
+inventories agree in total devices but place them at different hierarchy levels.
+This is not proof of their wiring or of the expanded driver/delay connections.
+The packaged replay reproduces the complete circuit readback and policy audit.
+Cross-block fault comparisons are deferred because their positive macro control
+does not pass.
+
+The next candidate context is the complete 32-bit tile: **192 MOS devices and
+96 resistors**. It needs preserved geometry, explicit model/layer/dimension
+interpretation and ownership/boundary qualification. The manifest also locates
+the array-edge, bit-line-driver, column-driver and row-register contexts for the
+remaining failures. These are candidate contexts, not newly passing fixtures.
+
+Four bounded offline invocations cost **38.143 CAD seconds**, including failures
+and cleanup. Three complete; the first macro adapter refused after misreading
+layer 50/25 as topmetal1. The pinned deck identifies it as metal4; the corrected
+recipe retains every port guard. The failed receipt remains intact. A final
+audit checks **4,440 unique source/artifact files**, exact packaged replay and
+container absence. Campaign total: **8,303.929 seconds / 138.40 minutes**.
+No new A route; three A used and two B reserved. Full SRAM/GDS signoff, prior
+Magic diagnostics, fast compatibility, timed refinement, accepted A/B and
+clean-source replay remain open. All changes remain local.
+
+Manifest: `physical/experiments/sram-integration-results.json`, SHA-256
+`5370a251b97dc192e152d8c62696aa8a0b6f93a3819dc84e89e0d5ab669ba707`.
+
+## 2026-09-27 — Complete SRAM tile isolates a source width disagreement
+
+The [tile experiment](../physical/sram-tile-results.md) exports the complete
+32-bit tile with its four tap instances and original hierarchy. All 27 source
+layers preserve polygon XOR and text identity. Its 192 MOS devices occupy
+different hierarchy levels in native extraction and source CDL; bounded tile
+netlist flattening reconciles that ownership without changing geometry.
+
+All **96 physical resistor markers measure 0.200 × 0.600 µm**, while the source
+declares **0.260 × 0.600 µm**. Native metal2/metal3 extraction agrees with the
+marker measurements and expected endpoints. The strict dimensional adapter
+refuses the source with `SOURCE_GEOMETRY_DIMENSION_MISMATCH: R1`.
+
+A separate diagnostic changes three repeated width tokens, affecting all 96
+resistors, and applies only the checked R0/R1 metal2 and R2 metal3 translation.
+Both deep and flat extraction match **288 device pairs, 182 net pairs and
+42 pin pairs**, with no ambiguity. Restoring the original widths on the same
+prepared comparison fails in both modes. The packaged comparison reproduces
+the original diagnostic's complete native circuit readback and policy audit.
+The supplied tile, complete SRAM and chip remain unqualified.
+
+The [tracked bundle](../../physical/fixtures/sram-tile/README.md) has four
+counterfactual positive comparisons, **42 fault rejections** (30 native,
+12 explicit policy), seven incomplete-evidence refusals and 13 adapter
+refusals. Faults include single-bit wiring/device/model/dimension changes,
+word-line swaps, physical metal/gate edits and physical port corruption.
+The shared physical bit-cell mutations affect 32 instances; their unchanged
+carrier preserves all geometry/text and passes both modes.
+
+An auxiliary local fault-area field incorrectly reports zero after its live
+KLayout geometry view is mutated. The whole-tile XOR checks remain correct.
+Separate saved-GDS readback records local/whole-tile areas of 0.008/0.256 µm²
+for the open, 0.012/0.384 µm² for the bridge and 0.039/1.248 µm² for the missing
+gate. Original receipts and this explicit correction are both retained.
+
+Four bounded offline invocations cost **86.455 CAD seconds**, including
+cleanup, with 52 native LVS comparisons. Final audit verifies **4,577 unique
+source/artifact files**, identical packaged recipes, the causal replay and
+container absence. Campaign total: **8,390.384 seconds / 139.84 minutes**.
+Three A routes remain used and two B routes reserved; chip, macro inputs and
+installed PDK remain unchanged. All work remains local.
+
+Next resolve whether the exact supplied views intentionally use different
+width conventions or contain an inconsistent reference. An accepted correction
+or interpretation needs source provenance and retained fault sensitivity.
+Remaining array/control contexts, macro wiring, Magic diagnostics, fast views,
+timed refinement, accepted A/B and clean-source replay remain open.
+
+Manifest: `physical/experiments/sram-tile-results.json`, SHA-256
+`35861d73053e38124b63369065d86768030d663b8838e553dacab012fc58cc32`.
+
+## 2026-09-27 — SRAM provenance and explicit component trust
+
+The [provenance study](../physical/sram-trust-results.md) verifies all seven
+actual SRAM views and the shared behavioral dependency against the complete
+pinned PDK tree. CMOS5L explicitly aliases the SG13G2 SRAM library. Direct
+measurement of the original 2023 GDS/CDL reproduces the 0.200/0.260 µm width
+split; it is not caused by mixing our view versions. Twenty-six public source
+captures retain the reference configuration/history and upstream discussions.
+The exact interpretation remains undocumented in the inspected material.
+
+The first native abstraction probe refuses before extraction because DEF is a
+required Step input. The second supplies the retained DEF to the unchanged
+GDS-selected native script: 47 cell names match the reference regex, and the
+macro becomes an empty 351-terminal definition. Twenty-three overlaps and 518
+conversion diagnostics remain. The one-instance native boundary comparison
+matches, rejects signal-to-ground and ground-to-power faults, and still matches
+when an internal width edit is projected away. This measures interface coverage
+and its internal blind spot; it does not repair extraction or qualify the macro.
+
+The source-audit parser initially selected both historical one-port/two-port
+bit cells and refused; the correction selects the exact one-port definition.
+A guessed upstream README fetch returned 404; the actual pinned doc is captured
+separately. Both failures remain recorded. The independent audit verifies
+3,867 frozen input/artifact paths and revalidates prior actual-chip boundary
+and geometry receipts. No chip/PDK modification or additional full route occurs.
+
+Three bounded offline invocations cost **21.779 CAD seconds**, bringing the
+campaign to **8,412.163 seconds / 140.20 minutes**. The
+[manifest](../../physical/experiments/sram-trust-results.json) SHA-256 is
+`5f1d0fab527f89ac88ee8f0873a78f6769d128421724909d18488452cc1d303e`.
+It binds 232 local raw files, the source audit, exact controls and proposed
+component contract. Receipted containers are absent and source hashes unchanged.
+
+The [maintainer report](../physical/sram-maintainer-report.md) is prepared and
+unsent. Current work separates conditional paired formal correspondence from
+exact-version physical component qualification. The contract is a proposal,
+with no new Lean axiom or production admission change. Internal signoff, fast
+compatibility, timed refinement, accepted A/B and clean-source replay remain
+open; [status](status.md) owns the next work.
+
+## 2026-09-27 — Conditional paired graph and package correspondence
+
+The [formal continuation](../storage/paired-formal-correspondence.md) proves
+the actual shared graph constructor preserves next-state and observation
+semantics. Both 45-node binding lists establish their equations; the seven
+upstream premises of the isolated-validation proof are now discharged from the
+graph. The retained variant agrees with the original paired controller for
+arbitrary input and register valuations.
+
+The existing sampler, serial receiver, pin map and result observer compose with
+that interpretation. The single-port memory contract explicitly distinguishes
+idle, enabled reads and writes. It starts with arbitrary contents/Q and tracks
+known words through a partial model. Legal package read/write modes and
+preservation of every previously active SRAM word are proved. Given the memory
+law as an explicit parameter, every finite package input history has equal
+before/after-edge observations in the retained typed package and graph model.
+
+This is not yet E64 execution correspondence: accepted-upload coverage,
+committed-image agreement and the controller's timed dispatch/capture/wait
+invariants remain open. No global memory axiom, physical waiver or admission
+change is introduced. The proposed SRAM contract and prior physical receipts
+are unchanged; this continuation has its own source freeze.
+
+The default library build and reachability check pass for 212 modules. The
+whole-library audit covers **15,843 declarations / 8,001 theorems** with only
+standard axioms, and the injected-axiom control rejects. Nine kernel examples,
+both actual constructor witnesses, four existing invalid-graph controls and the
+separate schedule proof pass. An executable check binds the proved package to
+the emitter. Fresh core/package MLIR and interface metadata match the retained
+mapping artifacts exactly. The full protocol executable suite was not rerun.
+
+The `paired-formal-01` receipt takes **9.191 seconds**, with **zero CAD calls**.
+Its UTC timestamp is September 28, still September 27 in America/New_York.
+Campaign CAD usage remains **8,412.163 seconds**; three A routes are used and
+two B routes reserved. All work is local.
+
+Manifest: `physical/experiments/paired-formal-results.json`, SHA-256
+`0bae814be784cafb2b238f66dcb5aef42fdee8f773b13ddeb25daef93358df39`.
+Full report: `build/validation/paired-formal-01/report.json`, SHA-256
+`454a717d470c0c178c81bd056220a6abcab89d4c30317d0145301024d750a92b`.
+
+## 2026-09-28 — Accepted uploads establish the paired resident image
+
+The [upload gate](../storage/paired-upload-coverage.md) closes the first two
+obligations from the graph/package checkpoint. `PairedLoader` tracks a
+mathematical ledger of accepted words for the 290-word protocol. `PairedUpload`
+proves the actual graph's acceptance, commit, control and storage updates agree
+with that protocol. `PairedCoverage` carries the invariant through arbitrary
+decoded-command histories after initialization and transfers it to the retained
+typed controller under the explicit SRAM contract.
+
+A valid active bank now matches a complete transcript: all 32 parameter words,
+256 SRAM rows, boot token and idle configuration. The image checker binds its
+E64 certificate to those actual stored values. Every write preserves the old
+active bank, including parameters and metadata. Enabled reads of a valid image
+return the loaded row for the token installed on the edge. Initial register
+values, contents and Q remain arbitrary; initialization invalidates ownership
+without requiring physical memory to clear. The ledger adds no hardware state.
+
+The first `paired-upload-01` attempt built but correctly failed the whole-library
+axiom audit: `bv_decide` introduced a compiled-check assumption in a control
+proof. The failed receipt retains its original source hashes and diagnostics.
+The proofs were rewritten using finite cases, bit-vector lemmas and arithmetic;
+the audit policy and memory premise were not weakened. The passing attempt has
+its own source freeze.
+
+The `paired-upload-02` receipt passes in **26.192 seconds**. The full library
+build and import check cover **215 reachable modules**; the audit checks
+**16,152 declarations / 8,219 theorems** with only standard Lean axioms. An
+injected axiom still rejects. The previous nine contract/ordering examples,
+both core constructor witnesses, four invalid-graph controls and schedule proof
+pass. New retained-controller executions cover two complete images, every
+storage slot, invalid words in each region, short/extra/busy commands, abort,
+both reset forms, restart, replacement, reinitialization, row 255 and old-Q
+dispatch. The full protocol executable suite was not rerun.
+
+Fresh core/package MLIR and interface metadata are byte-identical to the
+retained mapping artifacts. All 233 passing-run source inputs, 14 artifacts and
+three failed-run artifacts retain their recorded hashes. The previous formal
+manifest, proposed memory contract, chip and installed PDK are unchanged. There
+are **zero CAD calls**; campaign usage remains **8,412.163 seconds**, with three
+A routes used and two B routes reserved. All work is local.
+
+The next gate is a running-state invariant for usable Q, the current token and
+cached parameters on every edge, followed by timed dispatch/capture/guard/wait
+and terminal behavior. It must then compose with package and host-delivery
+conditions. The enabled-read theorem alone does not establish that full timing
+claim. Physical SRAM qualification, compatible fast timing, accepted A/B and
+clean-source physical replay remain open; [status](status.md) owns the current
+decision.
+
+Manifest: `physical/experiments/paired-upload-results.json`, SHA-256
+`cfba577201e3dc6e4ef8c410d8b688c53ede047c64dd4cee73ba418e8f494b7a`.
+Passing report: `build/validation/paired-upload-02/report.json`, SHA-256
+`346e7746ba6d1996831cdfe5d3cfea4668cbb146c4c85c92d194864ac2b9256e`.
+Failed report: `build/validation/paired-upload-01/report.json`, SHA-256
+`0603017efec8d4784b9046260482a254df7540336bcf2ced945d61a6f0034dba`.
+
+## 2026-09-28 — Running instructions own their parameters and SRAM responses
+
+The [running-state gate](../storage/paired-runtime-ownership.md) closes the
+next invariant in the timed execution plan. `PairedRunning` proves validity,
+parameter lookup, response ownership and current-token provenance from the
+actual graph equations. `PairedRuntime` combines that invariant with upload
+coverage for every finite initialized decoded-command history and transfers it
+to the retained typed controller under the explicit SRAM behavior law. Prior
+registers, memory contents and Q remain arbitrary; no global axiom or hardware
+state is added.
+
+The graph requests a read on **every edge whose resulting state is running**.
+Countdown and blocked-wait edges refresh the same current row. An instruction
+transition consumes old Q and refreshes Q for the new token; stopped states may
+hold stale Q. This resolves the earlier concern about Q availability across
+running hold cycles. With a certificate for the active accepted transcript,
+the current token denotes its canonical source instruction. Actual dispatch
+installs the certified successor selected by the actual branch wire.
+
+The `paired-runtime-01` receipt passes in **62.091 seconds**. Its build/import
+check covers **217 modules** and whole-library audit checks **16,268 declarations
+/ 8,328 theorems**, using only standard Lean axioms. An injected axiom rejects.
+Previous graph/package witnesses, memory/ordering examples, upload controls,
+invalid-graph controls and schedule proof pass. New retained-core controls load
+a certified image into both banks and compare **100 edges / 82 running edges**
+with the independent E64 reference. Six paths cover captures, wait and
+qualification success/timeouts, guard failure, both branch outcomes, an invalid
+target, halt, ignored busy commands, reset and restart. Stale-Q, parameter and
+invalid-token mutations reject in both banks. These finite tests do not replace
+the remaining universal timing proof.
+
+Fresh core/package MLIR and interface metadata remain byte-identical to the
+retained mapping artifacts. The report freezes **236 source inputs / 15
+artifacts**; prior reports and manifests retain their own source freezes.
+The proposed memory contract and chip are unchanged. There are **zero CAD
+calls**; campaign usage remains **8,412.163 seconds**, with three A routes used
+and two B routes reserved. The full protocol executable suite was not rerun.
+All work remains local.
+
+**Next:** prove timed control and observations from the E64 reference. The
+current successor theorem uses an actual entry edge and actual branch wire;
+derive those from capture, guard, countdown, wait and qualification behavior,
+then prove the mode/counter/sample/pin relation through start, terminal and
+reset. Package and qualified host delivery must then compose. Physical SRAM
+qualification, compatible fast timing, accepted A/B and clean-source replay
+remain open; [status](status.md) owns the next decision.
+
+Manifest: `physical/experiments/paired-runtime-results.json`, SHA-256
+`7a54e8b94aab65c43d999c1d794e66db0ac24f00788d6692dabe403e5f4f2634`.
+Report: `build/validation/paired-runtime-01/report.json`, SHA-256
+`bbe831bf9085d67ab519dcda708e482240b0b92cb15d7e5c454391a300414238`.
+
+## 2026-09-28 — Retained paired execution agrees with E64 on every segment edge
+
+The [timed execution gate](../storage/paired-timed-execution.md) closes the
+control and observation obligation left by running-state ownership. The proof
+derives actual dispatch, guard, wait and qualification decisions and interprets
+the resulting counters, captures and pin commands. Checked branching uses the
+terminal capture before successor entry capture, including when both captures
+write the same slot. Deadline success, guard priority, qualification retries,
+maximum-width counters, start, reset and terminal idle commands follow E64.
+
+`PairedTimed.retained_trace` compares the retained controller's actual public
+execution outputs before and after every edge. `initialized_segment` connects
+this result to arbitrary power-up registers, SRAM contents and Q, through
+initialization, an arbitrary upload history, active validity and an independent
+certificate for the actual accepted transcript. A real reset establishes the
+initial execution relation. The subsequent finite history may contain any
+inputs with `init = 0` and `command != 3`; program replacement begins another
+certified segment. Loops need not terminate. The SRAM law remains an explicit
+parameter, with no free graph-wire premise or new global axiom.
+
+The `paired-timed-02` receipt passes in **123.265 seconds**. The full build and
+import check cover **226 modules**; the audit checks **16,564 declarations /
+8,585 theorems**, with standard Lean axioms only. An injected axiom rejects.
+Existing contract/ordering, exact graph/package, upload, 100-edge runtime,
+invalid-graph and schedule controls pass. New retained-output controls certify
+the actual accepted transcripts and compare **686 before/after edge pairs**
+across both banks. Six scenarios cover capture/branch/entry overwrite,
+maximum duration, zero-budget deadlines and timeouts, guard priority,
+reset/restart and repeated backward jumps. Eight live counter, pin, sample or
+capture-parameter corruptions are run through another edge and rejected.
+
+The first `paired-timed-01` receipt failed on a missing dependent type annotation
+in the new mutation-test harness; its library build and axiom audit passed.
+The corrected test has a new source freeze. Both receipts are retained; no
+proof premise, memory contract or audit policy was weakened.
+
+Fresh core/package MLIR and interface metadata remain byte-identical to the
+retained mapping artifacts. The passing report freezes **246 source inputs /
+16 artifacts**. Fourteen existing graph-wire lemmas were made public without
+changing their statements or proofs: reversing only those visibility edits
+reconstructs the prior source hash. The predecessor runtime manifest/report and
+component proposal remain unchanged. All work is local, with **zero CAD calls**;
+campaign usage remains **8,412.163 seconds**, three A routes used and two B
+routes reserved. The full protocol executable suite was not rerun.
+
+**Next:** compose this execution theorem with the actual package adapters,
+result observer and qualified host delivery. Establish the relation at the
+existing commit/start boundary without relying on an additional reset, and
+account for certified replacement between segments. Physical SRAM qualification,
+compatible fast timing, RTL/source-to-GDS correctness, accepted A/B and clean
+physical replay remain separate. [Status](status.md) owns that decision.
+
+Manifest: `physical/experiments/paired-timed-results.json`, SHA-256
+`fe7aceef2e9bad1e55213355c07e5e92c114d77233db1410a078c2056e419b8c`.
+Passing report: `build/validation/paired-timed-02/report.json`, SHA-256
+`af8df88415148d29b4395675457234accdaf619c6fbdb6a4f77de71e1b5cb5b5`.
+Failed report: `build/validation/paired-timed-01/report.json`, SHA-256
+`9d7218ba6553ed28cd476c2a610109bf9bba456b0910a9639d4501d379ea003e`.
+
+## 2026-09-28 — Accepted commit starts E64 through the actual package and mailbox
+
+The [package and host lifecycle gate](../storage/paired-host-lifecycle.md)
+connects the prior timed-core proof to the retained paired package. Accepted
+commit clears execution mode/counters/samples and selects the new certified
+image's idle commands, establishing the E64 relation without an additional
+reset. `PairedPackage` interprets every actual adapter, controller/SRAM and
+mailbox edge. `PairedHost.retained_initialized_commit_segment` starts with
+arbitrary represented state, initializes through three reset-low samples,
+constructs accepted-write ownership through an arbitrary host prefix, and
+proves all three package output ports before and after each subsequent segment
+edge. The same commit boundary supports later certified replacements with an
+occupied mailbox.
+
+E64 supplies execution state and busy. Loader status and speculative read
+addresses retain their graph interpretation. `session_delivers` connects the
+existing qualified digital serial-session theorem to the command stream
+actually consumed by this package. The SRAM law remains an explicit parameter;
+no global axiom, hardware state or added cycle is introduced.
+
+The `paired-host-01` receipt passes in **199.413 seconds**, with **229 reachable
+modules**, **16,736 declarations / 8,696 theorems**, standard axioms only and
+successful rejection of the injected unapproved axiom. Existing graph/contract,
+upload, 100-edge runtime, 686-edge timed, graph-fault and schedule controls pass.
+The new actual-package test passes **794 before/after pin-edge pairs** and
+rejects **three executed mutations** of mailbox sample data, drive enables and
+page-pipeline state. It prepares two images using real accepted decoded writes,
+then drives two serial commit frames and three serial start frames. Immediate
+start, capture pages, unread retention across replacement, halt-only completion,
+overrun, consume/clear and restart pass. Full 290-word uploads are not replayed
+bit by bit by this finite test; delivery is covered by the universal theorem.
+
+Fresh core/package MLIR and assembly metadata match the retained mapping bytes.
+The report freezes **250 source inputs / 17 artifacts** and all inputs remain
+unchanged during the run. Previous timed manifest/report/proofs/test and the
+component proposal keep their recorded identities. The full protocol
+executable suite was not rerun. Work remains local, with **zero CAD calls**;
+campaign usage stays **8,412.163 seconds**, three A routes used and two B routes
+reserved. Physical qualification and acceptance are unchanged.
+
+**Next:** prove total certified-upload admission: a qualified host
+begin/290-word/commit sequence from stopped initialized state must establish the
+actual accepted transcript and commit required by this theorem. Delivery alone
+does not establish acceptance. SRAM internal qualification, compatible fast
+conditions, analog/board behavior, RTL/source-to-GDS correspondence, A/B and
+clean-source replay retain their separate gates. [Status](status.md) owns the
+next decision.
+
+Manifest: `physical/experiments/paired-host-results.json`, SHA-256
+`859aac7a2a260ed381861994d7465122293b210feca57ac90efa10ec3451f1e7`.
+Report: `build/validation/paired-host-01/report.json`, SHA-256
+`08465d6def861ef7d1dc9f04731b73a06f4d0db1a49a696cf3b3b8707192d92b`.
+
+## 2026-09-28 — Certified delivery derives actual upload acceptance
+
+The [certified upload-admission gate](../storage/paired-upload-admission.md)
+discharges the successful-upload premises of the package lifecycle theorem.
+`PairedAdmission` proves the actual word-validation decisions from the source
+certificate. `PairedSession` uses accepted-prefix ownership to establish the
+inactive parameter table after the first 32 words, then admits every row, boot
+token and idle word. A delivered begin/290-word/commit sequence necessarily
+reaches accepted commit and ready E64 state. Arbitrary quiet gaps, nonzero quiet
+data, producer-chosen parameter locations and unused noncanonical table entries
+are permitted. There is no assumed admission decision or accepted transcript.
+
+`retained_initialized_session` prepares arbitrary represented controller,
+adapter, mailbox and SRAM state with three reset-low samples and two idle
+release samples. It composes qualified serial delivery, two sampler-drain pins,
+derived admission and every subsequent package execution/observation edge.
+Commit needs no extra reset before start. The decoded/package upload theorem
+also covers replacement from any stopped initialized state. The SRAM law,
+digital `Serial.Session` and execution-segment rule (`init = 0`, `command != 3`)
+remain explicit. Loader sideband retains its graph interpretation.
+
+The `paired-admission-01` receipt passes in **235.829 seconds**. The default
+build and import check cover **231 modules**; the whole-library audit checks
+**16,808 declarations / 8,757 theorems** with standard Lean axioms only. The
+injected unapproved axiom rejects. Existing memory/graph, upload, 100-edge
+runtime, 686-pair timed, 794-pair package, graph-fault and schedule controls pass.
+The new retained-core controls take **28.409 seconds** and check two certified
+parameter permutations across both banks: **580 accepted pushes**, **168 quiet
+edges**, every stored parameter/row/metadata value, and ready E64 state directly
+after commit. Four executed refusals cover a corrupt inactive capture parameter
+and premature commit in each bank. Two canonical wrong-source guards fail the
+source certificate; these are not hardware syntax rejections. Replacement
+preserves the previous active image. The finite test does not replay a complete
+290-word upload bit by bit; qualified serial admission is proved universally.
+
+Fresh core/package MLIR and assembly metadata remain byte-identical to the
+retained mapping artifacts. The passing report freezes **253 source inputs /
+18 artifacts**, with all inputs unchanged during validation. The previous host
+manifest/report, all 26 of its proof/test sources and the component proposal
+retain their recorded identities. Root imports and the runner have a new source
+freeze. The full protocol executable suite was not rerun. All work is local,
+with **zero CAD calls**; campaign usage stays **8,412.163 seconds**, three A
+routes used and two B routes reserved. Physical acceptance is unchanged.
+
+**Next:** consolidate one reproducible acceptance report binding the actual host
+source certificate, this digital proof, retained emitted implementation and
+physical candidate by identity. Missing SRAM internal qualification, compatible
+fast operating conditions and source-to-GDS evidence must continue to refuse
+complete-chip acceptance. Resident SHIFT/KEEP, analog sampling, accepted A/B
+and clean physical replay retain their separate gates. [Status](status.md)
+owns the next decision.
+
+Manifest: `physical/experiments/paired-admission-results.json`, SHA-256
+`ab15aa2d908c26d2c7e2d617d4e92b97bb4d8377fcb6643e080743e25a63c451`.
+Report: `build/validation/paired-admission-01/report.json`, SHA-256
+`1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a`.
+
+## 2026-09-28 — One identity-bound assessment connects host, proof and physical candidate
+
+The [combined acceptance gate](implementation-acceptance.md) now provides one
+reproducible report for the exact retained A implementation. Nine pinned roots
+connect the actual host programs and certificates, conditional admission/session
+proof, retained emission, scoped mapping/physical checks, filled circuit and
+component evidence. The command creates JSON and readable Markdown and refuses
+missing, changed or disconnected evidence. A completed assessment is distinct
+from chip acceptance; `--require-accepted` returns 2 for the present open gates.
+
+The original paired host RTL is byte-identical to the baseline side of the
+validation-isolation SAT comparison. Its isolated side matches the emission
+bound by the new Lean proof. Further mapping SAT and the implemented circuit's
+own SAT receipt consume the selected balanced readback. Input identities and
+fresh structural comparisons connect the routed circuit, electrical repair and
+finishing. The repair check accounts for five noninverting buffers and one
+declared input-only protection diode bound to its receiver. Final timing is
+recomputed from metrics tied to the selected ODB/netlist/SDC/SPEF, and exact
+Liberty operating conditions are reread and joined to the inspection inputs.
+The exported-GDS SRAM boundary and proposed component views retain their own
+scope; none becomes an internal-memory proof.
+
+`design-acceptance-03` completes in **111.130 seconds**, checking **572 input
+files**, **58 evidence connections** and **eight fresh kernel certificates**.
+Every captured host program re-renders the exact retained image/upload
+certificate before the kernel checks it. The report retains **16 new artifacts**
+and confirms unchanged inputs. Its 11 requirement rows contain six scoped
+passes, one conditional digital proof and **four A blockers**: SRAM internal
+and behavioral qualification, compatible fast timing conditions,
+typed-circuit-to-RTL correspondence, and package power qualification. A, B and
+complete iteration remain unaccepted. The 64-record B change and clean-source
+physical replay remain additional iteration gates.
+
+All **17 focused tests** pass normally and under `python -OO`. The controls
+cover artifact custody, cross-candidate joins, actual consumed inputs, executed
+checks, complete requirement tables, program/certificate identity, physical
+readback corruptions, protection receiver/master restrictions, Liberty
+conditions and refusal/output behavior. The optimized controls have their own
+source and command receipt. The new report's refusal checks remain active under
+optimized Python.
+
+The earlier `design-acceptance-01` intake is retained as an invalid-evidence
+receipt (**88.518 seconds**). Its eight certificate checks passed, but the new
+consolidation replayed buffer contraction without the existing protection-diode
+check. The corrected intake includes that declared check plus direct receiver
+binding and rejection controls. The candidate, older physical checks and proof
+premises were not changed or weakened.
+
+The second intake completed with the same four blockers in **103.172 seconds**.
+A final source audit added the indirectly loaded execution grammar to the
+explicit checker freeze and historical host-source comparison. The third
+intake independently repeated all eight kernel checks and now covers 572 input
+files. Both completed assessments are retained in the manifest.
+
+The preceding proof receipt, all nine selected manifests and the SRAM proposal
+remain unchanged. The full Lean library gate is reused by source/artifact
+identity; host and final-netlist simulation, mapping SAT, physical CAD and
+extraction were not rerun. Work is local, with **zero CAD calls**, no additional
+route and no hardware edit. Campaign usage remains **8,412.163 CAD seconds**,
+three A routes used and two B routes reserved.
+
+**Next:** connect an interpretation of the exact paired emitted artifact to the
+typed circuit and session theorem, reusing the backend readback machinery.
+External component evidence, compatible timing and package power retain their
+independent qualification requirements. [Status](status.md) owns allocation.
+
+Manifest: `physical/experiments/design-acceptance-results.json`, SHA-256
+`52416347f4773313e4424694f746e35b63bc2e13d4418e98fb2c11df998b15d3`.
+Report: `build/validation/design-acceptance-03/report.json`, SHA-256
+`0dc56778c6c80f818bcc983e4e300998ea6ddc4991e05048e84b5c8bd8827226`.
+Controls: `build/validation/design-acceptance-controls-02/report.json`, SHA-256
+`a6a4d47f03f7dbb914042a813ec9b2a989e9a6bdff612ffc19aee86c9a2a2d95`.
+Failed intake: `build/validation/design-acceptance-01/report.json`, SHA-256
+`edc93b476614047048e1604a37467520b69df67350713ea22ddb4924c706b4f2`.
+
+
+## 2026-09-28 — Retained paired RTL interpretation and refreshed acceptance
+
+The [artifact-interpretation gate](../storage/paired-rtl-interpretation.md) now
+connects both exact retained emitted modules to their typed components and
+composes the package interpretation with the certified upload/E64 session
+proof. It checks all 81 controller register fields and 37 outputs, and all
+110 package register fields and seven outputs, for arbitrary represented
+state and two-state inputs. SRAM Q is independent at the component boundary;
+the complete session retains the explicit memory law and digital premises.
+
+The fresh `paired-readback-02` run passes in **315.149 seconds**: **264 frozen
+inputs**, **160 source/log artifacts**, **69 recorded validation commands**, and **1,082 local
+bit-vector equivalences**. The compiled-environment audits cover 18,645
+controller-context and 19,542 package-context theorems with standard axioms
+only; these overlap and are not a unique combined count. Both unchanged
+reimports pass. Six altered RTL artifacts fail against the original certificates
+(cursor, parameter bank, write enable, sampler, mailbox valid and package
+output); both injected-axiom controls fail as required. All seven importer
+tests pass normally and under optimized Python.
+
+During proof development, the default native-evaluation reconstruction was
+rejected by the axiom audit. The final proofs retain predicate/bit correlations
+and use explicit cursor, slice-assembly and modular-subtraction lemmas. The first
+packaged run (`paired-readback-01`) remains a failed receipt: adapting the
+already-typed package-to-core projections changed their return types, and Lean
+rejected the result. The final generator adapts only reused backend graph/link
+code. No hardware expression or proof premise was weakened.
+
+The [refreshed acceptance intake](implementation-acceptance.md) consumes the new
+interpretation and the same selected raw RTL, original formal receipt and final
+physical candidate. It completes in **80.463 seconds**, checking **740 files**,
+**75 evidence connections**, and **eight fresh host certificates**. The formal
+interpretation requirement now passes. **A remains unaccepted** with three
+blockers: exact-version SRAM internal/behavioral qualification, compatible fast
+conditions and qualified package power assumptions. All 20 acceptance tests
+pass normally and under optimized Python, including refusal of partial
+interfaces, missing session or fault checks, and physical-gate waivers.
+
+The original nine evidence roots, candidate and resource ledger are unchanged.
+Local Yosys frontend imports and untrusted Z3 proof proposals were used for
+readback; no physical-design run, hardware edit, external action or route slot
+was added. The acceptance intake itself runs no CAD. The physical campaign
+remains **8,412.163 CAD seconds**, three A routes used and two B routes reserved.
+The new v2 selection and report preserve the initial v1 four-blocker assessments.
+[Status](status.md) owns the next qualification decision.
+
+Readback manifest: `physical/experiments/paired-readback-results.json`, SHA-256
+`0be933835d54b5f543d53c4d92e0784f29d7cd3932e5e1578afed426556c1cc2`.
+Readback report: `build/validation/paired-readback-02/report.json`, SHA-256
+`666c1a75e56cc8d1a6ab598e1038338d708e5010f77d802b8c68c27d4abe16cd`.
+Acceptance selection: `physical/experiments/design-acceptance-readback-inputs.json`, SHA-256
+`13ab5917f59147e9944da5ff016eb6dd064149340164af78584ff9f037496e8e`.
+Acceptance manifest: `physical/experiments/design-acceptance-readback-results.json`, SHA-256
+`54b1ca809f61e9da33cf632861fb7de5ceab2f5e188c860924a3ecfff5fa0f19`.
+Acceptance report: `build/validation/design-acceptance-readback-01/report.json`, SHA-256
+`1adca18c69f62bcd99fea37073572e273eb44b8bd38633f587cc62a727cb911e`.
+
+Final local verification also passes the six existing backend-readback tests
+with `PYTHONPATH=scripts`, 775 local links / 116 anchors across the 11 affected
+documentation pages, and `git diff --check`. The first narrow legacy-test
+invocation lacked the scripts import path; its configured rerun passes. The
+status page retains the historical official-outline anchor used by the journal
+and competition brief. Final identity checks confirm both new report hashes and
+all 264 readback / 740 acceptance inputs remain unchanged.
+
+## 2026-09-28 — Physical qualification dependencies made concrete
+
+The user approved the bounded three-blocker assessment. The
+[study](../physical/physical-qualification-assessment.md) and
+[manifest](../../physical/experiments/physical-qualification-results.json)
+record the local inventory, public source captures and next experiment's
+admission conditions. The [read-only recipe](../../physical/fixtures/physical-qualification/README.md)
+replays the assessment without network or CAD.
+
+All six CMOS5L standard-cell libraries and all three exact-macro libraries
+match their pinned Git blobs and the captured development tree at
+`0488153564fdae82164201091e1c4375b97e61ad`. Fast temperatures remain −40°C and
+−55°C. The current unmerged lvsres proposal is no longer a draft; its 47-file
+diff retains our bit-cell widths while adding Metal1 labels inconsistent with
+the retained metal2/metal3 witnesses. The original unsent maintainer report is
+preserved; supplemental layer and fast-characterization questions are in the
+new study. No maintainer communication occurred.
+
+Pinned power-source code first uses block-pin shape nodes. The candidate DEF
+has 86 VPWR and 85 VGND shapes spanning the straps. The saved run lacks explicit
+source files and workload activity; its 9.119430 mW estimate and 0.257/0.285 mV
+rail drop/rise remain conditional observations. The next local power experiment
+needs source geometry, voltage/impedance and activity inputs tied to the timing
+voltage budget. Runtime source-node count was not newly measured.
+
+The first source-inventory audit refused a commit/tree-ID comparison. GitHub
+echoed the requested commit ID in the tree response; the corrected recipe
+reconstructs the actual root and all subtree objects before comparing against
+the commit's tree. Final inventory checks 64 files and nine libraries, and a
+fresh output is byte-identical. Earlier development inventory is retained as
+`inventory.json`; `inventory-02.json` is the complete selected assessment.
+
+This pass adds **zero CAD seconds** and no route. Campaign use remains
+**8,412.163 seconds / 140.20 minutes**. The acceptance report and its three
+blockers remain unchanged; A is unaccepted, B is not admitted, and clean-source
+physical replay remains open.
+
+Local validation passes 64 inventory input identities, 16 pre-validation
+manifest references, byte-identical replay, 723 local links / 113 anchors across
+nine affected documentation pages, and `git diff --check`. The final manifest
+also binds the validation result and its recipe. No new formal or CAD run is
+claimed by these checks.
+
+## 2026-09-29 — saved-layout power boundary and activity sensitivity
+
+Completed the [frozen power study](../physical/power-boundary-experiment.md) on
+A's unchanged filled layout. The [results](../physical/power-boundary-results.md)
+and [manifest](../../physical/experiments/power-boundary-results.json) retain
+sixteen bounded invocations and exact source, waveform and implementation IDs.
+Baseline worst rail drops reproduce exactly. Default sources resolve to
+7,912 VDD and 7,832 ground nodes; four explicit audited contacts per rail raise
+conservative combined loss from 0.541793 to 8.636490 mV. At those contacts,
+illustrative 1/10 Ω per-node resistance yields 12.634790/47.224500 mV.
+
+Three finite workloads after both banks are loaded draw 6.817498, 7.028776 and
+6.835193 mW for idle, replacement and a running branch loop. All 38,497 signal
+pins are natively annotated, with no unknown connected waveform bit. Combining
+replacement, the highest observed workload, with 10 Ω feeds gives 36.620100 mV
+conservative loss. These are static nominal sensitivities, not package
+qualification, a universal activity bound or a transient/timing result.
+
+Two failed runner setups remain recorded. The first trace set left an unwritten
+bank unknown; the second initialized both banks but its initial analysis
+annotated zero pins. Those three successful tool exits are rejected as workload
+measurements. Corrected cell-pin VCDs use the pinned reader's slash-separated
+scope and refuse incomplete annotation before interpreting power. The evidence
+audit checks 273 input identities and 220 artifacts, including all failed and
+rejected attempts. A byte-identical report replay and targeted refusal controls
+are retained with the study validation.
+
+Continuation cost is 430.957 CAD seconds; campaign cost is now 8,843.120 seconds
+of 28,800. All native containers are absent, frozen inputs are unchanged, no
+physical/PDK/Lean edit occurs, and no route is added. A remains unaccepted; B is
+not admitted. Actual parent connection geometry, supply tolerance/impedance and
+an applicable activity/voltage envelope are the next power inputs. SRAM and
+fast-condition provider questions remain unresolved and unsent.

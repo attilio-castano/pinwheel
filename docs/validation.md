@@ -73,6 +73,48 @@ pushing, verify that the committed sources match the validated sources. If code,
 tests, or validation inputs change, run the affected checks again. Documentation
 edits require link and whitespace checks.
 
+## Paired milestone before merge
+
+Run the portable checks above on the exact proposed source snapshot. The
+foundation runner builds and audits the paired library proofs, but its 32
+executable suites do not include the separate paired admission and artifact
+interpretation controls. Run those gates explicitly with fresh tags:
+
+```sh
+python3 -B scripts/check-paired-formal.py --tag merge-paired-admission \
+  --retained-manifest physical/experiments/paired-validation-mapping.json
+python3 -B scripts/check-paired-readback.py --tag merge-paired-readback
+python3 -B scripts/check-design-acceptance.py --tag merge-design-acceptance \
+  --selection physical/experiments/design-acceptance-readback-inputs.json \
+  --require-accepted
+```
+
+The admission gate checks upload, runtime, timed execution, package/host and
+certified-session controls as well as the standard-axiom audit. Supplying the
+retained manifest also checks fresh emission against the actual mapping inputs.
+The readback gate reinterprets both retained RTL modules, checks their
+correspondence in Lean, audits the generated proofs and rejects actual RTL
+corruptions. Its prerequisites include local Yosys/Z3 and the retained mapping
+and admission artifacts. See [admission](storage/paired-upload-admission.md) and
+[RTL interpretation](storage/paired-rtl-interpretation.md) for the exact scope.
+
+The final command explicitly selects the current v2 intake. Omitting
+`--selection` selects the historical v1 assessment. A completed current
+assessment returns **2**, with `status: assessed`, `A_accepted: false` and exactly
+`sram_qualification`, `timing_conditions`, and `package_power` blocked.
+Exit **1** means invalid or unavailable evidence and must not be treated as the
+expected blocked result. With `--require-accepted`, exit **0** requires accepted A;
+without it, exit 0 only means the assessment completed. See the
+[report contract](research/implementation-acceptance.md).
+
+These additional commands consume retained local artifacts; they are not a
+clean-source physical rebuild and do not rerun placement, routing or extraction.
+Preserve prior reports and manifests instead of replacing their hashes with
+fresh results. Record new validation separately, and confirm that its source
+files equal the committed files before pushing. Repository merge readiness and
+the [three physical follow-ups](physical/qualification-followups.md) are separate
+decisions; the complete A-to-B design iteration remains open.
+
 ## Hardware prerequisite order
 
 These are explicit local gates, not mandatory cloud CI jobs. The checked archives

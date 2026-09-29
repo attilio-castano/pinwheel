@@ -128,11 +128,193 @@ passes a 351-pin GDS boundary comparison and rejects deliberate signal/power
 wiring faults. All supplied macro geometry and labels survive streamout. The
 SRAM remains a schematic blackbox: two Magic overlaps, 438 conversion diagnostics
 and the independent internal LVS failure prevent final signoff. Full-flat
-controls time out within their declared limits. Next qualify a small context
-fixture for well-dependent device recognition and resistor-model correspondence;
-another chip routing attempt is not allocated. This continuation costs
+controls time out within their declared limits. That continuation costs
 **1,316.754 CAD seconds**, for **8,028.479 seconds** cumulatively. A/B, fast-view
 qualification, complete refinement and replay remain open.
+
+The [context-fixture continuation](../physical/sram-context-results.md) isolates
+the two failing cells in their complete local neighborhoods. All 64 driver
+transistors match flat; deep extraction assigns the NMOS devices to the parent.
+A dimension-preserving resistor-model translation passes the complete delay
+parent deep, with physical and dimensional fault rejection. Flat delay comparison
+still combines resistors inconsistently; the database comparison also matches a
+disconnected declared output until the explicit fixture pin-use guard rejects it.
+The later final-verdict audit corrects six database-only matches, including the
+flat driver parent and that output control: their native port checks failed.
+No further chip route is allocated. This continuation
+costs **39.179 CAD seconds**, for **8,067.658 seconds** cumulatively; acceptance
+and the remaining formal/physical gates are unchanged.
+
+The [comparison-policy qualification](../physical/sram-comparison-results.md)
+then passes all four unchanged fixtures in both modes. It binds ports from the
+original top-owned physical labels, reconciles the small netlists' hierarchy,
+preserves each dimensional resistor and guards the complete final verdict.
+Its packaged replay has ten positive comparisons, 42 defect rejections and
+eight incomplete-evidence refusals. A controlled ablation now demonstrates a
+real native pass for the disconnected-output fault when safeguards are removed.
+Six ambiguous internal dummy-net pairs per complete delay result are retained;
+devices and declared pins match. This adds **198.128 CAD seconds**, for
+**8,265.786 seconds** cumulatively.
+
+The bounded [hierarchical integration](../physical/sram-integration-results.md)
+then preserves all 351 physical ports, two matrices, 128 columns, 1,024 tiles and
+32,768 cells. Explicit name correspondence prevents comparison alignment from
+flattening the array. Scoped driver/delay expansion preserves devices and
+parameters, but eight other circuit types fail and the macro comparison is
+skipped. Both sides contain 215,806 MOS devices after preparation; that census
+does not establish wiring equivalence. The packaged replay reproduces the same
+negative result. Four invocations add **38.143 CAD seconds**, for **8,303.929
+seconds** cumulatively. Next qualify the complete 32-bit tile's ownership and
+96 metal2/metal3 resistor interpretations, then the recorded edge/control
+contexts. A passing macro positive control precedes cross-block fault tests.
+Full signoff, fast compatibility, timed refinement, accepted A/B and replay
+remain open; no additional A route or chip edit occurred.
+
+The subsequent [32-bit tile diagnostic](../physical/sram-tile-results.md)
+reconciles bounded hierarchy ownership but finds a dimensional disagreement:
+96 physical resistor markers have 0.200 µm width while source CDL declares
+0.260 µm. A separate diagnostic changes only three repeated width tokens, then
+applies the checked metal2/metal3 model translation. Both extraction modes
+match all 288 devices, 182 nets and 42 ports without ambiguity; original widths
+still fail. The packaged controls reject 42 faults, seven incomplete-evidence
+cases and 13 adapter faults. The supplied tile remains unqualified.
+
+Resolve that exact source/physical width contract before promoting the tile
+or extending its interpretation to the macro. The counterfactual pass supports
+causal diagnosis, not adoption of an unsupported reference change. Four bounded
+invocations add **86.455 CAD seconds**, for **8,390.384 seconds** cumulatively.
+No chip/installed-PDK change or additional A route occurred. Remaining contexts,
+macro wiring, fast views, timed refinement, A/B and replay retain their gates.
+
+The [provenance and trust-boundary investigation](../physical/sram-trust-results.md)
+then verifies that all seven SRAM views and the simulation dependency match the
+same pinned PDK. The source/geometry width discrepancy already exists in 2023.
+The linked reference uses macro abstraction; our native probe retains 351
+terminals but omits the macro's internal circuit and retains import diagnostics.
+A bounded boundary comparison rejects signal/power faults and deliberately
+fails to detect an internal width edit. Historical upstream commercial LVS
+evidence supplies a possible component-qualification route, not an exact-input
+certificate.
+
+The next design-iteration work separates two obligations: complete paired
+controller/loading/package correspondence under the
+[explicit memory contract](../../physical/fixtures/sram-trust/contract.json),
+and physical qualification of that supplied component in its permitted
+environment. The contract is proposed and is not a new global Lean axiom or
+production admission override. The [maintainer report](../physical/sram-maintainer-report.md)
+is ready but unsent. Conditional formal work need not wait for independent
+reverse engineering of every memory cell. Physical admission still requires
+its exact-version evidence, compatible timing corners and the existing gates.
+Three bounded invocations add **21.779 CAD seconds**, for **8,412.163 seconds**
+cumulatively; all chip and PDK inputs remain unchanged.
+
+The first [conditional correspondence gate](../storage/paired-formal-correspondence.md)
+now proves graph construction, retained validation equivalence, package adapter
+composition, legal SRAM modes and active-bank SRAM preservation. Under an
+explicit memory behavior premise, the retained typed package and the graph
+model agree before and after every clock edge. This permits arbitrary initial
+state; it does not promise E64 behavior before a qualified upload. The proof
+audit and focused checks pass, with byte-identical retained hardware IR and no
+CAD cost.
+
+On September 28, the subsequent [upload gate](../storage/paired-upload-coverage.md)
+establishes loader coverage and committed-image agreement for arbitrary decoded
+command histories after initialization. A valid bank contains the complete
+accepted transcript across all 32 parameters, 256 SRAM rows, boot and idle
+metadata; the image certificate therefore describes actual storage. Inactive
+updates preserve the prior active bank. Enabled reads return the loaded row for
+the token installed on that edge, under the same explicit SRAM law. The complete
+library audit and retained-controller controls pass with unchanged hardware IR
+and zero CAD calls. The next formal gate is usable Q and cached parameters
+through every execution edge, followed by timed E64 behavior and composition
+with the package and host-delivery conditions. Physical qualification and
+complete iteration acceptance remain open.
+
+The subsequent [running-state gate](../storage/paired-runtime-ownership.md)
+establishes current-token, cached-parameter and SRAM-response ownership for
+every initialized history, including transfer to the retained controller under
+the explicit memory law. A certified transcript identifies the running source
+instruction and the successor selected by an actual dispatch. The graph reads
+SRAM on every edge whose result is running; stopped Q may remain stale. Finite
+controls compare 100 edges with the independent E64 reference across both banks
+and reject stale-response, parameter and token corruptions. Full timed control
+refinement remains next: derive dispatch/branch decisions and preserve the
+reference's counters, samples and pin commands, then compose with package and
+host delivery. Hardware and physical acceptance are unchanged; no CAD calls.
+
+The subsequent [timed execution gate](../storage/paired-timed-execution.md)
+closes that control and observation gap for a certified program segment. Every
+before/after edge of the retained controller agrees with E64, including captures,
+branches, wait/qualification timing, counters, reset and pin commands. The
+initialized-segment theorem starts with arbitrary storage, uses the actual
+accepted transcript certificate, and establishes its initial execution relation
+with a reset. It then admits arbitrary finite histories without initialization
+or command 3. The SRAM law remains explicit. The next formal gate connects this
+result to the package, result observer and host lifecycle, including whether
+commit itself establishes the relation before start and how certified program
+replacement composes. Physical qualification and complete A/B acceptance remain
+separate; no CAD calls or hardware changes were needed.
+
+The subsequent [package/lifecycle gate](../storage/paired-host-lifecycle.md)
+closes the accepted commit/start boundary and carries E64 through the actual
+samplers, serial receiver and result observer. Three sampled reset-low edges
+initialize arbitrary state; later certified accepted commits establish the
+execution relation without another reset, including replacement with an unread
+mailbox. Qualified delivery refers to the actual consumed command stream.
+The subsequent admission gate below discharges the accepted-commit and
+staged-transcript premises for a qualified upload of a certified image. Physical
+SRAM, fast-view, source-to-GDS and A/B acceptance remain separate; no hardware
+edit or CAD call occurs.
+
+The [certified admission gate](../storage/paired-upload-admission.md) completes
+that conditional digital session: reset/release, qualified serial upload,
+accepted storage and commit, then timed E64 package observations. It derives
+validation from the source certificate and the actual installed inactive
+parameter table, with arbitrary quiet gaps. Stopped initialized replacements
+use the same argument. The next integration gate should bind the host/source
+certificate, this proof, emitted implementation and retained physical evidence
+into one reproducible acceptance report. Keep missing SRAM and compatible fast
+qualification visible as refusals; this result adds no route allocation or
+physical acceptance.
+
+The [combined acceptance report](implementation-acceptance.md) now supplies that
+integration gate. It rechecks eight concrete host certificates, binds the
+conditional proof's source and emitted artifacts, follows scoped SAT comparisons
+through mapping and the implemented circuit, and reproduces the final repair
+and finishing connections from retained readbacks. Actual timing and component
+identities are checked separately. A remains unaccepted for SRAM qualification,
+compatible fast conditions, typed-circuit-to-RTL correspondence and package power
+qualification. The next independently actionable formal gate is the paired
+artifact interpretation; the report adds no hardware change or CAD allocation.
+
+That [interpretation gate](../storage/paired-rtl-interpretation.md) is now complete
+for both retained raw RTL modules. Total component equality and session
+composition pass with standard axioms only; actual RTL faults are rejected.
+The refreshed intake retains the same candidate and advances the formal row to
+passed. SRAM qualification, compatible fast conditions and package power remain
+blocking requirements. The next useful work is to qualify those physical
+assumptions; a capacity change still requires A's acceptance gates.
+
+The bounded [physical qualification assessment](../physical/physical-qualification-assessment.md)
+now distinguishes provider dependencies from a local power experiment. Nine
+library files retain the same bytes in the captured development tree; no new
+compatible fast view is available there. The current SRAM proposal leaves the
+width discrepancy and raises a layer-annotation question. Power needs explicit
+source geometry, external impedance and activity before the saved layout can
+be evaluated against a justified voltage budget. The source/inventory replay
+adds no CAD, and all three acceptance blockers remain. Provider questions and
+the power experiment's admission/exit conditions are recorded in the study.
+
+The [power experiment](../physical/power-boundary-results.md) is now complete
+as a sensitivity study. Four audited contacts per rail raise default modeled
+loss from 0.542 to 8.636 mV; illustrative 10 Ω feeds raise it to 47.225 mV.
+Checked idle/replacement/execution traces fully annotate 38,497 signal pins.
+Replacement is highest among these observations at 7.029 mW and gives 36.620 mV
+loss with 10 Ω feeds. Rejected zero-annotation runs are preserved. Actual parent
+geometry, supply tolerance/impedance and an applicable activity/voltage envelope
+remain required. The 430.957-second continuation adds no routing attempt;
+campaign cost is 8,843.120 seconds. This advances the evaluator without waiving
+SRAM, fast-condition or package qualification.
 
 ## Outcome
 

@@ -26,10 +26,16 @@ unrestricted two-port flip-flop chip; the one-port chip cannot run this RX progr
 
 The experimental paired backend uses one 512×64 SRAM and a 290-word image.
 It also [kernel-checks each valid upload image](storage/paired-image-certificate.md)
-before sending it. Its receipt includes the concrete Lean certificates. This
-proves image/dispatch correspondence; complete timed-controller refinement and
-physical timing remain separate gates. The pinned macro models are required
-for both SRAM backends.
+before sending it. Its receipt includes the concrete Lean certificates. The
+subsequent [session proof](storage/paired-upload-admission.md) derives admission
+and timed package execution under explicit memory and digital-delivery premises.
+The [combined acceptance report](research/implementation-acceptance.md) binds the
+eight host certificates to that proof and the retained physical implementation,
+including the SAT connection between the original and validation-isolated RTL.
+The subsequent [artifact interpretation](storage/paired-rtl-interpretation.md)
+connects those exact retained RTL modules to the typed/session proof, under the
+explicit frontend and SRAM boundaries. Physical acceptance remains open. The
+pinned macro models are required for both SRAM backends.
 
 Each run retains the exact compiler output as `compiler-images.txt`; custom
 `run` inputs are captured as `program.json` before building or executing hardware.
