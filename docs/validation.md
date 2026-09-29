@@ -73,6 +73,33 @@ pushing, verify that the committed sources match the validated sources. If code,
 tests, or validation inputs change, run the affected checks again. Documentation
 edits require link and whitespace checks.
 
+## Current local iteration
+
+For the current source's emitted RTL interpretation, use:
+
+```sh
+python3 -B scripts/check-paired-readback.py --mode fresh --tag paired-source-fresh
+```
+
+This requires pinned Lean, CIRCT and Yosys/Z3, but no historical mapping or
+admission outputs. Both complete component/session proofs, standard-axiom
+audits and actual RTL corruption controls run. The new source receipt is not a
+match to the retained physical candidate. See the
+[interpretation study](storage/paired-rtl-interpretation.md).
+
+For the retained candidate, [current-A replay](research/current-a-replay.md)
+provides the dependency preflight, recoverable snapshot and current-v2 command.
+The snapshot preserves old sources and receipts even when current checker code
+changes. A completed assessment still returns 2 with three physical blockers;
+missing or inconsistent evidence returns 1. Expensive physical evidence is
+explicitly reused.
+
+The [package-power contract](physical/package-power-contract.md) is a checked
+analysis request tied to the saved candidate. It identifies missing parent and
+provider inputs and the finite traces' coverage. Request readiness does not
+qualify power or accept A. The [local continuation](research/local-iteration-continuation.md)
+records scope and completion criteria; no new CAD allocation is involved.
+
 ## Paired milestone before merge
 
 Run the portable checks above on the exact proposed source snapshot. The

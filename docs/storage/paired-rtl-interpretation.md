@@ -74,6 +74,43 @@ acceptance report.
 
 ## Reproduce and inspect
 
+To check the current source without historical experiment outputs, use the
+fresh-emission mode with the pinned Lean, CIRCT and Yosys/Z3 tools from
+[development setup](../development.md):
+
+```sh
+python3 -B scripts/check-paired-readback.py --mode fresh --tag paired-source-fresh
+```
+
+This mode emits both current typed modules, lowers their MLIR to raw RTL, then
+runs the same complete component/session proofs, compiled-environment axiom
+audits, unchanged reimports and six actual RTL corruption controls. It freezes
+the current Lean source, checker dependencies, tool binaries and all five newly
+emitted artifacts. It requires no saved mapping/admission reports, physical
+candidate, SRAM simulation model or Liberty library. It does not rerun the
+separate admission executable suite; the session composition compiles its proof
+dependencies as part of the library and generated interpretation.
+
+The fresh receipt uses schema 2, `mode: fresh` and
+`retained_identity_checked: false`. It records `emitted_artifacts` rather than a
+historical candidate match. The historical acceptance intake requires its
+retained evidence and cannot consume this source-only receipt as candidate
+qualification. Fresh-source interpretation and clean-source physical replay
+remain different gates.
+
+The September 29 `paired-source-readback-01` run passes in **475.265 seconds**
+from the current source and recovered pinned tools, without any historical
+mapping or admission receipt. It freezes **252 unchanged inputs** and records
+**72 commands / 160 artifacts**, with the same **1,082 local equalities** and
+**18,645 / 19,542 audited theorems** for the core and package/session environments.
+Both unchanged reimports pass; all six RTL corruptions and two injected axioms
+reject. The nine Python controls pass normally and under optimization.
+Its local receipt is `build/validation/paired-source-readback-01/report.json`,
+SHA-256 `e98d86f7dce0c5d2c0722166b638a942291517232b73fc24468b0b62012bea79`.
+It adds no route attempt and does not advance A's three physical requirements.
+
+The default remains `--mode retained`, preserving the exact-candidate check:
+
 Use the pinned Lean toolchain and the local Yosys/Z3 tools in
 `build/tools/oss-cad-suite/bin/`. The retained mapping and admission artifacts
 must be present. Every run requires a fresh tag:
@@ -83,7 +120,7 @@ python3 scripts/check-paired-readback.py --tag paired-readback-fresh
 python3 -m unittest discover -s test -p test_paired_readback.py -v
 ```
 
-The runner freezes sources, tool binaries and selected artifacts; checks fresh
+The retained runner freezes sources, tool binaries and selected artifacts; checks fresh
 emission identity; regenerates and compiles both interpretations; audits their
 axioms; and composes the package session theorem. Its receipt retains command
 logs, generated proof sources, exact input hashes and negative fixtures. A
@@ -97,7 +134,9 @@ output. Each must fail when given the original checked certificate. Unchanged
 reimports of both modules must pass. Injected axioms must fail both audits.
 Python controls also delete every register and output independently and test
 invalid clocks, state, memory, interface metadata and hint shapes, including
-execution with Python optimization enabled.
+execution with Python optimization enabled. New intake controls require every
+current proof dependency in fresh mode and reject changed retained proofs or any
+of the five historical artifacts in retained mode.
 
 The first packaged run, `build/validation/paired-readback-01/report.json`, is
 retained as a failure: a broad interface adaptation incorrectly changed the

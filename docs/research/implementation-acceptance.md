@@ -52,7 +52,12 @@ The interpretation receipt supplies the two additional compiled-environment
 audits and actual RTL fault controls; its sources, tools and artifacts are also
 checked. These earlier proofs are consumed by identity, not rerun by this intake.
 Referenced build outputs and external worktree library files must be present;
-missing dependencies are refused. This is not a clean-source physical replay.
+missing dependencies are refused. The subsequent
+[current-A recovery workflow](current-a-replay.md) inventories every dependency,
+preserves the original checker/source bytes and relocates exact retained inputs
+into a movable bundle. It uses this v2 selection explicitly and freshly checks
+the eight certificates; physical observations remain retained reuse. This is
+not a clean-source physical replay.
 
 ## The connection that the report checks
 

@@ -14,6 +14,7 @@ or interrupted work.
 
 | Topic | Entry points |
 | --- | --- |
+| Local iteration and retained replay | [Portable A, fresh-source interpretation and power request](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request) |
 | Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
 | Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
@@ -5661,3 +5662,63 @@ physical/PDK/Lean edit occurs, and no route is added. A remains unaccepted; B is
 not admitted. Actual parent connection geometry, supply tolerance/impedance and
 an applicable activity/voltage envelope are the next power inputs. SRAM and
 fast-condition provider questions remain unresolved and unsent.
+
+## 2026-09-29 — portable A, fresh-source interpretation and power request
+
+Completed the authorized [local continuation](local-iteration-continuation.md)
+from merged source `727525954dd170cc41279acdf99aecaa35493e87` on local branch
+`codex/portable-paired-iteration`. The
+[manifest](../../physical/experiments/local-iteration-results.json) binds new
+checker/test sources and all decisive receipts. Original acceptance and
+physical-study manifests are unchanged; no external publication occurred.
+
+The retained source had dangling tool/PDK links after an earlier worktree's
+retirement. Pinned official archives and five standard-cell files were recovered
+locally with exact historical hashes. Complete preflight recovered **749 files /
+602,275,665 bytes**; a preliminary 742-file inventory remains recorded. The final
+bundle moved from `build/retained/` to `build/portable/` before replay. The first
+replay compiled its snapshot but refused an absolute own-root receipt reference;
+the failed `current-a-portable-01` output is retained. The correction derives the
+original root from eight commands in the pinned saved assessment, allows only
+indexed lookups and changes no receipt/inventory bytes.
+
+The corrected `current-a-portable-02` receipt SHA-256 is
+`b9896d8699dccd92c11fb5c6448395531e422e815486922c3a5b2ead24f83bad`.
+All 247 current design/format pins match the snapshot; its build invocation
+reuses the first run's `.lake` cache. **Eight fresh kernel certificates** pass.
+The detailed preserved-checker assessment verifies 740 inputs in **103.385 s**,
+returning exactly SRAM qualification, timing conditions and package power as
+blockers. Every bundle input remains unchanged. This demonstrates local
+assessment portability with retained physical observations, not a physical rerun.
+
+Fresh-source interpretation independently emits both modules and passes
+**1,082 local equalities**, the complete session proof and standard-axiom
+audits in **475.265 s**. Both unchanged reimports pass; six actual RTL corruptions
+and two axiom injections reject. All 252 frozen inputs remain unchanged. Its
+schema-2 receipt SHA-256 is
+`e98d86f7dce0c5d2c0722166b638a942291517232b73fc24468b0b62012bea79`;
+it makes no retained-candidate identity claim.
+
+The power request verifies all 14 retained references from both the surviving
+source and recovered local support with identical assessments. Thirteen files
+are copied read-only; the unchanged tracked power manifest supplies the final
+reference. `package-power-request-02.json` SHA-256 is
+`a840316d0af9f8c7a80b8c128da486ad2c3f2fbff5e958ca9e25ca1c85926276`.
+Exactly eight absent input classes remain explicit; request readiness and
+qualification stay false. Three finite activity summaries are reused; no
+waveform simulation or native power analysis is added.
+
+The current clean Lean build passes **233 jobs**. Before the alias correction,
+the Python suite passed 596 tests with two skips; final regression passes
+**599 total / 597 passed / two platform skips**, with all **46 focused optimized
+controls** passing. The final regression receipt SHA-256 is
+`9ff54f8c90e16b7b3e864f9ce2134963ff61059683a062d17c9721e17e43d36c`.
+Independent final read-only review found no actionable alias/wrapper finding.
+The owning studies record commands and limits. Ignored bundles and receipts
+remain local dependencies, not durable remote backups.
+
+This continuation adds **zero CAD seconds and zero routes**. Campaign use
+remains **8,843.120 seconds**, with three A routes used and two B routes reserved.
+A remains unaccepted, B unadmitted and the complete iteration unfinished.
+The next local work is a declared activity domain and supported bound; component
+qualification and actual integration-source inputs remain external gates.

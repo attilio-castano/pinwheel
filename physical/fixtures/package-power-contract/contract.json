@@ -1,0 +1,138 @@
+{
+  "schema": 1,
+  "purpose": "analysis_request_only",
+  "source_manifest": {
+    "path": "physical/experiments/power-boundary-results.json",
+    "sha256": "c89b22d6e58e16db04ef4487fc4f4fa667dc873679793b752de86d97a618ab8c"
+  },
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    },
+    "readback": {
+      "path": "build/validation/chip-finalization-01/final-check/final.json",
+      "sha256": "c1d53d32e0454c5455b0e16f7a0c9e12dda44c4abc3bfec17de36df2130d3197"
+    },
+    "readback_receipt": {
+      "path": "build/validation/chip-finalization-01/final-check/report.json",
+      "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+    }
+  },
+  "clock": {
+    "period_ns": 20
+  },
+  "rails": [
+    "VPWR",
+    "VGND"
+  ],
+  "finite_workloads": [
+    {
+      "mode": "clocked_idle",
+      "case": "activity-idle-02",
+      "cycles": 8192,
+      "duration_ns": 163840,
+      "claim": "finite_zero_delay_observation"
+    },
+    {
+      "mode": "replacement_upload",
+      "case": "activity-replacement-02",
+      "cycles": 63656,
+      "duration_ns": 1273120,
+      "claim": "finite_zero_delay_observation"
+    },
+    {
+      "mode": "execution",
+      "case": "activity-execution-02",
+      "cycles": 8192,
+      "duration_ns": 163840,
+      "claim": "finite_zero_delay_observation"
+    }
+  ],
+  "requirements": {
+    "parent_geometry": {
+      "owner": "parent_chip_integrator",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Do not substitute diagnostic four-contact squares for actual parent contacts; both rails need a geometry binding."
+    },
+    "source_voltage": {
+      "owner": "parent_chip_or_package_integrator",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Do not use nominal voltage or zero tolerance as an actual source guarantee."
+    },
+    "external_impedance": {
+      "owner": "parent_chip_or_package_integrator",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Do not adopt illustrative 1/10 ohm cases or omit the return path; RLC requires a separate transient model."
+    },
+    "operating_envelope": {
+      "owner": "pinwheel_and_integrator",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Declare supported temperatures, legal program/input domain and retained 20 ns clock before interpreting power as an operating bound."
+    },
+    "activity_envelope": {
+      "owner": "pinwheel_and_component_provider",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Three finite zero-delay traces are observations; require applicable program/mode, physical-glitch and macro-energy coverage."
+    },
+    "supported_local_supply": {
+      "owner": "logic_and_sram_library_provider",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Obtain exact-version logic/SRAM support including compatible fast conditions or an applicable bound; do not rename a corner."
+    },
+    "transient_allowance": {
+      "owner": "parent_chip_or_package_integrator",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "An explicit loss allowance and justified scope are required; a zero value needs evidence and is not implied by static IR."
+    },
+    "analysis_conditions": {
+      "owner": "pinwheel_and_component_provider",
+      "status": "missing",
+      "value": null,
+      "evidence": null,
+      "stop_condition": "Evaluate source-minimum conditions; nominal 1.2 V losses cannot establish 1.08 V slow-corner headroom."
+    }
+  }
+}

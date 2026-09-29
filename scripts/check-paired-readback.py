@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Interpret retained paired RTL and kernel-check its typed/session meaning."""
+"""Interpret retained or freshly emitted paired RTL and kernel-check its meaning."""
 import argparse
 from datetime import datetime, timezone
 import json
@@ -14,6 +14,69 @@ from validation_run import Commands, fresh_directory, sha
 ROOT = Path(__file__).resolve().parents[1]
 YOSYS = ROOT / 'build/tools/oss-cad-suite/bin/yosys'
 SOLVER = ROOT / 'build/tools/oss-cad-suite/bin/z3'
+CIRCT = ROOT / 'build/tools/firtool-1.159.0/bin/circt-opt'
+
+
+def current_sources():
+    """Freeze every proof dependency and the code used by a source-only run."""
+    return [ROOT / 'Pinwheel.lean', *sorted((ROOT / 'Pinwheel').rglob('*.lean')),
+            *[ROOT / name for name in [
+                'lean-toolchain', 'lakefile.toml', 'lake-manifest.json',
+                'tools/hardware-toolchain.json', 'scripts/check-paired-readback.py',
+                'scripts/paired_readback.py', 'scripts/backend_readback.py',
+                'scripts/validation_run.py', 'scripts/process_group.py',
+                'test/PairedValidationEmit.lean', 'test/PairedReadback.lean',
+                'test/ProofAudit.lean', 'test/test_paired_readback.py']]]
+
+
+def select_artifacts(mode, out, retain):
+    """Fresh mode has no dependency on a historical report or generated artifact."""
+    if mode == 'fresh':
+        for path in current_sources():
+            retain(path)
+        return out / 'emitted', {}, {}
+    if mode != 'retained':
+        raise ValueError('Unknown paired readback mode')
+    mapping_path = retain('physical/experiments/paired-validation-mapping.json')
+    mapping = pr.read_json(mapping_path)
+    mapping_report_path = retain(mapping['report'], mapping['report_sha256'])
+    mapping_report = pr.read_json(mapping_report_path)
+    formal_path = retain('physical/experiments/paired-admission-results.json')
+    formal = pr.read_json(formal_path)
+    formal_report_path = retain(formal['report']['path'], formal['report']['sha256'])
+    formal_report = pr.read_json(formal_report_path)
+    if mapping['implementation'] != 'PairedValidation' or any(
+            x['status'] != 'passed' for x in [mapping, mapping_report, formal_report]):
+        raise ValueError('Expected passing retained mapping and formal reports')
+    for path, digest in formal_report['source_sha256'].items():
+        retain(path, digest)
+    for name in ['scripts/check-paired-readback.py', 'scripts/paired_readback.py',
+                 'scripts/backend_readback.py', 'test/PairedReadback.lean',
+                 'test/test_paired_readback.py']:
+        retain(name)
+    artifacts = {}
+    retained = out / 'retained'
+    retained.mkdir()
+    for name in ['core.mlir', 'chip.mlir', 'core.sv', 'chip.sv', 'assembly.json']:
+        path = mapping_report_path.parent / name
+        key = str(path.relative_to(ROOT))
+        retain(key, mapping_report['artifact_sha256'][key])
+        (retained / name).write_bytes(path.read_bytes())
+        artifacts[name] = {'path': key, 'sha256': sha(path)}
+    return retained, artifacts, {
+        'path': str(formal_path.relative_to(ROOT)), 'sha256': sha(formal_path)}
+
+
+def fresh_rtl(run, emitted, retain):
+    """Lower current MLIR, retaining the exact raw bytes interpreted by Lean."""
+    for kind in ['core', 'chip']:
+        text = run([CIRCT, emitted / (kind + '.mlir'), '--canonicalize',
+                    '--lower-seq-to-sv', '--lower-hw-to-sv', '--hw-legalize-modules',
+                    '--export-verilog', '-o', '/dev/null'], kind + '-export')
+        (emitted / (kind + '.sv')).write_text(text)
+    return {name: {'path': str((emitted / name).relative_to(ROOT)),
+                   'sha256': sha(retain(emitted / name))}
+            for name in ['core.mlir', 'chip.mlir', 'core.sv', 'chip.sv', 'assembly.json']}
 
 
 class ScopedCommands(Commands):
@@ -136,13 +199,19 @@ end Pinwheel.Artifact.Paired
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--mode', choices=['retained', 'fresh'], default='retained',
+                        help='Retained candidate identity (default), or current source with no historical artifacts')
     args = parser.parse_args()
     out = fresh_directory(ROOT / 'build/validation', args.tag)
     run = ScopedCommands(ROOT, out, default_timeout=600)
     started = time.monotonic()
-    report = dict(schema=1, status='running', date=datetime.now(timezone.utc).isoformat(),
+    report = dict(schema=1 if args.mode == 'retained' else 2, mode=args.mode,
+        status='running', date=datetime.now(timezone.utc).isoformat(),
         commands=run.records, modules={}, placement_or_routing=False,
-        scope='Exact retained raw controller and package RTL; all represented state and inputs; '
+        cad_seconds=0, retained_identity_checked=False,
+        scope=('Exact retained raw controller and package RTL; ' if args.mode == 'retained' else
+               'Fresh source-emitted raw controller and package RTL; no retained physical candidate identity; ') +
+              'all represented state and inputs; '
               'two-state positive-edge semantics. SRAM response is an independent input. '
               'Certified serial upload and E64 execution remain conditional on the explicit SRAM '
               'law, reset/release, digital delivery and execution-segment premises.')
@@ -155,59 +224,46 @@ def main():
         inputs[str(path.relative_to(ROOT))] = digest
         return path
     try:
-        mapping_path = retain('physical/experiments/paired-validation-mapping.json')
-        mapping = pr.read_json(mapping_path)
-        mapping_report_path = retain(mapping['report'], mapping['report_sha256'])
-        mapping_report = pr.read_json(mapping_report_path)
-        formal_path = retain('physical/experiments/paired-admission-results.json')
-        formal = pr.read_json(formal_path)
-        formal_report_path = retain(formal['report']['path'], formal['report']['sha256'])
-        formal_report = pr.read_json(formal_report_path)
-        if mapping['implementation'] != 'PairedValidation' or any(
-                x['status'] != 'passed' for x in [mapping, mapping_report, formal_report]):
-            raise ValueError('Expected passing retained mapping and formal reports')
-        for path, digest in formal_report['source_sha256'].items():
-            retain(path, digest)
-        for name in ['scripts/check-paired-readback.py', 'scripts/paired_readback.py',
-                     'scripts/backend_readback.py', 'test/PairedReadback.lean',
-                     'test/test_paired_readback.py']:
-            retain(name)
-        artifacts = {}
-        retained = out / 'retained'
-        retained.mkdir()
-        for name in ['core.mlir', 'chip.mlir', 'core.sv', 'chip.sv', 'assembly.json']:
-            path = mapping_report_path.parent / name
-            key = str(path.relative_to(ROOT))
-            retain(key, mapping_report['artifact_sha256'][key])
-            (retained / name).write_bytes(path.read_bytes())
-            artifacts[name] = {'path': key, 'sha256': inputs[key]}
-        report.update(source_sha256=inputs, retained_artifacts=artifacts,
-            previous_gate={'path': str(formal_path.relative_to(ROOT)), 'sha256': sha(formal_path)},
-            tools_sha256={str(p.relative_to(ROOT)): sha(p) for p in [YOSYS, SOLVER]})
-        for path in [YOSYS, SOLVER]:
+        selected, artifacts, previous_gate = select_artifacts(args.mode, out, retain)
+        tools = [YOSYS, SOLVER] + ([CIRCT] if args.mode == 'fresh' else [])
+        report.update(source_sha256=inputs,
+            tools_sha256={str(p.relative_to(ROOT)): sha(p) for p in tools})
+        if args.mode == 'retained':
+            report.update(retained_artifacts=artifacts, previous_gate=previous_gate)
+        for path in tools:
             retain(path)
         run(['lake', 'build'], 'build')
         report['lean'] = run(['lake', 'env', 'lean', '--version'], 'lean-version').strip()
         run([YOSYS, '-V'], 'yosys-version')
         run([SOLVER, '-version'], 'z3-version')
+        if args.mode == 'fresh':
+            expected = (ROOT / 'lean-toolchain').read_text().strip().split(':v')[-1]
+            if not re.search(r'Lean \(version ' + re.escape(expected) + r'(?:,|\s)', report['lean']):
+                raise ValueError('Wrong Lean toolchain: ' + report['lean'])
+            run([CIRCT, '--version'], 'circt-version')
         for optimized in [False, True]:
             run([sys.executable, *(['-O'] if optimized else []), '-m', 'unittest', 'discover',
                  '-s', 'test', '-p', 'test_paired_readback.py', '-v'], 'guards' + ('-optimized' if optimized else ''))
         emitted = out / 'emitted'
         run(['lake', 'env', 'lean', '--run', 'test/PairedValidationEmit.lean', emitted], 'emit')
-        for name in ['core.mlir', 'chip.mlir', 'assembly.json']:
-            if sha(emitted / name) != artifacts[name]['sha256']:
-                raise ValueError('Current typed emission differs from retained artifact: ' + name)
+        if args.mode == 'fresh':
+            artifacts = fresh_rtl(run, emitted, retain)
+            report['emitted_artifacts'] = artifacts
+        else:
+            for name in ['core.mlir', 'chip.mlir', 'assembly.json']:
+                if sha(emitted / name) != artifacts[name]['sha256']:
+                    raise ValueError('Current typed emission differs from retained artifact: ' + name)
+            report['retained_identity_checked'] = True
         run(['lake', 'env', 'lean', '--run', 'test/PairedReadback.lean', out / 'hints'], 'hint-labels')
-        interface = pr.read_json(retained / 'assembly.json')
+        interface = pr.read_json(selected / 'assembly.json')
         for kind in ['core', 'chip']:
             directory = out / kind
             directory.mkdir()
             check = ScopedCommands(ROOT, directory, run.records, default_timeout=600, scope=kind + '.')
             rb = pr.backend(kind)
             pr.check_interface(rb, interface[kind])
-            source = rb.read_hints(retained / (kind + '.mlir'))
-            rtl = import_rtl(rb, check, directory, retained / (kind + '.sv'))
+            source = rb.read_hints(selected / (kind + '.mlir'))
+            rtl = import_rtl(rb, check, directory, selected / (kind + '.sv'))
             cuts = pr.read_json(out / 'hints' / (kind + '-cuts.json'))
             pr.check_cuts(cuts, source)
             rb.add_storage_views(rtl, source)
@@ -226,7 +282,7 @@ def main():
             negative += 'axiom Pinwheel.CI.untrustedReadback : False\n#audit_pinwheel\n'
             (directory / 'RejectAxiom.lean').write_text(negative)
             compile_lean(check, directory, 'RejectAxiom', reject='Unapproved axioms in Pinwheel.CI.untrustedReadback')
-            controls = mutations(rb, directory, (retained / (kind + '.sv')).read_text(), kind, run.records)
+            controls = mutations(rb, directory, (selected / (kind + '.sv')).read_text(), kind, run.records)
             report['modules'][kind] = dict(top=rb.TOP, registers=len(rb.REGISTERS),
                 register_bits=sum(w for w, _ in rb.REGISTERS.values()), outputs=len(rb.OUTPUTS),
                 output_bits=sum(w for w, _ in rb.OUTPUTS.values()), shared_equations=len(cuts),

@@ -1,6 +1,7 @@
 # Research status
 
-Updated 2026-09-29 after the saved-layout power sensitivity study.
+Updated 2026-09-29 for the local iteration continuation after the saved-layout
+power sensitivity study.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -14,11 +15,21 @@ implementation to formal meaning and physical feasibility. Then repeat the
 process for a declared capacity change. Competition admission remains separate.
 
 **Active plan: [complete design iteration](complete-design-iteration.md).**
-The current merge milestone collects the conditional proofs, retained RTL
+The merged contribution collects the conditional proofs, retained RTL
 interpretation and physical evidence. The three remaining physical requirements
 are tracked in [qualification follow-ups](../physical/qualification-followups.md),
 with a [prepared upstream SRAM follow-up](../physical/sram-maintainer-followup.md).
 Merging the contribution does not accept A, admit B or complete the iteration.
+
+The user has authorized the [local iteration continuation](local-iteration-continuation.md):
+portable current-A replay, fresh-source RTL interpretation and a concrete
+package-power contract. The [moved-bundle replay](current-a-replay.md#recorded-local-replay)
+now checks all 749 recovered inputs and freshly kernel-checks eight certificates,
+with the same three physical blockers. The source interpretation passes
+independently of historical mapping/admission receipts, and the checked
+[power request](../physical/package-power-contract.md) names eight missing
+integration/component inputs. Historical receipts and physical acceptance
+criteria remain unchanged.
 
 The filled chip retains its passing electrical, timing, full-rule GDS DRC and
 package checks. The new [SRAM study](../physical/sram-extraction-results.md)
@@ -379,21 +390,26 @@ separate from exploratory progress.
    characterization or a justified conservative timing bound, then connect the
    power analysis to qualified package sources and an activity envelope. The
    [completed sensitivity study](../physical/power-boundary-results.md) supplies
-   the saved-layout evaluator and the explicit integration-data request. The
+   the saved-layout evaluator; the checked
+   [package-power request](../physical/package-power-contract.md) assigns the
+   eight absent input classes, typed values and stop criteria. The
    [updated intake](implementation-acceptance.md) keeps these separate from the
    now-passing formal interpretation row. Preserve the candidate while collecting
    qualification evidence.
 3. **Establish physically feasible A and its correspondence.** Apply the
    [bounded plan](complete-design-iteration.md) to the retained filled candidate
-   and close its formal and physical acceptance obligations. All three allocated
-   A routes are used. Connect compilation, admission, closed memory execution,
-   package and host behavior to the implemented netlist; historical results from
-   other backends do not transfer. Record exploratory size overages separately.
+   and close its physical acceptance obligations. Its interpreted emitted RTL
+   already composes certified upload and E64 package execution; scoped mapping,
+   cell-function and connectivity checks retain their separate boundaries.
+   All three allocated A routes are used. Historical results from other backends
+   do not transfer. Record exploratory size overages separately.
 4. **Repeat for a meaningful capacity change.** Increase distinct record capacity
    from 32 to 64 while retaining 256 positions, atomic replacement and execution
    timing. Require the same behavioral and physical gates; record image-format,
    area and implementation consequences explicitly.
-5. **Demonstrate a reproducible design iteration.** Recover both acceptance
+5. **Demonstrate a reproducible design iteration.** The current-A assessment
+   now replays from a movable, hash-checked source/evidence bundle. This retains
+   physical observations rather than rebuilding them. Recover both accepted A/B
    reports through the same documented workflow, with declared inputs and no
    unrecorded manual netlist edits. Required missing checks remain incomplete;
    experimental layout success is separate from the [submission package](../submission-plan.md).
