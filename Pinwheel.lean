@@ -23,6 +23,7 @@ import Pinwheel.Compile.UARTRxStream
 import Pinwheel.Compile.UARTStreamLink
 import Pinwheel.UART.LinkPipeline
 import Pinwheel.Compile.SPI
+import Pinwheel.Compile.SPITransaction
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
 import Pinwheel.Hardware.CountdownContract

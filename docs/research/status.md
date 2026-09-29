@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-09-29 for the local iteration continuation after the saved-layout
-power sensitivity study.
+Updated 2026-09-29 after delivery of four-mode, one- and two-byte SPI,
+the resolved package interface and fresh RTL interpretation.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -11,10 +11,23 @@ linked studies for measurements and reproduction.
 Make a complete chip-design iteration possible for someone without hardware
 expertise. Pinwheel's reloadable protocol engine is the test case: preserve pin
 timing, capture, branching and atomic replacement while connecting one exact
-implementation to formal meaning and physical feasibility. Then repeat the
-process for a declared capacity change. Competition admission remains separate.
+implementation to formal meaning and physical feasibility. Deepen UART, SPI
+and I²C before adding protocols; the larger iteration also retains its declared
+capacity-change gate. Competition admission remains separate.
 
-**Active plan: [complete design iteration](complete-design-iteration.md).**
+**Delivered local capability: [four SPI modes and bounded transactions](../protocols/spi-transactions.md).**
+One- and two-byte transfers keep chip select continuous. Universal Lean
+reference/compiler/E64 proofs, twenty resolved-wire cases, fresh upload
+certificates and independently interpreted RTL cover the stated digital scope.
+The fixed five-pad mapping separates MISO observation from MOSI drive. This is
+a new digital candidate; retained A's physical receipts remain historical.
+
+**Next local capability: bounded I²C recovery and two-payload-byte writes.**
+The [established-protocol continuation](established-protocol-continuation.md)
+sets the sequence and result-capacity limits. UART supervisor/buffer circuitry
+follows; new protocols are deferred.
+
+The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL
 interpretation and physical evidence. The three remaining physical requirements
 are tracked in [qualification follow-ups](../physical/qualification-followups.md),

@@ -66,10 +66,15 @@ alias/wrapper issue. No CAD invocation or route was added; campaign use remains
 8,843.120 seconds. Original physical experiment and acceptance manifests retain
 their exact tracked bytes.
 
-The next local discriminator is the activity envelope: define the admitted
+The original next local discriminator was the activity envelope: define the admitted
 program/input domain, then establish a conservative switching/power argument
 covering idle, replacement and execution. More finite traces alone do not supply
 that bound. Component energy and voltage/timing support, actual parent contacts,
 source range, impedance and transient allowance still require their named
 owners. Collect and review those inputs before allocating another physical
 analysis or admitting A. The 64-record B run remains gated on accepted A.
+
+The user subsequently selected [established-protocol refinement](established-protocol-continuation.md),
+starting with SPI modes 0–3 and one- or two-byte transfers. That milestone is
+delivered; the continuation owns the next bounded I²C capability. The
+activity/power obligation remains open alongside digital protocol refinement.

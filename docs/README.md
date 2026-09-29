@@ -45,6 +45,7 @@ examples provide context without replacing the [current decision](research/statu
 | [Architecture and ownership](architecture.md) | The design layers, Lean's role, module map, and boundaries between proof and implementation. |
 | [Complete design iteration](research/complete-design-iteration.md) | The planned path to one physically validated, formally connected reference and a second capacity variant through the same workflow. |
 | [Local iteration continuation](research/local-iteration-continuation.md) | Authorized local work on portable current-A replay, fresh-source interpretation and a concrete power request, with physical acceptance still separate. |
+| [Established-protocol continuation](research/established-protocol-continuation.md) | Delivered four-mode, one/two-byte SPI and resolved package wiring; next capabilities are bounded I²C recovery/writes and UART supervisor circuitry. |
 | [Processor verification obligations](engine/processor-verification.md) | The acceptance gates from protocol semantics to a physically feasible chip. |
 | [Submission plan](submission-plan.md) | The dated hybrid implementation sequence and durable acceptance gates; use research status for the current work queue. |
 | [Chip-contract integration record](history/branch-integration.md) | A dated account of how retained interfaces and experimental branches were reviewed together. |
@@ -59,7 +60,8 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | Record | Use it for |
 | --- | --- |
 | [UART transmitter model](protocols/uart-model.md) | The original byte transmitter, its timing specification, proofs, and runnable trace. |
-| [SPI model](protocols/spi-model.md) | Full-duplex bit sampling and the exact timing assumptions for one controller and peripheral. |
+| [SPI model](protocols/spi-model.md) | Original mode-0 byte model and its sampling/timing proofs. |
+| [SPI transactions](protocols/spi-transactions.md) | All four modes, one/two-byte continuous-CS transactions, program/refinement and resolved-pad evidence. |
 | [I²C reference model](protocols/i2c-model.md) | Open-drain writes, acknowledgment, and clock stretching in an ideal bus model. |
 | [Compiled I²C write](protocols/compiled-i2c.md) | Guarded timing, ACK branches, and correspondence of a loaded write program to the reference. |
 | [Reusable I²C byte loop](protocols/looped-i2c.md) | Cycle-preserving repetition and its instruction-storage tradeoff. |

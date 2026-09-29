@@ -28,6 +28,11 @@ process-group timeout cleanup, host input/readback/timeout boundaries, shared co
 checks using disposable files and Python children; it
 requires no CAD tools. The second runs the portable Lean/model gate.
 
+The [SPI transaction gate](protocols/spi-transactions.md) adds an independent
+resolved-pad simulation for the repaired package. Independent `uio_in` snapshots
+remain useful for abstract chip traces, but cannot verify driver ownership or
+full-duplex wire connections. Keep those scopes distinct when reusing receipts.
+
 `test_host_demo.py` and `test_host_receipts.py` also run in optimized Python
 children. They reject invalid observations, require repeated mailbox reads and
 consumption checks, bind receipts to captured input bytes despite later file
@@ -52,9 +57,10 @@ The gate:
    axiom must fail for the expected diagnostic. Counts include generated
    theorems; they are not counts of manually written mathematical results.
 3. Runs UART TX/RX, link timing, continuous buffered reception with ideal and
-   unequal clocks, SPI, shared engine, reactive I²C, explicit/counted/binary execution,
+   unequal clocks, original SPI and four-mode transaction images, shared engine,
+   reactive I²C, explicit/counted/binary execution,
    register reads, encoding, countdown, timed-interface/fetch, and storage
-   certificate checks, serial upload and host-result ownership checks. Their
+   certificate checks, static pad-map kernel proofs, serial upload and host-result ownership checks. Their
    existing negative cases remain included.
 4. Independently decodes and checks generated PWL images and UART RX E64 execution
    with Python oracles. RX includes every supported period/input storage configuration.

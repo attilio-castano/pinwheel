@@ -15,7 +15,7 @@ or interrupted work.
 | Topic | Entry points |
 | --- | --- |
 | Local iteration and retained replay | [Portable A, fresh-source interpretation and power request](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request) |
-| Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
+| Protocols and pin timing | [Four-mode SPI and resolved package wires](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
 | Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
 | Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
@@ -34,6 +34,7 @@ or interrupted work.
 | 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
 | 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
 | 2026-09-26 | [SRAM distribution and write timing](#2026-09-26--sram-distribution-and-write-timing), [competing read paths](#2026-09-26--control-distribution-and-competing-read-paths), [coordinated placement](#2026-09-26--coordinated-status-and-decode-placement) | Complete watchlist, matched coarse routes, rejected regional placement and clock/hold diagnosis |
+| 2026-09-29 | [Portable continuation](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request), [four-mode SPI](#2026-09-29--four-mode-spi-and-a-resolved-package-interface) | Replay portability, power-request boundary and established-protocol capability |
 
 ## Future receipt shape
 
@@ -5722,3 +5723,45 @@ remains **8,843.120 seconds**, with three A routes used and two B routes reserve
 A remains unaccepted, B unadmitted and the complete iteration unfinished.
 The next local work is a declared activity domain and supported bound; component
 qualification and actual integration-source inputs remain external gates.
+
+## 2026-09-29 — Four-mode SPI and a resolved package interface
+
+Delivered the first [established-protocol capability](established-protocol-continuation.md)
+on `codex/spi-transaction-refinement`, based on `8ba6b4f`. The
+[SPI study](../protocols/spi-transactions.md) defines all four modes, one or two
+bytes, continuous CS and the explicit sampler/peer-delay boundary. Universal
+reference/compiler/canonical-E64 proofs cover all logical periods and payloads.
+The fixed output mapping moves to `uio2–4`, separating SPI MOSI and MISO.
+I²C uses explicit pulled-up drive/sense joins; UART and SPI leave them open.
+
+The resolved-wire gate passes twenty matrix cases, delay and capture-slot
+controls, active reset/recovery and nine legacy cases in **547.180 s**.
+Thirty-three valid program uploads have fresh certificates. Fresh interpretation
+passes **1,082 equalities** and component/session proofs in **429.635 s**;
+the exact chip RTL and MLIR match the wire gate. The foundation passes all
+**33 executable suites and one kernel suite**, with **8,924 theorems** using
+standard axioms only, in **1,489.273 s**. Python passes **621 of 623 tests**
+with two platform skips and all **39 optimized controls** in **20.584 s**.
+All frozen input inventories match at final closeout. Receipt hashes and
+source/artifact identities are bound by the additive
+[manifest](../../physical/experiments/established-protocol-results.json).
+
+Preserved attempts precede these passes. `pads-regression-probe-01` stopped
+after emission because the exact behavioral SRAM model cache was missing.
+After hash-checked recovery from the unchanged movable bundle,
+`pads-regression-probe-02` ran the legacy cases and correctly refused a changed
+SPI compiler source at closeout. Both invoked `pinwheel-host.py demo` with
+`--backend paired-validation` and their respective tags; logs/artifacts remain,
+but full failure stderr was not saved. The first SPI wire gate was interrupted
+with exit 130 to add retained-copy identity checks. The first final Python
+wrapper passed its tests but failed metadata parsing on singular `test`; it
+produced no success receipt. Corrected fresh-tag runs pass. Earlier discovery
+logs retain the old mock-format failure and incomplete test-stub syntax error.
+
+The current-A replay refuses this new source inventory before reusing historical
+physical evidence. All **216 historical manifest/fixture artifacts** retain
+their base bytes; only the catalog README changes. This is a new digital
+candidate with **zero additional CAD or routes**. SRAM qualification,
+compatible fast timing and package power remain open; campaign consumption
+stays **8,843.120 seconds**, three A routes used and two B routes reserved.
+The next capability is bounded I²C recovery and two-payload-byte writes.
