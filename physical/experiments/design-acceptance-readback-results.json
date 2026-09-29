@@ -1,0 +1,328 @@
+{
+  "schema": 1,
+  "status": "assessed",
+  "date": "2026-09-28",
+  "policy": "pinwheel-paired-a-acceptance-v2-readback",
+  "report": {
+    "path": "build/validation/design-acceptance-readback-01/report.json",
+    "sha256": "1adca18c69f62bcd99fea37073572e273eb44b8bd38633f587cc62a727cb911e"
+  },
+  "study": "docs/research/implementation-acceptance.md",
+  "selection": {
+    "path": "physical/experiments/design-acceptance-readback-inputs.json",
+    "sha256": "13ab5917f59147e9944da5ff016eb6dd064149340164af78584ff9f037496e8e"
+  },
+  "previous_gate": {
+    "path": "physical/experiments/design-acceptance-results.json",
+    "sha256": "52416347f4773313e4424694f746e35b63bc2e13d4418e98fb2c11df998b15d3"
+  },
+  "interpretation": {
+    "path": "physical/experiments/paired-readback-results.json",
+    "sha256": "0be933835d54b5f543d53c4d92e0784f29d7cd3932e5e1578afed426556c1cc2"
+  },
+  "A_accepted": false,
+  "B_admitted": false,
+  "complete_design_iteration": false,
+  "blockers": [
+    "sram_qualification",
+    "timing_conditions",
+    "package_power"
+  ],
+  "requirements": [
+    {
+      "id": "host_certificates",
+      "requirement": "Canonical host image and 290-word upload",
+      "verdict": "passed",
+      "detail": "Eight retained programs reproduce their exact certificates and are freshly kernel checked.",
+      "evidence": [
+        {
+          "path": "build/host/design-iteration-paired-01/report.json",
+          "sha256": "22cd438a96bf333798513efd8acb63fe1f5a6b1c5637105dc960f502bfa0febf"
+        },
+        {
+          "path": "build/validation/paired-admission-01/report.json",
+          "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+        }
+      ]
+    },
+    {
+      "id": "digital_refinement",
+      "requirement": "Admission, storage, timed execution and package observations",
+      "verdict": "conditional",
+      "detail": "Universal Lean theorem under the explicit SRAM law, qualified digital delivery and execution-segment rule.",
+      "evidence": [
+        {
+          "path": "build/validation/paired-admission-01/report.json",
+          "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+        },
+        {
+          "path": "physical/fixtures/sram-trust/contract.json",
+          "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+          "scope": "Unchanged external proposal; the memory behavior law remains an explicit theorem parameter."
+        }
+      ]
+    },
+    {
+      "id": "emission_identity",
+      "requirement": "Proved typed package and retained emitted implementation",
+      "verdict": "passed",
+      "detail": "Fresh proof-gate core/package MLIR and assembly match the selected mapping bytes.",
+      "evidence": [
+        {
+          "path": "build/validation/paired-admission-01/report.json",
+          "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+        },
+        {
+          "path": "build/validation/paired-validation-check-06/report.json",
+          "sha256": "260f1459b37bcc0aaf3193743f8981d92452d2c62fdaea03c41d3664eddd229a"
+        }
+      ]
+    },
+    {
+      "id": "implementation_checks",
+      "requirement": "RTL, mapped logic and final signal circuit",
+      "verdict": "passed",
+      "detail": "Identity-connected scoped SAT receipts and fresh readback connectivity checks; pinned cell functions and tool interpretations remain trusted.",
+      "evidence": [
+        {
+          "path": "build/validation/paired-validation-check-06/report.json",
+          "sha256": "260f1459b37bcc0aaf3193743f8981d92452d2c62fdaea03c41d3664eddd229a"
+        },
+        {
+          "path": "build/validation/paired-buffer-balance-check-01/report.json",
+          "sha256": "5b2a5c5f8e2e3ddd752fc87fec92927eed515425f4251bcdb98f32cd02ae54a0"
+        },
+        {
+          "path": "build/validation/transport-split-01/candidate-implemented-check/report.json",
+          "sha256": "8d13611e7dfe280457bc56f8fe0f449d9c3072be91c5630f9e0bb48e07492dd6"
+        },
+        {
+          "path": "build/validation/transport-detailed-01/post-route-check/report.json",
+          "sha256": "130f6b61be504ba3dc58124886e2acd72b5ff0b205abdab4a2f5c9bd120c0a37"
+        },
+        {
+          "path": "build/validation/chip-closure-01/candidate-05-check/report.json",
+          "sha256": "ee61ea5c1079a8dbef6660039173b1b5d40eb57987218fe8b71917dd03ecbc28"
+        },
+        {
+          "path": "build/validation/chip-finalization-01/final-check/report.json",
+          "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+        }
+      ]
+    },
+    {
+      "id": "layout_checks",
+      "requirement": "Detailed wires, full-rule GDS DRC and antenna",
+      "verdict": "passed",
+      "detail": "Retained layout audit passes; disabled KLayout DRC/XOR and flow EQY remain disabled.",
+      "evidence": [
+        {
+          "path": "build/validation/chip-finalization-01/analysis.json",
+          "sha256": "0d8dbfe90de117e04970661066f00145261af571cf4cc791e7534b0330d8a7ad"
+        }
+      ]
+    },
+    {
+      "id": "sram_boundary",
+      "requirement": "Exported-GDS SRAM interface",
+      "verdict": "passed",
+      "detail": "351-pin boundary comparison passes and two wiring faults reject; internals are abstracted.",
+      "evidence": [
+        {
+          "path": "build/validation/sram-extraction-01/interface-01/output/report.json",
+          "sha256": "854340daaa8a3bf89c04a9c464db076bce1adcdae5d3bc8378ae74b63858508b"
+        }
+      ]
+    },
+    {
+      "id": "electrical_screen",
+      "requirement": "Extracted setup, hold and electrical limits",
+      "verdict": "passed",
+      "detail": "All recorded corners pass numerically; fast operating-condition qualification is a separate requirement.",
+      "evidence": [
+        {
+          "path": "build/validation/chip-finalization-01/inspect-02/output/timing.json",
+          "sha256": "249ac02745b7f9fc34101e61d54e524e334a88413711836826635ade87344564"
+        }
+      ]
+    },
+    {
+      "id": "sram_qualification",
+      "requirement": "Exact-version SRAM internal and behavioral qualification",
+      "verdict": "blocked",
+      "detail": "0.260/0.200 um source/layout width discrepancy and internal checking remain unresolved; the behavioral law is a premise.",
+      "evidence": [
+        {
+          "path": "physical/experiments/sram-trust-results.json",
+          "sha256": "5f1d0fab527f89ac88ee8f0873a78f6769d128421724909d18488452cc1d303e"
+        },
+        {
+          "path": "physical/fixtures/sram-trust/contract.json",
+          "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+          "scope": "Unchanged external proposal; the memory behavior law remains an explicit theorem parameter."
+        }
+      ]
+    },
+    {
+      "id": "timing_conditions",
+      "requirement": "Compatible logic/SRAM timing conditions",
+      "verdict": "blocked",
+      "detail": "Fast cells use -40 C, SRAM -55 C; no compatible delivered pair or justified conservative bound.",
+      "evidence": [
+        {
+          "path": "build/validation/design-iteration-01/audit.json",
+          "sha256": "af5f63557c38d549557a489f75fec28068cc2649c316f0b71e197d656c6c4b9b"
+        },
+        {
+          "path": "build/validation/chip-finalization-01/inspect-02/output/timing.json",
+          "sha256": "249ac02745b7f9fc34101e61d54e524e334a88413711836826635ade87344564"
+        }
+      ]
+    },
+    {
+      "id": "typed_circuit_to_rtl",
+      "requirement": "Meaning preserved from typed circuit through RTL export",
+      "verdict": "passed",
+      "detail": "Kernel-checked interpretations of both exact retained RTL modules equal their typed components and inherit the session theorem; the restricted adapter and Yosys frontend/lowering remain trusted.",
+      "evidence": [
+        {
+          "path": "build/validation/paired-admission-01/report.json",
+          "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+        },
+        {
+          "path": "build/validation/paired-validation-check-06/report.json",
+          "sha256": "260f1459b37bcc0aaf3193743f8981d92452d2c62fdaea03c41d3664eddd229a"
+        },
+        {
+          "path": "build/validation/paired-readback-02/report.json",
+          "sha256": "666c1a75e56cc8d1a6ab598e1038338d708e5010f77d802b8c68c27d4abe16cd"
+        }
+      ]
+    },
+    {
+      "id": "package_power",
+      "requirement": "Qualified power delivery for the declared package",
+      "verdict": "blocked",
+      "detail": "Continuity passes; IR-drop uses default source locations and modeled activity without qualified package assumptions.",
+      "evidence": [
+        {
+          "path": "build/validation/chip-finalization-01/inspect-02/output/power.json",
+          "sha256": "4195b29022b66d8db08d2de08f403c244198c508a47b3896193fae7f56de4b04"
+        },
+        {
+          "path": "build/validation/chip-finalization-01/analysis.json",
+          "sha256": "0d8dbfe90de117e04970661066f00145261af571cf4cc791e7534b0330d8a7ad"
+        }
+      ]
+    }
+  ],
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "campaign": {
+    "this_continuation_seconds": 21.779,
+    "prior_campaign_seconds": 8390.384,
+    "cumulative_cad_seconds": 8412.163,
+    "continuation_limit_seconds": 900,
+    "campaign_limit_seconds": 28800,
+    "per_invocation_limit_seconds": 600,
+    "cpus": 4,
+    "memory_gib": 6,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2,
+    "additional_full_routes": 0
+  },
+  "validation_seconds": 80.463,
+  "verified_file_count": 740,
+  "evidence_connections": 75,
+  "fresh_host_certificates": 8,
+  "checker_sources": [
+    {
+      "path": "scripts/check-design-acceptance.py",
+      "sha256": "9174d9344cdf07ac008496d352cd0c7d0897beb5d88e510bc826b7285deccdfe"
+    },
+    {
+      "path": "scripts/design_acceptance.py",
+      "sha256": "c30846f2099bf6834ace17de8b306874b2c1dc976f2c9cab14312c3b77cbe44b"
+    },
+    {
+      "path": "scripts/execution-vectors.py",
+      "sha256": "2924cb3fa2712111d930422196a8e81412cbe6b9ea0cdad4b4cd376585cd253d"
+    },
+    {
+      "path": "scripts/mapped_physical.py",
+      "sha256": "fb7aaadc5bce94a17b454266244e114ec9f6981be88a2ea98f453cf84c7f7266"
+    },
+    {
+      "path": "scripts/paired_execution.py",
+      "sha256": "1d37cfa5a88e5f69adb64376fddc49d468d4d86c6a83e8f7bb49d7b6fee244e6"
+    },
+    {
+      "path": "scripts/paired_image_certificate.py",
+      "sha256": "abe4081d523835be5489a2a1feb286af4722c9c410f4eee1f84cfd3c57eb74bc"
+    },
+    {
+      "path": "scripts/physical_buffer_repair.py",
+      "sha256": "b441d1746df823b6526a842c097a1ae32b75a34a575d8a570828e19e9bec85d1"
+    },
+    {
+      "path": "scripts/physical_timing_acceptance.py",
+      "sha256": "ddb68191a580800ff44d216972b8337eca55d0e0071c027c1fd7352606028cc8"
+    },
+    {
+      "path": "scripts/pinwheel_host.py",
+      "sha256": "85a63039d0f599f428aee0ed62111de6f6ac6cc35de3e942dc1e1e61d6aeb4ab"
+    },
+    {
+      "path": "scripts/process_group.py",
+      "sha256": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175"
+    },
+    {
+      "path": "scripts/tiled_chip.py",
+      "sha256": "45142a028afa1bc04364435873074514a35aab6fc8a75f7c50c89918d3fd83a7"
+    },
+    {
+      "path": "scripts/validation_run.py",
+      "sha256": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013"
+    },
+    {
+      "path": "test/test_design_acceptance.py",
+      "sha256": "618979390b976ba7746812fa71015cff4cdb8aa3b9dea44c52fed1065ff0741b"
+    }
+  ],
+  "focused_python_tests": 20,
+  "python_optimized_controls_passed": true,
+  "inputs_unchanged": true,
+  "cad_seconds": 0
+}

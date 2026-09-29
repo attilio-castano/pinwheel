@@ -1,0 +1,117 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-09-28",
+  "report": {
+    "path": "build/validation/paired-readback-02/report.json",
+    "sha256": "666c1a75e56cc8d1a6ab598e1038338d708e5010f77d802b8c68c27d4abe16cd"
+  },
+  "study": "docs/storage/paired-rtl-interpretation.md",
+  "previous_gate": {
+    "path": "physical/experiments/paired-admission-results.json",
+    "sha256": "ab15aa2d908c26d2c7e2d617d4e92b97bb4d8377fcb6643e080743e25a63c451"
+  },
+  "scope": "Exact retained raw controller and package RTL; all represented state and inputs; two-state positive-edge semantics. SRAM response is an independent input. Certified serial upload and E64 execution remain conditional on the explicit SRAM law, reset/release, digital delivery and execution-segment premises.",
+  "session_theorem": "Pinwheel.Artifact.Paired.Package.rtl_initialized_session",
+  "modules": {
+    "core": {
+      "top": "pinwheel_paired_core_controller",
+      "registers": 81,
+      "register_bits": 1469,
+      "outputs": 37,
+      "output_bits": 157,
+      "shared_equations": 45,
+      "local_equalities": 521,
+      "audit": {
+        "declarations": 29324,
+        "theorems": 18645,
+        "standard_axioms_only": true
+      },
+      "mutation_controls": [
+        "unchanged",
+        "upload-cursor",
+        "parameter-bank",
+        "sram-write"
+      ],
+      "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+    },
+    "chip": {
+      "top": "pinwheel_paired_controller",
+      "registers": 110,
+      "register_bits": 1592,
+      "outputs": 7,
+      "output_bits": 99,
+      "shared_equations": 45,
+      "local_equalities": 561,
+      "audit": {
+        "declarations": 30452,
+        "theorems": 19542,
+        "standard_axioms_only": true
+      },
+      "mutation_controls": [
+        "unchanged",
+        "sampler",
+        "mailbox-valid",
+        "package-output"
+      ],
+      "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+    }
+  },
+  "retained_artifacts": {
+    "core.mlir": {
+      "path": "build/validation/paired-validation-check-06/core.mlir",
+      "sha256": "b8a873066f76e5373911e5ebf8638b13214da98d5e28623af5b467e4d921810c"
+    },
+    "chip.mlir": {
+      "path": "build/validation/paired-validation-check-06/chip.mlir",
+      "sha256": "921fa76e8e668da06eeeb52f6aa1d6b44f73d3a678cef0e2def856b835d05feb"
+    },
+    "core.sv": {
+      "path": "build/validation/paired-validation-check-06/core.sv",
+      "sha256": "e4be16c34a3e81de9b12bcc3fd4b1ab53267dec433ba59ae5e64da66afce632d"
+    },
+    "chip.sv": {
+      "path": "build/validation/paired-validation-check-06/chip.sv",
+      "sha256": "1be171be95cff713eeb1778426d529ebe54bb7030142c0cda08d9c8ca9912934"
+    },
+    "assembly.json": {
+      "path": "build/validation/paired-validation-check-06/assembly.json",
+      "sha256": "dd47935675bc4ff72a6cfde8f794c43dd1cb683a70550a2e182a0895c1079641"
+    }
+  },
+  "validation_seconds": 315.149,
+  "source_input_count": 264,
+  "artifact_count": 160,
+  "source_sha256": {
+    "scripts/check-paired-readback.py": "5b8e59343b96c2cd46adba62519c7a2df950c22ae6a27729487d82a5413e89c8",
+    "scripts/paired_readback.py": "1a26402d12db3033ec636acfbc1a4db4ccbda487a10a10fde2ff649ed61cddf0",
+    "scripts/backend_readback.py": "e9a35a41b5027ad17906ef2b9342f46c4702c7ecd6e4a142cf01e24b5aebf669",
+    "test/PairedReadback.lean": "e96d46415660e37d033ba6de9e34e770913cd20ddc0939033a8f0e37c4f257f3",
+    "test/test_paired_readback.py": "458041b671f3e9d507ca20c621a0d2e4db23722b3910c870b1465335904e8ec1"
+  },
+  "tools_sha256": {
+    "build/tools/oss-cad-suite/bin/yosys": "8a6175ee88d6412c3d792c47d0750b8707a8e12cc2222c1322546d47cd85edb9",
+    "build/tools/oss-cad-suite/bin/z3": "bd17f09bc345d944aedcb0df63d8136cfec3b1bad24e5a72e83c61c302b75e8b"
+  },
+  "inputs_unchanged": true,
+  "physical_design_rerun": false,
+  "hardware_changed": false,
+  "trusted_boundary": [
+    "Yosys SystemVerilog frontend and proc/pmuxtree lowering",
+    "Restricted Python word-level interpretation",
+    "Lean kernel and standard axioms"
+  ],
+  "untrusted_proof_guidance": [
+    "MLIR hints",
+    "sampled signatures",
+    "Z3 equivalence and constraint selection"
+  ],
+  "unchanged_reimports": 2,
+  "rejected_rtl_corruptions": 6,
+  "rejected_axiom_controls": 2,
+  "failed_attempt": {
+    "path": "build/validation/paired-readback-01/report.json",
+    "sha256": "c2cb25c955ce41d9bbfcc0973c6113836e470a5dd54bd667c825c04d8eab27d9",
+    "stage": "chip Design type checking"
+  }
+}

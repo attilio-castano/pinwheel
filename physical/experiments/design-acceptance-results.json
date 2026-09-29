@@ -1,0 +1,261 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "assessment_completed_A_blocked",
+  "study": "docs/research/implementation-acceptance.md",
+  "selection": {
+    "path": "physical/experiments/design-acceptance-inputs.json",
+    "sha256": "3c98bb12a58711705b8c367a6549b45fbd986579c917d61043835c8fe8a9846f"
+  },
+  "report": {
+    "path": "build/validation/design-acceptance-03/report.json",
+    "sha256": "0dc56778c6c80f818bcc983e4e300998ea6ddc4991e05048e84b5c8bd8827226"
+  },
+  "readable_report": {
+    "path": "build/validation/design-acceptance-03/report.md",
+    "sha256": "2305277ef981167a9be09ca6f1c1827b1493bd5fdee92cfa2cd9779c59765e70"
+  },
+  "previous_gate": {
+    "path": "physical/experiments/paired-admission-results.json",
+    "sha256": "ab15aa2d908c26d2c7e2d617d4e92b97bb4d8377fcb6643e080743e25a63c451"
+  },
+  "source_sha256": {
+    "scripts/check-design-acceptance.py": "44e48fe6c08ed4c6728f64d64343f09707398bd1802933ceaedf49017cb6bb71",
+    "scripts/design_acceptance.py": "738899460d1cad9146a1767fde59b8509a28813149adf0479d987a28c4743e77",
+    "scripts/execution-vectors.py": "2924cb3fa2712111d930422196a8e81412cbe6b9ea0cdad4b4cd376585cd253d",
+    "scripts/mapped_physical.py": "fb7aaadc5bce94a17b454266244e114ec9f6981be88a2ea98f453cf84c7f7266",
+    "scripts/paired_execution.py": "1d37cfa5a88e5f69adb64376fddc49d468d4d86c6a83e8f7bb49d7b6fee244e6",
+    "scripts/paired_image_certificate.py": "abe4081d523835be5489a2a1feb286af4722c9c410f4eee1f84cfd3c57eb74bc",
+    "scripts/physical_buffer_repair.py": "b441d1746df823b6526a842c097a1ae32b75a34a575d8a570828e19e9bec85d1",
+    "scripts/physical_timing_acceptance.py": "ddb68191a580800ff44d216972b8337eca55d0e0071c027c1fd7352606028cc8",
+    "scripts/pinwheel_host.py": "85a63039d0f599f428aee0ed62111de6f6ac6cc35de3e942dc1e1e61d6aeb4ab",
+    "scripts/process_group.py": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175",
+    "scripts/tiled_chip.py": "45142a028afa1bc04364435873074514a35aab6fc8a75f7c50c89918d3fd83a7",
+    "scripts/validation_run.py": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013",
+    "test/test_design_acceptance.py": "9830dddd9d6fd7ad27a5a9801f3945d1a370fce65164cf21cd844e078d0da2b1"
+  },
+  "validation": {
+    "path": "build/validation/design-acceptance-controls-02/report.json",
+    "sha256": "a6a4d47f03f7dbb914042a813ec9b2a989e9a6bdff612ffc19aee86c9a2a2d95",
+    "tests": 17,
+    "python_optimization": 2
+  },
+  "assessment": {
+    "seconds": 111.13,
+    "verified_files": 572,
+    "identity_and_measurement_joins": 58,
+    "fresh_kernel_certificates": 8,
+    "artifacts": 16,
+    "inputs_unchanged": true,
+    "require_accepted_exit_code": 2
+  },
+  "requirements": [
+    {
+      "id": "host_certificates",
+      "verdict": "passed",
+      "detail": "Eight retained programs reproduce their exact certificates and are freshly kernel checked."
+    },
+    {
+      "id": "digital_refinement",
+      "verdict": "conditional",
+      "detail": "Universal Lean theorem under the explicit SRAM law, qualified digital delivery and execution-segment rule."
+    },
+    {
+      "id": "emission_identity",
+      "verdict": "passed",
+      "detail": "Fresh proof-gate core/package MLIR and assembly match the selected mapping bytes."
+    },
+    {
+      "id": "implementation_checks",
+      "verdict": "passed",
+      "detail": "Identity-connected scoped SAT receipts and fresh readback connectivity checks; pinned cell functions and tool interpretations remain trusted."
+    },
+    {
+      "id": "layout_checks",
+      "verdict": "passed",
+      "detail": "Retained layout audit passes; disabled KLayout DRC/XOR and flow EQY remain disabled."
+    },
+    {
+      "id": "sram_boundary",
+      "verdict": "passed",
+      "detail": "351-pin boundary comparison passes and two wiring faults reject; internals are abstracted."
+    },
+    {
+      "id": "electrical_screen",
+      "verdict": "passed",
+      "detail": "All recorded corners pass numerically; fast operating-condition qualification is a separate requirement."
+    },
+    {
+      "id": "sram_qualification",
+      "verdict": "blocked",
+      "detail": "0.260/0.200 um source/layout width discrepancy and internal checking remain unresolved; the behavioral law is a premise."
+    },
+    {
+      "id": "timing_conditions",
+      "verdict": "blocked",
+      "detail": "Fast cells use -40 C, SRAM -55 C; no compatible delivered pair or justified conservative bound."
+    },
+    {
+      "id": "typed_circuit_to_rtl",
+      "verdict": "blocked",
+      "detail": "Byte identity and SAT between emitted variants do not prove the emitter/CIRCT interpretation. No paired artifact-interpretation theorem is supplied."
+    },
+    {
+      "id": "package_power",
+      "verdict": "blocked",
+      "detail": "Continuity passes; IR-drop uses default source locations and modeled activity without qualified package assumptions."
+    }
+  ],
+  "blockers": [
+    "sram_qualification",
+    "timing_conditions",
+    "typed_circuit_to_rtl",
+    "package_power"
+  ],
+  "A_accepted": false,
+  "B_admitted": false,
+  "complete_design_iteration": false,
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "proof": {
+    "report": {
+      "path": "build/validation/paired-admission-01/report.json",
+      "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+    },
+    "audit": {
+      "declarations": 16808,
+      "theorems": 8757,
+      "standard_axioms_only": true
+    },
+    "theorem": "Pinwheel.Hardware.Storage.PairedSession.retained_initialized_session",
+    "premises": [
+      "explicit single-port SRAM contract",
+      "three reset-low samples and two idle release samples",
+      "image corresponds to canonical E64 source",
+      "qualified digital Serial.Session",
+      "two trailing sampler-drain pins",
+      "decoded execution inputs have init=0 and command!=3"
+    ]
+  },
+  "retained_observations": {
+    "host": {
+      "report": {
+        "path": "build/host/design-iteration-paired-01/report.json",
+        "sha256": "22cd438a96bf333798513efd8acb63fe1f5a6b1c5637105dc960f502bfa0febf"
+      },
+      "edges": 771879,
+      "frames": 2637,
+      "replayed_now": false
+    },
+    "final_netlist": {
+      "report": {
+        "path": "build/validation/chip-finalization-01/final-check/report.json",
+        "sha256": "652573d7ea34069820f3a10008d51b6cf96bed0d1d9686903da11ef80814b797"
+      },
+      "edges": 331401,
+      "frames": 1517,
+      "cases": [
+        {
+          "name": "resident-uart",
+          "edge": 812
+        },
+        {
+          "name": "resident-spi",
+          "edge": 66301
+        },
+        {
+          "name": "captures",
+          "edge": 130476
+        },
+        {
+          "name": "serial-branch",
+          "edge": 194673
+        },
+        {
+          "name": "uart-rx",
+          "edge": 259427
+        }
+      ],
+      "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle",
+      "replayed_now": false
+    }
+  },
+  "fresh_checks": [
+    "Re-rendered eight actual host programs/uploads and matched exact certificate bytes.",
+    "Kernel rechecked the eight captured certificates with standard-axiom audits.",
+    "Verified the admission proof source freeze and its unchanged emission against retained mapping.",
+    "Bound host/original, isolated and mapped RTL to scoped SAT receipts and the physical SAT endpoint.",
+    "Compared routed, repaired and filled readback connections, including clocks, declared buffers and the protection receiver.",
+    "Recomputed numerical timing and reread the exact Liberty conditions consumed by the physical inspection.",
+    "Checked selected final-candidate, GDS-boundary and component-view identities."
+  ],
+  "reused_checks_not_rerun": [
+    "Full Lean library/axiom gate",
+    "Host RTL demonstration",
+    "Mapping and physical SAT",
+    "Final-netlist pin replay",
+    "Physical CAD, extraction, DRC/LVS and electrical measurements"
+  ],
+  "failed_attempts": [
+    {
+      "path": "build/validation/design-acceptance-01/report.json",
+      "sha256": "edc93b476614047048e1604a37467520b69df67350713ea22ddb4924c706b4f2",
+      "status": "invalid_evidence",
+      "seconds": 88.518,
+      "reason": "The first consolidation replayed only buffer contraction; the retained repair also has a declared protection diode. The corrected intake checks its input-only master and actual receiver before contraction."
+    }
+  ],
+  "cad_seconds": 0,
+  "additional_full_routes": 0,
+  "hardware_changed": false,
+  "physical_qualification": false,
+  "campaign": {
+    "cad_seconds_total": 8412.163,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2
+  },
+  "next": "Connect an interpretation of the exact retained paired emitted artifact to the typed circuit and admission/session theorem. Keep external component, fast timing and package power requirements separate.",
+  "prior_assessments": [
+    {
+      "path": "build/validation/design-acceptance-02/report.json",
+      "sha256": "9aa8b54fee7f91fa1766af9efc184c209e36bb72744d3b8af14fffac08d08a22",
+      "status": "assessed",
+      "A_accepted": false,
+      "seconds": 103.172,
+      "verified_files": 571,
+      "superseded_reason": "Final source audit added the runpy-loaded execution grammar to the explicit checker freeze and host-source comparison. The final receipt independently repeats all eight kernel checks and preserves the same verdict."
+    }
+  ]
+}

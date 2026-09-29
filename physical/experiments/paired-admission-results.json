@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "status": "conditional_certified_upload_session_refinement_passed",
+  "date": "2026-09-28",
+  "report": {
+    "path": "build/validation/paired-admission-01/report.json",
+    "sha256": "1808375202825f9c103b0f2b78e31125fdcd1d6a71311053fc192936ff6afa6a"
+  },
+  "study": "docs/storage/paired-upload-admission.md",
+  "previous_gate": {
+    "path": "physical/experiments/paired-host-results.json",
+    "sha256": "859aac7a2a260ed381861994d7465122293b210feca57ac90efa10ec3451f1e7"
+  },
+  "source_sha256": {
+    "Pinwheel.lean": "77341a772c31c901abc649980a27cac701b937321107537b5c776a116b91ea81",
+    "Pinwheel/Hardware/Memory/SinglePort.lean": "b8559bf625613a24c2aa1a19e91c9c5316913356f725fd30968b38da3af353e0",
+    "Pinwheel/Hardware/Storage/PairedSemantics.lean": "52a786e8b4ae5e3d7fa15a93bd6f6c19763879c617d53295bef42503b122a042",
+    "Pinwheel/Hardware/Storage/PairedComposition.lean": "f798d2149f14018ae6f7fa86b31461088cc3467820a368cbcd0cdccfd101eefa",
+    "Pinwheel/Hardware/Storage/PairedClosed.lean": "e9f864cfea0ecadf61673107fdb3c2121c6e000f57968333bf4653a54ef81746",
+    "Pinwheel/Hardware/Storage/PairedLoader.lean": "e6fb86c950a6e47b82924315f636bd9657a79f87d15d015927f68d94eb4992c7",
+    "Pinwheel/Hardware/Storage/PairedUpload.lean": "989f9aa76775459c88f73b96fa9257bb21ac8e79d1854a8c0c38f2908f670b71",
+    "Pinwheel/Hardware/Storage/PairedCoverage.lean": "11859b1e844ddd639eb5f5fef81f6172bca5ed2e48a1ca687f905bf18338bbc9",
+    "test/PairedFormal.lean": "eeb9e9b370f93eb2bff5ef5c1d87844d74501d354804bf20ac899f20f9c186bf",
+    "test/PairedUpload.lean": "6fd754838f7c6520c9d766b55c537019f08e786c124c423bac21e17ac11866cb",
+    "scripts/check-paired-formal.py": "4c6b65d41a27f48ece8c7fcd01f3046a9b9d78be25d5bf42ac42bf0d9ab2479b",
+    "Pinwheel/Hardware/Storage/PairedRunning.lean": "8d36dcd53c0e9e41fbdfb29cc4d5a69cb3981187315f51a01f02729158e37a14",
+    "Pinwheel/Hardware/Storage/PairedRuntime.lean": "92c7e0321be4ceb3e201722d49b2dc63ff44f35446fea387dcc02d9a650852b3",
+    "test/PairedRuntime.lean": "fccb9583c63d7a572850985d08726b653184857f0f017384a962f55d0ae64bc2",
+    "Pinwheel/Hardware/Storage/PairedBits.lean": "2ae90a9b55f35a476007afc5af492842e91455e1f4cac371f665d3db50bd3f91",
+    "Pinwheel/Hardware/Storage/PairedE64.lean": "8db6072ff32e28df2bb652c3e80fd71a27f49bba14da0b6c978ccf26d0331dfd",
+    "Pinwheel/Hardware/Storage/PairedControl.lean": "6373bb0d450699802fb48e4f893bf2ef86aa1289ed1e4301a69b271349073e51",
+    "Pinwheel/Hardware/Storage/PairedEntry.lean": "b810f11890b0b117d5ea28eba791011bf1f8dcfa20ec07d5819919fe219cb1cf",
+    "Pinwheel/Hardware/Storage/PairedReference.lean": "dd1974f7f7793460fb0a01e9804054ca8edd05e4edb09387393a6fe6bbc286f3",
+    "Pinwheel/Hardware/Storage/PairedCertified.lean": "84658ec0497805999ef39ada2e72bb5d4462c52508bedb1be2ced750d0948281",
+    "Pinwheel/Hardware/Storage/PairedEdges.lean": "34f48f579c40a6fadc7d734af7745296e23006e3fd625322dab085b2a5aba281",
+    "Pinwheel/Hardware/Storage/PairedTimedStep.lean": "9eb9805e9e711fb600866b0f5b620a44450df5b6c390959c2e3ee127e3b38907",
+    "Pinwheel/Hardware/Storage/PairedTimed.lean": "426a04d42a7da796a2fdf9338e1d73ae00f2d8ef85905052de47f8a5fb452bcc",
+    "test/PairedTimed.lean": "fa9cd2f0f77dfd28624d16de82c44fbfa2d72369f1c1fc7699b94635def487fc",
+    "Pinwheel/Hardware/Storage/PairedLifecycle.lean": "e0457c060e307a09a5fce7f02b8e11a08aad088a73a7d1cd31ca4ea36dec2d60",
+    "Pinwheel/Hardware/Storage/PairedPackage.lean": "b6217372d6797c6da96d110ad1624e5b8bf673b65f4ac167c0d292a65571850f",
+    "Pinwheel/Hardware/Storage/PairedHost.lean": "e9aaf55406f5c517ba43b37caf1cff264dcbb159c9b5b4d6c9f80d6fe1041703",
+    "test/PairedHost.lean": "423f5882aa6f4c842bc121901a4f30f6e5d8c9bfa091355bacf62bde9cf1f6e6",
+    "Pinwheel/Hardware/Storage/PairedAdmission.lean": "890c305fad0971265b74f94bb3ffda6dec8f82a1fe6f32c411a0c22d49fe2117",
+    "Pinwheel/Hardware/Storage/PairedSession.lean": "77caad855c680a4e95783b5b9e3198785339e9ca90ffd6912c3abdb01aca42ec",
+    "test/PairedAdmission.lean": "18ef8626190f7a0fb4f134b47297a4e27c38f3114e15f36509e062d202995012"
+  },
+  "component_contract": {
+    "path": "physical/fixtures/sram-trust/contract.json",
+    "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+    "scope": "Unchanged external proposal; the memory behavior law remains an explicit theorem parameter."
+  },
+  "implementation": "Retained PairedValidation typed package: actual pin map, samplers, receiver, SRAM feedback and result observer",
+  "boundary": "Arbitrary represented initial state; three reset-low samples and two idle release samples; certified paired image; qualified digital Serial.Session delivering begin, 290 image words and commit; two sampler-drain pins; subsequent decoded inputs have init=0 and command!=3. Admission decisions and the accepted transcript are derived, not premises.",
+  "reachable_modules": 231,
+  "audit": {
+    "declarations": 16808,
+    "theorems": 8757,
+    "standard_axioms_only": true
+  },
+  "validation_seconds": 235.829,
+  "source_input_count": 253,
+  "artifact_count": 18,
+  "cad_seconds": 0,
+  "inputs_unchanged": true,
+  "checks": {
+    "default_library_build": true,
+    "whole_library_axiom_audit": true,
+    "injected_axiom_rejected": true,
+    "contract_controls": {
+      "kernel_checked_examples": 9,
+      "graph_nodes": 45,
+      "arbitrary_initial_memory": true,
+      "write_holds_q": true,
+      "enabled_read_updates_q": true,
+      "idle_holds_q": true,
+      "undefined_read_unspecified": true,
+      "illegal_mode_excluded": true,
+      "reversed_and_duplicate_bindings_rejected": true
+    },
+    "upload_controls": {
+      "retained_core": true,
+      "complete_images": 2,
+      "arbitrary_initial_registers_contents_and_q": true,
+      "malformed_parameter_row_boot_idle_rejected": true,
+      "short_extra_busy_abort_reset_restart_controls": true,
+      "all_32_parameters_256_rows_boot_idle_checked": true,
+      "prior_active_bank_preserved": true,
+      "row_255_read_and_old_q_checked": true,
+      "initialization_invalidates_without_clearing": true
+    },
+    "runtime_controls": {
+      "retained_core": true,
+      "certified_image": true,
+      "loaded_through_actual_commands": true,
+      "both_active_banks": true,
+      "reference_edges": 100,
+      "running_edges": 82,
+      "scenarios": [
+        "capture/branch/qualify/halt",
+        "wait timeout",
+        "guard fault",
+        "false branch/out of range",
+        "qualify timeout",
+        "reset and restart"
+      ],
+      "pins_samples_modes_counters_and_running_pc_compared": true,
+      "stopped_q_holds": true,
+      "stale_q_wrong_parameter_invalid_token_rejected": true,
+      "scope": "Finite execution controls; universal execution correspondence is proved separately in PairedTimed."
+    },
+    "timed_controls": {
+      "retained_public_outputs": true,
+      "certified_accepted_transcripts": true,
+      "both_active_banks": true,
+      "before_after_edge_pairs": 686,
+      "rejected_mutations": 8,
+      "scenarios": [
+        "terminal capture/branch/entry overwrite and maximum duration",
+        "zero-budget wait timeout",
+        "zero-budget qualify timeout",
+        "guard beats zero-duration dispatch",
+        "reset beats start and command reset restarts",
+        "backward jump and repeated capture overwrite"
+      ],
+      "ready_at_wait_and_qualify_deadline_wins": true,
+      "scope": "Finite controls, separate from the universal initialized-segment theorem."
+    },
+    "host_controls": {
+      "retained_package": true,
+      "both_active_banks": true,
+      "before_after_pin_edge_pairs": 794,
+      "rejected_mutations": 3,
+      "arbitrary_initial_core_adapter_mailbox_and_sram_state": true,
+      "three_reset_low_edges": true,
+      "certified_accepted_staged_and_active_transcripts": true,
+      "decoded_uploads": 2,
+      "serial_commit_frames": 2,
+      "serial_start_frames": 3,
+      "extra_reset_after_commit": false,
+      "immediate_decoded_start_checked": true,
+      "unread_result_survives_replacement": true,
+      "halt_only_completion_and_overrun": true,
+      "consume_clear_and_restart": true,
+      "low_high_result_pages": true,
+      "scope": "Finite package controls prepare complete images via actual decoded writes; 290-word uploads are not replayed bit by bit. Serial delivery is proved separately."
+    },
+    "admission_controls": {
+      "retained_core": true,
+      "certified_parameter_permutations": 2,
+      "accepted_pushes": 580,
+      "quiet_edges": 168,
+      "executed_refusals": 4,
+      "wrong_source_certificates_rejected": 2,
+      "both_banks": true,
+      "dirty_initial_storage": true,
+      "unused_parameters_noncanonical_for_tokens": true,
+      "all_parameters_rows_and_metadata_checked": true,
+      "previous_active_image_preserved": true,
+      "no_extra_reset_after_commit": true,
+      "scope": "Finite decoded-command controls; qualified full serial admission is proved universally. The new harness does not replay 290 words bit by bit."
+    },
+    "existing_invalid_graph_controls": 4,
+    "existing_schedule_proof": true,
+    "proved_package_matches_emitter": true,
+    "retained_artifacts": {
+      "core.mlir": {
+        "path": "build/validation/paired-validation-check-06/core.mlir",
+        "sha256": "b8a873066f76e5373911e5ebf8638b13214da98d5e28623af5b467e4d921810c"
+      },
+      "chip.mlir": {
+        "path": "build/validation/paired-validation-check-06/chip.mlir",
+        "sha256": "921fa76e8e668da06eeeb52f6aa1d6b44f73d3a678cef0e2def856b835d05feb"
+      },
+      "assembly.json": {
+        "path": "build/validation/paired-validation-check-06/assembly.json",
+        "sha256": "dd47935675bc4ff72a6cfde8f794c43dd1cb683a70550a2e182a0895c1079641"
+      }
+    },
+    "retained_identity_checked": true,
+    "full_protocol_executable_suite_rerun": false,
+    "full_290_word_serial_upload_replayed_by_new_finite_test": false,
+    "previous_host_manifest_report_proofs_tests_and_component_proposal_unchanged": true,
+    "unchanged_previous_proof_and_test_source_count": 26
+  },
+  "admission_refinement": {
+    "theorem": "Pinwheel.Hardware.Storage.PairedSession.retained_initialized_session",
+    "decoded_theorem": "Pinwheel.Hardware.Storage.PairedSession.upload_admitted",
+    "arbitrary_initial_core_adapters_mailbox_contents_and_q": true,
+    "every_certified_upload_admitted": true,
+    "arbitrary_quiet_gaps": true,
+    "admission_decisions_and_accepted_transcript_derived": true,
+    "inactive_parameter_table_owned_before_row_validation": true,
+    "stopped_initialized_replacement_supported": true,
+    "extra_reset_after_commit": false,
+    "before_and_after_every_execution_edge": true,
+    "all_three_package_output_ports": true,
+    "loader_sideband": "Exact graph semantics; E64 replaces execution state and busy.",
+    "premises": [
+      "explicit single-port SRAM contract",
+      "three reset-low samples and two idle release samples",
+      "image corresponds to canonical E64 source",
+      "qualified digital Serial.Session",
+      "two trailing sampler-drain pins",
+      "decoded execution inputs have init=0 and command!=3"
+    ],
+    "full_290_word_serial_upload_replayed_by_new_finite_test": false,
+    "rtl_emission_or_physical_qualification": false
+  },
+  "proved": [
+    "Every canonical source token, including padding, passes actual row validation when its uploaded parameter table is owned; all parameter, row, boot and idle words pass the actual good check.",
+    "The first 32 accepted words establish ownership of the inactive parameter table used by subsequent validation. The proof permits producer-chosen parameter locations and arbitrary unused 20-bit entries.",
+    "A correctly delivered begin/290-word/commit history for a certified image necessarily establishes the accepted transcript, accepted commit and ready E64 state, with arbitrary quiet gaps and no extra reset after commit.",
+    "The decoded and retained-package upload theorems support replacement from any stopped initialized controller while preserving the existing storage and mailbox guarantees.",
+    "Three reset-low and two idle release samples prepare arbitrary represented package state for the existing qualified digital serial delivery theorem.",
+    "The retained initialized-session theorem composes delivery and derived admission with every before/after execution edge on all three package output ports."
+  ],
+  "open": [
+    "Bind the host source certificate, admission/session proof, emitted implementation and retained physical candidate in one reproducible acceptance report.",
+    "Broaden the execution segment rule to include rejected command 3 without starting a new certificate boundary, if needed.",
+    "Resident SHIFT/KEEP extensions outside canonical E64.",
+    "RTL emitter, CIRCT, synthesis and complete source-to-GDS correspondence.",
+    "Exact-version SRAM internal/electrical qualification and compatible fast operating conditions.",
+    "Analog sampling/board transport, accepted A/B and clean-source physical replay."
+  ],
+  "no_global_memory_axiom": true,
+  "conditional_timed_paired_package_refinement": true,
+  "qualified_digital_serial_delivery_connected": true,
+  "certified_upload_admission_proved": true,
+  "physical_qualification": false,
+  "A_accepted": false,
+  "B_admitted": false,
+  "campaign": {
+    "cad_seconds_total": 8412.163,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2
+  }
+}
