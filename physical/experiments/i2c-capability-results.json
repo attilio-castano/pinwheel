@@ -1,0 +1,570 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-09-29",
+  "study": "docs/protocols/i2c-capabilities.md",
+  "continuation": "docs/research/established-protocol-continuation.md",
+  "base_commit": "2837d3ea4cbcfe035164254eab5a0e7b780a1279",
+  "branch": "codex/i2c-capability-refinement",
+  "candidate": "five-pad-digital",
+  "backend": "paired-validation",
+  "scope": "One/two payload-byte I2C writes with first-NACK STOP; separately loaded nine-attempt bus clear.",
+  "proof_domain": {
+    "address_bits": 7,
+    "payload_bits": 16,
+    "payload_byte_lengths": [
+      1,
+      2
+    ],
+    "phase_cycles": {
+      "minimum": 1,
+      "maximum": 256
+    },
+    "wait_cycles": {
+      "minimum": 1,
+      "maximum": 256
+    },
+    "incoming": "arbitrary consumed digital two-wire histories",
+    "write_positions": 115,
+    "recovery_positions": 30,
+    "recovery_controller_release_attempt_bound": 9,
+    "write_capture_slots": [
+      0,
+      1,
+      2
+    ],
+    "recovery_capture_slots": [
+      0
+    ],
+    "recovery_raw_wire_edge_bound_universal": false,
+    "external_target_liveness_or_timing_theorem": false,
+    "automatic_partial_write_retry": false,
+    "paired_capacity_checked_per_actual_upload": true
+  },
+  "reports": {
+    "wire": {
+      "path": "build/host/i2c-capabilities-02/report.json",
+      "sha256": "424a2a04ac205c7c0e0a634285e4bfab04573937ac5b9099069ac942edb3da28"
+    },
+    "readback": {
+      "path": "build/validation/i2c-source-readback-01/report.json",
+      "sha256": "d08dfa4dfb8cc8ef1bac879855f7750299cc4b0dd76b40cff31d0080e7bd8461"
+    },
+    "foundation": {
+      "path": "build/validation/i2c-foundation-01/report.json",
+      "sha256": "14f62b2513860f637ae61912837b317220abd83a2dc725eebc13c34b7fd93256"
+    },
+    "python": {
+      "path": "build/validation/i2c-python-final-02/report.json",
+      "sha256": "4482526985c2b9e5870f3791c193d17e5b0bb72388941fee37f316f47d2cfad4"
+    }
+  },
+  "closeout": {
+    "path": "build/validation/i2c-continuation-01/closeout.json",
+    "sha256": "8656c82d6be443eae54b104637e796b15fb0ff39ecd0e4d94fc2badf5043e228"
+  },
+  "validation": {
+    "wire": {
+      "write_cases": 11,
+      "bus_clear_cases": 12,
+      "fresh_upload_certificates": 33,
+      "positive_upload_certificates": 29,
+      "canonical_semantic_mutant_certificates": 4,
+      "guard_controls": 2,
+      "negative_categories": [
+        "capture",
+        "status",
+        "open-drain",
+        "wire-order"
+      ],
+      "fixture_statistics": {
+        "write": {
+          "cases": 11,
+          "max_positions": 115,
+          "max_distinct_records": 15
+        },
+        "clear": {
+          "cases": 12,
+          "max_positions": 30,
+          "max_distinct_records": 7
+        }
+      },
+      "max_distinct_records_actual_uploads": 16,
+      "reset_control": {
+        "boundary": "external rst_n through Host.reset; interrupted framing exempt",
+        "interrupted": {
+          "started": true,
+          "clock_count": 1
+        },
+        "engine_stopped": true,
+        "mailbox_cleared": true,
+        "outputs_released": true,
+        "recovery": {
+          "cases": [
+            {
+              "name": "i2c-write-after-rst-n",
+              "result": {
+                "samples": 0,
+                "outcome": 5,
+                "overrun": false,
+                "rejected": false
+              },
+              "retained_twice": true,
+              "consumed": true,
+              "scenario": {
+                "wait_cycles": 32,
+                "stretch_cycles": 0,
+                "scl_stuck": false,
+                "phase_cycles": 4,
+                "payload_bytes": [
+                  166,
+                  83
+                ],
+                "expected_samples": 0,
+                "expected_outcome": 5,
+                "expected_clock_count": 27,
+                "address": 83,
+                "ack_bits": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "wire": {
+                "address": 83,
+                "payload_bytes": [
+                  166,
+                  83
+                ],
+                "transmitted_bytes": [
+                  166,
+                  166,
+                  83
+                ],
+                "observed_ack_bits": [
+                  0,
+                  0,
+                  0
+                ],
+                "clock_count": 27,
+                "started": true,
+                "stopped": true,
+                "phase_cycles": 4,
+                "stretch_cycles": 0,
+                "stretch_events": 0,
+                "scl_stuck": false,
+                "fault_after_rises": null,
+                "guard_clock_lost": false,
+                "fault_delay_cycles": 2,
+                "board_links": [
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    1,
+                    3
+                  ]
+                ]
+              },
+              "outputs_released": true,
+              "decoded_ack_bits": [
+                0,
+                0,
+                0
+              ],
+              "protocol_result": "success"
+            }
+          ],
+          "edges": 86080,
+          "frames": 293
+        }
+      },
+      "recovery_then_write": {
+        "boundary": "same Host and Simulation; explicit cooperating peer replacement",
+        "intervening_chip_resets": 0,
+        "automatic_retry": false,
+        "steps": [
+          "clear",
+          "read-twice",
+          "consume",
+          "replace-peer",
+          "upload-write",
+          "start-write",
+          "read-twice",
+          "consume"
+        ],
+        "recovered": {
+          "cases": [
+            {
+              "name": "i2c-sequence-clear",
+              "result": {
+                "samples": 1,
+                "outcome": 5,
+                "overrun": false,
+                "rejected": false
+              },
+              "retained_twice": true,
+              "consumed": true,
+              "scenario": {
+                "timeout_cycles": 32,
+                "stretch_cycles": 0,
+                "scl_stuck": false,
+                "release_after_pulses": 9,
+                "recovery_policy": "nine_rises_release_only",
+                "phase_cycles": 4,
+                "expected_sda_sample": true,
+                "expected_pulses": 9,
+                "expected_outcome": 5,
+                "capture_slot": 0
+              },
+              "wire": {
+                "recovery_policy": "nine_rises_release_only",
+                "pulse_rises": 9,
+                "release_after_pulses": 9,
+                "sda_released_at": 2231707,
+                "natural_stop": true,
+                "controller_stop_claimed": false,
+                "stretch_cycles": 0,
+                "callback_delay_cycles": 1,
+                "sampler_delay_cycles": 2,
+                "scl_stuck": false,
+                "fault_after_rises": null,
+                "fault_delay_cycles": 2,
+                "guard_clock_lost": false,
+                "board_links": [
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    1,
+                    3
+                  ]
+                ]
+              },
+              "outputs_released": true,
+              "protocol_result": "recovered"
+            }
+          ],
+          "edges": 85757,
+          "frames": 293
+        },
+        "written": {
+          "cases": [
+            {
+              "name": "i2c-sequence-write",
+              "result": {
+                "samples": 0,
+                "outcome": 5,
+                "overrun": false,
+                "rejected": false
+              },
+              "retained_twice": true,
+              "consumed": true,
+              "scenario": {
+                "wait_cycles": 32,
+                "stretch_cycles": 0,
+                "scl_stuck": false,
+                "phase_cycles": 4,
+                "payload_bytes": [
+                  166,
+                  83
+                ],
+                "expected_samples": 0,
+                "expected_outcome": 5,
+                "expected_clock_count": 27,
+                "address": 83,
+                "ack_bits": [
+                  0,
+                  0,
+                  0
+                ]
+              },
+              "wire": {
+                "address": 83,
+                "payload_bytes": [
+                  166,
+                  83
+                ],
+                "transmitted_bytes": [
+                  166,
+                  166,
+                  83
+                ],
+                "observed_ack_bits": [
+                  0,
+                  0,
+                  0
+                ],
+                "clock_count": 27,
+                "started": true,
+                "stopped": true,
+                "phase_cycles": 4,
+                "stretch_cycles": 0,
+                "stretch_events": 0,
+                "scl_stuck": false,
+                "fault_after_rises": null,
+                "guard_clock_lost": false,
+                "fault_delay_cycles": 2,
+                "board_links": [
+                  [
+                    0,
+                    2
+                  ],
+                  [
+                    1,
+                    3
+                  ]
+                ]
+              },
+              "outputs_released": true,
+              "decoded_ack_bits": [
+                0,
+                0,
+                0
+              ],
+              "protocol_result": "success"
+            }
+          ],
+          "edges": 171825,
+          "frames": 586
+        }
+      },
+      "bundled_tool_closure": {
+        "method": "Conservative package inventory: explicit Icarus wrapper/compiler/runtime seeds, all lib/ivl assets, and all top-level bundled Icarus/CIRCT dylibs; each file hashed before use.",
+        "inventory_files": 852,
+        "inventory_unchanged": true,
+        "compiler_backend": "build/tools/oss-cad-suite/lib/ivl",
+        "vpi_modules": [
+          "build/tools/oss-cad-suite/lib/ivl/system.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/v2005_math.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/v2009.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/va_math.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/vhdl_sys.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/vhdl_textio.vpi"
+        ],
+        "loader_overrides_refused": true,
+        "compiler_config_and_vpi_path_overrides_refused": true,
+        "environment_boundary": "OS dynamic loader and system libraries, shell utilities, Python runtime, and Lake/Lean runtime environment; Lean version separately recorded and checked."
+      },
+      "tool_files": 852,
+      "input_count": 264,
+      "lean_version": "Lean (version 4.33.1, arm64-apple-darwin24.6.0, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)",
+      "seconds": 458.911
+    },
+    "readback": {
+      "local_equalities": 1082,
+      "modules": {
+        "core": {
+          "top": "pinwheel_paired_core_controller",
+          "registers": 81,
+          "register_bits": 1469,
+          "outputs": 37,
+          "output_bits": 157,
+          "shared_equations": 45,
+          "local_equalities": 521,
+          "audit": {
+            "declarations": 30586,
+            "theorems": 19477,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "upload-cursor",
+            "parameter-bank",
+            "sram-write"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+        },
+        "chip": {
+          "top": "pinwheel_paired_controller",
+          "registers": 110,
+          "register_bits": 1592,
+          "outputs": 7,
+          "output_bits": 99,
+          "shared_equations": 45,
+          "local_equalities": 561,
+          "audit": {
+            "declarations": 31721,
+            "theorems": 20384,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "sampler",
+            "mailbox-valid",
+            "package-output"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+        }
+      },
+      "session_theorem": "Pinwheel.Artifact.Paired.Package.rtl_initialized_session",
+      "input_count": 261,
+      "seconds": 361.618,
+      "inputs_unchanged": true
+    },
+    "foundation": {
+      "modules": 240,
+      "audited_declarations": 18070,
+      "audited_theorems": 9589,
+      "executable_suites": 35,
+      "kernel_suites": 1,
+      "untrusted_axiom_rejected": true,
+      "elapsed_seconds": 1417.024,
+      "input_count": 329
+    },
+    "python": {
+      "total_tests": 648,
+      "passed": 646,
+      "skipped": 2,
+      "optimized_tests": 47,
+      "elapsed_seconds": 19.764,
+      "input_count": 218
+    }
+  },
+  "artifact_identity": {
+    "prior_spi_manifest": {
+      "path": "physical/experiments/established-protocol-results.json",
+      "sha256": "a51099822ae4729e26a686928bec8e304363a9bd6e3985b0befd7b04462e6b32"
+    },
+    "chip_mlir": [
+      {
+        "path": "build/host/i2c-capabilities-02/chip.mlir",
+        "sha256": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8"
+      },
+      {
+        "path": "build/validation/i2c-source-readback-01/emitted/chip.mlir",
+        "sha256": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8"
+      },
+      {
+        "path": "build/host/spi-capabilities-five-pad-02/chip.mlir",
+        "sha256": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8"
+      }
+    ],
+    "chip_rtl": [
+      {
+        "path": "build/host/i2c-capabilities-02/design.sv",
+        "sha256": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf"
+      },
+      {
+        "path": "build/validation/i2c-source-readback-01/emitted/chip.sv",
+        "sha256": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf"
+      },
+      {
+        "path": "build/host/spi-capabilities-five-pad-02/design.sv",
+        "sha256": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf"
+      }
+    ],
+    "wire_executable": {
+      "path": "build/host/i2c-capabilities-02/host.vvp",
+      "sha256": "0922032caecdc246a23b65f05a1e1bbf3365e92051f6863c28b892b37078499d"
+    },
+    "same_chip_mlir_and_rtl_bytes": true,
+    "wire_executable_byte_equality_to_prior_spi_claimed": false
+  },
+  "implementation_source_sha256": {
+    "Pinwheel.lean": "4c935ece4bdc79a11910226aa4908fb94b92f37dbbee5496404c23a6bd195fcf",
+    "Pinwheel/Hardware/Chip.lean": "2768277df51596972d797e2b099830394e4fb94c2143757240373bfbae06fb4e",
+    "Pinwheel/I2C/WriteTransaction.lean": "4a159a7fc44559f020d7bcec5374213a493688062f7d35ba4abe47e2bb9a3f34",
+    "Pinwheel/I2C/WriteTransactionProofs.lean": "20cefa861e8280e35f23bfeae53e45dfd5cb6807cd9389dc336d7f3ac0dfd463",
+    "Pinwheel/I2C/Recovery.lean": "23f5977922bec080da66310d1c7c04cb8312a4e4d8c7c45fbb6a0e76e300cf4b",
+    "Pinwheel/Compile/I2CWriteTransaction.lean": "65473090d692acd74d72cf51170c5c098c7d0eb2cc4bfa969b45a5379d5b69b9",
+    "Pinwheel/Compile/I2CWriteTransactionProofs.lean": "b3169b5f320edc2e70bd8fea741c4d7f14f6fbc5da539845aaeb7d567501eed6",
+    "Pinwheel/Compile/I2CRecovery.lean": "05d7f393396518e0e048f5168bd162638265f0df3894e16b083d07f40bcc994a",
+    "Pinwheel/Compile/I2CRecoveryProofs.lean": "950618092e53f4bbd78833fc0c3c40d8a140df13e6b412d7a3b40e5a0fb6efe3",
+    "test/I2CWriteTransactions.lean": "b1d0c72d0a7de35b70db0865b305783a99addfb4cc97855d84bde4baa84895d1",
+    "test/I2CRecovery.lean": "ff15a841be69998015de0b8d974576084ab52ee60a1c9d7ef721d1ce6312c73f",
+    "scripts/check-foundation.py": "b772c2469a4764eaf10641d3fef76212bf52d60cc89f0fa36da940b0c02344b9",
+    "scripts/check-i2c-capabilities.py": "a345d25707193eb80e8c9c452fd1cca2d1d82d25603f36f35aba753afb19198b",
+    "scripts/capability_receipt.py": "95defe55f8a97c1ee84b2574862cf87c1dbed2a34c3e010b0f6507c8b015274b",
+    "scripts/i2c_peers.py": "707ae51a98975c3c5ec9720ef206de534399f1ea335a9334f82edfb58b3e3f47",
+    "test/test_i2c_capabilities.py": "005715de4236c1cdfe8341033ceaecfa308ac5e14abfee6788f7882378ba2ea9",
+    "scripts/protocol_tool_closure.py": "81d79c128333721d044e8f3a3225e3bff8edf579a8c98c8fa7134c87beff36b8",
+    "tools/hardware-toolchain.json": "e3200069764a8e44bfda73b3f0e45d28460d9e436da76ece0969510e55f4ef8a"
+  },
+  "behavioral_model_sha256": {
+    "RM_IHPSG13_1P_512x64_c2_bm_bist.v": "8aab6b018ab7dd90014fede340923bac537f610b9c2d9a082ab1c2d953b118c7",
+    "RM_IHPSG13_1P_core_behavioral_bm_bist.v": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12"
+  },
+  "preserved_attempts": [
+    {
+      "status": "passed_debug_only",
+      "log": {
+        "path": "build/validation/i2c-wire-probe-01.log",
+        "sha256": "ae3cd3615693705799e3a04ae75653ec4079661c16b1ae9c3ac8c48cd1e131a2"
+      },
+      "reason": "Two-byte write and pulse9 release against prior SPI executable; no fresh kernel receipt.",
+      "observations": {
+        "path": "build/host/i2c-wire-probe-01/debug-observations.json",
+        "sha256": "9812e130d2c6abcf1ffead60f8e7a0579ebc96e8331d915398372827c60439a7"
+      }
+    },
+    {
+      "status": "failed_debug_probe",
+      "log": {
+        "path": "build/validation/i2c-wire-controls-probe-01.log",
+        "sha256": "5ea88ba878b9616c4ebdb9b6c59be05a5ce47202134c3d5ffcdb03a6bb6757d7"
+      },
+      "reason": "Immediate SCL resinking hid the high pulse from the two-stage sampler; corrected the fault fixture delay."
+    },
+    {
+      "status": "passed_debug_only",
+      "log": {
+        "path": "build/validation/i2c-wire-controls-probe-02.log",
+        "sha256": "62b6a9109e71a3c14fafcecc77e3e85192e9f7822022c8668f2e70646772c2a4"
+      },
+      "reason": "Delayed guarded-high faults and four canonical semantic controls; final gate regenerates and certifies every upload.",
+      "observations": {
+        "path": "build/host/i2c-wire-controls-probe-02/debug-observations.json",
+        "sha256": "9035956297fef32cff97c3ee40ec6d9a4f95b1848f110313abd6d040c47e45ac"
+      }
+    },
+    {
+      "status": "superseded_tool_identity_scope",
+      "receipt": {
+        "path": "build/host/i2c-capabilities-01/report.json",
+        "sha256": "348b0b3b2c01405f3481910d946efc4dfa498e07a92029c3882847eeac1e5539"
+      },
+      "reason": "Wire checks and image certificates passed, but recorded OSS tool identity omitted executable/plugin files behind launch wrappers; gate02 supersedes this receipt."
+    },
+    {
+      "status": "superseded_source_snapshot",
+      "receipt": {
+        "path": "build/validation/i2c-python-final-01/report.json",
+        "sha256": "9b615d8b1ddbe92f76dce5bc7d3d7c68e5232a6c5e85a78a99161800532be38c"
+      },
+      "reason": "Passed643tests/42optimized on first frozen snapshot; final Python rerun covers tool-runtime custody changes and added controls."
+    }
+  ],
+  "physical_boundary": {
+    "A_accepted": false,
+    "physical_evidence_reused": false,
+    "cad_seconds_added": 0,
+    "routes_added": 0,
+    "campaign_cad_seconds": 8843.12,
+    "A_routes_used": 3,
+    "B_routes_reserved": 2,
+    "preexisting_manifests_and_fixtures_unchanged": 217,
+    "unmet_requirements": [
+      "authoritative SRAM internal qualification",
+      "compatible fast-corner characterization",
+      "package-power integration"
+    ]
+  },
+  "artifact_custody": "Generated receipts, focused logs and retained portable bundle are ignored local dependencies; tracked hashes are not a remote backup.",
+  "documentation_validation": {
+    "path": "build/validation/i2c-continuation-01/document-links.json",
+    "sha256": "f36ae1bef5b3adf574e598add455a8bf0d6fd533fba7ca11a6558cb5258933af",
+    "files": 139,
+    "local_links_checked": 1911,
+    "known_historical_missing_artifacts": [
+      {
+        "source": "docs/physical/power-boundary-results.md",
+        "target": "../../build/validation/power-boundary-01/report.json",
+        "reason": "missing path"
+      }
+    ]
+  },
+  "next_capability": "UART receive supervisor and one-entry result-buffer circuitry with explicit unread-result/rearm/drop ownership."
+}

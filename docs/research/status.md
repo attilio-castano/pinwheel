@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-09-29 after delivery of four-mode, one- and two-byte SPI,
-the resolved package interface and fresh RTL interpretation.
+Updated 2026-09-29 after delivery of bounded I²C writes and bus clear,
+following four-mode SPI and the resolved package interface.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -22,10 +22,18 @@ certificates and independently interpreted RTL cover the stated digital scope.
 The fixed five-pad mapping separates MISO observation from MOSI drive. This is
 a new digital candidate; retained A's physical receipts remain historical.
 
-**Next local capability: bounded I²C recovery and two-payload-byte writes.**
+**Delivered local capability: [bounded I²C writes and bus clear](../protocols/i2c-capabilities.md).**
+One/two payload bytes, separate ACK flags, first-NACK STOP and nine controller
+clock-release attempts have universal compiler/reference/E64 proofs. Eleven
+write and twelve recovery wire cases, guarded faults, reset/reload and recovery
+followed by a write on the same engine pass. Fresh chip MLIR/RTL are identical
+to the SPI checkpoint; no circuitry or physical evidence changes.
+
+**Next local capability: UART supervisor and one-entry result-buffer circuitry.**
 The [established-protocol continuation](established-protocol-continuation.md)
-sets the sequence and result-capacity limits. UART supervisor/buffer circuitry
-follows; new protocols are deferred.
+sets the sequence and result-capacity limits. Define unread-result, rearm and
+dropped-arrival ownership before connecting the modeled supervisor to RTL.
+New protocols are deferred.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

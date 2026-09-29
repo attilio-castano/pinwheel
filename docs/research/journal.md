@@ -15,7 +15,7 @@ or interrupted work.
 | Topic | Entry points |
 | --- | --- |
 | Local iteration and retained replay | [Portable A, fresh-source interpretation and power request](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request) |
-| Protocols and pin timing | [Four-mode SPI and resolved package wires](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
+| Protocols and pin timing | [Bounded I²C writes and bus clear](#2026-09-29--bounded-i2c-writes-and-bus-clear), [Four-mode SPI and resolved package wires](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
 | Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
 | Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
@@ -34,7 +34,7 @@ or interrupted work.
 | 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
 | 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
 | 2026-09-26 | [SRAM distribution and write timing](#2026-09-26--sram-distribution-and-write-timing), [competing read paths](#2026-09-26--control-distribution-and-competing-read-paths), [coordinated placement](#2026-09-26--coordinated-status-and-decode-placement) | Complete watchlist, matched coarse routes, rejected regional placement and clock/hold diagnosis |
-| 2026-09-29 | [Portable continuation](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request), [four-mode SPI](#2026-09-29--four-mode-spi-and-a-resolved-package-interface) | Replay portability, power-request boundary and established-protocol capability |
+| 2026-09-29 | [Portable continuation](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request), [four-mode SPI](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [bounded I²C](#2026-09-29--bounded-i2c-writes-and-bus-clear) | Replay portability, power-request boundary and established-protocol capabilities |
 
 ## Future receipt shape
 
@@ -5765,3 +5765,58 @@ candidate with **zero additional CAD or routes**. SRAM qualification,
 compatible fast timing and package power remain open; campaign consumption
 stays **8,843.120 seconds**, three A routes used and two B routes reserved.
 The next capability is bounded I²C recovery and two-payload-byte writes.
+
+## 2026-09-29 — Bounded I2C writes and bus clear
+
+Delivered the second [established-protocol capability](established-protocol-continuation.md)
+from SPI base `2837d3e`. The [study](../protocols/i2c-capabilities.md) records
+one/two payload bytes, independent ACK flags and first-NACK STOP, plus a separate
+nine-attempt bus-clear program. Universal Lean compiler/reference and canonical
+E64 proofs cover all timing configurations and consumed digital histories.
+External target timing/liveness and raw-wire recovery-edge bounds remain separate.
+
+| Gate | Recorded result |
+| --- | --- |
+| Lean foundation | 240 imported modules, 18,070 declarations and 9,589 theorems audited with standard axioms only; 35 executable suites, one kernel suite and untrusted-axiom rejection pass. 329 frozen inputs match; 1417.024 s. |
+| Resolved I²C package wires | 11 write and 12 bus-clear cases pass, including every first-NACK position, release on pulses 1–9, stuck SDA, bounded stretching and stuck-SCL timeout. Two guarded-high fault controls, active-write reset/reload and clear→write without an intervening chip reset pass. 33 fresh kernel certificates cover 29 positive/control uploads and four canonical altered programs rejected for the intended reasons. 264 frozen source inputs, tools, models, consumed copies and generated artifacts match; 458.911 s. |
+| Fresh RTL meaning | 1,082 equalities, component and initialized-session proofs, standard-axiom audits, two unchanged controls, six RTL corruptions and two axiom injections pass. 261 frozen inputs match; 361.618 s. Emitted chip MLIR/RTL equal both the wire gate and the prior SPI checkpoint byte-for-byte. |
+| Python regression | 648 tests: 646 pass and 2 platform skips. All 47 focused optimized tests pass; 218 frozen inputs match; 19.764 s. |
+
+Receipt paths and SHA-256 digests:
+
+- `build/host/i2c-capabilities-02/report.json`: `424a2a04ac205c7c0e0a634285e4bfab04573937ac5b9099069ac942edb3da28`.
+- `build/validation/i2c-source-readback-01/report.json`: `d08dfa4dfb8cc8ef1bac879855f7750299cc4b0dd76b40cff31d0080e7bd8461`.
+- `build/validation/i2c-foundation-01/report.json`: `14f62b2513860f637ae61912837b317220abd83a2dc725eebc13c34b7fd93256`.
+- `build/validation/i2c-python-final-02/report.json`: `4482526985c2b9e5870f3791c193d17e5b0bb72388941fee37f316f47d2cfad4`.
+
+The initial debug probe passed two-byte transmission and pulse9 release against
+the existing SPI executable. A second probe failed its intended guarded-high
+control because immediate SCL resinking could hide the high pulse from the
+sampler. Holding high for two callback intervals fixed the test; a new debug
+probe and the final fresh gate both produce fault status 7. All probe logs and
+debug observations remain retained and hash-bound in the additive
+[manifest](../../physical/experiments/i2c-capability-results.json). Debug runs
+supply no fresh upload or emitted-chip receipt.
+
+The first fresh wire gate passed, but final review found it fingerprinted only
+the simulator launch wrappers. Its passing receipt and the first Python receipt
+remain preserved with their narrower source/tool scope. The final rerun binds
+actual executables, backend assets, VPI modules and bundled shared libraries,
+checks inventory membership at closeout, and pins the compiler backend. System
+libraries, loader, shell and Python/Lean runtimes remain environment assumptions.
+
+The final gate freshly emitted/compiled the chip and certified all actual
+uploads. Its MLIR/RTL match both the new interpreted artifact and the prior SPI
+checkpoint exactly; VVP executable byte equality is not claimed. Four semantic
+mutants receive valid image certificates and then fail capture, status,
+open-drain or wire-order checks. Wrong capture/status controls preserve clean
+bytes, ACKs and STOP, so their rejection is distinct from a wire-format defect.
+Recovery→write uses the same Host/Simulation, consumes both retained mailboxes
+and has zero intervening chip resets. It does not retry an interrupted write.
+
+All 217 prior physical manifests/fixtures match base `2837d3e`, with only an
+additive catalog README row. Zero physical CAD seconds/routes are added; campaign
+use stays at 8,843.120 seconds, three A routes used and two B reserved. SRAM
+internal qualification, compatible fast-corner conditions and package power
+remain open. Next: UART supervisor/buffer circuitry, with unread-result,
+rearm and dropped-arrival ownership resolved before integration.

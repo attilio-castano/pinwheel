@@ -60,8 +60,8 @@ consumed histories is not a universal external-peripheral timing theorem.
 
 ## Next capabilities and stopping boundaries
 
-After this SPI gate, prefer bounded I²C recovery and two-payload-byte writes,
-then integrate the already modeled UART receive supervisor and one-entry result
+SPI and the bounded I²C recovery/write milestone are delivered below. Next
+integrate the already modeled UART receive supervisor and one-entry result
 buffer. Two-byte I²C reads need a separate result-ownership decision: retaining
 16 data bits plus three ACK flags needs 19 slots, exceeding the present 16-slot
 capture contract. UART streaming similarly needs an explicit rule for an unread
@@ -131,3 +131,29 @@ This work adds **zero CAD seconds and zero routes**; campaign use stays at
 receipts and the portable bundle remain ignored local dependencies; tracked
 hashes do not create a durable remote backup. The next capability is bounded
 I²C recovery and two-payload-byte writes.
+
+## Second delivered checkpoint — 2026-09-29
+
+Bounded I²C recovery and one/two-payload-byte writes are delivered locally on
+`codex/i2c-capability-refinement`, based on SPI checkpoint `2837d3e`. The
+[I²C study](../protocols/i2c-capabilities.md) owns contracts, proof names,
+commands and limits; its [manifest](../../physical/experiments/i2c-capability-results.json)
+binds the exact receipts and unchanged chip artifacts.
+
+| Gate | Recorded result |
+| --- | --- |
+| Lean foundation | 240 imported modules, 18,070 declarations and 9,589 theorems audited with standard axioms only; 35 executable suites, one kernel suite and untrusted-axiom rejection pass. 329 frozen inputs match; 1417.024 s. |
+| Resolved I²C package wires | 11 write and 12 bus-clear cases pass, including every first-NACK position, release on pulses 1–9, stuck SDA, bounded stretching and stuck-SCL timeout. Two guarded-high fault controls, active-write reset/reload and clear→write without an intervening chip reset pass. 33 fresh kernel certificates cover 29 positive/control uploads and four canonical altered programs rejected for the intended reasons. 264 frozen source inputs, tools, models, consumed copies and generated artifacts match; 458.911 s. |
+| Fresh RTL meaning | 1,082 equalities, component and initialized-session proofs, standard-axiom audits, two unchanged controls, six RTL corruptions and two axiom injections pass. 261 frozen inputs match; 361.618 s. Emitted chip MLIR/RTL equal both the wire gate and the prior SPI checkpoint byte-for-byte. |
+| Python regression | 648 tests: 646 pass and 2 platform skips. All 47 focused optimized tests pass; 218 frozen inputs match; 19.764 s. |
+
+Recovery remains an explicitly loaded program. A successful clear is consumed
+before a separately loaded write starts on the same host/engine; no intervening
+chip reset or automatic partial-write retry occurs. First NACK stops before any
+later payload and gets its own raw ACK flag. The universal recovery bound is
+nine controller release attempts, with exactly nine observed wire rises checked
+under the cooperating peer assumptions.
+
+All 217 preexisting physical manifests and fixtures match the SPI base commit.
+No physical CAD or routes are added. The next local milestone is UART supervisor
+and one-entry result-buffer circuitry, preserving explicit result ownership.

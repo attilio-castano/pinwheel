@@ -73,10 +73,10 @@ checks new emission without old experiment outputs. The
 integration inputs and activity evidence needed for the next physical decision.
 
 The current [protocol continuation](docs/research/established-protocol-continuation.md)
-focuses on existing capabilities: SPI modes 0–3 and one- or two-byte transfers,
-with separate physical input/output pads and resolved-wire checks. Its changed
-package is a new digital candidate; retained physical results keep their original
-source identity.
+delivers SPI modes 0–3, one/two-byte transfers, bounded I²C writes and bus clear,
+with separate physical input/output pads and resolved-wire checks. The I²C
+programs reuse the same chip circuitry. UART supervisor/buffer integration is
+next; retained physical results keep their original source identity.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

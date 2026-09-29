@@ -28,6 +28,15 @@ process-group timeout cleanup, host input/readback/timeout boundaries, shared co
 checks using disposable files and Python children; it
 requires no CAD tools. The second runs the portable Lean/model gate.
 
+The [I²C capability gate](protocols/i2c-capabilities.md),
+`python3 -B scripts/check-i2c-capabilities.py --tag <fresh-tag>`, checks
+one/two payload-byte writes and separately loaded bus clear on resolved package
+wires. It kernel-certifies every actual upload, verifies independent byte/ACK/STOP
+observations, tests clock faults and reset/reload, and runs recovery followed by
+a write without an intervening chip reset. Sources, tools, behavioral SRAM,
+consumed copies and generated artifacts are frozen and checked at closeout.
+Use the study for timing assumptions and the boundary from physical compliance.
+
 The [SPI transaction gate](protocols/spi-transactions.md) adds an independent
 resolved-pad simulation for the repaired package. Independent `uio_in` snapshots
 remain useful for abstract chip traces, but cannot verify driver ownership or
@@ -58,7 +67,7 @@ The gate:
    theorems; they are not counts of manually written mathematical results.
 3. Runs UART TX/RX, link timing, continuous buffered reception with ideal and
    unequal clocks, original SPI and four-mode transaction images, shared engine,
-   reactive I²C, explicit/counted/binary execution,
+   reactive I²C, bounded one/two-payload writes and nine-attempt recovery, explicit/counted/binary execution,
    register reads, encoding, countdown, timed-interface/fetch, and storage
    certificate checks, static pad-map kernel proofs, serial upload and host-result ownership checks. Their
    existing negative cases remain included.
