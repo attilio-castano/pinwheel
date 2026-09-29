@@ -1,0 +1,450 @@
+{
+  "schema": 1,
+  "date": "2026-09-26",
+  "study": "docs/physical/validation-isolation-experiment.md",
+  "status": "completed_bounded_experiment",
+  "physical_qualification": false,
+  "full_route_admitted": false,
+  "decision": "Retain the equivalent opt-in validation lookup. The measured unrepaired coarse layout fails timing, electrical limits and congestion; post-GRT repair was stopped and not accepted. Preserve the remaining A full-flow attempt.",
+  "baseline": {
+    "manifest": "physical/experiments/design-iteration-results.json",
+    "sha256": "bb03efe9b71d1ea9e82f17dcf1b69b39c1f39428029cd703bfcaac5545d213ab"
+  },
+  "scope": {
+    "architecture_candidates": 1,
+    "clock_period_ns": 20,
+    "image_words": 290,
+    "parameter_records": 32,
+    "positions": 256,
+    "declared_state_bits": 1592,
+    "physical_flip_flops": 1572,
+    "sram_macros": 1,
+    "added_cycles": 0,
+    "timing_exceptions_added": 0,
+    "default_backend_changed": false
+  },
+  "formal": {
+    "theorem": "Pinwheel.Hardware.Storage.PairedValidation.isolatedPush_correct",
+    "scope": "Local push expression under the original upstream binding equations, for arbitrary defined inputs and registers. Whole-graph, emitter and closed paired execution refinement remain open.",
+    "axioms": "standard only",
+    "audited_declarations": 15556,
+    "audited_theorems": 7794
+  },
+  "functional": {
+    "complete_core_and_package_arbitrary_state_SAT": true,
+    "typical_and_slow_mapped_SAT": true,
+    "physical_FF_SRAM_input_and_package_output_SAT": true,
+    "physical_state_outputs_exposed": 1636,
+    "physical_state_inputs_observed": 5000,
+    "core_oracle_edges": 173359,
+    "RTL_mapped_and_physical_pin_edges_each": 331401,
+    "serial_frames_each": 1517,
+    "negative_controls": [
+      "unapproved axiom",
+      "inverted rejection output",
+      "inverted mapped buffer",
+      "hidden physical FF",
+      "inverted physical sequential input"
+    ],
+    "state_intake_unit_tests": 4
+  },
+  "mapping": {
+    "typical_area_um2": 320742.036,
+    "baseline_typical_area_um2": 302239.2384,
+    "area_delta_um2": 18502.7976,
+    "area_delta_percent": 6.1219,
+    "slow_cell_setup_ns": 7.99,
+    "baseline_slow_cell_setup_ns": 3.93,
+    "sram_to_rejection_reachable": false,
+    "hold_repair_required": true
+  },
+  "physical": {
+    "selected_stage": "normal-clock-route-01/01-openroad-globalrouting",
+    "database_sha256": "2040c217363baf1eed14d81faf2d7c90748474e82929c573ad69913149ea6b1d",
+    "corners": {
+      "nom_fast_1p32V_m40C": {
+        "setup_ns": 4.88242,
+        "hold_ns": -0.409959,
+        "capacitance_violations": 224,
+        "slew_violations": 191,
+        "fanout_violations": 0,
+        "path_slacks_ns": {
+          "sram_address": 16.294436,
+          "entry_state": 8.300865,
+          "rejection_status": null,
+          "upload_hold": 0.602086
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_ns": -9.28698,
+        "hold_ns": -0.293061,
+        "capacitance_violations": 217,
+        "slew_violations": 1103,
+        "fanout_violations": 0,
+        "path_slacks_ns": {
+          "sram_address": 10.744295,
+          "entry_state": -7.479763,
+          "rejection_status": null,
+          "upload_hold": 1.136933
+        }
+      },
+      "nom_typ_1p20V_25C": {
+        "setup_ns": -0.00269473,
+        "hold_ns": -0.3771,
+        "capacitance_violations": 221,
+        "slew_violations": 459,
+        "fanout_violations": 0,
+        "path_slacks_ns": {
+          "sram_address": 14.277612,
+          "entry_state": 2.432508,
+          "rejection_status": null,
+          "upload_hold": 0.810017
+        }
+      }
+    },
+    "placed_area_um2": 376176.6432,
+    "placed_instances": 12183,
+    "die_um": [
+      0.0,
+      0.0,
+      1289.28,
+      710.64
+    ],
+    "historical_cell_area_allowance_um2": 359372.43823679996,
+    "over_historical_cell_area_allowance_um2": 16804.2049632,
+    "comparison_rule_is_not_competition_limit": true,
+    "coarse_overflow_by_layer": {
+      "Metal1": {
+        "resource": 0,
+        "demand": 0,
+        "usage_percent": 0.0,
+        "max_horizontal": 0,
+        "max_vertical": 0,
+        "overflow": 0
+      },
+      "Metal2": {
+        "resource": 132967,
+        "demand": 104487,
+        "usage_percent": 78.58,
+        "max_horizontal": 1,
+        "max_vertical": 3,
+        "overflow": 1254
+      },
+      "Metal3": {
+        "resource": 162127,
+        "demand": 131100,
+        "usage_percent": 80.86,
+        "max_horizontal": 5,
+        "max_vertical": 1,
+        "overflow": 6636
+      },
+      "Metal4": {
+        "resource": 130502,
+        "demand": 41341,
+        "usage_percent": 31.68,
+        "max_horizontal": 2,
+        "max_vertical": 4,
+        "overflow": 1021
+      },
+      "Total": {
+        "resource": 425596,
+        "demand": 276928,
+        "usage_percent": 65.07,
+        "max_horizontal": 8,
+        "max_vertical": 8,
+        "overflow": 8911
+      }
+    },
+    "post_GRT_repair_completed": false,
+    "standard_width_control_changed_clock_rules": 10,
+    "standard_width_control_circuit_and_geometry_unchanged": true,
+    "routed_geometry_and_power_binding_pass": true,
+    "wire_estimates_complete_for_consumed_nets": true,
+    "unannotated_unused_drivers_each_corner": 198,
+    "worst_slow_path": {
+      "endpoints": {
+        "_14336_": {
+          "register": "r_active",
+          "bit": 0
+        },
+        "_12949_": {
+          "register": "r_cached",
+          "bit": 10
+        }
+      },
+      "mapped_minimum_buffers": [
+        "_06393_",
+        "_06394_",
+        "_10841_",
+        "_10842_",
+        "_10843_",
+        "_10844_",
+        "_10866_",
+        "_10908_",
+        "_11005_"
+      ]
+    },
+    "new_detailed_routing_or_extraction": false
+  },
+  "resource_ledger": {
+    "entries": [
+      {
+        "name": "Prior design-iteration phase",
+        "seconds": 2640.603,
+        "receipt": "physical/experiments/design-iteration-results.json"
+      },
+      {
+        "name": "Architecture validation 01 (entire command elapsed, conservatively charged)",
+        "seconds": 0.022,
+        "receipt": "build/validation/paired-validation-check-01/report.json"
+      },
+      {
+        "name": "Architecture validation 02 (entire command elapsed, conservatively charged)",
+        "seconds": 5.287,
+        "receipt": "build/validation/paired-validation-check-02/report.json"
+      },
+      {
+        "name": "Architecture validation 03 (entire command elapsed, conservatively charged)",
+        "seconds": 1.119,
+        "receipt": "build/validation/paired-validation-check-03/report.json"
+      },
+      {
+        "name": "Architecture validation 04 (entire command elapsed, conservatively charged)",
+        "seconds": 4.854,
+        "receipt": "build/validation/paired-validation-check-04/report.json"
+      },
+      {
+        "name": "Architecture validation 05 (entire command elapsed, conservatively charged)",
+        "seconds": 8.856,
+        "receipt": "build/validation/paired-validation-check-05/report.json"
+      },
+      {
+        "name": "Architecture validation 06 (entire command elapsed, conservatively charged)",
+        "seconds": 72.579,
+        "receipt": "build/validation/paired-validation-check-06/report.json"
+      },
+      {
+        "name": "Initial floorplan",
+        "seconds": 10.537,
+        "receipt": "build/validation/paired-validation-isolation-01/paired-validation-import-01-receipt.json"
+      },
+      {
+        "name": "Import, macro placement, placement/CTS and stopped strict routing",
+        "seconds": 378.41,
+        "receipt": "build/validation/paired-validation-isolation-01/physical-screen-receipt.json"
+      },
+      {
+        "name": "Read-only pinned flow-order introspection",
+        "seconds": 0.204,
+        "note": "0.203474 s metadata invocation rounded upward; no circuit loaded."
+      },
+      {
+        "name": "Congestion-retaining NDR route, timed out",
+        "seconds": 604.108,
+        "receipt": "build/validation/paired-validation-isolation-01/coarse-receipt.json"
+      },
+      {
+        "name": "Standard-width clock control and stopped repair",
+        "seconds": 282.208,
+        "receipt": "build/validation/paired-validation-isolation-01/normal-clock-receipt.json"
+      },
+      {
+        "name": "Read-only explicit-corner timing and export",
+        "seconds": 20.341,
+        "receipt": "build/validation/paired-validation-isolation-01/routed-screen-receipt.json"
+      },
+      {
+        "name": "Implemented-circuit SAT and pin replay",
+        "seconds": 51.318,
+        "receipt": "build/validation/paired-validation-isolation-01/implemented-check-01/report.json"
+      },
+      {
+        "name": "Read-only exact physical target inspection",
+        "seconds": 0.467,
+        "receipt": "build/validation/paired-validation-isolation-01/routed-intake-receipt.json"
+      }
+    ],
+    "total_charged_CAD_seconds": 4080.913,
+    "new_phase_charged_CAD_seconds": 1440.31,
+    "budget_seconds": 28800,
+    "remaining_seconds": 24719.087,
+    "remaining_A_full_flow_attempts": 1,
+    "A_full_flow_attempts_used_this_phase": 0,
+    "cpus": 4,
+    "memory_gib": 6,
+    "owned_containers_absent": true,
+    "one_CAD_process_at_a_time": true
+  },
+  "receipts": [
+    {
+      "path": "build/validation/paired-validation-check-01/report.json",
+      "sha256": "4ea6246a76a15b14a1216066ff64aead6ce7e626ba912409e42fd4060ca1a29d",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-check-02/report.json",
+      "sha256": "d25bb5e00cfa70fb16dcf2b5ff4630f968c2f4eca4be9c6b14ff7a1935e0e96a",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-check-03/report.json",
+      "sha256": "96293c1b10cbcf217e3f17bba3077553e3a37a034e90008e9848bf41cb0fc0d5",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-check-04/report.json",
+      "sha256": "a5644787fe7bb0d16c96970303bd6d5c9af58dd57ef5093f5cab9ea0bf544b46",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-check-05/report.json",
+      "sha256": "a1f7e9b4f4ca2e8504bd717c840e385c48f1fefdae3fd656849de7e24920d48b",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-check-06/report.json",
+      "sha256": "260f1459b37bcc0aaf3193743f8981d92452d2c62fdaea03c41d3664eddd229a",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-foundation-01/report.json",
+      "sha256": "b2782cd9dde86a6d003c277d50bba0dec3753cc7dd252323a4e8df998f4c3b14",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/request.json",
+      "sha256": "67227e9d167eff4081a2bd2d10ee14ed63c1805aa21cee0b95436eff4b38a003",
+      "status": "recorded"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/state-intake-tests.json",
+      "sha256": "a17069b41ce3d5cea6f5b27586bbd2babf7e1598cbbaede7af26b1039113da9e",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/paired-validation-import-01-receipt.json",
+      "sha256": "d78ae6abbc157ac52b1d1250b5887c3c7f42df10d8886198312d2be5d1dfd7cb",
+      "status": "completed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/physical-screen-receipt.json",
+      "sha256": "a83b628b3b54afe397e0cb9be5273a6fe543c59f7c89379249d1a7aef231c42d",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/strict-grt-stop.json",
+      "sha256": "87eaca13d496eabf13b4aae02f6cbd4550a5eecff9704e49fe8c8ebecfacb01a",
+      "status": "recorded"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/coarse-receipt.json",
+      "sha256": "893b6acc77dd34ad2651bb563cbbfb44e4643013531a3fe7bd69d53e00ebe633",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/normal-clock-receipt.json",
+      "sha256": "42c8c6cc29e447bc4576d274929b5814dc7c6ddf31ca7d5babfd8740826514ef",
+      "status": "failed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/normal-clock-stop.json",
+      "sha256": "bd37bad499824492663b04579b6411ed7c06928e9e22f844a548e9be34fc4bdb",
+      "status": "recorded"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/normal-clock-input/receipt.json",
+      "sha256": "da283043161c7c3b13a466c83fdac482bcc91600f92d37cedc9f7e226d9e97a8",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/routed-screen-receipt.json",
+      "sha256": "8b4c510c7c2d26f5ca9a02d234cdac8f78399c061cfa89c42f3b759ac381ec71",
+      "status": "completed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/routed-screen-timing/report.json",
+      "sha256": "3d4ff642573bc526492391fd895c7cd3dcc061fe299964d27a57dd0945901357",
+      "status": "completed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/routed-intake-receipt.json",
+      "sha256": "63f790e6d0d5e9735b4705c86dc606183fe2d90a11ed9cc348c3e1084b760524",
+      "status": "completed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/routed-intake/report.json",
+      "sha256": "7b4636382b301ddb095b0803f5134fad82e7629873e86f97f839fcb83cf05aa2",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/implemented-check-01/report.json",
+      "sha256": "6ed950451f7e2cf7b9bb67db4bc6c36801a45467899410287b8d491b029ec98b",
+      "status": "passed"
+    },
+    {
+      "path": "build/validation/paired-validation-isolation-01/screen-analysis.json",
+      "sha256": "221ebe5af2dabe72da9b684aa0b35b429a701d9f98f5a326b035ba2587db35fd",
+      "status": "passed"
+    },
+    {
+      "path": "build/physical/paired-validation-01/inputs.json",
+      "sha256": "906f8c7a0fcdc76d781c8154b6219377ba71e2d15c8530e5038d4446750f92f9",
+      "status": "recorded"
+    },
+    {
+      "path": "build/physical/paired-validation-01/import-verified.json",
+      "sha256": "048d007007329323b45b671f82bb47bab28bdb9cbb2ccaedcb0866338c3abbd8",
+      "status": "passed"
+    },
+    {
+      "path": "build/physical/paired-validation-01/macro-verified.json",
+      "sha256": "6bff2e5dd6611f9517b6f06eec5889c1055834a215fb5d72752b1d06cfcb7551",
+      "status": "passed"
+    }
+  ],
+  "source_sha256": {
+    "Pinwheel.lean": "46a4627a0b95f02bbcab19e14aa989765bc640be237393a05b5fe2c2ebc42710",
+    "Pinwheel/Hardware/Storage/PairedValidation.lean": "56804189e67b685739061ca3a05a5fce9c92d9f8fcbf653bacca9e9010459965",
+    "Pinwheel/Hardware/Storage/PairedController.lean": "28143757cbb09f9df3180dfdeaaf36b67d4d224fa072cb1caa4d88cb0b9b930d",
+    "test/PairedValidationEmit.lean": "fd95d501b91d2951416f1d33cf92b39eac7d21d55344359177a5554d7899609b",
+    "scripts/check-paired-validation.py": "7a1b29fdbcf28ac105f814c3474b55c4687932dcd4bd782b6e29997100e59c06",
+    "test/test_paired_validation.py": "47b645b90ca6c1005ff4347db2a71db0d52b24e53ebd98989e7f8fc6fc258a19",
+    "physical/targets/paired-validation.json": "5066579d0c2a847d012fffac7412016be7453bd44277f2de16a52d1a91ce73ed",
+    "physical/experiments/paired-validation-mapping.json": "4586253a4f2b2bf7863d6f99a9988283fc9125c3a8c384a81ac67ae3c46b9c9f"
+  },
+  "recipe_sha256": {
+    "build/validation/paired-validation-isolation-01/coarse-launch.py": "9733481af2db741b3b3c243052cd5faee77084fdc90194f9cdf96f06d404b216",
+    "build/validation/paired-validation-isolation-01/coarse-worker.py": "11c24e28e073d3449254af060a9f1aa1b4de48216cabe6bc462db8498c7d1217",
+    "build/validation/paired-validation-isolation-01/implemented-check.py": "8b2801af76e9708ff51c442c74da5eb7e8659c215fdce1caf9708a9139efa6dd",
+    "build/validation/paired-validation-isolation-01/normal-clock-launch.py": "124fba00c4b74204053e11049768d3a133fa34ecfdb8e1200d73eed07ee32477",
+    "build/validation/paired-validation-isolation-01/normal-clock-prepare.py": "daab1b701f65fddbd1eb38eabc0df0f4079b007620b7dc0d2a24847caa205f3b",
+    "build/validation/paired-validation-isolation-01/normal-clock-worker.py": "b83d919a7bf0d1347730b54380b31de0166f2a2566715edd04b5be15d471832c",
+    "build/validation/paired-validation-isolation-01/physical-screen.py": "bedf1f796a574882fb3acbe242fb9c8de4f1620022e5a4d7dd050ac03be27ad8",
+    "build/validation/paired-validation-isolation-01/routed-intake-launch.py": "830715fec761826cc7a147c682e117b2417d60bea2fb8d3d2ce1c167b5b557c3",
+    "build/validation/paired-validation-isolation-01/routed-intake-worker.py": "9b49691227806f50cd55bad774d581ed6aa5bb800d7b7fd097af6fa0422e969f",
+    "build/validation/paired-validation-isolation-01/routed-screen-launch.py": "12ead998697164c4aac44d728f4e0a3f39b7d2fce558f3f289a10acd08afd942",
+    "build/validation/paired-validation-isolation-01/routed-screen-worker.py": "436a79f3d3eb4c64b17dc962c7161d3204fc55cac8936fcea894bbd7b0e030be",
+    "build/validation/paired-validation-isolation-01/screen-analysis.py": "601905949b455bac76afe56a2d0ecee410ebfe508a274d62155cd44ecec625db",
+    "build/validation/paired-validation-isolation-01/coarse-request.json": "4125d77177151fefe229a01e434b2ba78633dd7b420295a01c6e0135b600faaf",
+    "build/validation/paired-validation-isolation-01/normal-clock-request.json": "edd2fde37c1a3bd36102983e1b7daf3e98c93a11838e80b19cd49c583a2f0b2d",
+    "build/validation/paired-validation-isolation-01/request.json": "67227e9d167eff4081a2bd2d10ee14ed63c1805aa21cee0b95436eff4b38a003",
+    "build/validation/paired-validation-isolation-01/routed-intake-request.json": "4e794e4d0623db9aba39c82dff3c562e377ce224ae3a71632f09c80b371f327b",
+    "build/validation/paired-validation-isolation-01/routed-screen-request.json": "822b0f781d332733e0869955e52190adcf37301b1a06b110f88bc5462caccb34",
+    "build/validation/paired-validation-isolation-01/physical-overrides.json": "e7d386dd557ff11a4c4f1588f9447f6adf041bf3877fb58b61764886c3a778dd"
+  },
+  "key_artifacts_sha256": {
+    "build/validation/paired-validation-check-06/chip.sv": "1be171be95cff713eeb1778426d529ebe54bb7030142c0cda08d9c8ca9912934",
+    "build/validation/paired-validation-check-06/typical/design.v": "6227f6b198d639f8fae44ce148cead8f00723fa89471e56651dbc24eeaabb21e",
+    "build/validation/paired-validation-isolation-01/routed-screen-timing/implemented.v": "85aa62b61d0d3c1f5a0bf2669a7e31fb9e1ebbf294c56a33e896bc0b76fbc5cf",
+    "build/validation/paired-validation-isolation-01/normal-clock-route-01/01-openroad-globalrouting/tt_um_pinwheel.odb": "2040c217363baf1eed14d81faf2d7c90748474e82929c573ad69913149ea6b1d"
+  },
+  "boundaries": [
+    "Cell-only and calibrated coarse-route timing are not final extraction.",
+    "The failed physical screen selects the completed first coarse route; the subsequent repair is unfinished.",
+    "The fast-screen standard cells (-40 C) and SRAM (-55 C) are not a qualified matched corner.",
+    "The old physical baseline and new fresh floorplan are not a matched one-variable placement experiment; do not attribute every physical difference solely to lookup duplication.",
+    "No whole paired-controller/package/compiler refinement, accepted A, design B, or clean-source physical replay is claimed.",
+    "Physical recipes depend on declared local build inputs and pinned tool/PDK artifacts; hashes identify them but do not reconstruct missing artifacts."
+  ],
+  "next_discriminator": "Compare a physically aware distribution of the active-bank/control signals with the observed nine minimum-strength-buffer chain. Preserve the verified circuit contract, record area, and complete matched placement/routing/timing checks before considering full-route admission."
+}

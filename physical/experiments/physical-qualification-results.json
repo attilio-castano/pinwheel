@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "status": "assessed_three_blockers",
+  "study": "docs/physical/physical-qualification-assessment.md",
+  "recipe": {
+    "path": "physical/fixtures/physical-qualification/audit.py",
+    "sha256": "aca7b171e32d1e96ffd6ddddd3c5b05beaa6a77a40e4b24f2ebfe34150b8eaac"
+  },
+  "reproduction": "physical/fixtures/physical-qualification/README.md",
+  "predecessor": {
+    "path": "physical/experiments/design-acceptance-readback-results.json",
+    "sha256": "54b1ca809f61e9da33cf632861fb7de5ceab2f5e188c860924a3ecfff5fa0f19"
+  },
+  "report": {
+    "path": "build/validation/physical-qualification-01/inventory-02.json",
+    "sha256": "61e8b52414a85696841ee578bbd2cec69043415e26da641bbf73fbac06d172e8"
+  },
+  "replay": {
+    "path": "build/validation/physical-qualification-01/replay.json",
+    "sha256": "61e8b52414a85696841ee578bbd2cec69043415e26da641bbf73fbac06d172e8"
+  },
+  "replay_byte_identical": true,
+  "A_accepted": false,
+  "B_admitted": false,
+  "complete_design_iteration": false,
+  "blockers": [
+    "sram_qualification",
+    "timing_conditions",
+    "package_power"
+  ],
+  "new_qualification_evidence": false,
+  "decisions": [
+    {
+      "requirement": "sram_qualification",
+      "disposition": "external_evidence_required",
+      "finding": "Pinned supplied views match both captured branches. PR 1121 keeps the disputed width and proposes Metal1 for the three single-port bit-cell resistors, unlike the retained metal2/metal3 witnesses.",
+      "needed": "Authoritative layer and width convention or corrected views, and exact-version internal/behavioral qualification covering the permitted environment.",
+      "local_reopening": "Replay the retained tile and controls after an authoritative interpretation; remaining contexts and complete macro qualification still apply."
+    },
+    {
+      "requirement": "timing_conditions",
+      "disposition": "external_characterization_or_bound_required",
+      "finding": "All six standard-cell and three exact-macro libraries match the captured dev blobs. No compatible replacement fast pair is in that inventory. The only k_temp coefficients are two zero-valued power coefficients in each SRAM view; no timing temperature-scaling coefficients are supplied.",
+      "needed": "Compatible logic/SRAM characterization or an applicable conservative bound on relevant delay and constraint arcs.",
+      "local_reopening": "Evaluate the saved extracted circuit with the qualified evidence; current mixed-pair margins are not characterization bounds."
+    },
+    {
+      "requirement": "package_power",
+      "disposition": "local_experiment_after_integration_contract",
+      "finding": "Default power sources come first from block-pin shape nodes when available; the candidate exposes strap-spanning supply shapes. Saved power uses modeled input activity and no qualified source/impedance/activity contract.",
+      "needed": "Both rails source locations/contact geometry, voltage tolerances, external impedance interpretation, justified activity envelope, and an allowable local-rail budget tied to timing.",
+      "local_reopening": "Saved-layout default control, independent source/activity sensitivity, then combined justified conditions. Unqualified scenarios remain conditional; static IR is not transient-package or SRAM-internal power qualification."
+    }
+  ],
+  "candidate": {
+    "odb": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.odb",
+      "sha256": "c979ec7cdf2b1e0f6b6e3ab18d3d52c62265f4046b4722ebf875126496df8535"
+    },
+    "nl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.nl.v",
+      "sha256": "a02f00f975bc7c635e6a77b3452ac2939d3061a37804de021ba3aac381acc75e"
+    },
+    "pnl": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.pnl.v",
+      "sha256": "11f840a95cc296c8f2998233fd9d985103ef4b8bbe7cb70fff5b7be0d45fd577"
+    },
+    "sdc": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/01-openroad-fillinsertion/tt_um_pinwheel.sdc",
+      "sha256": "51280105ac62d05ef6c29fb414be2bbd1379cf95456b86368ef961a0ebf933e4"
+    },
+    "gds": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/07-klayout-streamout/tt_um_pinwheel.gds",
+      "sha256": "3b2d969813c6e7f13a9baa7d3fab4280366410b94c2fbc24951b4acfe48653f7"
+    },
+    "def": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/02-odb-cellfrequencytables/tt_um_pinwheel.def",
+      "sha256": "756c7b5dc68f3c00cb03fd13e877217d26b8577635b2f48782db4a9631003b30"
+    },
+    "spice": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/13-magic-spiceextraction/tt_um_pinwheel.spice",
+      "sha256": "8623477f92e7015d2b6825665f1c0a470c27f3659b6a8fd49c48135280bcd8c0"
+    },
+    "spef": {
+      "path": "build/validation/chip-finalization-01/finalize-01/output/flow/03-openroad-rcx/nom/tt_um_pinwheel.nom.spef",
+      "sha256": "67a376fe60b4b7b28429d5c180b88ec1d8a2a31524bf8a61d415ccd11721a5f0"
+    }
+  },
+  "inventory": {
+    "verified_files": 64,
+    "libraries": 9,
+    "captured_main_revision": "5e6d592e4002946a4616f798c357f0f3c06cf3b6",
+    "captured_dev_revision": "0488153564fdae82164201091e1c4375b97e61ad",
+    "lvsres_proposal_revision": "22a1f12ed015b52ccb689e71f9f2a3dadd6a8cdb",
+    "lvsres_proposal_merged": false
+  },
+  "public_captures": [
+    {
+      "path": "build/validation/physical-qualification-01/sources/receipt.json",
+      "sha256": "b66022ea002e57f15a1dbeb4e788195f77a2a2c18cc93dc73f734a1e5309380b"
+    },
+    {
+      "path": "build/validation/physical-qualification-01/tool-sources/receipt.json",
+      "sha256": "a34d7f20cc4156c8792eb65c36774978838e5a706f9e8e09af10d2eadd0dd28a"
+    }
+  ],
+  "capture_recipes": [
+    {
+      "path": "build/validation/physical-qualification-01/fetch_sources.py",
+      "sha256": "29ead4007bc1b3d4f1f309447a96761684f51df909fa0e24d06bee12aa61618d"
+    },
+    {
+      "path": "build/validation/physical-qualification-01/fetch_tool_sources.py",
+      "sha256": "289bab93c8cc0db3dfc2fc0c591adc72a4c20e58fc00f92bff50d0e625699351"
+    }
+  ],
+  "resource_ledger": {
+    "this_continuation_cad_seconds": 0,
+    "cumulative_cad_seconds": 8412.163,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2,
+    "additional_full_routes": 0
+  },
+  "external_message_sent": false,
+  "chip_changed": false,
+  "installed_PDK_changed": false,
+  "acceptance_policy_changed": false,
+  "physical_tools_run": false,
+  "scope": "Retained-artifact inventory and captured primary-source interpretation. No new physical pass, proof, package measurement or acceptance override.",
+  "validation": {
+    "path": "build/validation/physical-qualification-01/validation.json",
+    "sha256": "d3c2d503da04d4c86984c99afe35df525b4b4fad0fddad272d91b7c6ddcf2de0"
+  },
+  "validation_recipe": {
+    "path": "build/validation/physical-qualification-01/validate.py",
+    "sha256": "aad4a46262789e96465944b6472844bb975018001470365154f47dbefe80a708"
+  },
+  "study_sha256": "6f8ddb27e65fb8078ec9933eef8ca72d11be5abc14fe290b73831e3f85a6b6bf"
+}

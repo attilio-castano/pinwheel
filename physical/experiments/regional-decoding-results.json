@@ -1,0 +1,770 @@
+{
+  "schema": 1,
+  "status": "experiment-completed",
+  "recorded_at_utc": "2026-09-25T20:30:30.366446+00:00",
+  "decision": "Retain regional decoding as a measured timing technique. Do not promote either local candidate or the coarse-routed chip; next work is the complete SRAM bit-51 distribution and upload-to-SRAM hold/slew environment.",
+  "source_study": {
+    "path": "physical/experiments/paired-organization-study-results.json",
+    "sha256": "a4a2aa47a5521d09e4a58241a405e44f7105066949f4a9780508c51ff4096264"
+  },
+  "source_route": {
+    "path": "physical/experiments/paired-locality-route-results.json",
+    "sha256": "765d7b43fdc4a35687b8c14e9afe41bc4c9f2290dc2f6128f28970e49e748b5a"
+  },
+  "bounds": {
+    "total_cad_seconds": 1200,
+    "measurement_seconds": 180,
+    "edit_seconds": 120,
+    "coarse_route_seconds": 300,
+    "max_candidate_variants": 2,
+    "cpus": 2,
+    "memory_gib": 2
+  },
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "source_database_sha256": "cbd36b49f8ebe75aa269ec30dd1753a6aebd032ca493096c76cbd0d00fbfd904",
+  "area_reference": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359371.6704,
+    "historical_limit_um2": 359372.43823679996,
+    "size_overage_allowed_for_exploration": true
+  },
+  "variants": {
+    "baseline": {
+      "database_sha256": "cbd36b49f8ebe75aa269ec30dd1753a6aebd032ca493096c76cbd0d00fbfd904",
+      "area_um2": 359371.6704,
+      "incremental_area_um2": 0.0,
+      "over_old_area_allowance_um2": -0.7678367999615148,
+      "increment_percent_of_reference": 0.0,
+      "total_percent_above_reference": 0.2997856985599068,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.0645505,
+          "timing__setup__ws": 9.15959
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 12,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.411633,
+          "timing__setup__ws": -0.0558131
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.178716,
+          "timing__setup__ws": 5.67786
+        }
+      },
+      "measured_connections": 122,
+      "electrical_reserve_counts": {
+        "within_reserve": 117,
+        "failing": 4,
+        "below_reserve": 1
+      },
+      "below_electrical_reserve": [
+        {
+          "net": "_01924_",
+          "reserve": -0.14085918103229955,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02988_",
+          "reserve": -0.3913891143444354,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03097_",
+          "reserve": -0.1986118087221944,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03552_",
+          "reserve": -0.29475359820985625,
+          "verdict": "failing"
+        },
+        {
+          "net": "_04718_",
+          "reserve": 0.19914588092476204,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "selected_slacks": {
+        "nom_fast_1p32V_m40C": {
+          "mode_status_matched_min": 5.256045818,
+          "mode_status_matched_max": 9.159592628,
+          "mode_status_endpoints_min": 1.517425179,
+          "mode_status_endpoints_max": 9.159592628,
+          "sram_status_matched_min": 6.047111988,
+          "sram_status_matched_max": 9.304459572,
+          "sram_status_endpoints_min": 5.141667843,
+          "sram_status_endpoints_max": 9.199738503,
+          "input_hold_matched_min": 0.064550534,
+          "input_hold_matched_max": 15.664151192,
+          "input_hold_endpoints_min": 0.064550534,
+          "input_hold_endpoints_max": 15.663778305,
+          "parameter_hold_matched_min": 0.101285927,
+          "parameter_hold_matched_max": 19.443656921,
+          "parameter_hold_endpoints_min": 0.101285927,
+          "parameter_hold_endpoints_max": 19.431148529
+        },
+        "nom_slow_1p08V_125C": {
+          "mode_status_matched_min": 12.399085999,
+          "mode_status_matched_max": -0.055813134,
+          "mode_status_endpoints_min": 3.453647137,
+          "mode_status_endpoints_max": -0.055813134,
+          "sram_status_matched_min": 14.658238411,
+          "sram_status_matched_max": 0.113294266,
+          "sram_status_endpoints_min": 12.532625198,
+          "sram_status_endpoints_max": 0.069961816,
+          "input_hold_matched_min": 0.41291517,
+          "input_hold_matched_max": 15.219179153,
+          "input_hold_endpoints_min": 0.411632836,
+          "input_hold_endpoints_max": 15.219179153,
+          "parameter_hold_matched_min": 0.541411281,
+          "parameter_hold_matched_max": 18.902423859,
+          "parameter_hold_endpoints_min": 0.541411281,
+          "parameter_hold_endpoints_max": 18.866794586
+        },
+        "nom_typ_1p20V_25C": {
+          "mode_status_matched_min": 7.890503407,
+          "mode_status_matched_max": 5.677858353,
+          "mode_status_endpoints_min": 2.223922014,
+          "mode_status_endpoints_max": 5.677858353,
+          "sram_status_matched_min": 9.198526382,
+          "sram_status_matched_max": 5.944430828,
+          "sram_status_endpoints_min": 7.827730656,
+          "sram_status_endpoints_max": 5.909597397,
+          "input_hold_matched_min": 0.178716272,
+          "input_hold_matched_max": 15.513310432,
+          "input_hold_endpoints_min": 0.178716272,
+          "input_hold_endpoints_max": 15.513310432,
+          "parameter_hold_matched_min": 0.258951634,
+          "parameter_hold_matched_max": 19.247932434,
+          "parameter_hold_endpoints_min": 0.258951634,
+          "parameter_hold_endpoints_max": 19.223810196
+        }
+      },
+      "global_route_overflow": 33.0,
+      "congested_grid_edges": 33,
+      "native_grid_comparable": true,
+      "native_grid_boundary": "Complete coarse-route snapshots are comparable. Incremental-probe grid usage is partial and cannot establish zero whole-chip overflow.",
+      "clock_ndr_bindings": {
+        "clk": "CTS_NDR_0",
+        "clk_regs": "CTS_NDR_1",
+        "clknet_0_clk": "CTS_NDR_0",
+        "clknet_0_clk_regs": "CTS_NDR_1",
+        "delaynet_0_clk": "CTS_NDR_0",
+        "delaynet_1_clk": "CTS_NDR_0",
+        "delaynet_2_clk": "CTS_NDR_0",
+        "delaynet_3_clk": "CTS_NDR_0",
+        "delaynet_4_clk": "CTS_NDR_0"
+      }
+    },
+    "regional": {
+      "database_sha256": "9a844528e995dccb23e16f02c7582573b9c346abf01483102bf8071a1526f854",
+      "area_um2": 359393.4432,
+      "incremental_area_um2": 21.772799999976996,
+      "over_old_area_allowance_um2": 21.00496320001548,
+      "increment_percent_of_reference": 0.006076737132964886,
+      "total_percent_above_reference": 0.30586243569288296,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 2,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.0645505,
+          "timing__setup__ws": 9.19972
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 12,
+          "design__max_fanout_violation__count": 2,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.411633,
+          "timing__setup__ws": 0.0700471
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 2,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.178716,
+          "timing__setup__ws": 5.9096
+        }
+      },
+      "measured_connections": 124,
+      "electrical_reserve_counts": {
+        "within_reserve": 120,
+        "failing": 4
+      },
+      "below_electrical_reserve": [
+        {
+          "net": "_01924_",
+          "reserve": -0.14085918103229955,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02988_",
+          "reserve": -0.3913891143444354,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03097_",
+          "reserve": -0.1986118087221944,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03552_",
+          "reserve": -0.29475359820985625,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "selected_slacks": {
+        "nom_fast_1p32V_m40C": {
+          "mode_status_matched_min": 4.938426495,
+          "mode_status_matched_max": 9.444779396,
+          "mode_status_endpoints_min": 1.517425179,
+          "mode_status_endpoints_max": 9.444779396,
+          "sram_status_matched_min": 6.047111988,
+          "sram_status_matched_max": 9.304459572,
+          "sram_status_endpoints_min": 5.141667843,
+          "sram_status_endpoints_max": 9.199716568,
+          "input_hold_matched_min": 0.064550534,
+          "input_hold_matched_max": 15.664151192,
+          "input_hold_endpoints_min": 0.064550534,
+          "input_hold_endpoints_max": 15.663778305,
+          "parameter_hold_matched_min": 0.101285979,
+          "parameter_hold_matched_max": 19.443656921,
+          "parameter_hold_endpoints_min": 0.101285979,
+          "parameter_hold_endpoints_max": 19.431148529
+        },
+        "nom_slow_1p08V_125C": {
+          "mode_status_matched_min": 11.622626305,
+          "mode_status_matched_max": 0.600612938,
+          "mode_status_endpoints_min": 3.453647137,
+          "mode_status_endpoints_max": 0.600612938,
+          "sram_status_matched_min": 14.658238411,
+          "sram_status_matched_max": 0.113294266,
+          "sram_status_endpoints_min": 12.532625198,
+          "sram_status_endpoints_max": 0.070047081,
+          "input_hold_matched_min": 0.41291517,
+          "input_hold_matched_max": 15.219179153,
+          "input_hold_endpoints_min": 0.411632836,
+          "input_hold_endpoints_max": 15.219179153,
+          "parameter_hold_matched_min": 0.541411459,
+          "parameter_hold_matched_max": 18.902423859,
+          "parameter_hold_endpoints_min": 0.541411459,
+          "parameter_hold_endpoints_max": 18.866765976
+        },
+        "nom_typ_1p20V_25C": {
+          "mode_status_matched_min": 7.393507481,
+          "mode_status_matched_max": 6.11009407,
+          "mode_status_endpoints_min": 2.223922014,
+          "mode_status_endpoints_max": 6.11009407,
+          "sram_status_matched_min": 9.198526382,
+          "sram_status_matched_max": 5.944430828,
+          "sram_status_endpoints_min": 7.827730656,
+          "sram_status_endpoints_max": 5.90959549,
+          "input_hold_matched_min": 0.178716272,
+          "input_hold_matched_max": 15.513310432,
+          "input_hold_endpoints_min": 0.178716272,
+          "input_hold_endpoints_max": 15.513310432,
+          "parameter_hold_matched_min": 0.258951634,
+          "parameter_hold_matched_max": 19.247932434,
+          "parameter_hold_endpoints_min": 0.258951634,
+          "parameter_hold_endpoints_max": 19.223810196
+        }
+      },
+      "global_route_overflow": 0,
+      "congested_grid_edges": 0,
+      "native_grid_comparable": false,
+      "native_grid_boundary": "Complete coarse-route snapshots are comparable. Incremental-probe grid usage is partial and cannot establish zero whole-chip overflow.",
+      "clock_ndr_bindings": {
+        "clk": "CTS_NDR_0",
+        "clk_regs": "CTS_NDR_1",
+        "clknet_0_clk": "CTS_NDR_0",
+        "clknet_0_clk_regs": "CTS_NDR_1",
+        "delaynet_0_clk": "CTS_NDR_0",
+        "delaynet_1_clk": "CTS_NDR_0",
+        "delaynet_2_clk": "CTS_NDR_0",
+        "delaynet_3_clk": "CTS_NDR_0",
+        "delaynet_4_clk": "CTS_NDR_0"
+      }
+    },
+    "buffered": {
+      "database_sha256": "cbb8a75a149ccba84dbbb6cebc4522940b683b53fb22fb07dd8c04140e0a01ab",
+      "area_um2": 359411.5872,
+      "incremental_area_um2": 39.91680000000633,
+      "over_old_area_allowance_um2": 39.14896320004482,
+      "increment_percent_of_reference": 0.011140684743782495,
+      "total_percent_above_reference": 0.31092638330370015,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.0645505,
+          "timing__setup__ws": 9.19972
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 12,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.411633,
+          "timing__setup__ws": 0.0700471
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 4,
+          "timing__hold__ws": 0.178716,
+          "timing__setup__ws": 5.9096
+        }
+      },
+      "measured_connections": 126,
+      "electrical_reserve_counts": {
+        "within_reserve": 122,
+        "failing": 4
+      },
+      "below_electrical_reserve": [
+        {
+          "net": "_01924_",
+          "reserve": -0.14085918103229955,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02988_",
+          "reserve": -0.3913891143444354,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03097_",
+          "reserve": -0.1986118087221944,
+          "verdict": "failing"
+        },
+        {
+          "net": "_03552_",
+          "reserve": -0.29475359820985625,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "selected_slacks": {
+        "nom_fast_1p32V_m40C": {
+          "mode_status_matched_min": 4.938415051,
+          "mode_status_matched_max": 9.444779396,
+          "mode_status_endpoints_min": 1.517425179,
+          "mode_status_endpoints_max": 9.444779396,
+          "sram_status_matched_min": 6.047111988,
+          "sram_status_matched_max": 9.304459572,
+          "sram_status_endpoints_min": 5.141667843,
+          "sram_status_endpoints_max": 9.199716568,
+          "input_hold_matched_min": 0.064550534,
+          "input_hold_matched_max": 15.664151192,
+          "input_hold_endpoints_min": 0.064550534,
+          "input_hold_endpoints_max": 15.663778305,
+          "parameter_hold_matched_min": 0.101285927,
+          "parameter_hold_matched_max": 19.443656921,
+          "parameter_hold_endpoints_min": 0.101285927,
+          "parameter_hold_endpoints_max": 19.431148529
+        },
+        "nom_slow_1p08V_125C": {
+          "mode_status_matched_min": 11.62263298,
+          "mode_status_matched_max": 0.600612938,
+          "mode_status_endpoints_min": 3.453647137,
+          "mode_status_endpoints_max": 0.600612938,
+          "sram_status_matched_min": 14.658238411,
+          "sram_status_matched_max": 0.113294266,
+          "sram_status_endpoints_min": 12.532625198,
+          "sram_status_endpoints_max": 0.070047081,
+          "input_hold_matched_min": 0.41291517,
+          "input_hold_matched_max": 15.219179153,
+          "input_hold_endpoints_min": 0.411632836,
+          "input_hold_endpoints_max": 15.219179153,
+          "parameter_hold_matched_min": 0.541411281,
+          "parameter_hold_matched_max": 18.902423859,
+          "parameter_hold_endpoints_min": 0.541411281,
+          "parameter_hold_endpoints_max": 18.866794586
+        },
+        "nom_typ_1p20V_25C": {
+          "mode_status_matched_min": 7.393517017,
+          "mode_status_matched_max": 6.110301971,
+          "mode_status_endpoints_min": 2.223922014,
+          "mode_status_endpoints_max": 6.110301971,
+          "sram_status_matched_min": 9.198526382,
+          "sram_status_matched_max": 5.944430828,
+          "sram_status_endpoints_min": 7.827730656,
+          "sram_status_endpoints_max": 5.90959549,
+          "input_hold_matched_min": 0.178716272,
+          "input_hold_matched_max": 15.513310432,
+          "input_hold_endpoints_min": 0.178716272,
+          "input_hold_endpoints_max": 15.513310432,
+          "parameter_hold_matched_min": 0.258951634,
+          "parameter_hold_matched_max": 19.247932434,
+          "parameter_hold_endpoints_min": 0.258951634,
+          "parameter_hold_endpoints_max": 19.223810196
+        }
+      },
+      "global_route_overflow": 0,
+      "congested_grid_edges": 0,
+      "native_grid_comparable": false,
+      "native_grid_boundary": "Complete coarse-route snapshots are comparable. Incremental-probe grid usage is partial and cannot establish zero whole-chip overflow.",
+      "clock_ndr_bindings": {
+        "clk": "CTS_NDR_0",
+        "clk_regs": "CTS_NDR_1",
+        "clknet_0_clk": "CTS_NDR_0",
+        "clknet_0_clk_regs": "CTS_NDR_1",
+        "delaynet_0_clk": "CTS_NDR_0",
+        "delaynet_1_clk": "CTS_NDR_0",
+        "delaynet_2_clk": "CTS_NDR_0",
+        "delaynet_3_clk": "CTS_NDR_0",
+        "delaynet_4_clk": "CTS_NDR_0"
+      }
+    },
+    "coarse": {
+      "database_sha256": "889945e9e88fd051fb5dd328af22fe85a4e356a4f3996d41560b8e85be0c9586",
+      "area_um2": 359411.5872,
+      "incremental_area_um2": 39.91680000000633,
+      "over_old_area_allowance_um2": 39.14896320004482,
+      "increment_percent_of_reference": 0.011140684743782495,
+      "total_percent_above_reference": 0.31092638330370015,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 1,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.0498467,
+          "timing__setup__ws": 9.1611
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 9,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.370135,
+          "timing__setup__ws": -0.113646
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 1,
+          "timing__hold__ws": 0.171615,
+          "timing__setup__ws": 5.75473
+        }
+      },
+      "measured_connections": 126,
+      "electrical_reserve_counts": {
+        "within_reserve": 123,
+        "failing": 1,
+        "below_reserve": 2
+      },
+      "below_electrical_reserve": [
+        {
+          "net": "_02970_",
+          "reserve": -0.3847763779422782,
+          "verdict": "failing"
+        },
+        {
+          "net": "_02983_",
+          "reserve": 0.18428886262844546,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_03013_",
+          "reserve": 0.1505603339775866,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "selected_slacks": {
+        "nom_fast_1p32V_m40C": {
+          "mode_status_matched_min": 3.952108622,
+          "mode_status_matched_max": 10.589127541,
+          "mode_status_endpoints_min": 1.480299354,
+          "mode_status_endpoints_max": 9.926335335,
+          "sram_status_matched_min": 5.957566261,
+          "sram_status_matched_max": 9.409733772,
+          "sram_status_endpoints_min": 5.002440453,
+          "sram_status_endpoints_max": 9.399158478,
+          "input_hold_matched_min": 0.161558822,
+          "input_hold_matched_max": 15.570033073,
+          "input_hold_endpoints_min": 0.161558822,
+          "input_hold_endpoints_max": 15.569663048,
+          "parameter_hold_matched_min": 0.101283871,
+          "parameter_hold_matched_max": 19.443473816,
+          "parameter_hold_endpoints_min": 0.101283871,
+          "parameter_hold_endpoints_max": 19.43097496
+        },
+        "nom_slow_1p08V_125C": {
+          "mode_status_matched_min": 9.434686661,
+          "mode_status_matched_max": 3.153348684,
+          "mode_status_endpoints_min": 3.457047701,
+          "mode_status_endpoints_max": 1.798551559,
+          "sram_status_matched_min": 14.466156006,
+          "sram_status_matched_max": 0.314766884,
+          "sram_status_endpoints_min": 12.356726646,
+          "sram_status_endpoints_max": 0.187622368,
+          "input_hold_matched_min": 0.530015171,
+          "input_hold_matched_max": 15.103989601,
+          "input_hold_endpoints_min": 0.528731942,
+          "input_hold_endpoints_max": 15.103989601,
+          "parameter_hold_matched_min": 0.541412055,
+          "parameter_hold_matched_max": 18.901538849,
+          "parameter_hold_endpoints_min": 0.541412055,
+          "parameter_hold_endpoints_max": 18.866800308
+        },
+        "nom_typ_1p20V_25C": {
+          "mode_status_matched_min": 5.963429451,
+          "mode_status_matched_max": 7.803648472,
+          "mode_status_endpoints_min": 2.195153475,
+          "mode_status_endpoints_max": 6.933176994,
+          "sram_status_matched_min": 9.066392899,
+          "sram_status_matched_max": 6.094900608,
+          "sram_status_endpoints_min": 7.673949718,
+          "sram_status_endpoints_max": 6.034491062,
+          "input_hold_matched_min": 0.286324859,
+          "input_hold_matched_max": 15.407655716,
+          "input_hold_endpoints_min": 0.286324859,
+          "input_hold_endpoints_max": 15.407655716,
+          "parameter_hold_matched_min": 0.258951932,
+          "parameter_hold_matched_max": 19.247550964,
+          "parameter_hold_endpoints_min": 0.258951932,
+          "parameter_hold_endpoints_max": 19.223379135
+        }
+      },
+      "global_route_overflow": 19.0,
+      "congested_grid_edges": 19,
+      "native_grid_comparable": true,
+      "native_grid_boundary": "Complete coarse-route snapshots are comparable. Incremental-probe grid usage is partial and cannot establish zero whole-chip overflow.",
+      "clock_ndr_bindings": {
+        "clk": "CTS_NDR_0",
+        "clk_regs": "CTS_NDR_1",
+        "clknet_0_clk": "CTS_NDR_0",
+        "clknet_0_clk_regs": "CTS_NDR_1",
+        "delaynet_0_clk": "CTS_NDR_0",
+        "delaynet_1_clk": "CTS_NDR_0",
+        "delaynet_2_clk": "CTS_NDR_0",
+        "delaynet_3_clk": "CTS_NDR_0",
+        "delaynet_4_clk": "CTS_NDR_0"
+      }
+    }
+  },
+  "pin_corner_checks": 1494,
+  "complementary_path_checks": 192,
+  "source_global_metrics_reproduced": true,
+  "missing_parent_measurements_completed": [
+    "_01590_",
+    "_01808_"
+  ],
+  "matched_local_clock_paths_unchanged": true,
+  "all_consumed_nets_have_wire_estimates": true,
+  "functional_evidence": "Actual Verilog readback folds identical combinational copies and contracts only declared noninverting buffers; actual ODB checks exact terminals, original cells, placement and power bindings.",
+  "added_pipeline_cycles": 0,
+  "new_lean_theorems": 0,
+  "rtl_changed": false,
+  "production_admission_changed": false,
+  "physical_qualification": false,
+  "detailed_route_executed": false,
+  "complete_watchlist_requalified": false,
+  "original_watchlist_connections": 1152,
+  "largest_new_connection_collection": 126,
+  "conditional_clock_windows": {
+    "mode_status": {
+      "clock": "launch",
+      "lower_shift_ns": -1.438146789,
+      "upper_shift_ns": -0.42315623399999996,
+      "boundary": "Selected source/sink paths only. Assumes a common shift across corners with data and timing corrections fixed; does not establish a realizable clock tree."
+    },
+    "sram_status": {
+      "clock": "launch",
+      "lower_shift_ns": -5.062389453,
+      "upper_shift_ns": -0.29738128399999997,
+      "boundary": "Selected source/sink paths only. Assumes a common shift across corners with data and timing corrections fixed; does not establish a realizable clock tree."
+    },
+    "input_hold": {
+      "clock": "capture",
+      "lower_shift_ns": -14.851836053000001,
+      "upper_shift_ns": -0.014727855999999998,
+      "boundary": "Selected source/sink paths only. Assumes a common shift across corners with data and timing corrections fixed; does not establish a realizable clock tree."
+    }
+  },
+  "remaining_failures": {
+    "slow_setup": {
+      "source": "memory.storage/A_DOUT[51]",
+      "sink": "uo_out[4]",
+      "slack_ns": -0.113646,
+      "retained_floor_ns": 0.3673431
+    },
+    "fast_hold": {
+      "source": "_10783_/Q",
+      "owner": "r_serial_shift[43]",
+      "sink": "memory.storage/A_DIN[43]",
+      "slack_ns": 0.0498467,
+      "retained_floor_ns": 0.07927839
+    },
+    "fast_slew": {
+      "pin": "memory.storage/A_DIN[35]",
+      "slew_ns": 0.383922,
+      "limit_ns": 0.38
+    },
+    "capacitance": {
+      "driver": "_06785_/X",
+      "worst_capacitance_pf": 0.415433,
+      "limit_pf": 0.300000012
+    }
+  },
+  "tests": {
+    "tests_run": 465,
+    "passed": 463,
+    "skipped": 2,
+    "failures": 0,
+    "errors": 0,
+    "receipt": {
+      "path": "build/validation/regional-organization-01/python-tests-02.json",
+      "sha256": "642e6adea6d6efa220b803144793615ba19afce87953cfa25bf59d44dc702293"
+    }
+  },
+  "execution": {
+    "cad_container_attempts": 9,
+    "successful_containers": 8,
+    "failed_reader_attempts": 1,
+    "cad_container_elapsed_seconds": 169.993,
+    "incremental_routes": 2,
+    "whole_chip_coarse_routes": 1,
+    "detailed_routes": 0,
+    "timeouts": 0,
+    "containers": {
+      "pinwheel-regional-01-geometry": "absent",
+      "pinwheel-regional-01-baseline": "absent",
+      "pinwheel-regional-01-buffered": "absent",
+      "pinwheel-regional-01-regional": "absent",
+      "pinwheel-regional-01-buffered-timing": "absent",
+      "pinwheel-regional-01-coarse-timing": "absent",
+      "pinwheel-regional-01-regional-timing": "absent",
+      "pinwheel-regional-01-geometry-02": "absent",
+      "pinwheel-regional-01-coarse": "absent"
+    }
+  },
+  "preserved_attempts": [
+    {
+      "receipt": {
+        "path": "build/validation/regional-organization-01/regional-verification-01.json",
+        "sha256": "3f817d203bba089615a16c1fa121eae560a991f6b98204c663d44405207f5a92"
+      },
+      "reason": "Signal-only Verilog omits supply ports; corrected the verifier expectation while retaining exact ODB power checks."
+    },
+    {
+      "receipt": {
+        "path": "build/validation/regional-organization-01/geometry-receipt.json",
+        "sha256": "22a59677cfbcccf98a25d7cbe3dcab88fabece06b024a1118e87174160b7e4fb"
+      },
+      "reason": "Plain Python lacks OpenDB; repeated the read with OpenROAD Python. No route or edit ran in this failed reader."
+    },
+    {
+      "receipt": {
+        "path": "build/validation/regional-organization-01/analysis-attempt-01.json",
+        "sha256": "a82f74e071180b9e1fb9e7382db8c775c70f66d03a22ad98b6b314f72f489b22"
+      },
+      "reason": "Count reconciliation caught blank fanout slack columns. Fixed parser and added regression coverage; no CAD replay."
+    }
+  ],
+  "evidence_boundary": [
+    "Exploratory size overage is recorded. The original repair cap and historical results are unchanged.",
+    "All timing is estimated from global routes, at the saved constraints and corners. Fast cells use -40C and SRAM -55C as before.",
+    "Local probe grid usage is partial; zero stored overflow there is not a whole-chip congestion result.",
+    "The coarse route retains the candidate but also changes other wires. No separately rerouted unchanged control isolates all global effects of copying alone.",
+    "The 126-net collection includes all five selected transport families and both sides of added gates/buffers. Global electrical checks also include nets outside this collection; the full 1152-connection watchlist was not requalified.",
+    "No new Lean interpretation theorem, complete paired compiler/admission refinement, detailed pin-access qualification or extracted timing is claimed."
+  ],
+  "source_sha256": {
+    "scripts/physical_decoder_replication.py": "9c01f4ac5d2d8c42b4e0ef16a55b54711f1e872d4ba9ed84689f1058f43650b8",
+    "scripts/physical_checkpoint_sta.py": "4a986eaf400234bed9e998b91d7084e7bc6b5ccd7414cc4b93bf6fda091f1a49",
+    "test/test_physical_decoder_replication.py": "557408ffe123c7e7d7a90f8c83ffb749d698a46e9a522e346b71b4148e767dbf",
+    "test/test_mapped_physical_diagnostics.py": "b0a29769197b3feef360e8c9cd19a1d0a24cfe31d61ae12186e8bb7a734ca8c8"
+  },
+  "report": "build/validation/regional-organization-01/report.json",
+  "report_sha256": "9e734ee3dd38ff6a11a12fe9b11a959fdcef6a512cd50732386505914826ec42",
+  "evidence": {
+    "request.json": {
+      "path": "build/validation/regional-organization-01/request.json",
+      "sha256": "8442c096f43bc6a5afa621e8fb62fc31358add945ff62ff2cfd9427bb2f0a54a"
+    },
+    "analysis.json": {
+      "path": "build/validation/regional-organization-01/analysis.json",
+      "sha256": "fa4c86de713c9914e8d10a02de322a30a8e7a2b13e327450bbe05030614c0018"
+    },
+    "measurements.json": {
+      "path": "build/validation/regional-organization-01/measurements.json",
+      "sha256": "1f8443a1e3b966dfadd106333335bc41a128599d7ede22b18f335df3e0d8cb43"
+    },
+    "paths.json": {
+      "path": "build/validation/regional-organization-01/paths.json",
+      "sha256": "323071526f2a22159433b06ce09d078483581751618092f037a791acc484fddd"
+    },
+    "regional-plan.json": {
+      "path": "build/validation/regional-organization-01/regional-plan.json",
+      "sha256": "6bd44a0ebc0c70610389243e9a223ba4a25c6fafae8a885649b2a9ad78c1dd20"
+    },
+    "buffered-plan.json": {
+      "path": "build/validation/regional-organization-01/buffered-plan.json",
+      "sha256": "1a75f6b25200dc7baad7efe040ac2102a6f22ae1d8040b3b28bcb8d25fb04ba7"
+    },
+    "geometry.json": {
+      "path": "build/validation/regional-organization-01/geometry-02/geometry.json",
+      "sha256": "76c31c78496ed63468cae81fe07074ec46653010255913e66e1ae37763e4e98f"
+    },
+    "geometry-receipt.json": {
+      "path": "build/validation/regional-organization-01/geometry-receipt.json",
+      "sha256": "22a59677cfbcccf98a25d7cbe3dcab88fabece06b024a1118e87174160b7e4fb"
+    },
+    "baseline-receipt.json": {
+      "path": "build/validation/regional-organization-01/baseline-receipt.json",
+      "sha256": "ae6b4884b84215ff52dd9874a33844c0a55117655aa2e8edc35f72a29c62da12"
+    },
+    "buffered-receipt.json": {
+      "path": "build/validation/regional-organization-01/buffered-receipt.json",
+      "sha256": "aa40546dc5220f3d19541b4eb90864c7015372a85d7dd5fda21b246574938b4f"
+    },
+    "regional-receipt.json": {
+      "path": "build/validation/regional-organization-01/regional-receipt.json",
+      "sha256": "17626e548df871114a016194653a5e24ff83c7141191dc5f13b0fcdd5c62851a"
+    },
+    "buffered-timing-receipt.json": {
+      "path": "build/validation/regional-organization-01/buffered-timing-receipt.json",
+      "sha256": "c5de0b6721d8c9adcf066de8e2c89f9e4b3d8b18f8cd7a47c0a8b164f42b173f"
+    },
+    "coarse-timing-receipt.json": {
+      "path": "build/validation/regional-organization-01/coarse-timing-receipt.json",
+      "sha256": "645b94ec1cdb59023bd7bf27f0e2ddbf8473fab827e3494020e04bba9b475e1a"
+    },
+    "regional-timing-receipt.json": {
+      "path": "build/validation/regional-organization-01/regional-timing-receipt.json",
+      "sha256": "e9001d801624d7dedfb9467a795aff05312905550d7b5d0a327977e7668b2cad"
+    },
+    "geometry-02-receipt.json": {
+      "path": "build/validation/regional-organization-01/geometry-02-receipt.json",
+      "sha256": "93a582e11331c9f6935a613c6cbc17d8560a23d00f4179ef3a39f25fb0b412cd"
+    },
+    "coarse-receipt.json": {
+      "path": "build/validation/regional-organization-01/coarse-receipt.json",
+      "sha256": "0f194c4384f1e81160ed77d956c49c9ce6d966510ec9427def4bac7d2c1b0948"
+    },
+    "regional-verification-02.json": {
+      "path": "build/validation/regional-organization-01/regional-verification-02.json",
+      "sha256": "1fb2d4251240616229e179827e5dd22e99f657f18aecea2861874414323e4d60"
+    },
+    "buffered-verification-01.json": {
+      "path": "build/validation/regional-organization-01/buffered-verification-01.json",
+      "sha256": "5cb5bc8afe117d96054d4d958640612660cef0cac234d61903b9871c925c7d7f"
+    },
+    "coarse-verification-01.json": {
+      "path": "build/validation/regional-organization-01/coarse-verification-01.json",
+      "sha256": "f15019fd90f411d7a9adda4cee674c836bbb61a7d6276622f79e9f69e304bf53"
+    }
+  },
+  "source_versions_checked": 335,
+  "artifact_count": 508
+}

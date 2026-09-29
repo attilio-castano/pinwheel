@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "name": "paired-validation",
+  "source": {
+    "kind": "paired-controller",
+    "selection": "physical/experiments/paired-validation-mapping.json",
+    "sha256": "4586253a4f2b2bf7863d6f99a9988283fc9125c3a8c384a81ac67ae3c46b9c9f"
+  },
+  "macro": {
+    "master": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+    "instances": {
+      "memory.storage": {
+        "location": [
+          252,
+          144
+        ],
+        "orientation": "N"
+      }
+    },
+    "power": {
+      "VPWR": [
+        "VDD!",
+        "VDDARRAY!"
+      ],
+      "VGND": [
+        "VSS!"
+      ]
+    }
+  },
+  "placement_exclusions": [
+    [
+      252,
+      119.18,
+      1036.48,
+      144
+    ]
+  ],
+  "entry_state": [
+    "r_cached",
+    "r_mode",
+    "r_remaining",
+    "r_wait_left",
+    "r_levels",
+    "r_enabled",
+    "r_samples",
+    "r_payload"
+  ],
+  "upload_state": [
+    "r_serial_shift"
+  ]
+}

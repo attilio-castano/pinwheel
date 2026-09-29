@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "policy": "pinwheel-paired-a-acceptance-v1",
+  "scope": "Canonical E64 on the retained 256-position, 32-record, two-bank PairedValidation implementation; 290-word upload; 20 ns clock; retained 6x4 platform. Resident SHIFT/KEEP and board operation are outside this certificate scope.",
+  "roots": {
+    "formal": {
+      "path": "physical/experiments/paired-admission-results.json",
+      "sha256": "ab15aa2d908c26d2c7e2d617d4e92b97bb4d8377fcb6643e080743e25a63c451"
+    },
+    "mapping": {
+      "path": "physical/experiments/paired-validation-mapping.json",
+      "sha256": "4586253a4f2b2bf7863d6f99a9988283fc9125c3a8c384a81ac67ae3c46b9c9f"
+    },
+    "balanced": {
+      "path": "physical/experiments/paired-buffer-balance-mapping.json",
+      "sha256": "34a2dc550aff34c323b42a3379735b02dd94a5d1af3e9b6980fb20cadfeafe96"
+    },
+    "host_campaign": {
+      "path": "physical/experiments/design-iteration-results.json",
+      "sha256": "bb03efe9b71d1ea9e82f17dcf1b69b39c1f39428029cd703bfcaac5545d213ab"
+    },
+    "transport": {
+      "path": "physical/experiments/transport-split-results.json",
+      "sha256": "b2caf796124739d5c450d73437053afaae32b689756ae509424afceac64f086c"
+    },
+    "closure": {
+      "path": "physical/experiments/chip-closure-results.json",
+      "sha256": "786f8d1a904403e23d7c71133c925787650a7a5f146a8836feeca3995d6541aa"
+    },
+    "finalization": {
+      "path": "physical/experiments/chip-finalization-results.json",
+      "sha256": "e7402496649dce51c91ec663c01e8333687fbfc93b973186f5b70049d02e25f1"
+    },
+    "interface": {
+      "path": "physical/experiments/sram-extraction-results.json",
+      "sha256": "9fe2ebdc978c2c5d46070c7c0d33f1e8c22bcb37bcbe3bb897c5033cb6720392"
+    },
+    "trust": {
+      "path": "physical/experiments/sram-trust-results.json",
+      "sha256": "5f1d0fab527f89ac88ee8f0873a78f6769d128421724909d18488452cc1d303e"
+    }
+  }
+}

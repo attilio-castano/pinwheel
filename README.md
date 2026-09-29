@@ -46,15 +46,24 @@ part of the record.
 
 ## Where things stand
 
-Pinwheel has executable protocol models, Lean proofs for parts of the engine and
-its protocol behavior, emitted circuits, and independent simulation checks.
-The [UART link proof](docs/uart-link.md), for example, connects transmitted bytes
-to received bytes under explicit clock and observation-delay bounds.
+Pinwheel has executable protocol models, emitted circuits, and independent
+simulation checks. For the paired SRAM design, Lean proofs now connect a
+certified program upload to cycle-by-cycle execution and package observations.
+An [interpretation of the retained RTL](docs/storage/paired-rtl-interpretation.md)
+connects both emitted modules to those proofs. The SRAM behavior, digital input
+delivery, and artifact interpretation assumptions remain explicit.
 
-Physical experiments have reached placement and routing. Whole-chip timing,
-electrical limits, and routing closure remain open. A Lean model proof, an RTL
-test, a physical measurement, and a result from silicon establish different
-things; the project keeps those evidence boundaries explicit.
+The retained chip has completed routing and passes the recorded timing,
+electrical, full-rule GDS design-rule, and SRAM boundary checks. **It is not yet
+a qualified chip:** SRAM internal qualification, compatible fast timing
+conditions, and package power remain [tracked requirements](docs/physical/qualification-followups.md).
+The measured area is 4.5942% above the historical allowance. The 64-record
+capacity experiment and complete design iteration remain unaccepted.
+
+The [acceptance report](docs/research/implementation-acceptance.md) connects the
+proofs and physical evidence without treating one kind of check as another.
+Portable validation works from source; replaying the physical evidence still
+requires the retained local artifacts and pinned tools.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

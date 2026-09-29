@@ -3,14 +3,14 @@
 import argparse
 from datetime import datetime, timezone
 from fnmatch import fnmatch
+import hashlib
 import json
 from pathlib import Path
 import sys
 import time
 
-from physical_connections import parse_measurements
 from physical_distribution import inventory
-from physical_organization import Library, Planner, BufferGeometry, portfolios, screen_exchange_identity, validate_refinement, mechanism_screen
+from physical_organization import Library, Planner, BufferGeometry, portfolios, screen_exchange_identity, validate_refinement, mechanism_screen, parse_diagnostic_measurements
 from physical_path_contract import validate_preserved_budgets
 from validation_run import fresh_directory, sha
 
@@ -70,10 +70,6 @@ def main():
     full=reference(source['evidence']['inventory.json'])
     saved=reference(source['evidence']['measurements.json'])
     acceptance=reference(source['evidence']['acceptance.json'])
-    for corner in saved:
-        text=(root/collection_dir/'after'/corner/'connections.rpt').read_text()
-        if parse_measurements(text,{r['net'] for r in full['connections']})!=saved[corner]:
-            raise ValueError('Saved measurement differs from its raw report')
     coverage=inventory(context,ownership,roles,contract['scope']['distribution'])
     targets=sorted(r['net'] for r in acceptance['connections'] if r['verdict']!='within_trial_reserve')
     records={r['net']:r for r in coverage['connections']}
@@ -102,6 +98,17 @@ def main():
             if digest!=expected:raise ValueError('Changed pinned library: '+str(path))
             inputs[str(path)]=digest;texts[corner].append(path.read_text())
     library=Library(texts)
+    sdc_path=root/design/'experiments'/diagnostic['physical_tag']/'core.sdc'
+    sdc_bytes=sdc_path.read_bytes()
+    sdc_digest=hashlib.sha256(sdc_bytes).hexdigest()
+    if sdc_digest!=invocation['snapshot_files_sha256']['core.sdc']:
+        raise ValueError('Changed pinned comparison SDC')
+    inputs[str(sdc_path)]=sdc_digest
+    for corner in saved:
+        text=(root/collection_dir/'after'/corner/'connections.rpt').read_text()
+        if parse_diagnostic_measurements(text,{r['net'] for r in full['connections']},
+                context,library,corner,sdc_bytes.decode())!=saved[corner]:
+            raise ValueError('Saved measurement differs from its raw report')
     planner=Planner(context,coverage,geometry,saved,library,policy,contract)
     if abs(planner.current_area-source['area']['candidate_um2'])>1e-4:raise ValueError('Area reconstruction failed')
     by_root={}
@@ -159,6 +166,8 @@ def main():
             delay_cells=planner.model['delay_count'],transport_area_um2=planner.model['transport_area_um2'],
             leaves=planner.model['leaf_count'],total_instance_area_um2=planner.current_area,
             complete_path_contract_connections=len(full['connections'])),
+        unreported_macro_fanout_limits={corner:sorted(n for n,row in data.items() if row['fanout'] is None)
+            for corner,data in saved.items()},
         scope=dict(targets=targets,affected_roots=sorted(by_root),affected_branches=len(affected),
             independent_library_pin_corner_checks=pins_checked),
         area=dict(original_um2=contract['area_reference']['area_um2'],current_um2=planner.current_area,

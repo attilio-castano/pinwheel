@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "sources": [
+    {
+      "path": "tt-head.json",
+      "url": "https://api.github.com/repos/urish/ttihp-sram-test/commits/main",
+      "status": 200,
+      "bytes": 5424,
+      "sha256": "f13c2f71cabbbee8b99cdd2a1edb101432f9b9228fe2383d857bd322a952b8b6",
+      "captured_at": "2026-09-27T22:12:09.092477+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/tt-head.json"
+    },
+    {
+      "path": "tt-config-history.json",
+      "url": "https://api.github.com/repos/urish/ttihp-sram-test/commits?sha=efca7b356e5df69fc9caa6bacb7b6c224a7001b1&path=src%2Fconfig.json&per_page=30",
+      "status": 200,
+      "bytes": 33242,
+      "sha256": "e7eed2c11646d7fa195d6cd79784d679b5512d09c0c472f61de7751c6414d1c3",
+      "captured_at": "2026-09-27T22:12:09.364148+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/tt-config-history.json"
+    },
+    {
+      "path": "tt/src/config.json",
+      "url": "https://raw.githubusercontent.com/urish/ttihp-sram-test/efca7b356e5df69fc9caa6bacb7b6c224a7001b1/src/config.json",
+      "status": 200,
+      "bytes": 4366,
+      "sha256": "5df3dfee9ed926d4537e799c6b6a371a1362297b37ad9e639010b30213fe0d15",
+      "captured_at": "2026-09-27T22:12:09.518751+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/tt/src/config.json"
+    },
+    {
+      "path": "tt/.github/workflows/gds.yaml",
+      "url": "https://raw.githubusercontent.com/urish/ttihp-sram-test/efca7b356e5df69fc9caa6bacb7b6c224a7001b1/.github/workflows/gds.yaml",
+      "status": 200,
+      "bytes": 1043,
+      "sha256": "91a912a8cf6467aef52f26cd2bbdc3b75713f842b161e031852c14aac0c09f76",
+      "captured_at": "2026-09-27T22:12:09.633487+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/tt/.github/workflows/gds.yaml"
+    },
+    {
+      "path": "tt/macro/RM_IHPSG13_1P_1024x8_c2_bm_bist/README.md",
+      "url": "https://raw.githubusercontent.com/urish/ttihp-sram-test/efca7b356e5df69fc9caa6bacb7b6c224a7001b1/macro/RM_IHPSG13_1P_1024x8_c2_bm_bist/README.md",
+      "status": 200,
+      "bytes": 544,
+      "sha256": "5195c6239252c9167c892d5977f1312884bfcba0102df07b0c2f946a179ff719",
+      "captured_at": "2026-09-27T22:12:09.865807+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/tt/macro/RM_IHPSG13_1P_1024x8_c2_bm_bist/README.md"
+    },
+    {
+      "path": "pdk-pinned-commit.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits/2bbec755dc67ca3db0261c3d6163e15735d66710",
+      "status": 200,
+      "bytes": 22929,
+      "sha256": "211d3338fd3be99d0f4d9f7ea77fb12a2476cb66ab4f65ed7e80d0b03ca9cf3d",
+      "captured_at": "2026-09-27T22:12:10.175529+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-pinned-commit.json"
+    },
+    {
+      "path": "pdk-head.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits?per_page=1",
+      "status": 200,
+      "bytes": 4836,
+      "sha256": "45c2660831e2b5be94d1f69f3666784a1ef79dc924f0840e59617547c63886a6",
+      "captured_at": "2026-09-27T22:12:10.357239+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-head.json"
+    },
+    {
+      "path": "pdk-gds-history.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits?sha=5e6d592e4002946a4616f798c357f0f3c06cf3b6&path=ihp-sg13g2%2Flibs.ref%2Fsg13g2_sram%2Fgds%2FRM_IHPSG13_1P_512x64_c2_bm_bist.gds&per_page=30",
+      "status": 200,
+      "bytes": 17632,
+      "sha256": "f5ec9cf01fad6e33f7c28ff27489a5b643247e1374b598039003e7b19f9eaff2",
+      "captured_at": "2026-09-27T22:12:10.596038+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-gds-history.json"
+    },
+    {
+      "path": "pdk-head/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/5e6d592e4002946a4616f798c357f0f3c06cf3b6/ihp-sg13g2/libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "status": 200,
+      "bytes": 529528,
+      "sha256": "5ea60dd194594f6587906683e5ca44759d6e847297b99085a4cb889e046cce03",
+      "captured_at": "2026-09-27T22:12:10.806921+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-head/RM_IHPSG13_1P_512x64_c2_bm_bist.gds"
+    },
+    {
+      "path": "pdk-cdl-history.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits?sha=5e6d592e4002946a4616f798c357f0f3c06cf3b6&path=ihp-sg13g2%2Flibs.ref%2Fsg13g2_sram%2Fcdl%2FRM_IHPSG13_1P_512x64_c2_bm_bist.cdl&per_page=30",
+      "status": 200,
+      "bytes": 7108,
+      "sha256": "d0c9226ba1bb66c034e8b4f19592ee613a4b03d2ce54e686c7f7b5bbfc14f09f",
+      "captured_at": "2026-09-27T22:12:11.020157+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-cdl-history.json"
+    },
+    {
+      "path": "pdk-head/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/5e6d592e4002946a4616f798c357f0f3c06cf3b6/ihp-sg13g2/libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "status": 200,
+      "bytes": 592082,
+      "sha256": "825b831a246e1158fd4409501533874c21bc39f0f82369b2128947ffa2632999",
+      "captured_at": "2026-09-27T22:12:11.262034+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-head/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl"
+    },
+    {
+      "path": "pdk-pinned/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/2bbec755dc67ca3db0261c3d6163e15735d66710/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram",
+      "status": 200,
+      "bytes": 37,
+      "sha256": "1d58f3618779051e091c8952e54c353bd6d26c5388f31404cf1d22267383d0fd",
+      "captured_at": "2026-09-27T22:12:11.381282+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-01/pdk-pinned/ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram"
+    },
+    {
+      "path": "pdk-original/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/07717376fc9423fe30f7030e4ac38f49e3d4244c/ihp-sg13g2/libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "status": 200,
+      "bytes": 532480,
+      "sha256": "9665be2569e85e416acbe9f6acdf1be514e949a3e8d2e8120e44773f509dc6c1",
+      "captured_at": "2026-09-27T22:14:50.586178+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-original/RM_IHPSG13_1P_512x64_c2_bm_bist.gds"
+    },
+    {
+      "path": "pdk-pinned-gds-history.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits?sha=2bbec755dc67ca3db0261c3d6163e15735d66710&path=ihp-sg13g2%2Flibs.ref%2Fsg13g2_sram%2Fgds%2FRM_IHPSG13_1P_512x64_c2_bm_bist.gds&per_page=30",
+      "status": 200,
+      "bytes": 17632,
+      "sha256": "f5ec9cf01fad6e33f7c28ff27489a5b643247e1374b598039003e7b19f9eaff2",
+      "captured_at": "2026-09-27T22:14:50.839052+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-pinned-gds-history.json"
+    },
+    {
+      "path": "pdk-original/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/07717376fc9423fe30f7030e4ac38f49e3d4244c/ihp-sg13g2/libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "status": 200,
+      "bytes": 589258,
+      "sha256": "75e8db57db4ee8ed18e14d4e4b6484fa7e34d2e52072af16910aa8f374e93c50",
+      "captured_at": "2026-09-27T22:14:51.022811+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-original/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl"
+    },
+    {
+      "path": "pdk-pinned-cdl-history.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/commits?sha=2bbec755dc67ca3db0261c3d6163e15735d66710&path=ihp-sg13g2%2Flibs.ref%2Fsg13g2_sram%2Fcdl%2FRM_IHPSG13_1P_512x64_c2_bm_bist.cdl&per_page=30",
+      "status": 200,
+      "bytes": 7108,
+      "sha256": "d0c9226ba1bb66c034e8b4f19592ee613a4b03d2ce54e686c7f7b5bbfc14f09f",
+      "captured_at": "2026-09-27T22:14:51.214236+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-pinned-cdl-history.json"
+    },
+    {
+      "path": "pdk-pinned/ihp-sg13g2/libs.ref/sg13g2_sram/doc/RM_IHPSG13_1P_512x64_c2_bm_bist.txt",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/2bbec755dc67ca3db0261c3d6163e15735d66710/ihp-sg13g2/libs.ref/sg13g2_sram/doc/RM_IHPSG13_1P_512x64_c2_bm_bist.txt",
+      "status": 200,
+      "bytes": 18906,
+      "sha256": "025261a4c465f3c736331e28faace815a5653be4c66f81c996e2d5afc1f65e2f",
+      "captured_at": "2026-09-27T22:14:51.379894+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-pinned/ihp-sg13g2/libs.ref/sg13g2_sram/doc/RM_IHPSG13_1P_512x64_c2_bm_bist.txt"
+    },
+    {
+      "path": "pdk-pinned/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+      "url": "https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/2bbec755dc67ca3db0261c3d6163e15735d66710/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+      "status": 200,
+      "bytes": 3951,
+      "sha256": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12",
+      "captured_at": "2026-09-27T22:14:51.501718+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/pdk-pinned/ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v"
+    },
+    {
+      "path": "tt-2024/src/config.json",
+      "url": "https://raw.githubusercontent.com/urish/ttihp-sram-test/9db7d90a2ab4f1500eeffc0c51835c7eaa878bd0/src/config.json",
+      "status": 200,
+      "bytes": 2322,
+      "sha256": "818591c4f9a5c872d04e6fdc0b98220c84a0cee9c6b81e4e0f3e3899f9e1320c",
+      "captured_at": "2026-09-27T22:14:51.650178+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/tt-2024/src/config.json"
+    },
+    {
+      "path": "tt-2024/.github/workflows/gds.yaml",
+      "url": "https://raw.githubusercontent.com/urish/ttihp-sram-test/9db7d90a2ab4f1500eeffc0c51835c7eaa878bd0/.github/workflows/gds.yaml",
+      "status": 200,
+      "bytes": 2787,
+      "sha256": "8b4128cf1fe082f873d1208a017e182631038329af6c89e057bdeae83cc2e6e4",
+      "captured_at": "2026-09-27T22:14:51.876090+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/tt-2024/.github/workflows/gds.yaml"
+    },
+    {
+      "path": "tt-transition.json",
+      "url": "https://api.github.com/repos/urish/ttihp-sram-test/commits/a204e74b9111fba133e519214e018d202f825595",
+      "status": 200,
+      "bytes": 16738,
+      "sha256": "b878daaa6e964eba02fbd776bfa351617cde85bd2fb37e4df15bca49087b93dc",
+      "captured_at": "2026-09-27T22:14:52.172458+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/tt-transition.json"
+    },
+    {
+      "path": "issues-sram-lvs.json",
+      "url": "https://api.github.com/search/issues?q=repo%3AIHP-GmbH%2FIHP-Open-PDK+SRAM+LVS&per_page=30",
+      "status": 200,
+      "bytes": 91116,
+      "sha256": "ca8a02ee5d25158dcb0598b61ab633d33e7bc1234bac2941ff64a58608227554",
+      "captured_at": "2026-09-27T22:14:52.642498+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/issues-sram-lvs.json"
+    },
+    {
+      "path": "issues-lvsres.json",
+      "url": "https://api.github.com/search/issues?q=repo%3AIHP-GmbH%2FIHP-Open-PDK+lvsres&per_page=30",
+      "status": 200,
+      "bytes": 37662,
+      "sha256": "721507b3dd1765da99a9e87fc5b06a7c4ab742437fa7bf913bb2925f7706e257",
+      "captured_at": "2026-09-27T22:14:53.028816+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-02/issues-lvsres.json"
+    },
+    {
+      "path": "issue-239-comments.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/issues/239/comments?per_page=100",
+      "status": 200,
+      "bytes": 27467,
+      "sha256": "76c091ce504e255a305ddc4aab67885bef4bdcb94a2a0a215102a9e05bcf3718",
+      "captured_at": "2026-09-27T22:20:27.437862+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-03/issue-239-comments.json"
+    },
+    {
+      "path": "issue-794-comments.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/issues/794/comments?per_page=100",
+      "status": 200,
+      "bytes": 48220,
+      "sha256": "43fad059562802075a766e8f48ab6a679daecb8137ddb9f80a8c07794def456d",
+      "captured_at": "2026-09-27T22:20:27.685171+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-03/issue-794-comments.json"
+    },
+    {
+      "path": "issue-1121-comments.json",
+      "url": "https://api.github.com/repos/IHP-GmbH/IHP-Open-PDK/issues/1121/comments?per_page=100",
+      "status": 200,
+      "bytes": 6933,
+      "sha256": "9ac0b21a4332eef343c747a6c010befa1c2b961942b64bf0a95905496bb11bbc",
+      "captured_at": "2026-09-27T22:20:27.881375+00:00",
+      "capture_path": "build/validation/sram-trust-01/sources-03/issue-1121-comments.json"
+    }
+  ],
+  "capture_limitations": [
+    "sources-01 stops after an HTTP 404 for a guessed SRAM README path. Successful captures remain valid; sources-02 captures the actual pinned doc text.",
+    "Default-branch references were resolved once. The captured default head predates our PDK pin and is not described as a newer release."
+  ]
+}

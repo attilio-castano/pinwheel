@@ -10,6 +10,10 @@ import json
 from pathlib import Path
 from typing import Protocol
 
+LEGACY_FORMAT = 'pinwheel-e64-v1'
+PAIRED_FORMAT = 'pinwheel-paired32-v1'
+IMAGE_FORMATS = (LEGACY_FORMAT, PAIRED_FORMAT)
+
 
 class Command(IntEnum):
     BEGIN = 1
@@ -33,13 +37,16 @@ class Transport(Protocol):
 
 @dataclass(frozen=True)
 class Program:
-    """Uncompressed E64 execution image; padding participates in capacity."""
+    """Canonical source words with an explicit target upload format."""
     words: tuple[int, ...]
     last: int
     idle_levels: int = 0
     idle_enabled: int = 0
+    image_format: str = LEGACY_FORMAT
 
     def upload_words(self) -> tuple[int, ...]:
+        if self.image_format not in IMAGE_FORMATS:
+            raise ValueError('Unsupported program image format')
         if any(type(v) is not int for v in (self.last, self.idle_levels, self.idle_enabled)):
             raise ValueError('Program metadata must use integer fields')
         if not 1 <= len(self.words) <= 256 or not 0 <= self.last < len(self.words):
@@ -48,6 +55,9 @@ class Program:
             raise ValueError('Execution words must be unsigned 64-bit integers')
         if not (0 <= self.idle_levels < 8 and 0 <= self.idle_enabled < 8):
             raise ValueError('Idle levels/enables must fit three pins')
+        if self.image_format == PAIRED_FORMAT:
+            from paired_execution import compile_e64
+            return compile_e64(self.words, (self.idle_levels, self.idle_enabled), self.last).upload()
         words = (*self.words, *((4,) * (256 - len(self.words))))
         dictionary = tuple(dict.fromkeys(words))
         if len(dictionary) > 32:
@@ -59,7 +69,7 @@ class Program:
 
     def write(self, path: Path):
         self.upload_words()
-        path.write_text(json.dumps(dict(format='pinwheel-e64-v1', words=list(self.words),
+        path.write_text(json.dumps(dict(format=self.image_format, words=list(self.words),
             last=self.last, idle_levels=self.idle_levels, idle_enabled=self.idle_enabled), indent=2) + '\n')
 
     @classmethod
@@ -70,11 +80,11 @@ class Program:
     def from_bytes(cls, data: bytes):
         """Parse captured input without reopening its original file."""
         obj = json.loads(data.decode('utf-8'))
-        if not isinstance(obj, dict) or set(obj) != {'format', 'words', 'last', 'idle_levels', 'idle_enabled'} or obj['format'] != 'pinwheel-e64-v1':
+        if not isinstance(obj, dict) or set(obj) != {'format', 'words', 'last', 'idle_levels', 'idle_enabled'} or obj['format'] not in IMAGE_FORMATS:
             raise ValueError('Unsupported program image schema')
         if not isinstance(obj['words'], list) or any(type(obj[k]) is not int for k in ['last', 'idle_levels', 'idle_enabled']):
             raise ValueError('Malformed program image')
-        program = cls(tuple(obj['words']), obj['last'], obj['idle_levels'], obj['idle_enabled'])
+        program = cls(tuple(obj['words']), obj['last'], obj['idle_levels'], obj['idle_enabled'], obj['format'])
         program.upload_words()
         return program
 
@@ -92,10 +102,13 @@ class Result:
 
 
 class Host:
-    def __init__(self, transport: Transport, phase_cycles: int = 2):
+    def __init__(self, transport: Transport, phase_cycles: int = 2, *, image_format=LEGACY_FORMAT):
         if type(phase_cycles) is not int or phase_cycles < 2:
             raise ValueError('Serial phases require at least two chip edges')
+        if image_format not in IMAGE_FORMATS:
+            raise ValueError('Unsupported host image format')
         self.transport = transport
+        self.image_format = image_format
         self.phase_cycles = phase_cycles
         self.ui = 4  # serial select inactive, controls low, live status page
         self.edges = self.frames = 0
@@ -153,6 +166,8 @@ class Host:
         return status
 
     def upload(self, program: Program):
+        if program.image_format != self.image_format:
+            raise ValueError('Program image format does not match the selected chip')
         words = program.upload_words()  # reject capacity before touching the chip
         if self.page(0) & 1:
             raise RuntimeError('Cannot upload while the engine is busy')

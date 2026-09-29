@@ -72,6 +72,11 @@ class Acceptance(unittest.TestCase):
             a=fixture();change(a)
             with self.subTest(change=change),self.assertRaises(ValueError):qualify_candidate(*a)
 
+    def test_absent_fanout_bound_cannot_qualify_a_candidate(self):
+        a=fixture();a[4]['slow']['n']['fanout']=None
+        with self.assertRaisesRegex(ValueError,'Missing required electrical bound: n slow fanout'):
+            qualify_candidate(*a)
+
     def test_reported_violation_and_bad_path_cannot_be_hidden_by_global_counts(self):
         a=fixture();a[4]['fast']['n']['slew'].update(verdict='VIOLATED')
         self.assertEqual(qualify_candidate(*a)['counts'],{'failing':1,'within_trial_reserve':1})

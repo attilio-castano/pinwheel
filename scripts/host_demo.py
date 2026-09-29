@@ -1,7 +1,7 @@
 """Pin-only protocol peers and monitors for the reusable host demonstration."""
-from dataclasses import asdict
+from dataclasses import asdict, replace
 
-from pinwheel_host import Host, Program
+from pinwheel_host import Host, Program, LEGACY_FORMAT, PAIRED_FORMAT
 
 
 def _require(condition, message):
@@ -155,13 +155,16 @@ def trigger_program():
     return Program((wait, branch, pulse, 4), 3)
 
 
-def demonstrate(sim, images, directory):
-    host = Host(sim)
+def demonstrate(sim, images, directory, *, image_format=LEGACY_FORMAT, certify=None):
+    host = Host(sim, image_format=image_format)
     host.reset()
     cases = []
 
     def run(name, program, device, samples, outcome=5, check=None):
         sim.device = None
+        program = replace(program, image_format=image_format)
+        if certify is not None:
+            certify(name, program)
         program.write(directory / (name + '.json'))
         before = host.edges
         host.upload(program)
@@ -203,8 +206,20 @@ def demonstrate(sim, images, directory):
         run(name, program, peer, samples, outcome, check)
     # The client must fail closed on a chip-rejected record, retain the old
     # committed program, and expose the error through the actual host pins.
+    malformed = Program((1 << 63, 4), 1)
+    if image_format == PAIRED_FORMAT:
+        # Deliberately bypass the source compiler to exercise hardware admission.
+        # The ordinary Program API rejects this corruption before sending it.
+        class MalformedUpload:
+            image_format = PAIRED_FORMAT
+
+            def upload_words(self):
+                raw = list(replace(program, image_format=PAIRED_FORMAT).upload_words())
+                raw[0] |= 1 << 63
+                return tuple(raw)
+        malformed = MalformedUpload()
     try:
-        host.upload(Program((1 << 63, 4), 1))
+        host.upload(malformed)
     except RuntimeError as error:
         _require('rejected the staged image' in str(error), f'Unexpected malformed-upload failure: {error}')
     else:
@@ -218,7 +233,7 @@ def demonstrate(sim, images, directory):
     result = host.read_result(timeout_cycles=4000)
     _require(result.samples == 1 and result.outcome == 5, f'Recovered program result: {result}')
     sim.device = None
-    return dict(cases=cases, edges=host.edges, frames=host.frames,
+    return dict(cases=cases, edges=host.edges, frames=host.frames, image_format=image_format,
                 transport='Actual RTL pins over an interactive Icarus pipe; no internal state access',
                 clock_assumption_ns=20,
                 upload_time_ms_at_assumed_clock=cases[0]['upload_cycles'] * 20 / 1_000_000)

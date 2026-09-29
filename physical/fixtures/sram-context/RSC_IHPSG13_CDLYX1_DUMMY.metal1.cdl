@@ -1,0 +1,24 @@
+************************************************************************
+* 
+* Copyright 2023 IHP PDK Authors
+* 
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*    https://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* 
+************************************************************************
+
+* Experimental comparison: only dummy R0 model translated; nodes and w/l unchanged.
+.SUBCKT RSC_IHPSG13_CDLYX1_DUMMY A Z VDD VSS
+MN0 vss_r vdd_r VSS VSS sg13_lv_nmos m=1 w=2.49u l=300.0n ng=3 nrd=0  nrs=0
+MP0 vdd_r vss_r VDD VDD sg13_lv_pmos m=1 w=3.24u l=640.00n ng=2 nrd=0  nrs=0
+R0 Z A res_metal1 w=2.6e-07 l=6e-07
+.ENDS

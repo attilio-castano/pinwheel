@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "status": "conditional_graph_package_gate_passed",
+  "date": "2026-09-27",
+  "report": {
+    "path": "build/validation/paired-formal-01/report.json",
+    "sha256": "454a717d470c0c178c81bd056220a6abcab89d4c30317d0145301024d750a92b"
+  },
+  "study": "docs/storage/paired-formal-correspondence.md",
+  "source_sha256": {
+    "Pinwheel.lean": "cbfaa3d642a99de4328c832839e065652e3306732c0c46d1a626c93c59d380da",
+    "Pinwheel/Hardware/Memory/SinglePort.lean": "b8559bf625613a24c2aa1a19e91c9c5316913356f725fd30968b38da3af353e0",
+    "Pinwheel/Hardware/Storage/PairedSemantics.lean": "52a786e8b4ae5e3d7fa15a93bd6f6c19763879c617d53295bef42503b122a042",
+    "Pinwheel/Hardware/Storage/PairedComposition.lean": "f798d2149f14018ae6f7fa86b31461088cc3467820a368cbcd0cdccfd101eefa",
+    "Pinwheel/Hardware/Storage/PairedClosed.lean": "e9f864cfea0ecadf61673107fdb3c2121c6e000f57968333bf4653a54ef81746",
+    "test/PairedFormal.lean": "eeb9e9b370f93eb2bff5ef5c1d87844d74501d354804bf20ac899f20f9c186bf",
+    "scripts/check-paired-formal.py": "3b5e2d05da886676deed1435de32dfee0f350990c9f37648ba1f9ac1f24a48e6"
+  },
+  "component_contract": {
+    "path": "physical/fixtures/sram-trust/contract.json",
+    "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+    "scope": "Unchanged external component proposal; the new Lean contract is an explicit parameter."
+  },
+  "implementation": "PairedValidation; original PairedController graph interpretation",
+  "graph_nodes": 45,
+  "reachable_modules": 212,
+  "audit": {
+    "declarations": 15843,
+    "theorems": 8001,
+    "standard_axioms_only": true
+  },
+  "validation_seconds": 9.191,
+  "cad_seconds": 0,
+  "inputs_unchanged": true,
+  "checks": {
+    "default_library_build": true,
+    "whole_library_axiom_audit": true,
+    "injected_axiom_rejected": true,
+    "kernel_contract_and_ordering_examples": 9,
+    "existing_invalid_graph_controls": 4,
+    "existing_schedule_proof": true,
+    "both_core_constructors_succeed": true,
+    "proved_package_matches_emitter": true,
+    "retained_artifacts": {
+      "core.mlir": {
+        "path": "build/validation/paired-validation-check-06/core.mlir",
+        "sha256": "b8a873066f76e5373911e5ebf8638b13214da98d5e28623af5b467e4d921810c"
+      },
+      "chip.mlir": {
+        "path": "build/validation/paired-validation-check-06/chip.mlir",
+        "sha256": "921fa76e8e668da06eeeb52f6aa1d6b44f73d3a678cef0e2def856b835d05feb"
+      },
+      "assembly.json": {
+        "path": "build/validation/paired-validation-check-06/assembly.json",
+        "sha256": "dd47935675bc4ff72a6cfde8f794c43dd1cb683a70550a2e182a0895c1079641"
+      }
+    },
+    "full_protocol_executable_suite_rerun": false
+  },
+  "proved": [
+    "Shared named graph lowering preserves next state and observation.",
+    "Actual original and retained graph bindings establish all node equations.",
+    "Isolated validation and original paired controller agree for all inputs and registers.",
+    "Existing package adapters preserve graph interpretation without changing edge counts.",
+    "Retained package read/write enables are mutually exclusive; command conversion preserves both.",
+    "Restricted SRAM contract supports idle, read and write from arbitrary initial contents and Q.",
+    "Partial memory model relation survives finite commands; defined reads return the promised value.",
+    "Every finite package history agrees with the graph model conditional on the SRAM behavior law.",
+    "Controller SRAM writes preserve every word of the previously active bank."
+  ],
+  "open": [
+    "Paired loader establishes initialized-read coverage from an initializing edge.",
+    "Committed parameter/metadata/SRAM image agreement and atomic replacement.",
+    "Actual dispatch/capture/wait/timeout cycles refine certified E64 execution.",
+    "RTL emitter, CIRCT, synthesis and complete source-to-GDS correspondence.",
+    "Exact-version SRAM internal/electrical qualification and compatible fast timing.",
+    "Accepted A/B and clean-source physical replay."
+  ],
+  "no_global_memory_axiom": true,
+  "arbitrary_initial_memory": true,
+  "complete_timed_paired_refinement": false,
+  "physical_qualification": false,
+  "A_accepted": false,
+  "B_admitted": false,
+  "campaign": {
+    "cad_seconds_total": 8412.163,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2
+  }
+}

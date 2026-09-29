@@ -1,6 +1,30 @@
 # Physical targets and the paired implementation comparison
 
-Study dated **2026-09-22**, with follow-ups **2026-09-23**. The latest
+Study dated **2026-09-22**, with subsequent comparisons retained below.
+The preceding [hold-fix continuation](physical/hold-repair-experiment.md) passes
+both retained timing floors at **+0.382789 ns setup / +0.143801 ns hold**, with
+zero reported electrical violations. Keep it as the timing reference and the
+preceding coordinated layout as the lower-congestion comparison; the
+[34-buffer SRAM design](physical/sram-distribution-experiment.md) remains the
+original reference. Five timed nets miss 20% reserve, **25/25** router/grid
+overflow remains, and total area is **361,583.4240 µm²**. Native regression and
+independent actual-circuit checks qualify the isolated tool fix, not the chip.
+The subsequent [routing-policy comparison](physical/routing-policy-experiment.md)
+rejects unchanged-policy and timing-priority complete reroutes: both introduce
+electrical failures, with **29/40** congestion units. All cells and area stay
+fixed. A proposed grid offset translates guides without changing the working
+grid, so that physical hypothesis remains untested.
+The [incremental import controls](physical/incremental-routing-import-experiment.md)
+then preserve all routes and reproduce fresh timing, but expose lost clock-rule
+demand and changed macro-boundary capacity. The subsequent
+[import repair and signal experiment](physical/route-import-fix-experiment.md)
+passes exact no-edit and actual edit/revert resource controls. Retain its
+one-buffer candidate: shortfalls **5 → 4**, unchanged global timing/clocks and
+**25/25/25** reconciled overflow, at **14.5152 µm²** additional area. Local hold
+falls **0.396 → 0.211 ns** and still passes. [Research status](research/status.md)
+owns the next gate; detailed routing remains unadmitted.
+
+The September 23
 [whole-chip comparison](#shared-physical-edits-and-whole-chip-requalification)
 completes the shared edit abstraction and independent admission, but **rejects
 physical qualification**. All six targets of the preceding local repair retain
@@ -23,8 +47,8 @@ loses **39.835 ps** through capture-clock delay. The subsequent
 saved-chip screen: twelve consumer swaps have no complete conditional pass, and
 two proposed decoder copies exceed the remaining incremental area allowance.
 Clock-environment replay still leaves both setup paths below their retained
-floors. Next compare regional tree replacement and decoding with explicit
-upstream, clock and area budgets; the original contract remains intact.
+floors. The September 25 follow-up completes the proposed parent and opposite
+timing checks and measures regional decoding; the original contract remains intact.
 Detailed routing remains unadmitted.
 [Research status](research/status.md) owns allocation.
 The [initial](../physical/experiments/physical-target-results.json),

@@ -7,12 +7,13 @@ are screens, never routed timing or electrical qualification.
 """
 from collections import Counter
 from copy import deepcopy
+import hashlib
 from itertools import product
 import math
 import re
 
 from physical_buffer_repair import BUFFERS, _bufferless
-from physical_connections import connection_terminals
+from physical_connections import connection_terminals, parse_measurements
 from physical_distribution import CHAIN_CELLS
 from physical_floorplan import overlaps
 from physical_floorplan import to_dbu
@@ -66,6 +67,20 @@ class Library:
             self.cells[key] = _group(sources[0], 'cell', cell)
         return self.cells[key]
 
+    def has_fanout_limit(self, corner, cell, pin):
+        """Include inherited bus/bit limits and the owning library's default.
+
+        Attribute presence is enough to require a report, even if its value is
+        malformed. A bad characterization must never authorize missing evidence.
+        """
+        header = self.pin(corner, cell, pin)
+        if not re.search(r'\bdirection\s*:\s*"?output"?\s*;', header):
+            raise ValueError('Expected a library output pin')
+        source = next(s for s in self.texts[corner] if re.search(
+            r'\bcell\s*\(\s*"?'+re.escape(cell)+r'"?\s*\)', s))
+        return bool(re.search(r'\bmax_fanout\b', header) or
+                    re.search(r'\bdefault_max_fanout\b', source))
+
     def pin(self, corner, cell, pin):
         key = corner, cell, pin
         if key not in self.pins:
@@ -76,7 +91,21 @@ class Library:
                 ranges = re.findall(r'\bpin\s*\(\s*'+re.escape(base)+r'\[(\d+):(\d+)\]\s*\)', bus)
                 if len(ranges) != 1 or not min(map(int,ranges[0])) <= int(index) <= max(map(int,ranges[0])):
                     raise ValueError('Unresolved bus pin range')
-                header = _header(bus)
+                # A bus supplies defaults; range and individual-bit groups can
+                # override them. SRAM address pins use different capacitances
+                # per bit, even though a common range owns their timing tables.
+                headers = [_header(bus), _header(_group(body, 'pin',
+                    f'{base}[{ranges[0][0]}:{ranges[0][1]}]'))]
+                if re.search(r'\bpin\s*\(\s*"?'+re.escape(pin)+r'"?\s*\)',bus):
+                    headers.append(_header(_group(bus,'pin',pin)))
+                attributes = {}
+                for source in headers:
+                    seen = set()
+                    for match in re.finditer(r'\b([A-Za-z_]\w*)\s*(?::[^;]+|\([^{};]*\))\s*;',source):
+                        attribute = match[1]
+                        if attribute in seen:raise ValueError('Ambiguous inherited pin attribute')
+                        seen.add(attribute);attributes[attribute] = match[0]
+                header = '\n'.join(attributes.values())
             else:
                 header = _header(_group(body, 'pin', pin))
             self.pins[key] = header
@@ -113,6 +142,39 @@ class Library:
             input_cap_pf=self.capacitance(corner,cell,'A'), output_limit_pf=_number(output,'max_capacitance'))
         self.buffers[corner,cell]=result
         return result
+
+
+# The comparison SDC defines no fanout constraints. Pin this reviewed program
+# instead of attempting to infer Tcl behavior from a missing report section or
+# a substring search. Other SDC programs retain the strict parser behavior.
+COMPARISON_SDC_SHA256 = '860a5afd856cc92bbecc838b147a9f7c8259abd66bcd62c0f211cb7e8edc4db1'
+
+
+def parse_diagnostic_measurements(text, expected, context, library, corner, sdc):
+    """Replay a diagnostic with source-derived, per-corner macro exceptions.
+
+    Callers bind context, libraries, SDC and report bytes to the saved collection.
+    This adapter is for the pinned comparison flow, not physical admission.
+    An absent bound remains None, never a numerical limit or a passing verdict.
+    """
+    expected = set(expected)
+    missing = set()
+    terms = {name: connection_terminals(context, name) for name in expected}
+    if hashlib.sha256(sdc.encode()).hexdigest() == COMPARISON_SDC_SHA256:
+        for name, terminals in terms.items():
+            instance, pin = terminals['driver'].rsplit('/', 1)
+            driver = context['instances'][instance]
+            if driver['macro'] and not library.has_fanout_limit(corner, driver['cell'], pin):
+                missing.add(name)
+    measured = parse_measurements(text, expected, missing_fanout_limits=missing)
+    for name, row in measured.items():
+        terminals = terms[name]
+        if (row['capacitance']['pin'] != terminals['driver'] or
+                row['loads'] != len(terminals['consumers']) + len(terminals['ports']) or
+                row['slew']['pin'] not in {terminals['driver'], *terminals['consumers'], *terminals['ports']} or
+                (row['fanout'] is not None and row['fanout']['pin'] != terminals['driver'])):
+            raise ValueError('Diagnostic measurement differs from physical connection: '+name)
+    return measured
 
 
 def span(points):

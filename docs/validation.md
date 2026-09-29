@@ -73,6 +73,48 @@ pushing, verify that the committed sources match the validated sources. If code,
 tests, or validation inputs change, run the affected checks again. Documentation
 edits require link and whitespace checks.
 
+## Paired milestone before merge
+
+Run the portable checks above on the exact proposed source snapshot. The
+foundation runner builds and audits the paired library proofs, but its 32
+executable suites do not include the separate paired admission and artifact
+interpretation controls. Run those gates explicitly with fresh tags:
+
+```sh
+python3 -B scripts/check-paired-formal.py --tag merge-paired-admission \
+  --retained-manifest physical/experiments/paired-validation-mapping.json
+python3 -B scripts/check-paired-readback.py --tag merge-paired-readback
+python3 -B scripts/check-design-acceptance.py --tag merge-design-acceptance \
+  --selection physical/experiments/design-acceptance-readback-inputs.json \
+  --require-accepted
+```
+
+The admission gate checks upload, runtime, timed execution, package/host and
+certified-session controls as well as the standard-axiom audit. Supplying the
+retained manifest also checks fresh emission against the actual mapping inputs.
+The readback gate reinterprets both retained RTL modules, checks their
+correspondence in Lean, audits the generated proofs and rejects actual RTL
+corruptions. Its prerequisites include local Yosys/Z3 and the retained mapping
+and admission artifacts. See [admission](storage/paired-upload-admission.md) and
+[RTL interpretation](storage/paired-rtl-interpretation.md) for the exact scope.
+
+The final command explicitly selects the current v2 intake. Omitting
+`--selection` selects the historical v1 assessment. A completed current
+assessment returns **2**, with `status: assessed`, `A_accepted: false` and exactly
+`sram_qualification`, `timing_conditions`, and `package_power` blocked.
+Exit **1** means invalid or unavailable evidence and must not be treated as the
+expected blocked result. With `--require-accepted`, exit **0** requires accepted A;
+without it, exit 0 only means the assessment completed. See the
+[report contract](research/implementation-acceptance.md).
+
+These additional commands consume retained local artifacts; they are not a
+clean-source physical rebuild and do not rerun placement, routing or extraction.
+Preserve prior reports and manifests instead of replacing their hashes with
+fresh results. Record new validation separately, and confirm that its source
+files equal the committed files before pushing. Repository merge readiness and
+the [three physical follow-ups](physical/qualification-followups.md) are separate
+decisions; the complete A-to-B design iteration remains open.
+
 ## Hardware prerequisite order
 
 These are explicit local gates, not mandatory cloud CI jobs. The checked archives
@@ -102,9 +144,14 @@ For a new checkout, the relevant dependency chain is:
 | Local-decoding map tile | `check-map-tile.py --tag NAME`: builds/audits the reused memory and controller projection; emits one tile, flat map and complete tiled map; checks every output and next-state bit against independent behavioral Verilog for arbitrary binary states at RTL and both mapped corners. Verilog read-back, exact state/port checks, a joined-reader negative control, hierarchy/area/depth/fanout accounting; 180-second cap per command. `test_map_tile.py` tests fail-closed state/clock/reset/coordinate handling. No whole-chip replacement or physical run | [Map-tile reproduction](physical/map-tile-study.md#independent-checks-and-reproduction) |
 | Map buffer distribution | The same checker with `--distribute-from physical/experiments/map-tile-results.json --fanout-limit 10`: verifies retained artifact/source/tool hashes, inserts actual library buffers while preserving child modules, counts internal sink pins and glue aliases, checks flattened and reread Verilog metrics, proves all outputs/next-state bits at both mapped corners and rejects an inverted buffer. `test_map_distribution.py` checks weighted loads, aliases, bank grouping, unsupported boundaries and stale evidence. No new synthesis or physical run; 180-second cap per command | [Distribution result and limits](physical/map-tile-study.md#bounded-distribution-result) |
 | Complete-chip tiled map | `check-tiled-chip.py --tag NAME`: build/audit actual controller/map wiring, require retained baseline/map emission identity, four core/chip RTL and mapped-corner SAT checks, address-mutation rejection, exact package/macro terminals, paired mapping and Verilog read-back, then existing core/package-pin oracles. All reference current-state inputs remain arbitrary; only next values of six slots absent in both mapped chips are excluded. `test_tiled_chip.py` checks state projection, pruning, actual ports and macro constants. Reports structural acceptance separately from functional success; 180-second cap per command | [Complete-chip result](physical/map-tile-study.md#complete-chip-integration--september-22) |
+| Isolated paired validation | `check-paired-validation.py --tag NAME --baseline-root PATH --cell-model-dir PATH`: baseline byte reproduction, kernel axiom audit, arbitrary-state core/package SAT with inverted-output negative, independent core/package traces, both saved mapped corners, cell timing and structural SRAM-to-status absence. `test_paired_validation.py` checks that state intake rejects hidden or missing live state. | [Validation isolation](physical/validation-isolation-experiment.md) |
+| Explicit physical timing acceptance | `physical_timing_acceptance.assess_timing(metrics, corners)` requires per-corner setup/hold slack and violation counts plus cap/slew/fanout counts. Missing, malformed or nonfinite metrics fail; successful flow exit and passing aggregate values cannot hide a failed corner. `python3 -B -m unittest discover -s test -p test_physical_timing_acceptance.py -v` covers a positive control, 21 individual failure cases, missing corners and malformed contracts. The actual coarse screen passes and final extracted layout fails this gate. | [Final layout and independent acceptance](physical/balanced-detailed-experiment.md#completion-checks-and-the-flow-status-trap) |
+| Balanced mapped distribution | `check-paired-distribution.py --tag NAME --selection PATH --physical-receipt PATH --guidance-context PATH`: verifies source/guidance hashes, contracts known signal buffers, rebuilds spatially ordered shallow trees and checks unchanged nonbuffer connections, all signal loads, both mapped-corner SAT comparisons, an inverted-buffer negative, pin replay and cell timing. Five `test_mapped_buffer_balance.py` tests and twelve existing distribution tests pass. The study separately records fresh physical stages, all-corner measurement, actual-netlist SAT/pins and geometry/grid readbacks. | [Balanced distribution](physical/buffer-balance-experiment.md) |
 | Experimental paired controller | `check-paired-controller.py --tag NAME`: emit the typed controller with existing wrappers, validate core/package traces, exact one-macro/state intake, both saved mapped corners and typical mapped pin replay, then include SRAM arcs in cell timing under the eight-load policy. Axiom, stale-row and inverted-buffer negatives must fail. `test_paired_mapping.py` and `PairedGraph.lean` check malformed intake and shared-expression construction without CAD. Create-only receipts; 120-second command caps; bounded local STA containers; no placement/routing | [Complete controller and macro timing](storage/compact-execution-study.md#complete-controller-and-macro-timing) |
 | Combined controller/selection | The same checker with `--organization combined` retains all 32 storage tiles and optimizes the surrounding logic together. Requires the preceding tiled RTL/projection/tool/library identities, reproduces its mapped metrics, counts all controller/tile/fixed-macro loads, checks unchanged child implementations and reconciles every added cell after flattening/read-back. Repeats the full equivalence/pin gate and rejects an inverted distribution buffer. Optional `--fanout-limit 8` applies the pinned unit-load library budget during ABC mapping and aggregate distribution, rejects the incomplete separate boundary, and leaves baseline mapping unchanged. `test_map_distribution.py` checks fixed terminals, tie-offs, unknowns and aliases; `test_tiled_chip.py` additionally rejects library-budget mismatches. Successful checks are eligible for cheap STA; the structural score is diagnostic. Same 180-second command cap | [Combined result](physical/map-tile-study.md#combined-controller-and-selection--september-22), [library-budget follow-up](fetch-contract-study.md#local-mapping-with-the-library-budget--september-22) |
-| Interactive host demonstration | `pinwheel-host.py demo --backend hybrid --tag NAME` (or `reference`): builds its dependencies, loads protocol/custom programs on one fixed RTL chip, checks pin-only peers and retained results; pinned macro models required for hybrid | [Host workflow](host-workflow.md) |
+| Explicit mapping hierarchy | `check-tiled-chip.py --tag NAME --organization combined --fanout-limit 8 --compare-flat` maps identical tiled RTL with the 32 tiles retained and with all logic flattened, using the same candidate mapping recipe and aggregate load budget. Every mapping checks the declared hierarchy, records boundary loads, and verifies exact named leaf/package connections through flattening and Verilog read-back. Both candidates must pass the existing state-projection, SAT and pin-oracle gates. `test_synthesis_hierarchy.py` tests changed regions, interfaces, aliases, names and clock/reset/data connections. Cell ownership is provenance, not placement; no physical winner or backend promotion. Same 180-second command cap | [Hierarchy comparison and prerequisites](physical/map-tile-study.md#explicit-hierarchy-comparison--september-25) |
+| Paired image certificate | `check-paired-image.py --tag NAME`: independently decode canonical source bytes, kernel-check exact upload words and all finite successor histories; six positive cases and ten corruptions whose rejection is also kernel-proved. No CAD required. | [Certificate scope and replay](storage/paired-image-certificate.md) |
+| Interactive host demonstration | `pinwheel-host.py demo --backend hybrid --tag NAME` (or `reference` / `paired`): builds its dependencies, loads protocol/custom programs on one fixed RTL chip, checks pin-only peers and retained results; pinned macro models required for SRAM backends. Paired mode kernel-checks each valid image before upload and uses an explicit 290-word format. | [Host workflow](host-workflow.md) |
 | Whole-chip physical experiment | `prepare-chip-physical.py --comparison REPORT --design NAME [--fetch]`, then `run-physical.py --design NAME --tag RUN --pdk-root PATH --timeout-seconds SECONDS`: verified comparison/PDK/container, chip SDC, pinned macro views and official DEF; no shared-PDK modification | [Chip physical study](chip-physical-study.md) |
 | Routing diagnosis | Enable `physical/experiments/routing-diagnostics.json` through `--overrides`; export a retained database with `routing_context.py` in pinned OpenROAD Python, then run `diagnose-routing.py` on its matching iteration report. It requires a stopped run, verifies database identity and completed log counts, and emits classification plus SVG/HTML. A separate `routing_keepouts.py` derives the controlled macro-obstruction checkpoint | [Routing diagnosis](chip-physical-study.md#routing-diagnosis-2026-09-19) |
 | Macro orientation / guide screen | Stage with `prepare-chip-physical.py --macro-placement FILE` to change only existing macro placements in a separate design; the runner validates the derivation on fresh and resumed runs. `report-routing-guides.py` binds a guide to the same completed step's database/context and counts body overlaps by layer. These are coarse guides, not wires or DRC | [Orientation experiment](chip-physical-study.md#orientation-experiment-2026-09-19) |
@@ -187,6 +234,15 @@ across line breaks and multiple `NEW` segments, and excludes patch rectangles
 from via counts; see the [dated correction](physical-correlation-study.md#parser-correction-2026-09-19).
 
 ## Foundation review order
+
+For the 2026-09-26 complete-design-iteration campaign, see the
+[detailed-layout study](physical/design-iteration-experiment.md) and
+[manifest](../physical/experiments/design-iteration-results.json). They bind
+the audit, routed A netlist/GDS, exact-GDS flat Magic control, explicit-corner
+repair screens and final-netlist pin replay. The portable certificate/host
+commands above can be rerun with fresh tags. The physical receipts explicitly
+reuse pinned prepared-design and checkpoint dependencies; they do not establish
+a clean-source A/B replay or accepted physical A.
 
 The [shared physical target](physical-targets.md) is the current intake for
 the control and paired organization. `prepare-chip-physical.py --target PATH`
@@ -866,3 +922,302 @@ budget changes. The [manifest](../physical/experiments/paired-organization-study
 binds the source study, selected report and test receipts. Fresh tags preserve
 prior attempts; the helper tests are portable, while replaying the study needs
 its bound local physical artifacts and libraries.
+
+## Regional decoding experiment
+
+The [September 25 experiment](physical/regional-decoding-experiment.md) completes
+the missing parent measurements and complementary timing checks, then tests two
+actual decoder-copy variants and one coarse whole-chip reroute. The
+[manifest](../physical/experiments/regional-decoding-results.json) binds 335 source
+versions and 508 artifacts. Its evidence includes 1,494 independent pin/corner
+load reconciliations, 192 path witnesses, fresh global checks and exact actual
+ODB/Verilog readbacks. Identical gate copies and transparent input buffers retain
+the original signal graph; this checker adds no Lean theorem.
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_physical_decoder_replication.py' -v
+python3 -B -m unittest discover -s test -p 'test_mapped_physical_diagnostics.py' -v
+```
+
+Fourteen copy/placement/connectivity tests and a regression for OpenSTA's blank
+fanout-slack column are included in the final **463 passed / 2 skipped** portable
+suite. Incorrect copy inputs, changed original state/clock/package wiring,
+shorted outputs, malformed input trees, occupied sites and wrong power bindings
+are rejected. Malformed or numerically inconsistent fanout rows also fail.
+
+The 126-net collection contains the selected families and all new incident nets,
+but does not requalify the full 1,152-connection watchlist. Incremental-probe grid
+usage is partial; only complete coarse-route grids support the **33 → 19**
+overflow comparison. Worst coarse setup/hold are **−0.113646 / +0.049847 ns**,
+below their retained floors, so no promotion or detailed route follows. The
+recorded exploratory area overage does not change old admission contracts.
+
+## SRAM distribution and write timing
+
+The [September 25–26 follow-up](physical/sram-distribution-experiment.md) checks
+the complete inherited watchlist and all added branches across two local
+variants, an unchanged reroute and the candidate reroute. The
+[manifest](../physical/experiments/sram-distribution-results.json) binds **2,240
+artifacts / 1,943 source versions**, **18,534 pin/corner checks**, **360 selected
+path witnesses** and **1,920 write-interface witnesses**. Both timing directions
+are collected for all 64 SRAM data inputs at every corner. The unchanged reroute
+reproduces all baseline measurements; original cells/placements and actual
+signal/power connectivity are independently checked.
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_physical_signal_buffering.py' -v
+python3 -B -m unittest discover -s test -p 'test_physical_connections.py' -v
+python3 -B -m unittest discover -s test -p 'test_physical_organization.py' -v
+```
+
+Six new buffer-plan/readback tests reject undeclared consumers, clock/supply or
+package edits, occupied sites, wrong area, changed state and unexpected cells.
+The readers respect individual SRAM bus-bit capacitance overrides and preserve
+explicitly absent fanout limits as unknown. Missing or malformed sections remain
+errors. A cache regression is reproduced before correcting the inherited
+attribute/cache-key collision. The complete portable suite records **471 passed /
+2 skipped**; final-reader reanalysis reproduces all five comparisons without
+rerunning CAD. The original sealed report is retained beneath the amendment.
+
+The 34-buffer local variant clears both timing floors and all electrical reserves.
+Its complete reroute improves setup/hold to **+0.321638/+0.089025 ns** and removes
+slew/fanout violations, but develops one different capacitance violation and two
+reserve misses; setup is below its retained comparison floor. Minimum pin access
+passes. Router overflow **16** and stored-grid overflow **15** remain distinct,
+with one unresolved Metal4 unit; neither is a congestion-free result. No detailed
+route, extracted closure, backend promotion or new Lean theorem is claimed.
+
+## Control distribution and competing read paths
+
+The [September 26 follow-up](physical/control-distribution-experiment.md)
+records two rejected variants and preserves the earlier SRAM design. Its
+[manifest](../physical/experiments/control-distribution-results.json) binds
+**2,311 artifacts / 2,003 source versions**. Six timing collections perform
+**23,505** independent load reconciliations, **624** selected-path checks and
+**2,304** SRAM write-interface checks. The final local scope contains **1,319**
+connections; all ten affected transport families preserve their logical leaves
+and measured branches. All **108** local matched clock comparisons are unchanged.
+
+The unchanged reroute reproduces baseline measurements, paths and routing grid.
+The supplementary collection reproduces all prior measurements on overlapping
+scope. Actual database/Verilog readbacks validate both buffer plans and the
+completed routes. The complete portable suite passes **471 tests / 2 skips**;
+minimum pin access passes only for the completed four-buffer candidate.
+
+The four-buffer local timing gain regresses after full routing. Seven added
+buffers clear local electrical limits but miss the setup floor and have no
+complete-route result. One unnecessary repeat control launched after that
+failed gate is explicitly interrupted and retained; it is not candidate evidence.
+The run-local launcher now rejects missing candidate stages before creating
+output or invoking Docker, with both edit and route rejection checks recorded.
+
+Directional router overflow, saved-grid counts and 2-D native markers have
+different definitions in the pinned implementation. The four-buffer complete
+candidate's twenty units reconcile strictly with native markers and guides;
+the baseline's extra Metal4 3-D edge remains unlocated. No detailed routing,
+extracted closure, complete paired package refinement or new Lean theorem follows.
+
+## Coordinated status and decode placement
+
+The [placement study](physical/status-region-placement-experiment.md) and
+[manifest](../physical/experiments/status-region-placement-results.json) retain
+two completed placement candidates, three complete coarse routes and failed
+attempts. The reusable [placement helper](../scripts/physical_region_placement.py)
+selects a bounded combinational cone, fixes every other cell and validates actual
+readback identity, legal rows, occupancy, orientation, displacement and area.
+Its [seven tests](../test/test_physical_region_placement.py) include mutation
+rejection and authoritative row definitions for previously empty rows. The
+complete portable suite passes **478 tests / 2 skips**.
+
+Independent checks cover **4,199 connections / 2,190 complete transport families**,
+**75,582** pin/net/corner reconciliations, **576** selected-path checks,
+**2,304** SRAM write-interface checks, **90** targeted branch witnesses and
+**six** exact probes of the new hold failure. The **2,304** unrestricted regional
+witness records contain repeated paths and are not independent path coverage.
+All **96** matched local clock-pair comparisons are unchanged; full routing
+changes clock delay on a path whose cells never moved. Actual ODB and independent
+Verilog readbacks, row/status checks and both complete candidates' minimum pin
+access checks pass. Whole-chip electrical reports identify four capacitance
+failures, including one outside the scoped inventory.
+
+Those checks establish experiment integrity, not physical qualification. Both
+variants fail their complete-route setup comparison; the coordinated candidate
+also has four hold violations. Router/native/grid discrepancies remain rejected
+by strict reconciliation. The manifest binds **3,473 artifacts / 2,904 retained
+source versions**, including the rejected input-hash measurement, native placer
+failures, recovery limits and measurement-support revision. Reproduction needs
+the retained ignored inputs and pinned CAD/PDK; use a fresh output lineage.
+No detailed-route or extracted-timing closure follows.
+
+## Coupled placement, routing and repair
+
+The [routed-repair study](physical/routed-repair-experiment.md) and
+[manifest](../physical/experiments/routed-repair-results.json) retain a matched
+flow on the reference and coordinated layouts, separate pre-repair/final
+measurements, and two failed native hold continuations. The
+[repair validator](../scripts/physical_routed_repair.py) admits only pinned
+noninverting transport additions and explicitly enabled, same-family drive
+changes with identical all-corner functions. Independent Verilog and ODB
+readbacks check contracted signal identity, state/clock preservation, legal
+geometry, macro/power binding and area. Row definitions and final original
+placement statuses are checked independently.
+
+The complete portable suite passes **485 tests / 2 skips**. Seven focused
+repair tests reject semantic, function, parameter, clock, power and geometry
+mutations; four run-local inventory tests distinguish constant ties without
+reported limits from passing timed nets. Seven launch guards reject missing
+evidence, exhausted attempts/routes and reused output before new CAD or
+candidate changes. No Lean source changes, so this experiment adds no theorem
+or fresh Lean/model qualification.
+
+Four three-corner measurements cover **130,671** pin/net/corner reconciliations,
+**432** selected-path checks, **1,536** SRAM write-interface checks and **72**
+targeted branch witnesses. The final inventories contain 10,891 / 10,894
+consumed cell-driven signal nets, including 1,790 constant ties in each;
+package-input-driven and clock nets remain outside that electrical inventory.
+Global violation reports are reconciled separately. Both final pin-access
+checks pass, but neither candidate qualifies: coordinated repair retains two
+hold violations, six reserve shortfalls and nonzero congestion with a 13/12
+router/grid discrepancy.
+
+The report binds **2,229 artifacts / 2,122 retained source versions**. Twelve
+CAD attempts consume **1,427.573 seconds**, with ten successful stages and two
+native hold-repair failures that produce no final candidate. Six complete
+routes finish; eight reservations count both failed attempts conservatively.
+All containers are absent. Original evidence, failed checkers and pinned-tool
+sources remain available; reproduction needs the retained ignored inputs and
+a fresh output lineage. No detailed-route or extracted-timing closure follows.
+
+## Protected-load hold repair continuation
+
+The [hold-fix study](physical/hold-repair-experiment.md) and
+[manifest](../physical/experiments/hold-repair-results.json) bind the exact
+pinned native patch, both compiled implementations, 12 native regression
+executions and one completed physical continuation. The original executable
+and unchanged extension reproduce the empty-load failure; the patch preserves
+protected connections, repairs an editable branch and matches the unprotected
+control's final circuit and timing. The default tool image is unchanged.
+
+The actual candidate passes independent signal identity, all-corner transport
+functions, protected geometry, clock/power topology, legal rows and original
+placement-status checks. A narrowly recorded checker revision admits the
+pinned `buf_16` only after checking all three Liberty corners; its negative
+test rejects a changed corner function or unlisted drive strength. The complete
+portable suite passes **486 tests / 2 skips**, including eight routed-repair
+tests. Four launcher guards reject missing or changed evidence before CAD.
+
+Two saved-checkpoint three-corner collections supply **65,652** load
+reconciliations, **264** selected-path checks and **768** SRAM write-interface
+checks. Final setup/hold is **+0.382789 / +0.143801 ns**, above the retained
+floors, with zero reported electrical violations. The final inventory has
+10,990 consumed cell-driven signal nets: 9,195 timed nets meet 20% reserve,
+five do not, and 1,790 constant ties lack reported limits. All SRAM write holds
+retain their floor. Native, router and saved-grid congestion agree at **25**;
+minimum pin access passes, but nonzero congestion and reserve shortfalls
+prevent qualification.
+
+Actual readback counts 90 delays and six buffers; the native hold progress
+counter reports only 37 because its rollback branch resets the counter. The
+independent count also checks the insertion budget. Preparation changes no
+cells or geometry but already changes timing and produces 25 overflow, so
+its effect is measured separately from repair. The report binds **17,343
+artifacts / 1,002 retained source versions**, including failed setup/checker
+attempts. Four CAD stages take **604.601 seconds**; one candidate and two full
+routes complete without timeouts, and all experiment containers are absent.
+No Lean/RTL change, detailed route, extraction or backend promotion follows.
+
+## Routing-policy comparison
+
+The [routing-policy study](physical/routing-policy-experiment.md) and
+[manifest](../physical/experiments/routing-policy-results.json) retain three
+complete routes from the same saved hold-repair checkpoint. Independent
+Verilog/database readback checks all **11,406** original cells, placement,
+status, signal/clock/power identity and fixed geometry. No cell or area changes.
+
+The grid-offset probe translates **124,888** guide rectangles by 3.6 µm without
+changing any saved grid coordinate, capacity or usage value. It is rejected
+before fresh STA because the intended grid change was not exercised. A recorded
+one-variant continuation tests worst-slack 30% routing priority; all original
+attempts still count against the unchanged **1,700-second** cumulative CAD cap.
+
+Two fresh three-corner collections reconcile **65,940** physical loads,
+**264** selected path checks and **768** SRAM write-interface checks. Each
+covers 9,200 timed nets and separately counts 1,790 constant ties without
+reported limits. Both measured reroutes pass retained setup/hold and SRAM write
+floors, but introduce one capacitance violation per corner and seven slow slew
+violations. Router/grid/native-marker totals reconcile at **29/29/29** for
+the control and **40/40/40** for priority, versus 25 in the retained source.
+Stored routing-rule bindings are unchanged; runtime clock-rule relaxations
+are separately recorded. Minimum pin access is not simultaneous routability.
+
+**53 focused tests** and four launch guards pass. Earlier verifier/library-path
+and Python test-discovery setup failures are preserved with corrected helper
+versions; no failed CAD attempt is omitted. Eight CAD stages finish in
+**677.018 seconds**, without timeouts, and all experiment containers are absent.
+The sealed report binds 1,606 artifacts and 1,521 retained source bindings.
+Retain the earlier checkpoint; no detailed routing, new Lean proof, native
+hold-extension invocation, default tool change or backend promotion follows.
+
+
+## Saved-route import qualification
+
+The [unchanged import study](physical/incremental-routing-import-experiment.md)
+and [manifest](../physical/experiments/incremental-routing-import-results.json)
+require complete routing-resource identity before a local signal edit. Native
+segment comparison covers **11,342 nets / 126,729 segments**, including every
+one of **342 clock nets**. Independent netlist and physical readback retain all
+11,406 original cells, geometry, status and power bindings.
+
+Both controls fail resource identity. Initialization after import erases demand
+and leaves stale markers; reversed initialization loses 83 clock demand units
+and changes 79 Metal2 capacity entries despite reproducing 25/25/25 overflow.
+Fresh three-corner connection and selected/write path records reproduce exactly:
+32,970 load reconciliations, 132 selected checks and 384 write checks. No new
+minimum-pin-access or detailed-route claim is made.
+
+[`physical_route_import.py`](../scripts/physical_route_import.py) rejects changed
+routes, incomplete clocks, capacity/usage drift, invalid arrays and stale
+summaries. Twelve new tests cover these failures; the focused suite totals
+**65 passing tests**. Six launch guards include rejected or changed control
+admission. The checker does not repair the native import path.
+
+Five CAD stages take **168.145 seconds**, no full reroutes or signal edits,
+no added cells/area and no timeout. All containers are absent. The report binds
+**1,057 artifacts / 1,071 retained source bindings**; the rejected first analysis
+is preserved. Require corrected import and edit/revert accounting before another
+candidate. Prior complete-route measurements, Lean proofs and RTL checks retain
+their original scope.
+
+## Qualified native import and the one-buffer continuation
+
+The [follow-up study](physical/route-import-fix-experiment.md) and
+[manifest](../physical/experiments/route-import-fix-results.json) repair the
+preceding failed import boundary. Four native controls retain every saved grid
+entry, 126,729 source segments, all 342 clock routes and all original geometry.
+An independent oracle checks 174,035 native 2-D/3-D edges against wire demand.
+Ordinary, active-NDR and relaxed-NDR routes release the expected resources;
+an actual buffer insertion, partial route, deletion and reconnection restores
+the original edge arrays and independent circuit readback. A second native
+build also repairs the derived aggregate overflow counter, reproducing the
+same candidate circuit, routes and resources.
+
+The one-buffer candidate preserves global setup/hold **+0.382789/+0.143801 ns**
+and reported electrical limits, removes one of five reserve shortfalls, and
+retains **25/25/25** native/grid/marker overflow. Independent buffer-contracted
+Verilog, fixed geometry/status/power, all consumed signal nets and minimum pin
+access pass. Fresh coverage is **32,973 load / 132 selected / 384 write checks**.
+Local hold drops **0.396 → 0.211 ns**, still passing; 14.5152 µm² is added and
+the historical area overage is recorded explicitly.
+
+**79 focused Python tests** and **ten launcher refusal checks** pass. Eleven
+CAD stages use **336.314 seconds**; two isolated native builds use **6.100
+seconds**. No full reroute or CAD timeout occurs, and all thirteen containers
+are absent. Both adapter versions, the rejected identical-slew comparison and
+its corrected downstream propagation check remain in the evidence. The pinned
+parent source/header bundle is independently checked against its sealed hashes.
+
+This qualifies the tested import/edit boundary and one physical improvement.
+It does not extend Lean proofs or establish generic imported-circuit semantics,
+detailed routing, extracted timing, simultaneous pin access, DRC/LVS or backend
+promotion. The saved 3-D arrays are reproduced; historical transient 2-D
+optimization state was not serialized and is not claimed to be reproduced.

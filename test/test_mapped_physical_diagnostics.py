@@ -69,6 +69,20 @@ class PhysicalDiagnostics(unittest.TestCase):
                       state_sha256=sha(state_path), artifact_sha256={str(odb.relative_to(root)): sha(odb)})
         return design, report, previous
 
+    def test_blank_fanout_slack_keeps_the_violation(self):
+        context=dict(nets={'signal':dict(type='SIGNAL',ports=[],terminals=[
+            dict(instance='buf',pin='X',direction='OUTPUT')])})
+        template=('\nmax fanout\n\nPin Limit Fanout Slack\n{}\n\nmax capacitance\n\n\n'
+                  'Found 0 unannotated drivers.\nFound 0 partially unannotated drivers.\n')
+        for row in ('buf/X 8 9 -1 (VIOLATED)','buf/X 8 9    (VIOLATED)'):
+            quality=measurement_quality(template.format(row),context,[])
+            self.assertEqual(quality['fanout_violations'],[
+                dict(pin='buf/X',net='signal',kind='SIGNAL',limit=8,fanout=9)])
+        for row in ('buf/X 8 (VIOLATED)','buf/X 8 7 (VIOLATED)',
+                    'buf/X 8 9 1 (VIOLATED)','buf/X 8 9 -2 (VIOLATED)','missing/X 8 9 (VIOLATED)'):
+            with self.subTest(row=row),self.assertRaises(ValueError):
+                measurement_quality(template.format(row),context,[])
+
     def test_selects_completed_requested_checkpoint_not_latest_metric(self):
         with tempfile.TemporaryDirectory() as folder, patch.object(diagnostic, 'ROOT', Path(folder)):
             design, report, previous = self.fixture(Path(folder))

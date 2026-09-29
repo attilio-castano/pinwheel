@@ -1,0 +1,142 @@
+{
+  "schema": 1,
+  "status": "initialized_running_ownership_and_actual_successor_gate_passed",
+  "date": "2026-09-28",
+  "report": {
+    "path": "build/validation/paired-runtime-01/report.json",
+    "sha256": "bbe831bf9085d67ab519dcda708e482240b0b92cb15d7e5c454391a300414238"
+  },
+  "study": "docs/storage/paired-runtime-ownership.md",
+  "previous_gate": {
+    "path": "physical/experiments/paired-upload-results.json",
+    "sha256": "cfba577201e3dc6e4ef8c410d8b688c53ede047c64dd4cee73ba418e8f494b7a"
+  },
+  "source_sha256": {
+    "Pinwheel.lean": "b8073e7cc71c88e74b55912bf4ad1fbc216673a3f0332ce8fa7a6189a6723f57",
+    "Pinwheel/Hardware/Memory/SinglePort.lean": "b8559bf625613a24c2aa1a19e91c9c5316913356f725fd30968b38da3af353e0",
+    "Pinwheel/Hardware/Storage/PairedSemantics.lean": "52a786e8b4ae5e3d7fa15a93bd6f6c19763879c617d53295bef42503b122a042",
+    "Pinwheel/Hardware/Storage/PairedComposition.lean": "f798d2149f14018ae6f7fa86b31461088cc3467820a368cbcd0cdccfd101eefa",
+    "Pinwheel/Hardware/Storage/PairedClosed.lean": "e9f864cfea0ecadf61673107fdb3c2121c6e000f57968333bf4653a54ef81746",
+    "Pinwheel/Hardware/Storage/PairedLoader.lean": "e6fb86c950a6e47b82924315f636bd9657a79f87d15d015927f68d94eb4992c7",
+    "Pinwheel/Hardware/Storage/PairedUpload.lean": "989f9aa76775459c88f73b96fa9257bb21ac8e79d1854a8c0c38f2908f670b71",
+    "Pinwheel/Hardware/Storage/PairedCoverage.lean": "11859b1e844ddd639eb5f5fef81f6172bca5ed2e48a1ca687f905bf18338bbc9",
+    "test/PairedFormal.lean": "eeb9e9b370f93eb2bff5ef5c1d87844d74501d354804bf20ac899f20f9c186bf",
+    "test/PairedUpload.lean": "6fd754838f7c6520c9d766b55c537019f08e786c124c423bac21e17ac11866cb",
+    "scripts/check-paired-formal.py": "3d745af5d2a2b26ad6a157cf0da24a5e20c6adeef8494625aad04b1e52a01697",
+    "Pinwheel/Hardware/Storage/PairedRunning.lean": "de7fc140525f3d23148e4db9b7139c58b2d55d97a950400dad06334d8a149acb",
+    "Pinwheel/Hardware/Storage/PairedRuntime.lean": "92c7e0321be4ceb3e201722d49b2dc63ff44f35446fea387dcc02d9a650852b3",
+    "test/PairedRuntime.lean": "fccb9583c63d7a572850985d08726b653184857f0f017384a962f55d0ae64bc2"
+  },
+  "component_contract": {
+    "path": "physical/fixtures/sram-trust/contract.json",
+    "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+    "scope": "Unchanged external component proposal; the memory behavior law remains an explicit theorem parameter."
+  },
+  "implementation": "PairedValidation; actual PairedController graph equations and actual Q feedback",
+  "boundary": "Decoded commands, after an initializing edge; arbitrary prior registers, SRAM contents and Q.",
+  "reachable_modules": 217,
+  "audit": {
+    "declarations": 16268,
+    "theorems": 8328,
+    "standard_axioms_only": true
+  },
+  "validation_seconds": 62.091,
+  "cad_seconds": 0,
+  "inputs_unchanged": true,
+  "checks": {
+    "default_library_build": true,
+    "whole_library_axiom_audit": true,
+    "injected_axiom_rejected": true,
+    "contract_controls": {
+      "kernel_checked_examples": 9,
+      "graph_nodes": 45,
+      "arbitrary_initial_memory": true,
+      "write_holds_q": true,
+      "enabled_read_updates_q": true,
+      "idle_holds_q": true,
+      "undefined_read_unspecified": true,
+      "illegal_mode_excluded": true,
+      "reversed_and_duplicate_bindings_rejected": true
+    },
+    "upload_controls": {
+      "retained_core": true,
+      "complete_images": 2,
+      "arbitrary_initial_registers_contents_and_q": true,
+      "malformed_parameter_row_boot_idle_rejected": true,
+      "short_extra_busy_abort_reset_restart_controls": true,
+      "all_32_parameters_256_rows_boot_idle_checked": true,
+      "prior_active_bank_preserved": true,
+      "row_255_read_and_old_q_checked": true,
+      "initialization_invalidates_without_clearing": true
+    },
+    "runtime_controls": {
+      "retained_core": true,
+      "certified_image": true,
+      "loaded_through_actual_commands": true,
+      "both_active_banks": true,
+      "reference_edges": 100,
+      "running_edges": 82,
+      "scenarios": [
+        "capture/branch/qualify/halt",
+        "wait timeout",
+        "guard fault",
+        "false branch/out of range",
+        "qualify timeout",
+        "reset and restart"
+      ],
+      "pins_samples_modes_counters_and_running_pc_compared": true,
+      "stopped_q_holds": true,
+      "stale_q_wrong_parameter_invalid_token_rejected": true,
+      "scope": "Finite execution controls; not a universal timed E64 refinement proof."
+    },
+    "existing_invalid_graph_controls": 4,
+    "existing_schedule_proof": true,
+    "both_core_constructors_succeed": true,
+    "proved_package_matches_emitter": true,
+    "retained_artifacts": {
+      "core.mlir": {
+        "path": "build/validation/paired-validation-check-06/core.mlir",
+        "sha256": "b8a873066f76e5373911e5ebf8638b13214da98d5e28623af5b467e4d921810c"
+      },
+      "chip.mlir": {
+        "path": "build/validation/paired-validation-check-06/chip.mlir",
+        "sha256": "921fa76e8e668da06eeeb52f6aa1d6b44f73d3a678cef0e2def856b835d05feb"
+      },
+      "assembly.json": {
+        "path": "build/validation/paired-validation-check-06/assembly.json",
+        "sha256": "dd47935675bc4ff72a6cfde8f794c43dd1cb683a70550a2e182a0895c1079641"
+      }
+    },
+    "retained_identity_checked": true,
+    "full_protocol_executable_suite_rerun": false
+  },
+  "proved": [
+    "Every initialized decoded-command history preserves accepted-upload coverage and running-state ownership.",
+    "While running, the active image is valid, the cached parameter is its current-token lookup and Q is its current-token SRAM row.",
+    "Every edge whose resulting state is running performs a read, preserves stored contents and refreshes Q; stopped states need no Q usability guarantee.",
+    "The running token is nonterminal and comes from the active boot token or a stored successor.",
+    "The retained typed controller inherits the invariant for any memory implementation satisfying the explicit contract, with no free graph-wire or initial-memory premise.",
+    "A certificate for the accepted transcript identifies the actual cached parameter, Q and canonical source instruction denoted by the current token.",
+    "An actual entry edge from a running state installs the source successor selected by the actual branch wire."
+  ],
+  "open": [
+    "Derive actual dispatch times and branch choices from the timed E64 reference, including capture, guard, countdown, wait and qualification behavior.",
+    "Prove the full relation for modes, counters, samples and pin commands, including start, terminal and reset edges.",
+    "Compose complete timed execution with package behavior and qualified host delivery.",
+    "RTL emitter, CIRCT, synthesis and complete source-to-GDS correspondence.",
+    "Exact-version SRAM internal/electrical qualification and compatible fast timing.",
+    "Accepted A/B and clean-source physical replay."
+  ],
+  "no_global_memory_axiom": true,
+  "arbitrary_initial_registers_contents_and_q": true,
+  "reference_derived_dispatch_and_branch_proved": false,
+  "complete_timed_paired_refinement": false,
+  "physical_qualification": false,
+  "A_accepted": false,
+  "B_admitted": false,
+  "campaign": {
+    "cad_seconds_total": 8412.163,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2
+  }
+}

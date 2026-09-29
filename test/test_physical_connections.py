@@ -93,6 +93,18 @@ class Connections(unittest.TestCase):
             with self.subTest(text=text),self.assertRaises(ValueError):parse_measurements(text,{'n'})
         with self.assertRaises(ValueError):parse_measurements(REPORT,{'n','missing'})
 
+    def test_explicitly_missing_macro_fanout_stays_unknown(self):
+        report=REPORT.replace('max fanout\nd/X 8 1 7 (MET)\n','')
+        with self.assertRaises(ValueError):parse_measurements(report,{'n'})
+        row=parse_measurements(report,{'n'},missing_fanout_limits={'n'})['n']
+        self.assertIsNone(row['fanout'])
+        self.assertEqual(row['capacitance']['limit'],.4)
+        with self.assertRaises(ValueError):parse_measurements(report,{'n'},missing_fanout_limits={'other'})
+        with self.assertRaises(ValueError):
+            parse_measurements(report.replace('max slew','absent slew'),{'n'},missing_fanout_limits={'n'})
+        with self.assertRaises(ValueError):
+            parse_measurements(REPORT.replace('d/X 8 1 7 (MET)','bad row'),{'n'},missing_fanout_limits={'n'})
+
     def test_tcl_selector_injection_and_duplicates_rejected(self):
         row=dict(net='n',driver='d/X')
         for rows in [[row,row],[dict(row,driver='d/X}; exec bad')]]:

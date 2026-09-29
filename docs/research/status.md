@@ -1,29 +1,331 @@
 # Research status
 
-Updated 2026-09-24 for navigation; latest experimental evidence is dated
-2026-09-23. This page owns the **active decision and next evidence gates**.
-Read [results](results.md) for completed conclusions, [journal](journal.md) for
-dated receipts, and the linked studies for measurements and reproduction.
-The [research workflow](README.md) explains those record boundaries;
-[submission obligations](../submission-plan.md) own final acceptance criteria.
+Updated 2026-09-29 after the saved-layout power sensitivity study.
+This page owns the **active decision and next evidence gates**. Read
+[results](results.md) for conclusions, [journal](journal.md) for receipts and
+linked studies for measurements and reproduction.
 
 ## Objective and current decision
 
-Build a reloadable, generally programmable protocol engine that preserves pin
-timing, capture, branching and atomic program replacement, then establish that
-the emitted chip is physically feasible under the
-[competition constraints](../competition.md). Keep semantic proof, mapped RTL,
-local electrical estimates, whole-chip routing and final layout as distinct
-evidence layers.
+Make a complete chip-design iteration possible for someone without hardware
+expertise. Pinwheel's reloadable protocol engine is the test case: preserve pin
+timing, capture, branching and atomic replacement while connecting one exact
+implementation to formal meaning and physical feasibility. Then repeat the
+process for a declared capacity change. Competition admission remains separate.
+
+**Active plan: [complete design iteration](complete-design-iteration.md).**
+The current merge milestone collects the conditional proofs, retained RTL
+interpretation and physical evidence. The three remaining physical requirements
+are tracked in [qualification follow-ups](../physical/qualification-followups.md),
+with a [prepared upstream SRAM follow-up](../physical/sram-maintainer-followup.md).
+Merging the contribution does not accept A, admit B or complete the iteration.
+
+The filled chip retains its passing electrical, timing, full-rule GDS DRC and
+package checks. The new [SRAM study](../physical/sram-extraction-results.md)
+establishes a passing **351-pin exported-GDS boundary comparison** with signal
+and power fault rejection. **Full GDS signoff and A remain unaccepted:** SRAM
+internal extraction and layout/schematic qualification still fail. The new
+[comparison policy](../physical/sram-comparison-results.md) now qualifies all four
+unchanged context fixtures in both extraction modes, with explicit physical
+port ownership and defect rejection. The subsequent
+[macro integration](../physical/sram-integration-results.md) preserves all
+351 ports and four array levels but exposes eight remaining failing circuit
+types. The [complete tile diagnostic](../physical/sram-tile-results.md) now
+isolates a source/physical resistor-width disagreement: 0.260 versus 0.200 µm.
+An explicitly edited diagnostic matches completely; the supplied tile and
+macro's cross-block connections remain unqualified.
+
+The [provenance investigation](../physical/sram-trust-results.md) confirms all
+seven supplied views and the simulation dependency match one pinned release.
+The width discrepancy predates Pinwheel. The linked reference deliberately
+abstracts SRAM internals; the new native boundary controls demonstrate both
+wiring-fault sensitivity and blindness to an internal width edit. The
+[component contract](../../physical/fixtures/sram-trust/contract.json) proposes
+an explicit premise for further formal work. It is not a production admission
+rule, and external physical qualification remains open.
+
+The first [conditional paired proof gate](../storage/paired-formal-correspondence.md)
+now connects the actual shared graph, retained validation optimization and
+package adapters to an explicit SRAM contract. It proves legal memory modes,
+active-bank SRAM preservation and agreement with the graph model before and
+after every edge. It allows arbitrary initial memory and adds no global axiom.
+The default build, whole-library audit and focused controls pass; fresh core,
+package and interface artifacts are byte-identical to the retained mapping
+inputs.
+
+The subsequent [upload gate](../storage/paired-upload-coverage.md) proves that
+every valid active bank matches a complete 290-word accepted transcript, through
+arbitrary decoded commands after initialization. It covers all parameter
+registers, SRAM rows, boot and idle metadata; incomplete uploads preserve the
+active image. A certificate for that transcript now describes the stored image.
+Enabled reads of a valid image return the row for the token installed on the
+edge. The retained-controller theorem keeps the SRAM law explicit and permits
+arbitrary initial storage. The library audit, adversarial upload controls and
+retained emission identity pass. The subsequent timed gate is described below.
+
+The [running-state gate](../storage/paired-runtime-ownership.md) now connects
+the current instruction, cached parameter and usable SRAM response through
+every initialized command history. A certified active image supplies the
+current source instruction and the successor selected on an actual dispatch
+edge. The controller refreshes Q on every edge whose result is running;
+stopped states may hold stale Q. Finite tests agree with the reference on
+100 edges across both banks; the subsequent timed gate now derives dispatch
+times and branch choices from the reference.
+
+The [timed execution gate](../storage/paired-timed-execution.md) proves
+cycle-for-cycle agreement of the retained controller's public execution state
+with E64: mode, PC, both counters, all samples, and pin levels/enables. It derives
+capture ordering, branch choices, guard priority, wait deadlines and qualification
+retries from the actual graph. Initialization and certified accepted-upload
+coverage establish storage ownership from arbitrary prior state; a reset
+establishes the execution relation. Every subsequent finite history is covered
+under the explicit SRAM law, with no reinitialization or command 3 during that
+program segment. The subsequent package/lifecycle gate below establishes the
+relation at commit and composes it with host observations. Hardware and physical
+acceptance are unchanged. The focused gate passes the complete library audit
+(8,585 theorems), 686 new before/after edge comparisons and eight live mutation
+controls; fresh hardware artifacts match the retained mapping inputs.
+
+The [package and host lifecycle gate](../storage/paired-host-lifecycle.md)
+connects that result to the retained pin map, two samplers, serial receiver and
+mailbox. Three reset-low edges initialize arbitrary state; any later accepted
+commit of a certified staged transcript establishes the E64 relation directly.
+The normal commit/start sequence needs no additional reset. Every package
+output agrees before and after each execution-segment edge, including retention
+of an unread result across certified replacement. Qualified serial delivery is
+connected to the actual consumed stream. Loader status retains its graph
+interpretation. The subsequent admission gate below discharges certified-upload
+success; physical qualification is separate.
+The fresh gate passes in **199.413 seconds**: **8,696 audited theorems**,
+**794 package pin-edge pairs**, three rejected corruptions and unchanged
+hardware artifacts. No CAD calls or hardware edits occur.
+
+The [certified upload-admission gate](../storage/paired-upload-admission.md)
+now derives acceptance for every qualified begin/290-word/commit session of a
+certified image. The first 32 accepted words install the inactive parameter
+table used by actual row validation; accepted-prefix ownership carries the
+proof to commit. Arbitrary quiet gaps are allowed. From arbitrary represented
+state, three reset-low samples and two idle release samples prepare the actual
+package; qualified serial delivery then establishes E64 execution and host
+observations without an extra reset after commit. Stopped initialized
+replacement is covered by the decoded/package upload theorem. The SRAM law,
+digital delivery contract and execution-segment rule remain explicit.
+The fresh gate passes in **235.829 seconds**, with **8,757 audited theorems**,
+**580 accepted pushes**, **168 quiet edges**, four executed refusals and two
+wrong-source certificate rejections. Fresh hardware artifacts retain their
+identities; no hardware edit or CAD call is required.
+
+The initial [combined acceptance report](implementation-acceptance.md) bound the
+eight concrete host certificates, conditional proof, emitted circuit, scoped
+implementation checks and final physical candidate. The host's original paired
+RTL connects to the proved validation-isolated RTL through the recorded SAT
+comparison. Subsequent mapping and physical checks connect to the exact filled
+netlist and GDS. Fresh structural comparisons account for the five buffers,
+declared protection diode and signal-free finishing cells. **At that checkpoint A
+remained unaccepted:** SRAM qualification, compatible fast conditions, typed-circuit-to-RTL
+correspondence and package power qualification are explicit blocking rows.
+The intake checks **572 input files / 58 evidence connections** and rechecks all
+**eight host certificates** in **111.130 seconds**. All **17 refusal tests** pass
+normally and under optimized Python. No CAD calls or physical edits occurred.
+
+The subsequent [RTL interpretation gate](../storage/paired-rtl-interpretation.md)
+now connects both exact retained emitted modules to their typed components and
+the certified upload/E64 session theorem. It covers all **81 controller and 110
+package register fields**, **44 output fields** across both modules, and **1,082
+local equivalences**. Both compiled-environment audits allow only Lean's standard
+axioms. Six actual RTL corruptions and two injected axioms are rejected; both
+unchanged reimports pass. The fresh run takes **315.149 seconds**. The Yosys
+frontend/lowering and restricted interpreter remain explicit trust boundaries.
+The refreshed acceptance intake consumes this proof and these exact RTL bytes:
+**the formal interpretation row passes; A remains blocked by SRAM qualification,
+compatible fast conditions and package power qualification.** No physical-design
+run or hardware edit is involved.
+
+| Checked result | Current evidence |
+| --- | --- |
+| Setup / hold / electrical limits | Positive at every recorded corner, zero violations; **+1.242753 ns slow setup**, **+0.026979 ns fast-screen hold** |
+| Original circuit and physical layout | All **12,335** pre-fill instances, all original wire encodings, **340 clock nets** and **98 antenna bindings** preserved |
+| Finishing | **45,901** signal-free filler/decap cells; no new signal circuitry or routing |
+| Full-rule Magic GDS DRC / antenna | **0 / 0** |
+| Connectivity / power | All **12,191** connected nets wired; complete consumed-net parasitics; both power grids connected and every power terminal bound |
+| Functional replay | **331,401 package-pin edges / 1,517 frames** pass on the filled circuit |
+| Exported-GDS SRAM boundary LVS | **Pass:** all 351 pins accounted for, zero differences; existing schematic SRAM blackbox retained |
+| Deliberate signal / ground wiring faults | Both rejected by native LVS; four invalid pin-list cases also rejected |
+| Supplied macro versus macro in chip GDS | All **32 layers** and **754,685 text labels** preserved exactly |
+| SRAM internal qualification | **Rejected:** two residual Magic overlaps, 438 conversion diagnostics; independent strict hierarchical SRAM LVS fails |
+| Reduced SRAM fixtures | All four fixtures pass deep and flat: complete driver has 64 MOS devices / 34 ports; complete delay has 28 MOS devices / six separate resistors / four ports. All 42 defect checks reject. Full SRAM remains unqualified. |
+| Hierarchical SRAM integration | Reproduced failure: 23 matching types, eight nonmatches, 19 skipped parents including the macro. All 351 physical ports and array multiplicities survive. Both sides contain 215,806 MOS devices; count equality does not prove wiring. |
+| Complete 32-bit tile diagnostic | Source refuses: 96 resistor widths disagree with geometry. Changing three width tokens in a separate diagnostic yields 288 device / 182 net / 42 port matches in both modes, without ambiguity. All 42 fault comparisons reject. Supplied tile remains unqualified. |
+| SRAM provenance / abstraction coverage | Seven views plus behavioral dependency match the pinned PDK. A 351-pin abstract fixture matches and rejects signal/power faults; an internal width edit is invisible. Native GDS abstraction still reports 23 overlaps and 518 conversion diagnostics. |
+
+The original extra ground terminal belongs to the raw ground equivalence class
+and disappears when control hierarchy is imported consistently. The adapter
+changes 338 bus-pin spellings and preserves every pin and connection. No ground
+alias or terminal deletion is applied. Flattening all SRAM internals removes all
+24 original overlap errors in isolation, but full-flat chip extraction times out.
+The cheaper control import permits boundary LVS while leaving internal errors;
+its blackbox pass cannot hide those failures.
+
+The [reviewable recipe](../../physical/fixtures/sram-comparison/README.md) binds
+ports from original top-owned labels and extracted metal at their positions,
+reconciles only the small netlists' hierarchy, and retains every dimensional
+resistor and declared port through preparation. Its private deck copy changes
+one comparison file; extraction geometry and installed PDK remain unchanged.
+The final replay passes eight fixture comparisons and two unchanged-carrier
+comparisons, rejects 42 injected defects, and refuses eight incomplete-evidence
+cases. Six ambiguous internal net pairs remain in each complete delay result;
+all devices and declared pins match. Unique dummy-instance net identity is not
+claimed.
+
+**Correction:** six matches in the earlier context report were database matches
+with a failing final native port check. The new study audits all 24 earlier
+invocations and retains their raw receipts. With physical ports recognized,
+a new ablation also demonstrates a real final-native false positive when
+disconnected-output safeguards are removed. The retained recipe refuses it.
+
+The [integration diagnostic](../../physical/fixtures/sram-integration/README.md)
+adds explicit layout/schematic name correspondence and expands only the admitted
+driver/delay families. The prior near-flat macro arose during comparison
+alignment, not extraction. The new recipe preserves two matrices, 128 columns,
+1,024 tiles and 32,768 bit cells. All 548 macro label positions bind consistently
+to 351 distinct connected nets. Eight remaining circuit mismatches prevent a macro
+comparison; the full device census alone cannot verify the expanded blocks'
+connections. A packaged replay reproduces the same failure and audit.
+
+The [tile recipe](../../physical/fixtures/sram-tile/README.md) preserves the
+whole source hierarchy and physical context, reconciles ownership inside its
+netlists and retains all resistor dimensions and 42 physical ports. Its 96
+markers measure 0.200 × 0.600 µm while source CDL says 0.260 × 0.600 µm.
+The strict adapter refuses the original. A separate width-corrected diagnostic
+passes deep and flat; restoring original widths fails. The packaged run also
+rejects 42 defects, seven incomplete-evidence cases and 13 adapter faults.
+
+**Next: obtain component evidence and a qualified integration boundary.** The
+[qualification assessment](../physical/physical-qualification-assessment.md)
+audits nine libraries against the pin and current upstream inventories. The
+captured development tree supplies no new fast pair. The current unmerged
+SRAM proposal retains the width discrepancy and adds bit-cell layer annotations
+that appear inconsistent with the physical witnesses. Both issues need an
+authoritative component interpretation or characterization.
+
+The [power sensitivity study](../physical/power-boundary-results.md) now
+reproduces the retained rail drops and exposes their boundary assumptions:
+7,912 VDD and 7,832 ground sources. Four audited contacts per rail increase the
+conservative combined loss from **0.542 to 8.636 mV** with unchanged default
+activity. At those contacts, illustrative 1/10 Ω resistance per source node
+raises loss to **12.635/47.225 mV**. Three checked finite workloads draw
+**6.817–7.029 mW** in the nominal model; the highest, replacement, gives
+**36.620 mV** with 10 Ω feeds. All 38,497 signal pins are annotated. Three earlier
+zero-annotation runs are explicitly rejected despite successful tool exits.
+No connected waveform bit is unknown after both banks are initialized.
+
+The remaining power gate needs actual parent supply geometry, source tolerance,
+external impedance and an applicable activity/voltage envelope. The recorded
+values are sensitivities, not package values or a bound over every program.
+The nominal study does not qualify slow-corner headroom or transient droop.
+The [acceptance report](implementation-acceptance.md) retains its passing RTL
+interpretation row and all three physical blockers; A remains unaccepted.
+
+For physical acceptance, obtain exact-version qualification or a documented
+source/deck interpretation before changing the strict tile contract. The
+[prepared maintainer report](../physical/sram-maintainer-report.md) is unsent.
+Historical commercial LVS evidence supports investigating this route but is
+not a report for our exact inputs. Further independent internal verification
+would still need the recorded edge/control contexts and a passing macro
+positive control before cross-block wiring-fault claims. Keep the filled chip
+and all failed receipts; no error waiver or width correction is adopted.
+
+The tile continuation cost **86.455 CAD seconds**. The new provenance and
+abstraction continuation adds **21.779 CAD seconds**, including the failed
+first probe and cleanup. The power study adds **430.957 CAD seconds**, including
+all setup failures and rejected activity runs. Campaign total is now
+**8,843.120 seconds / 147.39 minutes** of eight hours. The
+[power manifest](../../physical/experiments/power-boundary-results.json) binds
+the measurements, complete-annotation gate and resource ledger. The
+[provenance manifest](../../physical/experiments/sram-trust-results.json)
+records source history, three bounded invocations and the boundary-coverage
+controls.
+Three A full-routing attempts remain used and two B attempts reserved; no
+additional A slot, chip edit or installed-PDK change occurred. The
+[tile manifest](../../physical/experiments/sram-tile-results.json) binds four
+bounded invocations, the original refusal, causal comparison, controls and
+independent audit. An auxiliary local fault-area reporting error is corrected
+by separate GDS readback; whole-tile geometry checks and verdicts remain valid.
+Earlier fixture and integration evidence remains separately recorded.
+
+The fast library audit still finds standard cells at −40°C and SRAM at −55°C,
+with no compatible delivered fast pair or established conservative bound.
+Conditional certified-upload admission and timed package refinement now pass;
+source-to-GDS correspondence remains open. Power-grid
+continuity passes, but IR-drop results use default voltage-source placement and
+modeled activity; package-level power delivery remains unqualified. Disabled
+KLayout DRC, streamout XOR and whole-flow EQY are not passing checks. Establish
+accepted A before admitting the 64-record B design; clean-source replay is open.
+
+Signal-cell/SRAM/antenna area stays **375,882.7104 µm²**, 4.5942% above the historical
+comparison allowance, on the unchanged **1,289.28 × 710.64 µm** outline. Filler/decap
+adds 491,334.0768 µm² of occupied area, for 867,216.7872 µm² total instance area;
+that fills existing space and does not enlarge the die. Competition admission
+remains separate.
 
 | Role | Current position | Detailed owner |
 | --- | --- | --- |
-| Semantic reference | The unrestricted two-read flip-flop chip preserves the exact edge contract. The selected hybrid dictionary SRAM has a closed-loop initialized array/controller proof, with external macro and emitted-package binding still open. | [Storage and execution](../storage-primitives.md#closed-loop-hybrid-execution-2026-09-21) |
-| Experimental execution candidate | The full-capacity paired controller retains canonical E64 operations and 256 positions/32 records using one 512×64 SRAM, banked parameters and a one-read successor schedule. Its 290-word image is experimental; mapped checks and conditional schedule lemmas do not close complete compiler, admission or package refinement. | [Compact execution](../storage/compact-execution-study.md#full-capacity-follow-up) |
-| Physical comparison | The latest paired locality edit passes its local budgets, but its independently rerouted whole-chip candidate is **rejected**. Its original area reference is 358,297.5456 µm², with a fixed cumulative 0.3% increment cap; the candidate uses 359,371.6704 µm², leaving 0.767837 µm². | [Physical targets](../physical-targets.md#shared-physical-edits-and-whole-chip-requalification) |
+| Semantic reference | Unrestricted two-read flip-flop chip preserves the edge contract; hybrid SRAM has an initialized array/controller proof. Certified delivery through paired package execution is now proved under explicit digital and SRAM premises. | [Storage and execution](../storage-primitives.md#closed-loop-hybrid-execution-2026-09-21) |
+| Experimental execution candidate | One 512×64 SRAM, 256 positions/32 canonical records and 290-word images. Certified upload admission, actual storage, timed E64 execution and package/result lifecycle are proved under explicit premises. | [Admission/session proof](../storage/paired-upload-admission.md) |
+| Retained filled chip | Electrical, timing, GDS DRC, antenna, circuit/pin replay and SRAM boundary LVS pass; internal SRAM qualification remains open. | [SRAM qualification](../physical/sram-extraction-results.md) |
+| Historical third full-flow layout | Its one-cap/four-fanout failure is retained. The new GDS control also exposes its SRAM extraction gap; its earlier LVS used DEF/LEF. | [Third A layout](../physical/transport-split-results.md) |
 
-**Retain the shared physical-edit abstraction and independent admission checks;
-do not promote the locality candidate.** One bounded coarse route keeps all six
+## Earlier starting checkpoint
+
+The following local results explain the checkpoint used by the first full
+attempt. Its extracted measurements above supersede these estimates for current
+physical acceptance; the historical experiments retain their original verdicts.
+
+**`route-import-fix-01/candidate` was the starting physical checkpoint.**
+The [import repair and signal experiment](../physical/route-import-fix-experiment.md)
+qualifies a pinned native adapter, then adds one buffer beside a weak XOR driver.
+Every original cell and all **342 clock routes** remain fixed. Independent actual
+netlist/geometry checks and fresh whole-chip measurements pass.
+
+| Measure | Hold-repair reference | Single-buffer continuation |
+| --- | ---: | ---: |
+| Slow setup / fast hold | +0.382789 / +0.143801 ns | Unchanged |
+| Electrical reserve shortfalls | 5 | **4** |
+| Reported capacitance / slew / fanout violations | 0 / 0 / 0 | 0 / 0 / 0 |
+| Native / saved-grid / marker overflow | 25 / 25 / 25 | 25 / 25 / 25 |
+| Added area | Reference | **14.5152 µm²** |
+
+The import now reproduces every saved capacity/usage entry and all **126,729**
+source segments. Native removal and a real buffer edit/revert restore all
+**174,035** checked 2-D/3-D edge entries exactly. Four controls cover the initial
+adapter and a follow-up correction to its derived overflow counter; the corrected
+adapter reproduces the measured candidate's circuit, routes and resource state.
+**79 focused tests**, **10 launcher refusal checks**, minimum pin access and
+independent readbacks pass. The
+[manifest](../../physical/experiments/route-import-fix-results.json) preserves
+both tool versions, every control and the source/candidate identities.
+
+The target's slow slew improves **2.082 → 0.355 ns**; both buffered branches
+exceed the 20% reserve floor. Local setup gains **1.246 ns**, while local hold
+margin falls **0.396 → 0.211 ns** and still passes. All 64 SRAM write hold checks
+retain their floors. This is a useful measured tradeoff, not physical closure.
+
+**The proposed `_01876_` consumer partition is deferred pending the complete
+acceptance audit.** It remains a possible local repair if a demonstrated blocker
+justifies it. The four reserve shortfalls are `_01876_`, `_02877_`, `_04597_` and
+`_05213_`; they do not define completion. Congestion reduction remains a separate
+gate: this experiment leaves **25** overflow units. Retain complete resource,
+clock, setup/hold and electrical accounting in subsequent comparisons.
+
+Total candidate area is **361,597.9392 µm²**, **2,225.5009632 µm²** above the
+historical allowance. The hold-repair checkpoint remains the matched reference,
+and the coordinated layout remains a lower-congestion comparison. Prior
+[routing-policy](../physical/routing-policy-experiment.md) and
+[import-control](../physical/incremental-routing-import-experiment.md) failures
+retain their historical verdicts. No detailed-route or backend admission follows.
+
+**September 23 baseline: retain the shared physical-edit abstraction and
+independent admission checks; reject the locality candidate.** One bounded coarse route keeps all six
 local target gains, but only **1,142 of 1,146** scoped connections retain the
 experimental 20% electrical reserve: three fail and one misses reserve. Another
 capacitance failure lies outside that inventory. Slow setup is **−0.055813 ns**;
@@ -44,8 +346,8 @@ loses **39.835 ps** through its capture clock. The
 binds four exact paths, five complete transport trees and thirteen clock nets.
 These observations do not identify a single routing-policy cause.
 
-The subsequent [timing and communication organization study](../physical/physical-organization-study.md)
-has **already screened all 1,152 watchlist connections** against the saved chip.
+The September 23 [timing and communication organization study](../physical/physical-organization-study.md)
+screened **all 1,152 watchlist connections** against the saved chip.
 Twelve bounded consumer swaps across fourteen branches preserve virtual
 buffer-contracted identity, but no complete family passes its conditional wire
 budget. Two proposed local decoder copies cost **21.7728 µm²** before any
@@ -57,45 +359,62 @@ and study own the full comparison. Retain regional decoding as a structural
 option with an explicit budget. The [43-buffer chip](../chip-physical-study.md#local-data-buffering-and-complete-wire-estimates--september-22)
 remains the physical control; the upload pipeline stays opt-in.
 
+**Allow temporary size overages during architectural exploration.** The user's
+September 25 direction permits an idea to exceed current size targets while its
+benefit is tested and later optimizations are investigated. Record the original
+target, candidate size and overage, benefit, regressions and next optimization
+question under the [exploration policy](README.md#exploration-with-temporary-size-overages).
+The remaining 0.767837 µm² from the earlier repair experiment is not a veto on
+new architectural ideas. Historical verdicts and final qualification remain
+separate from exploratory progress.
+
 ## Next discriminators
 
-1. **Complete the saved-chip boundary measurements.** Measure the two missing
-   decoder parent nets, `_01590_` and `_01808_`, and collect the opposite
-   setup/hold checks for the four matched timing paths. Preserve their clock
-   identities and the thirteen-clock watchlist. The current one-sided clock
-   bounds cannot establish a feasible clock tree.
-2. **Compare complete regional organizations.** Cost replacement or reuse of
-   existing distribution trees alongside local decoding, including the shared
-   control and serial-bit-49/50/51 families, passing siblings, both sides of
-   new gates, retained hold delays and shared routing capacity. Keep the
-   original timing floors, 20% reserve and cumulative area reference. If a
-   broader structural comparison needs more than 0.767837 µm², state its
-   separate absolute limit and show the old-cap result beside it; do not
-   retroactively qualify the rejected chip.
-3. **Admit only a complete, falsifiable physical candidate.** Require an exact
-   edit plan, independent functional identity, legal placement and a joint
-   timing/electrical/capacity prediction before bounded placement or coarse
-   routing. Recheck all **1,152 inherited/watchlist connections** plus any new
-   branches and global violations, the matched data and clock paths, native
-   congestion, pin access and original budgets after execution. No current
-   organization clears this gate; detailed routing remains unadmitted.
-4. **Bind the chosen implementation to the final chip.** Compose the paired
-   controller's compiler/admission, actual macro behavior, complete package
-   traces and atomic replacement before backend promotion. The upload stage
-   has a separate memory-view obligation; host integration of the 290-word
-   image follows the selected hardware decision. Final extracted timing,
-   electrical, antenna, power-grid and layout-netlist checks remain required
-   before the [submission package](../submission-plan.md).
+1. **Qualify the supplied SRAM.** Resolve the exact-version width
+   interpretation or obtain applicable component evidence. Independent internal
+   verification still needs the remaining contexts and a complete macro positive
+   control before cross-block fault claims. The prepared maintainer report remains
+   unsent; the interpreted session theorem retains the explicit memory law.
+2. **Qualify fast conditions and package power.** Obtain compatible logic/SRAM
+   characterization or a justified conservative timing bound, then connect the
+   power analysis to qualified package sources and an activity envelope. The
+   [completed sensitivity study](../physical/power-boundary-results.md) supplies
+   the saved-layout evaluator and the explicit integration-data request. The
+   [updated intake](implementation-acceptance.md) keeps these separate from the
+   now-passing formal interpretation row. Preserve the candidate while collecting
+   qualification evidence.
+3. **Establish physically feasible A and its correspondence.** Apply the
+   [bounded plan](complete-design-iteration.md) to the retained filled candidate
+   and close its formal and physical acceptance obligations. All three allocated
+   A routes are used. Connect compilation, admission, closed memory execution,
+   package and host behavior to the implemented netlist; historical results from
+   other backends do not transfer. Record exploratory size overages separately.
+4. **Repeat for a meaningful capacity change.** Increase distinct record capacity
+   from 32 to 64 while retaining 256 positions, atomic replacement and execution
+   timing. Require the same behavioral and physical gates; record image-format,
+   area and implementation consequences explicitly.
+5. **Demonstrate a reproducible design iteration.** Recover both acceptance
+   reports through the same documented workflow, with declared inputs and no
+   unrecorded manual netlist edits. Required missing checks remain incomplete;
+   experimental layout success is separate from the [submission package](../submission-plan.md).
 
 ## Evidence boundaries and where to go deeper
 
 | Question | Evidence owner and current limit |
 | --- | --- |
-| What exactly did the paired physical attempts establish? | [Physical targets](../physical-targets.md) traces local repairs, reroutes, admission and diagnosis. Its [latest route manifest](../../physical/experiments/paired-locality-route-results.json) records successful collection and failed qualification. A local electrical pass does not imply whole-chip or detailed routing closure. |
-| Why did the latest organization screen stop? | [Timing and communication organization](../physical/physical-organization-study.md) gives the complete tree, timing and area comparison. Its span scaling and virtual identity are planning evidence, not measured routed benefit. |
+| What exactly did the paired physical attempts establish? | [Physical targets](../physical-targets.md) traces local repairs, reroutes, admission and diagnosis. Its [September 23 route manifest](../../physical/experiments/paired-locality-route-results.json) records the baseline's failed qualification; the [regional experiment](../../physical/experiments/regional-decoding-results.json) records the later measured alternatives. A local gain does not imply whole-chip or detailed routing closure. |
+| Can saved routes be reopened for a local edit? | [Import repair and one signal buffer](../physical/route-import-fix-experiment.md) passes exact no-edit and actual edit/revert accounting. The first local edit removes one reserve shortfall with unchanged global timing and clock routes. The adapter remains pinned and restricted; four shortfalls and 25 overflow units remain. |
+| What did routing-policy changes establish? | [Routing policy and reserve](../physical/routing-policy-experiment.md) records an ineffective grid option, matched reroute drift and a timing-priority candidate with worse congestion. No cells or area changed; all three saved congestion views reconcile. |
+| What did the hold-fix continuation establish? | [Protected-load repair](../physical/hold-repair-experiment.md) reproduces and fixes the pinned optimizer failure, passes both retained timing floors and reported electrical limits, and records the area, reserve and congestion tradeoff. Preparation and repair effects are measured separately. |
+| What did coupled repair establish? | [Routed repair](../physical/routed-repair-experiment.md) separates initialization from repair, demonstrates electrical/setup and congestion gains on the coordinated layout, retains two new hold violations and records the pinned-tool continuation failures. |
+| What did coordinated placement establish? | [Status/decode placement](../physical/status-region-placement-experiment.md) records local gains, both rejected complete routes, an unmoved hold path damaged mainly by clock rerouting, global electrical failures outside the scoped inventory, and pinned-tool/checker recoveries. |
+| What did the control-distribution follow-up establish? | [Competing read paths](../physical/control-distribution-experiment.md) records two failed variants, a reproducible control, whole-chip regressions, changing bottlenecks, congestion-accounting limits and the interrupted control. The earlier SRAM design remains the starting point. |
+| What did SRAM distribution and write timing establish? | [SRAM distribution](../physical/sram-distribution-experiment.md) records two local variants, unchanged/candidate coarse reroutes, the full watchlist, minimum pin access, timing gains and new routed failures. |
+| What did regional decoding establish? | [Regional decoding](../physical/regional-decoding-experiment.md) records two measured variants, one coarse reroute, actual readback checks, benefits and new limiting paths. [Timing and communication organization](../physical/physical-organization-study.md) retains the preceding saved-chip screen. |
 | What does the chosen execution model prove? | [Compact execution](../storage/compact-execution-study.md) gives the paired capacity, controller, mapped SAT and open refinement boundary. [Storage primitives](../storage-primitives.md) owns the earlier hybrid closed-loop theorem, which does not automatically transfer to the paired controller. |
 | What happened in other physical and architectural branches? | [First chip physical study](../chip-physical-study.md), [chip architecture](../physical/chip-architecture-study.md) and [map tiles](../physical/map-tile-study.md) retain their experiments. [Results](results.md) indexes dispositions and reopening conditions; [journal](journal.md) retains dated receipts. No experimental backend is promoted by those screens. |
-| What is demonstrated to a host? | [Host workflow](../host-workflow.md) covers RTL pin demonstrations and upload cost. Board transport, continuous supervision and the paired 290-word host path remain separate obligations. |
+| How is mapping hierarchy checked? | The [matched hierarchy comparison](../physical/map-tile-study.md#explicit-hierarchy-comparison--september-25) uses identical tiled RTL and explicit flat or retained-tile policies. Exact cell ownership survives flattening and Verilog read-back. Retaining tiles saves 2.021629% of standard-cell area, with mixed address-depth effects. Use the explicit policies and checked flat views for subsequent architecture comparisons; physical locality and timing remain separate measurements. |
+| What is demonstrated to a host? | [Host workflow](../host-workflow.md) includes eight kernel-certified paired uploads and independent RTL pin peers. Conditional certified-upload admission and paired package execution now pass; board transport, continuous supervision and physical qualification remain separate obligations. |
 
 The fast-screen standard-cell and SRAM temperatures remain mismatched. The
 20% connection reserve and 0.3% area increment are **experiment comparison
@@ -105,6 +424,8 @@ ignored `build/` artifacts may be absent in a fresh checkout; tracked manifests
 identify their original reports but cannot reconstruct them.
 
 ## Stable constraints and deferred work
+
+<a id="the-official-outline-2026-09-18"></a>
 
 <a id="the-official-outline-2026-09-18"></a>
 

@@ -1,0 +1,2406 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "coarse-candidate-rejected",
+  "study": "docs/physical/antenna-load-results.md",
+  "protocol": {
+    "path": "docs/physical/antenna-load-experiment.md",
+    "sha256": "07ee4bd3b4199106467ff04e28ab72b0a3e58f16982e6fa8f6d872d07fc9e0a1"
+  },
+  "predecessor": {
+    "path": "physical/experiments/balanced-detailed-results.json",
+    "sha256": "2a93b522e236cfa67385b654eb083a0a2ce9da64c89bcb644da7bffc625dd7be"
+  },
+  "source_coarse_manifest": {
+    "path": "physical/experiments/balanced-electrical-results.json",
+    "sha256": "0811c2a7fca7a570319ca038eea60c1a05cd62ba0bdeccc6e45a165dca994f1f"
+  },
+  "physical_qualification": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "decision": "Reject this receiver-count-only placement plan. Retain the preceding detailed layout. A next plan must bound wire capacitance on parent and child branches using actual route geometry; do not launch this candidate under the unused detailed slot.",
+  "artifacts": {
+    "database": {
+      "path": "build/validation/antenna-load-01/candidate/route/tt_um_pinwheel.odb",
+      "sha256": "1a30b3cabe3f85bda7886764dd10cd8e9c07b554022fa7be4d6f06fdcbb1ea4a"
+    },
+    "netlist": {
+      "path": "build/validation/antenna-load-01/candidate/implemented.v",
+      "sha256": "126457041097b61e5d750894cc23a842765b2767599a64b9084914101b55ad28"
+    },
+    "context": {
+      "path": "build/validation/antenna-load-01/candidate/context.json",
+      "sha256": "36524e71fb4f479194a23991f1d3781e6c97b640289aedf38e4dbf34a0b7b000"
+    }
+  },
+  "reports": {
+    "request.json": {
+      "path": "build/validation/antenna-load-01/request.json",
+      "sha256": "343d2f7b242d3b49211808739461bef05ff9f5a64254b80a5e6ad75ffe4f027e"
+    },
+    "buffer-plan.json": {
+      "path": "build/validation/antenna-load-01/buffer-plan.json",
+      "sha256": "c05d08c4e00a0384e7c0a26ec13844e14e7f786dab8f3ad077ecc2bf07c80e36"
+    },
+    "prepare.py": {
+      "path": "build/validation/antenna-load-01/prepare.py",
+      "sha256": "feb890acb7f70f5a7cd15db3aea205e1517423850c12efccfa7bce1d5fb6c99d"
+    },
+    "control-verification.json": {
+      "path": "build/validation/antenna-load-01/control-verification.json",
+      "sha256": "1d2c79f2986f09942c27fde2a6cec40d61745ddc9643f34b0b22ac9f36b0404c"
+    },
+    "edit-revert-verification.json": {
+      "path": "build/validation/antenna-load-01/edit-revert-verification.json",
+      "sha256": "fc34ea517c790e2bd09e1d4ffd1527b807f2092664decc4d6a2358c7b4fbd477"
+    },
+    "candidate-verification.json": {
+      "path": "build/validation/antenna-load-01/candidate-verification.json",
+      "sha256": "6cb94b7a33c5e003cfc1cebbca93ff8c2edcc7b4a11dbff3a5912f72b5e3ee40"
+    },
+    "candidate-implemented-check/report.json": {
+      "path": "build/validation/antenna-load-01/candidate-implemented-check/report.json",
+      "sha256": "ea0798e7c8cad04fac23f5c6a67edd3aba5f62eae00802b449acc76106743043"
+    },
+    "closeout.json": {
+      "path": "build/validation/antenna-load-01/closeout.json",
+      "sha256": "a7370c72dfa6fbb12fdfab6ea750fee60beef2f398bfded28927b7921a87292c"
+    },
+    "loads-03/report.json": {
+      "path": "build/validation/antenna-load-01/loads-03/report.json",
+      "sha256": "d9b53aabda62d5f5f7130d149a045ff2b531e3434c3e1182181d0a5adc029353"
+    },
+    "loads-stage.json": {
+      "path": "build/validation/antenna-load-01/loads-stage.json",
+      "sha256": "64015b48628f3ab8e79a38ca419e2fa0fa698900480558943e2bd296d8e759c2"
+    },
+    "loads-02-stage.json": {
+      "path": "build/validation/antenna-load-01/loads-02-stage.json",
+      "sha256": "66fc69a81fe2a306a37cda3fd8610df6e87b9fa357a8d916441dc067bc923abd"
+    },
+    "loads-03-stage.json": {
+      "path": "build/validation/antenna-load-01/loads-03-stage.json",
+      "sha256": "a6e8a890b7908e6e0976920d090039f7b9a7956adb08f293d207ae31929052c6"
+    },
+    "launch-02.py": {
+      "path": "build/validation/antenna-load-01/launch-02.py",
+      "sha256": "0dbb8daaef0ae1ff28211de7d5b52c30ddc80f8b88fce36fa2dd87f6e7f0876a"
+    },
+    "worker-02.py": {
+      "path": "build/validation/antenna-load-01/worker-02.py",
+      "sha256": "1da6db0bc9fbdef0217ce2e91b7dac2ebd5ef024681c57d55dea120a7b42bd94"
+    },
+    "loads-worker.py": {
+      "path": "build/validation/antenna-load-01/loads-worker.py",
+      "sha256": "d18ccc0ecb24fa60e014530b43abd2f7f35c085413ccc440900af91c560e3938"
+    },
+    "loads-worker-02.py": {
+      "path": "build/validation/antenna-load-01/loads-worker-02.py",
+      "sha256": "803bc44ca0123c500946b044ad7484cb2b38a0a33f9b817beadf216c9e7329b2"
+    },
+    "loads-worker-03.py": {
+      "path": "build/validation/antenna-load-01/loads-worker-03.py",
+      "sha256": "3ae1e67df2aaef4586440e67fb9820fc45a3ee3af5e87b92605b3279c8ee3dbc"
+    },
+    "launch-loads.py": {
+      "path": "build/validation/antenna-load-01/launch-loads.py",
+      "sha256": "5400f7490c6d41ca314241b1d5d520aae04006db91f08dde900bfde027c488ed"
+    },
+    "launch-loads-02.py": {
+      "path": "build/validation/antenna-load-01/launch-loads-02.py",
+      "sha256": "0aa61d7f433dc4cbb49a92cb9bdd2bb4846fed1984cf245b20daa0645d36dc14"
+    },
+    "launch-loads-03.py": {
+      "path": "build/validation/antenna-load-01/launch-loads-03.py",
+      "sha256": "f008c046184927744e6e44f9112f0c97850e474e7160a21e94c83749cac744ba"
+    },
+    "verify-candidate.py": {
+      "path": "build/validation/antenna-load-01/verify-candidate.py",
+      "sha256": "0effe43fa12924072986e640a57631728895c512bfba8a4b6258fe0e4b9ccc8f"
+    },
+    "verify-control.py": {
+      "path": "build/validation/antenna-load-01/verify-control.py",
+      "sha256": "6f8e0b36063413a1fd4b7e07eb9e4789d65c5393e5d1b73d3b708390dc25a2b5"
+    },
+    "verify-edit-revert.py": {
+      "path": "build/validation/antenna-load-01/verify-edit-revert.py",
+      "sha256": "651734ce17301112b128efa45d5dbf5471c122e3cda3ece708e1865d8f019511"
+    },
+    "closeout.py": {
+      "path": "build/validation/antenna-load-01/closeout.py",
+      "sha256": "0a01023d4e8c1aa71df3fd57a45048f4e48e62b2bc45839108d84b25a7c8d227"
+    },
+    "rejected-full-continuation.log": {
+      "path": "build/validation/antenna-load-01/rejected-full-continuation.log",
+      "sha256": "57f6e3fd9551c59d29bac05669a98e73dc76b49e0a7c69f28c7498a1a0455ff9"
+    },
+    "publish-record.py": {
+      "path": "build/validation/antenna-load-01/publish-record.py",
+      "sha256": "6b4aadb5a7691947b60cbe9ca257d88765d830b5dafeeb1251495a5a3484cea1"
+    },
+    "candidate-receipt.json": {
+      "path": "build/validation/antenna-load-01/candidate-receipt.json",
+      "sha256": "83f3caa4c4b9112335cc0d7eaf47bb499bf29752b1348ef17d412a7def6d7258"
+    },
+    "control-02-receipt.json": {
+      "path": "build/validation/antenna-load-01/control-02-receipt.json",
+      "sha256": "4581ece9938b61c37dcdb102afc88b448759877fe3726f781b25906af81f9c50"
+    },
+    "edit-revert-receipt.json": {
+      "path": "build/validation/antenna-load-01/edit-revert-receipt.json",
+      "sha256": "e09716cc9cd07fa0ad0ffd454756181c7d561ec811a1c6b76ee453d72c03dee6"
+    },
+    "loads-02-receipt.json": {
+      "path": "build/validation/antenna-load-01/loads-02-receipt.json",
+      "sha256": "135347e68761ba26ffe1917c9672bf3ad1fb4614a621c70ba0baef5d25d3a5be"
+    },
+    "loads-03-receipt.json": {
+      "path": "build/validation/antenna-load-01/loads-03-receipt.json",
+      "sha256": "09ac243f0f2f25fea5485a78bb134e66f2904bf36ccbcf62bbb617e1684f7b94"
+    },
+    "loads-receipt.json": {
+      "path": "build/validation/antenna-load-01/loads-receipt.json",
+      "sha256": "f16f10120f0399ef48f92164d6185023efa178368f31369974a2fc80a14c5e56"
+    }
+  },
+  "full_continuation_gate": {
+    "path": "build/validation/antenna-detailed-01/prepare.py",
+    "sha256": "d1950f161fbde20f17d6cca5c5806d6b4ebefe5f2f56735f2203d1f0974a0502"
+  },
+  "corners": {
+    "nom_fast_1p32V_m40C": {
+      "setup_ns": 9.78084,
+      "hold_ns": 0.0401861,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 2,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.100717768,
+      "write_54_hold_ns": {
+        "before": 0.668778837,
+        "after": 0.668778837
+      },
+      "capacitance_failures": [
+        {
+          "pin": "paired_balanced_148_17/X",
+          "limit_pf": 0.3,
+          "actual_pf": 0.319284,
+          "slack_pf": -0.019283
+        },
+        {
+          "pin": "_07915_/Y",
+          "limit_pf": 0.3,
+          "actual_pf": 0.308709,
+          "slack_pf": -0.008709
+        }
+      ]
+    },
+    "nom_slow_1p08V_125C": {
+      "setup_ns": 0.845953,
+      "hold_ns": 0.326675,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 2,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.506850123,
+      "write_54_hold_ns": {
+        "before": 2.030596972,
+        "after": 2.030596972
+      },
+      "capacitance_failures": [
+        {
+          "pin": "paired_balanced_148_17/X",
+          "limit_pf": 0.3,
+          "actual_pf": 0.317644,
+          "slack_pf": -0.017644
+        },
+        {
+          "pin": "_07915_/Y",
+          "limit_pf": 0.3,
+          "actual_pf": 0.307616,
+          "slack_pf": -0.007616
+        }
+      ]
+    },
+    "nom_typ_1p20V_25C": {
+      "setup_ns": 6.65535,
+      "hold_ns": 0.135776,
+      "electrical_violations": {
+        "slew": 0,
+        "cap": 2,
+        "fanout": 0
+      },
+      "minimum_write_hold_ns": 0.262792587,
+      "write_54_hold_ns": {
+        "before": 1.154741526,
+        "after": 1.154741526
+      },
+      "capacitance_failures": [
+        {
+          "pin": "paired_balanced_148_17/X",
+          "limit_pf": 0.3,
+          "actual_pf": 0.318376,
+          "slack_pf": -0.018376
+        },
+        {
+          "pin": "_07915_/Y",
+          "limit_pf": 0.3,
+          "actual_pf": 0.308105,
+          "slack_pf": -0.008105
+        }
+      ]
+    }
+  },
+  "coarse_acceptance": {
+    "status": "rejected",
+    "corners": {
+      "nom_fast_1p32V_m40C": {
+        "setup_ns": 9.78084,
+        "hold_ns": 0.0401861,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 2,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_ns": 0.845953,
+        "hold_ns": 0.326675,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 2,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      },
+      "nom_typ_1p20V_25C": {
+        "setup_ns": 6.65535,
+        "hold_ns": 0.135776,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "capacitance_violations": 2,
+        "slew_violations": 0,
+        "fanout_violations": 0
+      }
+    },
+    "failures": [
+      {
+        "corner": "nom_fast_1p32V_m40C",
+        "measure": "capacitance_violations",
+        "value": 2
+      },
+      {
+        "corner": "nom_slow_1p08V_125C",
+        "measure": "capacitance_violations",
+        "value": 2
+      },
+      {
+        "corner": "nom_typ_1p20V_25C",
+        "measure": "capacitance_violations",
+        "value": 2
+      }
+    ],
+    "boundary": "Requires separately validated artifact, parasitics and corner definitions; no layout or physical qualification."
+  },
+  "area_um2": {
+    "source": 374652.5472,
+    "candidate": 375247.6704,
+    "added": 595.1232,
+    "historical_allowance": 359372.4382368,
+    "overage": 15875.23216319998,
+    "overage_percent": 4.417487395830655
+  },
+  "added_buffers": 41,
+  "changed_routes": 56,
+  "clock_routes_unchanged": 340,
+  "all_original_placements_preserved": true,
+  "source_saved_grid_import_equal": true,
+  "conservative_extra_usage_retained": 1,
+  "conservative_overflow": 0,
+  "state_cut": {
+    "state_outputs": 1636,
+    "observed_state_inputs": 5000,
+    "flip_flops": 1572,
+    "macros": 1
+  },
+  "pin_replay": {
+    "edges": 331401,
+    "frames": 1517,
+    "cases": [
+      {
+        "name": "resident-uart",
+        "edge": 812
+      },
+      {
+        "name": "resident-spi",
+        "edge": 66301
+      },
+      {
+        "name": "captures",
+        "edge": 130476
+      },
+      {
+        "name": "serial-branch",
+        "edge": 194673
+      },
+      {
+        "name": "uart-rx",
+        "edge": 259427
+      }
+    ],
+    "boundary": "actual serial pins and existing sampler/receiver/mailbox; Python paired execution oracle"
+  },
+  "fanout_reserve": {
+    "original_driver_functional_loads_at_most": 3,
+    "leaf_functional_loads_at_most": 3,
+    "reserved_load_units": 5,
+    "final_antenna_effect_measured": false
+  },
+  "load_diagnosis": {
+    "nom_fast_1p32V_m40C": {
+      "paired_balanced_148_17_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.01742984,
+            0.021247759
+          ],
+          "wire_cap_pf": [
+            0.236110017,
+            0.236110047
+          ],
+          "total_cap_pf": [
+            0.25353986,
+            0.257357806
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_148_10/A",
+            "limit": 2.507400036,
+            "actual": 0.688275039,
+            "slack": 1.819125175,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.257357806,
+            "slack": 0.042642213,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_14234_",
+              "slack_ns": 0.773087859,
+              "verdict": "MET",
+              "cells": [
+                "_09095_",
+                "_12840_",
+                "_14234_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_7_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_58__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_leaf_180_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_9"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 10.367452621,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.01047186,
+            0.01301595
+          ],
+          "wire_cap_pf": [
+            0.30626756,
+            0.30626756
+          ],
+          "total_cap_pf": [
+            0.31673938,
+            0.319283515
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_26/A",
+            "limit": 2.507400036,
+            "actual": 0.866163969,
+            "slack": 1.641236067,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.319283515,
+            "slack": -0.019283485,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_13578_",
+              "slack_ns": 0.98142463,
+              "verdict": "MET",
+              "cells": [
+                "_09987_",
+                "_12840_",
+                "_13578_",
+                "antenna_branch_27",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_6_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_48__f_clk_regs",
+                "clkbuf_leaf_131_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 10.083112717,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "antenna_branch_27",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        }
+      },
+      "_03354_": {
+        "source": {
+          "pin_cap_pf": [
+            0.010893649,
+            0.01327985
+          ],
+          "wire_cap_pf": [
+            0.230130419,
+            0.230130419
+          ],
+          "total_cap_pf": [
+            0.241024077,
+            0.243410274
+          ],
+          "loads": 5,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_22_4/A",
+            "limit": 2.507400036,
+            "actual": 0.655591726,
+            "slack": 1.851808429,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.243410274,
+            "slack": 0.056589741,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 5.0,
+            "slack": 3.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 1.941424131,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 10.133925438,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00698124,
+            0.0086773
+          ],
+          "wire_cap_pf": [
+            0.300032049,
+            0.300032079
+          ],
+          "total_cap_pf": [
+            0.307013303,
+            0.308709353
+          ],
+          "loads": 2,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_3/A",
+            "limit": 2.507400036,
+            "actual": 0.965607405,
+            "slack": 1.54179275,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.308709353,
+            "slack": -0.008709342,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 2.0,
+            "slack": 6.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 2.412235737,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 9.780844688,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        }
+      },
+      "paired_balanced_5_4_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.021221578,
+            0.029202968
+          ],
+          "wire_cap_pf": [
+            0.2569637,
+            0.25696373
+          ],
+          "total_cap_pf": [
+            0.278185278,
+            0.286166668
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "_06644_/B1",
+            "limit": 2.507400036,
+            "actual": 0.822808921,
+            "slack": 1.684591174,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.286166668,
+            "slack": 0.013833336,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 0.846280932,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 14.150022507,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.01047186,
+            0.01301595
+          ],
+          "wire_cap_pf": [
+            0.264038265,
+            0.264038295
+          ],
+          "total_cap_pf": [
+            0.274510145,
+            0.27705422
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_38/A",
+            "limit": 2.507400036,
+            "actual": 0.774579465,
+            "slack": 1.73282063,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.27705422,
+            "slack": 0.022945784,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 0.931454301,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "antenna_branch_40",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 13.656754494,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "antenna_branch_39",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "paired_balanced_148_17_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.01532008,
+            0.018319121
+          ],
+          "wire_cap_pf": [
+            0.236110047,
+            0.236110076
+          ],
+          "total_cap_pf": [
+            0.251430124,
+            0.254429191
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_148_10/A",
+            "limit": 2.507400036,
+            "actual": 1.603504539,
+            "slack": 0.903895676,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.254429191,
+            "slack": 0.045570832,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_14074_",
+              "slack_ns": 2.134242535,
+              "verdict": "MET",
+              "cells": [
+                "_09317_",
+                "_12840_",
+                "_14074_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_7_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_58__f_clk_regs",
+                "clkbuf_leaf_179_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_9"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 2.758106709,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00929088,
+            0.01137624
+          ],
+          "wire_cap_pf": [
+            0.30626756,
+            0.30626756
+          ],
+          "total_cap_pf": [
+            0.315558434,
+            0.317643821
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_26/A",
+            "limit": 2.507400036,
+            "actual": 2.005907059,
+            "slack": 0.501493096,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.317643791,
+            "slack": -0.017643765,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_14074_",
+              "slack_ns": 2.661213398,
+              "verdict": "MET",
+              "cells": [
+                "_09317_",
+                "_12840_",
+                "_14074_",
+                "antenna_branch_26",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_7_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_58__f_clk_regs",
+                "clkbuf_leaf_179_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_9"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 1.997888088,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "antenna_branch_27",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        }
+      },
+      "_03354_": {
+        "source": {
+          "pin_cap_pf": [
+            0.00957505,
+            0.011449451
+          ],
+          "wire_cap_pf": [
+            0.230130419,
+            0.230130419
+          ],
+          "total_cap_pf": [
+            0.239705473,
+            0.241579875
+          ],
+          "loads": 5,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_22_4/A",
+            "limit": 2.507400036,
+            "actual": 1.521312475,
+            "slack": 0.98608768,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.241579875,
+            "slack": 0.058420148,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 5.0,
+            "slack": 3.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 5.141487598,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 2.165860415,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00619392,
+            0.00758416
+          ],
+          "wire_cap_pf": [
+            0.300032079,
+            0.300032079
+          ],
+          "total_cap_pf": [
+            0.306225985,
+            0.307616234
+          ],
+          "loads": 2,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_3/A",
+            "limit": 2.507400036,
+            "actual": 2.012985945,
+            "slack": 0.494414091,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.307616234,
+            "slack": -0.007616222,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 2.0,
+            "slack": 6.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 6.153891563,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 1.202472806,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        }
+      },
+      "paired_balanced_5_4_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.01855693,
+            0.024300341
+          ],
+          "wire_cap_pf": [
+            0.25696373,
+            0.25696373
+          ],
+          "total_cap_pf": [
+            0.275520653,
+            0.281264067
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "_06644_/B1",
+            "limit": 2.507400036,
+            "actual": 1.807010055,
+            "slack": 0.7003901,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.281264067,
+            "slack": 0.018735962,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 2.688359737,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 5.649251938,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00929088,
+            0.01137624
+          ],
+          "wire_cap_pf": [
+            0.264038265,
+            0.264038295
+          ],
+          "total_cap_pf": [
+            0.273329169,
+            0.275414526
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_38/A",
+            "limit": 2.507400036,
+            "actual": 1.754090548,
+            "slack": 0.753309548,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.275414526,
+            "slack": 0.024585504,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 2.921585798,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "antenna_branch_40",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 4.803064823,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "antenna_branch_39",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "nom_typ_1p20V_25C": {
+      "paired_balanced_148_17_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.0163304,
+            0.019603839
+          ],
+          "wire_cap_pf": [
+            0.236110047,
+            0.236110076
+          ],
+          "total_cap_pf": [
+            0.252440423,
+            0.25571391
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_148_10/A",
+            "limit": 2.507400036,
+            "actual": 1.048984528,
+            "slack": 1.458415627,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.25571388,
+            "slack": 0.044286136,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_14234_",
+              "slack_ns": 1.244590998,
+              "verdict": "MET",
+              "cells": [
+                "_09095_",
+                "_12840_",
+                "_14234_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_7_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_58__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_leaf_180_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_9"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 7.546656132,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00984825,
+            0.01210893
+          ],
+          "wire_cap_pf": [
+            0.30626756,
+            0.30626756
+          ],
+          "total_cap_pf": [
+            0.316115797,
+            0.318376482
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_26/A",
+            "limit": 2.507400036,
+            "actual": 1.3134799,
+            "slack": 1.193920255,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 0.300000012,
+            "actual": 0.318376482,
+            "slack": -0.018376468,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "paired_balanced_148_17/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12840_",
+              "endpoint": "_14234_",
+              "slack_ns": 1.571766019,
+              "verdict": "MET",
+              "cells": [
+                "_09095_",
+                "_12840_",
+                "_14234_",
+                "antenna_branch_26",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_3_7_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_6_58__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_leaf_180_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_9"
+              ]
+            },
+            "max": {
+              "startpoint": "_12840_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 7.074056149,
+              "verdict": "MET",
+              "cells": [
+                "_07937_",
+                "_08170_",
+                "_08172_",
+                "_08173_",
+                "_08195_",
+                "_08245_",
+                "_08246_",
+                "_08586_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12840_",
+                "antenna_branch_27",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_11__f_clk_regs",
+                "clkbuf_leaf_17_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_148_17",
+                "paired_balanced_148_8",
+                "paired_balanced_25_2",
+                "paired_balanced_26_0"
+              ]
+            }
+          }
+        }
+      },
+      "_03354_": {
+        "source": {
+          "pin_cap_pf": [
+            0.010206501,
+            0.0122524
+          ],
+          "wire_cap_pf": [
+            0.230130419,
+            0.230130419
+          ],
+          "total_cap_pf": [
+            0.24033691,
+            0.242382824
+          ],
+          "loads": 5,
+          "drivers": 1,
+          "slew": {
+            "pin": "paired_balanced_22_4/A",
+            "limit": 2.507400036,
+            "actual": 0.996489942,
+            "slack": 1.510910273,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.242382824,
+            "slack": 0.057617188,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 5.0,
+            "slack": 3.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 3.103872061,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 7.252912045,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.0065655,
+            0.00807262
+          ],
+          "wire_cap_pf": [
+            0.300032049,
+            0.300032079
+          ],
+          "total_cap_pf": [
+            0.306597561,
+            0.308104694
+          ],
+          "loads": 2,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_3/A",
+            "limit": 2.507400036,
+            "actual": 1.370228291,
+            "slack": 1.137171865,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "_07915_/Y",
+            "limit": 0.300000012,
+            "actual": 0.308104694,
+            "slack": -0.008104682,
+            "verdict": "VIOLATED"
+          },
+          "fanout": {
+            "pin": "_07915_/Y",
+            "limit": 8.0,
+            "actual": 2.0,
+            "slack": 6.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_12839_",
+              "endpoint": "_12839_",
+              "slack_ns": 3.757030725,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_12498_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_0",
+                "wire58"
+              ]
+            },
+            "max": {
+              "startpoint": "_12839_",
+              "endpoint": "uo_out[4]",
+              "slack_ns": 6.655354023,
+              "verdict": "MET",
+              "cells": [
+                "_07915_",
+                "_08660_",
+                "_08667_",
+                "_08729_",
+                "_08833_",
+                "_08836_",
+                "_08837_",
+                "_08850_",
+                "_08859_",
+                "_08860_",
+                "_08861_",
+                "_08867_",
+                "_08870_",
+                "_08909_",
+                "_08911_",
+                "_08914_",
+                "_12839_",
+                "antenna_branch_2",
+                "antenna_branch_24",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_4_0_clk_regs",
+                "clkbuf_6_32__f_clk_regs",
+                "clkbuf_leaf_230_clk_regs",
+                "clkbuf_regs_0_clk",
+                "hold1888",
+                "paired_balanced_147_12",
+                "paired_balanced_147_2",
+                "paired_balanced_22_2",
+                "paired_balanced_26_0",
+                "wire58"
+              ]
+            }
+          }
+        }
+      },
+      "paired_balanced_5_4_out": {
+        "source": {
+          "pin_cap_pf": [
+            0.019736899,
+            0.026319481
+          ],
+          "wire_cap_pf": [
+            0.2569637,
+            0.2569637
+          ],
+          "total_cap_pf": [
+            0.276700586,
+            0.283283174
+          ],
+          "loads": 8,
+          "drivers": 1,
+          "slew": {
+            "pin": "_06644_/B1",
+            "limit": 2.507400036,
+            "actual": 1.206436872,
+            "slack": 1.300963283,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.283283174,
+            "slack": 0.016716853,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 8.0,
+            "slack": 0.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 1.473768473,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 10.977766991,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        },
+        "candidate": {
+          "pin_cap_pf": [
+            0.00984825,
+            0.01210893
+          ],
+          "wire_cap_pf": [
+            0.264038265,
+            0.264038265
+          ],
+          "total_cap_pf": [
+            0.273886532,
+            0.276147217
+          ],
+          "loads": 3,
+          "drivers": 1,
+          "slew": {
+            "pin": "antenna_branch_38/A",
+            "limit": 2.507400036,
+            "actual": 1.158035874,
+            "slack": 1.349364161,
+            "verdict": "MET"
+          },
+          "capacitance": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 0.300000012,
+            "actual": 0.276147217,
+            "slack": 0.023852801,
+            "verdict": "MET"
+          },
+          "fanout": {
+            "pin": "paired_balanced_5_4/X",
+            "limit": 8.0,
+            "actual": 3.0,
+            "slack": 5.0,
+            "verdict": "MET"
+          },
+          "paths": {
+            "min": {
+              "startpoint": "_14341_",
+              "endpoint": "_12962_",
+              "slack_ns": 1.616269708,
+              "verdict": "MET",
+              "cells": [
+                "_06479_",
+                "_06632_",
+                "_06633_",
+                "_12962_",
+                "_14341_",
+                "antenna_branch_40",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_3_1_0_clk_regs",
+                "clkbuf_6_10__f_clk_regs",
+                "clkbuf_6_3__f_clk_regs",
+                "clkbuf_leaf_255_clk_regs",
+                "clkbuf_leaf_7_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_163_0",
+                "paired_balanced_5_4"
+              ]
+            },
+            "max": {
+              "startpoint": "_14340_",
+              "endpoint": "_12901_",
+              "slack_ns": 10.353208542,
+              "verdict": "MET",
+              "cells": [
+                "_06388_",
+                "_06479_",
+                "_10814_",
+                "_10821_",
+                "_11884_",
+                "_11885_",
+                "_11892_",
+                "_11893_",
+                "_11915_",
+                "_12276_",
+                "_12360_",
+                "_12362_",
+                "_12363_",
+                "_12901_",
+                "_14340_",
+                "antenna_branch_39",
+                "clkbuf_0_clk_regs",
+                "clkbuf_3_0_0_clk_regs",
+                "clkbuf_6_0__f_clk_regs",
+                "clkbuf_leaf_4_clk_regs",
+                "clkbuf_leaf_6_clk_regs",
+                "clkbuf_regs_0_clk",
+                "paired_balanced_104_1",
+                "paired_balanced_107_18",
+                "paired_balanced_107_46",
+                "paired_balanced_5_4",
+                "wire14"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "root_wire_lengths": {
+    "source": {
+      "_02185_": {
+        "by_layer_um": {
+          "Metal4": 655.2,
+          "Metal3": 676.8,
+          "Metal2": 165.60000000000002
+        },
+        "total_um": 1497.6
+      },
+      "_03354_": {
+        "by_layer_um": {
+          "Metal2": 453.6,
+          "Metal3": 756.0
+        },
+        "total_um": 1209.6
+      },
+      "net3552": {
+        "by_layer_um": {
+          "Metal2": 338.3999999999999,
+          "Metal4": 151.2,
+          "Metal3": 662.4
+        },
+        "total_um": 1152.0
+      },
+      "net52": {
+        "by_layer_um": {
+          "Metal3": 230.4,
+          "Metal2": 381.6
+        },
+        "total_um": 612.0
+      },
+      "paired_balanced_108_15_out": {
+        "by_layer_um": {
+          "Metal3": 568.8,
+          "Metal2": 223.20000000000002,
+          "Metal4": 136.8
+        },
+        "total_um": 928.8
+      },
+      "paired_balanced_133_5_out": {
+        "by_layer_um": {
+          "Metal3": 576.0,
+          "Metal2": 151.20000000000002,
+          "Metal4": 36.0
+        },
+        "total_um": 763.2
+      },
+      "paired_balanced_139_2_out": {
+        "by_layer_um": {
+          "Metal3": 432.0,
+          "Metal2": 467.99999999999994
+        },
+        "total_um": 900.0
+      },
+      "paired_balanced_142_4_out": {
+        "by_layer_um": {
+          "Metal2": 295.2,
+          "Metal3": 741.6,
+          "Metal4": 172.8
+        },
+        "total_um": 1209.6
+      },
+      "paired_balanced_144_4_out": {
+        "by_layer_um": {
+          "Metal3": 669.6000000000001,
+          "Metal2": 93.60000000000001
+        },
+        "total_um": 763.2000000000002
+      },
+      "paired_balanced_147_12_out": {
+        "by_layer_um": {
+          "Metal3": 568.8,
+          "Metal2": 597.5999999999999
+        },
+        "total_um": 1166.3999999999999
+      },
+      "paired_balanced_148_17_out": {
+        "by_layer_um": {
+          "Metal2": 172.8,
+          "Metal3": 892.8,
+          "Metal4": 172.8
+        },
+        "total_um": 1238.4
+      },
+      "paired_balanced_157_16_out": {
+        "by_layer_um": {
+          "Metal3": 561.6,
+          "Metal2": 194.39999999999998,
+          "Metal4": 165.6
+        },
+        "total_um": 921.6
+      },
+      "paired_balanced_17_3_out": {
+        "by_layer_um": {
+          "Metal2": 352.8,
+          "Metal3": 309.6,
+          "Metal4": 43.2
+        },
+        "total_um": 705.6
+      },
+      "paired_balanced_25_3_out": {
+        "by_layer_um": {
+          "Metal3": 669.5999999999999,
+          "Metal4": 36.0,
+          "Metal2": 129.60000000000002
+        },
+        "total_um": 835.1999999999999
+      },
+      "paired_balanced_5_4_out": {
+        "by_layer_um": {
+          "Metal2": 64.8,
+          "Metal3": 1000.8,
+          "Metal4": 280.8
+        },
+        "total_um": 1346.3999999999999
+      }
+    },
+    "candidate": {
+      "_02185_": {
+        "by_layer_um": {
+          "Metal2": 266.4,
+          "Metal3": 540.0,
+          "Metal4": 309.6
+        },
+        "total_um": 1116.0
+      },
+      "_03354_": {
+        "by_layer_um": {
+          "Metal2": 561.5999999999998,
+          "Metal3": 756.0,
+          "Metal4": 403.19999999999993
+        },
+        "total_um": 1720.7999999999997
+      },
+      "net3552": {
+        "by_layer_um": {
+          "Metal2": 842.3999999999999,
+          "Metal3": 1209.6000000000004,
+          "Metal4": 410.40000000000003
+        },
+        "total_um": 2462.4
+      },
+      "net52": {
+        "by_layer_um": {
+          "Metal3": 201.60000000000002,
+          "Metal4": 158.4,
+          "Metal2": 64.8
+        },
+        "total_um": 424.8
+      },
+      "paired_balanced_108_15_out": {
+        "by_layer_um": {
+          "Metal3": 504.00000000000006,
+          "Metal2": 108.00000000000003,
+          "Metal4": 136.8
+        },
+        "total_um": 748.8000000000001
+      },
+      "paired_balanced_133_5_out": {
+        "by_layer_um": {
+          "Metal3": 338.4,
+          "Metal2": 144.0,
+          "Metal4": 14.4
+        },
+        "total_um": 496.79999999999995
+      },
+      "paired_balanced_139_2_out": {
+        "by_layer_um": {
+          "Metal2": 64.8,
+          "Metal3": 316.8,
+          "Metal4": 100.8
+        },
+        "total_um": 482.4
+      },
+      "paired_balanced_142_4_out": {
+        "by_layer_um": {
+          "Metal2": 374.4,
+          "Metal3": 727.2,
+          "Metal4": 129.6
+        },
+        "total_um": 1231.2
+      },
+      "paired_balanced_144_4_out": {
+        "by_layer_um": {
+          "Metal2": 129.60000000000002,
+          "Metal3": 655.2,
+          "Metal4": 57.6
+        },
+        "total_um": 842.4000000000001
+      },
+      "paired_balanced_147_12_out": {
+        "by_layer_um": {
+          "Metal2": 302.4,
+          "Metal3": 568.8,
+          "Metal4": 223.20000000000002
+        },
+        "total_um": 1094.3999999999999
+      },
+      "paired_balanced_148_17_out": {
+        "by_layer_um": {
+          "Metal2": 460.7999999999998,
+          "Metal3": 892.8000000000001,
+          "Metal4": 360.0
+        },
+        "total_um": 1713.6
+      },
+      "paired_balanced_157_16_out": {
+        "by_layer_um": {
+          "Metal2": 460.79999999999995,
+          "Metal3": 482.40000000000003
+        },
+        "total_um": 943.2
+      },
+      "paired_balanced_17_3_out": {
+        "by_layer_um": {
+          "Metal2": 108.0,
+          "Metal3": 302.4,
+          "Metal4": 331.20000000000005
+        },
+        "total_um": 741.6
+      },
+      "paired_balanced_25_3_out": {
+        "by_layer_um": {
+          "Metal3": 604.8,
+          "Metal2": 144.0,
+          "Metal4": 122.4
+        },
+        "total_um": 871.1999999999999
+      },
+      "paired_balanced_5_4_out": {
+        "by_layer_um": {
+          "Metal3": 648.0,
+          "Metal4": 936.0,
+          "Metal2": 14.4
+        },
+        "total_um": 1598.4
+      }
+    }
+  },
+  "resource_ledger": {
+    "prior_campaign_cad_seconds": 4926.281,
+    "stages_seconds": {
+      "control-02": 23.403,
+      "edit-revert": 3.939,
+      "candidate": 20.883,
+      "loads": 1.421,
+      "loads-02": 0.183,
+      "loads-03": 35.069,
+      "implemented-check": 41.501
+    },
+    "followup_cad_seconds": 126.399,
+    "cumulative_cad_seconds": 5052.68,
+    "campaign_limit_seconds": 28800,
+    "additional_full_flow_attempts_used": 0,
+    "A_full_flow_attempts_used": 2,
+    "newly_allocated_A_slot_unused": 1,
+    "B_full_flow_attempts_reserved": 2,
+    "candidate_plans_used": 1,
+    "candidate_plan_allocation_closed": true
+  },
+  "remaining_gates": [
+    "qualified fast cell/SRAM pair",
+    "complete paired refinement",
+    "accepted A",
+    "B capacity iteration",
+    "clean-source replay"
+  ]
+}

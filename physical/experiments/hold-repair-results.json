@@ -1,0 +1,1920 @@
+{
+  "schema": 1,
+  "status": "experiment-completed",
+  "recorded_at_utc": "2026-09-26T15:54:08.442400+00:00",
+  "study": "docs/physical/hold-repair-experiment.md",
+  "decision": {
+    "physical_qualification": false,
+    "backend_promotion": false,
+    "timing_reference": "candidate-final",
+    "lower_congestion_comparison": "routed-repair-01/coordinated",
+    "original_reference": "sram-distribution-01/coarse",
+    "reason": "Both retained timing floors and reported electrical limits pass. Five timed-net reserve shortfalls, nonzero congestion and exploratory area overage remain. The prior candidate has lower congestion and area but negative hold.",
+    "next_gate": "Diagnose and reduce the 25 reconciled Metal3 congestion markers and five reserve shortfalls while preserving both timing floors, all protected cells and SRAM write paths. Compare against this timing reference and retain the lower-congestion predecessor."
+  },
+  "predecessor": {
+    "path": "physical/experiments/routed-repair-results.json",
+    "sha256": "c031e9fd9eb22e721321d927710b370bc11e4fc3d2b69220f115252bfcc376f9"
+  },
+  "predecessor_report": {
+    "path": "build/validation/routed-repair-01/report.json",
+    "sha256": "56b5475fa26511822828d745e5b6486ad2db18e3df0fd2c1fb1453be427cc5b5"
+  },
+  "source_database": {
+    "path": "build/validation/routed-repair-01/coordinated/repaired.odb",
+    "sha256": "18dab93b857f9452ab19c02f037c051aa2a887ff66aeac18ec65f5015eb542c0"
+  },
+  "candidate_database": {
+    "path": "build/validation/hold-repair-01/candidate/repaired.odb",
+    "sha256": "596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114"
+  },
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "openroad_commit": "dcf36133a369abc8f3c5e5738cd4d82e4903c0e0",
+  "bounds": {
+    "build_seconds": 1800,
+    "build_cpus": 4,
+    "build_memory_gb": 6,
+    "configuration_seconds": 120,
+    "cad_seconds": 1800,
+    "cad_command_seconds": 360,
+    "measurement_seconds": 240,
+    "geometry_seconds": 120,
+    "cad_cpus": 2,
+    "cad_memory_gb": 2,
+    "max_completed_candidates": 1,
+    "max_full_routes": 2,
+    "max_regression_seconds": 300,
+    "max_build_attempts": 1,
+    "total_cad_seconds": 1800,
+    "edit_seconds": 360,
+    "coarse_route_seconds": 360,
+    "inspect_seconds": 60,
+    "max_candidate_variants": 1,
+    "max_coarse_routes": 2
+  },
+  "native_fix": {
+    "patch": {
+      "path": "tools/openroad-hold/protected-loads.patch",
+      "sha256": "c071ca8a7be96a20c8ee5937cd4990c097e05509c90e4a1268aa7d9da6a9c627"
+    },
+    "adapter": {
+      "path": "tools/openroad-hold/extension.cc",
+      "sha256": "572d8716d482f8c0295d373a1db087e8c149b94967df710909f4050e89b33815"
+    },
+    "compiled_binaries": {
+      "original": "ad8dec1fb1e7b8e3b0904c5024125a0f4dff528fdda3798fa588dad089676770",
+      "patched": "28ea74836414016d46b7e2503ff3ed363654c50dc45c9868f0a26c33d20b3f7b"
+    },
+    "regression": {
+      "path": "build/validation/hold-repair-01/regression-verification.json",
+      "sha256": "5e95d78fb3bcdcbca61134d4ec7f1c928a4c3a731ad9394041dd3a8c0b052d6c"
+    },
+    "checked_executions": 12,
+    "expected_native_failures": 6,
+    "default_tool_image_changed": false
+  },
+  "variants": {
+    "prepared": {
+      "status": "passed",
+      "label": "candidate-prepared",
+      "database_sha256": "f06df2cf34d33abc662ef1a6a517f1018200e383914785390a9f8ba27f1f3ee5",
+      "measured_connections": 10894,
+      "pin_corner_checks": 32682,
+      "selected_path_checks": 132,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.100468,
+          "timing__setup__ws": 9.39917
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 2,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.457414,
+          "timing__setup__ws": 0.518838
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 1,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 2,
+          "timing__hold__ws": 0.21979,
+          "timing__setup__ws": 6.21712
+        }
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 9097,
+        "below_reserve": 4,
+        "failing": 3,
+        "constant_without_reported_timing_limits": 1790
+      },
+      "below_reserve": [
+        {
+          "net": "_02353_",
+          "reserve": 0.10410556916911053,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02771_",
+          "reserve": 0.18186493939206907,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02988_",
+          "reserve": -0.3312036267518551,
+          "verdict": "failing"
+        },
+        {
+          "net": "_04753_",
+          "reserve": 0.17827289247115566,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04754_",
+          "reserve": -0.2234475710620972,
+          "verdict": "failing"
+        },
+        {
+          "net": "_05207_",
+          "reserve": 0.17292379641638145,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "net1922",
+          "reserve": -0.32170655637867424,
+          "verdict": "failing"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 359950.464,
+      "added_area_um2": 174.1823999999906,
+      "over_historical_allowance_um2": 578.0257632000139,
+      "total_percent_above_reference": 0.46132562734473304,
+      "minimum_write_hold_ns": 0.231953681,
+      "timing_floor_pass": {
+        "slow_setup": true,
+        "fast_hold": true
+      },
+      "actual_hold_violations": {
+        "nom_fast_1p32V_m40C": [],
+        "nom_slow_1p08V_125C": [],
+        "nom_typ_1p20V_25C": []
+      }
+    },
+    "final": {
+      "status": "passed",
+      "label": "candidate-final",
+      "database_sha256": "596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114",
+      "measured_connections": 10990,
+      "pin_corner_checks": 32970,
+      "selected_path_checks": 132,
+      "interface_path_checks": 384,
+      "global_metrics": {
+        "nom_fast_1p32V_m40C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.143801,
+          "timing__setup__ws": 9.32177
+        },
+        "nom_slow_1p08V_125C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.570068,
+          "timing__setup__ws": 0.382789
+        },
+        "nom_typ_1p20V_25C": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 0,
+          "design__max_cap_violation__count": 0,
+          "timing__hold__ws": 0.32959,
+          "timing__setup__ws": 6.13235
+        }
+      },
+      "electrical_reserve_counts": {
+        "within_reserve": 9195,
+        "below_reserve": 5,
+        "constant_without_reported_timing_limits": 1790
+      },
+      "below_reserve": [
+        {
+          "net": "_01876_",
+          "reserve": 0.07895150201712768,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_02877_",
+          "reserve": 0.170972239827777,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04215_",
+          "reserve": 0.16970916442947684,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_04597_",
+          "reserve": 0.19540492885046945,
+          "verdict": "below_reserve"
+        },
+        {
+          "net": "_05213_",
+          "reserve": 0.14061122437555093,
+          "verdict": "below_reserve"
+        }
+      ],
+      "complete_consumed_net_annotation": true,
+      "area_um2": 361583.424,
+      "added_area_um2": 1807.1424000000115,
+      "over_historical_allowance_um2": 2210.985763200035,
+      "total_percent_above_reference": 0.9170809123175916,
+      "minimum_write_hold_ns": 0.145047083,
+      "timing_floor_pass": {
+        "slow_setup": true,
+        "fast_hold": true
+      },
+      "actual_hold_violations": {
+        "nom_fast_1p32V_m40C": [],
+        "nom_slow_1p08V_125C": [],
+        "nom_typ_1p20V_25C": []
+      }
+    }
+  },
+  "phase_effects": {
+    "status": "passed",
+    "phases": {
+      "source": {
+        "setup_ns": 0.571241,
+        "hold_ns": -0.0186813,
+        "electrical_reserve_counts": {
+          "within_reserve": 9098,
+          "below_reserve": 6,
+          "constant_without_reported_timing_limits": 1790
+        },
+        "area_um2": 359950.464
+      },
+      "prepared": {
+        "setup_ns": 0.518838,
+        "hold_ns": 0.100468,
+        "electrical_reserve_counts": {
+          "within_reserve": 9097,
+          "below_reserve": 4,
+          "failing": 3,
+          "constant_without_reported_timing_limits": 1790
+        },
+        "area_um2": 359950.464
+      },
+      "final": {
+        "setup_ns": 0.382789,
+        "hold_ns": 0.143801,
+        "electrical_reserve_counts": {
+          "within_reserve": 9195,
+          "below_reserve": 5,
+          "constant_without_reported_timing_limits": 1790
+        },
+        "area_um2": 361583.424
+      }
+    },
+    "preparation_geometry_and_connectivity_unchanged": true,
+    "original_placement_statuses_restored": true,
+    "original_status_checks": 11310,
+    "added_cell_counts": {
+      "sg13cmos5l_buf_8": 5,
+      "sg13cmos5l_dlygate4sd3_1": 90,
+      "sg13cmos5l_buf_16": 1
+    },
+    "actual_added_count": 96,
+    "native_reported_hold_buffers": 37,
+    "native_counter_caveat": "Journal rollback resets the optimizer counter; independently reread additions are authoritative.",
+    "translated_original_cells": 125,
+    "reoriented_original_cells": 30,
+    "prepared_grid_overflow": 25.0,
+    "new_transport_incident_marked_nets": [
+      "_04754_",
+      "controller.r_parameter_b0_w12[18]",
+      "controller.r_parameter_b0_w4[18]",
+      "controller.r_parameter_b0_w6[18]",
+      "net3523"
+    ],
+    "associated_marker_overflow": 5,
+    "association_boundary": "Native net/marker association is not causal attribution; initial route already had 25 overflow units."
+  },
+  "immediate_added_area_um2": 1632.960000000021,
+  "area_reference": {
+    "reference_um2": 358297.5456,
+    "current_um2": 359776.2816,
+    "historical_limit_um2": 359372.43823679996,
+    "size_overage_allowed_for_exploration": true
+  },
+  "timing_floors_ns": {
+    "slow_setup": 0.3673431,
+    "fast_hold": 0.07927839
+  },
+  "congestion": {
+    "router_overflow": 25,
+    "stored_grid_overflow": 25.0,
+    "native_2d_overflow": 25,
+    "native_marker_count": 25,
+    "strict_reconciliation": {
+      "status": "passed",
+      "result": {
+        "hotspots": [
+          {
+            "layer": "Metal3",
+            "index": [
+              36,
+              7
+            ],
+            "bbox_dbu": [
+              259200,
+              50400,
+              266400,
+              57600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 18.0,
+            "saved_usage": 19.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01541_",
+              "_01588_",
+              "_01706_",
+              "_01724_",
+              "_02944_",
+              "_02961_",
+              "_03114_",
+              "_04215_",
+              "_04241_",
+              "_04336_",
+              "_04393_",
+              "_04611_"
+            ],
+            "guide_associations": [
+              "_01541_",
+              "_01588_",
+              "_01706_",
+              "_01724_",
+              "_02944_",
+              "_02961_",
+              "_03046_",
+              "_03114_",
+              "_04215_",
+              "_04241_",
+              "_04336_",
+              "_04393_",
+              "_04403_",
+              "_04605_",
+              "_04611_",
+              "_04694_",
+              "net15"
+            ],
+            "guide_only_nets": [
+              "_03046_",
+              "_04403_",
+              "_04605_",
+              "_04694_",
+              "net15"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              36,
+              9
+            ],
+            "bbox_dbu": [
+              259200,
+              64800,
+              266400,
+              72000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01707_",
+              "_04384_",
+              "_04423_",
+              "_04432_",
+              "_04450_",
+              "_04694_",
+              "delaynet_3_clk",
+              "memory.mem_q0[1]",
+              "memory.mem_q0[3]",
+              "net18",
+              "net34"
+            ],
+            "guide_associations": [
+              "_01707_",
+              "_03073_",
+              "_04300_",
+              "_04384_",
+              "_04423_",
+              "_04432_",
+              "_04450_",
+              "_04694_",
+              "delaynet_3_clk",
+              "memory.mem_q0[1]",
+              "memory.mem_q0[3]",
+              "net18",
+              "net34"
+            ],
+            "guide_only_nets": [
+              "_03073_",
+              "_04300_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 10,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              36,
+              10
+            ],
+            "bbox_dbu": [
+              259200,
+              72000,
+              266400,
+              79200
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01793_",
+              "_02930_",
+              "_03073_",
+              "_04220_",
+              "_04300_",
+              "_04333_",
+              "_04413_",
+              "_04557_",
+              "_04605_",
+              "_05312_",
+              "memory.mem_data[21]",
+              "net1881"
+            ],
+            "guide_associations": [
+              "_01793_",
+              "_02930_",
+              "_03007_",
+              "_03073_",
+              "_03107_",
+              "_04220_",
+              "_04300_",
+              "_04333_",
+              "_04371_",
+              "_04410_",
+              "_04413_",
+              "_04557_",
+              "_04605_",
+              "_05312_",
+              "memory.mem_data[21]",
+              "net1881"
+            ],
+            "guide_only_nets": [
+              "_03007_",
+              "_03107_",
+              "_04371_",
+              "_04410_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              36,
+              12
+            ],
+            "bbox_dbu": [
+              259200,
+              86400,
+              266400,
+              93600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01660_",
+              "_01715_",
+              "_01740_",
+              "_03007_",
+              "_03107_",
+              "_04410_",
+              "_04536_",
+              "_04553_",
+              "_04579_",
+              "net33",
+              "net3518"
+            ],
+            "guide_associations": [
+              "_01660_",
+              "_01711_",
+              "_01715_",
+              "_01740_",
+              "_03007_",
+              "_03107_",
+              "_03157_",
+              "_04410_",
+              "_04436_",
+              "_04536_",
+              "_04553_",
+              "_04579_",
+              "_04628_",
+              "net33",
+              "net3518"
+            ],
+            "guide_only_nets": [
+              "_01711_",
+              "_03157_",
+              "_04436_",
+              "_04628_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              36,
+              18
+            ],
+            "bbox_dbu": [
+              259200,
+              129600,
+              266400,
+              136800
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01662_",
+              "_01837_",
+              "_02065_",
+              "_02366_",
+              "_03181_",
+              "_03250_",
+              "_03340_",
+              "_04375_",
+              "memory.mem_q0[4]",
+              "net1903",
+              "net1969",
+              "net3515"
+            ],
+            "guide_associations": [
+              "_01662_",
+              "_01837_",
+              "_02065_",
+              "_02222_",
+              "_02366_",
+              "_03047_",
+              "_03181_",
+              "_03250_",
+              "_03340_",
+              "_04375_",
+              "memory.mem_q0[0]",
+              "memory.mem_q0[4]",
+              "net1758",
+              "net1903",
+              "net1969",
+              "net3515"
+            ],
+            "guide_only_nets": [
+              "_02222_",
+              "_03047_",
+              "memory.mem_q0[0]",
+              "net1758"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              64,
+              57
+            ],
+            "bbox_dbu": [
+              460800,
+              410400,
+              468000,
+              417600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_04340_",
+              "_04385_",
+              "_04393_",
+              "_04525_",
+              "_04577_",
+              "_04582_",
+              "clk",
+              "clknet_leaf_22_clk_regs",
+              "controller.r_parameter_b0_w12[5]",
+              "net28",
+              "net3014"
+            ],
+            "guide_associations": [
+              "_03246_",
+              "_04340_",
+              "_04385_",
+              "_04393_",
+              "_04525_",
+              "_04577_",
+              "_04582_",
+              "clk",
+              "clknet_leaf_22_clk_regs",
+              "controller.r_parameter_b0_w12[5]",
+              "net28",
+              "net3014"
+            ],
+            "guide_only_nets": [
+              "_03246_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 9,
+              "CLOCK": 2
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              64,
+              72
+            ],
+            "bbox_dbu": [
+              460800,
+              518400,
+              468000,
+              525600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01924_",
+              "_02064_",
+              "_02137_",
+              "_02995_",
+              "_03028_",
+              "_03132_",
+              "_03137_",
+              "_03139_",
+              "_03163_",
+              "_04257_",
+              "_04379_"
+            ],
+            "guide_associations": [
+              "_01924_",
+              "_02064_",
+              "_02137_",
+              "_02995_",
+              "_03028_",
+              "_03132_",
+              "_03137_",
+              "_03139_",
+              "_03163_",
+              "_03364_",
+              "_04257_",
+              "_04379_"
+            ],
+            "guide_only_nets": [
+              "_03364_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              64,
+              79
+            ],
+            "bbox_dbu": [
+              460800,
+              568800,
+              468000,
+              576000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01425_",
+              "_01869_",
+              "_02974_",
+              "_03552_",
+              "_04420_",
+              "_04455_",
+              "_04512_",
+              "_04619_",
+              "clknet_3_3_0_clk_regs",
+              "controller.r_parameter_b0_w1[1]",
+              "controller.r_parameter_b0_w5[1]"
+            ],
+            "guide_associations": [
+              "_01425_",
+              "_01869_",
+              "_02974_",
+              "_03552_",
+              "_04279_",
+              "_04420_",
+              "_04455_",
+              "_04512_",
+              "_04619_",
+              "clknet_3_3_0_clk_regs",
+              "controller.r_parameter_b0_w1[1]",
+              "controller.r_parameter_b0_w5[1]",
+              "net1603"
+            ],
+            "guide_only_nets": [
+              "_04279_",
+              "net1603"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 10,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              52
+            ],
+            "bbox_dbu": [
+              511200,
+              374400,
+              518400,
+              381600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01706_",
+              "_01970_",
+              "_04415_",
+              "_04474_",
+              "_04716_",
+              "clk",
+              "clknet_leaf_15_clk_regs",
+              "controller.r_parameter_b1_w17[8]",
+              "memory.mem_data[10]",
+              "memory.mem_data[12]",
+              "net1897",
+              "net32"
+            ],
+            "guide_associations": [
+              "_01706_",
+              "_01970_",
+              "_04415_",
+              "_04474_",
+              "_04716_",
+              "_04733_",
+              "clk",
+              "clknet_leaf_15_clk_regs",
+              "controller.r_parameter_b1_w17[8]",
+              "memory.mem_data[10]",
+              "memory.mem_data[12]",
+              "net1897",
+              "net32"
+            ],
+            "guide_only_nets": [
+              "_04733_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 10,
+              "CLOCK": 2
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              63
+            ],
+            "bbox_dbu": [
+              511200,
+              453600,
+              518400,
+              460800
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 18.0,
+            "saved_usage": 19.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01877_",
+              "_01974_",
+              "_02000_",
+              "_02040_",
+              "_03079_",
+              "_03160_",
+              "_03208_",
+              "_03243_",
+              "_03266_",
+              "_04475_",
+              "controller.r_parameter_b0_w16[10]",
+              "controller.r_parameter_b0_w20[10]"
+            ],
+            "guide_associations": [
+              "_01877_",
+              "_01974_",
+              "_02000_",
+              "_02040_",
+              "_02992_",
+              "_03079_",
+              "_03160_",
+              "_03208_",
+              "_03243_",
+              "_03263_",
+              "_03266_",
+              "_03267_",
+              "_04475_",
+              "controller.r_parameter_b0_w16[10]",
+              "controller.r_parameter_b0_w20[10]"
+            ],
+            "guide_only_nets": [
+              "_02992_",
+              "_03263_",
+              "_03267_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              70
+            ],
+            "bbox_dbu": [
+              511200,
+              504000,
+              518400,
+              511200
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 18.0,
+            "saved_usage": 19.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01934_",
+              "_02008_",
+              "_02998_",
+              "_03030_",
+              "_03038_",
+              "_03100_",
+              "_04527_",
+              "_04718_",
+              "controller.r_parameter_b0_w12[18]",
+              "controller.r_parameter_b1_w11[8]",
+              "controller.r_parameter_b1_w3[8]",
+              "net12"
+            ],
+            "guide_associations": [
+              "_01934_",
+              "_02008_",
+              "_02998_",
+              "_03024_",
+              "_03030_",
+              "_03038_",
+              "_03100_",
+              "_04527_",
+              "_04718_",
+              "controller.r_parameter_b0_w12[18]",
+              "controller.r_parameter_b1_w11[8]",
+              "controller.r_parameter_b1_w3[8]",
+              "net12"
+            ],
+            "guide_only_nets": [
+              "_03024_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              73
+            ],
+            "bbox_dbu": [
+              511200,
+              525600,
+              518400,
+              532800
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01843_",
+              "_01919_",
+              "_02027_",
+              "_02033_",
+              "_02587_",
+              "_02994_",
+              "_03023_",
+              "_03273_",
+              "_03364_",
+              "_04257_",
+              "_04456_",
+              "clknet_leaf_114_clk_regs"
+            ],
+            "guide_associations": [
+              "_01843_",
+              "_01919_",
+              "_02027_",
+              "_02033_",
+              "_02587_",
+              "_02994_",
+              "_03023_",
+              "_03273_",
+              "_03364_",
+              "_04257_",
+              "_04456_",
+              "clknet_leaf_114_clk_regs",
+              "net2925"
+            ],
+            "guide_only_nets": [
+              "net2925"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              74
+            ],
+            "bbox_dbu": [
+              511200,
+              532800,
+              518400,
+              540000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01812_",
+              "_02137_",
+              "_02217_",
+              "_02967_",
+              "_03348_",
+              "_03561_",
+              "_03796_",
+              "clknet_6_25__leaf_clk_regs",
+              "controller.r_parameter_b0_w17[18]",
+              "controller.r_parameter_b0_w21[18]",
+              "controller.r_parameter_b0_w4[18]"
+            ],
+            "guide_associations": [
+              "_01812_",
+              "_02137_",
+              "_02217_",
+              "_02967_",
+              "_03348_",
+              "_03561_",
+              "_03796_",
+              "clknet_6_25__leaf_clk_regs",
+              "controller.r_parameter_b0_w17[18]",
+              "controller.r_parameter_b0_w21[18]",
+              "controller.r_parameter_b0_w4[18]"
+            ],
+            "guide_only_nets": [],
+            "crossing_net_types": {
+              "SIGNAL": 10,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              76
+            ],
+            "bbox_dbu": [
+              511200,
+              547200,
+              518400,
+              554400
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_02726_",
+              "_03031_",
+              "_03138_",
+              "_04249_",
+              "_04352_",
+              "_04458_",
+              "_04476_",
+              "_04502_",
+              "clknet_3_3_0_clk_regs",
+              "controller.r_parameter_b0_w4[17]",
+              "controller.r_parameter_b0_w6[18]"
+            ],
+            "guide_associations": [
+              "_02726_",
+              "_03031_",
+              "_03138_",
+              "_04249_",
+              "_04352_",
+              "_04458_",
+              "_04476_",
+              "_04502_",
+              "_04710_",
+              "clknet_3_3_0_clk_regs",
+              "controller.r_parameter_b0_w4[17]",
+              "controller.r_parameter_b0_w6[18]"
+            ],
+            "guide_only_nets": [
+              "_04710_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 10,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              84
+            ],
+            "bbox_dbu": [
+              511200,
+              604800,
+              518400,
+              612000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 18.0,
+            "saved_usage": 19.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01858_",
+              "_01878_",
+              "_02679_",
+              "_02689_",
+              "_02706_",
+              "_02966_",
+              "_03196_",
+              "_03258_",
+              "_03284_",
+              "_04490_",
+              "_04512_",
+              "_04564_"
+            ],
+            "guide_associations": [
+              "_01858_",
+              "_01878_",
+              "_02673_",
+              "_02675_",
+              "_02679_",
+              "_02689_",
+              "_02706_",
+              "_02707_",
+              "_02966_",
+              "_03196_",
+              "_03258_",
+              "_03284_",
+              "_04490_",
+              "_04512_",
+              "_04564_",
+              "clknet_leaf_105_clk_regs"
+            ],
+            "guide_only_nets": [
+              "_02673_",
+              "_02675_",
+              "_02707_",
+              "clknet_leaf_105_clk_regs"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              71,
+              91
+            ],
+            "bbox_dbu": [
+              511200,
+              655200,
+              518400,
+              662400
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 18.0,
+            "saved_usage": 19.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_01801_",
+              "_01903_",
+              "_02089_",
+              "_03003_",
+              "_03769_",
+              "_04328_",
+              "_04355_",
+              "_04383_",
+              "_04608_",
+              "clknet_leaf_90_clk_regs",
+              "controller.r_parameter_b0_w3[12]",
+              "controller.r_parameter_b0_w3[13]"
+            ],
+            "guide_associations": [
+              "_01801_",
+              "_01903_",
+              "_02089_",
+              "_03003_",
+              "_03769_",
+              "_04328_",
+              "_04355_",
+              "_04383_",
+              "_04608_",
+              "clknet_leaf_90_clk_regs",
+              "controller.r_parameter_b0_w0[13]",
+              "controller.r_parameter_b0_w3[12]",
+              "controller.r_parameter_b0_w3[13]"
+            ],
+            "guide_only_nets": [
+              "controller.r_parameter_b0_w0[13]"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              78,
+              9
+            ],
+            "bbox_dbu": [
+              561600,
+              64800,
+              568800,
+              72000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 10,
+            "routed_demand": 11,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 7.0,
+            "crossing_nets": [
+              "_02961_",
+              "_02982_",
+              "_03073_",
+              "_03100_",
+              "_03157_",
+              "_03398_",
+              "_04432_",
+              "_04440_",
+              "_04623_",
+              "_04832_",
+              "_05205_"
+            ],
+            "guide_associations": [
+              "_02961_",
+              "_02982_",
+              "_03073_",
+              "_03100_",
+              "_03157_",
+              "_03398_",
+              "_04432_",
+              "_04440_",
+              "_04623_",
+              "_04832_",
+              "_05205_"
+            ],
+            "guide_only_nets": [],
+            "crossing_net_types": {
+              "SIGNAL": 11
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              78,
+              18
+            ],
+            "bbox_dbu": [
+              561600,
+              129600,
+              568800,
+              136800
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01737_",
+              "_01837_",
+              "_02065_",
+              "_02366_",
+              "_03047_",
+              "_03150_",
+              "_03167_",
+              "_03340_",
+              "_04393_",
+              "_04397_",
+              "net3515",
+              "net3523"
+            ],
+            "guide_associations": [
+              "_01737_",
+              "_01837_",
+              "_02065_",
+              "_02366_",
+              "_02914_",
+              "_03047_",
+              "_03150_",
+              "_03167_",
+              "_03340_",
+              "_04393_",
+              "_04397_",
+              "net3515",
+              "net3523"
+            ],
+            "guide_only_nets": [
+              "_02914_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              105,
+              75
+            ],
+            "bbox_dbu": [
+              756000,
+              540000,
+              763200,
+              547200
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01825_",
+              "_01889_",
+              "_01890_",
+              "_01905_",
+              "_01941_",
+              "_02245_",
+              "_02552_",
+              "_02997_",
+              "_04446_",
+              "_04508_",
+              "controller.r_parameter_b0_w22[18]",
+              "controller.r_parameter_b0_w2[18]"
+            ],
+            "guide_associations": [
+              "_01811_",
+              "_01825_",
+              "_01889_",
+              "_01890_",
+              "_01905_",
+              "_01941_",
+              "_02245_",
+              "_02552_",
+              "_02601_",
+              "_02997_",
+              "_04446_",
+              "_04508_",
+              "controller.r_parameter_b0_w22[18]",
+              "controller.r_parameter_b0_w2[18]"
+            ],
+            "guide_only_nets": [
+              "_01811_",
+              "_02601_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              105,
+              80
+            ],
+            "bbox_dbu": [
+              756000,
+              576000,
+              763200,
+              583200
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01799_",
+              "_02982_",
+              "_03070_",
+              "_03324_",
+              "_03410_",
+              "_04511_",
+              "_04519_",
+              "_04553_",
+              "_04558_",
+              "_04568_",
+              "_04766_",
+              "clknet_6_11__leaf_clk_regs"
+            ],
+            "guide_associations": [
+              "_01799_",
+              "_01910_",
+              "_01936_",
+              "_02071_",
+              "_02982_",
+              "_03070_",
+              "_03266_",
+              "_03324_",
+              "_03410_",
+              "_04511_",
+              "_04519_",
+              "_04553_",
+              "_04558_",
+              "_04568_",
+              "_04766_",
+              "clknet_6_11__leaf_clk_regs"
+            ],
+            "guide_only_nets": [
+              "_01910_",
+              "_01936_",
+              "_02071_",
+              "_03266_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              106,
+              67
+            ],
+            "bbox_dbu": [
+              763200,
+              482400,
+              770400,
+              489600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01935_",
+              "_02005_",
+              "_02014_",
+              "_02121_",
+              "_02521_",
+              "_02528_",
+              "_03176_",
+              "_04653_",
+              "clknet_leaf_126_clk_regs",
+              "controller.r_parameter_b1_w18[10]",
+              "paired_distribution_1_0_out",
+              "sram_dist_0_net"
+            ],
+            "guide_associations": [
+              "_01935_",
+              "_02005_",
+              "_02014_",
+              "_02121_",
+              "_02521_",
+              "_02528_",
+              "_03176_",
+              "_04653_",
+              "clknet_leaf_126_clk_regs",
+              "controller.r_parameter_b1_w18[10]",
+              "paired_distribution_1_0_out",
+              "sram_dist_0_net"
+            ],
+            "guide_only_nets": [],
+            "crossing_net_types": {
+              "SIGNAL": 11,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              108,
+              68
+            ],
+            "bbox_dbu": [
+              777600,
+              489600,
+              784800,
+              496800
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01808_",
+              "_01930_",
+              "_01935_",
+              "_02384_",
+              "_03017_",
+              "_03028_",
+              "_03072_",
+              "_03074_",
+              "_03254_",
+              "_04330_",
+              "_04501_",
+              "net596"
+            ],
+            "guide_associations": [
+              "_01808_",
+              "_01930_",
+              "_01935_",
+              "_02384_",
+              "_02408_",
+              "_03017_",
+              "_03028_",
+              "_03072_",
+              "_03074_",
+              "_03254_",
+              "_04330_",
+              "_04501_",
+              "_04738_",
+              "_04747_",
+              "net596"
+            ],
+            "guide_only_nets": [
+              "_02408_",
+              "_04738_",
+              "_04747_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              108,
+              74
+            ],
+            "bbox_dbu": [
+              777600,
+              532800,
+              784800,
+              540000
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01846_",
+              "_01882_",
+              "_02245_",
+              "_02966_",
+              "_03045_",
+              "_03071_",
+              "_03107_",
+              "_03168_",
+              "_03284_",
+              "_04310_",
+              "_04319_",
+              "_04515_"
+            ],
+            "guide_associations": [
+              "_01833_",
+              "_01846_",
+              "_01882_",
+              "_02221_",
+              "_02245_",
+              "_02966_",
+              "_02975_",
+              "_03045_",
+              "_03071_",
+              "_03107_",
+              "_03168_",
+              "_03225_",
+              "_03284_",
+              "_04310_",
+              "_04319_",
+              "_04446_",
+              "_04508_",
+              "_04515_"
+            ],
+            "guide_only_nets": [
+              "_01833_",
+              "_02221_",
+              "_02975_",
+              "_03225_",
+              "_04446_",
+              "_04508_"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              108,
+              81
+            ],
+            "bbox_dbu": [
+              777600,
+              583200,
+              784800,
+              590400
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01828_",
+              "_01834_",
+              "_01890_",
+              "_03082_",
+              "_03083_",
+              "_03818_",
+              "_04411_",
+              "_04563_",
+              "_04572_",
+              "_04621_",
+              "_04674_",
+              "net1199"
+            ],
+            "guide_associations": [
+              "_00495_",
+              "_01065_",
+              "_01828_",
+              "_01834_",
+              "_01890_",
+              "_02977_",
+              "_03082_",
+              "_03083_",
+              "_03211_",
+              "_03818_",
+              "_04411_",
+              "_04563_",
+              "_04572_",
+              "_04576_",
+              "_04621_",
+              "_04674_",
+              "controller.r_parameter_b0_w14[17]",
+              "net1199"
+            ],
+            "guide_only_nets": [
+              "_00495_",
+              "_01065_",
+              "_02977_",
+              "_03211_",
+              "_04576_",
+              "controller.r_parameter_b0_w14[17]"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 12
+            },
+            "macro_obstruction_overlap": false
+          },
+          {
+            "layer": "Metal3",
+            "index": [
+              108,
+              87
+            ],
+            "bbox_dbu": [
+              777600,
+              626400,
+              784800,
+              633600
+            ],
+            "direction": "HORIZONTAL",
+            "available_capacity": 11,
+            "routed_demand": 12,
+            "overflow": 1,
+            "saved_capacity": 17.0,
+            "saved_usage": 18.0,
+            "capacity_reduction": 6.0,
+            "crossing_nets": [
+              "_01818_",
+              "_01858_",
+              "_02055_",
+              "_02475_",
+              "_03048_",
+              "_03063_",
+              "_03101_",
+              "_03199_",
+              "_04695_",
+              "_04754_",
+              "clknet_leaf_141_clk_regs",
+              "net3082"
+            ],
+            "guide_associations": [
+              "_01818_",
+              "_01858_",
+              "_02055_",
+              "_02068_",
+              "_02475_",
+              "_03048_",
+              "_03063_",
+              "_03101_",
+              "_03199_",
+              "_04643_",
+              "_04695_",
+              "_04754_",
+              "clknet_leaf_141_clk_regs",
+              "controller.r_parameter_b1_w6[13]",
+              "net3082"
+            ],
+            "guide_only_nets": [
+              "_02068_",
+              "_04643_",
+              "controller.r_parameter_b1_w6[13]"
+            ],
+            "crossing_net_types": {
+              "SIGNAL": 11,
+              "CLOCK": 1
+            },
+            "macro_obstruction_overlap": false
+          }
+        ],
+        "overflow": 25,
+        "marker_count": 25,
+        "capacity_demand_counts": {
+          "11/12": 17,
+          "10/11": 8
+        },
+        "zero_capacity_edges": 0,
+        "crossing_nets": 265,
+        "guide_association_nets": 312,
+        "boundary": "Native marker demand reconciles with this saved whole-chip grid and flow total. Crossing attribution is distinct from guide-area overlap and does not prove one net caused the shared overflow."
+      }
+    }
+  },
+  "minimum_pin_access": {
+    "database_sha256": "596a2c51189bc3e0abaed68103839973c3043842013787ecde5c3bbd8c6f2114",
+    "signal_layers": "Metal2-Metal4",
+    "clock_layers": "Metal2-Metal4",
+    "source_unchanged": true,
+    "counts": {
+      "stdCellPinCnt": 33886,
+      "stdCellPinNoAp": 0,
+      "macroGenAp": 498,
+      "macroValidPlanarAp": 348,
+      "macroValidViaAp": 0,
+      "macroNoAp": 0
+    },
+    "decision": "pass",
+    "off_grid_warnings": 0,
+    "boundary": "Minimum-one-access-point probe. Initial grid warnings are separate from final no-access counts; this does not establish simultaneous routability."
+  },
+  "execution": {
+    "cad_attempts": 4,
+    "completed_candidates": 1,
+    "completed_full_routes": 2,
+    "cad_container_seconds": 604.601,
+    "previous_cad_seconds": 3374.535,
+    "combined_cad_seconds": 3979.136,
+    "compile_seconds_including_failed_configuration": 20.542,
+    "native_fixture_seconds_including_failed_setup": 8.234,
+    "timeouts": 0,
+    "containers": {
+      "pinwheel-holdfix-01-geometry": "absent",
+      "pinwheel-holdfix-01-candidate-prepared": "absent",
+      "pinwheel-holdfix-01-candidate-final": "absent",
+      "pinwheel-holdfix-01-candidate": "absent"
+    }
+  },
+  "evidence_counts": {
+    "pin_corner_checks": 65652,
+    "selected_path_checks": 264,
+    "interface_path_checks": 768,
+    "targeted_branch_witnesses": 36,
+    "native_regression_checks": 12,
+    "portable_tests": 486,
+    "portable_skips": 2,
+    "launch_guards": 4
+  },
+  "evidence_boundary": [
+    "Global-route estimates only; retained fast-cell -40C / SRAM -55C mismatch remains.",
+    "The first reroute preserves cells and placement but changes timing/electrical checks and already has 25 overflow; repair gains are measured separately.",
+    "1,790 constant ties have no reported timing limits and are not counted as timed-net passes; input-driven and clock nets are outside the cell-driven inventory.",
+    "Actual netlist/geometry readback counts 90 delay cells and six buffers; native journal progress counters undercount accepted additions.",
+    "No new Lean theorem, RTL change, extra pipeline cycle, complete compiler/package refinement, detailed routing, extraction or backend promotion."
+  ],
+  "evidence": {
+    "request.json": {
+      "path": "build/validation/hold-repair-01/request.json",
+      "sha256": "183c1ccc3f75f97bf77908234a1725aba7c797aebf9b39b884300213014e5d21"
+    },
+    "regression-verification.json": {
+      "path": "build/validation/hold-repair-01/regression-verification.json",
+      "sha256": "5e95d78fb3bcdcbca61134d4ec7f1c928a4c3a731ad9394041dd3a8c0b052d6c"
+    },
+    "source-comparison.json": {
+      "path": "build/validation/hold-repair-01/source-comparison.json",
+      "sha256": "0d3b2b581461bef1adb8aebda3700b20e63f9502b2021728f0680304a81b09b0"
+    },
+    "source-inputs.json": {
+      "path": "build/validation/hold-repair-01/source-inputs.json",
+      "sha256": "204aec6966d076626baf2053c93c7c09b19516dff3afbf9dfac4d9755f6ddfa6"
+    },
+    "headers-fetch.json": {
+      "path": "build/validation/hold-repair-01/headers-fetch.json",
+      "sha256": "126c1981b5d79bbcff46227c4dafe03454d586e50ec09af10b3d54bb5d3fd482"
+    },
+    "build.json": {
+      "path": "build/validation/hold-repair-01/build.json",
+      "sha256": "509d825ce122f70978d9161c8f3e2c6f00beb18ec116c4b811dd67f6ee28ab8b"
+    },
+    "support-revision.json": {
+      "path": "build/validation/hold-repair-01/support-revision.json",
+      "sha256": "416f94fe647e1a297a77ce42bcf6972213d3af67d5eec25d832b7d4068edb727"
+    },
+    "phase-analysis.json": {
+      "path": "build/validation/hold-repair-01/phase-analysis.json",
+      "sha256": "d9467694c96a782ef000f0dd6464e8718dc9ffa7f5ee9e7f96cfe85b31f02541"
+    },
+    "congestion-analysis.json": {
+      "path": "build/validation/hold-repair-01/congestion-analysis.json",
+      "sha256": "89fa50374b50a7050e8bfdadb591f612151a428189d3df30028f99e1cddcecab"
+    },
+    "python-tests-final.json": {
+      "path": "build/validation/hold-repair-01/python-tests-final.json",
+      "sha256": "87d73002b450103a0ba0ed4e522952e3fb4ebaa130b87772354ae1cb3d9ec3e4"
+    },
+    "launch-guards.json": {
+      "path": "build/validation/hold-repair-01/launch-guards.json",
+      "sha256": "097c4c54516cc75f5858095a184dbc6a46b55ac26a464d612645c98bd2e4fa85"
+    },
+    "container-cleanup.json": {
+      "path": "build/validation/hold-repair-01/container-cleanup.json",
+      "sha256": "08a143f29fa1788008f57a4bb5fc99aeb0b482006c407ff23073a1e412936080"
+    }
+  },
+  "source_sha256": {
+    "scripts/physical_routed_repair.py": "805aaa583e243cb6c1740d726d4977c008187bdbd23045f13814e7cd2f116af6",
+    "test/test_physical_routed_repair.py": "e76f5788fe7df9322dbb5e0153e4b61c86dc9837a49bb4e119608d0a3f579574",
+    "tools/openroad-hold/build.py": "18d187e2b5ef340dfedaf3e2e51d5148c402869eb77081ba6074f2d7c5273a5c",
+    "tools/openroad-hold/regression.py": "f526f610df7528ab9b2ee95a8c4a34caa321bcfb748013e7a5fd819834fc02f6",
+    "tools/openroad-hold/OPENROAD-LICENSE": "28cfc93cb2b552192bc316259d2c2a1aa5a980018cda1c5cd9b1143c9151aebb",
+    "tools/openroad-hold/extension.cc": "572d8716d482f8c0295d373a1db087e8c149b94967df710909f4050e89b33815",
+    "tools/openroad-hold/README.md": "ef1444a79d7e9384beca704814ad987ed409a424897c16bfc02fe9a808e51822",
+    "tools/openroad-hold/verify_regression.py": "4e359947f6688885d081851f55216c5506aa6db8f3b867c909ee093ef4fd79f3",
+    "tools/openroad-hold/protected-loads.patch": "c071ca8a7be96a20c8ee5937cd4990c097e05509c90e4a1268aa7d9da6a9c627"
+  },
+  "report": {
+    "path": "build/validation/hold-repair-01/report.json",
+    "sha256": "7616001e95b92b3139519132d56f4527ac97cd181ab39985f49c42c3a365a691"
+  },
+  "artifact_count": 17343,
+  "retained_source_version_count": 1002
+}

@@ -40,7 +40,18 @@ def measurement_quality(checks, context, disconnected):
     if fanout:
         if len(fanout) != 1:
             raise ValueError('Ambiguous fanout report')
-        for pin, limit, actual, slack in re.findall(r'^\s*(\S+)\s+([\d.]+)\s+([\d.]+)\s+(-[\d.]+)\s+\(VIOLATED\)\s*$', fanout[0], re.M):
+        # Pinned OpenSTA can omit the unitless fanout slack column entirely.
+        # Every violation line must still resolve; never silently drop a row.
+        for line in fanout[0].splitlines():
+            if '(VIOLATED)' not in line:
+                continue
+            row = re.fullmatch(r'\s*(\S+)\s+([\d.]+)\s+([\d.]+)(?:\s+(-?[\d.]+))?\s+\(VIOLATED\)\s*', line)
+            if not row:
+                raise ValueError('Malformed fanout violation row')
+            pin, limit, actual, slack = row.groups()
+            if float(actual) <= float(limit) or (slack is not None and
+                    abs(float(slack) - (float(limit) - float(actual))) > 1e-6):
+                raise ValueError('Inconsistent fanout violation')
             if pin not in index:
                 raise ValueError('Unresolved fanout driver')
             name, net = index[pin]

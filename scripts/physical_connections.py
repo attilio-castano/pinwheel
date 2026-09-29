@@ -22,7 +22,15 @@ def connection_terminals(context, name):
     return dict(driver=drivers[0], consumers=sorted(loads), ports=sorted(net['ports']))
 
 
-def parse_measurements(text, expected):
+def parse_measurements(text, expected, *, missing_fanout_limits=()):
+    """Require all limits unless the caller explicitly names an absent fanout limit.
+
+    Some SRAM output libraries specify capacitance and slew but no max fanout.
+    Preserve that absence as None; never manufacture a passing numerical limit.
+    """
+    missing_fanout_limits = set(missing_fanout_limits)
+    if not missing_fanout_limits <= set(expected):
+        raise ValueError('Unknown optional fanout-limit connection')
     parts = re.split(r'^PINWHEEL_CONNECTION (\S+)\n', text, flags=re.M)
     result = {}
     for name, body in zip(parts[1::2], parts[2::2]):
@@ -42,9 +50,14 @@ def parse_measurements(text, expected):
         for title, key in [('max slew', 'slew'), ('max capacitance', 'capacitance'), ('max fanout', 'fanout')]:
             chunk = body.split('\n'+title+'\n', 1)
             if len(chunk) != 2:
+                if key == 'fanout' and name in missing_fanout_limits:
+                    row[key] = None
+                    continue
                 raise ValueError('Missing electrical measurement')
+            section = re.split(r'\n(?:max (?:slew|capacitance|fanout)\n|Startpoint: )',
+                               chunk[1], maxsplit=1)[0]
             m = re.search(r'^(\S+)\s+('+NUMBER+r')\s+('+NUMBER+r')\s+('+NUMBER+r')\s+\((MET|VIOLATED)\)$',
-                          chunk[1], re.M)
+                          section, re.M)
             if not m:
                 raise ValueError('Missing electrical limit/slack')
             row[key] = dict(pin=m[1], limit=float(m[2]), actual=float(m[3]), slack=float(m[4]), verdict=m[5])
@@ -61,7 +74,8 @@ def parse_measurements(text, expected):
         if row['drivers'] != 1 or set(row['paths']) != {'min','max'}:
             raise ValueError('Connection requires one driver and both min/max timing paths')
         values = [v for k in ['pin_cap_pf','wire_cap_pf','total_cap_pf'] for v in row[k]]
-        values += [row[k][v] for k in ['slew','capacitance','fanout'] for v in ['limit','actual','slack']]
+        values += [row[k][v] for k in ['slew','capacitance','fanout'] if row[k] is not None
+                   for v in ['limit','actual','slack']]
         values += [p['slack_ns'] for p in row['paths'].values()]
         if not all(math.isfinite(v) for v in values):
             raise ValueError('Nonfinite measured connection value')

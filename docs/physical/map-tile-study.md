@@ -355,3 +355,95 @@ The first distribution attempt, `distributed-01`, stopped before export because
 a generated cell and wire shared a name in Yosys. Separate wire names fix the
 collision; a regression checks disjoint names. `distributed-02` passes all gates,
 and both attempts are retained.
+
+## Explicit hierarchy comparison — September 25
+
+This increment asks whether retaining the storage tiles changes mapped cost
+when the candidate RTL and mapping constraints are held fixed. The existing
+separate and combined organizations remain available. `synthesis_hierarchy.py`
+names their policies and the exact expected instance paths. The combined policy
+retains only the 32 storage tiles through technology mapping; the final chip
+view is flat. These boundaries express circuit ownership, not placement regions.
+
+The opt-in comparison maps the **same tiled RTL** twice, once with those tiles
+retained and once with all available logic flattened before mapping:
+
+```sh
+python3 -B scripts/check-tiled-chip.py --tag hierarchy-policy-02 \
+  --organization combined --fanout-limit 8 --compare-flat
+```
+
+Both candidates use the same tools, corner libraries, macro views, ABC recipe,
+and aggregate sink budget. The existing hybrid baseline is retained separately;
+it is not the matched flat control. Both candidates undergo mapped read-back,
+arbitrary-state output/next-state SAT checks and the independent pin oracle.
+The comparison records area, address depth and fanout without declaring a
+physical winner. Execution is local and sequential, with the runner's existing
+180-second per-command cap. This is a bounded two-corner mapping comparison;
+it launches no placement, routing or container. The second run verifies the
+added Verilog identity check, with the same RTL and mapping policies.
+Historical cumulative CAD use is unrecorded. Earlier artifacts and unsuccessful
+attempts remain intact.
+
+Each mapping and distribution stage checks all expected hierarchy instances.
+Boundary-load artifacts retain actual leaf sink counts before and after
+distribution. An independent module-connection interpreter expands the mapped
+hierarchy and compares every named cell pin and package connection against the
+actual flattened JSON. The resulting `*-flatten-identity.json` binds each flat
+leaf to its mapped module instance and local cell name. Verilog export retains
+private cell names with `-norename`; `*-readback-identity.json` checks every cell
+and connection again after independent parsing. It records the exact Yosys JSON
+escaping of private names and binds the read-back names to the same owners.
+These identity maps are available to later physical analysis; they impose no
+physical grouping and prove no gate behavior. The existing state projection
+and SAT checks retain that separate obligation. Missing regions, changed
+interfaces, ambiguous names, unsupported signals, and changed clock/reset/data
+connections are rejected.
+
+Reproduction needs the pinned tools and macro views plus the retained
+`corridor-02`, `local-decode-03`, and `integration-03` artifacts selected by the
+existing experiment manifests. This checkout reused those local fixtures after
+the runner checked their identities. They are not reconstructed from the tracked
+manifests in a fresh checkout. Portable hierarchy tests need none of these CAD
+fixtures: `python3 -B -m unittest discover -s test -p 'test_synthesis_hierarchy.py'`.
+
+The fresh mappings reproduce the following measurements. Both candidates have
+2,895 FFs, two SRAM macros, and a maximum non-clock sink count of eight.
+
+| Same RTL, different mapping policy | Standard-cell area, both corners (µm²) | Typical SRAM address depths | Slow SRAM address depths |
+| --- | ---: | --- | --- |
+| Retain 32 storage tiles | 290,943.9540 | 31 / 29 | 31 / 29 |
+| Flatten before mapping | 296,947.1232 | 30 / 29 | 31 / 30 |
+
+Retaining the tiles saves **6,003.1692 µm² (2.021629%)** of standard-cell area
+after distribution. The depth comparison depends on corner and endpoint: the
+typical first address is one gate deeper with tiles, while the slow second
+address is one gate shallower. These are gate counts, not delays. The result
+supports keeping hierarchy as an explicit measured policy; it does not justify
+an unconditional flattening or hierarchy-preservation rule. A physical winner
+would require a separately bounded timing, placement and routing comparison.
+
+The selected **`hierarchy-policy-02`** run passes in **559.885 seconds**, with
+no individual command exceeding **84.247 seconds**. Six RTL/mapped SAT checks
+pass; joined SRAM addresses and an inverted distribution buffer are rejected.
+Six independent core/package-pin regressions pass **2,553,100 simulated edges**.
+The Lean build and audit pass with 15,395 declarations and 7,706 theorems using
+only the existing standard axioms. The full Python suite passes **448 tests**,
+with two platform-specific skips; 15 cases exercise hierarchy and export identity.
+The [tracked receipt](../../physical/experiments/hierarchy-policy-results.json)
+binds 259 experiment inputs, 178 artifacts and the portable validation report.
+
+The first full comparison, `hierarchy-policy-01`, also passed, in 498.102 seconds;
+its measurements match the final run exactly. It checked flattening but did not
+yet retain cell identity through Verilog export. A small export probe exposed
+Yosys's private-to-public name encoding; the explicit conversion and collision
+rejection were then checked against all six mapped artifacts and in the final
+full run. Both comparison directories and the export probes remain intact.
+The two full runs total **1,057.987 seconds** elapsed; this excludes the small
+probes and portable tests and is not a historical project-wide CAD total.
+
+**Decision:** retain the explicit policies, matched flat control and checked
+ownership receipts. Future architectural experiments can distinguish synthesis
+boundaries from actual physical locality. This experiment supplies no new Lean
+circuit-interpretation theorem, placement constraint, routed result or backend
+promotion.

@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "report": "build/validation/paired-buffer-balance-check-01/report.json",
+  "report_sha256": "5b2a5c5f8e2e3ddd752fc87fec92927eed515425f4251bcdb98f32cd02ae54a0",
+  "implementation": "PairedValidation with balanced mapped positive-buffer trees",
+  "scope": "Same mapped circuit checked in typical and slow libraries; physical implementation unqualified."
+}

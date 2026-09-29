@@ -1,0 +1,718 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "hierarchical_integration_not_qualified",
+  "study": "docs/physical/sram-integration-results.md",
+  "protocol": {
+    "path": "docs/physical/sram-integration-experiment.md",
+    "sha256": "b67ea603a87a3aedab2aef680ac9d7117b1cbd345e81e8b874ba0f41af512154"
+  },
+  "predecessor": {
+    "path": "physical/experiments/sram-comparison-results.json",
+    "sha256": "e27dd920505df8fa6eec9c8dc35ebe78fe6c298c6ad9a8e647e971ee8e46e7ee"
+  },
+  "full_sram_qualification": false,
+  "full_gds_signoff": false,
+  "A_accepted": false,
+  "complete_design_iteration": false,
+  "chip_geometry_changed": false,
+  "installed_PDK_changed": false,
+  "decision": "Retain the chip and qualified local policy. Qualify a complete 32-bit array tile next, then the array edge and remaining control contexts; require a positive macro comparison before cross-block fault sensitivity.",
+  "inventory": {
+    "layout_circuit_definitions": 140,
+    "schematic_circuit_definitions": 145,
+    "reachable_schematic_definitions": 62,
+    "raw_top_direct_devices": {},
+    "explicit_name_pairs": 22,
+    "physical_ports": 351,
+    "physical_label_locations": 548,
+    "preserved_array_placements": {
+      "layout": {
+        "RM_IHPSG13_1P_MATRIX_128x128": 2,
+        "RM_IHPSG13_1P_COLUMN_128": 128,
+        "RM_IHPSG13_1P_BITKIT_16x2_SRAM": 1024,
+        "RM_IHPSG13_1P_BITKIT_CELL": 32768
+      },
+      "schematic": {
+        "RM_IHPSG13_512X64_C2_1P_MATRIX_PCELL_1": 2,
+        "RM_IHPSG13_512X64_C2_1P_COLUMN_PCELL_0": 128,
+        "RM_IHPSG13_512X64_C2_1P_BITKIT_16X2_SRAM": 1024,
+        "RM_IHPSG13_512X64_C2_1P_BITKIT_CELL": 32768
+      }
+    },
+    "expanded_devices_after_preparation": {
+      "layout": {
+        "res_metal1": 12,
+        "res_metal2": 65552,
+        "res_metal3": 33152,
+        "sg13_lv_nmos": 140639,
+        "sg13_lv_pmos": 75167
+      },
+      "schematic": {
+        "lvsres": 98704,
+        "res_metal1": 12,
+        "sg13_lv_nmos": 140639,
+        "sg13_lv_pmos": 75167
+      }
+    }
+  },
+  "comparison": {
+    "native_exit_code": 0,
+    "native_final_pass": false,
+    "native_final_fail": true,
+    "database_match": false,
+    "policy_status": "native_no_match",
+    "circuit_status_counts": {
+      "Skipped": 19,
+      "NoMatch": 8,
+      "Match": 23
+    },
+    "top_status": "Skipped",
+    "physical_ports_bound": true,
+    "all_declared_top_ports_preserved": true,
+    "scoped_flatten_preserved_all_device_parameters": true,
+    "all_resistor_counts_and_native_parameters_preserved": true,
+    "driver_delay_connections_qualified": false,
+    "unqualified_models": {
+      "layout": {
+        "res_metal2": 65552,
+        "res_metal3": 33152
+      },
+      "schematic": {
+        "lvsres": 98704
+      }
+    },
+    "native_comparisons_completed": 2,
+    "negative_connection_comparisons": 0,
+    "negative_controls_disposition": "Deferred: macro positive control fails; arbitrary mismatch would not establish fault sensitivity."
+  },
+  "failure_frontier": [
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RM_IHPSG13_1P_BITKIT_CELL",
+        "devices": {
+          "res_metal2": 2,
+          "res_metal3": 1
+        },
+        "pins": [
+          "LWL",
+          "RWL",
+          "",
+          "BLC_BOT",
+          "BLC_TOP",
+          "VDD",
+          "VSS",
+          "VSS",
+          "BLT_BOT",
+          "BLT_TOP",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RM_IHPSG13_512X64_C2_1P_BITKIT_CELL",
+        "devices": {
+          "sg13_lv_nmos": 4,
+          "sg13_lv_pmos": 2,
+          "LVSRES": 3
+        },
+        "pins": [
+          "BLC_BOT",
+          "BLC_TOP",
+          "BLT_BOT",
+          "BLT_TOP",
+          "LWL",
+          "NW",
+          "PW",
+          "RWL",
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 12
+      },
+      "net_statuses": {
+        "Mismatch": 18
+      },
+      "pin_statuses": {
+        "Mismatch": 25
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RM_IHPSG13_1P_BITKIT_EDGE_LR",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RM_IHPSG13_512X64_C2_1P_BITKIT_EDGE_LR",
+        "devices": {
+          "sg13_lv_nmos": 2
+        },
+        "pins": [
+          "LWL",
+          "NW",
+          "PW",
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 2
+      },
+      "net_statuses": {
+        "Mismatch": 3
+      },
+      "pin_statuses": {
+        "Mismatch": 7,
+        "Match": 3
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RM_IHPSG13_1P_BLDRV",
+        "devices": {
+          "sg13_lv_nmos": 9,
+          "sg13_lv_pmos": 13
+        },
+        "pins": [
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RM_IHPSG13_512X64_C2_1P_BLDRV",
+        "devices": {
+          "sg13_lv_nmos": 2,
+          "sg13_lv_pmos": 6
+        },
+        "pins": [
+          "BLC",
+          "BLC_SEL",
+          "BLT",
+          "BLT_SEL",
+          "PRE_N",
+          "SEL_P",
+          "WR_ONE",
+          "WR_ZERO",
+          "VDD",
+          "VSS"
+        ],
+        "children": {
+          "RSC_IHPSG13_NAND2X2": 2,
+          "RSC_IHPSG13_INVX2": 3
+        }
+      },
+      "device_statuses": {
+        "Mismatch": 30
+      },
+      "net_statuses": {
+        "Mismatch": 30,
+        "Match": 1
+      },
+      "pin_statuses": {
+        "Mismatch": 23,
+        "Match": 2
+      },
+      "subcircuit_statuses": {
+        "Mismatch": 5
+      }
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RSC_IHPSG13_CBUFX8",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RSC_IHPSG13_CBUFX8",
+        "devices": {
+          "sg13_lv_pmos": 2,
+          "sg13_lv_nmos": 2
+        },
+        "pins": [
+          "A",
+          "Z",
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 4
+      },
+      "net_statuses": {
+        "Mismatch": 5
+      },
+      "pin_statuses": {
+        "Mismatch": 9
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RSC_IHPSG13_CINVX2",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RSC_IHPSG13_CINVX2",
+        "devices": {
+          "sg13_lv_nmos": 1,
+          "sg13_lv_pmos": 1
+        },
+        "pins": [
+          "A",
+          "Z",
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 2
+      },
+      "net_statuses": {
+        "Mismatch": 4
+      },
+      "pin_statuses": {
+        "Mismatch": 8
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RSC_IHPSG13_CINVX8",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RSC_IHPSG13_CINVX8",
+        "devices": {
+          "sg13_lv_nmos": 1,
+          "sg13_lv_pmos": 1
+        },
+        "pins": [
+          "A",
+          "Z",
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 2
+      },
+      "net_statuses": {
+        "Mismatch": 4
+      },
+      "pin_statuses": {
+        "Mismatch": 8
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RSC_IHPSG13_FILLCAP4",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RSC_IHPSG13_FILLCAP4",
+        "devices": {
+          "sg13_lv_nmos": 1,
+          "sg13_lv_pmos": 1
+        },
+        "pins": [
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 2
+      },
+      "net_statuses": {
+        "Mismatch": 4
+      },
+      "pin_statuses": {
+        "Mismatch": 6
+      },
+      "subcircuit_statuses": {}
+    },
+    {
+      "status": "NoMatch",
+      "layout": {
+        "name": "RSC_IHPSG13_FILLCAP8",
+        "devices": {},
+        "pins": [
+          "",
+          "",
+          "",
+          ""
+        ],
+        "children": {}
+      },
+      "schematic": {
+        "name": "RSC_IHPSG13_FILLCAP8",
+        "devices": {
+          "sg13_lv_nmos": 1,
+          "sg13_lv_pmos": 1
+        },
+        "pins": [
+          "VDD",
+          "VSS"
+        ],
+        "children": {}
+      },
+      "device_statuses": {
+        "Mismatch": 2
+      },
+      "net_statuses": {
+        "Mismatch": 4
+      },
+      "pin_statuses": {
+        "Mismatch": 6
+      },
+      "subcircuit_statuses": {}
+    }
+  ],
+  "candidate_local_contexts": [
+    {
+      "layout": "RM_IHPSG13_1P_BITKIT_16x2_SRAM",
+      "schematic": "RM_IHPSG13_512X64_C2_1P_BITKIT_16X2_SRAM",
+      "affected_failure_types": [
+        "BITKIT_CELL"
+      ],
+      "status": "candidate context only; no new local comparison performed",
+      "layout_expanded_devices": {
+        "res_metal2": 64,
+        "res_metal3": 32,
+        "sg13_lv_nmos": 128,
+        "sg13_lv_pmos": 64
+      },
+      "schematic_expanded_devices": {
+        "lvsres": 96,
+        "sg13_lv_nmos": 128,
+        "sg13_lv_pmos": 64
+      }
+    },
+    {
+      "layout": "RM_IHPSG13_1P_BITKIT_16x2_EDGE_LR",
+      "schematic": "RM_IHPSG13_512X64_C2_1P_BITKIT_16X2_EDGE_LR",
+      "affected_failure_types": [
+        "BITKIT_EDGE_LR"
+      ],
+      "status": "candidate context only; no new local comparison performed",
+      "layout_expanded_devices": {
+        "sg13_lv_nmos": 32
+      },
+      "schematic_expanded_devices": {
+        "sg13_lv_nmos": 32
+      }
+    },
+    {
+      "layout": "RM_IHPSG13_1P_BLDRV",
+      "schematic": "RM_IHPSG13_512X64_C2_1P_BLDRV",
+      "affected_failure_types": [
+        "BLDRV"
+      ],
+      "status": "candidate context only; no new local comparison performed",
+      "layout_expanded_devices": {
+        "sg13_lv_nmos": 9,
+        "sg13_lv_pmos": 13
+      },
+      "schematic_expanded_devices": {
+        "sg13_lv_nmos": 9,
+        "sg13_lv_pmos": 13
+      }
+    },
+    {
+      "layout": "RM_IHPSG13_1P_COLDRV13X8",
+      "schematic": "RM_IHPSG13_512X64_C2_1P_COLDRV13X8",
+      "affected_failure_types": [
+        "RSC_IHPSG13_CBUFX8",
+        "RSC_IHPSG13_FILLCAP4"
+      ],
+      "status": "candidate context only; no new local comparison performed",
+      "layout_expanded_devices": {
+        "sg13_lv_nmos": 28,
+        "sg13_lv_pmos": 28
+      },
+      "schematic_expanded_devices": {
+        "sg13_lv_nmos": 28,
+        "sg13_lv_pmos": 28
+      }
+    },
+    {
+      "layout": "RM_IHPSG13_1P_ROWREG7",
+      "schematic": "RM_IHPSG13_512X64_C2_1P_ROWREG7",
+      "affected_failure_types": [
+        "RSC_IHPSG13_CINVX2",
+        "RSC_IHPSG13_CINVX8",
+        "RSC_IHPSG13_FILLCAP8"
+      ],
+      "status": "candidate context only; no new local comparison performed",
+      "layout_expanded_devices": {
+        "sg13_lv_nmos": 134,
+        "sg13_lv_pmos": 134
+      },
+      "schematic_expanded_devices": {
+        "sg13_lv_nmos": 134,
+        "sg13_lv_pmos": 134
+      }
+    }
+  ],
+  "failed_recipe": {
+    "attempt": "hierarchical-01",
+    "native_comparison_completed": false,
+    "reason": "Experimental macro-port adapter incorrectly selected topmetal1 for labels on 50/25; guard refused first supply label after 348 signal probes.",
+    "repair": "Pinned layers_definitions.lvs defines 50/25 as metal4. The second recipe uses metal4_con, preserving all physical-port guards."
+  },
+  "resource_ledger": {
+    "starting_campaign_cad_seconds": 8265.786,
+    "continuation_cad_seconds": 38.143,
+    "cumulative_campaign_cad_seconds": 8303.929,
+    "allocated_continuation_seconds": 1800,
+    "campaign_budget_seconds": 28800,
+    "bounded_invocations": 4,
+    "native_tool_invocations": 4,
+    "A_full_routing_attempts_used": 3,
+    "B_full_routing_attempts_reserved": 2,
+    "additional_full_routing_attempts": 0
+  },
+  "attempts": [
+    {
+      "name": "inventory-01",
+      "status": "completed",
+      "cad_seconds": 10.111,
+      "limits": {
+        "seconds": 180,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-integration-01/inventory-01-receipt.json",
+        "sha256": "a87104ccf8ab421653d95405bc0e3880e0fa526c8b3d774b4913cd3b745d5cef"
+      }
+    },
+    {
+      "name": "hierarchical-01",
+      "status": "failed",
+      "cad_seconds": 9.67,
+      "limits": {
+        "seconds": 540,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-integration-01/hierarchical-01-receipt.json",
+        "sha256": "3753e55320d818cca53b692c1ac77ffc88b8fbc91ad554d81fbe3ae57bab5aa7"
+      }
+    },
+    {
+      "name": "hierarchical-02",
+      "status": "completed",
+      "cad_seconds": 9.167,
+      "limits": {
+        "seconds": 540,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-integration-01/hierarchical-02-receipt.json",
+        "sha256": "01563897a07bc6eb757b533a62bdccd0ca7349684a6af47b17fc2afa47f541e5"
+      }
+    },
+    {
+      "name": "replay-01",
+      "status": "completed",
+      "cad_seconds": 9.195,
+      "limits": {
+        "seconds": 540,
+        "cpus": 4,
+        "memory_gib": 6
+      },
+      "sources_unchanged": true,
+      "container_state": "absent",
+      "receipt": {
+        "path": "build/validation/sram-integration-01/replay-01-receipt.json",
+        "sha256": "05a949e4567624999c3a05d8ebdd13fadca2cdb791f33cc220cf8af0c616f89c"
+      }
+    }
+  ],
+  "intake": {
+    "path": "build/validation/sram-integration-01/request.json",
+    "sha256": "380df18bb3eda8ad08734432aefb217977e13ab49e8ae053df9a32401afba4dd"
+  },
+  "launcher": {
+    "path": "build/validation/sram-integration-01/launch.py",
+    "sha256": "86db856d8012da7dc3ec7c162534d487fc6fa2d0f4bad3945325888bcc443c63"
+  },
+  "record_recipe": {
+    "path": "build/validation/sram-integration-01/record.py",
+    "sha256": "cbdbf5276bf8dafc17510ffd4ac1e3536699ad7e2543fca73fce4f4ecfd21718"
+  },
+  "record_audit": {
+    "path": "build/validation/sram-integration-01/record-audit.json",
+    "sha256": "44c9434c10bb009448cf19b28ed1666c4340b4eb4ba2fa5727eb4263f1899e17"
+  },
+  "reports": {
+    "inventory-01": {
+      "path": "build/validation/sram-integration-01/inventory-01/output/report.json",
+      "sha256": "02d3863a731dfb6ee1ca698219fd3243f8214d057f8e0d975543cc39130ecf99"
+    },
+    "hierarchical-01": {
+      "path": "build/validation/sram-integration-01/hierarchical-01/output/report.json",
+      "sha256": "baeb1dab21311c6be7d263ffb77f35196459af19d5836f43fbb550e8004f56d8"
+    },
+    "hierarchical-02": {
+      "path": "build/validation/sram-integration-01/hierarchical-02/output/report.json",
+      "sha256": "e194a5d9a5f0ad3496757e5a93fd2df5de93a54c9d1419492d2a6575a51d9d82"
+    },
+    "replay-01": {
+      "path": "build/validation/sram-integration-01/replay-01/output/report.json",
+      "sha256": "86d6751c5c07b517838a82e6e1d67c31a022c5cae109b240799836ff248b33af"
+    }
+  },
+  "raw_inventory": {
+    "native-inventory.json": {
+      "path": "build/validation/sram-integration-01/inventory-01/output/native-inventory.json",
+      "sha256": "05d956dfbf0ad2ff8d3a344cde33638f4a45ffe81088d21793f99ae1b5664111"
+    },
+    "gds-inventory.json": {
+      "path": "build/validation/sram-integration-01/inventory-01/output/gds-inventory.json",
+      "sha256": "fa575630f1cb00e661928820054c89fb870bc817cb0d018137cc5150406746f5"
+    },
+    "raw.l2n": {
+      "path": "build/validation/sram-integration-01/inventory-01/output/raw.l2n",
+      "sha256": "3f63ea4feeda60d3ff6acc6eea0b7e5b1396c249fa96800994ce4d3f51ec6fb8"
+    }
+  },
+  "replay_evidence": {
+    "policy.json": {
+      "path": "build/validation/sram-integration-01/replay-01/output/policy.json",
+      "sha256": "cf89f551845a1f3169114f2e7e538c691d50c0778ae3b4829374e3ad936d8845"
+    },
+    "native.log": {
+      "path": "build/validation/sram-integration-01/replay-01/output/native.log",
+      "sha256": "5363c1ee599639ac4063aea4c501e8c610e7c2691d99fb6102cd6366af97546e"
+    },
+    "lvs/RM_IHPSG13_1P_512x64_c2_bm_bist.lvsdb": {
+      "path": "build/validation/sram-integration-01/replay-01/output/lvs/RM_IHPSG13_1P_512x64_c2_bm_bist.lvsdb",
+      "sha256": "49490c285a77c2b82a4c43b42a32b49f4e36203de80cea31d5a6224a1ba7f2ec"
+    }
+  },
+  "diagnostic_bundle": {
+    "README.md": {
+      "path": "physical/fixtures/sram-integration/README.md",
+      "sha256": "d7a0eb8d083716fcabb5d9beea785f65f54602e1540a8baa644991092a152ff9"
+    },
+    "contract.json": {
+      "path": "physical/fixtures/sram-integration/contract.json",
+      "sha256": "bcea46f70948aace37912c30972eeaca7cd9f964dad1ac0a4cbf8b7db9ed0a32"
+    },
+    "inputs.json": {
+      "path": "physical/fixtures/sram-integration/inputs.json",
+      "sha256": "bf3b689aa412be71113e4bc0f68bad1795c156484f3458af68d10df67fc80aca"
+    },
+    "policy.rb": {
+      "path": "physical/fixtures/sram-integration/policy.rb",
+      "sha256": "a7852cfc72d79e8d636e6e482420c7dc45ed70224205d53ac30c87072741c8d9"
+    },
+    "run.py": {
+      "path": "physical/fixtures/sram-integration/run.py",
+      "sha256": "1f3e8f29f2a34f56b416f75c2672c0906d79abf5878268854147e9b3c3772c2d"
+    }
+  },
+  "local_evidence_root": "build/validation/sram-integration-01",
+  "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+  "container_path_mapping": {
+    "/probe": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-integration-01",
+    "/prior": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/sram-comparison-01",
+    "/fixtures": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/physical/fixtures/sram-context",
+    "/work/core": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/physical/paired-buffer-balance-01",
+    "/work/pdk": "/Users/attiliocastano/.codex/worktrees/fc40/pinwheel/build/physical/pdk"
+  },
+  "unchanged_open_gates": [
+    "Full strict SRAM evidence or justified supplied-IP qualification",
+    "Prior Magic overlaps and conversion diagnostics",
+    "Compatible fast characterization",
+    "Timed Lean refinement",
+    "Accepted A/B and clean-source replay"
+  ],
+  "boundary": "This is a reproduced negative integration result. Ports, device census and retained hierarchy are necessary checks, not circuit equivalence. No full SRAM, chip, analog or silicon acceptance follows."
+}

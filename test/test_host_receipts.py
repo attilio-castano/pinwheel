@@ -31,8 +31,10 @@ class HostReceiptTests(unittest.TestCase):
         sources = ['Pinwheel/Fixture.lean', 'lakefile.toml', 'lean-toolchain',
                    'test/Loader.lean', 'test/ChipEmit.lean', 'test/SramChipEmit.lean',
                    'test/sram_chip.sv', 'test/host_bridge.sv',
+                   'test/PairedChipEmit.lean', 'test/paired_chip.sv',
                    *['scripts/' + name for name in ('pinwheel-host.py', 'pinwheel_host.py',
-                     'pinwheel_sim.py', 'host_demo.py', 'validation_run.py', 'process_group.py')],
+                     'pinwheel_sim.py', 'host_demo.py', 'validation_run.py', 'process_group.py',
+                     'paired_execution.py', 'paired_image_certificate.py', 'execution-vectors.py')],
                    'build/tools/firtool-1.159.0/bin/circt-opt',
                    'build/tools/oss-cad-suite/bin/iverilog', 'build/tools/oss-cad-suite/bin/vvp']
         for name in sources:
@@ -89,7 +91,7 @@ class HostReceiptTests(unittest.TestCase):
                 test.event('closed')
 
         class Host:
-            def __init__(self, simulation):
+            def __init__(self, simulation, *, image_format):
                 self.edges = self.frames = 0
 
             def reset(self):
@@ -107,7 +109,7 @@ class HostReceiptTests(unittest.TestCase):
                 return Result(0, 5, False, False)
 
         class DemoHost(ScriptedHost):
-            def __init__(self, simulation):
+            def __init__(self, simulation, *, image_format):
                 super().__init__(simulation, test.demo_fault)
 
             def upload(self, program):

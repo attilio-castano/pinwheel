@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "status": "accepted_upload_and_committed_image_gate_passed",
+  "date": "2026-09-28",
+  "report": {
+    "path": "build/validation/paired-upload-02/report.json",
+    "sha256": "346e7746ba6d1996831cdfe5d3cfea4668cbb146c4c85c92d194864ac2b9256e"
+  },
+  "study": "docs/storage/paired-upload-coverage.md",
+  "previous_gate": {
+    "path": "physical/experiments/paired-formal-results.json",
+    "sha256": "0bae814be784cafb2b238f66dcb5aef42fdee8f773b13ddeb25daef93358df39"
+  },
+  "failed_attempt": {
+    "report": {
+      "path": "build/validation/paired-upload-01/report.json",
+      "sha256": "0603017efec8d4784b9046260482a254df7540336bcf2ced945d61a6f0034dba"
+    },
+    "error": "RuntimeError: axioms: test/ProofAudit.lean:26:0: error: Unapproved axioms in Pinwheel.Hardware.Storage.PairedUpload.control_next._native.bv_decide.ax_1_36: [Pinwheel.Hardware.Storage.PairedUpload.control_next._native.bv_decide.ax_1_36]\n; see /Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/paired-upload-01/axioms.log",
+    "validation_seconds": 5.045,
+    "cad_seconds": 0,
+    "resolution": "Replaced compiled-check bit-vector proofs with finite cases, bit-vector lemmas and arithmetic; axiom audit policy unchanged.",
+    "source_freeze": "The failed report retains its own source hashes. The passing report is a new source freeze."
+  },
+  "source_sha256": {
+    "Pinwheel.lean": "367e4f868b598da74bf46f948d0b1e8e21f9d007cab533e6b6c7940444b1d761",
+    "Pinwheel/Hardware/Memory/SinglePort.lean": "b8559bf625613a24c2aa1a19e91c9c5316913356f725fd30968b38da3af353e0",
+    "Pinwheel/Hardware/Storage/PairedSemantics.lean": "52a786e8b4ae5e3d7fa15a93bd6f6c19763879c617d53295bef42503b122a042",
+    "Pinwheel/Hardware/Storage/PairedComposition.lean": "f798d2149f14018ae6f7fa86b31461088cc3467820a368cbcd0cdccfd101eefa",
+    "Pinwheel/Hardware/Storage/PairedClosed.lean": "e9f864cfea0ecadf61673107fdb3c2121c6e000f57968333bf4653a54ef81746",
+    "Pinwheel/Hardware/Storage/PairedLoader.lean": "e6fb86c950a6e47b82924315f636bd9657a79f87d15d015927f68d94eb4992c7",
+    "Pinwheel/Hardware/Storage/PairedUpload.lean": "989f9aa76775459c88f73b96fa9257bb21ac8e79d1854a8c0c38f2908f670b71",
+    "Pinwheel/Hardware/Storage/PairedCoverage.lean": "11859b1e844ddd639eb5f5fef81f6172bca5ed2e48a1ca687f905bf18338bbc9",
+    "test/PairedFormal.lean": "eeb9e9b370f93eb2bff5ef5c1d87844d74501d354804bf20ac899f20f9c186bf",
+    "test/PairedUpload.lean": "6fd754838f7c6520c9d766b55c537019f08e786c124c423bac21e17ac11866cb",
+    "scripts/check-paired-formal.py": "329ff9944630966236a945a5f5b25936f158ec138922d8a971eda5252682fff0"
+  },
+  "component_contract": {
+    "path": "physical/fixtures/sram-trust/contract.json",
+    "sha256": "94991cceae146b8df17ab60a785b6ec73227c42a74b2ecb0648deea477a1600e",
+    "scope": "Unchanged external component proposal; the memory behavior law remains an explicit theorem parameter."
+  },
+  "implementation": "PairedValidation; actual PairedController graph equations",
+  "boundary": "Decoded commands, after an initializing edge; arbitrary prior registers, SRAM contents and Q.",
+  "upload_words": 290,
+  "storage_slots": {
+    "parameters": 32,
+    "sram_rows": 256,
+    "boot": 1,
+    "idle": 1
+  },
+  "reachable_modules": 215,
+  "audit": {
+    "declarations": 16152,
+    "theorems": 8219,
+    "standard_axioms_only": true
+  },
+  "validation_seconds": 26.192,
+  "cad_seconds": 0,
+  "inputs_unchanged": true,
+  "checks": {
+    "default_library_build": true,
+    "whole_library_axiom_audit": true,
+    "injected_axiom_rejected": true,
+    "contract_controls": {
+      "kernel_checked_examples": 9,
+      "graph_nodes": 45,
+      "arbitrary_initial_memory": true,
+      "write_holds_q": true,
+      "enabled_read_updates_q": true,
+      "idle_holds_q": true,
+      "undefined_read_unspecified": true,
+      "illegal_mode_excluded": true,
+      "reversed_and_duplicate_bindings_rejected": true
+    },
+    "upload_controls": {
+      "retained_core": true,
+      "complete_images": 2,
+      "arbitrary_initial_registers_contents_and_q": true,
+      "malformed_parameter_row_boot_idle_rejected": true,
+      "short_extra_busy_abort_reset_restart_controls": true,
+      "all_32_parameters_256_rows_boot_idle_checked": true,
+      "prior_active_bank_preserved": true,
+      "row_255_read_and_old_q_checked": true,
+      "initialization_invalidates_without_clearing": true
+    },
+    "existing_invalid_graph_controls": 4,
+    "existing_schedule_proof": true,
+    "both_core_constructors_succeed": true,
+    "proved_package_matches_emitter": true,
+    "retained_artifacts": {
+      "core.mlir": {
+        "path": "build/validation/paired-validation-check-06/core.mlir",
+        "sha256": "b8a873066f76e5373911e5ebf8638b13214da98d5e28623af5b467e4d921810c"
+      },
+      "chip.mlir": {
+        "path": "build/validation/paired-validation-check-06/chip.mlir",
+        "sha256": "921fa76e8e668da06eeeb52f6aa1d6b44f73d3a678cef0e2def856b835d05feb"
+      },
+      "assembly.json": {
+        "path": "build/validation/paired-validation-check-06/assembly.json",
+        "sha256": "dd47935675bc4ff72a6cfde8f794c43dd1cb683a70550a2e182a0895c1079641"
+      }
+    },
+    "retained_identity_checked": true,
+    "full_protocol_executable_suite_rerun": false
+  },
+  "proved": [
+    "Accepted-prefix and active-image transcript invariants survive every decoded command history after initialization.",
+    "Actual graph acceptance, commit and next loader control agree with the 290-word protocol.",
+    "Actual parameter, SRAM, boot and idle writes agree with transcript offsets; every write preserves the previously active bank.",
+    "A valid bank matches a complete accepted transcript, permitting arbitrary initial register values, contents and Q.",
+    "Erasing the mathematical ledger yields exactly the closed graph/SRAM model; no hardware storage is added.",
+    "The retained typed controller inherits the upload invariant for any memory implementation satisfying the explicit contract.",
+    "An image certificate for the accepted transcript establishes equality with every stored slot and E64 successor correspondence.",
+    "An enabled read with a valid image returns the loaded row for the token installed on that edge."
+  ],
+  "open": [
+    "Usable Q, cached parameters and current-token agreement through every running edge, including Q-hold cycles.",
+    "Actual dispatch, capture, guard, countdown, wait, timeout and terminal cycles refine certified E64 execution.",
+    "Compose the complete timed execution theorem with package behavior and qualified host delivery.",
+    "RTL emitter, CIRCT, synthesis and complete source-to-GDS correspondence.",
+    "Exact-version SRAM internal/electrical qualification and compatible fast timing.",
+    "Accepted A/B and clean-source physical replay."
+  ],
+  "no_global_memory_axiom": true,
+  "arbitrary_initial_registers_contents_and_q": true,
+  "complete_timed_paired_refinement": false,
+  "physical_qualification": false,
+  "A_accepted": false,
+  "B_admitted": false,
+  "campaign": {
+    "cad_seconds_total": 8412.163,
+    "A_full_routes_used": 3,
+    "B_full_routes_reserved": 2
+  }
+}

@@ -1,0 +1,46 @@
+************************************************************************
+* 
+* Copyright 2023 IHP PDK Authors
+* 
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*    https://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* 
+************************************************************************
+
+* Context fixture: selected source subcircuits; boundary name mapped to GDS.
+.SUBCKT RM_IHPSG13_1P_DLY_2 A Z VDD VSS
+	XIDL<2> D<7> Z VDD VSS / RSC_IHPSG13_CDLYX1 
+	XIDL<1> D<6> D<7> VDD VSS / RSC_IHPSG13_CDLYX1 
+	XIDM<6> D<5> D<6> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+	XIDM<5> D<4> D<5> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+	XIDM<4> D<3> D<4> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+	XIDM<3> D<2> D<3> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+	XIDM<2> D<1> D<2> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+	XIDM<1> A D<1> VDD VSS / RSC_IHPSG13_CDLYX1_DUMMY 
+.ENDS
+
+.SUBCKT RSC_IHPSG13_CDLYX1 A Z VDD VSS
+MN1 net010 net032 VSS VSS sg13_lv_nmos m=1 w=300.0n l=160.00n ng=1  nrd=0 nrs=0
+MN2 net032 A net014 VSS sg13_lv_nmos m=1 w=300.0n l=160.00n ng=1 nrd=0  nrs=0
+MN0 Z net032 net010 VSS sg13_lv_nmos m=1 w=300.0n l=160.00n ng=1 nrd=0  nrs=0
+MN3 net014 A VSS VSS sg13_lv_nmos m=1 w=300.0n l=160.00n ng=1 nrd=0  nrs=0
+MP1 Z net032 net07 VDD sg13_lv_pmos m=1 w=720.00n l=160.00n ng=1 nrd=0  nrs=0
+MP3 net011 A VDD VDD sg13_lv_pmos m=1 w=720.00n l=160.00n ng=1 nrd=0  nrs=0
+MP0 net07 net032 VDD VDD sg13_lv_pmos m=1 w=720.00n l=160.00n ng=1  nrd=0 nrs=0
+MP2 net032 A net011 VDD sg13_lv_pmos m=1 w=720.00n l=160.00n ng=1 nrd=0  nrs=0
+.ENDS
+
+.SUBCKT RSC_IHPSG13_CDLYX1_DUMMY A Z VDD VSS
+MN0 vss_r vdd_r VSS VSS sg13_lv_nmos m=1 w=2.49u l=300.0n ng=3 nrd=0  nrs=0
+MP0 vdd_r vss_r VDD VDD sg13_lv_pmos m=1 w=3.24u l=640.00n ng=2 nrd=0  nrs=0
+R0 Z A lvsres w=2.6e-07 l=6e-07
+.ENDS

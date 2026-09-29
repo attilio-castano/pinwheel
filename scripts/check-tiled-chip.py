@@ -11,6 +11,7 @@ import time
 from validation_run import Commands, fresh_directory, sha
 from map_distribution import BUFFER, boundary_loads, distribute
 from tiled_chip import MACRO, controller_wrapper, state_cut, project_pruned_state, chip_metrics, macro_binding
+from synthesis_hierarchy import tiled_policy, check_hierarchy, check_flattening
 
 ROOT = Path(__file__).resolve().parents[1]
 CAD = ROOT / 'build/tools/oss-cad-suite/bin'
@@ -49,23 +50,30 @@ def main():
                         help='Combine controller and selection logic while retaining the 32 storage tiles')
     parser.add_argument('--fanout-limit', type=int, choices=(8, 10), default=10,
                         help='Eight uses the library budget during candidate ABC mapping and aggregate distribution; ten reproduces the historical flow')
+    parser.add_argument('--compare-flat', action='store_true',
+                        help='Also map the identical tiled RTL flat, using the same candidate mapping and load budget (requires combined)')
     args = parser.parse_args()
     combined = args.organization == 'combined'
     if args.fanout_limit == 8 and not combined:
         parser.error('Fanout eight requires the combined boundary to account for every consumer')
+    if args.compare_flat and not combined:
+        parser.error('Flat comparison requires the combined organization and aggregate load accounting')
     out = fresh_directory(ROOT / 'build/storage/tiled-chip', args.tag)
     started = time.monotonic()
     run = Commands(ROOT, out, default_timeout=180)
     sources = [*sorted((ROOT / 'Pinwheel').rglob('*.lean')), ROOT / 'Pinwheel.lean', ROOT / 'lakefile.toml',
                ROOT / 'lean-toolchain', *[ROOT / 'test' / p for p in (
                    'TiledChipEmit.lean', 'MapTileEmit.lean', 'ProofAudit.lean', 'sram_chip.sv', 'chip_tb.sv',
-                   'sram_core_tb.sv', 'test_tiled_chip.py', 'test_map_distribution.py', 'test_map_tile.py')],
+                   'sram_core_tb.sv', 'test_tiled_chip.py', 'test_map_distribution.py', 'test_map_tile.py',
+                   'test_synthesis_hierarchy.py')],
                *[ROOT / 'scripts' / p for p in ('check-tiled-chip.py', 'tiled_chip.py', 'check-map-tile.py',
-                   'map_distribution.py', 'validation_run.py', 'process_group.py')],
+                   'map_distribution.py', 'synthesis_hierarchy.py', 'mapped_physical.py',
+                   'validation_run.py', 'process_group.py')],
                *[ROOT / 'tools' / p for p in ('technology-library.json', 'storage-macros.json')]]
     report = {'schema': 1, 'status': 'running', 'commands': run.records, 'variants': {},
               'per_command_timeout_seconds': 180, 'organization': args.organization,
-              'candidate_fanout_limit': args.fanout_limit}
+              'candidate_fanout_limit': args.fanout_limit, 'compare_flat': args.compare_flat,
+              'hierarchy': {}}
     def yosys(label, lines):
         return map_check.yosys_command(run, out, label, lines)
     try:
@@ -174,6 +182,18 @@ def main():
         files = {part: [out / f'{part}-logic.sv', out / f'{part}-wrapper.sv',
                         *[out / 'map' / (p + '.sv') for p in ('tiled', 'tile', 'glue')]] for part in ('chip', 'core')}
         wrapper = ROOT / 'test/sram_chip.sv'
+        variants = ('baseline', 'tiled', 'tiled-flat') if args.compare_flat else ('baseline', 'tiled')
+        policies = {variant: tiled_policy(variant, args.organization, map_manifest) for variant in variants}
+        report['hierarchy_policies'] = {name: policy.describe() for name, policy in policies.items()}
+        if args.compare_flat:
+            report['matched_hierarchy_inputs'] = {
+                'variants': ['tiled', 'tiled-flat'],
+                'rtl_sha256': {str(p.relative_to(ROOT)): sha(p) for p in [*files['chip'], wrapper]},
+                'candidate_fanout_limit': args.fanout_limit,
+                'changed_factor': 'Retain storage tiles through mapping versus flatten before mapping.',
+                'controls': 'Identical RTL, tools, corner libraries, macro views, ABC recipe and aggregate sink budget. '
+                            'Distribution accounts for the resulting hierarchy in each variant.',
+                'scope': 'Mapped cell cost, depth and load comparison with functional checks; no physical timing or placement.'}
         top = {'chip': 'pinwheel_sram_controller', 'core': 'pinwheel_sram_core_controller'}
         reference_cuts = {}
         report['state_projections'] = {}
@@ -236,35 +256,36 @@ def main():
             suffix = 'typ_1p20V_25C' if corner == 'typical' else 'slow_1p08V_125C'
             macro_lib = VIEWS / f'{MACRO}_{suffix}.lib'
             comparison = {}
-            for variant in ('baseline', 'tiled'):
+            for variant in variants:
                 prefix = variant + '-' + corner
+                candidate = variant != 'baseline'
+                policy = policies[variant]
                 rtl = [out / 'baseline-chip.sv'] if variant == 'baseline' else files['chip']
                 mapped = out / (prefix + '-hierarchy.json')
                 lines = [f'read_liberty -lib {library}', f'read_liberty -lib {macro_lib}',
                          'read_verilog -sv -DSRAM_HYBRID ' + ' '.join(map(str, rtl + [wrapper])),
                          'hierarchy -check -top tt_um_pinwheel']
-                if variant == 'tiled' and combined:
-                    lines.append('setattr -mod -set keep_hierarchy 1 pinwheel_map_tile')
-                lines += ['synth -top tt_um_pinwheel -noabc' + (' -flatten' if variant == 'baseline' or combined else ''),
+                lines += policy.mapping_commands() + [
                          f'dfflibmap -liberty {library}',
                          f'abc -liberty {library} -constr {out}/abc.constr -D 10000' +
-                         (f' -script {out}/abc-eight.script' if variant == 'tiled' and args.fanout_limit == 8 else ''),
+                         (f' -script {out}/abc-eight.script' if candidate and args.fanout_limit == 8 else ''),
                          'clean', 'check -assert', f'write_json {mapped}']
                 yosys(prefix + '-map', lines)
                 data = json.loads(mapped.read_text())
-                if variant == 'tiled':
+                hierarchy = {'mapped': check_hierarchy(data, policy)}
+                report['hierarchy'][prefix] = hierarchy
+                if candidate:
                     boundary = 'tt_um_pinwheel' if combined else 'pinwheel_map_tiled'
                     banks = {('controller.map.' if combined else '') + t['name']: (t['bank'], t['low'])
-                             for t in map_manifest['tiles']}
+                             for t in map_manifest['tiles']} if variant == 'tiled' else {}
                     original_children = {n: m for n, m in data['modules'].items() if n != boundary}
                     fixed = ()
                     if combined:
-                        top_cells = data['modules'][boundary]['cells']
-                        if {n for n, c in top_cells.items() if c['type'] == 'pinwheel_map_tile'} != set(banks):
-                            raise ValueError('Combined boundary lost a typed storage tile')
                         fixed = set(macro_binding(data['modules'][boundary]))
-                        comparison['retained_tile'] = map_check.metrics(data['modules']['pinwheel_map_tile'],
-                            data['modules'], 'tile', map_manifest)
+                        if variant == 'tiled':
+                            comparison['retained_tile'] = map_check.metrics(data['modules']['pinwheel_map_tile'],
+                                data['modules'], 'tile', map_manifest)
+                    loads_before = boundary_loads(data['modules'], boundary, fixed)
                     data, distribution = distribute(data, boundary, banks, args.fanout_limit, fixed_cells=fixed)
                     if any(data['modules'][n] != value for n, value in original_children.items()):
                         raise ValueError('Distribution changed a child or library')
@@ -272,18 +293,27 @@ def main():
                         raise ValueError('Distribution boundary still exceeds budget')
                     distribution.update(boundary=boundary, fixed_cells=sorted(fixed), child_modules_unchanged=True)
                     write(out / (prefix + '-distribution.json'), distribution)
-                    comparison['distribution'] = distribution
+                    comparison['distribution' if variant == 'tiled' else 'flat_distribution'] = distribution
+                    loads_path = out / (prefix + '-boundary-loads.json')
+                    write(loads_path, dict(boundary=boundary, before=loads_before,
+                        after=boundary_loads(data['modules'], boundary, fixed),
+                        scope='Actual mapped signal sink pins, including child loads; excludes clock and wire capacitance.'))
+                    hierarchy['boundary_loads'] = loads_path.name
+                    hierarchy['distributed'] = check_hierarchy(data, policy)
                     mapped = out / (prefix + '-buffered.json')
                     write(mapped, data)
+                retained = data
                 flat = out / (prefix + '.json')
                 yosys(prefix + '-flatten', [f'read_json {mapped}',
-                    *(['setattr -mod -unset keep_hierarchy pinwheel_map_tile'] if variant == 'tiled' and combined else []),
-                    'hierarchy -check -top tt_um_pinwheel',
-                    'flatten', 'clean', 'check -assert', f'write_json {flat}',
-                    f'write_verilog -noattr -noexpr {out}/{prefix}.v'])
+                    *policy.flatten_commands(), f'write_json {flat}',
+                    f'write_verilog -norename -noattr -noexpr {out}/{prefix}.v'])
                 data = json.loads(flat.read_text())
+                identity_path = out / (prefix + '-flatten-identity.json')
+                write(identity_path, check_flattening(retained, data))
+                hierarchy['flat_connection_identity'] = identity_path.name
+                hierarchy['flattened'] = check_hierarchy(data, policies['baseline'])
                 metrics = chip_metrics(data)
-                if variant == 'tiled' and combined:
+                if candidate and combined:
                     if metrics['maximum_signal_fanout'] > args.fanout_limit:
                         raise ValueError('Complete-chip fanout exceeds the aggregate budget')
                     unbuffered = json.loads((out / (prefix + '-hierarchy.json')).read_text())
@@ -306,15 +336,19 @@ def main():
                     f'read_verilog {out}/{prefix}.v', 'hierarchy -check -top tt_um_pinwheel',
                     'check -assert', f'write_json {readback}'])
                 back = json.loads(readback.read_text())
+                readback_identity = out / (prefix + '-readback-identity.json')
+                write(readback_identity, check_flattening(retained, back, verilog_readback=True))
+                hierarchy['readback_connection_identity'] = readback_identity.name
+                hierarchy['readback'] = check_hierarchy(back, policies['baseline'])
                 if chip_metrics(back) != metrics:
                     raise ValueError('Independent mapped Verilog metrics disagree')
                 if variant == 'baseline':
                     _, baseline_projection = state_cut(back['modules']['tt_um_pinwheel'], manifest['chip'], False, True)
                     comparison['baseline_state_projection'] = baseline_projection
                 else:
-                    comparison['tiled_state_projection'] = prove(back, 'chip', prefix + '-proof', package=True, lib=library,
+                    comparison[variant + '_state_projection'] = prove(back, 'chip', prefix + '-proof', package=True, lib=library,
                         expected_pruned=comparison['baseline_state_projection']['pruned_state_positions'])
-                    if combined and corner == 'typical':
+                    if variant == 'tiled' and combined and corner == 'typical':
                         prove(back, 'chip', prefix + '-inverted-buffer-negative', package=True, lib=library,
                             expected_pruned=comparison['baseline_state_projection']['pruned_state_positions'],
                             invert_buffer=distribution['trees'][0]['buffers'][0]['cell'])
@@ -327,15 +361,29 @@ def main():
                 tiled['standard_cell_area_um2'] <= base['standard_cell_area_um2'] and
                 max(tiled['macro_address_depth'].values()) < max(base['macro_address_depth'].values()) and
                 tiled['maximum_signal_fanout'] <= base['maximum_signal_fanout'])
+            if args.compare_flat:
+                flat = comparison['tiled-flat']
+                comparison['matched_hierarchy'] = {
+                    'retained_minus_flat_area_um2': round(tiled['standard_cell_area_um2'] - flat['standard_cell_area_um2'], 4),
+                    'retained_minus_flat_area_percent': round(100 * (tiled['standard_cell_area_um2'] / flat['standard_cell_area_um2'] - 1), 6),
+                    'retained_macro_address_depth': tiled['macro_address_depth'],
+                    'flat_macro_address_depth': flat['macro_address_depth'],
+                    'retained_maximum_signal_fanout': tiled['maximum_signal_fanout'],
+                    'flat_maximum_signal_fanout': flat['maximum_signal_fanout'],
+                    'physical_winner_established': False}
             report['variants'][corner] = comparison
 
         model = [VIEWS / (MACRO + '.v'), VIEWS / 'RM_IHPSG13_1P_core_behavioral_bm_bist.v']
         report['pin_oracles'] = {}
-        for label, part, rtl, bindings, cells in [
+        oracle_variants = [
                 ('core-rtl-oracle', 'core', files['core'], [wrapper], []),
                 ('chip-rtl-oracle', 'chip', files['chip'], [wrapper], []),
                 ('typical-gates-oracle', 'chip', [out / 'tiled-typical.v'], [], cell_models),
-                ('slow-gates-oracle', 'chip', [out / 'tiled-slow.v'], [], cell_models)]:
+                ('slow-gates-oracle', 'chip', [out / 'tiled-slow.v'], [], cell_models)]
+        if args.compare_flat:
+            oracle_variants += [(corner + '-flat-gates-oracle', 'chip', [out / f'tiled-flat-{corner}.v'], [], cell_models)
+                                for corner in ('typical', 'slow')]
+        for label, part, rtl, bindings, cells in oracle_variants:
             tb = ROOT / 'test' / ('chip_tb.sv' if part == 'chip' else 'sram_core_tb.sv')
             top_tb = 'chip_tb' if part == 'chip' else 'sram_core_tb'
             run([CAD / 'iverilog', '-g2012', '-DFUNCTIONAL', '-DSRAM_HYBRID', '-s', top_tb,

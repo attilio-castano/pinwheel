@@ -1,0 +1,166 @@
+{
+  "schema": 1,
+  "date": "2026-09-27",
+  "status": "proposed_external_component_contract",
+  "enforced_by_production_admission": false,
+  "macro": "RM_IHPSG13_1P_512x64_c2_bm_bist",
+  "technology": "ihp-sg13cmos5l",
+  "pdk_revision": "2bbec755dc67ca3db0261c3d6163e15735d66710",
+  "library_alias": {
+    "path": "ihp-sg13cmos5l/libs.ref/sg13cmos5l_sram",
+    "target": "../../ihp-sg13g2/libs.ref/sg13g2_sram",
+    "git_blob": "39b7bae9a81ac42304e3dc37b2c77f5d723f325a"
+  },
+  "supplied_views": [
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/cdl/RM_IHPSG13_1P_512x64_c2_bm_bist.cdl",
+      "sha256": "825b831a246e1158fd4409501533874c21bc39f0f82369b2128947ffa2632999",
+      "git_blob": "66ea944d2365896a6b05421be2b4968b048997f9",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/gds/RM_IHPSG13_1P_512x64_c2_bm_bist.gds",
+      "sha256": "5ea60dd194594f6587906683e5ca44759d6e847297b99085a4cb889e046cce03",
+      "git_blob": "eb089ec553013e0f5e7f27ba3b9466c6a934f855",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.lef",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/lef/RM_IHPSG13_1P_512x64_c2_bm_bist.lef",
+      "sha256": "93aced65c204c35cc3a9e0315048346df149b6957fd95787df1a2ee0b1bb274b",
+      "git_blob": "17e2fc041662030146d180c96aa5dddfb83e8170",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist.v",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_512x64_c2_bm_bist.v",
+      "sha256": "8aab6b018ab7dd90014fede340923bac537f610b9c2d9a082ab1c2d953b118c7",
+      "git_blob": "ef79add36edbdcbdfa6f59a2272cebfe5f55038e",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist_slow_1p08V_125C.lib",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_512x64_c2_bm_bist_slow_1p08V_125C.lib",
+      "sha256": "c09bbbe341c8ce701933d645198a4045e2cb53f5621842534722876e8243cb40",
+      "git_blob": "1f907e69cd0578b77ffc7395bb503eb796d66154",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist_fast_1p32V_m55C.lib",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_512x64_c2_bm_bist_fast_1p32V_m55C.lib",
+      "sha256": "b78f5deea88222e3993a148588d96a187b84c767e8d31cdc988c8cf746bd05c0",
+      "git_blob": "c0cb7226a32f173d41815d4bc51b67b621836a0f",
+      "matches": true
+    },
+    {
+      "path": "build/physical/paired-buffer-balance-01/experiments/paired-balance-place-02/macro/RM_IHPSG13_1P_512x64_c2_bm_bist_typ_1p20V_25C.lib",
+      "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/lib/RM_IHPSG13_1P_512x64_c2_bm_bist_typ_1p20V_25C.lib",
+      "sha256": "1fb769565599938fa7179d4d62f1d49ffd356ef0fdf7277d705ca19486b27b0e",
+      "git_blob": "e4e636e5e785521f0c949addd73372bdd5982278",
+      "matches": true
+    }
+  ],
+  "behavioral_dependency": {
+    "path": "build/storage/macros/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+    "sha256": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12",
+    "upstream_path": "ihp-sg13g2/libs.ref/sg13g2_sram/verilog/RM_IHPSG13_1P_core_behavioral_bm_bist.v",
+    "git_blob": "f6f009ecca80cb999fec6b76d2dbe54bf76a5957",
+    "matches": true
+  },
+  "interface": {
+    "address_bits": 9,
+    "data_bits": 64,
+    "words": 512,
+    "physical_pins": 351,
+    "fixed_inputs": {
+      "A_MEN": 1,
+      "A_DLY": 1,
+      "A_BM": "64 ones",
+      "A_BIST_EN": 0,
+      "A_BIST_CLK": 0,
+      "A_BIST_MEN": 0,
+      "A_BIST_WEN": 0,
+      "A_BIST_REN": 0,
+      "A_BIST_ADDR": "9 zeroes",
+      "A_BIST_DIN": "64 zeroes",
+      "A_BIST_BM": "64 zeroes"
+    },
+    "power": {
+      "VDD": "VPWR",
+      "VDDARRAY": "VPWR",
+      "VSS": "VGND"
+    },
+    "binding_checker": "scripts/paired_mapping.py:binding",
+    "allowed_operating_modes": [
+      "read: A_REN=1, A_WEN=0",
+      "write: A_REN=0, A_WEN=1",
+      "idle: A_REN=0, A_WEN=0"
+    ],
+    "simultaneous_read_write": "Outside the proposed restricted contract; the supplied model supports write-through, which must not be confused with write-holds-Q."
+  },
+  "digital_obligation": {
+    "status": "external_behavior_premise_and_pending_paired_refinement",
+    "clock": "posedge A_CLK; observe Q after the modeled edge update",
+    "read": "At enabled non-write edge, Q becomes contents[A_ADDR]; contents unchanged.",
+    "write": "At enabled full-mask write with REN=0, contents[A_ADDR] becomes A_DIN; Q holds; other words unchanged.",
+    "idle": "With REN=WEN=0, contents and Q hold.",
+    "initialization": "Contents and Q arbitrary at power-up; no SRAM reset-clear assumption. Readiness/coverage must establish all observed words.",
+    "evidence": "Pinned behavioral core and macro documentation; existing hybrid array proofs and paired simulation/binding checks are distinct evidence.",
+    "no_new_lean_axiom": true,
+    "complete_timed_paired_refinement": false
+  },
+  "evidence_levels": [
+    {
+      "id": "identity",
+      "status": "verified",
+      "claim": "All seven physical/interface/timing views and the simulation dependency match the pinned PDK tree."
+    },
+    {
+      "id": "component_boundary",
+      "status": "measured",
+      "claim": "Native abstract boundary preserves 351 terminals; signal and power fault controls fail; internal width edit is invisible."
+    },
+    {
+      "id": "chip_integration",
+      "status": "previously_measured_and_hash_revalidated",
+      "claim": "Retained exported-GDS chip boundary LVS passes with two wiring faults rejected; exact macro geometry preservation is separately receipted."
+    },
+    {
+      "id": "macro_internals",
+      "status": "unqualified_locally",
+      "claim": "Strict original-width tile refuses; eight hierarchical types remain mismatched. Abstraction does not repair these failures."
+    },
+    {
+      "id": "external_qualification",
+      "status": "missing_exact_version_evidence",
+      "claim": "IHP reported commercial SRAM LVS success historically. This is supporting precedent, not a report for these exact hashes, CMOS5L stack, operating point and signoff scope."
+    },
+    {
+      "id": "timing",
+      "status": "fast_pair_unqualified",
+      "claim": "Retained timing is positive, but SRAM fast at -55C versus standard cells at -40C needs a supported pair or justified bound."
+    },
+    {
+      "id": "formal_composition",
+      "status": "pending",
+      "claim": "Complete paired controller/loading/package timed correspondence has not been proved."
+    }
+  ],
+  "development_policy": "Proceed with explicit conditional digital-contract work while preserving all physical qualification obligations. This file is a reviewable proposal, not a waiver or admission command.",
+  "acceptance_requirements": [
+    "Exact-version vendor or organizer qualification, including the intended lvsres/deck interpretation and internal checking scope, or independently qualified internal verification.",
+    "Validated wrapper timing/mode/initialization obligations, compatible corners and existing layout/electrical/power checks.",
+    "Complete timed paired refinement and clean-source replay before complete design iteration is claimed."
+  ],
+  "forbidden_inferences": [
+    "A boundary LVS pass proves SRAM internal layout or stored behavior.",
+    "A different macro silicon test qualifies this exact 512x64 CMOS5L macro.",
+    "Source identity resolves the .260 versus .200 um width interpretation."
+  ],
+  "full_sram_qualification": false,
+  "full_gds_signoff": false,
+  "A_accepted": false,
+  "B_admitted": false
+}
