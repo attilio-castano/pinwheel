@@ -45,7 +45,7 @@ examples provide context without replacing the [current decision](research/statu
 | [Architecture and ownership](architecture.md) | The design layers, Lean's role, module map, and boundaries between proof and implementation. |
 | [Complete design iteration](research/complete-design-iteration.md) | The planned path to one physically validated, formally connected reference and a second capacity variant through the same workflow. |
 | [Local iteration continuation](research/local-iteration-continuation.md) | Authorized local work on portable current-A replay, fresh-source interpretation and a concrete power request, with physical acceptance still separate. |
-| [Established-protocol continuation](research/established-protocol-continuation.md) | Delivered four-mode SPI, bounded I²C writes/bus clear and resolved package wiring; next is UART supervisor/buffer circuitry. |
+| [Established-protocol continuation](research/established-protocol-continuation.md) | Delivered four-mode SPI, bounded I²C writes/bus clear, UART supervisor/result ownership and resolved package wiring. |
 | [Processor verification obligations](engine/processor-verification.md) | The acceptance gates from protocol semantics to a physically feasible chip. |
 | [Submission plan](submission-plan.md) | The dated hybrid implementation sequence and durable acceptance gates; use research status for the current work queue. |
 | [Chip-contract integration record](history/branch-integration.md) | A dated account of how retained interfaces and experimental branches were reviewed together. |
@@ -69,6 +69,7 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | [Bounded I²C writes and bus clear](protocols/i2c-capabilities.md) | One/two payload bytes, first-NACK STOP, nine-attempt recovery, universal digital proofs and fresh resolved-wire evidence. |
 | [One-byte UART receive](protocols/uart-receive.md) | Receive timing, framing errors, compiler proofs, and storage integration. |
 | [UART link proof](uart-link.md) | TX-to-RX roundtrip under independent clocks and bounded observation delay. |
+| [UART supervisor and retained results](protocols/uart-supervisor.md) | Opt-in circuitry, one-edge mailbox phase, explicit ownership and fresh RTL/wire receipts. |
 | [Continuous UART receive](protocols/uart-stream.md) | Rearming, one-slot result buffering, overrun accounting, and finite frame sequences. |
 | [UART stream with unequal clocks](protocols/uart-stream-clocks.md) | The clock and observation-age bounds needed for finite-stream correctness. |
 | [Input latency](input-latency.md) | The pin-level latency parameter and its consequences for UART, SPI, and I²C programs. |

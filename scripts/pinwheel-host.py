@@ -10,6 +10,7 @@ from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
+import re
 import time
 
 from host_demo import compiler_images, demonstrate
@@ -32,7 +33,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('action', choices=['demo', 'run'])
     parser.add_argument('--tag', required=True)
-    parser.add_argument('--backend', choices=['hybrid', 'reference', 'paired', 'paired-validation'], default='hybrid')
+    parser.add_argument('--backend', choices=['hybrid', 'reference', 'paired', 'paired-validation', 'paired-stream'], default='hybrid')
     parser.add_argument('--program', type=Path)
     parser.add_argument('--incoming', type=lambda n: int(n, 0), default=3)
     parser.add_argument('--timeout-cycles', type=int, default=100_000)
@@ -42,7 +43,7 @@ def main():
     if not 0 <= args.incoming < 4 or args.timeout_cycles < 0:
         parser.error('incoming must be 0..3 and timeout-cycles nonnegative')
     out = fresh_directory(ROOT / 'build/host', args.tag)
-    paired = args.backend in ('paired', 'paired-validation')
+    paired = args.backend in ('paired', 'paired-validation', 'paired-stream')
     image_format = PAIRED_FORMAT if paired else LEGACY_FORMAT
     started = time.monotonic()
     program = program_digest = None
@@ -63,23 +64,37 @@ def main():
         *[ROOT / 'scripts' / n for n in ['pinwheel-host.py', 'pinwheel_host.py',
            'pinwheel_sim.py', 'host_demo.py', 'pad_io.py', 'pad_peers.py', 'validation_run.py', 'process_group.py',
            'paired_execution.py', 'paired_image_certificate.py', 'execution-vectors.py']]]
+    if args.backend == 'paired-stream':
+        sources += [ROOT/'test/PairedStreamEmit.lean',ROOT/'tools/hardware-toolchain.json',
+                    ROOT/'scripts/protocol_tool_closure.py']
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     run = Commands(ROOT, out, default_timeout=600)
+    lean_version = None
+    if args.backend == 'paired-stream':
+        lean_version = run(['lake','env','lean','--version'],'lean-version').strip()
+        version = (ROOT/'lean-toolchain').read_text().strip().split(':v')[-1]
+        if not re.search(r'Lean \(version '+re.escape(version)+r'(?:,|\s)',lean_version):
+            raise RuntimeError('Lean version differs from the pinned paired-stream toolchain')
     emitter = 'sram_chip_emit' if args.backend == 'hybrid' else 'chip_emit'
     run(['lake', 'build', 'Pinwheel', *([] if paired else [emitter])], 'build')
     run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', 'test/Loader.lean'], 'compile-programs')
     images_bytes, images_digest = capture_input(ROOT / 'build/loader/images.txt', out / 'compiler-images.txt')
     captured_inputs['compiler-images.txt'] = images_digest
     if paired:
-        source = 'test/PairedValidationEmit.lean' if args.backend == 'paired-validation' else 'test/PairedChipEmit.lean'
+        source = {'paired-validation':'test/PairedValidationEmit.lean',
+                  'paired-stream':'test/PairedStreamEmit.lean'}.get(args.backend,'test/PairedChipEmit.lean')
         run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', source, out], 'emit')
     else:
         run([ROOT / '.lake/build/bin' / emitter, out], 'emit')
     circt = ROOT / 'build/tools/firtool-1.159.0/bin/circt-opt'
     cad = ROOT / 'build/tools/oss-cad-suite/bin'
+    closure = None
+    if args.backend == 'paired-stream':
+        from protocol_tool_closure import ProtocolToolClosure
+        closure = ProtocolToolClosure(ROOT,circt,cad/'iverilog',cad/'vvp')
     tool_hashes = {str(path.relative_to(ROOT)): sha(path.resolve())
-                   for path in (circt, cad / 'iverilog', cad / 'vvp')}
-    mlir = out / {'hybrid': 'hybrid-chip.mlir', 'paired': 'chip.mlir', 'paired-validation': 'chip.mlir',
+                   for path in (closure.files if closure else (circt, cad / 'iverilog', cad / 'vvp'))}
+    mlir = out / {'hybrid': 'hybrid-chip.mlir', 'paired': 'chip.mlir', 'paired-validation': 'chip.mlir', 'paired-stream': 'chip.mlir',
                   'reference': 'chip-twoport-result.mlir'}[args.backend]
     mlir_digest = sha(mlir)
     rtl = run([circt, mlir, '--canonicalize', '--lower-seq-to-sv', '--lower-hw-to-sv',
@@ -89,7 +104,7 @@ def main():
     rtl_digest = sha(design)
     extra, defines = [], []
     models = {}
-    if args.backend in ('hybrid', 'paired', 'paired-validation'):
+    if args.backend in ('hybrid', 'paired', 'paired-validation', 'paired-stream'):
         lock = json.loads((ROOT / 'tools/storage-macros.json').read_text())
         size = 512 if paired else 64
         names = [f'RM_IHPSG13_1P_{size}x64_c2_bm_bist.v', 'RM_IHPSG13_1P_core_behavioral_bm_bist.v']
@@ -102,9 +117,11 @@ def main():
         extra = [ROOT / ('test/paired_chip.sv' if paired else 'test/sram_chip.sv'),
                  *[ROOT / 'build/storage/macros' / name for name in names]]
     executable = out / 'host.vvp'
-    run([cad / 'iverilog', '-g2012', *defines, '-s', 'host_bridge', '-o', executable,
+    run([cad / 'iverilog', *(['-B',closure.backend] if closure else []), '-g2012', *defines, '-s', 'host_bridge', '-o', executable,
          design, ROOT / 'test/host_bridge.sv', *extra], 'compile-simulation')
     executable_digest = sha(executable)
+    if closure:
+        closure.check_executable(executable)
     certificates = []
 
     def certify(name, source):
@@ -157,6 +174,10 @@ def main():
     for name, digest in captured_inputs.items():
         if sha(out / name) != digest:
             raise RuntimeError('Captured input changed after consumption: ' + name)
+    if closure:
+        if run(['lake','env','lean','--version'],'lean-version-closeout').strip() != lean_version:
+            raise RuntimeError('Lean version changed during paired-stream demonstration')
+        closure.closeout()
     report = dict(backend=args.backend, action=args.action, source_sha256=hashes,
         image_certificates=certificates,
         rtl_sha256=rtl_digest, mlir_sha256=mlir_digest, executable_sha256=executable_digest,
@@ -167,6 +188,11 @@ def main():
         elapsed_seconds=round(time.monotonic() - started, 3), **result,
         boundary='Interactive host transactions on one unchanged RTL chip. Protocol peers inspect only '
                  'external pins. No FPGA/board, analog timing, SRAM refinement or physical closure claim.')
+    if closure:
+        report['bundled_tool_closure'] = closure.identity()
+        report['lean_version'] = lean_version
+        report['lean_version_unchanged'] = True
+        report['stream_channel'] = 'One-shot demo/run with supervisor disabled; streaming requires explicit Host API.'
     (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps({k: v for k, v in report.items() if k in ['backend', 'cases', 'result', 'edges',
           'frames', 'upload_time_ms_at_assumed_clock', 'elapsed_seconds']}, indent=2))

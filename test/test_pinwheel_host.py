@@ -6,7 +6,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
-from pinwheel_host import Host, Pins, Program, LEGACY_FORMAT, PAIRED_FORMAT
+from pinwheel_host import Command, Host, Pins, Program, Result, uart_result, LEGACY_FORMAT, PAIRED_FORMAT
 
 
 class Transport:
@@ -22,6 +22,65 @@ class Transport:
 
 
 class HostTests(unittest.TestCase):
+    def test_uart_result_distinguishes_stop_from_engine_completion(self):
+        for stop in (0, 1):
+            decoded = uart_result(Result(0x53 | stop << 9, 5, True, False))
+            self.assertEqual((decoded.byte, decoded.framing_error, decoded.overrun), (0x53, not stop, True))
+        for result in (Result(0x100, 5, False, False), Result(0x400, 5, False, False), Result(0x53, 6, False, False)):
+            with self.subTest(result=result), self.assertRaisesRegex(RuntimeError, 'canonical RX capture'):
+                uart_result(result)
+
+    def test_failed_uart_decode_preserves_fault_and_noncanonical_packet(self):
+        for low, high, status in [(0x53,0,0xd1),(0x53,0,0xf1),(0x53,1,0xb1),(0x53,4,0xb1)]:
+            transport=Transport((2,low,high,status))
+            host=Host(transport)
+            with self.subTest(status=status, high=high), self.assertRaisesRegex(RuntimeError,'canonical RX capture'):
+                host.read_uart_result(timeout_cycles=0)
+            self.assertFalse(any(ui&32 for ui in transport.controls))
+            result=host.read_result(timeout_cycles=0,consume=False)
+            self.assertEqual((result.samples,result.outcome),(low|(high<<8),status>>5))
+
+    def test_stream_channel_requires_explicit_host_opt_in(self):
+        transport = Transport((3, 0x53, 2, 0xb9))
+        host = Host(transport)
+        with self.assertRaisesRegex(RuntimeError, 'interface version'):
+            host.result_status()
+        self.assertEqual(host.stream_status(), 0xb9)
+        result = host.read_uart_result(timeout_cycles=0, consume=False)
+        self.assertEqual((result.byte, result.framing_error), (0x53, False))
+        for action in (lambda: host.upload(Program((4,), 0)), host.start):
+            with self.assertRaisesRegex(RuntimeError, 'Stop the UART stream'):
+                action()
+
+    def test_stream_commands_arm_stop_and_preserve_old_result(self):
+        class StreamTransport(Transport):
+            def __init__(self):
+                super().__init__((2, 0x53, 2, 0xb1))
+            def apply(self, command, data):
+                self.assertion = command
+                if command == Command.STREAM:
+                    enabled = data == 1
+                    self.pages = (3 if enabled else 2, 0x53, 2, 0xb9 if enabled else 0xb1)
+        transport = StreamTransport()
+        host = Host(transport)
+        host.command = transport.apply
+        host.arm_uart_stream()
+        self.assertTrue(host.stream_status() & 8)
+        # Stopping is not mailbox consumption and does not discard the old byte.
+        host.stop_uart_stream()
+        self.assertEqual(host.read_uart_result(timeout_cycles=0, consume=False).byte, 0x53)
+        self.assertFalse(any(ui & 32 for ui in transport.controls))
+
+    def test_stream_arm_preconditions_and_rejection(self):
+        for live, status in ((0, 0x10), (3, 0x10), (6, 0x10), (2, 0x18), (2, 0x14)):
+            host = Host(Transport((live, 0, 0, status)))
+            with self.subTest(live=live, status=status), self.assertRaises(RuntimeError):
+                host.arm_uart_stream()
+        host = Host(Transport((2, 0, 0, 0x10)))
+        host.command = lambda *args: None
+        with self.assertRaisesRegex(RuntimeError, 'rejected UART'):
+            host.arm_uart_stream()
+
     def test_formats_cannot_be_cross_uploaded(self):
         for target, supplied in [(LEGACY_FORMAT, PAIRED_FORMAT), (PAIRED_FORMAT, LEGACY_FORMAT)]:
             transport = Transport()

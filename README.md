@@ -75,8 +75,9 @@ integration inputs and activity evidence needed for the next physical decision.
 The current [protocol continuation](docs/research/established-protocol-continuation.md)
 delivers SPI modes 0–3, one/two-byte transfers, bounded I²C writes and bus clear,
 with separate physical input/output pads and resolved-wire checks. The I²C
-programs reuse the same chip circuitry. UART supervisor/buffer integration is
-next; retained physical results keep their original source identity.
+programs reuse the SPI circuitry. An opt-in [UART receive supervisor](docs/protocols/uart-supervisor.md)
+adds automatic rearm and explicit retained-result/drop ownership. Retained
+physical results keep their original source identity.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

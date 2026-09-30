@@ -16,6 +16,12 @@ with a protocol-specific external board fixture.
 The [SPI continuation](research/established-protocol-continuation.md) adds modes
 0–3 and one- or two-byte transfers on this contract.
 
+The opt-in [UART supervisor](protocols/uart-supervisor.md) uses the explicit
+`paired-stream` backend. It deliberately owns a committed UART RX program until
+STOP/reset or a terminal timeout/fault, with automatic rearm, retained results
+and sticky dropped-arrival overrun. Its page-3 bit 3 reports enabled state; bit 4 retains the interface
+marker. Ordinary upload/start calls refuse enabled streaming.
+
 ## Reproduce the demonstration
 
 Install the pinned Lean/CIRCT/Icarus tools described in [development](development.md).

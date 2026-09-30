@@ -101,6 +101,9 @@ import Pinwheel.Hardware.Storage.PairedRuntime
 import Pinwheel.Hardware.Storage.PairedTimed
 import Pinwheel.Hardware.Storage.PairedHost
 import Pinwheel.Hardware.Storage.PairedSession
+import Pinwheel.Hardware.HostResultBuffer
+import Pinwheel.UART.BufferedSupervisor
+import Pinwheel.Hardware.Storage.PairedStream
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.

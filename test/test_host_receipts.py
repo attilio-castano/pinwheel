@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import host_demo
 from pinwheel_host import Program, Result
+from protocol_tool_closure import CIRCT_SEEDS, ICARUS_SEEDS, VPI_NAMES
 from test_host_demo import ScriptedHost
 
 
@@ -31,10 +32,11 @@ class HostReceiptTests(unittest.TestCase):
         sources = ['Pinwheel.lean', 'Pinwheel/Fixture.lean', 'lakefile.toml', 'lake-manifest.json', 'lean-toolchain',
                    'test/Loader.lean', 'test/ChipEmit.lean', 'test/SramChipEmit.lean',
                    'test/sram_chip.sv', 'test/host_bridge.sv',
-                   'test/PairedChipEmit.lean', 'test/PairedValidationEmit.lean', 'test/paired_chip.sv',
+                   'test/PairedChipEmit.lean', 'test/PairedValidationEmit.lean', 'test/PairedStreamEmit.lean', 'test/paired_chip.sv',
                    *['scripts/' + name for name in ('pinwheel-host.py', 'pinwheel_host.py',
                      'pinwheel_sim.py', 'host_demo.py', 'pad_io.py', 'pad_peers.py', 'validation_run.py', 'process_group.py',
                      'paired_execution.py', 'paired_image_certificate.py', 'execution-vectors.py')],
+                   'scripts/protocol_tool_closure.py',
                    'build/tools/firtool-1.159.0/bin/circt-opt',
                    'build/tools/oss-cad-suite/bin/iverilog', 'build/tools/oss-cad-suite/bin/vvp']
         for name in sources:
@@ -59,6 +61,7 @@ class HostReceiptTests(unittest.TestCase):
         self.images_bytes = b'\n'.join(name + b' 0 0 0 4' for name in
                                       (b'uart', b'spi', b'i2c-read', b'uart-rx')) + b'\n'
         self.events = []
+        self.commands = []
         self.programs = []
         self.sequence = 0
         self.demo_fault = None
@@ -73,6 +76,16 @@ class HostReceiptTests(unittest.TestCase):
         self.sequence += 1
         tag = 'case-' + str(self.sequence)
         self.out = self.root / 'build/host' / tag
+        if backend == 'paired-stream':
+            (self.root/'lean-toolchain').write_text('leanprover/lean4:v4.33.1\n')
+            (self.root/'tools/hardware-toolchain.json').write_text(json.dumps(dict(platform='darwin-arm64',packages={
+                'circt':dict(directory='firtool-1.159.0'),'oss-cad-suite':dict(directory='oss-cad-suite')})))
+            for package,names in [('firtool-1.159.0',CIRCT_SEEDS),
+                    ('oss-cad-suite',(*ICARUS_SEEDS,*('lib/ivl/'+n for n in VPI_NAMES)))]:
+                for name in names:
+                    path=self.root/'build/tools'/package/name
+                    path.parent.mkdir(parents=True,exist_ok=True)
+                    path.write_text('Fixture closure '+package+'/'+name)
 
         class Commands:
             def __init__(self, *args, **kwargs):
@@ -80,6 +93,7 @@ class HostReceiptTests(unittest.TestCase):
 
             def __call__(self, command, label):
                 self.records.append(dict(label=label, stubbed=True))
+                test.commands.append(list(map(str,command)))
                 if label == 'compile-programs':
                     test.images_path.parent.mkdir(parents=True, exist_ok=True)
                     test.images_path.write_bytes(test.images_bytes)
@@ -87,10 +101,14 @@ class HostReceiptTests(unittest.TestCase):
                     (test.out / 'chip-twoport-result.mlir').write_text('Fixture MLIR')
                     (test.out / 'chip.mlir').write_text('Fixture MLIR')
                 if label == 'compile-simulation':
-                    (test.out / 'host.vvp').write_text('Fixture executable')
+                    modules=''.join(':vpi_module "'+str(test.root/'build/tools/oss-cad-suite/lib/ivl'/n)+'";\n'
+                                    for n in sorted(VPI_NAMES)) if backend=='paired-stream' else ''
+                    (test.out / 'host.vvp').write_text(modules+'Fixture executable')
                 test.event(label)
                 if label == 'export':
                     return 'Fixture RTL'
+                if label in ('lean-version','lean-version-closeout'):
+                    return 'Lean (version 4.33.1, arm64-apple-darwin)'
                 return 'Paired image certificate: kernel checked; standard axioms only.'
 
         class Simulation:
@@ -236,6 +254,34 @@ class HostReceiptTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(RuntimeError, 'Captured input changed'):
                 self.run_cli()
             self.assertFalse((self.out / 'report.json').exists())
+
+    def test_paired_stream_backend_is_explicit_and_uses_additive_emitter_and_tool_closure(self):
+        Program((4,),0,image_format='pinwheel-paired32-v1').write(self.program_path)
+        report=self.run_cli(backend='paired-stream')
+        emitter=next(c for c in self.commands if 'test/PairedStreamEmit.lean' in c)
+        self.assertIn('--run',emitter)
+        compiler=next(c for c in self.commands if c[0].endswith('/iverilog'))
+        self.assertIn('-B',compiler)
+        self.assertGreater(report['bundled_tool_closure']['inventory_files'],3)
+        self.assertEqual(report['image_format'],'pinwheel-paired32-v1')
+        self.assertTrue(report['lean_version_unchanged'])
+        self.assertIn('supervisor disabled',report['stream_channel'])
+        self.assertEqual(report['backend'],'paired-stream')
+
+    def test_paired_stream_backend_refuses_legacy_format_before_any_build(self):
+        with self.assertRaisesRegex(ValueError,'format does not match --backend'):
+            self.run_cli(backend='paired-stream')
+        self.assertEqual(self.events,[])
+
+    def test_paired_stream_actual_tool_payload_mutation_cannot_publish_receipt(self):
+        Program((4,),0,image_format='pinwheel-paired32-v1').write(self.program_path)
+        def mutate(event):
+            if event=='read-result':
+                (self.root/'build/tools/oss-cad-suite/libexec/vvp').write_text('Changed behind stable launcher')
+        self.on_event=mutate
+        with self.assertRaisesRegex(RuntimeError,'Tool changed'):
+            self.run_cli(backend='paired-stream')
+        self.assertFalse((self.out/'report.json').exists())
 
 
 class ReceiptOptimizationModes(unittest.TestCase):

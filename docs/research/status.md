@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-09-29 after delivery of bounded I²C writes and bus clear,
-following four-mode SPI and the resolved package interface.
+Updated 2026-09-29 after delivery of UART supervisor/buffer circuitry,
+following bounded I²C writes/bus clear and four-mode SPI.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -29,11 +29,18 @@ write and twelve recovery wire cases, guarded faults, reset/reload and recovery
 followed by a write on the same engine pass. Fresh chip MLIR/RTL are identical
 to the SPI checkpoint; no circuitry or physical evidence changes.
 
-**Next local capability: UART supervisor and one-entry result-buffer circuitry.**
+**Delivered local capability: [UART supervisor and retained results](../protocols/uart-supervisor.md).**
+The opt-in paired wrapper adds one enabled bit, explicit arm/stop, automatic
+rearm and retain-old/drop-newest ownership with sticky overrun. Conditional
+UART/E64 and exact mailbox proofs, finite resolved streams, reset/fault/ownership
+controls and fresh universal circuit interpretation pass.
+
+**Next local gate: compose continuous initialized package execution.**
+Connect certified active UART-image ownership, supervisor controls, SRAM responses
+and pre-edge mailbox correspondence through every initialized paired history.
+The present component theorem and finite wire gate keep those premises separate.
 The [established-protocol continuation](established-protocol-continuation.md)
-sets the sequence and result-capacity limits. Define unread-result, rearm and
-dropped-arrival ownership before connecting the modeled supervisor to RTL.
-New protocols are deferred.
+retains the result-capacity decision for two-byte I²C reads. New protocols are deferred.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

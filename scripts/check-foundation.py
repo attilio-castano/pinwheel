@@ -28,6 +28,7 @@ SUITES = [
     ('StructuralTiming', []), ('Enables', []), ('Latency', []), ('Memory', []),
     ('SerialUpload', []),
     ('HostResult', []),
+    ('UARTBufferedSupervisor', []), ('PairedStream', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
@@ -124,7 +125,7 @@ def main():
                   untrusted_axiom_rejected=True, commands=commands, source_sha256=hashes,
                   elapsed_seconds=round(time.monotonic()-started, 3),
                   boundary='Fresh-source-capable Lean/model gate, compiled UART link/stream timing and continuous RX supervisor, '
-                           'independent PWL lookup and UART RX/E64 oracle. '
+                           'independent PWL lookup and UART RX/E64 oracle, retained-result ownership and stream-control circuitry. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')
