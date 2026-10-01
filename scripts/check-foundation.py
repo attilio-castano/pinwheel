@@ -17,7 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = [
     ('UART', []), ('UARTRx', []), ('UARTLink', []), ('UARTStream', []), ('UARTStreamClocks', []),
-    ('SPI', []), ('Engine', []), ('I2C', []), ('Reactive', []),
+    ('SPI', []), ('SPITransactions', []),
+    ('Engine', []), ('I2C', []), ('I2CWriteTransactions', []), ('I2CRecovery', []), ('Reactive', []),
     ('Control', []), ('CompiledI2C', []), ('Counted', []),
     ('CompiledI2C', ['--looped']), ('Binary', []),
     ('CompiledI2C', ['--binary-explicit']), ('CompiledI2C', ['--binary-looped']),
@@ -27,7 +28,9 @@ SUITES = [
     ('StructuralTiming', []), ('Enables', []), ('Latency', []), ('Memory', []),
     ('SerialUpload', []),
     ('HostResult', []),
+    ('UARTBufferedSupervisor', []), ('PairedStream', []),
 ]
+KERNEL_SUITES = ['ChipPinMap']
 
 
 def sha(path):
@@ -104,6 +107,8 @@ def main():
     mutant.write_text(audit_text.removesuffix('#audit_pinwheel\n') +
                       'axiom Pinwheel.CI.untrusted : False\n#audit_pinwheel\n')
     run([*lean, mutant], 'reject-untrusted-axiom', reject=True)
+    for name in KERNEL_SUITES:
+        run([*lean, f'test/{name}.lean'], name + '-kernel')
     for name, flags in SUITES:
         label = name + (('-' + flags[0].removeprefix('--')) if flags else '')
         run([*lean, '--run', f'test/{name}.lean', *flags], label)
@@ -116,10 +121,11 @@ def main():
             raise RuntimeError(f'Source changed during validation: {path}')
     report = dict(lean=version, modules=modules, audited_declarations=int(counts[1]),
                   audited_theorems=int(counts[2]), executable_suites=len(SUITES),
+                  kernel_suites=len(KERNEL_SUITES),
                   untrusted_axiom_rejected=True, commands=commands, source_sha256=hashes,
                   elapsed_seconds=round(time.monotonic()-started, 3),
                   boundary='Fresh-source-capable Lean/model gate, compiled UART link/stream timing and continuous RX supervisor, '
-                           'independent PWL lookup and UART RX/E64 oracle. '
+                           'independent PWL lookup and UART RX/E64 oracle, retained-result ownership and stream-control circuitry. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')

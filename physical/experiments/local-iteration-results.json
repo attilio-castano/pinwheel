@@ -1,0 +1,174 @@
+{
+  "schema": 1,
+  "status": "completed_local_continuation",
+  "date": "2026-09-29",
+  "base_commit": "727525954dd170cc41279acdf99aecaa35493e87",
+  "branch": "codex/portable-paired-iteration",
+  "study": "docs/research/local-iteration-continuation.md",
+  "A_accepted": false,
+  "B_admitted": false,
+  "complete_design_iteration": false,
+  "blockers": [
+    "sram_qualification",
+    "timing_conditions",
+    "package_power"
+  ],
+  "sources": [
+    {
+      "path": "scripts/check-current-a.py",
+      "sha256": "be8f817f8d88f460d62df4b29087161ac0d971c85fd200aa3573173de3aff0d6"
+    },
+    {
+      "path": "scripts/retained_evidence.py",
+      "sha256": "a92d5e6608d5238c14b36443a14d367a5a837a20589b68d61852f11c84ffe636"
+    },
+    {
+      "path": "scripts/check-paired-readback.py",
+      "sha256": "55c0f5747034aef92a210aebc8e48c9a740409413308843180deb4038544f810"
+    },
+    {
+      "path": "scripts/validation_run.py",
+      "sha256": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013"
+    },
+    {
+      "path": "scripts/process_group.py",
+      "sha256": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175"
+    },
+    {
+      "path": "test/test_current_a.py",
+      "sha256": "cfeba92f32e2a91dd6533fdd600941f1d26d0cb991d86d8146145d36950b2e02"
+    },
+    {
+      "path": "test/test_retained_evidence.py",
+      "sha256": "00e32ae3290d1b24eb326b80bb8e64c013e2e4f68cc4d736fe0cb06e98cbdce5"
+    },
+    {
+      "path": "test/test_paired_readback.py",
+      "sha256": "808a78b8b0d532f3934afa048d8b3b5ba96cc957cf5871715cf11ba02363a46d"
+    },
+    {
+      "path": "test/test_package_power_contract.py",
+      "sha256": "a88477efaed738a0e9571aaf24e22b6950dc5b23f54eef313ea66e29466a0a8d"
+    },
+    {
+      "path": "physical/fixtures/package-power-contract/contract.json",
+      "sha256": "e92cc6386fedb9606f6d278ee514b6ace67ae87456f3f40ce9a09ac6a687393c"
+    },
+    {
+      "path": "physical/fixtures/package-power-contract/validate.py",
+      "sha256": "0beb5c06d0908876c4ee29b90c032179bb72f22b825c42d3fab27eb3421744e6"
+    }
+  ],
+  "retained_replay": {
+    "status": "assessed",
+    "physical_evidence": "hash-bound retained reuse, not rerun",
+    "report": {
+      "path": "build/validation/current-a-portable-02/report.json",
+      "sha256": "b9896d8699dccd92c11fb5c6448395531e422e815486922c3a5b2ead24f83bad"
+    },
+    "assessment": {
+      "path": "build/validation/current-a-portable-02/assessment-report.json",
+      "sha256": "73fbc19ae5c3d02c146aa259fa1e9f67ba553be44b90f6f8ff7f528d6b3ab90b"
+    },
+    "inventory": {
+      "path": "build/portable/current-a-20260929-02/inventory.json",
+      "sha256": "0f9b8ac036f26872f47fbd440120f1617800125790dd2a5ea59f7a7da3ff2ac4"
+    },
+    "files": 749,
+    "bytes": 602275665,
+    "current_design_format_pins": 247,
+    "fresh_kernel_certificates": 8,
+    "assessment_seconds": 103.385,
+    "snapshot_build_cache_reused": true,
+    "preserved_failure": {
+      "path": "build/validation/current-a-portable-01/report.json",
+      "sha256": "fc20f9933fb0ccef0c548e5c747ea86d6b450f4cb93d5f7920401ed28e930c8f"
+    },
+    "preliminary_inventory": {
+      "path": "build/retained/current-a-20260929-01/inventory.json",
+      "sha256": "1b8fb1104af8f7aaee5e74873a9fa394ea1ad08ac371d01502e0a1b515619116"
+    }
+  },
+  "fresh_source_interpretation": {
+    "status": "passed",
+    "report": {
+      "path": "build/validation/paired-source-readback-01/report.json",
+      "sha256": "e98d86f7dce0c5d2c0722166b638a942291517232b73fc24468b0b62012bea79"
+    },
+    "retained_candidate_identity_checked": false,
+    "seconds": 475.265,
+    "frozen_inputs": 252,
+    "local_equalities": 1082,
+    "commands": 72,
+    "artifacts": 160,
+    "unchanged_reimports": 2,
+    "actual_rtl_corruption_rejections": 6,
+    "axiom_corruption_rejections": 2
+  },
+  "package_power_request": {
+    "status": "incomplete_request",
+    "report": {
+      "path": "build/validation/package-power-request-02.json",
+      "sha256": "a840316d0af9f8c7a80b8c128da486ad2c3f2fbff5e958ca9e25ca1c85926276"
+    },
+    "original_location_report": {
+      "path": "build/validation/package-power-request-01.json",
+      "sha256": "a840316d0af9f8c7a80b8c128da486ad2c3f2fbff5e958ca9e25ca1c85926276"
+    },
+    "support_inventory": {
+      "path": "build/portable/package-power-support-01/inventory.json",
+      "sha256": "5b2a88132c0b700185f73fce2b4f7feeac5d61d64b03609e7ce3b2c30dcc3214"
+    },
+    "saved_references_verified": 14,
+    "copied_support_files": 13,
+    "missing_inputs": [
+      "parent_geometry",
+      "source_voltage",
+      "external_impedance",
+      "operating_envelope",
+      "activity_envelope",
+      "supported_local_supply",
+      "transient_allowance",
+      "analysis_conditions"
+    ],
+    "qualification": false,
+    "ready_for_scoped_analysis": false,
+    "boundary": "Saved finite activity summaries only; no raw waveform replay or native analysis."
+  },
+  "dependency_recovery": {
+    "tools": {
+      "path": "build/tools/installed.json",
+      "sha256": "e3200069764a8e44bfda73b3f0e45d28460d9e436da76ece0969510e55f4ef8a"
+    },
+    "standard_cells": {
+      "path": "build/recovery/pdk-recovery.json",
+      "sha256": "acfb1a39f6de2444ca7f56aa70e13d03de6b3c55882009272e1434563ca4a210"
+    },
+    "scope": "Pinned official release bytes recovered locally; historical inputs match unchanged hashes."
+  },
+  "validation": {
+    "report": {
+      "path": "build/validation/local-iteration-python-02/report.json",
+      "sha256": "9ff54f8c90e16b7b3e864f9ce2134963ff61059683a062d17c9721e17e43d36c"
+    },
+    "prior_before_alias_fix": {
+      "path": "build/validation/local-iteration-python-01/report.json",
+      "sha256": "a5a6ba9379938273474668f993a6046c8e310e80a933431cda48f1f881b71b97"
+    },
+    "full_python_tests": 599,
+    "passed": 597,
+    "platform_skips": 2,
+    "optimized_focused_tests": 46,
+    "clean_current_lean_build_jobs": 233,
+    "independent_review": "Final read-only review found no actionable issue in preserved-root alias or replay wrapper controls."
+  },
+  "campaign": {
+    "this_continuation_cad_seconds": 0,
+    "cumulative_cad_seconds": 8843.12,
+    "campaign_limit_seconds": 28800,
+    "A_full_flow_attempts_used": 3,
+    "B_full_flow_attempts_reserved": 2,
+    "additional_full_routes": 0
+  },
+  "boundary": "Local evidence portability, source proof execution and checked request preparation. No new physical qualification, accepted A/B, remote-host replay, clean-source physical rebuild or publication."
+}

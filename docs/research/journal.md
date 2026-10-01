@@ -14,7 +14,8 @@ or interrupted work.
 
 | Topic | Entry points |
 | --- | --- |
-| Protocols and pin timing | [Continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
+| Local iteration and retained replay | [Portable A, fresh-source interpretation and power request](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request) |
+| Protocols and pin timing | [Bounded I²C writes and bus clear](#2026-09-29--bounded-i2c-writes-and-bus-clear), [Four-mode SPI and resolved package wires](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
 | Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
 | Storage and fetch | [Memory abstraction](#2026-09-17-memory-abstraction), [complete SRAM comparison](#2026-09-19-complete-sram-chip-comparison), [closed-loop execution](#2026-09-21--verified-placement-corridors-and-closed-loop-sram-execution) |
 | Map and execution architecture | [Complete map slice](#2026-09-21--complete-map-slice-and-read-tree-tile-costs), [tiled chip](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen), [paired controller](#2026-09-22--complete-paired-controller-exact-mapped-replay-and-macro-timing) |
@@ -33,6 +34,7 @@ or interrupted work.
 | 2026-09-22 | [Complete-chip tile](#2026-09-22--complete-chip-tile-integration-passes-function-fails-structural-screen) | Mapping, library load, placement, compact/paired execution |
 | 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
 | 2026-09-26 | [SRAM distribution and write timing](#2026-09-26--sram-distribution-and-write-timing), [competing read paths](#2026-09-26--control-distribution-and-competing-read-paths), [coordinated placement](#2026-09-26--coordinated-status-and-decode-placement) | Complete watchlist, matched coarse routes, rejected regional placement and clock/hold diagnosis |
+| 2026-09-29 | [Portable continuation](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request), [four-mode SPI](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [bounded I²C](#2026-09-29--bounded-i2c-writes-and-bus-clear) | Replay portability, power-request boundary and established-protocol capabilities |
 
 ## Future receipt shape
 
@@ -5661,3 +5663,238 @@ physical/PDK/Lean edit occurs, and no route is added. A remains unaccepted; B is
 not admitted. Actual parent connection geometry, supply tolerance/impedance and
 an applicable activity/voltage envelope are the next power inputs. SRAM and
 fast-condition provider questions remain unresolved and unsent.
+
+## 2026-09-29 — portable A, fresh-source interpretation and power request
+
+Completed the authorized [local continuation](local-iteration-continuation.md)
+from merged source `727525954dd170cc41279acdf99aecaa35493e87` on local branch
+`codex/portable-paired-iteration`. The
+[manifest](../../physical/experiments/local-iteration-results.json) binds new
+checker/test sources and all decisive receipts. Original acceptance and
+physical-study manifests are unchanged; no external publication occurred.
+
+The retained source had dangling tool/PDK links after an earlier worktree's
+retirement. Pinned official archives and five standard-cell files were recovered
+locally with exact historical hashes. Complete preflight recovered **749 files /
+602,275,665 bytes**; a preliminary 742-file inventory remains recorded. The final
+bundle moved from `build/retained/` to `build/portable/` before replay. The first
+replay compiled its snapshot but refused an absolute own-root receipt reference;
+the failed `current-a-portable-01` output is retained. The correction derives the
+original root from eight commands in the pinned saved assessment, allows only
+indexed lookups and changes no receipt/inventory bytes.
+
+The corrected `current-a-portable-02` receipt SHA-256 is
+`b9896d8699dccd92c11fb5c6448395531e422e815486922c3a5b2ead24f83bad`.
+All 247 current design/format pins match the snapshot; its build invocation
+reuses the first run's `.lake` cache. **Eight fresh kernel certificates** pass.
+The detailed preserved-checker assessment verifies 740 inputs in **103.385 s**,
+returning exactly SRAM qualification, timing conditions and package power as
+blockers. Every bundle input remains unchanged. This demonstrates local
+assessment portability with retained physical observations, not a physical rerun.
+
+Fresh-source interpretation independently emits both modules and passes
+**1,082 local equalities**, the complete session proof and standard-axiom
+audits in **475.265 s**. Both unchanged reimports pass; six actual RTL corruptions
+and two axiom injections reject. All 252 frozen inputs remain unchanged. Its
+schema-2 receipt SHA-256 is
+`e98d86f7dce0c5d2c0722166b638a942291517232b73fc24468b0b62012bea79`;
+it makes no retained-candidate identity claim.
+
+The power request verifies all 14 retained references from both the surviving
+source and recovered local support with identical assessments. Thirteen files
+are copied read-only; the unchanged tracked power manifest supplies the final
+reference. `package-power-request-02.json` SHA-256 is
+`a840316d0af9f8c7a80b8c128da486ad2c3f2fbff5e958ca9e25ca1c85926276`.
+Exactly eight absent input classes remain explicit; request readiness and
+qualification stay false. Three finite activity summaries are reused; no
+waveform simulation or native power analysis is added.
+
+The current clean Lean build passes **233 jobs**. Before the alias correction,
+the Python suite passed 596 tests with two skips; final regression passes
+**599 total / 597 passed / two platform skips**, with all **46 focused optimized
+controls** passing. The final regression receipt SHA-256 is
+`9ff54f8c90e16b7b3e864f9ce2134963ff61059683a062d17c9721e17e43d36c`.
+Independent final read-only review found no actionable alias/wrapper finding.
+The owning studies record commands and limits. Ignored bundles and receipts
+remain local dependencies, not durable remote backups.
+
+This continuation adds **zero CAD seconds and zero routes**. Campaign use
+remains **8,843.120 seconds**, with three A routes used and two B routes reserved.
+A remains unaccepted, B unadmitted and the complete iteration unfinished.
+The next local work is a declared activity domain and supported bound; component
+qualification and actual integration-source inputs remain external gates.
+
+## 2026-09-29 — Four-mode SPI and a resolved package interface
+
+Delivered the first [established-protocol capability](established-protocol-continuation.md)
+on `codex/spi-transaction-refinement`, based on `8ba6b4f`. The
+[SPI study](../protocols/spi-transactions.md) defines all four modes, one or two
+bytes, continuous CS and the explicit sampler/peer-delay boundary. Universal
+reference/compiler/canonical-E64 proofs cover all logical periods and payloads.
+The fixed output mapping moves to `uio2–4`, separating SPI MOSI and MISO.
+I²C uses explicit pulled-up drive/sense joins; UART and SPI leave them open.
+
+The resolved-wire gate passes twenty matrix cases, delay and capture-slot
+controls, active reset/recovery and nine legacy cases in **547.180 s**.
+Thirty-three valid program uploads have fresh certificates. Fresh interpretation
+passes **1,082 equalities** and component/session proofs in **429.635 s**;
+the exact chip RTL and MLIR match the wire gate. The foundation passes all
+**33 executable suites and one kernel suite**, with **8,924 theorems** using
+standard axioms only, in **1,489.273 s**. Python passes **621 of 623 tests**
+with two platform skips and all **39 optimized controls** in **20.584 s**.
+All frozen input inventories match at final closeout. Receipt hashes and
+source/artifact identities are bound by the additive
+[manifest](../../physical/experiments/established-protocol-results.json).
+
+Preserved attempts precede these passes. `pads-regression-probe-01` stopped
+after emission because the exact behavioral SRAM model cache was missing.
+After hash-checked recovery from the unchanged movable bundle,
+`pads-regression-probe-02` ran the legacy cases and correctly refused a changed
+SPI compiler source at closeout. Both invoked `pinwheel-host.py demo` with
+`--backend paired-validation` and their respective tags; logs/artifacts remain,
+but full failure stderr was not saved. The first SPI wire gate was interrupted
+with exit 130 to add retained-copy identity checks. The first final Python
+wrapper passed its tests but failed metadata parsing on singular `test`; it
+produced no success receipt. Corrected fresh-tag runs pass. Earlier discovery
+logs retain the old mock-format failure and incomplete test-stub syntax error.
+
+The current-A replay refuses this new source inventory before reusing historical
+physical evidence. All **216 historical manifest/fixture artifacts** retain
+their base bytes; only the catalog README changes. This is a new digital
+candidate with **zero additional CAD or routes**. SRAM qualification,
+compatible fast timing and package power remain open; campaign consumption
+stays **8,843.120 seconds**, three A routes used and two B routes reserved.
+The next capability is bounded I²C recovery and two-payload-byte writes.
+
+## 2026-09-29 — Bounded I2C writes and bus clear
+
+Delivered the second [established-protocol capability](established-protocol-continuation.md)
+from SPI base `2837d3e`. The [study](../protocols/i2c-capabilities.md) records
+one/two payload bytes, independent ACK flags and first-NACK STOP, plus a separate
+nine-attempt bus-clear program. Universal Lean compiler/reference and canonical
+E64 proofs cover all timing configurations and consumed digital histories.
+External target timing/liveness and raw-wire recovery-edge bounds remain separate.
+
+| Gate | Recorded result |
+| --- | --- |
+| Lean foundation | 240 imported modules, 18,070 declarations and 9,589 theorems audited with standard axioms only; 35 executable suites, one kernel suite and untrusted-axiom rejection pass. 329 frozen inputs match; 1417.024 s. |
+| Resolved I²C package wires | 11 write and 12 bus-clear cases pass, including every first-NACK position, release on pulses 1–9, stuck SDA, bounded stretching and stuck-SCL timeout. Two guarded-high fault controls, active-write reset/reload and clear→write without an intervening chip reset pass. 33 fresh kernel certificates cover 29 positive/control uploads and four canonical altered programs rejected for the intended reasons. 264 frozen source inputs, tools, models, consumed copies and generated artifacts match; 458.911 s. |
+| Fresh RTL meaning | 1,082 equalities, component and initialized-session proofs, standard-axiom audits, two unchanged controls, six RTL corruptions and two axiom injections pass. 261 frozen inputs match; 361.618 s. Emitted chip MLIR/RTL equal both the wire gate and the prior SPI checkpoint byte-for-byte. |
+| Python regression | 648 tests: 646 pass and 2 platform skips. All 47 focused optimized tests pass; 218 frozen inputs match; 19.764 s. |
+
+Receipt paths and SHA-256 digests:
+
+- `build/host/i2c-capabilities-02/report.json`: `424a2a04ac205c7c0e0a634285e4bfab04573937ac5b9099069ac942edb3da28`.
+- `build/validation/i2c-source-readback-01/report.json`: `d08dfa4dfb8cc8ef1bac879855f7750299cc4b0dd76b40cff31d0080e7bd8461`.
+- `build/validation/i2c-foundation-01/report.json`: `14f62b2513860f637ae61912837b317220abd83a2dc725eebc13c34b7fd93256`.
+- `build/validation/i2c-python-final-02/report.json`: `4482526985c2b9e5870f3791c193d17e5b0bb72388941fee37f316f47d2cfad4`.
+
+The initial debug probe passed two-byte transmission and pulse9 release against
+the existing SPI executable. A second probe failed its intended guarded-high
+control because immediate SCL resinking could hide the high pulse from the
+sampler. Holding high for two callback intervals fixed the test; a new debug
+probe and the final fresh gate both produce fault status 7. All probe logs and
+debug observations remain retained and hash-bound in the additive
+[manifest](../../physical/experiments/i2c-capability-results.json). Debug runs
+supply no fresh upload or emitted-chip receipt.
+
+The first fresh wire gate passed, but final review found it fingerprinted only
+the simulator launch wrappers. Its passing receipt and the first Python receipt
+remain preserved with their narrower source/tool scope. The final rerun binds
+actual executables, backend assets, VPI modules and bundled shared libraries,
+checks inventory membership at closeout, and pins the compiler backend. System
+libraries, loader, shell and Python/Lean runtimes remain environment assumptions.
+
+The final gate freshly emitted/compiled the chip and certified all actual
+uploads. Its MLIR/RTL match both the new interpreted artifact and the prior SPI
+checkpoint exactly; VVP executable byte equality is not claimed. Four semantic
+mutants receive valid image certificates and then fail capture, status,
+open-drain or wire-order checks. Wrong capture/status controls preserve clean
+bytes, ACKs and STOP, so their rejection is distinct from a wire-format defect.
+Recovery→write uses the same Host/Simulation, consumes both retained mailboxes
+and has zero intervening chip resets. It does not retry an interrupted write.
+
+All 217 prior physical manifests/fixtures match base `2837d3e`, with only an
+additive catalog README row. Zero physical CAD seconds/routes are added; campaign
+use stays at 8,843.120 seconds, three A routes used and two B reserved. SRAM
+internal qualification, compatible fast-corner conditions and package power
+remain open. Next: UART supervisor/buffer circuitry, with unread-result,
+rearm and dropped-arrival ownership resolved before integration.
+
+## 2026-09-29 — UART supervisor and retained-result circuitry
+
+Delivered the third [established-protocol capability](established-protocol-continuation.md)
+from I²C base `855fd94`. The [study](../protocols/uart-supervisor.md) records the
+command-6 arm/stop policy, one-bit session ownership, delayed actual-mailbox
+arrival, drop-newest/sticky-overrun rule and abort-versus-flush boundary.
+
+| Gate | Recorded result |
+| --- | --- |
+| Lean foundation | 243 imported modules, 18,852 declarations and 9,893 theorems audited with standard axioms only; 37 executable suites, 1 kernel suite and untrusted-axiom rejection pass. 336 frozen inputs match; 1453.859 s. |
+| Resolved UART/package wires | 30 resolved UART stream cases, 148 actual-mailbox RTL vectors, 8 session controls, terminal modes 6/7, three disabled legacy protocols and 5 semantic corruptions pass. 23 fresh upload and 18 sufficient-clock certificates are kernel checked. 269 source inputs and consumed tool/model/generated bytes match; 371.490 s. |
+| Fresh RTL meaning | 984 local equalities connect fresh core/package RTL to the typed circuit for all represented state and inputs; exhaustive state/output proofs and standard-axiom audits pass. Two unchanged controls, eight RTL corruptions and two axiom injections behave as expected. 555 frozen source inputs match; 1098.455 s. Wire/readback chip MLIR and RTL are byte-identical. |
+| Python regression | 703 tests: 701 pass and 2 platform skips. All 89 focused optimized tests pass; 224 frozen inputs match; 23.563 s. |
+
+Receipt paths and SHA-256 digests:
+
+- `build/host/uart-stream-supervisor-01/report.json`: `af4a463714e1370bb200c3207c82b48e81713b16c99db3ef95c2b6c7ebcae88a`.
+- `build/validation/uart-source-readback-03/report.json`: `1f3989a082e70df6ca441602bbbcbd90646e2c195ee2b22027cec94b133c2f28`.
+- `build/validation/uart-foundation-01/report.json`: `c743215b04dcbef09317ad4a2138e4d4eda509b2f397f8c812324d6a46e4066c`.
+- `build/validation/uart-python-final-03/report.json`: `766280a1de4331d634ff4a6bf617fc82bce42095f310bb7726a6516591b230cd`.
+
+The fresh wire peer schedules external values independently of DUT state.
+Review corrected host decoding to validate before consumption and extended
+reservation coverage to the stopped edge immediately after completion. The
+RTL interpretation freezes imported JSON before consumption and rejects changes
+after import; all exact state, parameter banks, captures and ports are covered.
+Successful generated `.olean` imports are frozen before and after dependent
+compilation and again at closeout; tampering is rejected.
+
+Development attempts and the failed first full RTL proof gate remain in the
+manifest. That gate reached the final core equalities, then the kernel rejected
+a generated tactic proof term involving a closed 64-bit equality. The corrected
+helper generalizes wide scalar equality predicates and applies small
+kernel-proved facts for one-bit guards and padding before proving the surrounding
+logic. The imported equalities retain the same circuit claim. Large package
+helpers use typed let-bound DAG propositions whose exact expansion is checked
+against the original expression trees; their Lean statement text is compacted.
+Unchanged endpoint connections must still close in the kernel, and the
+standard-axiom audit retains the same trust boundary. The second full gate
+passed the core helper and endpoint equalities, then stopped at the observation
+theorem because the generated top-level declaration was indented into the prior
+proof. The adapter restores that declaration boundary. A subsequent private
+package helper compile reached its 600-second bound. Another bounded package
+batch exposed a threshold-selection bug: checking each side separately omitted
+two equalities whose combined tree size exceeded the compact-proof threshold.
+The adapter now uses total equality size, with a regression for that boundary.
+A further full package compile exposed two smaller helpers whose generated
+closed 64-bit zero-equality reduction was rejected by the kernel; their
+proof-local normalization was repaired without changing the imported claims.
+Field cuts are proposed from exact bit requirements through masks, slices and
+concatenation; finite signatures remain untrusted hints. Small cuts use explicit
+kernel-proved index and mask-bit facts, and only checked cuts can be reused.
+These diagnostics are retained, and the final gate independently regenerates
+all dependencies. The final private package compile passed all 449 helpers,
+endpoint connections and the whole standard-axiom audit. Its wrapper then
+miscounted axiom-free helpers as missing audits; the original reporting failure
+is preserved alongside a separately checked receipt counting all 449 helpers.
+The official gate is regenerated independently of those private receipts. Private timeout wrappers that stopped only Lake could leave
+its Lean children running; cleanup targeted exact owned probe paths, and those
+diagnostics now terminate their owned process groups on timeout. Recorded
+seconds are observed wall time, not a performance qualification.
+The isolated probes are
+debug evidence only. Initial generated Design probes
+needed explicit dependent-function application and the Boolean/Prop overlay
+bridge; source-equation probe01 failed only an unused-simplification warning.
+Direct early compile stderr was not retained in full, so those sources are
+debug evidence only. Wire development02 corrected a terminal-fault fixture;
+development03 had a duplicate-key report serialization error after detecting
+the reservation mutant. Fresh final gates regenerate and certify all uploads.
+
+No universal initialized continuous paired-package theorem is inferred from
+the conditional UART observer, logical delayed stream or all-state circuit
+theorem. No analog, board-frequency, metastability or lossless-stall claim is
+made. All 218 historical physical manifests/fixtures retain base bytes. New
+chip bytes differ from the old SPI/I²C checkpoint. Zero CAD/routes are added;
+SRAM internal qualification, compatible fast-corner conditions and package
+power remain open. Next formal gate: continuous initialized package composition.

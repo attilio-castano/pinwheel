@@ -63,12 +63,14 @@ class Chip:
         elif page==2: value=h['samples']>>8
         elif page==3: value=(h['outcome']<<5)|16|(h['rejected']<<2)|(h['overrun']<<1)|h['valid']
         else: value=(m.s[0]<<5)|(int(rejected)<<4)|(m.active<<3)|(m.pending<<2)|(m.committed<<1)|int(1<=m.s[0]<=4)
-        return [value,m.s[4],m.s[5]]
+        return [value,m.s[4] << 2,m.s[5] << 2]
 
     def tick(self, incoming=None, rst=1, check=True):
         if incoming is not None: self.incoming=incoming
         if self.device is not None:
-            self.incoming = self.device(self.edges, Pins(*self.shown(self.gates(self.inputs())[1])), self.ui)
+            raw = self.shown(self.gates(self.inputs())[1])
+            logical = Pins(raw[0], raw[1] >> 2, raw[2] >> 2)
+            self.incoming = self.device(self.edges, logical, self.ui)
         i=self.inputs()
         started,rejected=self.gates(i)
         before=self.shown(rejected)

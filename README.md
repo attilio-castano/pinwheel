@@ -65,6 +65,20 @@ proofs and physical evidence without treating one kind of check as another.
 Portable validation works from source; replaying the physical evidence still
 requires the retained local artifacts and pinned tools.
 
+The [current-A replay workflow](docs/research/current-a-replay.md) inventories and
+recovers those dependencies into a movable snapshot with their original hashes.
+[Fresh-source RTL interpretation](docs/storage/paired-rtl-interpretation.md#reproduce-and-inspect)
+checks new emission without old experiment outputs. The
+[package-power request](docs/physical/package-power-contract.md) identifies the
+integration inputs and activity evidence needed for the next physical decision.
+
+The current [protocol continuation](docs/research/established-protocol-continuation.md)
+delivers SPI modes 0–3, one/two-byte transfers, bounded I²C writes and bus clear,
+with separate physical input/output pads and resolved-wire checks. The I²C
+programs reuse the SPI circuitry. An opt-in [UART receive supervisor](docs/protocols/uart-supervisor.md)
+adds automatic rearm and explicit retained-result/drop ownership. Retained
+physical results keep their original source identity.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).

@@ -16,7 +16,7 @@ class SimulatorTransport(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             peer = Path(directory) / 'peer.py'
             peer.write_text('import sys\nfor line in sys.stdin:\n'
-                            ' sys.stdout.write("vendor diagnostic\\nPINWHEEL 2 5 7\\n")\n'
+                            ' sys.stdout.write("vendor diagnostic\\nPINWHEEL 2 20 28 23 255\\n")\n'
                             ' sys.stdout.flush()\n')
             poll = select.select
             # Fail a buffered-read regression promptly, without a 30-second wait.

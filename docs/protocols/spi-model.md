@@ -4,6 +4,11 @@ Implemented and verified: **2026-09-13**. Pure Lean specification, finite contro
 
 Scope: one controller, one peripheral, eight-bit full-duplex transfers, most-significant bit first, and mode 0. This is a pure Lean model. Other SPI modes, peripheral mode, multi-byte transactions under continuous chip select, RTL, and physical timing are outside this milestone.
 
+This page preserves the original milestone. The current
+[transaction study](spi-transactions.md)
+adds all four modes and one- or two-byte transactions, with a repaired physical
+pad contract and resolved-wire checks.
+
 ## Interface and edge convention
 
 - The configuration fixes a half-clock duration `H` of 1–256 system cycles. No physical frequency is selected.

@@ -1,5 +1,12 @@
 # Continuous UART receive
 
+
+The later [circuit continuation](uart-supervisor.md) adds an opt-in paired UART
+supervisor and reuses the host mailbox. Its observer sees pre-edge completion,
+so arrivals occur one edge after this model's newly stepped result. Control
+alignment and active program ownership are explicit premises; the fresh finite
+wire gate and universal circuit interpretation retain separate scope.
+
 Implemented and validated 2026-09-15. The Lean receiver
 rearms automatically, retains one unread result, and reports overrun when a late
 consumer leaves that slot full. Finite ideal back-to-back frames have an exact

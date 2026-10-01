@@ -28,6 +28,20 @@ process-group timeout cleanup, host input/readback/timeout boundaries, shared co
 checks using disposable files and Python children; it
 requires no CAD tools. The second runs the portable Lean/model gate.
 
+The [I²C capability gate](protocols/i2c-capabilities.md),
+`python3 -B scripts/check-i2c-capabilities.py --tag <fresh-tag>`, checks
+one/two payload-byte writes and separately loaded bus clear on resolved package
+wires. It kernel-certifies every actual upload, verifies independent byte/ACK/STOP
+observations, tests clock faults and reset/reload, and runs recovery followed by
+a write without an intervening chip reset. Sources, tools, behavioral SRAM,
+consumed copies and generated artifacts are frozen and checked at closeout.
+Use the study for timing assumptions and the boundary from physical compliance.
+
+The [SPI transaction gate](protocols/spi-transactions.md) adds an independent
+resolved-pad simulation for the repaired package. Independent `uio_in` snapshots
+remain useful for abstract chip traces, but cannot verify driver ownership or
+full-duplex wire connections. Keep those scopes distinct when reusing receipts.
+
 `test_host_demo.py` and `test_host_receipts.py` also run in optimized Python
 children. They reject invalid observations, require repeated mailbox reads and
 consumption checks, bind receipts to captured input bytes despite later file
@@ -52,9 +66,10 @@ The gate:
    axiom must fail for the expected diagnostic. Counts include generated
    theorems; they are not counts of manually written mathematical results.
 3. Runs UART TX/RX, link timing, continuous buffered reception with ideal and
-   unequal clocks, SPI, shared engine, reactive I²C, explicit/counted/binary execution,
+   unequal clocks, original SPI and four-mode transaction images, shared engine,
+   reactive I²C, bounded one/two-payload writes and nine-attempt recovery, explicit/counted/binary execution,
    register reads, encoding, countdown, timed-interface/fetch, and storage
-   certificate checks, serial upload and host-result ownership checks. Their
+   certificate checks, static pad-map kernel proofs, serial upload and host-result ownership checks. Their
    existing negative cases remain included.
 4. Independently decodes and checks generated PWL images and UART RX E64 execution
    with Python oracles. RX includes every supported period/input storage configuration.
@@ -72,6 +87,33 @@ Include the check results and source identity in the PR description. Before
 pushing, verify that the committed sources match the validated sources. If code,
 tests, or validation inputs change, run the affected checks again. Documentation
 edits require link and whitespace checks.
+
+## Current local iteration
+
+For the current source's emitted RTL interpretation, use:
+
+```sh
+python3 -B scripts/check-paired-readback.py --mode fresh --tag paired-source-fresh
+```
+
+This requires pinned Lean, CIRCT and Yosys/Z3, but no historical mapping or
+admission outputs. Both complete component/session proofs, standard-axiom
+audits and actual RTL corruption controls run. The new source receipt is not a
+match to the retained physical candidate. See the
+[interpretation study](storage/paired-rtl-interpretation.md).
+
+For the retained candidate, [current-A replay](research/current-a-replay.md)
+provides the dependency preflight, recoverable snapshot and current-v2 command.
+The snapshot preserves old sources and receipts even when current checker code
+changes. A completed assessment still returns 2 with three physical blockers;
+missing or inconsistent evidence returns 1. Expensive physical evidence is
+explicitly reused.
+
+The [package-power contract](physical/package-power-contract.md) is a checked
+analysis request tied to the saved candidate. It identifies missing parent and
+provider inputs and the finite traces' coverage. Request readiness does not
+qualify power or accept A. The [local continuation](research/local-iteration-continuation.md)
+records scope and completion criteria; no new CAD allocation is involved.
 
 ## Paired milestone before merge
 
