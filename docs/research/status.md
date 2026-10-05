@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-09-29 after delivery of UART supervisor/buffer circuitry,
-following bounded I²C writes/bus clear and four-mode SPI.
+Updated 2026-10-05 after verification of the initialized UART package/lifecycle proof,
+following UART supervision, bounded I²C writes/bus clear and four-mode SPI.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -35,12 +35,20 @@ rearm and retain-old/drop-newest ownership with sticky overrun. Conditional
 UART/E64 and exact mailbox proofs, finite resolved streams, reset/fault/ownership
 controls and fresh universal circuit interpretation pass.
 
-**Next local gate: compose continuous initialized package execution.**
-Connect certified active UART-image ownership, supervisor controls, SRAM responses
-and pre-edge mailbox correspondence through every initialized paired history.
-The present component theorem and finite wire gate keep those premises separate.
+**Implemented formal milestone: [initialized UART package sessions](../protocols/uart-session.md).**
+Actual reset, certified upload and qualified serial ARM establish the relation
+from arbitrary represented state. Resident execution derives image ownership,
+SRAM/core correspondence, supervisor controls and pre-edge receipts. Certified
+replacement and external restart preserve exact occurrence accounting and old
+packet origins; every finite lifecycle prefix has the emitted package's same
+pad observations. The sufficient receive theorem includes the actual sampler
+and trailing ARM edges. Fresh foundation, resolved-wire, RTL interpretation and Python gates pass on
+unchanged circuit bytes; all 230 historical physical inputs are preserved.
+
+**Next local decision: result capacity for bounded two-byte I²C reads.**
 The [established-protocol continuation](established-protocol-continuation.md)
-retains the result-capacity decision for two-byte I²C reads. New protocols are deferred.
+owns that refinement and its capture/flag policy. Physical sampling, SRAM
+qualification and package power remain separate gates. New protocols are deferred.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL
@@ -458,7 +466,7 @@ separate from exploratory progress.
 | What does the chosen execution model prove? | [Compact execution](../storage/compact-execution-study.md) gives the paired capacity, controller, mapped SAT and open refinement boundary. [Storage primitives](../storage-primitives.md) owns the earlier hybrid closed-loop theorem, which does not automatically transfer to the paired controller. |
 | What happened in other physical and architectural branches? | [First chip physical study](../chip-physical-study.md), [chip architecture](../physical/chip-architecture-study.md) and [map tiles](../physical/map-tile-study.md) retain their experiments. [Results](results.md) indexes dispositions and reopening conditions; [journal](journal.md) retains dated receipts. No experimental backend is promoted by those screens. |
 | How is mapping hierarchy checked? | The [matched hierarchy comparison](../physical/map-tile-study.md#explicit-hierarchy-comparison--september-25) uses identical tiled RTL and explicit flat or retained-tile policies. Exact cell ownership survives flattening and Verilog read-back. Retaining tiles saves 2.021629% of standard-cell area, with mixed address-depth effects. Use the explicit policies and checked flat views for subsequent architecture comparisons; physical locality and timing remain separate measurements. |
-| What is demonstrated to a host? | [Host workflow](../host-workflow.md) includes eight kernel-certified paired uploads and independent RTL pin peers. Conditional certified-upload admission and paired package execution now pass; board transport, continuous supervision and physical qualification remain separate obligations. |
+| What is demonstrated to a host? | [Host workflow](../host-workflow.md) includes eight kernel-certified paired uploads and independent RTL pin peers. [Initialized UART sessions](../protocols/uart-session.md) now compose the supervisor through actual upload/ARM and its declared finite lifecycle. Board transport and physical qualification remain separate obligations. |
 
 The fast-screen standard-cell and SRAM temperatures remain mismatched. The
 20% connection reserve and 0.3% area increment are **experiment comparison

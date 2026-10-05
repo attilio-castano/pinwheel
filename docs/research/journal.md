@@ -5898,3 +5898,29 @@ made. All 218 historical physical manifests/fixtures retain base bytes. New
 chip bytes differ from the old SPI/I²C checkpoint. Zero CAD/routes are added;
 SRAM internal qualification, compatible fast-corner conditions and package
 power remain open. Next formal gate: continuous initialized package composition.
+
+## 2026-10-05 — Initialized UART package/lifecycle closeout
+
+Implemented all six checkpoints of the [approved plan](uart-session-proof-plan.md)
+on the `07be98c` UART candidate. The [study](../protocols/uart-session.md) owns
+the exact domain and reproduction; the
+[manifest](../../physical/experiments/uart-session-results.json) binds receipts.
+Actual reset/upload/ARM derives execution, memory coverage, policy and observer
+correspondence. Resident segments, decoded STOP/certified replacement and
+external restart compose every finite prefix; fresh ghost epochs preserve old
+packet origins and exact occurrence receipts. The strong timing endpoint includes
+the admitted edge's original serial suffix and actual two-edge sampler.
+
+Fresh validation passes: 255 modules, 10,543 standard-axiom
+theorems and 39 executable suites; 30 wire cases,
+148 mailbox vectors, 23 upload and
+18 timing certificates; 984 RTL equalities;
+701 Python passes, 2 platform skips and 89 optimized passes.
+The failed 600-second readback and interrupted foundation retain their partial
+evidence; isolated/fresh replacements supply the completed receipts.
+
+Chip MLIR/RTL remain byte-identical to the existing UART candidate. All 230
+historical physical inputs are preserved; zero hardware bits, CAD seconds or
+routes are added. The lawful-memory and digital timing contracts remain explicit;
+SRAM internal qualification, fast-corner characterization and package power are
+separate open gates.

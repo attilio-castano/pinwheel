@@ -1,5 +1,10 @@
 # UART receive supervisor and retained results
 
+The September 30 [initialized package session study](uart-session.md) now
+composes this candidate through actual reset, certified upload, delivered ARM,
+resident execution and certified reset/reload boundaries. The circuitry and
+September 29 evidence below remain the original supervisor checkpoint.
+
 This local continuation of the [established protocols](../research/established-protocol-continuation.md)
 adds an explicit repeat supervisor to the paired controller. Work starts from
 the I²C checkpoint `855fd94` on `codex/uart-supervisor-refinement`. The existing
@@ -84,15 +89,16 @@ includes the real sampler and the declared digital wire/clock schedule.
 and the normal UART receiver result, plus consumed control alignment.
 `decoded_step` and `decoded_run` cover canonical E64 execution from a well-formed
 receiver and its lifted compiled state, with caller-supplied start/reset inputs.
-Connecting those controls and core correspondence to the active UART image and
-paired supervisor is an integration premise. The
+At this checkpoint, connecting those controls and core correspondence to the
+active UART image and paired supervisor remained an integration premise. The
 `uninterrupted_delay` and `uninterrupted_receipt` theorems compare the logical
 continuous-start model with the existing stream model after one warm-up edge,
 shifting consumer and clear histories by one edge. They allow arbitrary initial
 buffer contents but require no execution reset or mailbox flush. Interpreting
 an older pending packet as a UART result additionally requires its program
-ownership. These are separate from a theorem about every initialized paired
-package history, which is not claimed here.
+ownership. The [initialized session proof](uart-session.md) subsequently
+derives the relation, controls, SRAM responses and owned receipt history for
+its declared finite lifecycle; this original component study retains its scope.
 
 This adds a new digital candidate. The saved physical A receipts do not qualify
 the new control bit or altered logic. SRAM internal qualification, compatible

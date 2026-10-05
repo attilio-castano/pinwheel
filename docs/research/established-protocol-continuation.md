@@ -190,3 +190,18 @@ The new circuit adds one enabled bit and changes chip bytes; historical physical
 A does not qualify it. All 218 old manifests/fixtures match base, with zero new
 CAD/routes. Universal initialized continuous-package composition remains the
 next formal gate; two-byte I²C reads retain their separate capture-capacity decision.
+
+## Fourth delivered checkpoint — 2026-10-05
+
+The [initialized UART package study](../protocols/uart-session.md) closes the
+declared formal gap on the same UART circuit. Actual reset/upload/ARM establishes
+the independent receiver relation; finite resident, STOP/reload and external
+reset/restart prefixes preserve observations and exact packet ownership. Strong
+wire timing includes the actual sampler and trailing ARM samples. Fresh
+foundation, wire, RTL and Python receipts are bound in the additive
+[manifest](../../physical/experiments/uart-session-results.json).
+
+The circuit bytes and all 230 historical physical inputs are unchanged. SRAM,
+fast-corner and package-power qualification remain open. The next local
+capability decision remains result capacity for bounded two-byte I²C reads,
+under the current established-protocol direction in [status](status.md).
