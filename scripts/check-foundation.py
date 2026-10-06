@@ -33,6 +33,7 @@ SUITES = [
     ('PairedStream', []), ('PairedStreamSession', []),
     ('ResidentEffects', []),
     ('ProgramExport', []), ('ResidentProgram', []),
+    ('Transfer', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
@@ -130,7 +131,8 @@ def main():
                   elapsed_seconds=round(time.monotonic()-started, 3),
                   boundary='Fresh-source-capable Lean/model gate, initialized finite UART package/lifecycle and owned receipts, '
                            'compiled UART link/stream timing, independent PWL lookup and UART RX/E64 oracle, '
-                           'retained-result ownership and stream-control circuitry. '
+                           'retained-result ownership and stream-control circuitry; '
+                           'parametric finite-transfer ownership model (no buffered circuit claim). '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')
