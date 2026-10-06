@@ -379,7 +379,8 @@ class BufferedEngine:
     sampler register. Stale identities propagate an ownership error; only TX
     underflow/RX overflow becomes a retained engine fault.
     """
-    def __init__(self, slot, identity, program):
+    def __init__(self, slot, identity, program, *, initial_first_sample=3,
+                 initial_second_sample=3):
         if type(program) is not BufferedProgram:
             raise ValueError('Engine requires a buffered reference program')
         descriptor = slot.descriptor
@@ -390,10 +391,14 @@ class BufferedEngine:
         if (descriptor.tx_bit_count != program.tx_bits or
                 descriptor.rx_limit < program.rx_reservation_bits):
             raise ValueError('Accepted buffers cannot satisfy the program demands')
+        _integer(initial_first_sample, 0, 3, 'Initial first input sample')
+        _integer(initial_second_sample, 0, 3, 'Initial second input sample')
         self.slot, self.identity, self.program = slot, identity, program
         self.cycle = self.pc = 0
         self.levels, self.enabled = program.idle_levels, program.idle_enabled
-        self._first = self._second = 3
+        # START entry observes the sampler history before that edge. Hardware
+        # fixtures can supply it without rewriting already-applied effects.
+        self._first, self._second = initial_first_sample, initial_second_sample
         self._remaining = 0
         self._wait_left = 0
         self.samples = (False,) * 16

@@ -285,6 +285,21 @@ class BufferedHardwareHost:
         return dict(command=2, count=len(image.words),
                     idle_levels=image.idle_levels, idle_enabled=image.idle_enabled)
 
+    def _rx_reservation(self, image):
+        return getattr(image, 'rx_reservation_bits', image.rx_bits)
+
+    def _result_fingerprint(self, status):
+        return tuple(status[name] for name in ('generation', 'transfer', 'mode',
+                     'tx_consumed', 'rx_length', 'levels', 'enabled'))
+
+    def _result_outcome(self, status):
+        return 'complete' if status['mode'] == 2 else 'fault'
+
+    def _make_result(self, pending, status, outcome, raw, payload):
+        image = pending.image
+        return BufferedHardwareResult(pending.identity, image.key, image.program_key,
+            image.protocol, outcome, status['tx_consumed'], len(raw), payload, raw)
+
     def load(self, source):
         image = self._prepare_image(source)
         if self._pending is not None:
@@ -315,8 +330,9 @@ class BufferedHardwareHost:
         if type(tx) not in (bytes, bytearray, memoryview):
             raise ValueError('Hardware TX must be bytes or a byte buffer')
         bits = loaded.image.encode_tx(bytes(tx))
-        rx_limit = loaded.image.rx_bits if rx_limit is None else rx_limit
-        _integer(rx_limit, loaded.image.rx_bits, RX_CAPACITY, 'Hardware RX reservation')
+        reservation = self._rx_reservation(loaded.image)
+        rx_limit = reservation if rx_limit is None else rx_limit
+        _integer(rx_limit, reservation, RX_CAPACITY, 'Hardware RX reservation')
         data = pack_wire_bits(bits)
         before = self._edge(command=0)
         if (before['busy'] or before['retained'] or before['pending'] or
@@ -419,24 +435,21 @@ class PendingBufferedHardware:
         if not first['retained'] or first['busy']:
             raise TransferError('Result read requires a retained hardware completion')
         bits = []
-        frozen = tuple(first[name] for name in ('generation', 'transfer', 'mode',
-                         'tx_consumed', 'rx_length', 'levels', 'enabled'))
+        frozen = self.host._result_fingerprint(first)
         for index in range(first['rx_length']):
             status = first if index == 0 else self._edge(command=0, read_index=index)
             if (not status['retained'] or status['busy'] or not status['read_valid'] or
-                    tuple(status[name] for name in ('generation', 'transfer', 'mode',
-                          'tx_consumed', 'rx_length', 'levels', 'enabled')) != frozen):
+                    self.host._result_fingerprint(status) != frozen):
                 raise RuntimeError('Indexed hardware result changed or its bit window is invalid')
             bits.append(bool(status['read_bit']))
         if not bits and first['read_valid']:
             raise RuntimeError('Empty hardware result exposed a valid read bit')
-        outcome = 'complete' if first['mode'] == 2 else 'fault'
+        outcome = self.host._result_outcome(first)
         raw = tuple(bits)
         if outcome == 'complete' and first['tx_consumed'] != self.image.tx_bits:
             raise ValueError('Completed hardware transfer did not consume the declared TX demand')
         payload = self.image.decode_rx(raw) if outcome == 'complete' else None
-        return BufferedHardwareResult(self.identity, self.image.key, self.image.program_key,
-            self.image.protocol, outcome, first['tx_consumed'], len(raw), payload, raw)
+        return self.host._make_result(self, first, outcome, raw, payload)
 
     def release(self):
         before = self._edge(command=0)
