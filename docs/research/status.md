@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-05 after verification of the initialized UART package/lifecycle proof,
-following UART supervision, bounded I²C writes/bus clear and four-mode SPI.
+Updated 2026-10-06 after implementing reusable payload programs, a named program
+builder and compact I²C register reads, following the initialized UART lifecycle.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -45,10 +45,23 @@ pad observations. The sufficient receive theorem includes the actual sampler
 and trailing ARM edges. Fresh foundation, resolved-wire, RTL interpretation and Python gates pass on
 unchanged circuit bytes; all 230 historical physical inputs are preserved.
 
-**Next local decision: result capacity for bounded two-byte I²C reads.**
-The [established-protocol continuation](established-protocol-continuation.md)
-owns that refinement and its capture/flag policy. Physical sampling, SRAM
-qualification and package power remain separate gates. New protocols are deferred.
+**Implemented capability: [reusable programs and bounded register reads](../protocols/reusable-programs.md).**
+Named pins, captures and labels expose existing instructions. UART/SPI programs
+stay resident while accepted START carries a changing byte. A separate resident
+source certificate checks the actual paired upload/dispatch sequence; local
+node proofs connect START/SHIFT/KEEP to the existing graph. The one/two-byte
+I²C frontend uses all sixteen captures for successful data and reports NACK or
+guarded bus fault through terminal status, discarding partial captures. The
+196-position bound and reference/compiler/E64 refinement are universal; image
+capacity and resolved-pin behavior are checked per declared upload/scenario.
+No circuit or emitter changes are allocated.
+
+**Next flexibility decision: exercise a new waveform using the generic builder.**
+A small JTAG sequence can test whether naming, branching, timing and capture
+are sufficient without protocol-specific circuitry. A universal initialized
+resident UART/SPI lifecycle proof and longer-payload ownership remain separate
+continuations. Physical sampling, SRAM qualification and package power remain
+their existing gates.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL
@@ -491,8 +504,9 @@ impossibility proof or a universal utilization limit.
 
 Both-synchronous indexed storage needs a different latency contract. One-port
 UART changes, alternative gating and broad ISA expansion are deferred. The
-resident-payload workload needs a bounded instruction and hardware cost before
-promotion. Preserve the tested digital sampling conditions: SPI requires
+resident-payload workload now exposes existing SHIFT/KEEP with source
+certification and package tests; universal initialized resident protocol
+composition and physical promotion remain open. Preserve the tested digital sampling conditions: SPI requires
 `d + tco ≤ halfCycles`; I²C requires `d ≤ phaseCycles` and `d < waitCycles`.
 These digital bounds do not establish analog sampling behavior. Root licensing,
 publication and submission remain separate decisions under the

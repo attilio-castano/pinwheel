@@ -79,6 +79,13 @@ programs reuse the SPI circuitry. An opt-in [UART receive supervisor](docs/proto
 adds automatic rearm and explicit retained-result/drop ownership. Retained
 physical results keep their original source identity.
 
+[Reusable programs](docs/protocols/reusable-programs.md) now expose named pins,
+captures and labels, with resident UART/SPI programs whose payload comes from
+`start(payload=...)`. A compact one/two-byte I²C read frontend uses the full
+16-bit result for successful data. These capabilities use existing paired
+circuitry; their source certificates, formal contracts and package tests have
+separate scopes.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).

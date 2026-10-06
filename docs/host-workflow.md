@@ -100,22 +100,28 @@ the raw mailbox.
 the interactive RTL transport. A future board transport must establish the same
 clock, sampling, voltage and drive/release assumptions separately.
 
-`Program` holds 1–256 unsigned E64 records, the last executable address, three
-idle levels/enables and an explicit target image format. The default legacy
+`Program` holds 1–256 unsigned source records, the last executable address,
+three idle levels/enables and an explicit image format. The format selects the
+record grammar and target backend. The default legacy
 format deduplicates the full padded image, rejects more than 32
 distinct records before I/O, and produces the existing 322-word upload. Canonical
-record validation remains in the chip: a rejected push aborts staging before
-commit. Uploading does not consume an older result. Starting with an unread
+legacy record validation remains in the chip. The paired loader retains staging
+after a rejected push; `Host.upload` explicitly sends ABORT on a failed staged
+upload, preserving the committed image. Uploading does not consume an older
+result. Starting with an unread
 result is refused, and readback preserves overflow/rejection flags.
 
 Exported JSON has exactly `format`, `words`, `last`, `idle_levels`, and
-`idle_enabled`. The format is `pinwheel-e64-v1` for the reference/hybrid, or
-`pinwheel-paired32-v1` for the paired backend. The latter validates canonical
-E64 before I/O, checks record and parameter capacity, and compiles parameters,
-successor pairs, boot and idle into 290 words. The selected host rejects a
+`idle_enabled`. The format is `pinwheel-e64-v1` for the reference/hybrid,
+`pinwheel-paired32-v1` for canonical E64 on the paired backend, or
+`pinwheel-resident32-v1` for resident records on that same paired backend.
+Both paired formats validate their source grammar before I/O, check record and
+parameter capacity, and compile parameters, successor pairs, boot and idle into
+290 words. The resident grammar exposes the existing SHIFT/KEEP operations; see
+the [reusable-program guide](protocols/reusable-programs.md). The selected host rejects a
 mismatched format before touching the chip. Backend identity is an explicit
 configuration assumption; current status pins do not identify it automatically.
-These are host-side E64 interchange formats,
+These are host-side source interchange formats,
 separate from the [PWL binary format](storage/binary-images.md). For example:
 
 ```sh
@@ -136,15 +142,36 @@ period. The paired upload costs 85,285 edges, or 1.7057 ms at that same period.
 The TX example executes for 40 edges, or 0.8 µs on that same assumption. These
 are modeled edge counts, not measured board throughput or signed-off rates.
 
-The next useful workload is repeated transfers with changing payloads and a
-resident program. Compare a small data register/shift operation and explicit
-rearm against reuploading code. Specify ownership, starvation and result delivery
-before adding a FIFO. Continuous UART receive remains a separately proved model;
-this demonstration does not compose its supervisor into the chip. Defer an ISA
-change until the physical experiment establishes the remaining area/routing
-budget, and retain this workload as its acceptance test.
+These costs motivated repeated transfers with changing payloads and a resident
+program. The October 6 continuation below implements that workload through
+existing paired SHIFT/KEEP operations and tests payload/result ownership.
+Continuous receive is delivered separately in the [UART supervisor](protocols/uart-supervisor.md)
+and [initialized UART session](protocols/uart-session.md) studies. FIFO capacity,
+concurrent transmit/receive and physical area/routing qualification remain
+separate decisions.
+
+### Resident payloads: supported paired programs (2026-10-06)
+
+The September 19 proposal below is now implemented through the existing paired
+SHIFT/KEEP circuitry. Use [`resident_uart` or `resident_spi`](protocols/reusable-programs.md#program-an-unchanged-chip),
+upload once, then call `host.start(payload=byte)` for each transfer. The
+[`ProgramBuilder`](protocols/reusable-programs.md#name-pins-captures-and-control-flow)
+adds named pins, captures and labels for custom programs. Its resident source
+format has a separate kernel certificate; E64 v1 remains unchanged.
+
+```sh
+python3 scripts/pinwheel-host.py resident-demo --backend paired-stream --tag resident-pins
+```
+
+This exercises all 256 UART/SPI payloads and ownership/reset/upload controls
+through emitted package pins. The [study](protocols/reusable-programs.md)
+records local node proofs, upload/dispatch correspondence, compact I²C reads,
+reproduction and the remaining lifecycle/physical gates.
 
 ### Bounded resident-payload proposal (2026-09-19)
+
+The following is the historical proposal. The supported paired implementation
+and current evidence are described above.
 
 Use one resident UART 8N1 transmitter to send `00`, `ff`, `a6`, and `53`, then
 all 256 byte values, with four chip edges per bit and the same program image

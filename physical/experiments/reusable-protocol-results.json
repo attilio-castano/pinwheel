@@ -1,0 +1,360 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-10-06",
+  "study": "docs/protocols/reusable-programs.md",
+  "base_commit": "45543b26cc1920ca138e0a5ed89ac4b507187fa3",
+  "branch": "codex/reusable-protocol-programs",
+  "implementation_commit": "8de296ac6629432c00de70eefff8d56e863ca0b0",
+  "scope": "Named timed pin programs; resident START payload UART/SPI; compact one/two-byte I2C register reads on existing paired circuitry.",
+  "reports": {
+    "foundation": {
+      "path": "build/validation/reusable-foundation-final-02/report.json",
+      "sha256": "74cdb54e644d8c28ea35295b3398a306cd272a3f9f7d3f7402c6e7f71590d212"
+    },
+    "python": {
+      "path": "build/validation/reusable-python-final-03/report.json",
+      "sha256": "bea8d4a910466ccd73e18ad63d7d012eea9923f6e884a16554044fe1e449895f"
+    },
+    "resident_source": {
+      "path": "build/validation/resident-image-final-01/report.json",
+      "sha256": "ac7dc583cf85e6a254822466c3d696bba70190773e4808ebe6ac06b97f136188"
+    },
+    "resident_package": {
+      "path": "build/host/resident-programs-final-01/report.json",
+      "sha256": "567e0da1fefbbbab763b3129ea4c025fb6a97d72a199d45eb2b8c23a2a1f84d9"
+    },
+    "resident_cli": {
+      "path": "build/host/resident-cli-payload-final-01/report.json",
+      "sha256": "5ed7c6efeb2af910d00252f4cb3b2d0a9326c8cb3b837e5161d3572e59ea76ff"
+    },
+    "named_ready": {
+      "path": "build/host/named-trigger-ready-final-01/report.json",
+      "sha256": "d940b215afd2042db19826ba3e595f644a0828d0d246eae19453b571a0da4d39"
+    },
+    "named_timeout": {
+      "path": "build/host/named-trigger-timeout-final-01/report.json",
+      "sha256": "859c001b4a3fc70db719b04d3b1247faaf8212f1cecbfa0a1052d441be64e488"
+    },
+    "i2c_package": {
+      "path": "build/host/i2c-read-final-02/report.json",
+      "sha256": "b3c20e52613a67a759ef3ca28f916e622a21c5776ac98bce27c2be90acb4c198"
+    },
+    "paired_rtl": {
+      "path": "build/validation/reusable-readback-final-01/report.json",
+      "sha256": "1348b3253afc37064424cc75c74262b83b47c01073a956ab19f9401d737f7682"
+    },
+    "stream_rtl": {
+      "path": "build/validation/reusable-stream-readback-final-03/report.json",
+      "sha256": "dc65ec5579ad4d005f76217ce49f7e808b9c14d8d91d7a574718b77f5ee231bf"
+    }
+  },
+  "closeout": {
+    "path": "build/validation/reusable-closeout-final-01/closeout.json",
+    "sha256": "497e04624f1e9cf86372312990c8ccc6560173c5987be355c0696def3d0272d6"
+  },
+  "implementation_source_sha256": {
+    "Pinwheel.lean": "cdb8b8f0e86d561eb74cb94f78e77dbeec0957e36233071e3296539e52f5b39d",
+    "Pinwheel/Compile/I2CReadTransaction.lean": "f6436764bf7c55bb7d4dff861225f7c34ad842c25b7194e9f8e29d29bca77fff",
+    "Pinwheel/Compile/I2CReadTransactionProofs.lean": "b8f4417baecf1f852dd24bc64b886e2e25006b2127c7219bf8832ff77b86e08d",
+    "Pinwheel/Hardware/Storage/PairedResidentEffects.lean": "baa12f3ba3a8313d7f36a16b7f7b6d34af7b0e3277006c0f92a8fb2da10eb233",
+    "Pinwheel/Hardware/Storage/PairedResidentImage.lean": "423739e01b48781bd89df569e5b5582cc10f374cb729d0fecccb7b993727551f",
+    "Pinwheel/I2C/RegisterReadTransaction.lean": "f8593a8064bf39006a08076c8d6a049059dd7e910bf8e6c6a29ff58ab58eed19",
+    "Pinwheel/I2C/RegisterReadTransactionProofs.lean": "b5ceadf8f2556d99a6713456a31d8fdc25e9f0a3ed6266c0da2b964ec01fdc53",
+    "scripts/capability_receipt.py": "7c6b7c5bd70e2b19dbd4afd3dcf1707a2d3286585f8df1fbef69c6276e158e2e",
+    "scripts/check-foundation.py": "a35eab09ffec443575768c5d62f42121dab481736f4b24c26ade24fe311dd3dd",
+    "scripts/check-i2c-read-transactions.py": "f995806bd576a4deeba1d4c1dd534290956def00736cb8242f625bfbbc3b6acc",
+    "scripts/check-resident-image.py": "bdc35b740414f4e0f4f564a12a3cdcd4758e321b504312f1063940ef75c92d93",
+    "scripts/check-resident-programs.py": "36c6764b8f03b42603165a71e83c2a526677d3b65a8072bb7b5526fab5c654ed",
+    "scripts/check-stream-readback.py": "29cd04660007ab19eb52582b01931b14a9c2d29296666874ab7c8bcc1e108e67",
+    "scripts/i2c_read_peers.py": "9d0e0b5ea262de9f3e6b88c5831fa9dc586104cd492c5f4fd43ed5206da7c6c6",
+    "scripts/paired_execution.py": "000b722f89de9c51b179a1a31f9e1597e16021748db67952b404a3674774a75c",
+    "scripts/pinwheel-host.py": "615bef3f9a76a246d5cc73577cc42bd12b99ed0baf7d235a8b731796e90d602c",
+    "scripts/pinwheel_host.py": "73c7cacd7e04b0e66009dca66af6ef92a49cbe32ecf68fcaeea8d4d6e5115450",
+    "scripts/pinwheel_program.py": "d0871f451228450d634c8ab885308ec783cdad59937d038a8e80477fcee4152f",
+    "scripts/protocol_results.py": "f164b756d6f53822ca27fe59c4991942c865cfa2f55585aa1fcd8ff30a1c265d",
+    "scripts/resident_image_certificate.py": "8334628f8396d10c2c534fc11501f7373f0f82f3aa05c30c51371a4a12d463bf",
+    "scripts/resident_peers.py": "d30aec696f69c04d7bdb505b3e127d462697cdc00ac0b816b7ee6bc46127c442",
+    "test/I2CReadTransactions.lean": "d7b39cd2457fd71284e68275d2be41981cd032cddbd6e1c478ead02d758f0727",
+    "test/ResidentEffects.lean": "d942cf4e4ebdcd1e361077d4f522763059a10f295bdf873ccda8180d418060c3",
+    "test/test_i2c_read_peer.py": "ada56ea6da9d3370036fdd30333e6dfe3d53a21a0bbf037c49ff4fdcce8890d0",
+    "test/test_protocol_results.py": "cf0dc1ca82d08e2c45e3d53eaa5ec320fdf9582b7c35851c319a2f0d5285ae69",
+    "test/test_resident_gate.py": "7bbeefb64abbd356254385d785d34d5f7204902b6fb2abbb4d4fef0cd423bdc3",
+    "test/test_resident_program.py": "2ecd72623b0f3848ad13c814b4226eed29c3da649e5396399b8b52595b45e6ea"
+  },
+  "proof_domain": {
+    "resident_source_and_dispatch": true,
+    "resident_local_controller_effects": true,
+    "universal_initialized_resident_protocol_lifecycle": false,
+    "universal_i2c_reference_compiler_e64": true,
+    "i2c_arbitrary_requests_configs_consumed_histories": true,
+    "i2c_one_byte_upper_captures_zero": true,
+    "i2c_positions_universal": 196,
+    "i2c_capacity_checked_per_upload": true,
+    "i2c_success_capture_bits": 16,
+    "i2c_failure_policy": "Discard all captures; timeout or aggregate NACK/guard fault",
+    "memory": "Explicit lawful SRAM contracts; pinned behavioral models for package tests",
+    "analog_or_board_qualification": false
+  },
+  "validation": {
+    "foundation": {
+      "modules": 261,
+      "audited_declarations": 20800,
+      "audited_theorems": 11224,
+      "executable_suites": 41,
+      "kernel_suites": 1,
+      "untrusted_axiom_rejected": true,
+      "elapsed_seconds": 1524.296
+    },
+    "python": {
+      "tests": 742,
+      "passed": 740,
+      "skipped": [
+        [
+          "test_zombie_group_remains_addressable_but_has_no_live_members (test_process_group.ProcessGroupTests.test_zombie_group_remains_addressable_but_has_no_live_members)",
+          "'Linux /proc zombie observation'"
+        ],
+        [
+          "test_exited_leader_does_not_hide_a_live_worker_thread (test_process_group.ThreadLivenessTests.test_exited_leader_does_not_hide_a_live_worker_thread)",
+          "'Linux thread-group leader state'"
+        ]
+      ],
+      "optimized_tests": 34
+    },
+    "resident": {
+      "uart_payloads": 256,
+      "spi_payloads": 256,
+      "uart_edges": 40,
+      "spi_edges": 68,
+      "controls": 19,
+      "semantic_negatives": 2,
+      "upload_certificates": 5,
+      "programs": [
+        {
+          "name": "resident-uart",
+          "snapshot": "resident-uart.json",
+          "sha256": "2be20c77bbfa7b9b87f1da2f37a4f92bd05b9f55af857143d8bc0176ee8586f0",
+          "positions": 11,
+          "source_words": 11,
+          "distinct_records": 4,
+          "capture_slots": [],
+          "used_parameters": 1,
+          "upload_words": 290
+        },
+        {
+          "name": "resident-spi",
+          "snapshot": "resident-spi.json",
+          "sha256": "64f95c1183136749c53e753e15f5ac5cbc52a10eae9f5deccd17d47c724a6f07",
+          "positions": 18,
+          "source_words": 18,
+          "distinct_records": 11,
+          "capture_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "used_parameters": 10,
+          "upload_words": 290
+        },
+        {
+          "name": "resident-uart-controls",
+          "snapshot": "resident-uart-controls.json",
+          "sha256": "76c9de40c1888290ada9df103b1a331836fb640f587f4508f71bb3c349e66b81",
+          "positions": 11,
+          "source_words": 11,
+          "distinct_records": 4,
+          "capture_slots": [],
+          "used_parameters": 1,
+          "upload_words": 290
+        }
+      ],
+      "repeat_serial_command_frames": 1,
+      "typed_shift_cases": 4608,
+      "typed_keep_cases": 640,
+      "source_certificate_positives": 2,
+      "proved_source_corruptions": 8
+    },
+    "i2c": {
+      "read_cases": 16,
+      "byte_lengths": [
+        1,
+        2
+      ],
+      "nack_stages": [
+        0,
+        1,
+        2
+      ],
+      "successful_clocks": [
+        36,
+        45
+      ],
+      "nack_clocks": [
+        9,
+        18,
+        27
+      ],
+      "reset_reload": true,
+      "guard_loss": true,
+      "upload_certificates": 23,
+      "semantic_negatives": 4,
+      "fixture_canonical_records": 32,
+      "fixture_paired_parameters": 23
+    },
+    "rtl": {
+      "paired_rtl": {
+        "local_equalities": 1082,
+        "modules": {
+          "core": {
+            "top": "pinwheel_paired_core_controller",
+            "registers": 81,
+            "register_bits": 1469,
+            "outputs": 37,
+            "output_bits": 157,
+            "shared_equations": 45,
+            "local_equalities": 521,
+            "audit": {
+              "declarations": 33316,
+              "theorems": 21112,
+              "standard_axioms_only": true
+            },
+            "mutation_controls": [
+              "unchanged",
+              "upload-cursor",
+              "parameter-bank",
+              "sram-write"
+            ],
+            "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+          },
+          "chip": {
+            "top": "pinwheel_paired_controller",
+            "registers": 110,
+            "register_bits": 1592,
+            "outputs": 7,
+            "output_bits": 99,
+            "shared_equations": 45,
+            "local_equalities": 561,
+            "audit": {
+              "declarations": 34451,
+              "theorems": 22019,
+              "standard_axioms_only": true
+            },
+            "mutation_controls": [
+              "unchanged",
+              "sampler",
+              "mailbox-valid",
+              "package-output"
+            ],
+            "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+          }
+        }
+      },
+      "stream_rtl": {
+        "local_equalities": 984,
+        "modules": {
+          "core": {
+            "top": "pinwheel_paired_core_controller",
+            "registers": 82,
+            "register_bits": 1470,
+            "outputs": 37,
+            "shared_equations": 45,
+            "local_equalities": 535,
+            "audit": {
+              "declarations": 35808,
+              "theorems": 23503,
+              "standard_axioms_only": true
+            },
+            "mutation_controls": [
+              "unchanged",
+              "upload-cursor",
+              "parameter-bank",
+              "sram-write",
+              "stream-enabled"
+            ],
+            "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+          },
+          "chip": {
+            "top": "pinwheel_paired_controller",
+            "registers": 111,
+            "register_bits": 1593,
+            "outputs": 7,
+            "shared_equations": 45,
+            "local_equalities": 449,
+            "audit": {
+              "declarations": 42494,
+              "theorems": 29947,
+              "standard_axioms_only": true
+            },
+            "mutation_controls": [
+              "unchanged",
+              "sampler",
+              "mailbox-valid",
+              "package-output",
+              "stream-enabled"
+            ],
+            "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+          }
+        }
+      }
+    }
+  },
+  "artifact_identity": {
+    "paired_mlir": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8",
+    "paired_rtl": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf",
+    "stream_mlir": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6",
+    "stream_rtl": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+    "pin_readback_cli_bytes_match": true,
+    "same_as_prior_candidates": true
+  },
+  "preservation": {
+    "historical_physical_files": 231,
+    "unchanged": true,
+    "attempts": [
+      {
+        "path": "build/host/resident-package-probe-01/failed-attempt.json",
+        "sha256": "2e2ff58a3ae64c52db1497224cbdd055641f6db03add79feb821fa3dd6593a36",
+        "accepted": false
+      },
+      {
+        "path": "build/host/resident-package-probe-02/failed-attempt.json",
+        "sha256": "09b357738fbb97ea95236ad44446a236fa5f32b498ea33d51c4b8df9a1ff3830",
+        "accepted": false
+      },
+      {
+        "path": "build/host/i2c-read-final-01/failed-attempt.json",
+        "sha256": "fd07ca9d18c454c5d6351f9215f1b5120207ad77aab42816b7327ae6ab60ac2a",
+        "accepted": false
+      },
+      {
+        "path": "build/validation/reusable-foundation-final-01/aborted-attempt.json",
+        "sha256": "9fd64b4e75dce7065d68e787b9182524c45899033685fbc729a9f665d39aed69",
+        "accepted": false
+      },
+      {
+        "path": "build/validation/reusable-stream-readback-final-01/aborted-attempt.json",
+        "sha256": "9c0f3c57104d8daf0e2e9414f5d62cd3cc45f900238d22abb3b069f4dcab2142",
+        "accepted": false
+      },
+      {
+        "path": "build/validation/reusable-stream-readback-final-02/report.json",
+        "sha256": "e42b540b91399d9be87f32c0f8ef4f89af9e9342f68b9e1484ca29fb57d2eec5",
+        "accepted": false
+      }
+    ]
+  },
+  "hardware_bits_added": 0,
+  "new_physical_runs": 0,
+  "A_accepted": false,
+  "remaining": [
+    "Initialized universal resident UART/SPI protocol lifecycle composition",
+    "Longer dynamic payload ownership/buffer design",
+    "SRAM qualification",
+    "Compatible fast timing conditions",
+    "Package power"
+  ]
+}

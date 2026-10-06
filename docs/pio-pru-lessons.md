@@ -73,6 +73,12 @@ physical-budget gate. Reuse that specification rather than create a second
 payload mechanism here. Its tests must distinguish entry from hold, protect
 execution-owned data, and preserve reset, busy-start and result behavior.
 
+Update 2026-10-06: [reusable payload programs](protocols/reusable-programs.md)
+now expose that mechanism through the existing paired hardware and public
+host API. Code remains resident across all 256 UART/SPI payloads. The new
+source/kernel/package gates check its ownership rules; physical qualification
+and universal initialized resident protocol composition remain separate.
+
 This could reduce upload traffic and program expansion. It does not establish
 a smaller chip: encoding, selection logic, registers and transport changes all
 need to be costed. A FIFO is optional; the smallest useful comparison can use

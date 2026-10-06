@@ -5924,3 +5924,55 @@ historical physical inputs are preserved; zero hardware bits, CAD seconds or
 routes are added. The lawful-memory and digital timing contracts remain explicit;
 SRAM internal qualification, fast-corner characterization and package power are
 separate open gates.
+
+## 2026-10-06 — Reusable programs and compact register reads
+
+Implemented the [reusable-program continuation](../protocols/reusable-programs.md)
+on `codex/reusable-protocol-programs`. Named outputs, sampled inputs, captures
+and labels expose the existing instructions. A separate resident source grammar
+lowers SHIFT/KEEP to the existing paired upload ABI; accepted START supplies a
+new byte while the UART/SPI program remains resident. The chip and emitter
+sources remain unchanged.
+
+The one/two-byte I²C register-read frontend resolves the capture-capacity
+decision: successful payload owns all sixteen slots; timeout or aggregate
+NACK/guard fault discards captures. Prefix ACK slots are overwritten only after
+all three succeed. Each prefix NACK emits STOP before structural fault. Exact
+NACK stage is a reference diagnostic rather than part of the public result;
+the earlier precise-ACK one-byte frontend remains available.
+
+The foundation gate passes 261 modules, 20,800 declarations and 11,224
+standard-axiom theorems, 41 executable suites, one kernel suite and the
+untrusted-axiom rejection. Python has 740 passes, two Linux-only skips and 34
+new optimized passes. Resident image certificates cover two positives and eight
+proved corruptions. Typed graph tests cover 4,608 SHIFT and 640 KEEP cases.
+The source dispatch theorem and local node equations do not yet compose a
+universal initialized resident UART/SPI lifecycle proof.
+
+Resolved resident package tests cover every UART/SPI byte, 19 ownership/serial/
+reset controls, two certified semantic negatives and five upload certificates.
+Actual CLI runs carry `0xa6` through the same UART image and exercise one custom
+named ready/branch/pulse image in completed and timeout cases. Sixteen I²C
+scenarios, all three first-NACK stages, stretching/timeout, guard loss and
+reset/reload pass with 23 certified uploads and four semantic negatives.
+Success uses 36/45 clocks; prefix NACK uses 9/18/27. The I²C reference/compiler/
+E64 refinement and 196-position bound are universal; fixture capacity is
+certified per upload, with 32 canonical records and 23 paired parameters.
+
+Fresh paired core/package interpretation passes all 1,082 local equalities,
+standard-axiom audits and corruption controls. Its chip MLIR/RTL match the I²C
+pin gate byte-for-byte. Fresh stream core/package interpretation passes all 984
+local equalities, standard-axiom audits and corruption controls; its chip bytes
+match the resident pin gate and actual CLI runs. The additive
+[manifest](../../physical/experiments/reusable-protocol-results.json) binds all
+ten final reports. Their closeout rechecks 601 source inputs and preserves all
+231 historical physical files. Interrupted source-freeze attempts, failed peer
+probes and the 600-second stream proof timeout retain separate diagnostics;
+the fresh stream gate passes with the same proof/checks and a recorded
+1,800-second per-module bound, in 1,351.138 s.
+
+Resident and I²C chip bytes also match the previous UART
+and I²C candidates respectively. SRAM qualification, compatible fast timing and
+package power remain open; the new software capabilities add zero hardware bits
+and zero physical runs. A JTAG sequence can next exercise the generic builder;
+longer dynamic payloads require a separate buffer and ownership decision.

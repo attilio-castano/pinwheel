@@ -22,6 +22,12 @@ python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
 
+The default foundation now includes compact one/two-byte I²C register reads and
+actual typed-core resident SHIFT/KEEP effects. The separate
+[reusable-program gates](protocols/reusable-programs.md#evidence-and-reproduction)
+check resident source certificates, resolved UART/SPI and I²C package pins, and
+fresh RTL interpretation for both paired package variants.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative
