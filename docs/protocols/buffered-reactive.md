@@ -149,3 +149,8 @@ readback. Compare dedicated registers with an explicit SRAM partition/access
 schedule, preserve exact pin and fault traces, and measure mapped cost. Live
 streaming, concurrent transfers and runtime loop-count operands remain separate
 extensions.
+
+The [first digital slice](buffered-hardware.md) now implements linear timed data
+entry, owned 32-bit buffers and indexed results in an opt-in parallel circuit.
+It provides an emitted/gate SPI baseline and register-store cost; compact
+counted/reactive lowering and paired SRAM/serial integration remain next.

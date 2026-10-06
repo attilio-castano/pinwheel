@@ -70,6 +70,7 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | [Unified transaction workflow](protocols/transaction-workflow.md) | Bound request/program/pin/result metadata, compile/load/run/decode API and CLI, typed resident semantics and a bounded JTAG flexibility test. |
 | [Finite buffered transfers](protocols/buffered-transfers.md) | Single-transfer TX/RX ownership, retained completion, timeout recovery and independent four-byte SPI/32-bit JTAG reference-model witnesses; hardware integration remains separate. |
 | [Shared buffered reactive execution](protocols/buffered-reactive.md) | Compose Reactive timing/decisions with owned data and compact counted schedules; four-byte I²C, early NACK, clock-stretch timeout and partial results on the same reference engine. |
+| [First buffered hardware slice](protocols/buffered-hardware.md) | Reloadable linear circuit, dedicated 32-bit TX/RX, retained indexed result reads and release; emitted/gate SPI traces and measured register-store cost. |
 | [Production Lean frontend](protocols/program-export.md) | Static JSON request/response schemas for fixed SPI and compact I²C programs; no generated Lean request source. |
 | [Bounded I²C writes and bus clear](protocols/i2c-capabilities.md) | One/two payload bytes, first-NACK STOP, nine-attempt recovery, universal digital proofs and fresh resolved-wire evidence. |
 | [One-byte UART receive](protocols/uart-receive.md) | Receive timing, framing errors, compiler proofs, and storage integration. |

@@ -6100,3 +6100,48 @@ binds the focused and foundation reports and preserves the preceding physical
 evidence. No buffered circuit, current paired image extension, serial transport,
 mapped area or physical timing is established. The next gate is a versioned
 digital engine with counted lookup, owned data admission and indexed readback.
+
+## 2026-10-06 — First owned buffered SPI circuit
+
+The [buffered hardware study](../protocols/buffered-hardware.md) implements a
+reloadable linear parallel circuit with 32-bit owned TX, 32-bit retained RX,
+indexed reads and matching release. Five generic operations express the first
+four-byte SPI slice without protocol dispatch. Four-byte SPI occupies 66 of
+128 writable 32-bit rows. Unsupported reactive/counting operations reject
+before host I/O; the retained paired SRAM/serial package remains unchanged.
+
+Twenty-six named local circuit proofs cover entry effects, conditional bounds,
+sampler age, retention, admission and saturating identities. Directed Lean tests
+cover cold/warm reset, counter limits, malformed/underflow/overflow priority,
+PC128 falloff and retained read/release. The whole-library audit passes 22,887
+declarations and 12,273 standard-axiom theorems and rejects a custom axiom.
+These are local equations and finite lifecycle cases, not complete initialized
+compiler/package refinement.
+
+Actual Lean circuit traces match emitted RTL for 76 cases and 1,920 edges across
+all twenty public state fields, with 714 independent state expectations and 64
+raw-input histories. The SPI gate passes 1,027 transfers and compares 350,864
+reference execution edges, alongside an independent resolved-pad peer. The
+sweep varies every byte in each of four lanes; three further cases reload
+length/timing on the same circuit. All cases recover the same pending handle
+after host wait timeout, read retained RX twice and release it. The reference
+comparison binds sampler state at START; first-entry RX with pads primed low
+has separate actual circuit/RTL vectors. An early-sampling mutant is rejected.
+
+Saved generic and typical CMOS5L Verilog are read back before census. Each
+passes all control cases, nineteen SPI cases and SAT comparison of every
+public output and all 4,389 next-state bits for arbitrary defined inputs/state;
+no state coordinates are pruned. Inverted-output controls are rejected.
+Generic mapping has 26,438 cells; typical mapping has 24,671 cells and
+400,519.6524 µm² summed cell area. Both retain all 4,389 flip-flops, including
+4,096 instruction bits and 64 TX/RX bits. Normal and optimized Python each
+pass 926 tests with two platform skips.
+
+The [accepted manifest](../../physical/experiments/buffered-hardware-results.json)
+binds the completed gate to implementation commit `d67fbe0`, 659 frozen inputs
+and sixty generated artifacts. All 235 preceding physical and 176 hardware
+files retain their bytes. This measured register-bank baseline motivates
+SRAM-backed instruction storage and compact counted/reactive lookup with exact
+entry/failure timing, followed by serial operations and initialized package
+composition. Clock distribution, placement, routing, physical timing, SRAM
+qualification and package power remain separate gates.

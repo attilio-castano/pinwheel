@@ -137,6 +137,13 @@ descriptors for 270 virtual positions, with distinct ACK scratch and RX data.
 This is a reference schedule, not a larger admitted paired image. Its lowering,
 data storage, command admission and indexed readback need a new circuit contract.
 
+The [first buffered hardware slice](protocols/buffered-hardware.md) implements
+linear timed programs, dedicated 32-bit TX/RX, coverage-checked image loading,
+finite identities and retained indexed readback in a typed circuit. Its writable
+128-by-32 register store supplies a measurable baseline. Actual emitted and saved
+gate RTL exercise SPI; this parallel target does not extend the paired SRAM
+image or serial package. Compact lookup and reactive control still need lowering.
+
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
 definition. Its netlist semantics evaluates all bindings from the same pre-edge

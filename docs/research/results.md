@@ -137,8 +137,17 @@ one Python interpreter runs SPI/JTAG and four-byte I²C. The I²C schedule store
 50 instruction leaves and 55 control descriptors for 270 virtual positions.
 ACK/NACK cleanup, clock stretching and failed STOP qualification preserve exact
 diagnostic prefixes. This establishes the reference programming contract;
-versioned hardware encoding, counted lookup timing, storage/readback and mapped
-cost remain the next implementation gate.
+that reference gate does not establish versioned hardware encoding, counted
+lookup timing, circuit storage/readback or mapped cost. The digital continuation
+below implements a first linear subset.
+
+The [first buffered digital slice — October 6](../protocols/buffered-hardware.md)
+implements owned 32-bit TX/RX and retained indexed readback in a reloadable
+linear parallel circuit. It supplies actual SPI RTL and saved-gate evidence
+plus register-store cost: 4,389 flip-flops and 400,519.6524 µm² typical cell area.
+The 4,096-bit instruction bank makes SRAM-backed compact lookup the next cost
+question. Counted/reactive hardware, paired SRAM/serial package integration
+and routed timing remain the next stages.
 
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three

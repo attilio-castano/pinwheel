@@ -102,6 +102,11 @@ adds waits, decisions and counted loops to the same engine, demonstrated by a
 four-byte I²C read with NACK and clock-stretch failure prefixes. It is a reference
 target; current chip capacities are unchanged.
 
+The [first buffered hardware slice](docs/protocols/buffered-hardware.md) executes
+four-byte SPI with dedicated TX/RX registers, a writable linear program store,
+retained indexed readback and matching release. It is an opt-in parallel target;
+counted/reactive hardware and paired serial/SRAM integration remain the next gate.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).

@@ -52,6 +52,15 @@ with ACK/NACK, stretching, lawful STOP and retained timeout prefixes. The
 foundation includes the composed `Buffered` suite and safety proofs. Virtual
 positions and stored syntax counts do not establish hardware image capacity.
 
+The [buffered hardware gate](protocols/buffered-hardware.md),
+`python3 -B scripts/check-buffered-hardware.py --tag <fresh-tag>`, emits the
+opt-in linear parallel target. It binds actual circuit/RTL command traces,
+reference SPI execution, independent resolved-pad peers and retained indexed
+readback. Saved generic/CMOS5L Verilog is read back, compared for arbitrary-state
+next-state equivalence and measured. It adds no paired SRAM/serial package or
+physical timing qualification. The portable foundation includes its local
+proofs and `BufferedHardware` executable.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative
