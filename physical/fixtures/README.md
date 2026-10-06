@@ -1,5 +1,9 @@
 # Physical comparison fixtures
 
+The [package-power request](package-power-contract/README.md) binds the saved
+candidate, records the finite activity evidence and declares missing integration
+inputs. Its validator runs no CAD and cannot accept design A.
+
 The [32-bit tile diagnostic](sram-tile/README.md) isolates a source/physical
 resistor-width disagreement. Only an explicitly modified diagnostic passes;
 the supplied tile remains unqualified. Its [study](../../docs/physical/sram-tile-results.md)

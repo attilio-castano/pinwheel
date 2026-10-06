@@ -2,8 +2,9 @@
 
 This is the digital integration contract. The default core has no input
 pipeline; sampled variants and the experimental [whole chip](whole-chip.md)
-implement the two-register delay. Independent validation of the chip's emitted
-RTL and its physical/electrical boundary remains open.
+implement the two-register delay. The current paired chip has
+[fresh RTL interpretation and resolved-wire checks](../protocols/spi-transactions.md#recorded-validation).
+Its physical/electrical boundary remains unqualified.
 
 ## Clock-edge meaning
 
@@ -47,6 +48,13 @@ history in existing compiler theorems.
 
 ## Drive and release
 
+Current chip source uses the [version-2 pad contract](whole-chip.md#protocol-pad-contract-version-2):
+the engine observes `uio0–1` and drives only `uio2–4`. This separates SPI MISO
+from MOSI. I²C board wiring must join drive and sense pads on each pulled-up bus
+net. The [SPI transaction study](../protocols/spi-transactions.md) owns the new
+mode/length contract and resolved-wire checks. Historical physical receipts keep
+their original pad assignment.
+
 The core has output levels and output enables. A push-pull lane drives its chosen
 level while enabled. An open-drain lane drives zero or disables the driver; a
 logical release is not an actively driven one. The `openDrain` adapter always
@@ -73,14 +81,17 @@ an atomic 64-bit transfer. Specify backpressure/acknowledgement and how the host
 distinguishes transport acceptance from loader rejection. A protocol must not
 start until upload and commit acceptance are known.
 
-The experimental [whole chip](whole-chip.md) now defines a three-pin, 72-bit
-serial frame, the Tiny Tapeout pin allocation, and two-register sampling in
-Lean. Its emitted RTL has no independent serial-driver check yet. The interface
-also lacks captured-result readback and a retained command acknowledgement;
-`rejected` is an indication on the command edge. Startup, result ownership,
-board electrical limits and the actual physical boundary remain acceptance
-gates in the [submission plan](../submission-plan.md). The routed 6×4 core uses
-stand-in ports and does not validate that wrapper.
+The [whole chip](whole-chip.md) defines a three-pin, 72-bit serial frame,
+the Tiny Tapeout pin allocation and two-register sampling in Lean. The original
+status-only wrapper lacked result readback and an independent serial-driver
+check. The current host-result wrapper retains sixteen sample bits, completion
+status, rejection and overflow flags, with nondestructive reads and explicit
+consumption. Its serial upload, active-transfer reset, mailbox and resolved
+protocol wires pass the [current digital gate](../protocols/spi-transactions.md#recorded-validation);
+fresh interpretation separately checks the emitted paired core and package.
+These checks retain the digital delivery and SRAM premises. Board electrical
+limits and physical qualification remain acceptance gates. Historical stand-in
+core routes do not qualify this wrapper or its new pad mapping.
 
 See [atomic loading](../storage/atomic-loader.md), [hardware closure](hardware-closure.md),
 and [processor obligations](processor-verification.md#milestone-5-implement-real-loading-and-external-interfaces).

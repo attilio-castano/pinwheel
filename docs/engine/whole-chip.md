@@ -1,5 +1,10 @@
 # The whole chip in Lean
 
+The source pin contract was revised on 2026-09-29 to separate protocol input
+and output pads. The [version-2 pad contract](#protocol-pad-contract-version-2)
+below owns current wiring. Earlier entries on this page preserve their dated
+mapping and checks; retained physical A uses the original mapping.
+
 Status: **experimental top level, with proved serial delivery, program loading,
 execution and a retained host result interface.** The historical status-only
 chip has mapping evidence. The new result emissions have a separate independent
@@ -206,6 +211,33 @@ open. The existing physical scripts target the core's module and ports; the
 lists the required chip-specific tooling changes.
 
 ## Host result interface, version 1
+
+### Protocol pad contract, version 2
+
+The [established-protocol continuation](../research/established-protocol-continuation.md)
+repairs a physical conflict in the original mapping: input 0 and enabled output
+0 could both claim `uio0`. `Chip.outputs` now maps three logical levels/enables
+to `uio[4:2]`, leaving `uio[1:0]` and `uio[7:5]` permanently released. Input
+sampling remains on `uio[1:0]`; the two-stage history and all serial, result-page
+and consume/clear pins are unchanged. E64 words contain logical lanes, so program
+images do not encode this physical reassignment.
+
+| Signal | Pad or connection |
+| --- | --- |
+| UART TX / RX | `uio2` / `uio0` |
+| SPI MOSI / SCLK / CS_N / MISO | `uio2` / `uio3` / `uio4` / `uio0` |
+| I²C SCL | Connect drive `uio2` and sense `uio0` on one pulled-up net |
+| I²C SDA | Connect drive `uio3` and sense `uio1` on one pulled-up net |
+
+Universal packing/decoding and enable-mask lemmas belong to `Chip.lean`.
+Open the I²C sense/drive joins when connecting independent SPI or UART wires.
+The chip pin map is fixed; the external board fixture is protocol-specific.
+Resolved-wire simulation is a separate gate: chip and peer levels/enables must
+actually share nets, including the two declared I²C board joins. The repaired
+package is a new digital candidate. Its identity and timing/electrical validation
+must be established separately from historical physical A.
+
+### Retained result controls
 
 `chip-oneport-result.mlir` and `chip-twoport-result.mlir` add 35 register bits and
 use the previously spare `ui_in[6:3]`. The serial frame format and protocol pins

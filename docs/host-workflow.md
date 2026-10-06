@@ -6,6 +6,30 @@ are data: UART TX/RX, SPI, I²C and a conditional trigger use the same RTL. The
 assignments, synchronization and mailbox semantics; this page owns the client,
 demonstration and its limits.
 
+Current source uses the [version-2 protocol pad contract](engine/whole-chip.md#protocol-pad-contract-version-2):
+separate input pads `uio0–1`, output pads `uio2–4`, and explicit I²C sense/drive
+joins. The interactive bridge now resolves external drivers against enabled chip
+outputs. Historical receipts used the former mapping and independent input
+snapshots; they do not establish the repaired package's physical qualification.
+I²C joins are open for SPI/UART; the demonstration uses one unchanged RTL chip
+with a protocol-specific external board fixture.
+The [SPI continuation](research/established-protocol-continuation.md) adds modes
+0–3 and one- or two-byte transfers on this contract.
+
+The opt-in [UART supervisor](protocols/uart-supervisor.md) uses the explicit
+`paired-stream` backend. It deliberately owns a committed UART RX program until
+STOP/reset or a terminal timeout/fault, with automatic rearm, retained results
+and sticky dropped-arrival overrun. Its page-3 bit 3 reports enabled state; bit 4 retains the interface
+marker. Ordinary upload/start calls refuse enabled streaming.
+
+`Host.stop_uart_stream()` also accepts repeated STOP and aborts disabled
+execution or a staged upload on a stream-capable chip. It verifies the reset
+execution, cleared staging and disabled supervisor, and reports fresh command
+rejection. If rejection was already set while streaming was disabled, the
+common result marker cannot establish stream support: STOP is still sent, but
+the host reports that acceptance cannot be verified. It preserves the retained
+result, rejection and overrun flags; it never clears diagnostics to probe support.
+
 ## Reproduce the demonstration
 
 Install the pinned Lean/CIRCT/Icarus tools described in [development](development.md).
@@ -47,7 +71,7 @@ the input identities recorded in its receipt.
 | --- | --- |
 | UART TX | Byte `0x53`, 8N1, four chip edges per bit; all 40 driven edges checked |
 | SPI mode 0 | Transmit `0xa6`, receive `0x96`, four edges per half clock; eight rising edges checked |
-| I²C register read | Address `0x53`, register `0xa6`, receive `0x96`; repeated START, ACKs, open-drain release and 0–3-edge clock stretches |
+| I²C register read | Address `0x53`, register `0xa6`, receive `0x96`; repeated START, ACKs, open-drain release and peer-configured 0–3 additional waits after observing SCL release |
 | UART RX | Byte `0xa6` with a good stop, then `0x53` with a bad stop, 16 edges per bit |
 | Custom trigger | Wait on input 0; capture input 1 and branch immediately; emit an eight-edge pulse only when the captured bit is high |
 | Recovery | A malformed upload aborts staging; the previous committed trigger program still executes |
@@ -56,6 +80,9 @@ The trigger runs with high, low and absent input, covering both branches and
 timeout. Each successful run reads its retained result twice, then consumes it.
 The peers inspect only pin values and edge counts. `host_bridge.sv` never reads
 internal DUT state, and the host client does not import the engine oracle.
+The resolved I²C peer also has callback scheduling latency; its configured wait
+count is not the complete wire delay or an analog timing bound. It checks the
+actual resolved START/STOP, clock intervals and sampled bus bits separately.
 Acceptance checks remain active with `python -O`, `python -OO`, or
 `PYTHONOPTIMIZE`. Mailbox observations execute before their values are checked;
 any failed check prevents the CLI from publishing its success receipt.

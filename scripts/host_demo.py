@@ -2,6 +2,8 @@
 from dataclasses import asdict, replace
 
 from pinwheel_host import Host, Program, LEGACY_FORMAT, PAIRED_FORMAT
+from pad_io import PAD_MAP, PadDrive
+from pad_peers import SPIPeer, I2CPeer
 
 
 def _require(condition, message):
@@ -39,6 +41,13 @@ class UARTTransmit:
         _require(self.trace == [bit for bit in symbols for _ in range(self.period)], 'UART pin waveform')
         return dict(byte=self.byte, bit_cycles=self.period, frame_cycles=len(self.trace))
 
+    def drive(self, cycle, pads, ui):
+        pins = pads.logical
+        if pins.enabled & 1:
+            _require(pads.bit(2) == pins.levels & 1, 'UART TX resolved wire differs from drive')
+        self(cycle, pins, ui)
+        return PadDrive()
+
 
 class SPI:
     def __init__(self, receive=0x96):
@@ -67,6 +76,14 @@ class SPI:
         _require([b - a for a, b in zip(self.rises, self.rises[1:])] == [8] * 7, 'SPI clock spacing')
         return dict(transmitted=0xa6, received=self.receive, clock_cycles=8, rising_edges=len(self.bits))
 
+    def drive(self, cycle, pads, ui):
+        pins = pads.logical
+        # This existing compiler has its final trailing edge at CS release.
+        # Observe real package wires while preserving its established waveform.
+        from pinwheel_host import Pins
+        observed = Pins(pins.status, (pads.wires >> 2) & 7, pins.enabled)
+        return PadDrive(self(cycle, observed, ui), 1)
+
 
 class Receive:
     def __init__(self, byte=0xa6, stop=1, trigger=False, value=3):
@@ -86,6 +103,12 @@ class Receive:
             return self.value if t >= 8 else 0
         symbol = (t - 8) // 16
         return 1 if t < 8 else 0 if symbol == 0 else ((self.byte >> (symbol - 1)) & 1) if 1 <= symbol <= 8 else self.stop if symbol == 9 else 1
+
+    def drive(self, cycle, pads, ui):
+        pins = pads.logical
+        if not self.trigger:
+            _require(pins.enabled == 0, 'UART RX must release every output pad')
+        return PadDrive(self(cycle, pins, ui), 3 if self.trigger else 1)
 
 
 class I2C:
@@ -137,6 +160,8 @@ class I2C:
         return bus[0] | bus[1] << 1
 
     def check(self):
+        if hasattr(self, 'resolved_peer'):
+            return self.resolved_peer.check()
         _require(self.stopped and self.starts == 2 and len(self.clocks) == 36, 'I2C transaction framing')
         outgoing = [0xa6, 0xa6, 0xa7, self.byte]
         expected = [((0 if k < 27 else 1) if k % 9 == 8 else
@@ -144,6 +169,11 @@ class I2C:
         _require(self.clocks == expected, 'I2C wire bytes/ACKs')
         return dict(address=0x53, register=0xa6, received=self.byte, clocks=36,
                     starts=self.starts, stretching_cycles='0..3 per SCL release')
+
+    def drive(self, cycle, pads, ui):
+        if not hasattr(self, 'resolved_peer'):
+            self.resolved_peer = I2CPeer(self.byte)
+        return self.resolved_peer.drive(cycle, pads, ui)
 
 
 def trigger_program():
@@ -234,6 +264,7 @@ def demonstrate(sim, images, directory, *, image_format=LEGACY_FORMAT, certify=N
     _require(result.samples == 1 and result.outcome == 5, f'Recovered program result: {result}')
     sim.device = None
     return dict(cases=cases, edges=host.edges, frames=host.frames, image_format=image_format,
-                transport='Actual RTL pins over an interactive Icarus pipe; no internal state access',
+                transport='Resolved RTL package pads over an interactive Icarus pipe; no internal state access',
+                pad_map=PAD_MAP,
                 clock_assumption_ns=20,
                 upload_time_ms_at_assumed_clock=cases[0]['upload_cycles'] * 20 / 1_000_000)

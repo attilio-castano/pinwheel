@@ -1,13 +1,21 @@
 """Paired import contracts and refusal controls, without CAD or saved artifacts."""
 import copy
+import importlib.util
 import json
 from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import paired_readback as pr
+from validation_run import sha
+
+spec = importlib.util.spec_from_file_location('paired_readback_runner',
+    Path(__file__).resolve().parents[1] / 'scripts/check-paired-readback.py')
+runner = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(runner)
 
 
 def fixture(rb):
@@ -33,6 +41,83 @@ def fixture(rb):
 
 
 class PairedReadback(unittest.TestCase):
+    def test_fresh_intake_uses_current_sources_without_historical_artifacts(self):
+        retained = []
+        def retain(path, expected=None):
+            path = runner.ROOT / path
+            retained.append(path)
+            self.assertTrue(path.is_file())
+            self.assertIsNone(expected)
+            return path
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            selected, artifacts, predecessor = runner.select_artifacts('fresh', out, retain)
+            self.assertEqual(selected, out / 'emitted')
+            self.assertEqual(artifacts, {})
+            self.assertEqual(predecessor, {})
+            self.assertFalse(selected.exists())
+        paths = {str(path.relative_to(runner.ROOT)) for path in retained}
+        self.assertTrue({'test/PairedValidationEmit.lean', 'test/PairedReadback.lean',
+                         'test/ProofAudit.lean', 'scripts/process_group.py',
+                         'scripts/validation_run.py', 'tools/hardware-toolchain.json'} <= paths)
+        self.assertTrue({str(path.relative_to(runner.ROOT))
+                         for path in (runner.ROOT / 'Pinwheel').rglob('*.lean')} <= paths)
+        self.assertFalse(any(path.startswith(('physical/', 'build/')) for path in paths))
+        with self.assertRaisesRegex(ValueError, 'Unknown paired readback mode'):
+            runner.select_artifacts('other', Path('/unused'), retain)
+
+    def test_retained_intake_preserves_all_artifact_and_predecessor_checks(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def file(name, contents):
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(contents)
+                return path
+            source = file('proof.lean', 'current proof')
+            checks = ['scripts/check-paired-readback.py', 'scripts/paired_readback.py',
+                      'scripts/backend_readback.py', 'test/PairedReadback.lean',
+                      'test/test_paired_readback.py']
+            for name in checks:
+                file(name, name)
+            artifacts = {name: file('build/mapping/' + name, name) for name in
+                         ['core.mlir', 'chip.mlir', 'core.sv', 'chip.sv', 'assembly.json']}
+            mapping_report = file('build/mapping/report.json', json.dumps({
+                'status': 'passed', 'artifact_sha256': {
+                    str(path.relative_to(root)): sha(path) for path in artifacts.values()}}))
+            formal_report = file('build/formal/report.json', json.dumps({
+                'status': 'passed', 'source_sha256': {'proof.lean': sha(source)}}))
+            file('physical/experiments/paired-validation-mapping.json', json.dumps({
+                'implementation': 'PairedValidation', 'status': 'passed',
+                'report': 'build/mapping/report.json', 'report_sha256': sha(mapping_report)}))
+            file('physical/experiments/paired-admission-results.json', json.dumps({
+                'report': {'path': 'build/formal/report.json', 'sha256': sha(formal_report)}}))
+            def retain(path, expected=None):
+                path = root / path
+                if expected is not None and sha(path) != expected:
+                    raise ValueError('Changed retained input')
+                return path
+            out = root / 'run'
+            out.mkdir()
+            with patch.object(runner, 'ROOT', root):
+                selected, actual, predecessor = runner.select_artifacts('retained', out, retain)
+                self.assertEqual(predecessor['path'], 'physical/experiments/paired-admission-results.json')
+                self.assertEqual(set(actual), set(artifacts))
+                for name, path in artifacts.items():
+                    self.assertEqual((selected / name).read_bytes(), path.read_bytes())
+                    self.assertEqual(actual[name]['sha256'], sha(path))
+                for name, path in artifacts.items():
+                    original = path.read_text()
+                    path.write_text('changed artifact')
+                    failed = root / ('fail-' + name)
+                    failed.mkdir()
+                    with self.subTest(artifact=name), self.assertRaisesRegex(ValueError, 'Changed retained input'):
+                        runner.select_artifacts('retained', failed, retain)
+                    path.write_text(original)
+                source.write_text('changed proof')
+                with self.assertRaisesRegex(ValueError, 'Changed retained input'):
+                    runner.select_artifacts('retained', root / 'unused', retain)
+
     def read(self, rb, module):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'import.json'

@@ -21,6 +21,7 @@ class Command(IntEnum):
     COMMIT = 3
     ABORT = 4
     START = 5
+    STREAM = 6
     RESET = 7
 
 
@@ -101,6 +102,22 @@ class Result:
         return {5: 'complete', 6: 'timeout', 7: 'fault'}[self.outcome]
 
 
+@dataclass(frozen=True)
+class UARTResult:
+    byte: int
+    framing_error: bool
+    overrun: bool
+    rejected: bool
+
+
+def uart_result(result: Result) -> UARTResult:
+    """Interpret the existing RX program's retained byte and stop observation."""
+    if result.outcome != 5 or result.samples & 0xfd00:
+        raise RuntimeError('UART result is not a completed canonical RX capture')
+    return UARTResult(result.samples & 255, not bool(result.samples & 512),
+                      result.overrun, result.rejected)
+
+
 class Host:
     def __init__(self, transport: Transport, phase_cycles: int = 2, *, image_format=LEGACY_FORMAT):
         if type(phase_cycles) is not int or phase_cycles < 2:
@@ -112,6 +129,7 @@ class Host:
         self.phase_cycles = phase_cycles
         self.ui = 4  # serial select inactive, controls low, live status page
         self.edges = self.frames = 0
+        self._stream_access = False
 
     def advance(self, cycles=1, *, rst_n=1):
         if cycles < 1:
@@ -124,6 +142,7 @@ class Host:
         self.ui = 4
         self.advance(8, rst_n=0)
         self.advance(4)
+        self._stream_access = False
 
     def command(self, command: Command, data=0):
         if not 0 <= data < 1 << 64:
@@ -161,14 +180,58 @@ class Host:
 
     def result_status(self):
         status = self.page(3)
-        if status & 0x18 != 0x10:
+        if status & 0x10 != 0x10 or status & 8 and not self._stream_access:
             raise RuntimeError('Chip does not expose result interface version 1')
         return status
+
+    def stream_status(self):
+        """Explicitly opt into the stream channel; bit3 is its enabled state."""
+        self._stream_access = True
+        return self.result_status()
+
+    def arm_uart_stream(self):
+        status = self.stream_status()
+        if status & 8 or self.page(0) & 7 != 2:
+            raise RuntimeError('UART arm requires a valid stopped image with no staged upload or enabled stream')
+        if status & 4:
+            raise RuntimeError('Clear rejected-command flags before arming UART')
+        self.command(Command.STREAM, 1)
+        after = self.stream_status()
+        if not after & 8 or after & 4:
+            raise RuntimeError('Chip rejected UART stream arm')
+
+    def stop_uart_stream(self):
+        """Abort execution/staging and disarm without consuming or clearing flags.
+
+        STOP is valid while already disabled. An existing rejection obscures
+        its acceptance unless the enabled flag witnesses stream support. When
+        support is unknown, STOP is sent before reporting unverifiable acceptance.
+        """
+        before = self.stream_status()
+        self.command(Command.STREAM, 0)
+        after = self.stream_status()
+        live = self.page(0)
+        # Idle alone does not establish that STOP reset execution and staging.
+        if after & 8 or live & 0xe5:
+            raise RuntimeError('Chip did not stop the UART stream')
+        if after & 4 and not before & 4:
+            raise RuntimeError('Chip rejected UART stream stop')
+        if before & 4 and not before & 8:
+            raise RuntimeError('Cannot verify UART stream stop acceptance with an existing rejection and no enabled stream')
+
+    def read_uart_result(self, *, timeout_cycles=100_000, consume=True):
+        self._stream_access = True
+        decoded = uart_result(self.read_result(timeout_cycles=timeout_cycles, consume=False))
+        if consume:
+            self.consume()
+        return decoded
 
     def upload(self, program: Program):
         if program.image_format != self.image_format:
             raise ValueError('Program image format does not match the selected chip')
         words = program.upload_words()  # reject capacity before touching the chip
+        if self.result_status() & 8:
+            raise RuntimeError('Stop the UART stream before uploading')
         if self.page(0) & 1:
             raise RuntimeError('Cannot upload while the engine is busy')
         self.clear_flags()
@@ -186,7 +249,10 @@ class Host:
             raise RuntimeError('Chip did not accept program commit')
 
     def start(self):
-        if self.result_status() & 1:
+        status = self.result_status()
+        if status & 8:
+            raise RuntimeError('Stop the UART stream before a one-shot start')
+        if status & 1:
             raise RuntimeError('Consume the previous result before starting')
         live = self.page(0)
         if live & 3 != 2:

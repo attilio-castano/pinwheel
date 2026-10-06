@@ -13,6 +13,8 @@ import Pinwheel.Engine.Compatibility
 import Pinwheel.Engine.ControlProofs
 import Pinwheel.Compile.StretchedPulse
 import Pinwheel.Compile.I2CReadProofs
+import Pinwheel.Compile.I2CWriteTransactionProofs
+import Pinwheel.Compile.I2CRecoveryProofs
 import Pinwheel.Compile.I2CProofs
 import Pinwheel.Compile.I2CLoopCorrectness
 import Pinwheel.UART.Tx
@@ -23,6 +25,7 @@ import Pinwheel.Compile.UARTRxStream
 import Pinwheel.Compile.UARTStreamLink
 import Pinwheel.UART.LinkPipeline
 import Pinwheel.Compile.SPI
+import Pinwheel.Compile.SPITransaction
 import Pinwheel.Hardware.RawProgram
 import Pinwheel.Hardware.Countdown
 import Pinwheel.Hardware.CountdownContract
@@ -98,6 +101,18 @@ import Pinwheel.Hardware.Storage.PairedRuntime
 import Pinwheel.Hardware.Storage.PairedTimed
 import Pinwheel.Hardware.Storage.PairedHost
 import Pinwheel.Hardware.Storage.PairedSession
+import Pinwheel.Hardware.HostResultBuffer
+import Pinwheel.UART.BufferedSupervisor
+import Pinwheel.Hardware.Storage.PairedStream
+import Pinwheel.Hardware.Storage.PairedStreamPackage
+import Pinwheel.Hardware.Storage.PairedStreamOwnership
+import Pinwheel.Hardware.Storage.PairedStreamBootstrap
+import Pinwheel.Hardware.Storage.PairedStreamLifecycle
+import Pinwheel.Hardware.Storage.PairedStreamOrigin
+import Pinwheel.Hardware.Storage.PairedStreamArm
+import Pinwheel.Hardware.Storage.PairedStreamProgram
+import Pinwheel.Hardware.Storage.PairedStreamUART
+import Pinwheel.UART.BufferedSupervisorPhase
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.

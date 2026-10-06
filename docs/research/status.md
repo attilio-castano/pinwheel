@@ -1,6 +1,7 @@
 # Research status
 
-Updated 2026-09-29 after the saved-layout power sensitivity study.
+Updated 2026-10-05 after verification of the initialized UART package/lifecycle proof,
+following UART supervision, bounded I²C writes/bus clear and four-mode SPI.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -10,15 +11,61 @@ linked studies for measurements and reproduction.
 Make a complete chip-design iteration possible for someone without hardware
 expertise. Pinwheel's reloadable protocol engine is the test case: preserve pin
 timing, capture, branching and atomic replacement while connecting one exact
-implementation to formal meaning and physical feasibility. Then repeat the
-process for a declared capacity change. Competition admission remains separate.
+implementation to formal meaning and physical feasibility. Deepen UART, SPI
+and I²C before adding protocols; the larger iteration also retains its declared
+capacity-change gate. Competition admission remains separate.
 
-**Active plan: [complete design iteration](complete-design-iteration.md).**
-The current merge milestone collects the conditional proofs, retained RTL
+**Delivered local capability: [four SPI modes and bounded transactions](../protocols/spi-transactions.md).**
+One- and two-byte transfers keep chip select continuous. Universal Lean
+reference/compiler/E64 proofs, twenty resolved-wire cases, fresh upload
+certificates and independently interpreted RTL cover the stated digital scope.
+The fixed five-pad mapping separates MISO observation from MOSI drive. This is
+a new digital candidate; retained A's physical receipts remain historical.
+
+**Delivered local capability: [bounded I²C writes and bus clear](../protocols/i2c-capabilities.md).**
+One/two payload bytes, separate ACK flags, first-NACK STOP and nine controller
+clock-release attempts have universal compiler/reference/E64 proofs. Eleven
+write and twelve recovery wire cases, guarded faults, reset/reload and recovery
+followed by a write on the same engine pass. Fresh chip MLIR/RTL are identical
+to the SPI checkpoint; no circuitry or physical evidence changes.
+
+**Delivered local capability: [UART supervisor and retained results](../protocols/uart-supervisor.md).**
+The opt-in paired wrapper adds one enabled bit, explicit arm/stop, automatic
+rearm and retain-old/drop-newest ownership with sticky overrun. Conditional
+UART/E64 and exact mailbox proofs, finite resolved streams, reset/fault/ownership
+controls and fresh universal circuit interpretation pass.
+
+**Implemented formal milestone: [initialized UART package sessions](../protocols/uart-session.md).**
+Actual reset, certified upload and qualified serial ARM establish the relation
+from arbitrary represented state. Resident execution derives image ownership,
+SRAM/core correspondence, supervisor controls and pre-edge receipts. Certified
+replacement and external restart preserve exact occurrence accounting and old
+packet origins; every finite lifecycle prefix has the emitted package's same
+pad observations. The sufficient receive theorem includes the actual sampler
+and trailing ARM edges. Fresh foundation, resolved-wire, RTL interpretation and Python gates pass on
+unchanged circuit bytes; all 230 historical physical inputs are preserved.
+
+**Next local decision: result capacity for bounded two-byte I²C reads.**
+The [established-protocol continuation](established-protocol-continuation.md)
+owns that refinement and its capture/flag policy. Physical sampling, SRAM
+qualification and package power remain separate gates. New protocols are deferred.
+
+The larger [complete design iteration](complete-design-iteration.md) remains open.
+The merged contribution collects the conditional proofs, retained RTL
 interpretation and physical evidence. The three remaining physical requirements
 are tracked in [qualification follow-ups](../physical/qualification-followups.md),
 with a [prepared upstream SRAM follow-up](../physical/sram-maintainer-followup.md).
 Merging the contribution does not accept A, admit B or complete the iteration.
+
+The user has authorized the [local iteration continuation](local-iteration-continuation.md):
+portable current-A replay, fresh-source RTL interpretation and a concrete
+package-power contract. The [moved-bundle replay](current-a-replay.md#recorded-local-replay)
+now checks all 749 recovered inputs and freshly kernel-checks eight certificates,
+with the same three physical blockers. The source interpretation passes
+independently of historical mapping/admission receipts, and the checked
+[power request](../physical/package-power-contract.md) names eight missing
+integration/component inputs. Historical receipts and physical acceptance
+criteria remain unchanged.
 
 The filled chip retains its passing electrical, timing, full-rule GDS DRC and
 package checks. The new [SRAM study](../physical/sram-extraction-results.md)
@@ -379,21 +426,26 @@ separate from exploratory progress.
    characterization or a justified conservative timing bound, then connect the
    power analysis to qualified package sources and an activity envelope. The
    [completed sensitivity study](../physical/power-boundary-results.md) supplies
-   the saved-layout evaluator and the explicit integration-data request. The
+   the saved-layout evaluator; the checked
+   [package-power request](../physical/package-power-contract.md) assigns the
+   eight absent input classes, typed values and stop criteria. The
    [updated intake](implementation-acceptance.md) keeps these separate from the
    now-passing formal interpretation row. Preserve the candidate while collecting
    qualification evidence.
 3. **Establish physically feasible A and its correspondence.** Apply the
    [bounded plan](complete-design-iteration.md) to the retained filled candidate
-   and close its formal and physical acceptance obligations. All three allocated
-   A routes are used. Connect compilation, admission, closed memory execution,
-   package and host behavior to the implemented netlist; historical results from
-   other backends do not transfer. Record exploratory size overages separately.
+   and close its physical acceptance obligations. Its interpreted emitted RTL
+   already composes certified upload and E64 package execution; scoped mapping,
+   cell-function and connectivity checks retain their separate boundaries.
+   All three allocated A routes are used. Historical results from other backends
+   do not transfer. Record exploratory size overages separately.
 4. **Repeat for a meaningful capacity change.** Increase distinct record capacity
    from 32 to 64 while retaining 256 positions, atomic replacement and execution
    timing. Require the same behavioral and physical gates; record image-format,
    area and implementation consequences explicitly.
-5. **Demonstrate a reproducible design iteration.** Recover both acceptance
+5. **Demonstrate a reproducible design iteration.** The current-A assessment
+   now replays from a movable, hash-checked source/evidence bundle. This retains
+   physical observations rather than rebuilding them. Recover both accepted A/B
    reports through the same documented workflow, with declared inputs and no
    unrecorded manual netlist edits. Required missing checks remain incomplete;
    experimental layout success is separate from the [submission package](../submission-plan.md).
@@ -414,7 +466,7 @@ separate from exploratory progress.
 | What does the chosen execution model prove? | [Compact execution](../storage/compact-execution-study.md) gives the paired capacity, controller, mapped SAT and open refinement boundary. [Storage primitives](../storage-primitives.md) owns the earlier hybrid closed-loop theorem, which does not automatically transfer to the paired controller. |
 | What happened in other physical and architectural branches? | [First chip physical study](../chip-physical-study.md), [chip architecture](../physical/chip-architecture-study.md) and [map tiles](../physical/map-tile-study.md) retain their experiments. [Results](results.md) indexes dispositions and reopening conditions; [journal](journal.md) retains dated receipts. No experimental backend is promoted by those screens. |
 | How is mapping hierarchy checked? | The [matched hierarchy comparison](../physical/map-tile-study.md#explicit-hierarchy-comparison--september-25) uses identical tiled RTL and explicit flat or retained-tile policies. Exact cell ownership survives flattening and Verilog read-back. Retaining tiles saves 2.021629% of standard-cell area, with mixed address-depth effects. Use the explicit policies and checked flat views for subsequent architecture comparisons; physical locality and timing remain separate measurements. |
-| What is demonstrated to a host? | [Host workflow](../host-workflow.md) includes eight kernel-certified paired uploads and independent RTL pin peers. Conditional certified-upload admission and paired package execution now pass; board transport, continuous supervision and physical qualification remain separate obligations. |
+| What is demonstrated to a host? | [Host workflow](../host-workflow.md) includes eight kernel-certified paired uploads and independent RTL pin peers. [Initialized UART sessions](../protocols/uart-session.md) now compose the supervisor through actual upload/ARM and its declared finite lifecycle. Board transport and physical qualification remain separate obligations. |
 
 The fast-screen standard-cell and SRAM temperatures remain mismatched. The
 20% connection reserve and 0.3% area increment are **experiment comparison

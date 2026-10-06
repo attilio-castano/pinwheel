@@ -16,8 +16,9 @@ which core it is; with a core proved against the reference machine, the chip is
 the reference machine on the fed history (`reference_trace`).
 
 Pin assignment: `ui_in[0]` serial clock, `ui_in[1]` serial data, `ui_in[2]`
-select (active low); `uio[2:0]` the three protocol pins, driven through their
-enables, with `uio_in[1:0]` sampled as the engine's inputs; `uo_out` shows busy,
+select (active low); `uio[4:2]` the three protocol outputs, driven through their
+enables, with `uio_in[1:0]` sampled as the engine's inputs; `uio[1:0]` and
+`uio[7:5]` are always released. `uo_out` shows busy,
 valid, pending, active, rejected and the engine's mode. `rst_n` low is `init`. -/
 namespace Pinwheel.Hardware.Chip
 open Loader
@@ -86,6 +87,45 @@ def pinModel : Feeder.Model pinMap Pins Unit Serial.Inputs where
 
 /-! ### The output map -/
 
+/-- The three logical output lanes occupy physical bidirectional pads 2, 3 and 4. -/
+def protocolOutputMask : BitVec 8 := 0x1c
+
+/-- Encode either logical levels or logical enables into the physical output pads. -/
+def packProtocolOutput (bits : BitVec 3) : BitVec 8 := 0#3 ++ (bits ++ 0#2)
+
+/-- Decode the three physical output pads back into the engine's logical lanes. -/
+def unpackProtocolOutput (pads : BitVec 8) : BitVec 3 := pads.extractLsb' 2 3
+
+/-- Packing preserves all logical lanes and drives no input or unused pad. -/
+theorem packProtocolOutput_fields : ∀ bits : BitVec 3,
+    unpackProtocolOutput (packProtocolOutput bits) = bits ∧
+    packProtocolOutput bits &&& protocolOutputMask = packProtocolOutput bits ∧
+    packProtocolOutput bits &&& ~~~protocolOutputMask = 0 ∧
+    (packProtocolOutput bits).getLsbD 0 = false ∧
+    (packProtocolOutput bits).getLsbD 1 = false ∧
+    (packProtocolOutput bits).getLsbD 2 = bits.getLsbD 0 ∧
+    (packProtocolOutput bits).getLsbD 3 = bits.getLsbD 1 ∧
+    (packProtocolOutput bits).getLsbD 4 = bits.getLsbD 2 ∧
+    (packProtocolOutput bits).getLsbD 5 = false ∧
+    (packProtocolOutput bits).getLsbD 6 = false ∧
+    (packProtocolOutput bits).getLsbD 7 = false := by
+  decide +kernel
+
+@[simp] theorem unpack_packProtocolOutput (bits : BitVec 3) :
+    unpackProtocolOutput (packProtocolOutput bits) = bits :=
+  (packProtocolOutput_fields bits).1
+
+/-- Decoding and re-encoding retains exactly the three physical output pads. -/
+theorem pack_unpackProtocolOutput : ∀ pads : BitVec 8,
+    packProtocolOutput (unpackProtocolOutput pads) = pads &&& protocolOutputMask := by
+  decide +kernel
+
+/-- Every pad outside the three output lanes is released, including both input pads. -/
+theorem packProtocolOutput_released (bits : BitVec 3) (k : Nat) (h : k < 2 ∨ 5 ≤ k) :
+    (packProtocolOutput bits).getLsbD k = false := by
+  simp only [packProtocolOutput, BitVec.getLsbD_append, BitVec.getLsbD_zero]
+  grind
+
 def outputs : {w : Nat} → Output w → Expr Machine.Output NoRegister w
   | _, .uoOut =>
     (.concat (.input (.core (.state .mode)))
@@ -94,14 +134,41 @@ def outputs : {w : Nat} → Output w → Expr Machine.Output NoRegister w
           (.concat (.input (.control (.state .pending)))
             (.concat (.input (.control (.state .valid))) (.input (.core .busy)))))) :
       Expr Machine.Output NoRegister (3 + (1 + (1 + (1 + (1 + 1))))))
-  | _, .uioOut => (.concat (.lit (0 : BitVec 5)) (.input (.core (.state .levels))) :
-      Expr Machine.Output NoRegister (5 + 3))
-  | _, .uioOe => (.concat (.lit (0 : BitVec 5)) (.input (.core (.state .enabled))) :
-      Expr Machine.Output NoRegister (5 + 3))
+  | _, .uioOut => (.concat (.lit (0 : BitVec 3))
+      (.concat (.input (.core (.state .levels))) (.lit (0 : BitVec 2))) :
+      Expr Machine.Output NoRegister (3 + (3 + 2)))
+  | _, .uioOe => (.concat (.lit (0 : BitVec 3))
+      (.concat (.input (.core (.state .enabled))) (.lit (0 : BitVec 2))) :
+      Expr Machine.Output NoRegister (3 + (3 + 2)))
 
 /-- What the pins show of what the core shows. -/
 def shown (o : Values Machine.Output) : Values Output :=
   fun q => (outputs q).eval o NoRegister.values
+
+theorem shown_levels (o : Values Machine.Output) :
+    shown o .uioOut = packProtocolOutput (o (.core (.state .levels))) := rfl
+
+theorem shown_enables (o : Values Machine.Output) :
+    shown o .uioOe = packProtocolOutput (o (.core (.state .enabled))) := rfl
+
+/-- The wrapper preserves logical output levels and enables without changing the engine. -/
+theorem shown_protocol_outputs (o : Values Machine.Output) :
+    unpackProtocolOutput (shown o .uioOut) = o (.core (.state .levels)) ∧
+    unpackProtocolOutput (shown o .uioOe) = o (.core (.state .enabled)) :=
+  ⟨unpack_packProtocolOutput _, unpack_packProtocolOutput _⟩
+
+/-- Levels and enables are confined to the output mask; all other enables are zero. -/
+theorem shown_protocol_mask (o : Values Machine.Output) :
+    shown o .uioOut &&& protocolOutputMask = shown o .uioOut ∧
+    shown o .uioOe &&& protocolOutputMask = shown o .uioOe ∧
+    shown o .uioOe &&& ~~~protocolOutputMask = 0 :=
+  ⟨(packProtocolOutput_fields _).2.1, (packProtocolOutput_fields _).2.1,
+    (packProtocolOutput_fields _).2.2.1⟩
+
+/-- Input pads 0–1 and unused pads 5–7 are never enabled by the chip. -/
+theorem shown_released (o : Values Machine.Output) (k : Nat) (h : k < 2 ∨ 5 ≤ k) :
+    (shown o .uioOe).getLsbD k = false :=
+  packProtocolOutput_released _ k h
 
 /-- Both observations of an edge, as the pins show them. -/
 def shownEdge (e : Values Machine.Output × Values Machine.Output) : Values Output × Values Output :=

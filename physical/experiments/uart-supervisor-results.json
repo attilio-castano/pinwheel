@@ -1,0 +1,2318 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-09-29",
+  "study": "docs/protocols/uart-supervisor.md",
+  "continuation": "docs/research/established-protocol-continuation.md",
+  "base_commit": "855fd942e1341dacb2b80cf26811eee3a9d19bc9",
+  "branch": "codex/uart-supervisor-refinement",
+  "candidate": "paired-uart-stream-digital",
+  "backend": "paired-stream",
+  "scope": "Explicit UART receive repeat supervisor and reused one-entry host result mailbox, with separate execution abort and external mailbox flush.",
+  "reports": {
+    "wire": {
+      "path": "build/host/uart-stream-supervisor-01/report.json",
+      "sha256": "af4a463714e1370bb200c3207c82b48e81713b16c99db3ef95c2b6c7ebcae88a"
+    },
+    "readback": {
+      "path": "build/validation/uart-source-readback-03/report.json",
+      "sha256": "1f3989a082e70df6ca441602bbbcbd90646e2c195ee2b22027cec94b133c2f28"
+    },
+    "foundation": {
+      "path": "build/validation/uart-foundation-01/report.json",
+      "sha256": "c743215b04dcbef09317ad4a2138e4d4eda509b2f397f8c812324d6a46e4066c"
+    },
+    "python": {
+      "path": "build/validation/uart-python-final-03/report.json",
+      "sha256": "766280a1de4331d634ff4a6bf617fc82bce42095f310bb7726a6516591b230cd"
+    }
+  },
+  "cli_disabled_smoke": {
+    "path": "build/host/uart-stream-cli-disabled-01/report.json",
+    "sha256": "0aded2b3a5496b370396b9662f259bce8b7c99ba834bab8220fe5aa5fcf43a70"
+  },
+  "closeout": {
+    "path": "build/validation/uart-continuation-01/closeout.json",
+    "sha256": "688ef31de40d75ce778669aa6a31d3c29dc9645051dda51f9f6486bb610b5c43"
+  },
+  "proof_domain": {
+    "supervisor_state_bits_added": 1,
+    "host_control": {
+      "command": 6,
+      "arm_payload": 1,
+      "stop_payload": 0
+    },
+    "UART_program_inference": false,
+    "universal_mailbox_step_history_refinement": true,
+    "pre_edge_UART_observer_correspondence_conditional": true,
+    "canonical_E64_step_run": true,
+    "logical_uninterrupted_stream_delay_edges": 1,
+    "initialized_continuous_paired_package_theorem": false,
+    "physical_sampler_age_qualification": false,
+    "unread_policy": "retain-old-drop-newest-sticky-overrun",
+    "fixture_statistics": {
+      "configurations": 10,
+      "max_positions": 250,
+      "max_distinct_records": 14
+    }
+  },
+  "validation": {
+    "wire": {
+      "cases": 30,
+      "buffer_rtl_vectors": 148,
+      "timing_certificates": 18,
+      "fresh_upload_certificates": 23,
+      "session_controls": [
+        {
+          "name": "arm-no-image-and-staged-upload",
+          "absent_image_rejected": true,
+          "staged_image_rejected_and_preserved": true,
+          "aborted": true
+        },
+        {
+          "name": "enabled-session-command-reservation-and-stop",
+          "commands": [
+            {
+              "command": 1,
+              "data": 0,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            },
+            {
+              "command": 2,
+              "data": 4,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            },
+            {
+              "command": 3,
+              "data": 0,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            },
+            {
+              "command": 4,
+              "data": 0,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            },
+            {
+              "command": 5,
+              "data": 0,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            },
+            {
+              "command": 6,
+              "data": 2,
+              "enabled": true,
+              "rejected": true,
+              "committed_image_valid": true,
+              "staging_pending": false
+            }
+          ],
+          "retained_after_stop": {
+            "samples": 595,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 111107201,
+                "byte": 83,
+                "bit_ticks": 1600,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 3113,
+            "transitions": [
+              {
+                "edge": 1108473,
+                "time": 110847300,
+                "level": 1
+              },
+              {
+                "edge": 1111073,
+                "time": 111107300,
+                "level": 0
+              },
+              {
+                "edge": 1111089,
+                "time": 111108900,
+                "level": 1
+              },
+              {
+                "edge": 1111121,
+                "time": 111112100,
+                "level": 0
+              },
+              {
+                "edge": 1111153,
+                "time": 111115300,
+                "level": 1
+              },
+              {
+                "edge": 1111169,
+                "time": 111116900,
+                "level": 0
+              },
+              {
+                "edge": 1111185,
+                "time": 111118500,
+                "level": 1
+              },
+              {
+                "edge": 1111201,
+                "time": 111120100,
+                "level": 0
+              },
+              {
+                "edge": 1111217,
+                "time": 111121700,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          },
+          "automatic_consumption": false
+        },
+        {
+          "name": "serial-reset-retains-and-explicit-rearm-drops",
+          "reset_boundary": "serial command7 core reset; mailbox retained",
+          "retained_after_reset": {
+            "samples": 595,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "retained_after_new_arrival": {
+            "samples": 595,
+            "outcome": 5,
+            "overrun": true,
+            "rejected": false
+          },
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 111233701,
+                "byte": 166,
+                "bit_ticks": 1600,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 939,
+            "transitions": [
+              {
+                "edge": 1111908,
+                "time": 111190800,
+                "level": 1
+              },
+              {
+                "edge": 1112338,
+                "time": 111233800,
+                "level": 0
+              },
+              {
+                "edge": 1112370,
+                "time": 111237000,
+                "level": 1
+              },
+              {
+                "edge": 1112402,
+                "time": 111240200,
+                "level": 0
+              },
+              {
+                "edge": 1112434,
+                "time": 111243400,
+                "level": 1
+              },
+              {
+                "edge": 1112450,
+                "time": 111245000,
+                "level": 0
+              },
+              {
+                "edge": 1112466,
+                "time": 111246600,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          },
+          "consumed": true,
+          "flags_cleared": true
+        },
+        {
+          "name": "active-external-reset-and-reload",
+          "reset_boundary": "external rst_n through Host.reset",
+          "incomplete_frame": true,
+          "mailbox_flushed": true,
+          "supervisor_disarmed": true,
+          "image_invalidated": true,
+          "recovery": {
+            "policy": "ready",
+            "expected_completions": [
+              {
+                "core_edge": 1199228,
+                "mailbox_edge": 1199229,
+                "byte": 166,
+                "framing_error": false
+              }
+            ],
+            "reads": [
+              {
+                "byte": 166,
+                "framing_error": false,
+                "overrun": false,
+                "rejected": false
+              }
+            ],
+            "retained_twice": true,
+            "outputs_released": true,
+            "stopped": true,
+            "wire": {
+              "input_pin": 0,
+              "rx_tick": 100,
+              "rx_phase": 0,
+              "wire_delay_quanta": 0,
+              "initial_low_until": 0,
+              "low_pulses": [],
+              "frames": [
+                {
+                  "start": 119907301,
+                  "byte": 166,
+                  "bit_ticks": 1600,
+                  "stop": 1
+                }
+              ],
+              "observed_edges": 926,
+              "transitions": [
+                {
+                  "edge": 1198644,
+                  "time": 119864400,
+                  "level": 1
+                },
+                {
+                  "edge": 1199074,
+                  "time": 119907400,
+                  "level": 0
+                },
+                {
+                  "edge": 1199106,
+                  "time": 119910600,
+                  "level": 1
+                },
+                {
+                  "edge": 1199138,
+                  "time": 119913800,
+                  "level": 0
+                },
+                {
+                  "edge": 1199170,
+                  "time": 119917000,
+                  "level": 1
+                },
+                {
+                  "edge": 1199186,
+                  "time": 119918600,
+                  "level": 0
+                },
+                {
+                  "edge": 1199202,
+                  "time": 119920200,
+                  "level": 1
+                }
+              ],
+              "sampler_delay_cycles": 2,
+              "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+            },
+            "boundary": "Package mailbox captures core completion one edge later; raw consumer controls use the same mailbox edge."
+          }
+        },
+        {
+          "name": "unread-completed-external-reset",
+          "old_unread_flushed": true,
+          "no_stale_result": true,
+          "supervisor_disarmed": true
+        },
+        {
+          "name": "completion-edge-serial-reservation",
+          "observations": [
+            {
+              "serial_frame_first_edge": 1286344,
+              "serial_frame_last_edge": 1286635,
+              "command_delivery_edge": 1286633,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 288,
+              "core_completion_edge": 1286631,
+              "mailbox_arrival_edge": 1286632,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 1287827,
+              "serial_frame_last_edge": 1288118,
+              "command_delivery_edge": 1288116,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 289,
+              "core_completion_edge": 1288115,
+              "mailbox_arrival_edge": 1288116,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 1289309,
+              "serial_frame_last_edge": 1289600,
+              "command_delivery_edge": 1289598,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 290,
+              "core_completion_edge": 1289598,
+              "mailbox_arrival_edge": 1289599,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 1290790,
+              "serial_frame_last_edge": 1291081,
+              "command_delivery_edge": 1291079,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 291,
+              "core_completion_edge": 1291080,
+              "mailbox_arrival_edge": 1291081,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 1292270,
+              "serial_frame_last_edge": 1292561,
+              "command_delivery_edge": 1292559,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 292,
+              "core_completion_edge": 1292561,
+              "mailbox_arrival_edge": 1292562,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 1293749,
+              "serial_frame_last_edge": 1294040,
+              "command_delivery_edge": 1294038,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 293,
+              "core_completion_edge": 1294041,
+              "mailbox_arrival_edge": 1294042,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            }
+          ],
+          "all_rejected": true
+        },
+        {
+          "name": "active-stop-retains-unread",
+          "bit_cycles": 257,
+          "old": {
+            "byte": 83,
+            "framing_error": false,
+            "overrun": false,
+            "rejected": false
+          },
+          "incomplete_new_frame": true,
+          "mailbox_unchanged": true,
+          "overrun": false,
+          "disarmed": true,
+          "consumed": true,
+          "reset_boundary": "serial command6 word0; core abort, mailbox retained",
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 138329301,
+                "byte": 166,
+                "bit_ticks": 25700,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 1524,
+            "transitions": [
+              {
+                "edge": 1382864,
+                "time": 138286400,
+                "level": 1
+              },
+              {
+                "edge": 1383294,
+                "time": 138329400,
+                "level": 0
+              },
+              {
+                "edge": 1383808,
+                "time": 138380800,
+                "level": 1
+              },
+              {
+                "edge": 1384322,
+                "time": 138432200,
+                "level": 0
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          }
+        },
+        {
+          "name": "single-frame-bound-does-not-guarantee-stream-rearm",
+          "declared_frames": 2,
+          "actual_arrivals": 1,
+          "first": {
+            "byte": 0,
+            "framing_error": false,
+            "overrun": false,
+            "rejected": false
+          },
+          "second_start_missed": true,
+          "overrun": false,
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 164153101,
+                "byte": 0,
+                "bit_ticks": 770,
+                "stop": 1
+              },
+              {
+                "start": 164160801,
+                "byte": 0,
+                "bit_ticks": 770,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 894,
+            "transitions": [
+              {
+                "edge": 1641102,
+                "time": 164110200,
+                "level": 1
+              },
+              {
+                "edge": 1641532,
+                "time": 164153200,
+                "level": 0
+              },
+              {
+                "edge": 1641601,
+                "time": 164160100,
+                "level": 1
+              },
+              {
+                "edge": 1641609,
+                "time": 164160900,
+                "level": 0
+              },
+              {
+                "edge": 1641678,
+                "time": 164167800,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          },
+          "boundary": "Finite RX8/TXbit770-quanta phase counterexample; stronger stream bound fails. Loss precedes mailbox admission and is distinct from consumer overrun."
+        }
+      ],
+      "failure_controls": [
+        {
+          "name": "uart-supervisor-terminal6",
+          "result": {
+            "samples": 0,
+            "outcome": 6,
+            "overrun": false,
+            "rejected": false
+          },
+          "disarmed": true,
+          "no_rearm_after32_edges": true,
+          "retained_twice": true,
+          "consumed": true,
+          "outputs_released": true,
+          "uart_decoder_refused_and_packet_preserved": true,
+          "boundary": "Generic canonical E64 terminal failure; not a UART bad-stop packet."
+        },
+        {
+          "name": "uart-supervisor-terminal7",
+          "result": {
+            "samples": 0,
+            "outcome": 7,
+            "overrun": false,
+            "rejected": false
+          },
+          "disarmed": true,
+          "no_rearm_after32_edges": true,
+          "retained_twice": true,
+          "consumed": true,
+          "outputs_released": true,
+          "uart_decoder_refused_and_packet_preserved": true,
+          "boundary": "Generic canonical E64 terminal failure; not a UART bad-stop packet."
+        }
+      ],
+      "disabled_compatibility": [
+        {
+          "name": "disabled-uart-rx",
+          "result": {
+            "samples": 678,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "retained_twice": true,
+          "consumed": true,
+          "disabled_marker_unchanged": true,
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 181394801,
+                "byte": 166,
+                "bit_ticks": 1600,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 619,
+            "transitions": [
+              {
+                "edge": 1813519,
+                "time": 181351900,
+                "level": 1
+              },
+              {
+                "edge": 1813949,
+                "time": 181394900,
+                "level": 0
+              },
+              {
+                "edge": 1813981,
+                "time": 181398100,
+                "level": 1
+              },
+              {
+                "edge": 1814013,
+                "time": 181401300,
+                "level": 0
+              },
+              {
+                "edge": 1814045,
+                "time": 181404500,
+                "level": 1
+              },
+              {
+                "edge": 1814061,
+                "time": 181406100,
+                "level": 0
+              },
+              {
+                "edge": 1814077,
+                "time": 181407700,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          }
+        },
+        {
+          "name": "disabled-spi",
+          "result": {
+            "samples": 15465,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "retained_twice": true,
+          "consumed": true,
+          "disabled_marker_unchanged": true,
+          "wire": {
+            "mode": 0,
+            "cpol": 0,
+            "cpha": 0,
+            "transmitted": [
+              166,
+              83
+            ],
+            "received": [
+              150,
+              60
+            ],
+            "half_cycles": 4,
+            "peer_tco_cycles": 0,
+            "callback_delay_cycles": 1,
+            "sampler_delay_cycles": 2,
+            "required_half_cycles": 3,
+            "within_receive_timing_contract": true,
+            "sampled_bits": 16,
+            "clock_edges": 32
+          }
+        },
+        {
+          "name": "disabled-i2c-write",
+          "result": {
+            "samples": 0,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "retained_twice": true,
+          "consumed": true,
+          "disabled_marker_unchanged": true,
+          "wire": {
+            "address": 83,
+            "payload_bytes": [
+              166,
+              83
+            ],
+            "transmitted_bytes": [
+              166,
+              166,
+              83
+            ],
+            "observed_ack_bits": [
+              0,
+              0,
+              0
+            ],
+            "clock_count": 27,
+            "started": true,
+            "stopped": true,
+            "phase_cycles": 4,
+            "stretch_cycles": 0,
+            "stretch_events": 0,
+            "scl_stuck": false,
+            "fault_after_rises": null,
+            "guard_clock_lost": false,
+            "fault_delay_cycles": 2,
+            "board_links": [
+              [
+                0,
+                2
+              ],
+              [
+                1,
+                3
+              ]
+            ]
+          }
+        }
+      ],
+      "semantic_corruptions": [
+        {
+          "name": "uart-wrong-capture-slots",
+          "canonical_upload_certificate_passed": true,
+          "refused_by": "decoded-byte/stop oracle",
+          "result": {
+            "samples": 1,
+            "outcome": 5,
+            "overrun": false,
+            "rejected": false
+          },
+          "intended_samples": 595,
+          "retained_twice": true,
+          "consumed": true,
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 172772501,
+                "byte": 83,
+                "bit_ticks": 1600,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 920,
+            "transitions": [
+              {
+                "edge": 1727296,
+                "time": 172729600,
+                "level": 1
+              },
+              {
+                "edge": 1727726,
+                "time": 172772600,
+                "level": 0
+              },
+              {
+                "edge": 1727742,
+                "time": 172774200,
+                "level": 1
+              },
+              {
+                "edge": 1727774,
+                "time": 172777400,
+                "level": 0
+              },
+              {
+                "edge": 1727806,
+                "time": 172780600,
+                "level": 1
+              },
+              {
+                "edge": 1727822,
+                "time": 172782200,
+                "level": 0
+              },
+              {
+                "edge": 1727838,
+                "time": 172783800,
+                "level": 1
+              },
+              {
+                "edge": 1727854,
+                "time": 172785400,
+                "level": 0
+              },
+              {
+                "edge": 1727870,
+                "time": 172787000,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          },
+          "protocol_refinement_claimed": false
+        },
+        {
+          "name": "buffer-overwrite-unread",
+          "refused_by": "actual mailbox component truth table",
+          "log": "buffer-overwrite-unread-rejected.log"
+        },
+        {
+          "name": "buffer-clear-after-drop",
+          "refused_by": "actual mailbox component truth table",
+          "log": "buffer-clear-after-drop-rejected.log"
+        },
+        {
+          "refused_by": "second independently scheduled byte absent",
+          "reason": "No result before host timeout; engine state is unchanged",
+          "wire": {
+            "input_pin": 0,
+            "rx_tick": 100,
+            "rx_phase": 0,
+            "wire_delay_quanta": 0,
+            "initial_low_until": 0,
+            "low_pulses": [],
+            "frames": [
+              {
+                "start": 8573001,
+                "byte": 83,
+                "bit_ticks": 1600,
+                "stop": 1
+              },
+              {
+                "start": 8589001,
+                "byte": 166,
+                "bit_ticks": 1600,
+                "stop": 1
+              }
+            ],
+            "observed_edges": 765,
+            "transitions": [
+              {
+                "edge": 85301,
+                "time": 8530100,
+                "level": 1
+              },
+              {
+                "edge": 85731,
+                "time": 8573100,
+                "level": 0
+              },
+              {
+                "edge": 85747,
+                "time": 8574700,
+                "level": 1
+              },
+              {
+                "edge": 85779,
+                "time": 8577900,
+                "level": 0
+              },
+              {
+                "edge": 85811,
+                "time": 8581100,
+                "level": 1
+              },
+              {
+                "edge": 85827,
+                "time": 8582700,
+                "level": 0
+              },
+              {
+                "edge": 85843,
+                "time": 8584300,
+                "level": 1
+              },
+              {
+                "edge": 85859,
+                "time": 8585900,
+                "level": 0
+              },
+              {
+                "edge": 85875,
+                "time": 8587500,
+                "level": 1
+              },
+              {
+                "edge": 85891,
+                "time": 8589100,
+                "level": 0
+              },
+              {
+                "edge": 85923,
+                "time": 8592300,
+                "level": 1
+              },
+              {
+                "edge": 85955,
+                "time": 8595500,
+                "level": 0
+              },
+              {
+                "edge": 85987,
+                "time": 8598700,
+                "level": 1
+              },
+              {
+                "edge": 86003,
+                "time": 8600300,
+                "level": 0
+              },
+              {
+                "edge": 86019,
+                "time": 8601900,
+                "level": 1
+              }
+            ],
+            "sampler_delay_cycles": 2,
+            "boundary": "Independent integer-quanta sender waveform installed before chip edges; actual resolved sense pad checked on the following observation. No metastability or analog timing claim."
+          },
+          "name": "supervisor-no-rearm",
+          "refused_mutant": true
+        },
+        {
+          "observations": [
+            {
+              "serial_frame_first_edge": 86168,
+              "serial_frame_last_edge": 86459,
+              "command_delivery_edge": 86457,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 288,
+              "core_completion_edge": 86455,
+              "mailbox_arrival_edge": 86456,
+              "status": 189,
+              "live": 107,
+              "rejected": true
+            },
+            {
+              "serial_frame_first_edge": 87651,
+              "serial_frame_last_edge": 87942,
+              "command_delivery_edge": 87940,
+              "command_delivery_boundary": "phase_cycles2 serial sampler/receiver/control pipeline",
+              "lead_cycles": 289,
+              "core_completion_edge": 87939,
+              "mailbox_arrival_edge": 87940,
+              "status": 185,
+              "live": 174,
+              "rejected": false
+            }
+          ],
+          "refused_mutant": true,
+          "refused_by": "completion-edge session ownership; staged BEGIN accepted",
+          "name": "supervisor-no-reservation"
+        }
+      ],
+      "unsafe_clock_control": {
+        "rx_cycles": 8,
+        "tx_cycles": 1,
+        "tx_tick": 770,
+        "rx_tick": 100,
+        "single_frame_safe": true,
+        "safe_certificate_rejected": true,
+        "log": "unsafe-clock-rejected.log",
+        "boundary": "Failure of the stronger sufficient stream bound; no universal failure claim outside it."
+      },
+      "bundled_tool_closure": {
+        "method": "Conservative package inventory: explicit Icarus wrapper/compiler/runtime seeds, all lib/ivl assets, and all top-level bundled Icarus/CIRCT dylibs; each file hashed before use.",
+        "inventory_files": 852,
+        "inventory_unchanged": true,
+        "compiler_backend": "build/tools/oss-cad-suite/lib/ivl",
+        "vpi_modules": [
+          "build/tools/oss-cad-suite/lib/ivl/system.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/v2005_math.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/v2009.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/va_math.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/vhdl_sys.vpi",
+          "build/tools/oss-cad-suite/lib/ivl/vhdl_textio.vpi"
+        ],
+        "loader_overrides_refused": true,
+        "compiler_config_and_vpi_path_overrides_refused": true,
+        "environment_boundary": "OS dynamic loader and system libraries, shell utilities, Python runtime, and Lake/Lean runtime environment; Lean version separately recorded and checked."
+      },
+      "source_inputs": 269,
+      "tool_files": 852,
+      "seconds": 371.49
+    },
+    "readback": {
+      "local_equalities": 984,
+      "modules": {
+        "core": {
+          "top": "pinwheel_paired_core_controller",
+          "registers": 82,
+          "register_bits": 1470,
+          "outputs": 37,
+          "shared_equations": 45,
+          "local_equalities": 535,
+          "audit": {
+            "declarations": 33862,
+            "theorems": 22174,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "upload-cursor",
+            "parameter-bank",
+            "sram-write",
+            "stream-enabled"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+        },
+        "chip": {
+          "top": "pinwheel_paired_controller",
+          "registers": 111,
+          "register_bits": 1593,
+          "outputs": 7,
+          "shared_equations": 45,
+          "local_equalities": 449,
+          "audit": {
+            "declarations": 40549,
+            "theorems": 28619,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "sampler",
+            "mailbox-valid",
+            "package-output",
+            "stream-enabled"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+        }
+      },
+      "source_inputs": 555,
+      "seconds": 1098.455,
+      "inputs_unchanged": true
+    },
+    "foundation": {
+      "modules": 243,
+      "audited_declarations": 18852,
+      "audited_theorems": 9893,
+      "executable_suites": 37,
+      "kernel_suites": 1,
+      "untrusted_axiom_rejected": true,
+      "elapsed_seconds": 1453.859,
+      "source_inputs": 336
+    },
+    "python": {
+      "total_tests": 703,
+      "passed": 701,
+      "skipped": 2,
+      "optimized_tests": 89,
+      "elapsed_seconds": 23.563,
+      "source_inputs": 224
+    }
+  },
+  "artifact_identity": {
+    "prior_manifests": [
+      {
+        "path": "physical/experiments/established-protocol-results.json",
+        "sha256": "a51099822ae4729e26a686928bec8e304363a9bd6e3985b0befd7b04462e6b32"
+      },
+      {
+        "path": "physical/experiments/i2c-capability-results.json",
+        "sha256": "19557c9bb77ca62d8b5d2ac5089f77c1749bbaca29c4927731bd8be36e8b050d"
+      }
+    ],
+    "historical_chip_mlir": {
+      "path": "build/host/i2c-capabilities-02/chip.mlir",
+      "sha256": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8"
+    },
+    "historical_chip_rtl": {
+      "path": "build/host/i2c-capabilities-02/design.sv",
+      "sha256": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf"
+    },
+    "all_verified_prior_chip_bytes": {
+      "build/host/spi-capabilities-five-pad-02/chip.mlir": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8",
+      "build/host/spi-capabilities-five-pad-02/design.sv": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf",
+      "build/validation/spi-source-readback-01/emitted/chip.mlir": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8",
+      "build/validation/spi-source-readback-01/emitted/chip.sv": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf",
+      "build/host/i2c-capabilities-02/chip.mlir": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8",
+      "build/validation/i2c-source-readback-01/emitted/chip.mlir": "8b8d68232ef73e483013a81bd64cbc54f8abc98f459ee51007401a9343d215b8",
+      "build/host/i2c-capabilities-02/design.sv": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf",
+      "build/validation/i2c-source-readback-01/emitted/chip.sv": "85727816dd4886cd8007732a133620a27be2f3491b5f0eff305d83cd7e3981bf"
+    },
+    "chip_mlir": [
+      {
+        "path": "build/host/uart-stream-supervisor-01/chip.mlir",
+        "sha256": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6"
+      },
+      {
+        "path": "build/validation/uart-source-readback-03/emitted/chip.mlir",
+        "sha256": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6"
+      }
+    ],
+    "chip_rtl": [
+      {
+        "path": "build/host/uart-stream-supervisor-01/design.sv",
+        "sha256": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806"
+      },
+      {
+        "path": "build/validation/uart-source-readback-03/emitted/chip.sv",
+        "sha256": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806"
+      }
+    ],
+    "wire_executable": {
+      "path": "build/host/uart-stream-supervisor-01/host.vvp",
+      "sha256": "fc16439bd6463d5a8fe08c2b67242c09872caff8c2d90e8f1ddabceb80d08550"
+    },
+    "wire_attempt": {
+      "path": "build/host/uart-stream-supervisor-01/attempt.json",
+      "sha256": "f78554bacb362f07ec57924f16987e1efcc7c17aa6841cd4ba16742835ea1092"
+    },
+    "wire_readback_chip_mlir_and_rtl_same_bytes": true,
+    "new_chip_differs_from_prior": true,
+    "wire_executable_byte_equality_to_prior_claimed": false
+  },
+  "focused_logs": {
+    "build/validation/uart-buffered-supervisor-axioms-01.log": "adc106ff3f3bb03730a800e37f63def312065a3041bb22e9273a24b9e3405543",
+    "build/validation/uart-buffered-supervisor-build-01.log": "7aff24a0984922efaa91e3c0856a06b492ec06c5f30699d0c1363c22a133abf8",
+    "build/validation/uart-buffered-supervisor-focused-01.log": "8af26600ec3007d7eacf2f50c244f2b5a7349c696ede7ae57f72760220bd6ca3",
+    "build/validation/uart-continuation-closeout-01.log": "982b15746ab39660ac7e0e564167254b7a608a62b521165b426ac822364658a6",
+    "build/validation/uart-python-final-02.log": "1d292c09305f9cf887325388e4726d1431a33b1732f26447bfc3a409f30a7163",
+    "build/validation/uart-python-final-03.log": "583fdd9de9f12888bc6535b81f8854d7c7fec7727ced74eb39a71dc3ce7ec252",
+    "build/validation/uart-source-readback-02.log": "cd2d12d59f7907d1b8e208fca43c54ca3eea9fb1835bad7a7f53820a8dcb8df0",
+    "build/validation/uart-source-readback-03.log": "f6216d9b78d4f165a8fdfd0170965e57124393a7c5da951dbe7e359f65c0fa90",
+    "build/validation/uart-stream-cli-disabled-01.log": "341b401a0a388419d1594acfdb43593d0e12f99526deb76c1ab818144e00c8e3",
+    "build/validation/uart-stream-development-01.log": "a22d717682797d38f342af231f31fe414e109da1bff01ab04c6bf4209dee43f8",
+    "build/validation/uart-stream-development-02.log": "7bee71c6a214223508f8858af47aa18e76b3296af52405fb391e5b06a9b67607",
+    "build/validation/uart-stream-development-03.log": "7a3cfceb719f8c17faab1c20b0778068722e7be3519e0c85e31c378cdf51eddd",
+    "build/validation/uart-stream-development-04.log": "5fbae8edfe5d0e411d6df17b88986d9679b14dea536a1d2ddbbb7a7efbe1975e",
+    "build/validation/uart-stream-focused-01.log": "df017bb6152687d46b1952427a818d2dec0571009a054c4d425ea192551baa99",
+    "build/validation/uart-stream-focused-optimized-01.log": "29c622f0d64142b5b50430140eac915c0619ba82cab1428b3dcf5b0cb1d8bde0",
+    "build/validation/uart-stream-supervisor-01.log": "49553829eab6d6c9d523bb7ae9fe24738b80c0f040a8a657f0c43e654b0c253c"
+  },
+  "implementation_source_sha256": {
+    "Pinwheel.lean": "9a8bfc326c53ef281e8f0ac1ea508cde380750152b8936b81340ddcb0e9dc792",
+    "Pinwheel/Hardware/HostResultBuffer.lean": "adf11a475f70a8752c007e58e468d825c87c630726c10696b814ea2accac91d3",
+    "Pinwheel/UART/BufferedSupervisor.lean": "31bde24f06c1e27186a6c25bfedf3a393760c381218d6dd7d8322e147e2c5d75",
+    "Pinwheel/Hardware/Storage/PairedStream.lean": "9c1c453557335b98961b2dc705e94bec909eecb46bd511bc0c3725648748298f",
+    "test/UARTBufferedSupervisor.lean": "c770b8bf6525de139c4fda481e4b1ca6b37be5f440f90818969d12897334e450",
+    "test/PairedStream.lean": "cc9f8de67a044aabe2f17b5b177863210b1d385b971f3c0929b45c4e199fe679",
+    "test/PairedStreamEmit.lean": "06e5d493e042795a21e02762963cb6e90cc0369e87030eafe1b75c99957682ad",
+    "test/PairedStreamReadback.lean": "9c3ee7473fab0a25c705bb86e5c254316e5252adc6d05b187817d961d9e5907b",
+    "scripts/check-foundation.py": "7e7c6003305cf6a2ef3e9614782a7b6c47bdf8418ef191a91b6c1d163f71f536",
+    "scripts/check-uart-stream.py": "b0d843cd9e49719ee3ca5857cc9e419c05555e6ff04dbb0ab6d8a71c065eaf48",
+    "scripts/uart_stream_peer.py": "cc42baf2dfd442c395330a9764a26f1e224fd83d8cc9807484554f31ca53ae0e",
+    "scripts/check-stream-readback.py": "477abd45ed1f771d1b7b663afc12320d18076ab8621a0b8ee88d1d6eb7434503",
+    "scripts/stream_readback.py": "0a87bf7def04b13fb95188202781e9cbb4606df131ef79bcc1d91d59821a4287",
+    "scripts/pinwheel_host.py": "20beca37927c308c57e73ab7236698644427d16548b09150ba17b21c1e9b7411",
+    "scripts/pinwheel-host.py": "d5ab7631e0578d07d7a418c9f907fc0813acf050ca4d62fea44ccd090a9f5470",
+    "test/test_uart_stream.py": "a5e475a05cae5c00fd1471e95a4e92f1111b55e06fd32f44a28c6b8d27c61be2",
+    "test/test_stream_readback.py": "533c3a9aa0c95b938217029057baa62fc2b329da0054900cbd5047f792ea9b90",
+    "test/test_pinwheel_host.py": "a9b2b57f454f4c3d9e714dfec4bd4e60ae0b3790588595b004b02e4437c88a52",
+    "test/test_host_receipts.py": "2956c787b5171193a7144a2cd84b0ddb9445c3559fded26302172471a493225f"
+  },
+  "behavioral_model_sha256": {
+    "RM_IHPSG13_1P_512x64_c2_bm_bist.v": "8aab6b018ab7dd90014fede340923bac537f610b9c2d9a082ab1c2d953b118c7",
+    "RM_IHPSG13_1P_core_behavioral_bm_bist.v": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12"
+  },
+  "preserved_attempts": [
+    {
+      "kind": "development_attempt_inventory",
+      "receipt": {
+        "path": "build/validation/uart-stream-development-attempts.json",
+        "sha256": "f2d827746d5e3453b9338b70105da666505b808394ca84aa52c44f55a7e9044b"
+      }
+    },
+    {
+      "kind": "source_equation_debug_only",
+      "report": {
+        "path": "build/validation/uart-readback-source-probe-01/report.json",
+        "sha256": "a6a85b718a0824666f81e373914d74a33a10416fa18116db697b7dc6787a3e21"
+      },
+      "status": "failed",
+      "artifact_sha256": {
+        "build/validation/uart-readback-source-probe-01/core/Design.lean": "3006a635c57621438033752b775dee3292601f1511b835ee6bf793a79020e81b",
+        "build/validation/uart-readback-source-probe-01/core/Design.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-01/core/Equations.lean": "8b4934ecd4470bf91a2b88724e9c77585a5db315bd1e9689e05b78d26fe156c0",
+        "build/validation/uart-readback-source-probe-01/core/Equations.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-01/core/HintEquations.lean": "9f36f6ef5cf7dbb8df8489ed506f06a09d94d47f9d7487ceda144a074b980b82",
+        "build/validation/uart-readback-source-probe-01/core/HintEquations.log": "4066ba68c44a5bc312df07b16e70ae120b4ba4b1acd088f384baa83ac2cdf528",
+        "build/validation/uart-readback-source-probe-01/core/Hints.lean": "222ffb9fad7b9c8c093ffcc97b3e8a754178bcf73d43a555e0a95b9c2ecaa946",
+        "build/validation/uart-readback-source-probe-01/core/Hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-01/core/Sources.lean": "0cc55d64274d8483822d6ad351c3d2b70572935fa3b949c727220b6b7b73e5e6",
+        "build/validation/uart-readback-source-probe-01/core/Sources.log": "52692ead9c22ae40a3557cf80f914d56df5f76c41335a48a4bf530073142288f",
+        "build/validation/uart-readback-source-probe-01/emit.log": "a0cfe6b6b5c777b8e7bab8a5839a025f04d21f967718ca393eb4701f9c4c295c",
+        "build/validation/uart-readback-source-probe-01/emitted/assembly.json": "2c847bc50ed59e90037e08c1afee954c5220d3c1cb4ec80a549ddf8874e2ef96",
+        "build/validation/uart-readback-source-probe-01/emitted/chip.mlir": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6",
+        "build/validation/uart-readback-source-probe-01/emitted/core.mlir": "dc640cea17c6a889b299402a5d27593c007a081b839ae377cff3beb1d6c8516d",
+        "build/validation/uart-readback-source-probe-01/emitted/host-result-component.mlir": "f63c1c1e341049550d3f7f0cf611962562698b90ab8474dea2bb9db9a5a90808",
+        "build/validation/uart-readback-source-probe-01/hints/chip-cuts.json": "827cc63a54f5b2d144d97c460a72124d11876a17f46bfe93e0f0a07721c18bda",
+        "build/validation/uart-readback-source-probe-01/hints/core-cuts.json": "82943750c5f59f48ca85d4939726fcf5d7c394caa48c9cbe00203989d8a0c0aa",
+        "build/validation/uart-readback-source-probe-01/hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-01/report.json": "a6a85b718a0824666f81e373914d74a33a10416fa18116db697b7dc6787a3e21"
+      }
+    },
+    {
+      "kind": "source_equation_debug_only",
+      "report": {
+        "path": "build/validation/uart-readback-source-probe-03/report.json",
+        "sha256": "30b1502f6029bfb7de18dca0197a35b2f5c0e62dbc548bcff6f9bf9d600eb382"
+      },
+      "status": "passed_debug_only",
+      "artifact_sha256": {
+        "build/validation/uart-readback-source-probe-03/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4",
+        "build/validation/uart-readback-source-probe-03/chip/Design.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/chip/Equations.lean": "61583d64001b604054fb76ebdecd63afe67c8d8d474a183879536d4323f1133f",
+        "build/validation/uart-readback-source-probe-03/chip/Equations.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/chip/HintEquations.lean": "aa67302c36764c4da42b1d665f29468dc9d5c9980514f1d7e5d928f76bbac58a",
+        "build/validation/uart-readback-source-probe-03/chip/HintEquations.log": "4066ba68c44a5bc312df07b16e70ae120b4ba4b1acd088f384baa83ac2cdf528",
+        "build/validation/uart-readback-source-probe-03/chip/Hints.lean": "05438b9bafee6576e9e07f11c2bf0623a529e04c079f1c9c0dc019ffbbf20083",
+        "build/validation/uart-readback-source-probe-03/chip/Hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/chip/Sources.lean": "2355fe770916c592cb96cddf15130ecf5503f9c2d9c2976e5f064e754c2500bf",
+        "build/validation/uart-readback-source-probe-03/chip/Sources.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/core/Design.lean": "3006a635c57621438033752b775dee3292601f1511b835ee6bf793a79020e81b",
+        "build/validation/uart-readback-source-probe-03/core/Design.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/core/Equations.lean": "8b4934ecd4470bf91a2b88724e9c77585a5db315bd1e9689e05b78d26fe156c0",
+        "build/validation/uart-readback-source-probe-03/core/Equations.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/core/HintEquations.lean": "9f36f6ef5cf7dbb8df8489ed506f06a09d94d47f9d7487ceda144a074b980b82",
+        "build/validation/uart-readback-source-probe-03/core/HintEquations.log": "4066ba68c44a5bc312df07b16e70ae120b4ba4b1acd088f384baa83ac2cdf528",
+        "build/validation/uart-readback-source-probe-03/core/Hints.lean": "222ffb9fad7b9c8c093ffcc97b3e8a754178bcf73d43a555e0a95b9c2ecaa946",
+        "build/validation/uart-readback-source-probe-03/core/Hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/core/Sources.lean": "9a21dd54ad80c1d4b39b7fe4b3f7f800678fc877221e1f6d0150950e88cf2381",
+        "build/validation/uart-readback-source-probe-03/core/Sources.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/emit.log": "a0cfe6b6b5c777b8e7bab8a5839a025f04d21f967718ca393eb4701f9c4c295c",
+        "build/validation/uart-readback-source-probe-03/emitted/assembly.json": "2c847bc50ed59e90037e08c1afee954c5220d3c1cb4ec80a549ddf8874e2ef96",
+        "build/validation/uart-readback-source-probe-03/emitted/chip.mlir": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6",
+        "build/validation/uart-readback-source-probe-03/emitted/core.mlir": "dc640cea17c6a889b299402a5d27593c007a081b839ae377cff3beb1d6c8516d",
+        "build/validation/uart-readback-source-probe-03/emitted/host-result-component.mlir": "f63c1c1e341049550d3f7f0cf611962562698b90ab8474dea2bb9db9a5a90808",
+        "build/validation/uart-readback-source-probe-03/hints/chip-cuts.json": "827cc63a54f5b2d144d97c460a72124d11876a17f46bfe93e0f0a07721c18bda",
+        "build/validation/uart-readback-source-probe-03/hints/core-cuts.json": "82943750c5f59f48ca85d4939726fcf5d7c394caa48c9cbe00203989d8a0c0aa",
+        "build/validation/uart-readback-source-probe-03/hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/uart-readback-source-probe-03/report.json": "30b1502f6029bfb7de18dca0197a35b2f5c0e62dbc548bcff6f9bf9d600eb382"
+      }
+    },
+    {
+      "kind": "resolved_wire_development_only",
+      "directory": "build/host/uart-stream-development-01",
+      "artifact_sha256": {
+        "build/host/uart-stream-development-01/assembly.json": "2c847bc50ed59e90037e08c1afee954c5220d3c1cb4ec80a549ddf8874e2ef96",
+        "build/host/uart-stream-development-01/buffer-rtl.log": "e69c4f0c24a161e766f623da197fdcab8df5889c475d9ed16751918850784d00",
+        "build/host/uart-stream-development-01/buffer-tb.sv": "f890fc351042fb1f2ac3c6bb461a13f185770bce73fe94b4cec2653dd362c46b",
+        "build/host/uart-stream-development-01/buffer.vvp": "88c58e9e13378accda66ee132dc904c6413ce4714cca234a0a25afe218d5d0f8",
+        "build/host/uart-stream-development-01/chip.mlir": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6",
+        "build/host/uart-stream-development-01/chip.sv": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+        "build/host/uart-stream-development-01/compile-buffer.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/host/uart-stream-development-01/compile-host.log": "0a17f676fc87f8d9104789766ddbd8c0f7e090f8afd50baef32cedd5ae56e262",
+        "build/host/uart-stream-development-01/core.mlir": "dc640cea17c6a889b299402a5d27593c007a081b839ae377cff3beb1d6c8516d",
+        "build/host/uart-stream-development-01/emit.log": "a0cfe6b6b5c777b8e7bab8a5839a025f04d21f967718ca393eb4701f9c4c295c",
+        "build/host/uart-stream-development-01/export-chip.log": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+        "build/host/uart-stream-development-01/export-host-result-component.log": "9ac2c74d2959600c70f717458c0892b43b7b9be02b1ccd81ee0efd2403c03363",
+        "build/host/uart-stream-development-01/host-result-component.mlir": "f63c1c1e341049550d3f7f0cf611962562698b90ab8474dea2bb9db9a5a90808",
+        "build/host/uart-stream-development-01/host-result-component.sv": "9ac2c74d2959600c70f717458c0892b43b7b9be02b1ccd81ee0efd2403c03363",
+        "build/host/uart-stream-development-01/host.vvp": "62a845d39fbec688188ebe41b4ad325c910a3771a260a2823ff05ad3efc0add7",
+        "build/host/uart-stream-development-01/probe.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3"
+      },
+      "scope": "Development controls; the final gate regenerates and certifies every actual upload."
+    },
+    {
+      "kind": "resolved_wire_development_only",
+      "directory": "build/host/uart-stream-development-02",
+      "artifact_sha256": {
+        "build/host/uart-stream-development-02/active-stop.json": "5818160c17be45b1bf745ed033faa464268bba6977efe0e6481e9f28ff770749",
+        "build/host/uart-stream-development-02/bad.json": "c4244afc92f296fa244048854193dc44e0253e154cf1eaac77f5c031b3420761",
+        "build/host/uart-stream-development-02/clear.json": "6f3eac25bc49911495c5b0bf03d6e92101d912fd6f4c95962205030004c2eb92",
+        "build/host/uart-stream-development-02/compiled/images.txt": "221b30b0ca2817e71944f5314bc7fa820ee07b01b55042cd30002f947b91b046",
+        "build/host/uart-stream-development-02/compiled/metadata.json": "7c15ce116bc073f0b71342a31b07b5184af995ad0315a283018f7246da023283",
+        "build/host/uart-stream-development-02/false.json": "51ce50aac52da774a40abbbf10559ddc356528b2a62c09ea0e4b9138fb476fac",
+        "build/host/uart-stream-development-02/fixture.log": "ffe1d19f2ee78798cdd5e9d1e01156fba93c48ee202eaaec9fb682d703ca3649",
+        "build/host/uart-stream-development-02/held.json": "d3d14edfd46555cd331e8e17d058140825aa6e21ba4517e019c3a0776ceaf000",
+        "build/host/uart-stream-development-02/probe.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-02/reservation.json": "e0569de022b3acbdcaff1bf05b3399bde971100bad7293c8854f07f9e22c5926",
+        "build/host/uart-stream-development-02/reserve.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-02/same.json": "77a217fd47d5be1cb8f1dc3d4128e745868b442670bc021c87f08ea9de3a4ae1",
+        "build/host/uart-stream-development-02/session.json": "b72b4761fae05dc92b2dfe9f07c79445bea87b00fbc35637bef9a7f48a946e1b",
+        "build/host/uart-stream-development-02/stall.json": "43586eb5470d1162469045443e0dcd319d8fbe923f3907b87a5895b6f85a7a5d",
+        "build/host/uart-stream-development-02/uart-active-stop-source.json": "4418ce67f129f12571351296b655627816375f5ef1475913c147462c56de7bed",
+        "build/host/uart-stream-development-02/uart-after-active-reset.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-02/uart-control-source.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-02/uart-supervisor-terminal6.json": "90b63d45a28abcf7efb7039831a365b032fab40b9f1608bc611efe78ae74225f",
+        "build/host/uart-stream-development-02/uart-supervisor-terminal7.json": "a3506df4d7f60b2241ee884f8241f2c3f6b0b7e3b2aed09dee3d41add666634a"
+      },
+      "scope": "Development controls; the final gate regenerates and certifies every actual upload."
+    },
+    {
+      "kind": "resolved_wire_development_only",
+      "directory": "build/host/uart-stream-development-03",
+      "artifact_sha256": {
+        "build/host/uart-stream-development-03/buffer-clear-after-drop-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/host/uart-stream-development-03/buffer-clear-after-drop-rejected.log": "43dbce406c9b26571b1cf4a27e23408cbd157461cde9ed710ec0f7ce21183410",
+        "build/host/uart-stream-development-03/buffer-clear-after-drop.sv": "d46475e582e5745d9b638288c0e77f216db996f3dd3c9d3c29d768c53f70ba89",
+        "build/host/uart-stream-development-03/buffer-clear-after-drop.vvp": "301bdb1efbb015973c92c90c65e06833b29496094a4afc604dfa8856b7aaf7a2",
+        "build/host/uart-stream-development-03/buffer-overwrite-unread-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/host/uart-stream-development-03/buffer-overwrite-unread-rejected.log": "0d8359a592be1fce6348c424310c512d578336664c8e69b8cfde42da33d84bd2",
+        "build/host/uart-stream-development-03/buffer-overwrite-unread.sv": "25fbbd51dbafce6f3ffe777377b19a5dbc528d7c8c57edd664bc579cca28ab70",
+        "build/host/uart-stream-development-03/buffer-overwrite-unread.vvp": "8b56696cd61ce5c4b7c3b88bc380863a4020ba78ece3cff6eeddc86caf1764dc",
+        "build/host/uart-stream-development-03/buffer-tb.sv": "f890fc351042fb1f2ac3c6bb461a13f185770bce73fe94b4cec2653dd362c46b",
+        "build/host/uart-stream-development-03/capture.json": "aa5cc0ecb7bd9e7a8d35722c4ea847eab9d122217a213016ea85a42445a7aa2d",
+        "build/host/uart-stream-development-03/design.sv": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+        "build/host/uart-stream-development-03/faults.json": "ddf1dd2484e0da27cb1288049447791e979e71ce18256f10b47129b79a12cc1c",
+        "build/host/uart-stream-development-03/host-result-component.sv": "9ac2c74d2959600c70f717458c0892b43b7b9be02b1ccd81ee0efd2403c03363",
+        "build/host/uart-stream-development-03/reservation.json": "8aa5c3efee885a0a5d9c1ac5a1850cd0e33f16bd06fa7ba770d1ccfded9281d0",
+        "build/host/uart-stream-development-03/supervisor-no-rearm-compile.log": "8096ebb95fe5b9baecb667d6bf172356bd54a52c86774e014a6304ca2ee5afc4",
+        "build/host/uart-stream-development-03/supervisor-no-rearm-source.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-03/supervisor-no-rearm.sv": "d2c3347c79f059ae96322d3aa2a5a609d4623dc302f16178d87acce5b9525ee1",
+        "build/host/uart-stream-development-03/supervisor-no-rearm.vvp": "882f13dee0db73f35085749c3a5cb5492953434239c1570e1e70f81b0ea98778",
+        "build/host/uart-stream-development-03/supervisor-no-reservation-compile.log": "dccda06e8ec17baae739e79fe00d21de1671b80e760e288ab5eb4b21c157b810",
+        "build/host/uart-stream-development-03/supervisor-no-reservation-source.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-03/supervisor-no-reservation.sv": "50d14aaaf4ae2fb309a3abd39e6e3d25d06d900d66fbfd5d7234919b3eab1f78",
+        "build/host/uart-stream-development-03/supervisor-no-reservation.vvp": "e671ea5266703291fc9d0619ba733ba5de138f6dbc114f5bc5503cfc975225ec",
+        "build/host/uart-stream-development-03/uart-supervisor-terminal6.json": "90b63d45a28abcf7efb7039831a365b032fab40b9f1608bc611efe78ae74225f",
+        "build/host/uart-stream-development-03/uart-supervisor-terminal7.json": "caaa5aac762a6af9899d36ae90a27610f1464b68bafb38efedb60c40b910fa63",
+        "build/host/uart-stream-development-03/uart-wrong-capture-slots.json": "3c3af42281c99ac9b5fa6e1020a3771f6d383802f1678592c590c32b3ae8126c"
+      },
+      "scope": "Development controls; the final gate regenerates and certifies every actual upload."
+    },
+    {
+      "kind": "resolved_wire_development_only",
+      "directory": "build/host/uart-stream-development-04",
+      "artifact_sha256": {
+        "build/host/uart-stream-development-04/compatibility.json": "4370bd07f0287f9811f48423e33944d88f1018390f12536503df5c3cd5e735ca",
+        "build/host/uart-stream-development-04/disabled-i2c-write.json": "962227ebe9237f8debac0e34203b0f13359a2492a33acfbe53a6f5f3b0d99b9e",
+        "build/host/uart-stream-development-04/disabled-spi.json": "778320b90f2aa6b97551977f12b42259e861c19b9d3db888996a0e2344c59919",
+        "build/host/uart-stream-development-04/disabled-uart-rx.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-04/mutation.json": "9e50f731b138b7aa452f3091e99b47fefe1d77ae8c52a384762230227b3287d3",
+        "build/host/uart-stream-development-04/reservation-negative.json": "62a17ca3eda88518d397a45bbbdb307fc6742eb9eb31706c8417e196cf6a5df3",
+        "build/host/uart-stream-development-04/spacing.json": "8ba9edca226ed9e336333e871f4bf3c53db8d2c6ffa32b9abb31fc5698f7cf06",
+        "build/host/uart-stream-development-04/uart-rearm-spacing-control.json": "080e4dd4c2d84989f59d945f5bfe89e9fa74e8e31430bbf572f337e7d230b5c6",
+        "build/host/uart-stream-development-04/unsafe.lean": "b2ccd72ac4fa2e3d7504923b10c85ea84f420e17bea1e822c989159ef001f7bd",
+        "build/host/uart-stream-development-04/unsafe.log": "c998743884d7bae4f4f56fc27457d8921dfcc44eaeeaaf0b4ec4058765ed1008"
+      },
+      "scope": "Development controls; the final gate regenerates and certifies every actual upload."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-01",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-01/chip/Design.lean": "e0fcc2bed8afe6bc56c92d0c5806f53b347ba7f00e2024a8496619a85ba201bf",
+        "build/validation/uart-readback-design-probe-01/core/Design.lean": "3550029fb6406ae6d9ea077bbd9f99dc8225c0a4771732f9a62a8bedc38282b6"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-02",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-02/chip/Design.lean": "e65671e970ef312df72e71a973e227b6f3b68ec57a4d54e54934c6060695bf35",
+        "build/validation/uart-readback-design-probe-02/core/Design.lean": "9174b961b5e32d8aa0e02423d16ea5277c409a5754fcae487a8e08677422a120"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-03",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-03/chip/Design.lean": "2aeb1b4bbdbd6046875875b6d04ad39203174cd1d36e02ada6a8125dc4e0a357",
+        "build/validation/uart-readback-design-probe-03/core/Design.lean": "3006a635c57621438033752b775dee3292601f1511b835ee6bf793a79020e81b"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-04",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-04/chip/Design.lean": "c49d57ca7e55fe7f9a75d503fa63174effe0bd20c3e90ce54c95dfe888e1fa76",
+        "build/validation/uart-readback-design-probe-04/core/Design.lean": "3006a635c57621438033752b775dee3292601f1511b835ee6bf793a79020e81b"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-05",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-05/chip/Design.lean": "da60ca67e3f730e9c6b054ced12e3ff01e9ec843988674cacd3b03ef5dd9cb90",
+        "build/validation/uart-readback-design-probe-05/core/Design.lean": "3006a635c57621438033752b775dee3292601f1511b835ee6bf793a79020e81b"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-design-probe-06",
+      "artifact_sha256": {
+        "build/validation/uart-readback-design-probe-06/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "preserved_generated_proof_debug",
+      "directory": "build/validation/uart-readback-source-probe-02",
+      "artifact_sha256": {
+        "build/validation/uart-readback-source-probe-02/core/Sources.lean": "9a21dd54ad80c1d4b39b7fe4b3f7f800678fc877221e1f6d0150950e88cf2381"
+      },
+      "scope": "Generated debugging sources only; no complete successful RTL receipt or full direct-compile stderr retained."
+    },
+    {
+      "kind": "superseded_readback_attempt",
+      "report": {
+        "path": "build/validation/uart-source-readback-01/report.json",
+        "sha256": "eefe2e0e0b8015fc1d7ebc9641cf84676a19c2ef8dee3eeb6d30f09aa765a383"
+      },
+      "status": "failed"
+    },
+    {
+      "kind": "superseded_readback_attempt",
+      "report": {
+        "path": "build/validation/uart-source-readback-02/report.json",
+        "sha256": "d6b8589ed946ba01265ca3a4f6a3562e34bc58ae482d9e139b185ca99ad1a200"
+      },
+      "status": "failed"
+    },
+    {
+      "kind": "superseded_python_snapshot",
+      "report": {
+        "path": "build/validation/uart-python-final-01/report.json",
+        "sha256": "a9a46a76f1fdddac69bce2768313d5de062aa3ea6cf94d42b5d7e8e73dff360a"
+      },
+      "status": "passed"
+    },
+    {
+      "kind": "superseded_python_snapshot",
+      "report": {
+        "path": "build/validation/uart-python-final-02/report.json",
+        "sha256": "330ecb4915e63e76255ad0d7db567698640d2e9810229da5815c0fbdd786bcbd"
+      },
+      "status": "passed"
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-helper-probes-01",
+      "artifact_sha256": {
+        "build/validation/stream-helper-probes-01/Adapter526.lean": "8f4d222e931d312a5658f28f8d7008c2d89a8822c0087ed84b547583dde56ca5",
+        "build/validation/stream-helper-probes-01/Adapter526.log": "b14ec7860f4c13afa891710fdc2635f4b762d7a309c9ea1ef6b2564b54963bbe",
+        "build/validation/stream-helper-probes-01/Adapter531.lean": "e1be594e7c8074be757c8f5d4c4814cf77e9e22ec77eef573723d5fa6a167561",
+        "build/validation/stream-helper-probes-01/Adapter531.log": "4d69ac557de5bbe192a3ba575c7fb437107dec24741e527c66a6b884940e2f6c",
+        "build/validation/stream-helper-probes-01/Adapter534.lean": "8f3c03ce6134f764e30fd5bb34c10ed644976ecb2013cee321468283d1fffcc1",
+        "build/validation/stream-helper-probes-01/Adapter534.log": "2657af663aa2cef78f9f95e7ce44d6ad6485120b82f87ce4d54d3786c4c1bdd3",
+        "build/validation/stream-helper-probes-01/Adapter534Abstract.lean": "7c3d84b9b22b2546f93eeadc4820c14c9751255f779da209a8e2f61ecd0bd807",
+        "build/validation/stream-helper-probes-01/Adapter534Abstract.log": "5df206bf3feaeae939db6452e579d6337c8a671aadd328ed1b987fd0611a26d5",
+        "build/validation/stream-helper-probes-01/BitNotMux.lean": "faec0e6492969c88d20c374142b147e712438c6fc1062ff42e7128ad2ce7c400",
+        "build/validation/stream-helper-probes-01/BitNotMux.log": "0087e014c7d4f031304dcb47e673cd46984e4e141466a8abe8aec7250afd8b65",
+        "build/validation/stream-helper-probes-01/CoreHelpers-control.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-helper-probes-01/CoreHelpers.lean": "2b2eeea9d50635b0ecc4df9c1390736477baef32b97e22a61b9f88ee314ecdf0",
+        "build/validation/stream-helper-probes-01/CoreHelpers.log": "6a93029bbb17fc35944d69c1a3f1e2444a21e076a0bb20ea59dbae185e98b56e",
+        "build/validation/stream-helper-probes-01/CoreHelpers02-control.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-helper-probes-01/CoreHelpers02.lean": "8cfc856c8c421f51515ae9834e3782b12129f3e89a6e97a5e50a2ecd85e337e1",
+        "build/validation/stream-helper-probes-01/CoreHelpers02.log": "e0fea1b6067cd2d631b1596353ba3af57a16fa8946fa093825a121383f0d8ee3",
+        "build/validation/stream-helper-probes-01/Local10.lean": "4b0fb6fe182d1eadbeb4646aab6b20e9cdcfbe5ed23bf61904c0211fe943de96",
+        "build/validation/stream-helper-probes-01/Local10.log": "822be3bd5456176499ac50bc42692b78d76e30fdba9114236d925a6bd8828a78",
+        "build/validation/stream-helper-probes-01/Local517.lean": "15201a0a77ece00383a3c446b5583cd6d676a15ee52720ddbbb7a27827e3fa0f",
+        "build/validation/stream-helper-probes-01/Local517.log": "f82bfd196ca16f7b9e4efde80f1dc0f40f0c21072f41b83b3ff74a0135d0f2d8",
+        "build/validation/stream-helper-probes-01/Local526.lean": "28b3a65204ebd5ea629585231a87893e8356413e357a33f4cdb5d68572490636",
+        "build/validation/stream-helper-probes-01/Local526.log": "909174dc200b96d82be32e907560c82eadbe2728689e26b3bed92b15a20b2326",
+        "build/validation/stream-helper-probes-01/Local526Abstract.lean": "0fae5a6a1f7dddb059cc83d72672cb31ce0b392a853103261de8b29f4cf576dc",
+        "build/validation/stream-helper-probes-01/Local526Abstract.log": "59859f98094f4a60453edf9e9e0fb704a8316570b952a2478e1ab64532ae16a7",
+        "build/validation/stream-helper-probes-01/Local526Canonical.lean": "827020b96d3783b84b98b76912e508bfba305373bef852e7743b02255b147cf9",
+        "build/validation/stream-helper-probes-01/Local526Canonical.log": "76d590793723acd937d2c6e194d519e5ea9d4cb14ff88953f44506f9c73b168e",
+        "build/validation/stream-helper-probes-01/Local526Guard.lean": "a38ea515e6a9691d40afbcc11e09eb89aaf1d1cb469aaf218966594aaa03a07a",
+        "build/validation/stream-helper-probes-01/Local526Guard.log": "ecb22f4ebc9c846ae06a7241056ac0be1bdb2e772b1e95c4641b07bcd83e1cfa",
+        "build/validation/stream-helper-probes-01/Local526Shared.lean": "1f0fdbdd55058c253fd0da2babd5907ce31589e6fa73f42c6a9298e7ea1b24e9",
+        "build/validation/stream-helper-probes-01/Local526Shared.log": "59859f98094f4a60453edf9e9e0fb704a8316570b952a2478e1ab64532ae16a7",
+        "build/validation/stream-helper-probes-01/Local53.lean": "5b605d792d4ab07853b817263fe8e5129acf705d0e4e1c5f7f5bd2fa3a868934",
+        "build/validation/stream-helper-probes-01/Local53.log": "26c18332140c194ba4ed89b799f53f5bbb8e820e2eb317bfb8e37cedd1c057dd",
+        "build/validation/stream-helper-probes-01/Local531.lean": "1a907dd9406e142c583b1daec6b47b2ecdc6c55c87b85b4cd69234aded99ab15",
+        "build/validation/stream-helper-probes-01/Local531Abstract.lean": "c2c5504b3b8034f9b4621fa734c9484196ed1b30fc298474241b2e6eb271e50d",
+        "build/validation/stream-helper-probes-01/Local531Abstract.log": "6f6d4ec7608e8ebd46991125f9cb8e71a15c20d59f7cf03391d13a42ab5ab3fa",
+        "build/validation/stream-helper-probes-01/Local531Bits.lean": "c244d44bdd10054b8e0e6b7b7afc6d0ec4b410e691ee7a29ec7589428f929774",
+        "build/validation/stream-helper-probes-01/Local531Bits.log": "46d9f08b591cfcc6d64332f662d4e622e12da0f8d5d5c92e6e9213a16dc1f4ec",
+        "build/validation/stream-helper-probes-01/Local531Boolean.lean": "9fb1eb29fc7d292b82d478c28c532f328fcffde45457633fe71c8d5e7a6047a1",
+        "build/validation/stream-helper-probes-01/Local531Boolean.log": "14282944f21e035c5df1cf951989453c60ab0db0a8a0865590520600e65fd1de",
+        "build/validation/stream-helper-probes-01/Local531Mux.lean": "9e46a3fb62ccb0ce7b822913906c47ba8c6e7b62fa1210f19845bf75f315de7f",
+        "build/validation/stream-helper-probes-01/Local531Mux.log": "9425f6ccb85e563000b6a28641716609bb86c674ebcde7167b171e6e11e6e084",
+        "build/validation/stream-helper-probes-01/Local531Normalize.lean": "1dedf7efa2968ba56ef7b5dc99f8e4489eae5682f4e00386eb933ec0304f9184",
+        "build/validation/stream-helper-probes-01/Local531Normalize.log": "515caa8950121e41046e7df4f07ac715217af6fe1ee6153d62f7c45c29e9313b",
+        "build/validation/stream-helper-probes-01/Local531Shared.lean": "d26ae066af04aaa0e5bf3703fdf31aab844615a35934edf08bb09ee93c157c7c",
+        "build/validation/stream-helper-probes-01/Local531Shared.log": "8b26b9c93a87f80cc3f3906cd2c8c776ca33aa832de5aa11970ad7dbc753b878",
+        "build/validation/stream-helper-probes-01/NR526Generic.lean": "5337462224a68e761106ea770f721ec0136cd47ed802e5955415f303261991d9",
+        "build/validation/stream-helper-probes-01/NR531Arithmetic.lean": "27e233d7d125bdf4c16c3c6b2bc5530f67e581372e5872d94c5e3e46903b559e",
+        "build/validation/stream-helper-probes-01/NR531Arithmetic.log": "51ce699d19be0fd4254da17a07d3bcc41300d27334310838705c5853a338dfee",
+        "build/validation/stream-helper-probes-01/NR531Closed.lean": "e30c4fd9ba11f5a212adabbfdba78534f447fb6e1a68295fe789dc8bf2a58c41",
+        "build/validation/stream-helper-probes-01/NR531Congr.lean": "557500d2dca8a2d5c3d10dc50e230e47600ac778bcf12627a20ced713579daa6",
+        "build/validation/stream-helper-probes-01/NR531Congr.log": "3a46e731954de37b3f2f7a9a81516af818774df8e42d862c2ab525c34ba4600c",
+        "build/validation/stream-helper-probes-01/NR531Congr5.lean": "31439a38b9ce3bd9fafe2210e2cc88e1c14a81d75dffd475a098b3526e5a665e",
+        "build/validation/stream-helper-probes-01/NR531Congr5.log": "5a2d972fbb5436c13d797995d91b7bb8c986578b57ba94a0537a93c92aeccd08",
+        "build/validation/stream-helper-probes-01/NR531Extract.lean": "dfd6ea9a293f4c1322d6097b062e7f800800069959e347d2c426a1b5a7d43f85",
+        "build/validation/stream-helper-probes-01/NR531Extract.log": "8756998e6b02552ba5355deabd2e64d981ff00ff5902f7ea9794e8036b78ff5c",
+        "build/validation/stream-helper-probes-01/NR531Generic.lean": "5c787a6831f3ae795488de6aba7fd3f848a8cf23d9cf2678997ba0e5d0e7ce45",
+        "build/validation/stream-helper-probes-01/NR531Guard.lean": "feb312aabc69d39eea9c5d817e2bb7827ae8ad6333107e7427d55004f4ec4823",
+        "build/validation/stream-helper-probes-01/NR531Guard.log": "0a4e6254a5366a4a81592d408a4f2172e7a8e29968a004d6a9e0542969c11874",
+        "build/validation/stream-helper-probes-01/NR531Props.lean": "0268a2d20dd4dbe93a86172a714a3176359a38f4a7ebe180e6947b4df5500b3e",
+        "build/validation/stream-helper-probes-01/NR531Props.log": "61d173365e1781fd8e9969f348362df6e421c543a7aa36ae8e3a74bf578257ef",
+        "build/validation/stream-helper-probes-01/NRGuards.lean": "1009285aa15e5c264bee9911c43baf489a4c25e0daeaaa9d46b96f8b5a618936",
+        "build/validation/stream-helper-probes-01/RejectFalseGuard.lean": "adbde1bbcba7c4ec52544943cf09db053302831c5945c2da4c768abfc4d2c1a0",
+        "build/validation/stream-helper-probes-01/RejectFalseGuard.log": "e031862c3400db87df9ad936308e0661cb4efc69b1c71df2ed8a03d76b7ab958",
+        "build/validation/stream-helper-probes-01/abstract_probe.py": "b36e75cd2f6fcb0ce634927c0e17e015d8651be192c47553ade572b43fff2f31",
+        "build/validation/stream-helper-probes-01/core-pairs.json": "8ac022a1ac700b6d030dbdcd8538ebf82a7a3dbab0ed8f7d65fec6089fd4f39e",
+        "build/validation/stream-helper-probes-01/focused-report.json": "5c121a8e4f2d37ae3cfd499836d88725db5e5d7bd579fef4715f78b4ed81ea50",
+        "build/validation/stream-helper-probes-01/guards-normal.log": "4d63ca9427396db66fead3e3afccb4fc3af86ecbec5f929ca8bc165393a02738",
+        "build/validation/stream-helper-probes-01/guards-normal02.log": "9fbd3df628d63bb85bb2f91d6a5b05473c00576ecac1e7904da9ff974cb31b26",
+        "build/validation/stream-helper-probes-01/guards-optimized.log": "c3a800c684ab9256d02dc68337e247b57a4fe1a28595c733b3d2f071082dd1e2",
+        "build/validation/stream-helper-probes-01/guards-optimized02.log": "53446a8bafaf9114702e350b55b5d23846860660ce1cd5a2555e4a508a9d377d"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-01",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-01/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4",
+        "build/validation/stream-proof-probes-01/chip/Equations.lean": "61583d64001b604054fb76ebdecd63afe67c8d8d474a183879536d4323f1133f",
+        "build/validation/stream-proof-probes-01/chip/Graphs.lean": "e399a57d33e281ea7e94b4327facc841138169458999b8b7063e9cf52bf1a97a",
+        "build/validation/stream-proof-probes-01/chip/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-01/chip/HintEquations.lean": "aa67302c36764c4da42b1d665f29468dc9d5c9980514f1d7e5d928f76bbac58a",
+        "build/validation/stream-proof-probes-01/chip/Hints.lean": "05438b9bafee6576e9e07f11c2bf0623a529e04c079f1c9c0dc019ffbbf20083",
+        "build/validation/stream-proof-probes-01/chip/LocalProofs.lean": "69ca027be7a7bca5d0d4075d1c7d0f6dc20ef82ff4a5fba8751251fb6cafac03",
+        "build/validation/stream-proof-probes-01/chip/LocalProofs.log": "192d5bf7854455ed8fee852331a40ddb09343e229e4399fdffcaca9b15063fee",
+        "build/validation/stream-proof-probes-01/chip/Proof.lean": "52a0a8d2e863f79f52324a689443ba563f833c36d291e20b56dac383d98fb108",
+        "build/validation/stream-proof-probes-01/chip/Sources.lean": "2355fe770916c592cb96cddf15130ecf5503f9c2d9c2976e5f064e754c2500bf",
+        "build/validation/stream-proof-probes-01/chip/debug-report.json": "8e8c575cc67826b3a5286faa44f8e6f09424140d0ff7bdef4526ca9439e70433",
+        "build/validation/stream-proof-probes-01/chip/import.json": "c9e2f3f28319d39f752b9566669180c0a55ffa46361738866509b45e4649045e",
+        "build/validation/stream-proof-probes-01/chip/import.log": "115f7c0d6a297bd1d24301132335938d87abf7aeb9b3aad8b73ea053aa1afae3",
+        "build/validation/stream-proof-probes-01/chip/import.ys": "8e7253b46f147441752c4e89c6716a2e1586bec72bb5e888a910069724b96219",
+        "build/validation/stream-proof-probes-01/chip/pairs.json": "c02c11e3daa259f8e14e9ee3af58817d437b8c0107244b8a27a4ca053f476733",
+        "build/validation/stream-proof-probes-01/chip_probe.py": "9a9507b04235036f7c24bf71708c1cfa2656ad2498248fd00de74e51f484cdb4",
+        "build/validation/stream-proof-probes-01/core/Proof.lean": "f1ea86e0a7823c52ebd5e137104befa7ee4031f6d2787b6ad497e9732110034d",
+        "build/validation/stream-proof-probes-01/core/Proof.log": "ae96a571eec6c0e1f4e7749e45e1255bad594d0fee2b316ea95e6739c683f31e",
+        "build/validation/stream-proof-probes-01/guards-normal.log": "5f634a9b71cabb0ede485f26f45ebf9102cd1aec71e175de3281aa50fa6a0980",
+        "build/validation/stream-proof-probes-01/guards-optimized.log": "e4d343269cd00d51bb26459323192e5b7b575bb3181ca4434aef43c19ea3d68d"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-02",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-02/__pycache__/dag_outer.cpython-313.pyc": "85b4f9f19afc52630e9bd08f8b5d9af5bb7266fa005e72d23a7f7f6aa2ead1ad",
+        "build/validation/stream-proof-probes-02/__pycache__/dag_payloads.cpython-313.pyc": "b2feaefe7b205b990ea586f4594d801a4470671b2012a410f51a75db7b7fd772",
+        "build/validation/stream-proof-probes-02/__pycache__/dag_plan.cpython-313.pyc": "8508d76095795d6b4d71d6bb7a45f600e91a06a635c51757714808471d86f4b2",
+        "build/validation/stream-proof-probes-02/__pycache__/dag_tactic.cpython-313.pyc": "d9ff1a408712e1c0a9e75bff10f5d7f4a09627cc0176e66a6291f5b591136fda",
+        "build/validation/stream-proof-probes-02/chip/Dag440.lean": "dd857f5a1f319fb1fe349cd4e3f63b39f42ec69f4e3ce91176840c6450f2f9bd",
+        "build/validation/stream-proof-probes-02/chip/Dag440Statement.log": "b122ac0507c14c3d83952cbb0cbad9c56eb4ffa3574d6fd01bbfc0b1ac822c77",
+        "build/validation/stream-proof-probes-02/chip/DagAssemblyCapture440.lean": "1b219413140657e3c2f7c39b3c8559f4efa71b333d019a9b7748ec9f23b4063b",
+        "build/validation/stream-proof-probes-02/chip/DagAssemblyCapture440.log": "76514bbc60d0071a47cdd26964694cd055427baf70d2c41d56870b27a7646478",
+        "build/validation/stream-proof-probes-02/chip/DagAssemblyCases440.lean": "d920ce46a0ad49cf58a6d4d3515f9cbd3e6bf32458e9cdafce4c9142e8723cac",
+        "build/validation/stream-proof-probes-02/chip/DagAssemblyPrefix440.lean": "05486628ce87111421307eb8963eb3b4605e0d09cb66e8c8835ac4a7d01c8ed9",
+        "build/validation/stream-proof-probes-02/chip/DagAssemblyPrefix440.log": "cee731df7c066e722b51fb36ba28e843f7779e312d3e891bfa566215c0054475",
+        "build/validation/stream-proof-probes-02/chip/DagBridgesAllOps.lean": "3dddd29412073a07acf46d5a26289a1375bf7f2f6e8d832c06537808837a9f1b",
+        "build/validation/stream-proof-probes-02/chip/DagBridgesAllOps.log": "f04a249dfc7302e0869288074a84fc21f468eaa36bc971027a48ba00a4beadaf",
+        "build/validation/stream-proof-probes-02/chip/DagCanon440.lean": "4c8a830e783304df3de92226ba7ce9396c1c711405565cceb6218c434a24f2c3",
+        "build/validation/stream-proof-probes-02/chip/DagCanon440.log": "b1e5cd622dfff4ed8677b0adf165b5b6b808874474bf9afc17a98130128ef9f7",
+        "build/validation/stream-proof-probes-02/chip/DagCaptureMatch.lean": "2995e6a13f3fd5d0cb7c06bdf9a5e227d309b334e4582db4e8b9919a3354bae0",
+        "build/validation/stream-proof-probes-02/chip/DagCaptureMatch.log": "712516a4d71d8b42264c93daeabad39147a8a5bed9f60dbf3f71a7c23d0bd89e",
+        "build/validation/stream-proof-probes-02/chip/DagClosedCandidate440.lean": "b0cc3be5cd348bf1fc6148ba8aadec3513c026f1419369c1d4a9284890a37663",
+        "build/validation/stream-proof-probes-02/chip/DagClosedCandidate440.log": "dd953ef85b66822949bfeed29632f1f1a882c31cb5b11a2959067c49ab95c5b2",
+        "build/validation/stream-proof-probes-02/chip/DagClosedRepair01440.lean": "ebfc1531b2ab886f2f7860421ddaf01e878e3210982f97a36a73b77f0315267b",
+        "build/validation/stream-proof-probes-02/chip/DagClosedRepair01440.log": "d47dfcfb55ff0ba5eaf568e9249dc0795523f0366bb9a88bd8bea35e6c0db591",
+        "build/validation/stream-proof-probes-02/chip/DagClosedRepair02440.lean": "fba9f323ad05b5a1ab187fbc14c69f900c6258227778423989678434447f94e5",
+        "build/validation/stream-proof-probes-02/chip/DagClosedRepair02440.log": "88dbda10b45f6e16243c8faee8f07868dccbc99f476c1febf208877a14837f9e",
+        "build/validation/stream-proof-probes-02/chip/DagControl102121.lean": "1f6e54ebf3ae163b2d66dc79f16a17db4b169d41eca381283a27bcc0b89dc454",
+        "build/validation/stream-proof-probes-02/chip/DagControl102121.log": "92d5316ff4d984c9251f185860e63e47e6f7389ecbcf722faa70ebaae32b1a09",
+        "build/validation/stream-proof-probes-02/chip/DagControlExplicit102121.lean": "d3204af751710845e6c6071e707094a59cc34e7cda724c5a8694960977acbb14",
+        "build/validation/stream-proof-probes-02/chip/DagControlExplicit102121.log": "7448df1bdb95168af0df9b1287c5f6120141ec2a507d72a69b0611c4bc6bc3d6",
+        "build/validation/stream-proof-probes-02/chip/DagControlIntro102121.lean": "a211b68651e9dc97e33a3a1d7e27cf57911f72591ff975b42b23f093bb71dd3a",
+        "build/validation/stream-proof-probes-02/chip/DagControlIntro102121.log": "28112c34b14d926dfd3e2817eaea86b07eadc7722c3c580d53443f844d80326a",
+        "build/validation/stream-proof-probes-02/chip/DagControlOpaque102121.lean": "bf7373f8153ba9b2da8dc4e95cd21d17a4c6ec4e11a3a11456c8de79bde10050",
+        "build/validation/stream-proof-probes-02/chip/DagControlOpaque102121.log": "a6c681a2d93dccc3e7df3c84fae8225bd12ad28b21fdc0d68192276ef4fce8b5",
+        "build/validation/stream-proof-probes-02/chip/DagControlRich102121.lean": "cf36e2a21110d4a0d270585133554b9534c77577f9c89954238d82ddc939528c",
+        "build/validation/stream-proof-probes-02/chip/DagControlRich102121.log": "d1e057e12b7e08a00b4ba0edd2b655abe2e73e2a25d78bc69eb43f62928dda53",
+        "build/validation/stream-proof-probes-02/chip/DagExtractCompose.lean": "7f431c488aea47e480b36dc6ac0be00c7bd72a4e6b28f7f576abc4421528c47b",
+        "build/validation/stream-proof-probes-02/chip/DagFacts.lean": "efb827ae3f76493a7f0a3727876c44e6fa73ded9852e01875cae430d499b5a66",
+        "build/validation/stream-proof-probes-02/chip/DagFieldsCongruence01440.lean": "262d7e95ec28bb1e5bf2199df25cade6cfb75b1d01fa1a4fcf3ab516ed916da9",
+        "build/validation/stream-proof-probes-02/chip/DagFieldsCongruence01440.log": "91f62aebd040fba0cdae4fc64a80e32abac986943d1d112e5575f6129f481086",
+        "build/validation/stream-proof-probes-02/chip/DagFieldsCongruence440.log": "29d3d1dfd5dfb0754ce40f4229985f15d043b95a12c37de6ae1a182fe8d6c417",
+        "build/validation/stream-proof-probes-02/chip/DagFieldsPrefix440.lean": "70c14d63aa084b4294e6860176867783d16e34c905cf5b5260f1c6530f73f64a",
+        "build/validation/stream-proof-probes-02/chip/DagFieldsPrefix440.log": "522b1c8eb27fa30c5f6e4b5f0725dcf93f777b6c32efca49ce7a9685c2041a43",
+        "build/validation/stream-proof-probes-02/chip/DagGenericOuter440.lean": "1ee24fb8a6450b6633c041ae90920d142931712ce565a55043e210cd2d91a436",
+        "build/validation/stream-proof-probes-02/chip/DagGenericOuter440.log": "88dbda10b45f6e16243c8faee8f07868dccbc99f476c1febf208877a14837f9e",
+        "build/validation/stream-proof-probes-02/chip/DagGrind440.lean": "8a6500b4564bf9f30f376e8c74d2f469bef73b16c3f25286156f90f28e876580",
+        "build/validation/stream-proof-probes-02/chip/DagGrind440.log": "54684b77949c51e96902eb6f91d604a9071db83a18623148c51767560a970d41",
+        "build/validation/stream-proof-probes-02/chip/DagHints440.lean": "1ee8b5ac768b09c4f8a8b6b2c1a0f1096ff9092f63c6e4843eafde851eabe1f5",
+        "build/validation/stream-proof-probes-02/chip/DagHints440.log": "afd840241e4e0b84ae0c74c32c56e5ba10b1852d2981c6755844826ce903573a",
+        "build/validation/stream-proof-probes-02/chip/DagNumeral440.lean": "d42881e21aef1e187f2e9603d79208408777899b2d819efb599da6d5198d875b",
+        "build/validation/stream-proof-probes-02/chip/DagNumeral440.log": "2e38cd377cbcba1afe9e2fede0d9d876d9b0a7260aeec2fb226af09c6f8d91b1",
+        "build/validation/stream-proof-probes-02/chip/DagOnly440.lean": "a1e06452e0db189aac2bf469311f5248341b5d3cae818a77cc3bc0dae79d2830",
+        "build/validation/stream-proof-probes-02/chip/DagOnly440.log": "a41a7fac6f3ae13ddbea1b22229dec31aad62813b0b4d967cb24a132304d0db7",
+        "build/validation/stream-proof-probes-02/chip/DagOpaque440.lean": "b520d324519262bf09bfad57d6c0c67f2125161b928407e6e9da19a41bea614f",
+        "build/validation/stream-proof-probes-02/chip/DagOpaque440.log": "6004e22655a088d8b4496251a5d105e954a778115bb0179225ad21f1074f2e9b",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric437-02.json": "7eca90e8ec3ee855e69d967722858edd41570b0c2007e293a3f02ea66d79a6e1",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric437-02.lean": "a197b0a1189f142b8da97581a06b025483bc642f49f6d0cb2bdda9cfc1f23bad",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric437-02.log": "c51a3e6ee6408143751417ff51f23274c21f39287d88175ab6d7806c04274152",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric437.lean": "00476976ae667499e641d5065ff7dc62cdb193cc4e9521d7ab8800a13c891ef5",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric437.log": "75976b434107baddd1a27c7907f0a8f7db8aa424f49d34642ceb7983f60997b0",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric441.json": "96d0715f9e05d3fb899e04c0a8636f20f33eab91e771358c95d368ae729b99a2",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric441.lean": "b604c969f3a449f942b095c38c4f499586fb48bc8d8b5833d6ac7adf56579596",
+        "build/validation/stream-proof-probes-02/chip/DagOuterGeneric441.log": "4f67bca4a2680bddc036eb94bcd70df18553c2c7a5d90b2242ac319607b1b4cf",
+        "build/validation/stream-proof-probes-02/chip/DagRejectLeaf.lean": "f1ad9a10b92120a7514c32c2536132228600c7a31bbf4354236df3b1dbf24ee1",
+        "build/validation/stream-proof-probes-02/chip/DagRejectLeaf.log": "8a0fc629dd590e12be3931c4e404dd389211ff948330a12575b950ba71a5b7f4",
+        "build/validation/stream-proof-probes-02/chip/DagRejectLeafClear.lean": "528d1b65d781201041590da4fc4d417e3c6114ec925e627249fd72d5391a1bc0",
+        "build/validation/stream-proof-probes-02/chip/DagRejectLeafClear.log": "8ad91593b1a39055c08c9414dfa8c5a9c2b7d88a848d43b215f13b0f2c7ba581",
+        "build/validation/stream-proof-probes-02/chip/DagRich256440.lean": "7e41969924bf217df033cbe0d05f2ccc7c62e8ee206bc9dceda72f413377d09b",
+        "build/validation/stream-proof-probes-02/chip/DagRich256440.log": "6c67250cff27907015dce955307a3358ac494fe0b089973c56b8118d08ffa81b",
+        "build/validation/stream-proof-probes-02/chip/DagRich440.lean": "6642477291df494847c374b7f7d57ce2f8d1e9b4509b004da8dd0d6fc38ba373",
+        "build/validation/stream-proof-probes-02/chip/DagRich440.log": "47e4c084f3feb0735f30f18d6e5d2ae33609fa8c8082c0304a81019b66e84a19",
+        "build/validation/stream-proof-probes-02/chip/DagRichBool440.lean": "cc37cacca538ef2216eebf81c8c3fd3cb5f9b4f677ed2725fe7dfce1e7d1ad68",
+        "build/validation/stream-proof-probes-02/chip/DagRichBool440.log": "1b3e688e5be36eb6c18b815949726b71a5b61f47f29264fe4c2db028262b92e3",
+        "build/validation/stream-proof-probes-02/chip/DagRichFixed440.lean": "4e9ee2d62b55568e5dd557110bd53c62e108f87727e7707ffeed8cec32a26790",
+        "build/validation/stream-proof-probes-02/chip/DagRichFixed440.log": "da38b7ce9a955fbaf0b31ba6327fb38e7d8196b77250d1ef941ce69a62b2ac16",
+        "build/validation/stream-proof-probes-02/chip/DagRichNoIte440.lean": "172af15852dbe0c373d68f83ff300503734eb2dc93159eb3a386b3d32751a4a1",
+        "build/validation/stream-proof-probes-02/chip/DagRichNoIte440.log": "b09caf2f481776b60a3b2cd4bc2cd472d04e7dbff46ec69596bf05ef380e5fe7",
+        "build/validation/stream-proof-probes-02/chip/DagRichRule440.lean": "e396e209cf50d82be981e2c320ac7293e19808a586d0aa94914ceee587db5300",
+        "build/validation/stream-proof-probes-02/chip/DagRichRule440.log": "90ac223c851836fec02fc0b19499e1aa3d25b06ea6e886a3ec08eb4869204614",
+        "build/validation/stream-proof-probes-02/chip/DagSelectorCompose440.lean": "764b1b8edfb66af2e24719ecc49f7eced2d356a7b77e2e594fc76ad139d43560",
+        "build/validation/stream-proof-probes-02/chip/DagSelectorCompose440.log": "0fa4bc93a3381be1dd27d03ce3c1be94c0e8c19bdfd8e6a9b5e97e24b3ad9f72",
+        "build/validation/stream-proof-probes-02/chip/DagSelectorHints440.lean": "ebb9b353957e87b26294a0354af41c7a2826dcd1b05a200808975d3cb313fb16",
+        "build/validation/stream-proof-probes-02/chip/DagSelectorHints440.log": "32b87484be8bbbf2427489d988f5723bd0b7d590b1447015fbf450d647dcf187",
+        "build/validation/stream-proof-probes-02/chip/DagSharedConcat.lean": "1e3e770fdb2303dc720478d9bca1a9a17a42543341d29a19f430f3999c4390b4",
+        "build/validation/stream-proof-probes-02/chip/DagSharedConcat.log": "3f8575a905236e926b277cb352ebce295dc9a21d0a8922ca0fe270776878c34d",
+        "build/validation/stream-proof-probes-02/chip/DagSmall.lean": "8bf9777e97ed97ccc89b2ecb5fc351e71209db5f84f189411f178774671f0ddf",
+        "build/validation/stream-proof-probes-02/chip/DagSmall.log": "09e9d1b38c27d3fc7a59f9ab97e881a44ba1d09744366d0cf9d1336c36f58c96",
+        "build/validation/stream-proof-probes-02/chip/DagSmallClear.lean": "5e4ebb236295b9fd30b1077f5a3f7761b5f68cd9b2e48f1a023e35e21bd1c6a1",
+        "build/validation/stream-proof-probes-02/chip/DagSmallClear.log": "09e9d1b38c27d3fc7a59f9ab97e881a44ba1d09744366d0cf9d1336c36f58c96",
+        "build/validation/stream-proof-probes-02/chip/DagWord440.lean": "703e2c4071bdc5a3907c10b77ccc24a7c7cc857f4375c87c39934efe2471182c",
+        "build/validation/stream-proof-probes-02/chip/DagWord440.log": "c1d3d82ebe9a93a56f87517d6c11e54e5b3deae5c5ff60efad5407e35b10da6f",
+        "build/validation/stream-proof-probes-02/chip/DagWordBool440.lean": "90164d3b7597515391b4197796860ee500df05b72a8451bbabfa81d4e8382a83",
+        "build/validation/stream-proof-probes-02/chip/DagWordBool440.log": "4dfc7ce98b4d73be64d640837de2710b2299961a392ac06ead8bfa254b63eacc",
+        "build/validation/stream-proof-probes-02/chip/DagWordRemaining440.lean": "194e04d96e7c9da077bd534d4e31d4ae2e031e6a201d19646d5b21dd5c0a5bc0",
+        "build/validation/stream-proof-probes-02/chip/DagWordRemaining440.log": "c42859d461dcd4eb7abcbf42b1745d2ae7073bef7dc2eac9d22faf571110e2ba",
+        "build/validation/stream-proof-probes-02/chip/Local0.lean": "9764af986955d92aa378651bdc5d61070bf2a542244f997f16bc63996d314b34",
+        "build/validation/stream-proof-probes-02/chip/Local0.log": "e71120da87e30c4cdf69204083daec40c243f5b7e8264e5e915ec2365fae4416",
+        "build/validation/stream-proof-probes-02/chip/Local400.lean": "cfb35a1664b58277432fb860b364a5d5ef7dd62bfdae104b3a8e04fe2b2e6ce6",
+        "build/validation/stream-proof-probes-02/chip/Local440.lean": "7060fcf0e6340fb8c8a923ac6c176d83deffb588e04767adf775dede79ad22ee",
+        "build/validation/stream-proof-probes-02/chip/Statement440.lean": "5aa83ee86784779c6353e6b83fc186abf0cb0297cef3e596ec38dfd48ac0838f",
+        "build/validation/stream-proof-probes-02/chip/Statement440.log": "961c0b0c50ed83a78914920afcf15f6a8ad1a57dfd41aeead7607938bb4bb4b6",
+        "build/validation/stream-proof-probes-02/chip/dag440.json": "0104a7a564678222064ae3978e02ea44f9d50f0ad0bfca6c33f5802230759349",
+        "build/validation/stream-proof-probes-02/chip/generic-plans-02.json": "bd7846c18e81fbf2cfe593319a696f7775c55d8593eabdd655147e593c0d1b68",
+        "build/validation/stream-proof-probes-02/chip/generic-plans-03.json": "c926e71fc97ea0efcd848b1fdb1a13cb4a0d79c95b4c42ef9c5e87b65fb89c50",
+        "build/validation/stream-proof-probes-02/chip/generic-plans-04.json": "11ec23838f0fc325ae32781ca70035f14de21cf161d3d493b00210c492432213",
+        "build/validation/stream-proof-probes-02/chip/generic-plans.json": "035e80dc990650a2fc5965e5c144e822fc668dc69b5fae9b71b4eb4a37d0c5d2",
+        "build/validation/stream-proof-probes-02/chip/guard-hints.json": "214ed595bb141497a72dd001050a4913d5d27bdd5f1aaea2134bea03afa26dde",
+        "build/validation/stream-proof-probes-02/chip/mux-cone-hints.json": "e1153bd21576651cead0c653e7753257883e52bd535ae45372c6387014631e3e",
+        "build/validation/stream-proof-probes-02/chip/normalizer-guarded-cut-proposal.txt": "b822f913fbf70de92b12c89cadc415117315fa1b149501e400710bcf424a37a9",
+        "build/validation/stream-proof-probes-02/dag_cones.py": "08c3115277e58ca705605150dc13bfa15adaea27f6610c413c0274786b069218",
+        "build/validation/stream-proof-probes-02/dag_controls03.py": "864c3dd6f9a533a571b29d30be5d9d36d3ab723823bf40afab5118c621703ef9",
+        "build/validation/stream-proof-probes-02/dag_emit.py": "ed5fdc7c117f6538fde18ed01f6a029c5be4050b0cb0362d1c813042628a837f",
+        "build/validation/stream-proof-probes-02/dag_hints.py": "bc96e16d0e0c2073952b19abd802f13cda9420d57d7a451f96d714aa9265f859",
+        "build/validation/stream-proof-probes-02/dag_outer.py": "117167e16d29106c634001fedd777827fcb4c15e2acc546d357965791309c8e0",
+        "build/validation/stream-proof-probes-02/dag_payloads.py": "3e7914fbc2abfa6f75f4eb543cd395a9943a099088549a921d7417723b6bb5b5",
+        "build/validation/stream-proof-probes-02/dag_plan.py": "9dc82e7620ab8623d7f283f0403fd2544366e50fb520f9014e7b956baedcf29a",
+        "build/validation/stream-proof-probes-02/dag_small.py": "0b73d6776585ff2646c29924897976627487c619d8a2324e6ef908e87e2c6cbf",
+        "build/validation/stream-proof-probes-02/dag_tactic.py": "d828c950065ea6729bd6eae0d5f935283c1516780a938b46a059eac7ff18ee1f"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-03",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-03/assembly441.py": "14d3b9140310d9b87f5c718ed44049f59833315f3ece778c74bdcf1dcbe33d56",
+        "build/validation/stream-proof-probes-03/large/Assembly441-02.lean": "425949c40db442e32c61434cd02fded1d626bc1ab521c61bd9c9698b531fbd73",
+        "build/validation/stream-proof-probes-03/large/Assembly441-02.log": "8e9b423835e85375fc7ff0802e1c6c542c4433f7670d517392504a26b0f8d7c0",
+        "build/validation/stream-proof-probes-03/large/Assembly441-03.lean": "62d46698a1f5e180aa948a9fb9a385024e61a9657d62a18263c18c34d3dbf100",
+        "build/validation/stream-proof-probes-03/large/Assembly441-03.log": "cabd37a07c409c6dbe337d7302cd969beabf9d44a7ae8321d66f0dcc4b65c816",
+        "build/validation/stream-proof-probes-03/large/Assembly441-04.lean": "1df2034fa4eb889135c5d199930ddc860d04a359411f6b75399abe1ca335a230",
+        "build/validation/stream-proof-probes-03/large/Assembly441-04.log": "4f67bca4a2680bddc036eb94bcd70df18553c2c7a5d90b2242ac319607b1b4cf",
+        "build/validation/stream-proof-probes-03/large/Assembly441.lean": "21edc6caa04a8ca3a68f524e7f703deb2c0be93d8125b5afca4e61b6c78e1e80",
+        "build/validation/stream-proof-probes-03/large/Assembly441.log": "490d7e481305a32a59a15566a2845fa7b70bb4bb6e91d9f33bf66f9617224996",
+        "build/validation/stream-proof-probes-03/large/Dag434.json": "57952ecc3f9d6a6419463ac4a4e762ecefd6c8f2d27110fdb93c6cb2e2b1a924",
+        "build/validation/stream-proof-probes-03/large/Dag437.json": "033fa480a89e7047fa205c096d31f060c9eb8099d4a34befdfe963c016984fc5",
+        "build/validation/stream-proof-probes-03/large/Dag438.json": "c2b813489882fcd4982ba38377f408e7240ada9d568d9800494f13a040eced87",
+        "build/validation/stream-proof-probes-03/large/Dag441.json": "db3135a3f17d2e9593c50a250cecda3c2c71f0fee517b491410247ddd72b6363",
+        "build/validation/stream-proof-probes-03/large/Guarded434.lean": "0a7265cc6f5bf0c545309719dc4d8a96690b8e94e9b659a49d1c9a823e4d930b",
+        "build/validation/stream-proof-probes-03/large/Guarded434.log": "69c87b0af3281fcbb8f95db325f1f681ac90d1d2257c1aba7f32ea9e00c152ad",
+        "build/validation/stream-proof-probes-03/large/Local434.lean": "5f6203d5ebd314a60e0b2a53bcc6fc987363da7837b0883b23b506d6f7f9496c",
+        "build/validation/stream-proof-probes-03/large/Local434.log": "0b86ef34aad7428ff6ab23d89f718de1f1232f63832cd7da6e394dcfc615cfea",
+        "build/validation/stream-proof-probes-03/large/Local437.lean": "668695f8afefd333cf340a7a590ebb6a3c995be9fd0ec44476283ada7d2f6927",
+        "build/validation/stream-proof-probes-03/large/Local437.log": "a30bd981ed5e8ad9aaa6c4096d6291b8f5e6989de38c18f5dfa6e160be1f9cb3",
+        "build/validation/stream-proof-probes-03/large/Local438.lean": "fef08a791691c86942bc71a3b32365c9c675a85ba0d78feb71a997f38b176092",
+        "build/validation/stream-proof-probes-03/large/Local438.log": "9986d78ce3a3b46dc60dd5ccecf4184124013291afe4fc413f04d2feebcb9345",
+        "build/validation/stream-proof-probes-03/large/Local441.lean": "41d3fcee572bad97c4a0b30573fad4a7ad999e5c998e64aa0f7cf8dbfb9a44e1",
+        "build/validation/stream-proof-probes-03/large/Local441.log": "0ae873e527138b129e1bb9f57900228a83cab13aaaf906a456a523b04abe6f6d",
+        "build/validation/stream-proof-probes-03/large/Selectors441.lean": "a29f80ea3d623aa4bbb4b2acf6050f19bb8a1cb49f7f92258955a500280643f5",
+        "build/validation/stream-proof-probes-03/large/Selectors441.log": "6e9cafcc85196f42dda40514f4f54a3a26fcefae11ebad6f1a5c8987bbb448cb",
+        "build/validation/stream-proof-probes-03/large_probes.py": "7f721513a14a5fbeeba484d0e85dfa098aad76709f92effd39a87c310519991b",
+        "build/validation/stream-proof-probes-03/probe434.py": "248cb738ec6f6fe87f54a7f3633c28b6b8ed32a7b8d7578558d3d7e11d28dc10",
+        "build/validation/stream-proof-probes-03/probe441.py": "3917898556154f40fb40b9e8171cc5f4b71e404d88516f2c4127eddd9ee92e87"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-04",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-04/chip/Assembly438-09.lean": "774eb55cbef84b8b2b70577ead062465d172e48a78c94f59b85e492d90564472",
+        "build/validation/stream-proof-probes-04/chip/Assembly438-09.log": "0e042e8598b51fb308232a806730f6c069263f5caf746f7356650a4bb90c00b1",
+        "build/validation/stream-proof-probes-04/chip/Assembly438-11.json": "fc2d0557e40eac63b6dc553a794efc92500a3cc734d903f1fb0efe04b4f3fc3b",
+        "build/validation/stream-proof-probes-04/chip/Assembly438-11.lean": "651bba09a65239bba5e35b9968835b68b3070bc630eb6fbc6199d89fae81a877",
+        "build/validation/stream-proof-probes-04/chip/Assembly438-11.log": "51b42365fbc95088a53fac99d7ee4d0f8320d9aab6aee8616877b7579e461624",
+        "build/validation/stream-proof-probes-04/chip/Body438-08.lean": "3f7d4bc31f1d6b019dccef5f13f7fd308deb082de3ae45f3a64425fbec4de87b",
+        "build/validation/stream-proof-probes-04/chip/Body438-08.log": "48e4dc853097afc7c851008afcc9d577b1c6048588f911c3cabacfd37fa0100d",
+        "build/validation/stream-proof-probes-04/chip/Body438-10.lean": "8b193354463023bc7e4f9d6a53c7eb0191e079ba10ecb46677271ef0f1009b6f",
+        "build/validation/stream-proof-probes-04/chip/Body438-10.log": "0c01d7d233f1af51226ff07129dbe6313c9a64c964a024f0e200c706107f2089",
+        "build/validation/stream-proof-probes-04/chip/Controls438-03.lean": "31ee7013936f1e690bba994ff77e5bc03e14450a589be79a20a1de1b618be6c7",
+        "build/validation/stream-proof-probes-04/chip/Controls438-03.log": "6e8bc68c44477adee76206af4d4196341f63885a5dece23b9e532b5cd377320c",
+        "build/validation/stream-proof-probes-04/chip/Controls438-06.lean": "853438ac6656538f4e2f47310ae65314532d9ce3171846f3dfd1529f0a6ca46d",
+        "build/validation/stream-proof-probes-04/chip/Controls438-06.log": "fde3bcb96b65852dfde1f8debcc0e4e782be0af253a3658085a1677f37608ea1",
+        "build/validation/stream-proof-probes-04/chip/Idle438-07.lean": "f1d46c62bd80f309228f2b5851340c8104ad3ffe24190ec7288713c6540aeae4",
+        "build/validation/stream-proof-probes-04/chip/Idle438-07.log": "2c58038ce3aa014f6152403f6b1f6d98af598db2aa615fec3a7983e702bfc539",
+        "build/validation/stream-proof-probes-04/chip/Permit438-05.lean": "c69338e11f24e96e9e171dd5910d5984a0c023f9d6350e0f61078393464dde75",
+        "build/validation/stream-proof-probes-04/chip/Permit438-05.log": "f46b7a4809d4b67558bfee7f7beda642b523111f4482fa851f2d149b71d8136d",
+        "build/validation/stream-proof-probes-04/chip/Policy438-04.lean": "a03573fa275e1dc73720000e1b12fad31340fafbd8d83850a91fb31237ec3181",
+        "build/validation/stream-proof-probes-04/chip/Policy438-04.log": "18745ee363f60c006857813482dca4b1012ba926de636699feed5a6187f16f23",
+        "build/validation/stream-proof-probes-04/chip/Selectors438-01.lean": "2d6a6ed02188749c93fa3cadc08c90271a44513e5d1fb45f2c0b2255086312f2",
+        "build/validation/stream-proof-probes-04/chip/Selectors438-01.log": "eaac9472fdf413a0d48b7c1010a25dd2334cbe8243a3e60990737dbd54556bc4",
+        "build/validation/stream-proof-probes-04/chip/Selectors438-02.lean": "06590fb3cb887ddcae167bd226d72b0311f422b92e4170ff3c1f4754d65bb436",
+        "build/validation/stream-proof-probes-04/chip/Selectors438-02.log": "48a653f96e67506b516be36c891e6d22c6d40931aea8aa767c69ae766de31d33",
+        "build/validation/stream-proof-probes-04/chip/dag438.json": "c2b813489882fcd4982ba38377f408e7240ada9d568d9800494f13a040eced87",
+        "build/validation/stream-proof-probes-04/chip/inputs.json": "b7ac74f406ba0b7590a24df1db793f19678716b45834b809a4192ea10a72fede",
+        "build/validation/stream-proof-probes-04/chip/prefix438.txt": "189f1f8ee4c13644e2ec2676eabb29cdea3bf2dc90def0f5811ecd1dc2a509a2"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-05",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-05/chip/Assembly437-02.json": "b2952bbad94330b587af5cdae5b28e8db154452038691e71c8f970c1e0e4627b",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-02.lean": "74bc3ec381c97d84e039c260ba016520262d84cc090d988eb3081e5b7047cbfe",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-02.log": "372cc45e20c17ebdb6ce8f5b0248021fa38187d11a6380a6cec8238c345a5d77",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-03.json": "ff7e182d343ae96efaca8826aee8c4cff33fb3078aedb1eed46670c69b7b2dbe",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-03.lean": "1733cc9af5ed2503b377deb457e416d19a83dde3bc00e9c82c3731803a5633e6",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-03.log": "cea3beb258dd3f266acd65f90ca2e78964df15792ba6a01cb8d0bf2cc6491e6f",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-04.json": "c86ea6c8f0c3a291b2ce31f48a3bb9b4e86bebfcbf0ef72af509a5528665d1e0",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-04.lean": "72980d08605d385564a6cf67bf7d180a43a62fcf63d319afe9d958eb0513af2b",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-04.log": "39158e383b6a0061afc23138142c60e4d5c49148c368c5d12936a94496918f95",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-05.json": "b33732721a7c4a291c4696becce645d257b0c4a081cb1e5942092efb1c9e7f48",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-05.lean": "d5166682a9ae55bd24d43fe59f8a4a6213123dc62d57740b551d142f9d960c2e",
+        "build/validation/stream-proof-probes-05/chip/Assembly437-05.log": "c51a3e6ee6408143751417ff51f23274c21f39287d88175ab6d7806c04274152",
+        "build/validation/stream-proof-probes-05/chip/Assembly437.json": "290289408b6a591243d39e10c080b62525bcb787467735a55d0fd607c803ee34",
+        "build/validation/stream-proof-probes-05/chip/Assembly437.lean": "2cc76138a20c51faa7c05342e70757a8cbd1f74a4ce30d203404cac276f6fae8",
+        "build/validation/stream-proof-probes-05/chip/Assembly437.log": "b70b67905d5137d6290baae816e916dedcc63838ad11f6e205d511ac87e5fa48",
+        "build/validation/stream-proof-probes-05/chip/Selectors437.json": "449a3981c99e317e49c09b5cad4724c39f712b9c9c08ae5b1a8569ca289069ab",
+        "build/validation/stream-proof-probes-05/chip/Selectors437.lean": "ffb649e386c088fe00e71d98872194bfd9ca74c2c959c1896af45ff23be4e8f9",
+        "build/validation/stream-proof-probes-05/chip/Selectors437.log": "da5d782d26fa920c2f87e4f4f340452b8f5e79edc1b3512d8725d67de661b213",
+        "build/validation/stream-proof-probes-05/inputs.json": "af3b69e168a6722ca2b2b88941253b5c21f4a07fa2d9de1913ad74102c369406"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-06",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-06/chip/Generic434-02.lean": "86efd526442da393288e2a1154aa705bfbfcbeea16401fa475444b32e535f32a",
+        "build/validation/stream-proof-probes-06/chip/Generic434-02.log": "5b0bf4b1e7ca7b8594ec10bcadd54a247c7d141ca114a9faad0109bfaa019cc1",
+        "build/validation/stream-proof-probes-06/chip/Generic434.lean": "c24900c0398f8fd8c86b4c0aeb39abe92ad5c459047753ba46f20c5bc15b2370",
+        "build/validation/stream-proof-probes-06/chip/Generic434.log": "30c7572b8a4809ecf581b7316e734fff38ee08cc8f19a28219a290ff22600c59",
+        "build/validation/stream-proof-probes-06/chip/Generic437-02.lean": "eed3600445bece9bc56450c849a4b2f5b05e491bd2ff5bf29547997c9b359f36",
+        "build/validation/stream-proof-probes-06/chip/Generic437-02.log": "2e40bef09c74762a14d6f3b427451bc8a8fd3d0d5d46b7913c619f4374d94b11",
+        "build/validation/stream-proof-probes-06/chip/Generic437.lean": "8f0605d060e7d79a1b95840781bb69ca05415ad679bfe2892afc87f5bf5a22ee",
+        "build/validation/stream-proof-probes-06/chip/Generic438-02.lean": "700e32190d84cd7227079bd5fa20e0674b4b3972043d03c74e09406e52686573",
+        "build/validation/stream-proof-probes-06/chip/Generic438-02.log": "194bc635cca2fa60157b331abef1261ed64bd8fa3f1870a19a8c5645f2af0f32",
+        "build/validation/stream-proof-probes-06/chip/Generic438.lean": "8b3c87bf901a2ae457d89842ee202ec9c4db732592b631368e1a4d3cb77d32a7",
+        "build/validation/stream-proof-probes-06/chip/Generic440-03.lean": "75c2b20b2504f6c016e8768dacbfc4521adf37ea56979d3d0491c0bbe39ef7bf",
+        "build/validation/stream-proof-probes-06/chip/Generic440-03.log": "aed1ec7a2b266a9435b8143377244a86a6adce0e371b802308bad1dcb721805f",
+        "build/validation/stream-proof-probes-06/chip/Generic440-04.lean": "b0d17371007f8afd36adae1ec9202d59691a4b5fd783a8b3de4f4817b79436dd",
+        "build/validation/stream-proof-probes-06/chip/Generic440-04.log": "cf78db3407b2bf14d4aab9c5409213297c8927c1fcafdbda618f8d3029a01356",
+        "build/validation/stream-proof-probes-06/chip/Generic440-05.lean": "75c2b20b2504f6c016e8768dacbfc4521adf37ea56979d3d0491c0bbe39ef7bf",
+        "build/validation/stream-proof-probes-06/chip/Generic440-05.log": "17a38d8999641ea0b146ba468d87152320064c1b2e0b8553327f297427a2a096",
+        "build/validation/stream-proof-probes-06/chip/Generic440-06.lean": "363312de6d3ef4c49732fe6b36a0e1e0d3812a878e87a1019f12da085ec44fd8",
+        "build/validation/stream-proof-probes-06/chip/Generic440-06.log": "c3f20c7b3b44318479c25e1e4fb913b93a2d6ac98218b5d0ddeb494bd26e4df8",
+        "build/validation/stream-proof-probes-06/chip/Generic441-02.lean": "4c29992bb48eb5a85a628131f2bef16495266539e67e30694b1f20dbfb123ba5",
+        "build/validation/stream-proof-probes-06/chip/Generic441-03.lean": "4c29992bb48eb5a85a628131f2bef16495266539e67e30694b1f20dbfb123ba5",
+        "build/validation/stream-proof-probes-06/chip/Generic441-03.log": "024471fb2b725bcb66a65e2d823ea75d6a0433dc6ff97a813e0b0ad2ef45a2d4"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-07",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-07/chip/Marker.lean": "da01e3798210560b0b44e184950c53fe70fc687cf6d288309a042c1257a88de2",
+        "build/validation/stream-proof-probes-07/chip/active-body-typed-paths.json": "c4a5b2db15012109175fa7fb1b8eeb0b5f37de4492285e1bd1dcd34fa6794573"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-08",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-08/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4",
+        "build/validation/stream-proof-probes-08/chip/Equations.lean": "61583d64001b604054fb76ebdecd63afe67c8d8d474a183879536d4323f1133f",
+        "build/validation/stream-proof-probes-08/chip/Graphs.lean": "e399a57d33e281ea7e94b4327facc841138169458999b8b7063e9cf52bf1a97a",
+        "build/validation/stream-proof-probes-08/chip/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-08/chip/HintEquations.lean": "aa67302c36764c4da42b1d665f29468dc9d5c9980514f1d7e5d928f76bbac58a",
+        "build/validation/stream-proof-probes-08/chip/Hints.lean": "05438b9bafee6576e9e07f11c2bf0623a529e04c079f1c9c0dc019ffbbf20083",
+        "build/validation/stream-proof-probes-08/chip/LocalProofs.lean": "44f8b515a966e5c6e73553268aceb4dc4c7ad55b5cf5d12efe90e15f74d68c23",
+        "build/validation/stream-proof-probes-08/chip/LocalProofs.log": "51afb4fdcc2c1868e8fb34831d6c0b14b42eac5723621ec33bb600b4d6a56148",
+        "build/validation/stream-proof-probes-08/chip/Sources.lean": "2355fe770916c592cb96cddf15130ecf5503f9c2d9c2976e5f064e754c2500bf",
+        "build/validation/stream-proof-probes-08/chip/debug-report.json": "6f9e44f2ca73dab2cc53f41bebc475b6413e3fbe33f633f33aed9348fa6c4df6",
+        "build/validation/stream-proof-probes-08/chip/import.json": "c9e2f3f28319d39f752b9566669180c0a55ffa46361738866509b45e4649045e",
+        "build/validation/stream-proof-probes-08/chip/import.log": "63639dbe20262fb1e5e20a9cc37590b3f6bb280f92b21d8d4623bf1e0269c5d0",
+        "build/validation/stream-proof-probes-08/chip/import.ys": "ab74356f00ca0d814a4307c2161160e5470af7d1a175e9e587f88962ec47edf6",
+        "build/validation/stream-proof-probes-08/chip/pairs.json": "c02c11e3daa259f8e14e9ee3af58817d437b8c0107244b8a27a4ca053f476733",
+        "build/validation/stream-proof-probes-08/chip_probe.py": "58184ed981d4b7a4d17eb4a7ce149b0628b2bfcbe1a76b4b0347d779683e62a6",
+        "build/validation/stream-proof-probes-08/focused-report.json": "706a0c828a9b6f9b7f1f7e015ed5e1713e539e0a8fdc703afd14bffcff4a8cc9",
+        "build/validation/stream-proof-probes-08/normal-focused.log": "0ce43ac1e550f45af6c2ccc3967399638ceaf3770b87a7304299e052afb6e05e",
+        "build/validation/stream-proof-probes-08/optimized-focused.log": "8f130481aa2a3aa67edb767d05d39fc131c2b7d58474094d6d4cfb629567ef25"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-09",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-09/chip/Dag443-11.inputs.json": "707d3a889e1e7eca4d23697f1e36fe70e2ff5413044598c0a01fc029b0d2ff6b",
+        "build/validation/stream-proof-probes-09/chip/Dag443-11.json": "5e1279a039d05f69dacb69dc6897ce7bf7ce1e76ceda915ca15a3f5cf7d1ca35",
+        "build/validation/stream-proof-probes-09/chip/Dag443-11.lean": "a6498cf606cab5adcc3c245b872c88365f486580b3cb45713d33e74c99c77146",
+        "build/validation/stream-proof-probes-09/chip/Dag443-11.log": "09eb749645c14e185c1259a4df453aa18303d67e8bc80208125f7d039bdb3a4a",
+        "build/validation/stream-proof-probes-09/chip/Dag448-12.inputs.json": "682609fe2142c3e0321900b68ecdeaa1a3b263508e0b6d596071243168ca0ac0",
+        "build/validation/stream-proof-probes-09/chip/Dag448-12.json": "145e428db900ed06da984285061f44a21638c53239f6fa1e9a1918a8316a21c0",
+        "build/validation/stream-proof-probes-09/chip/Dag448-12.lean": "09c2e3a06758417400767b72e20f2d5bfa934e2ceec0bc418d3d103b792dec7a",
+        "build/validation/stream-proof-probes-09/chip/Dag448-12.log": "09eb749645c14e185c1259a4df453aa18303d67e8bc80208125f7d039bdb3a4a",
+        "build/validation/stream-proof-probes-09/chip/Local361-04.json": "ed0ace6d9fd65c588f932e4f10095d1017ce6c5e42435d57b2f669ea0530b520",
+        "build/validation/stream-proof-probes-09/chip/Local361-04.lean": "7d684cf715ae8dc4c622e12292178dfb678d995391946aa623f562415b050192",
+        "build/validation/stream-proof-probes-09/chip/Local361-04.log": "92eccc0fdea8717b0e3948c6296b16c0b54bf74f6bfaa12cd5314853424537c4",
+        "build/validation/stream-proof-probes-09/chip/Local443-06.json": "6e6b56bba04abcd3adc38b9aeb7b050e6d8762e30b0d7eb7c4c80d62faaa7cb0",
+        "build/validation/stream-proof-probes-09/chip/Local443-06.lean": "34df56a4a673fbd67f46167d97b968a2f92180ce20cf4642c9976a819b102c0e",
+        "build/validation/stream-proof-probes-09/chip/Local443-06.log": "09eb749645c14e185c1259a4df453aa18303d67e8bc80208125f7d039bdb3a4a",
+        "build/validation/stream-proof-probes-09/chip/Local443-07.json": "e8f5cc1d21e29b96fcbc3150dae65b1538baaad3717004b3656fb01b803193b7",
+        "build/validation/stream-proof-probes-09/chip/Local443-07.lean": "348cdfa1d7a89df7077816aff8768ef1d286743df536fb05bf46ef4131cea9a3",
+        "build/validation/stream-proof-probes-09/chip/Local443-07.log": "74fffaa261c8906598078769a9dbee10a7197ffefb6e355c9f314d5ec0b0d243",
+        "build/validation/stream-proof-probes-09/chip/Local443-08.json": "dff7f0a65db0be35aa8bfdedde9f6a00893d5b212cf0927c74949ca9da7505d3",
+        "build/validation/stream-proof-probes-09/chip/Local443-08.lean": "ec503dcdb7df6be5ebbdbeec770ff5b3f04377adc6ed284dd7d138a95f955456",
+        "build/validation/stream-proof-probes-09/chip/Local443-08.log": "54f0db28cc78dfb0fad678c9fefd34543e11cab9265e7eea88662fb57b7fedfd",
+        "build/validation/stream-proof-probes-09/chip/Local443-09.json": "918ea5941bdb134d48beae4b9e917a8fb6521235862d80ab89df71af5bdf4b2d",
+        "build/validation/stream-proof-probes-09/chip/Local443-09.lean": "e923e9db2ddf2caad73def946aff1a59704e80db4c138058227cac5a91acb1cb",
+        "build/validation/stream-proof-probes-09/chip/Local443-09.log": "91f296c8f6847ffa055680654f9141b377666f640000d7aeb3cafad9e2f40ba0",
+        "build/validation/stream-proof-probes-09/chip/Local448-05.json": "ca68cfa2ca9158a13c4ef098081b5f5759d24e386735e3ebe6b6fb7f44249eb8",
+        "build/validation/stream-proof-probes-09/chip/Local448-05.lean": "8cab2d517b52c6de1d2d4877d3cfa8e6d1926145df22910fcae86f8080e1fdb4",
+        "build/validation/stream-proof-probes-09/chip/Local448-05.log": "09eb749645c14e185c1259a4df453aa18303d67e8bc80208125f7d039bdb3a4a",
+        "build/validation/stream-proof-probes-09/chip/Small349_398-02.lean": "c6528006c044ab8328d4e07b409c80e153e91aad03585af92ff9c593c1de11a2",
+        "build/validation/stream-proof-probes-09/chip/Small349_398-02.log": "bb8d8432945fe76bb8f27095ea463c2af5113070b6e3a8213d00fcde419a3baf",
+        "build/validation/stream-proof-probes-09/chip/Small349_448-01.lean": "e82621672fe63a1f4dad76f11b8c39548771e88f20246ce38cec36cc6ee113b3",
+        "build/validation/stream-proof-probes-09/chip/Small349_448-01.log": "bb8d8432945fe76bb8f27095ea463c2af5113070b6e3a8213d00fcde419a3baf",
+        "build/validation/stream-proof-probes-09/chip/Small399_448-03.lean": "cb3b0b8b292ff6cbc6132aa200cd68893f10847be256a5583bc065506401961d",
+        "build/validation/stream-proof-probes-09/chip/Small399_448-03.log": "bb8d8432945fe76bb8f27095ea463c2af5113070b6e3a8213d00fcde419a3baf",
+        "build/validation/stream-proof-probes-09/chip/WideZero-10.json": "51d161ceac573314a40bacedcf8f192e4d2c863fd1fe4178c834754905c23375",
+        "build/validation/stream-proof-probes-09/chip/WideZero-10.lean": "6fa0cf296fa82462ca262eb1f66ee4b12dd6f80d4a2e2b4ccade2b2b913cf454",
+        "build/validation/stream-proof-probes-09/chip/WideZero-10.log": "71f9348728e742e65199aba892fb726afedb6483ef5042b9de1e417718defc87",
+        "build/validation/stream-proof-probes-09/chip/inputs.json": "aab9b5d8cbfe10229a0d44a84cf18e40b3550b064d3f5979fdb508152411ccaf",
+        "build/validation/stream-proof-probes-09/run_probe.py": "580550b0b5232c8e40dc679595ec82f8a51c7fcca4b3259a226edaf7dfb6a5ba"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-10",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-10/chip/Chunks000_024.lean": "b164f4540f78534dab95bbdc456b4c705487835eea1b8b9895b37b2604bc735a",
+        "build/validation/stream-proof-probes-10/chip/Chunks000_024.log": "1f59ffa60358c6ca2bbdc72061639d1e3d73688f5db0065514474b5f3c6f66a1",
+        "build/validation/stream-proof-probes-10/chip/Chunks025_049.lean": "eaa5f969d67bf1614266b41edd56aaaceddbc529fbb9fc52af0d2ca1739adfac",
+        "build/validation/stream-proof-probes-10/chip/Chunks025_049.log": "b7a2f01a84659b8e27d5d59a6be623d1d97a3415826221f48d272a2cdd9907e2",
+        "build/validation/stream-proof-probes-10/chip/Chunks050_074.lean": "060c91740927a3607ae4ed6faac8f3d8d2ae5fbf4ff306c690f154d8702e66cd",
+        "build/validation/stream-proof-probes-10/chip/Chunks050_074.log": "c8f3136df4060261dab5d086b2715cf956a91d464c56c390b0faabe3b7ba9fbe",
+        "build/validation/stream-proof-probes-10/chip/Chunks075_099.lean": "638e5c504032f9da7d71f1e94d8c98c38bb7935f3ca3cdcf815fc19f4bc543b9",
+        "build/validation/stream-proof-probes-10/chip/Chunks075_099.log": "0f1cfba30fe3272a59b8006c0c02bcba690ddbb3c0bc90ced776e177f2d5c2ec",
+        "build/validation/stream-proof-probes-10/chip/Chunks100_124.lean": "4dfc77408236a2968d839757f78668cb18fe12bfe50a3caef5079cf62b01ad59",
+        "build/validation/stream-proof-probes-10/chip/Chunks100_124.log": "650a9358da5efd945156ca2fb78c0b0af3d2c83bf328c217e3b0cd82c029b15c",
+        "build/validation/stream-proof-probes-10/chip/Chunks125_149.lean": "096dfe462d839a9c3900b951564e5c28b6fadf312d2e0d4fbb670706ac134f9a",
+        "build/validation/stream-proof-probes-10/chip/Chunks125_149.log": "5441ed9764779aca6bd1f5e089429a4930978c393250e01de38cdd9999989467",
+        "build/validation/stream-proof-probes-10/chip/Chunks150_174.lean": "9bd69028d8f2423091710d32a0771661190a23de6f8773a8386c99333b15858d",
+        "build/validation/stream-proof-probes-10/chip/Chunks150_174.log": "d25c603559f46debdfa21f71b6cc9264fb74db74cdb9d1960dfabb4ee2c7d338",
+        "build/validation/stream-proof-probes-10/chip/Chunks175_199.lean": "467bcf29208d39c12411e275da40d30d050e6c8053f0536390d3599ad1623703",
+        "build/validation/stream-proof-probes-10/chip/Chunks175_199.log": "a0875212b4f243e84c74c688eeb1795d98fe750f952bb5f77a52aeb7d0133da1",
+        "build/validation/stream-proof-probes-10/chip/Chunks200_224.lean": "a2b93c517641494b41c23dac5f6890dca6e99c5e2dabbf916fe8825ceaf8e082",
+        "build/validation/stream-proof-probes-10/chip/Chunks200_224.log": "fb52b7f7ae36d9e001a79ab7e445f2a9bc72e2a1b2ae304d78e3849efe5db15f",
+        "build/validation/stream-proof-probes-10/chip/Chunks225_249.lean": "a2044862dd83badf6190040cdfe4ed4540c0b53e2c4a12befc46b5ee829f458c",
+        "build/validation/stream-proof-probes-10/chip/Chunks225_249.log": "232d81a373e9af83f674c89edea7e042112f290836be33b2bde875056327b640",
+        "build/validation/stream-proof-probes-10/chip/Chunks250_274.lean": "0eb5fc3df545135f419d26ed48721c04fd3f1c03b3975fac0f077e08f2dae679",
+        "build/validation/stream-proof-probes-10/chip/Chunks250_274.log": "bc485c3e80060a4d3cc62780ed28ed589bb1d156ac208e7cf204dad5f7e71bf9",
+        "build/validation/stream-proof-probes-10/chip/Chunks275_299.lean": "aa8c7dbc43ca6d37a440c499ec7e87bd29b504f27d40432ea0de9442b354d399",
+        "build/validation/stream-proof-probes-10/chip/Chunks275_299.log": "ccad71d96f9c58081d8c758825c42abf5711d49668c7cbd4cd2a558e33bca7bc",
+        "build/validation/stream-proof-probes-10/chip/Chunks300_324.lean": "21a8a997469ce1dee74f64b9e559b5280b520e63d73e6635450048dfdfc2b8ca",
+        "build/validation/stream-proof-probes-10/chip/Chunks300_324.log": "2ed05444e089e191e8cc9b82427b51b49fd2ca9b445771c4d5cfdda36d90844f",
+        "build/validation/stream-proof-probes-10/chip/Chunks325_348.lean": "d098321e07018fc16aa983f02b8906a271faea6bd008792567c95e4a0099b5e6",
+        "build/validation/stream-proof-probes-10/chip/Chunks325_348.log": "4d5259f2986b80678d69cfc0bcbb58fd58988b3fe8b37e9af7732df8ec3db121",
+        "build/validation/stream-proof-probes-10/chip/MarkerFlushTimeout.lean": "e0d1dcc2038a4775f3502b955b9c6428323c1f34d81525ead293471c32c575e7",
+        "build/validation/stream-proof-probes-10/chip/MarkerFlushTimeout.log": "9096b0d4bc8ecdd4c0afaa6ea96ff4ce77249492bdcd1502908a0954ddba5fe0",
+        "build/validation/stream-proof-probes-10/chip/MarkerTimeout.lean": "d8790074f31974f5811498b93a0e6181b2588ac8790499b2da9d40d3c01e4cf7",
+        "build/validation/stream-proof-probes-10/chip/MarkerTimeout.log": "21b8e177ace9f4a8638c84a8f40eeb5e631e81a31750d38b164e3d0238a161a0",
+        "build/validation/stream-proof-probes-10/chip/chunks-report.json": "d580d325c5718d1681eff5318094db719f5f4fc9b14b551866883548ff23e1b5",
+        "build/validation/stream-proof-probes-10/profile_chunks.py": "0d1dc0dc13c7be307405c8d937c30e27e8846c1a0d9d50cc533c21ee57186e69"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-11",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-11/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4",
+        "build/validation/stream-proof-probes-11/chip/Equations.lean": "61583d64001b604054fb76ebdecd63afe67c8d8d474a183879536d4323f1133f",
+        "build/validation/stream-proof-probes-11/chip/Graphs.lean": "e399a57d33e281ea7e94b4327facc841138169458999b8b7063e9cf52bf1a97a",
+        "build/validation/stream-proof-probes-11/chip/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-11/chip/HintEquations.lean": "aa67302c36764c4da42b1d665f29468dc9d5c9980514f1d7e5d928f76bbac58a",
+        "build/validation/stream-proof-probes-11/chip/Hints.lean": "05438b9bafee6576e9e07f11c2bf0623a529e04c079f1c9c0dc019ffbbf20083",
+        "build/validation/stream-proof-probes-11/chip/LocalProofs.lean": "3fafa390ee1e5aef0212cf9cf4a52e7f4378960e8ab9003c3f1ac8d16c834bc7",
+        "build/validation/stream-proof-probes-11/chip/LocalProofs.log": "dabba82d1ab1e823589f207066838a91521667605a0e4bcd4907635233437162",
+        "build/validation/stream-proof-probes-11/chip/Sources.lean": "2355fe770916c592cb96cddf15130ecf5503f9c2d9c2976e5f064e754c2500bf",
+        "build/validation/stream-proof-probes-11/chip/debug-report.json": "fd8cad4eceefaa4180469b289b98c1fa0a39d38b0406ef81262d69ad7a0bf309",
+        "build/validation/stream-proof-probes-11/chip/helper-selection.json": "411e410aafac91dc2e54d2e427719dc6dbad1a8fb0ae95257c9a5e472f6b76dc",
+        "build/validation/stream-proof-probes-11/chip/import.json": "c9e2f3f28319d39f752b9566669180c0a55ffa46361738866509b45e4649045e",
+        "build/validation/stream-proof-probes-11/chip/import.log": "0c275855e7758b2e3ede014193c8752d1417c63370677d45f3d32bc8252265e9",
+        "build/validation/stream-proof-probes-11/chip/import.ys": "947d4406f9abebc2efc7f1f49c33c9c7af0751ecc554f77122aa7a04c37cf881",
+        "build/validation/stream-proof-probes-11/chip/pairs.json": "c02c11e3daa259f8e14e9ee3af58817d437b8c0107244b8a27a4ca053f476733",
+        "build/validation/stream-proof-probes-11/chip_probe.py": "d80b2cd53f51f15a399dd6cb0e56c461d90b21bd32feabb050657a3793c2e58b",
+        "build/validation/stream-proof-probes-11/core-size-report.json": "55c72b63b7dbb9c5588ecaea88f5d1d49be9aa84d2529709c439d64bc1fd5aa1"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-12",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-12/chip/Closed431.lean": "dec46cbebdb63e9f27b3f132778c3fe40c858efb95eb3393967ca3b182e6d8db",
+        "build/validation/stream-proof-probes-12/chip/Closed431.log": "87c0ee4b599eb0d1217a94b72fbcc8d9a700e6ffe0f61d27a0f4dae574242f79",
+        "build/validation/stream-proof-probes-12/chip/Dag431.lean": "bcb3b89250c016adb54bf9baf8893e4ea708590075fe86743a321c158a1c1bbb",
+        "build/validation/stream-proof-probes-12/chip/Dag431.log": "64ac84ac0c1bed9659dada84766e6d3820bcc9294904ac0aa24a3bf5fd39e546",
+        "build/validation/stream-proof-probes-12/chip/Natural431.lean": "4cc9a1947ec83700d7dd4a5b65ae6bf1c5b4ecef2ade1c59f11391116af1a015",
+        "build/validation/stream-proof-probes-12/chip/Natural431.log": "184d269902fd8988c69628e18f431ed920eb69cea07d7421254488c9e793bda6",
+        "build/validation/stream-proof-probes-12/chip/NoEager431.lean": "5050533f617fb91e492bc82f2b43b61fb8e303847279c41da09fad395342e84b",
+        "build/validation/stream-proof-probes-12/chip/NoEager431.log": "8b379ae7869fd7b5f139af8a5024a82aba3575500ee4b4b12e8d369e3bddc9d9",
+        "build/validation/stream-proof-probes-12/chip/Retained431.lean": "319e497d7f2012965e945f5a28596f4e40827e1fc6c57e742f533b1802e55711",
+        "build/validation/stream-proof-probes-12/chip/Truth431.lean": "f77630e9d4554800d06349a201a8c439e5d2ba23ccf365935919ecc32471b43d",
+        "build/validation/stream-proof-probes-12/chip/Truth431.log": "86cc691283a32a5c6171d1279d44a0da9842d63e5eb694e8065ff0cd7e9677d1"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-13",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-13/__pycache__/field_signatures.cpython-313.pyc": "c24c618ea52ef443078acf45029274a1bcc8e9ba1d75afc58e74826866eb7ec3",
+        "build/validation/stream-proof-probes-13/__pycache__/field_tactic.cpython-313.pyc": "7519d339116213a77b8fc60cbb2d816fc00c193f42299ec37b8f0f0aec531b11",
+        "build/validation/stream-proof-probes-13/__pycache__/probe_alias443.cpython-313.pyc": "5d743834ba77642ef5bb8b55870e7ab43c90c6ca0cf8b1e747b1c8f6a6584bae",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-01.json": "64331398cd2d6bb8855d8cb37205f031c1fe9177a09865747786d00891d4bfad",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-01.lean": "0fa99970f1cd072023b3b5abe575f9d7ac10ee5fcde7d3f6364503e67dbeb081",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-01.log": "a5d5e920fb287cdfb463e7ecaa0decf49794cb0ff21ab0751faf57bea4b142be",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-02.json": "6347b7dee52ca25901af4c60b15fde7a24fca232c7703769e15f17365d4d4180",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-02.lean": "be60b4f2b0c65317794320c70580e9f4de261bf2aa7122fb6ba25871cae09a05",
+        "build/validation/stream-proof-probes-13/chip/Alias443Fields-02.log": "e529c023511e8e93263b48cace8c22fc0ad3528eb0b1f8eaee8d43881d68ef18",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-01.json": "f2d00213df20fbe22470bc2d7c750e3134904980d688bfaacdeb91579ac5386e",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-01.lean": "08eb01adb213814f8d748dd9ae2d52b65365091b743acd7d62ad3901999d6173",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-01.log": "e196ce5c6fa8c8f2c89518a23fd3cf3019db2cd6408ed1395402b139525967bc",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-02.json": "ddf6fb87175d01a9ed00772be30c0bb540b81b2db5ac80493f6a4817a2d5331b",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-02.lean": "d50c2e8d13a0e0d2102e0f355d2b211b98cc5d1693c912ec2b765846a707f02b",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-02.log": "8113692190c6b6e22e27c311b5e464a044409557aba68a2dbd630d6a240d51ed",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-03.json": "41bc18248570e5044419e0047403f2f9dfb30de5764a78a98451b5668223ae4c",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-03.lean": "13bf8b84c4644e1218319aa62d543509c9b6e710c38d692803ce277fbac5696c",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-03.log": "75cf213a6d2ea001b10161e7e4ba3d743f81636ef893e602a86d3ff7e1569d60",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-04.json": "0e5926d0b44af024dcb556e2bb4623145da094adbd82215a723d83d7d0fdb7f2",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-04.lean": "62b55b47128f2b9ae57e30bcf277fefa8aafd9f897d76f802aea567140cce314",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-04.log": "0305dbfdfdfb68c7bd6dd0d643ef851d7dfc7fd19483698cd78ee78025a5e52c",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-05.json": "6a8ad452aed786cffe697a93f2aecd713b6e28060964737f7f16f0436c4af1ca",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-05.lean": "2b50cd76b7601c1e10802e66e1460d8ee37fdba051fff74aa145e597608acf10",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-05.log": "3618f880637fb40e13732182c2c7efd8d4901cf164024b4e4cd4992c922f8d52",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-06.json": "cdc73f3df8d2e0012a93ae7fbb5bbf941bee071466bba06c8ef30b4ad4237d8c",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-06.lean": "0adfcd424966d65f4fd35956f6100e77b215cbbadd5792272578845d86d442f0",
+        "build/validation/stream-proof-probes-13/chip/Alias443Full-06.log": "fcf037f11df2f5c2733725c9a807b611b4f225ae9f7b8da277679f6fb27d007a",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-01.json": "c7ecc168b67ef90bd1b33dc572139695befa87b2cfa88a0abe2d34ecbae772c9",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-01.lean": "d3728f698f798089896c0060a2185def60abb9b8996cbfbc52a97654669c37fe",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-01.log": "972beb145f9496dcd8c012812cfa75d76b57439c75b9cd3fe41842c74df2a1d9",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-02.json": "8121b5e5d5e18a17c2e8212174c95dcca813b78ba6208a5f388cb5816fafebaf",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-02.lean": "d981b6d7bcee4f9d4442cc919278e03e0057268e2e77a875d02ab4c9c93c5471",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-02.log": "84ff69eee2e8199d1d2491839c644d90394b1195fff39894e498935c59ebebff",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-03.json": "f053d071f0f3b319741413cfaad789e93a80b9165fb18bb980faab25fa4aa8b0",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-03.lean": "9046c7840cdff1e2d3c3947d52f4c4ddd85bbbdf30792e14f06f84c7a4f43c01",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-03.log": "ed3b8fc0c3cd2c2a28bd8595c47a024010b3f2e04f6037704b382c898465ea8d",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-04.json": "d1221afc8fc364d727bbdfa47dc43900e1301e8da0b16fda59b13c6f5867b802",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-04.lean": "91b65e93e5c39b4d153f9d5be213b3bf30f49e5ac306f62c9fe965faf9e22ae6",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-04.log": "94dfc1f1de60e4a7122c726df48874b9bc478b6092ef262917e317a3b81f224e",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-05.json": "510412ab1d9ad94f5126436a8c8809bacf69b039938cac1f9bfbb42a72e38c24",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-05.lean": "a6bffb813da50eef403be9ec0042607213220d8925ddb417a97354c8acd1be98",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-05.log": "534add56231b72374fa53bd59de449911829bbc18aeba8044aae7bf3b021c5dd",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-06.json": "d4171a9ec4be5789c94974b95ff6031b5b6eca106b6343c6614a6ae1f48593e0",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-06.lean": "351bc9132bd027fffe005d7affe98c5146afa40385f94de79676a0eb76417102",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-06.log": "f7243ef31cb9f409f0284c2b97e4e33d7d031990d48abec2f58115129f6bcc6c",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-07.json": "8743bbceeac0b118c0d743486cd76ed1e6c992d118889fe440487f116795b1f3",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-07.lean": "6710ff40065ee03be49b945ce4c4d97bec5064bb446b7502dfb14ab7cb94b4d0",
+        "build/validation/stream-proof-probes-13/chip/Alias443Mask-07.log": "927c4671f66220852daa41b1a2e644e3518daf2e1089e3cbeaff4f4dc24eb0bf",
+        "build/validation/stream-proof-probes-13/chip/AppendAccessor-01.json": "acb515f3e0e387c981fffdf0dd1b5729a06b840118bee5173c4e61810e899c99",
+        "build/validation/stream-proof-probes-13/chip/AppendAccessor-01.lean": "4bc92f68c680d8f53d58ed9ce46c2e974e6b278e693d0d632cd296a038876722",
+        "build/validation/stream-proof-probes-13/chip/AppendAccessor-01.log": "c892b8e15fef4aae2fb18af0b2a0aa13349300101e8dd1d9ffe8390df4c27a81",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431-01.json": "d6c975baba7a1edf4a82555ed8333d5b3b5115aff9ddd6f6ee218e7a08fc99f9",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431-01.lean": "b3ef36cc24fe0a539fbc6d278eeee723e4cd7483eda049195a7a4b8dab164705",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431-01.log": "d8af690cc19bfb6cbfacc23f4497bd3426fb8877a2874616719c6660be898617",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-01.json": "84971c1f6b51910a4dee52f322feba5ba4dd59fa4de18d3c5da1df4a3255d872",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-01.lean": "e52c828d5d87e01b872e6ddfa019b29c3dec6bacb210a50d2f47e7e22a0955d0",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-01.log": "f129c5680c89c9f8160e648b7fe1737783461dc99ab85f0332cb37c3bf56aa0c",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-02.json": "498985eaa35edf5632dee20a0a41d98d3addd12843fb61fe2925135acce70803",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-02.lean": "40dd2cb58a79cded2610f67514125de46f9a1e03b204091fd2e51da076e8125c",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-02.log": "cabc308c814626fa296b9c419e23554f83f5e082d3eb6100f25d3e1d9cbd6c85",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-03.json": "7f6bdefbda70d369a44d2a95668517c767a3ab3a603095d09491ad372b4953cf",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-03.lean": "3f94f7e9d1e9f3afa70822a5365d82f971c3c12821a3ea986250fd0c55563fad",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-03.log": "1d48f2d3efe5fb1e48875c180e1a346580e03d13faba8d03f4a0667fd771ca72",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-04.json": "25bf64a7e2e9f436985f07ee8f44255aa37284d269abb363a8751d65cf5c1655",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-04.lean": "efae4911edde0e7b144edfc6d70efaf521bf54270f639079fdd609d14cf27a9c",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Bool-04.log": "fe7976f9b71253dc71f257b69d40c5961ea150e87e350cfd6c25eebb7281dd96",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Goal-01.json": "5e1bafd8fc1124d27982aae583d3a82434a773c403d85172e26a2c59d2d80382",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Goal-01.lean": "be283a6ab9d8a90b52c3b851c9b985aae88fa4e2d8886dc604c7f20afc44dc32",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Goal-01.log": "c3b426c2c647631c9f3e34db869f0f0688cf493d7c3d661475e5d8a1d3adee13",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-01.json": "77021ce68c59d7b314979bfc20db43ebfd7052b7ff1ce59deb0b38ea0ffe8e54",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-01.lean": "2dd767a9c652adbd1d496c7a3fcf1054d795ac1a04d89ed5a78548554a065430",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-01.log": "cf9f1c0a9b14a2a6330aa62b09025dc842cc29a98c2be20ab6bb03ab1137af31",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-02.json": "821d398722ed35e84293ba9b8912350cdda4bcfd30030b9782e227a822ae0bb8",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-02.lean": "2f749979138733ca4f1a7f09cc0db018fd8eb0906033672ef288902c44d6697b",
+        "build/validation/stream-proof-probes-13/chip/Disjoint431Nat-02.log": "c836d50afa8a51ffe2aa3500f8ef86bcef6b34551b2efec47623a1561b9c86af",
+        "build/validation/stream-proof-probes-13/chip/FieldZero443-01.json": "f0a6ed9a1d849dfba8fb31af12c8a770a23c1faab56f76f7b8154c036da75f24",
+        "build/validation/stream-proof-probes-13/chip/FieldZero448-01.json": "b4b405e24db5a56cf52a0bd5ee7ab9d06d586e4d9962e240538bb9bce6d55f47",
+        "build/validation/stream-proof-probes-13/chip/GuardDisjointSupport.json": "830f500abd9217877fbcf6864b34f54fdd37dc2f1f108fdd2f5cc033e67775ea",
+        "build/validation/stream-proof-probes-13/chip/GuardDisjointSupport.lean": "313e208f202b7ddf1f75a27c8c10d8e02e2407820550f7f938bd9dabd9f88ab6",
+        "build/validation/stream-proof-probes-13/chip/GuardDisjointSupport.log": "388c855e5cac9e5fafd4706ce8f76cd7c05bde0cdfbebbb3a141bb56c9d8e1c8",
+        "build/validation/stream-proof-probes-13/field_signatures.py": "2820b6d3eba8cb9265f827594c9e9c8632e40f9748f901a77ab10f5eb6de5870",
+        "build/validation/stream-proof-probes-13/field_tactic.py": "8a6abebb12fff6c449721f75048a2162a803de4529a19d9946031bf51a781c32",
+        "build/validation/stream-proof-probes-13/probe_alias443.py": "0def80aef9c38c7fb22d6a561d453315cddb82d586b46955129ebc364ed4934a",
+        "build/validation/stream-proof-probes-13/probe_disjoint.py": "ef3f586f8c0032c9b9b2ef38cc9b732b1af4556522a1b29893459b64ae6d8f68",
+        "build/validation/stream-proof-probes-13/probe_full443.py": "dd56460d82d8b4f017830333409d3b53f4b0f3c76448b1f42a91d3ceb9e24c99",
+        "build/validation/stream-proof-probes-13/probe_full443_safe.py": "0e82476833b23c41730c327b7b8602e2df1d400fb3540743dcd54ad4508fe9c1"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-14",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-14/chip/Aliased448-01.json": "8a222e0699177d192ebca7d35995be58a26ffe313647a6e0d9ae0a2d6a8233f4",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-01.lean": "ed1d16985d5a557466b89c160ce71e6f5a375c833ac3edc3524f319ccd3d513c",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-01.log": "5058428db0cd706902e4e034014da0c92e90f4ba94ab5b91e8fa2b1fae72cc15",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-02.json": "ab38050883572f7e48c502c774e26d3ae6443c28227d5ef6af04524b9e362a86",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-02.lean": "a15bec05a04a65ed1efd24ea0b47e2092a1502106acc85bbdceeee7f400ef903",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-02.log": "b0022a39b7d8a2f5bb1025c3cbb6ce5c48acbaedf3f71a06c07a30e1e582b98c",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-03.json": "fc850de694ba3e8533ac79fbf0772ef4c269ebe5e7b36b9bc2cd1715804378dd",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-03.lean": "d1a42adaa1ea1829bc5a18f32b9ee0446207b70cf73714a77f78455814e32a6c",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-03.log": "d02b1f1923fee648b5798baedd28cba5502d11b719f70aab3b52646aa48ee777",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-04.json": "8f0610b5f54d931bd36d7e51d55a817bd56e6621ec4ca09bc86ec16bd3620951",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-04.lean": "4c18825e69fc3e354c0ef5b1401e9f4cd3e31c2830863703af06ff98cfa2dfec",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-04.log": "797b6e7674922ff815cac38756c83508e9cc4ceaff9f7eb8599e3b2a30c9bbe4",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-05.json": "a2312c7675bc18afa02c3dc2724c6b46f357ba5beffa21af18caac6d978376d1",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-05.lean": "d3d0d3cd40800faedc0818bd29d8b00e39838b32727bc60f57048e65651be8fd",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-05.log": "ac993f7c7f2dadcc3f0789507134a153072859c39f0e325880ebc979b8873f14",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-06.json": "b50dbd3787eeef67e7e8e5269bcc3f6e140c33902fd6f9e89f5c14652cd7ebfb",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-06.lean": "bfc6351087c373c8df09a2f2318abff4924710c2fae6eeab046c954142e30a9c",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-06.log": "ff01fc264a52038f5b320958396106ffd60948e7d53d33da1402d67848a2f020",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-07.json": "f6cc4e82522bdbbce6be97dbe6e52576450047d45d7b6566b8f2f20fbdf990cf",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-07.lean": "1bfd2f91b409b5a4351d358e2f6e5419ee723272b0c5b934106dcde0cd1d060e",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-07.log": "692f20b7713415be67bf609062493116c0fa39503b72f97578152a40cdd511d8",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-08.json": "a2deb6b067d3c538daa54bd24b31cf78023ed00585a9e85e3669a42efbe93304",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-08.lean": "139df6f0f65d4d73e53c7f67c415b68351b3ca20abaa93a10c76a3cc4eacfb4f",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-08.log": "e3e02bf04111117f6f005c262e2c38d92fc892eff0b2318111ab24e60c78db05",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-09.json": "643eb701b795072d96efc672a4657d325f536dec027ffd3badbb33aaab1711e3",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-09.lean": "98e7da1880de2df72357437432daafd45a777e9032c82ff90316650a884601b6",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-09.log": "26ee7deb93400e176a26e3088f0a0f646dc439e9d5c5921f892077ea5f24c093",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-10.json": "fc50f72507d1885d80c6e90e4fb603068446f8d2c65b10e95a45e6fdc0536e99",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-10.lean": "e1174b86aac0800c3072db227a75d463e75a17d3cf9b5f2ded954053a2a6d7cc",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-10.log": "93ec8671f907d34b31efeba823b1401901d3b004aef6beddda994150faf2a680",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-11.json": "9332372db6a985fa42a9f48aedfc0bb8d48671ffe510fe66af498f093f112c12",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-11.lean": "8668132aa9ff6fac00d8c4acfe8739560249c6237202ebf113a7af9aa1965497",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-11.log": "50fb43840e9161156d547e17128a61af3281d64fd1b7e901ff17cfc674ef8b4b",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-12.json": "705b4342bc446d422a60c4d2ed240983bec6e1700beb16aaa5a94611cc3287db",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-12.lean": "4eb2462456d2ce11a5949150d795d4903728c97e1edeb501d60c49a4ece474a8",
+        "build/validation/stream-proof-probes-14/chip/Aliased448-12.log": "a935126efd9cd243ed04e164cb9f24eb174e4bc94e526c23549bb958da92829d",
+        "build/validation/stream-proof-probes-14/chip/Mask448-03.lean": "f588ea0a35837288110871d37c0a92a9531006280fcc97f6ea173d638b07798e",
+        "build/validation/stream-proof-probes-14/chip/Mask448-03.log": "3b889ad431316a92aa4e74c39df8e1e21dc9ae92ebaf99a54d8223dd153bd4af",
+        "build/validation/stream-proof-probes-14/chip/Mask448-04.lean": "33609f33c433cb8e38d4856c58ba46a2c31c7b697bd54e9fa7213db305843703",
+        "build/validation/stream-proof-probes-14/chip/Mask448-04.log": "a8aee08d95bcc8262bc810d186dbe32a8661d299f1eed0adb5dbd34db18a12c6",
+        "build/validation/stream-proof-probes-14/chip/Mask448-05.lean": "a92231d96029cceed7d1e0f61cce665f004c9ee2499db4a1e9b886f8929b887a",
+        "build/validation/stream-proof-probes-14/chip/Mask448-05.log": "2aac9982f666e0c41f3fe79f3500603ffd6880419770fd0fab41a8597cf82a8b",
+        "build/validation/stream-proof-probes-14/chip/Mask448-06.lean": "995a8c0b378a3f6396464a436804a66d22c6fb4ec99f08470fe18b239a9f3827",
+        "build/validation/stream-proof-probes-14/chip/Mask448-06.log": "b47220e682a68d0c7f1a805af1dd65bfdecd43ab4b6b391cf9230a71275830e1",
+        "build/validation/stream-proof-probes-14/chip/Mask448-07.lean": "57db735de9e2cbd2d2edbb3f6c86884ad73d7f1f5f64da11119fd628bcbb5c64",
+        "build/validation/stream-proof-probes-14/chip/Mask448-07.log": "b197ccb351cad30b62dc78bf681b988dcb840d197105c43d3f29d64d79dab3d4",
+        "build/validation/stream-proof-probes-14/chip/Mask448-08.lean": "e7c66741fb693b17f497d445513f05929939d6fc35aff0dbac36a3ed9f837e11",
+        "build/validation/stream-proof-probes-14/chip/Mask448-08.log": "910c785fe90764d91d2079d37eaea3114207d8379e73e3e343dc3598ceaab954",
+        "build/validation/stream-proof-probes-14/chip/Mask448-09.lean": "6332a3a95ee249c029d7b4cd9f54d10a9642ca33e7393f54f6c66f05a748fb79",
+        "build/validation/stream-proof-probes-14/chip/Mask448-09.log": "1cdd78eb9dcdc74f27107e5f79e4f84210a18fbcca80e28d473b8f5dfbfa604d",
+        "build/validation/stream-proof-probes-14/chip/Mask448-10.lean": "d9d90c522b9b4f84aff981b6bcfab42d852f43bfd94577e9cb3ba9c2509bfd36",
+        "build/validation/stream-proof-probes-14/chip/Mask448-10.log": "cddf05a044793e1da535d8d681686ff43140bc6298c8b653829fc7761fc5b32e",
+        "build/validation/stream-proof-probes-14/probe_aliases.py": "3c313357bf6875f904f3c416a3dc2e8217a5097db444ee219ab97868b88b5ce6",
+        "build/validation/stream-proof-probes-14/probe_aliases10.py": "25550c46dad992705582563020a27e203b3d583e31984a5aae094148d6dc76b7",
+        "build/validation/stream-proof-probes-14/probe_aliases11.py": "1466127c73dfa08aa8b48a2f84769e786f001354796a5a6030642bc2a780986f",
+        "build/validation/stream-proof-probes-14/probe_aliases12.py": "b14bec4221ef9e8d7be222332d8bde0b399e3a9098f126c72a57b0d2df8b1d97",
+        "build/validation/stream-proof-probes-14/probe_aliases2.py": "3d1ae099ab0a20db8f91648d3ed80882be5fb3c3a3dc05a0008d4637ab57240c",
+        "build/validation/stream-proof-probes-14/probe_aliases3.py": "4eaadb7fa6602c57f1b302df41b0439f8e25d3d2c66bacb72a88fcc652427586",
+        "build/validation/stream-proof-probes-14/probe_aliases4.py": "471c9a3d998fc3ce0abcdcdb1c7f2aba304774a0563f7d02406a70d4a2ecf1a4",
+        "build/validation/stream-proof-probes-14/probe_aliases5.py": "6ff4f6adc5e4b03576152e17da58713cd802fa0c5e9d4decb25a309c9dfb6fed",
+        "build/validation/stream-proof-probes-14/probe_aliases6.py": "b5ee5ca5a62710e27af44ffa254c92ab4a986b1f35abc5e77279b81c52cb4abf",
+        "build/validation/stream-proof-probes-14/probe_aliases7.py": "619861f98a34d0f4ca7ecbb8d1068f0e6f80dfe38f0b9ae6a09aac357a987eed",
+        "build/validation/stream-proof-probes-14/probe_aliases8.py": "91ed61c962b12f247f27a804b425d2f5ae86ac7e52ce5ab5a3fb033ef9af30ee",
+        "build/validation/stream-proof-probes-14/probe_aliases9.py": "05e7ef5c7a07dc2107a13b0310c2f86605c0872107d614816aa4a6eca68b49a0"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-15",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-15/ApplyIte443.lean": "d431ed256de6971c8afb2cb13edbe7fd5a7f47b1986f993114f8990eb7dd95e4",
+        "build/validation/stream-proof-probes-15/ApplyIte443.log": "e4014d568090c0720aadf840c7b18f97433e25f21a3d05317219f29560b804ce",
+        "build/validation/stream-proof-probes-15/report.json": "abd2e4d27b1792e1928494b0f55d7f8446deae2d2b30870ea93ffb36a0cc95a9",
+        "build/validation/stream-proof-probes-15/run_probe.py": "1e2d160709a3e6b0ab13d47407cc8cb4c8ebc441b9bbd3c77b145d43685ad220"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-16",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-16/EqIte443.lean": "56b62120b7f168c8b779305aaa7140818fa7e31d663d913080510e4e829a0108",
+        "build/validation/stream-proof-probes-16/EqIte443.log": "de0b4c0964ec27a81bbbe99df48cd05eef651d9e23191c69ebdb25eec5d5ac27",
+        "build/validation/stream-proof-probes-16/report.json": "7b3c4824a848c5597104a0812da1eeccbf3083214d5fa4539c8d09b7c4b1fc87",
+        "build/validation/stream-proof-probes-16/run_probe.py": "41eff2318310333ddcc6372a547383e360e259825f4598a2959f5036b49adc33"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-17",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-17/chip/Mask448-01.json": "c11f23590c5e023ef4192aade86dd637c058d23dcdb1df35344e525cdf1d3dba",
+        "build/validation/stream-proof-probes-17/chip/Mask448-01.lean": "bde0e9e0b56fc10b6f9dab094bcc9083ca1dabe4312225fc4bf5e676d5d726d7",
+        "build/validation/stream-proof-probes-17/chip/Mask448-01.log": "cd80c9a5cb05480d32a59f6d2372378c71c9aa852880f031c141578a7b9ca5e5",
+        "build/validation/stream-proof-probes-17/chip/Mask448-02.json": "2fd4065fa8237905cc50462fdcf37d4a139bec7f222a39511f0ee19954558d97",
+        "build/validation/stream-proof-probes-17/chip/Mask448-02.lean": "e7a52a5cb4ed656959f9b3e4042c40148c5b0117b0ec31aba64b981e7df812f6",
+        "build/validation/stream-proof-probes-17/chip/Mask448-02.log": "86109ebd926b26136596b99ed9ab4ceecc2f7fa6476596ae05e4d92ae311acf8"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-20",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-20/chip/OpcodeLookup-01.json": "ef00c46394d8eab1c7ca93e9561fe6778c9a38f12a907b94df6c366d42f5f1e4",
+        "build/validation/stream-proof-probes-20/chip/OpcodeLookup-01.lean": "efe73230b7d989c82afb10048e0aabd74b3468a965f86134ab4109adda3526d3",
+        "build/validation/stream-proof-probes-20/chip/OpcodeLookup-01.log": "4d185ffd4821fe957baddb609eaf76c958e892e2b81303908dd980ea1cfb1c7d"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-21",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-21/chip/Packing448-01.json": "12d2c4fbfbb822f4c7d585424f2576f09587798eda4096ab2e2f5ab023e28e2d",
+        "build/validation/stream-proof-probes-21/chip/Packing448-01.lean": "71c0e4bf59481e04d43d741ee329a29536493542b421c615652250ff08e5a881",
+        "build/validation/stream-proof-probes-21/chip/Packing448-01.log": "9ecdd9b854b2e941b674d7c776a9b0538c5b4f35f251c1889c8e28693fa7b5e0"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-22",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-22/chip/Audit.lean": "caa520e515040091d1f4df36c86bb0808107fa0b935119d08c32b51322e1cae6",
+        "build/validation/stream-proof-probes-22/chip/Audit.log": "cd275bbc3d5a3602526e5a50607c0c9c6410f748380735e6c19ed576f6abbb30",
+        "build/validation/stream-proof-probes-22/chip/Design.lean": "a9e582d61657fd342b1cac0f2ccb35d0ea33a2486fb95a63fdaf50c25c6908e4",
+        "build/validation/stream-proof-probes-22/chip/Endpoints.lean": "9a3059c7f2278614b4d63c8878ababc8376137993908e3184755327440d17d30",
+        "build/validation/stream-proof-probes-22/chip/Endpoints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-22/chip/Equations.lean": "61583d64001b604054fb76ebdecd63afe67c8d8d474a183879536d4323f1133f",
+        "build/validation/stream-proof-probes-22/chip/Graphs.lean": "e399a57d33e281ea7e94b4327facc841138169458999b8b7063e9cf52bf1a97a",
+        "build/validation/stream-proof-probes-22/chip/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-22/chip/HintEquations.lean": "aa67302c36764c4da42b1d665f29468dc9d5c9980514f1d7e5d928f76bbac58a",
+        "build/validation/stream-proof-probes-22/chip/Hints.lean": "05438b9bafee6576e9e07f11c2bf0623a529e04c079f1c9c0dc019ffbbf20083",
+        "build/validation/stream-proof-probes-22/chip/Integrated443.json": "3f6f62211d683cbebeb94760a161515964b6607c7563c872ea0edbb6acdc05e0",
+        "build/validation/stream-proof-probes-22/chip/Integrated443.lean": "36c2191601123e18876c4bc4a3feaf27282397b4ef3c322505fe2ac1cd222420",
+        "build/validation/stream-proof-probes-22/chip/Integrated443.log": "d22ff30fab4f28a857de0c3f332cfe6c3e1a35855f198c5c55a9e834cfb623d5",
+        "build/validation/stream-proof-probes-22/chip/Integrated448.json": "f9cc098d9739e9e11c593278a7ec97391ae5cdb25bd57e05657882c5a6ca867b",
+        "build/validation/stream-proof-probes-22/chip/Integrated448.lean": "6db6c59f33f54198aafa7ba60d33fdf76c157dd5099f2f4424184d15558708be",
+        "build/validation/stream-proof-probes-22/chip/Integrated448.log": "d22ff30fab4f28a857de0c3f332cfe6c3e1a35855f198c5c55a9e834cfb623d5",
+        "build/validation/stream-proof-probes-22/chip/Links.lean": "daf501c73274b777355d905b486ef7a4b9203c8a724354dd22b36d7f3a52f56c",
+        "build/validation/stream-proof-probes-22/chip/Links.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-22/chip/LocalProofs.lean": "a45ea8fb03f55cd85538ff6a0480ca04d04193bd72ed9af06351ee7b324bb08e",
+        "build/validation/stream-proof-probes-22/chip/LocalProofs.log": "344b9d0c81fe7c55ec3cca0a4f54a3fa5d0465b2f7ae58c9af2140686bb02949",
+        "build/validation/stream-proof-probes-22/chip/Model.lean": "01a245cd4aaf014f1412c0dd8596564859a4e4d35b183dbb4b27adf11f342a66",
+        "build/validation/stream-proof-probes-22/chip/Model.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "build/validation/stream-proof-probes-22/chip/Proof.lean": "52a0a8d2e863f79f52324a689443ba563f833c36d291e20b56dac383d98fb108",
+        "build/validation/stream-proof-probes-22/chip/Proof.log": "6f334e2f6b0c76a5cfd3147f68a6a39b1c2c1b6b93224943d8e05bfb339e9564",
+        "build/validation/stream-proof-probes-22/chip/Sources.lean": "2355fe770916c592cb96cddf15130ecf5503f9c2d9c2976e5f064e754c2500bf",
+        "build/validation/stream-proof-probes-22/chip/debug-report.json": "c7eeba3c2e2a79ed889f34631d8de0398222421ea98a881ac2be1d883fb24235",
+        "build/validation/stream-proof-probes-22/chip/import.json": "c9e2f3f28319d39f752b9566669180c0a55ffa46361738866509b45e4649045e",
+        "build/validation/stream-proof-probes-22/chip/import.log": "50ec39ce5e3b3dfa4156c0b70ca8a85d39f405ace0cb74a414789c5998100fcb",
+        "build/validation/stream-proof-probes-22/chip/import.ys": "28a9c7750d4b73b0f5f5c469b2b4a4aed76abebdfe635423c8a19a05779c983e",
+        "build/validation/stream-proof-probes-22/chip/pairs.json": "c02c11e3daa259f8e14e9ee3af58817d437b8c0107244b8a27a4ca053f476733",
+        "build/validation/stream-proof-probes-22/chip_probe.py": "db1878b3cbf6eb5e2baabddc57e86658de8d1e5804f8d26c9bbee67ddd8c2cf3",
+        "build/validation/stream-proof-probes-22/core-equivalence.json": "4e6ddd49bb5f559dbc0e99885e4f1fb18f723509e08bdc80d076f5b23ed2cb8d",
+        "build/validation/stream-proof-probes-22/focused-normal.log": "708ecf0243b0eb15e022870a9b345e2940029dd33a8e062d824d61473bed8489",
+        "build/validation/stream-proof-probes-22/focused-optimized.log": "6c75b32a8cdec103888062991ed21c9424085ef5ae0c848acbeb727f7b4de839",
+        "build/validation/stream-proof-probes-22/focused-report.json": "2603004089a1cb64847423ba3cf5ad3828ead778481aa669afbcaae62f3d9a99",
+        "build/validation/stream-proof-probes-22/focused.py": "171a40a22d067e61ca0367997a959c7129b1dca9315778698242c534e77b8423",
+        "build/validation/stream-proof-probes-22/isolated.py": "05585730f830d3ab3e5522ad5aa1845e1caf10c1b2b4c3c41641c8827f009dd8",
+        "build/validation/stream-proof-probes-22/selection.json": "c3f13b5de4ea2a06741b4b3131afa95056ad9fd0fabe0b33e987a90d5f290ae3",
+        "build/validation/stream-proof-probes-22/verified-report.json": "94793254c16b26e183671d3159e47fc32151abcc09e43955df920e7d02f343a1",
+        "build/validation/stream-proof-probes-22/verify_final.py": "ba98b0ebe41a56744b387fdb8f782152bf7f498cc55fa56be65f3f1a305c3728"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-23",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-23/chip/Chunks349_358.lean": "e91104ae6dcbb151e1bc9f475ec049d860508365cfd4f8738cb1bf4c84343bdf",
+        "build/validation/stream-proof-probes-23/chip/Chunks349_358.log": "6d4a8d86dff272580bde8b63229da14992e43b9cc185bb9af8997039b8fb18ec",
+        "build/validation/stream-proof-probes-23/chip/Chunks359_368.lean": "1f9e0256178ef4f7e8ea6fee20049fbff6860492f1ee426792348e0f7478f57d",
+        "build/validation/stream-proof-probes-23/chip/Chunks359_368.log": "e5490c0a81ea226da0d688f012c133f222772d318a6a8a001cf2ccf05f4b6e93",
+        "build/validation/stream-proof-probes-23/chip/Chunks369_378.lean": "816ba47f51c3ac1a9585d4c06e29fca450754267daf0600f3a34eb9961b25acf",
+        "build/validation/stream-proof-probes-23/chip/Chunks369_378.log": "5c69cd34d0b7eab8141444073bdd030e0ae57a5de640e1fa121d67a4cbb8d0bb",
+        "build/validation/stream-proof-probes-23/chip/Chunks379_388.lean": "3db2cff0199ab6e5acd18b51fae7f87af507c9617c420ec88c29c9565061c91b",
+        "build/validation/stream-proof-probes-23/chip/Chunks379_388.log": "25d6bbf8e7584c44ac306ef0d5b72016d5f7be39709781a037506fce01e24ab7",
+        "build/validation/stream-proof-probes-23/chip/Chunks389_398.lean": "134d0509d8783f0a260da9a61cc6a042181ef8633c63d3b30f032287f4c11d48",
+        "build/validation/stream-proof-probes-23/chip/Chunks389_398.log": "4c8039802a25039feebbdb16119a9fabf63db2da52209d88849efaf4ec107341",
+        "build/validation/stream-proof-probes-23/chip/Chunks399_408.lean": "8f697f04699dc0c091a44caa8b4dc47314fc4f41b06cc19bed42d75e5b162a65",
+        "build/validation/stream-proof-probes-23/chip/Chunks399_408.log": "441c38fc05495e709f848445a7f7782832e66cd0cbb79a8bede76d3429e7b3b6",
+        "build/validation/stream-proof-probes-23/chip/Chunks409_418.lean": "d0ebcdb11110369668458f7a3291afd665a6dea7fd84716fc4544fe5de47c56b",
+        "build/validation/stream-proof-probes-23/chip/Chunks409_418.log": "09cb6f49637c729400dd365af034862be118ce22697ecca8cfc330a40efd01e4",
+        "build/validation/stream-proof-probes-23/chip/chunks-report.json": "25d735527508375dda4279e2a5251fde7362a7eca8e0fa18b07295d9ce88b09e",
+        "build/validation/stream-proof-probes-23/freeze.json": "2f1696a4f6a56366ed39194c281024e18546febfdfdb69c81df1c5b18b2954a6",
+        "build/validation/stream-proof-probes-23/profile_chunks.py": "7b2039c3eed88726257a21423f0bb9d291eae19b4602b70cfd15d84dfff0177b",
+        "build/validation/stream-proof-probes-23/profile_subset.py": "48215006e729a24eae9f3b7c9ea52cf9d4b7bc48d2eb9e5077dbd1069cf75268"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    },
+    {
+      "kind": "isolated_kernel_proof_debug",
+      "directory": "build/validation/stream-proof-probes-24",
+      "artifact_sha256": {
+        "build/validation/stream-proof-probes-24/Local435.json": "e2b5d4438912f027a4a9cf2e61bd5e8db90b658ab2820883033abbf5e36d169a",
+        "build/validation/stream-proof-probes-24/Local435.lean": "f07d8f3260515a0cd0ee1504714298a78c63f6fd68a2bebbd890828a47a5d10b",
+        "build/validation/stream-proof-probes-24/Local435.log": "c33dbdffd6cf4c17fb73d883a38135b25ee4e2f2313b7bb8afe35026a463745f",
+        "build/validation/stream-proof-probes-24/Local436.json": "7db57ad6ec68110da064f7f686c90d42277b9d7bfe661bf4ddc1c264e7761567",
+        "build/validation/stream-proof-probes-24/Local436.lean": "2324b1e7c5a05ff04f2d4271406c4431a351de58c3390e1b068f6c35031add77",
+        "build/validation/stream-proof-probes-24/Local436.log": "05bf69ab42c29349a584c050f8a8230561f6141a149e82f845352f7dfb9c4652",
+        "build/validation/stream-proof-probes-24/Local439.json": "73aeb719cfb6993e54638123eb9aaa87b04142ca28583575bf2ab3f36b3816fd",
+        "build/validation/stream-proof-probes-24/Local439.lean": "dfe11549462ebcfda6b32d26219a09f0b2a76063d1046d403d506aa7ceaace5b",
+        "build/validation/stream-proof-probes-24/Local439.log": "681865a3e9a9e7a232e359591fa2e0ee869aa75526a4968b12f630bd236dec01",
+        "build/validation/stream-proof-probes-24/Local442.json": "03dc2d01fc2c49aa4eff6b884bf3edf4b2eb38e6b7ea2b8fb9e6435c80dc3730",
+        "build/validation/stream-proof-probes-24/Local442.lean": "5acb2fa4799f6463020c489496cd2cf2cb3ec9f793d944a686a4a3557293881a",
+        "build/validation/stream-proof-probes-24/Local442.log": "57d421b5c9140992453c6d3b96d582d4cda7b63baaa338188c7f9b473be03af7",
+        "build/validation/stream-proof-probes-24/Local444.json": "62db5e3e24cab42485d4dd2a5ebabfbcbe01365b2dab3ff25105447328d95964",
+        "build/validation/stream-proof-probes-24/Local444.lean": "28d3b1dc534b1e38a1fcbe2fca11a72dd70ba8aca9cc583cf375da6bb89c7c44",
+        "build/validation/stream-proof-probes-24/Local444.log": "2f7b39e6aba6749a6839d1e025a220cebbe29f92bdfe8432bec7936d43a86b43",
+        "build/validation/stream-proof-probes-24/Local445.json": "47ca63f79878f3ceb23a8aeb01c088acd64e1190c889fc2ccd03c531501c2b93",
+        "build/validation/stream-proof-probes-24/Local445.lean": "5ee9eafd075afdd86f82bb8a09a9e6d1464e5192f51eda50dfc4582baec48488",
+        "build/validation/stream-proof-probes-24/Local445.log": "a37400f9ea13718b60b7e6d286f92095e07e36056bf0eedef3e86e33479c20ab",
+        "build/validation/stream-proof-probes-24/Local446.json": "d413bb6a834d58a6f0e53de600e836721b81b6526a86b66dc5fe437ccf98d22e",
+        "build/validation/stream-proof-probes-24/Local446.lean": "5b2b60241aaaac41fd4fc4b2f938eb40e50bea565433329b70c4754ae0944dfd",
+        "build/validation/stream-proof-probes-24/Local446.log": "3c7164f27b365a2fadc893106da9f4f93abbc1448f8b4a363723de2e87fc5df7",
+        "build/validation/stream-proof-probes-24/Local447.json": "baf84c47eb788e91af80c08bdef2fa92c4520650f735b86d9097d2133e1abcd3",
+        "build/validation/stream-proof-probes-24/Local447.lean": "4de42d87c4215b136d1457ebc8f9982b6c26d00a97032f126034594d9e0e517c",
+        "build/validation/stream-proof-probes-24/Local447.log": "668aacf7e3982ffdf60dec6f83744087a189d5dc5d3e0f49efaeb95e54cc4ce6",
+        "build/validation/stream-proof-probes-24/report.json": "6d7c7efc55eb330ed363a0b2e38fdbc8afd979e75c738e1fc11d129fdbae778b",
+        "build/validation/stream-proof-probes-24/retained_helpers.py": "b4c47b39e9445b55c39b8069b8a8658c47aa048c2287e80b6b729e0a2eb744bb"
+      },
+      "scope": "Bounded generated-helper diagnostics; no full RTL acceptance receipt."
+    }
+  ],
+  "physical_boundary": {
+    "A_accepted": false,
+    "physical_evidence_reused": false,
+    "cad_seconds_added": 0,
+    "routes_added": 0,
+    "campaign_cad_seconds": 8843.12,
+    "A_routes_used": 3,
+    "B_routes_reserved": 2,
+    "preexisting_manifests_and_fixtures_unchanged": 218,
+    "unmet_requirements": [
+      "authoritative SRAM internal qualification",
+      "compatible fast-corner characterization",
+      "package-power integration"
+    ]
+  },
+  "artifact_custody": "Generated receipts and focused logs are ignored local dependencies; tracked hashes are not a remote backup.",
+  "document_links": {
+    "path": "build/validation/uart-continuation-01/document-links.json",
+    "sha256": "97bc721d89c76a2dac6f13150c025ee31c3b5fc2206bacc19c0976b35996552b"
+  },
+  "document_link_checker": {
+    "path": "build/validation/uart-continuation-01/document-link-checker.py",
+    "sha256": "b45d29903af13c3b1d4df2b9189ae13b4ffcf1378e0199ffa4ba7046c4038b3e"
+  },
+  "manifest_finalization": {
+    "path": "build/validation/uart-continuation-01/manifest-finalization.json",
+    "sha256": "d1e7da779078252f7f15b9820baff91eedd323bcfd8566f08e0a575db885972d"
+  }
+}

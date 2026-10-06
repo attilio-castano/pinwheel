@@ -1,0 +1,408 @@
+{
+  "schema": 1,
+  "status": "passed",
+  "date": "2026-10-05",
+  "implementation_date": "2026-09-30",
+  "study": "docs/protocols/uart-session.md",
+  "plan": "docs/research/uart-session-proof-plan.md",
+  "base_commit": "07be98c869f24d4947f56000ee484486db3dad4d",
+  "branch": "codex/uart-supervisor-refinement",
+  "candidate": "paired-uart-stream-digital",
+  "backend": "paired-stream",
+  "scope": "Initialized finite UART package sessions with actual reset/upload/ARM, resident execution, certified reload and external reset restart; exact observations and packet receipt custody.",
+  "reports": {
+    "foundation": {
+      "path": "build/validation/uart-session-foundation-02/report.json",
+      "sha256": "85fb5713d3a762aaa8366cfc53958ea4e5277dd629b780536ad5233b2bcef548"
+    },
+    "wire": {
+      "path": "build/host/uart-session-wire-01/report.json",
+      "sha256": "98c63a0ab361242372dd3f7b882be50367e321b15fc5c973a29cfef80f4563be"
+    },
+    "readback": {
+      "path": "build/validation/uart-session-readback-02/report.json",
+      "sha256": "c17b8bec8514c1fb6f336207294043240e20d46553cc4c5ae90ce337c6efc877"
+    },
+    "python": {
+      "path": "build/validation/uart-session-python-01/report.json",
+      "sha256": "d6ccc97397e2533964b1e7faffbc4b5643839dd1ac88288a71b7087b243194d4"
+    }
+  },
+  "closeout": {
+    "path": "build/validation/uart-session-continuation-01/closeout.json",
+    "sha256": "58c90b6a19658b0e8cd90799e60ddc304f9e25f6db6873eed68d91fa871622a3"
+  },
+  "focused_theorem_audit": {
+    "path": "build/validation/uart-session-focused-01/report.json",
+    "sha256": "0c8f0cd7b2af83e3bf083a34029e1d6c31091c20fd05de86346304124c28279d"
+  },
+  "preserved_attempts": {
+    "path": "build/validation/uart-session-continuation-01/preserved-attempts.json",
+    "sha256": "5bd2de6fb2eff35630dbf7c85ea680b6212870c9434251c1fa9ac13de741d188"
+  },
+  "proof_domain": {
+    "initial_state": "arbitrary represented registers, memory contents and Q",
+    "memory": "lawful SinglePort.Contract",
+    "uploads": "canonical UART image certificate and qualified actual serial delivery for each epoch",
+    "initialized_continuous_paired_package_theorem": true,
+    "recurring_core_memory_activation_premises": false,
+    "immutable_packet_origins": true,
+    "exact_occurrence_receipts": true,
+    "pin_sampling": "actual two-edge sampled inputs",
+    "reception_progress": "strong stream safety, declared digital sample age, matching external waveform and quiet command window",
+    "arbitrary_stalls_lossless": false,
+    "physical_sampler_age_qualification": false,
+    "hardware_bits_added": 0
+  },
+  "validation": {
+    "foundation": {
+      "modules": 255,
+      "audited_declarations": 19862,
+      "audited_theorems": 10543,
+      "executable_suites": 39,
+      "kernel_suites": 1,
+      "untrusted_axiom_rejected": true,
+      "elapsed_seconds": 1436.752
+    },
+    "wire": {
+      "cases": 30,
+      "buffer_rtl_vectors": 148,
+      "fresh_upload_certificates": 23,
+      "timing_certificates": 18,
+      "elapsed_seconds": 355.461
+    },
+    "readback": {
+      "local_equalities": 984,
+      "modules": {
+        "core": {
+          "top": "pinwheel_paired_core_controller",
+          "registers": 82,
+          "register_bits": 1470,
+          "outputs": 37,
+          "shared_equations": 45,
+          "local_equalities": 535,
+          "audit": {
+            "declarations": 34870,
+            "theorems": 22822,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "upload-cursor",
+            "parameter-bank",
+            "sram-write",
+            "stream-enabled"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Core.component_correct"
+        },
+        "chip": {
+          "top": "pinwheel_paired_controller",
+          "registers": 111,
+          "register_bits": 1593,
+          "outputs": 7,
+          "shared_equations": 45,
+          "local_equalities": 449,
+          "audit": {
+            "declarations": 41556,
+            "theorems": 29266,
+            "standard_axioms_only": true
+          },
+          "mutation_controls": [
+            "unchanged",
+            "sampler",
+            "mailbox-valid",
+            "package-output",
+            "stream-enabled"
+          ],
+          "component_theorem": "Pinwheel.Artifact.Paired.Package.component_correct"
+        }
+      },
+      "inputs_unchanged": true,
+      "elapsed_seconds": 1202.031
+    },
+    "python": {
+      "total_tests": 703,
+      "passed": 701,
+      "skipped": 2,
+      "optimized_tests": 89,
+      "elapsed_seconds": 21.267
+    },
+    "frozen_source_counts": {
+      "foundation": 350,
+      "wire": 281,
+      "readback": 569,
+      "python": 224
+    }
+  },
+  "artifact_identity": {
+    "prior_manifest": {
+      "path": "physical/experiments/uart-supervisor-results.json",
+      "sha256": "f01a506372e41d7488808a9294f9eac6ced61a6180bf4bfb7c6615da93b6c3ca"
+    },
+    "chip_mlir": [
+      {
+        "path": "build/host/uart-session-wire-01/chip.mlir",
+        "sha256": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6"
+      },
+      {
+        "path": "build/validation/uart-session-readback-02/emitted/chip.mlir",
+        "sha256": "115ee4f0f8288aafb04c95e732317445c65e7cc7616c7d6b34dd0836fa2635e6"
+      }
+    ],
+    "chip_rtl": [
+      {
+        "path": "build/host/uart-session-wire-01/design.sv",
+        "sha256": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806"
+      },
+      {
+        "path": "build/validation/uart-session-readback-02/emitted/chip.sv",
+        "sha256": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806"
+      }
+    ],
+    "proof_only_candidate_unchanged": true
+  },
+  "implementation_source_sha256": {
+    "Pinwheel.lean": "f03e418f8a5a1f507bedcebe558a76ec431a850a1855172792444e9c4d1f1ca9",
+    "Pinwheel/Hardware/Storage/PairedStream.lean": "9c1c453557335b98961b2dc705e94bec909eecb46bd511bc0c3725648748298f",
+    "Pinwheel/Hardware/Storage/PairedStreamArm.lean": "f4750fe4f7754c22a32a533ae952fe480ef36d80e876cc19d1e2636e8b4213d6",
+    "Pinwheel/Hardware/Storage/PairedStreamBootstrap.lean": "2e98695a35783379bc2ef8e9327ec2ea40d5e48993d95701082902e0fc55d84a",
+    "Pinwheel/Hardware/Storage/PairedStreamDormant.lean": "9af599caed25822e973c42907ad318f8490fa59baeb46261781c6311960be146",
+    "Pinwheel/Hardware/Storage/PairedStreamLifecycle.lean": "99aeb8526926b9cde8bc5aca36a0c0a2a1e69586eb81288dc404f95a94531fdb",
+    "Pinwheel/Hardware/Storage/PairedStreamMailboxInit.lean": "0059688a6896800e57d09a638b0b13ba34790d897dff88d63a28f2b526fc780b",
+    "Pinwheel/Hardware/Storage/PairedStreamOrigin.lean": "c47e59574acf864bfe787a33ff6bce633c90cff5f7bbb82c657d851fdb49dbd3",
+    "Pinwheel/Hardware/Storage/PairedStreamOwnership.lean": "8f2970f5f295151d81555b8272d7182662a937360a466b906fd464f5d6fc11c6",
+    "Pinwheel/Hardware/Storage/PairedStreamPackage.lean": "7f39f66cbc6b0e5d73c3d4403ed89375813a48422f6ba18e4f51e4ffdb055ad1",
+    "Pinwheel/Hardware/Storage/PairedStreamProgram.lean": "69fe996939eb6c80c2fc94dad509f95dfc12d2daf29317d0cedb1377fafb8018",
+    "Pinwheel/Hardware/Storage/PairedStreamSession.lean": "f36c291fc0399e9ceb10c005ec71b35e6e51c809d16186e1e41edede5e8ec569",
+    "Pinwheel/Hardware/Storage/PairedStreamUART.lean": "07c01238072a7e376ba224e3473313d320c5cfbf2233bb5ac470113cf30c1dcd",
+    "Pinwheel/UART/BufferedSupervisorPhase.lean": "9ea2d00da35a838069301acda6d2d290ed6a669bc4f78b5bc8e85a202ab2647e",
+    "test/PairedStreamSession.lean": "a7750adb2e55a539ecd9a5cc8df8d11484c4a8d461d8293f98cca08156dec3c8",
+    "test/UARTBufferedSupervisorPhase.lean": "7ac3b3467e06f060f324c90f2d7c5d1f132244a486e862678611216a873b62e9",
+    "scripts/check-foundation.py": "0832fe55691de14c381351e5041ed0cf304efc909a8594745fda3ea3e13845c3"
+  },
+  "validation_log_sha256": {
+    "build/validation/uart-session-foundation-02/Binary.log": "1801ca10bf0c2103c9b965f8760d2cab65e0f484f6fc90990694d2acc3a9ac4e",
+    "build/validation/uart-session-foundation-02/ChipPinMap-kernel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-foundation-02/CompiledI2C-binary-explicit.log": "cd75a549e73e2cdd47685462b374bb37e3b1acd61426096d5ad948d880f142a1",
+    "build/validation/uart-session-foundation-02/CompiledI2C-binary-looped.log": "9f06083572f601a53a9efa4fd12687cdabadfb8bcf231537ca618d123d58610c",
+    "build/validation/uart-session-foundation-02/CompiledI2C-looped.log": "9f06083572f601a53a9efa4fd12687cdabadfb8bcf231537ca618d123d58610c",
+    "build/validation/uart-session-foundation-02/CompiledI2C.log": "cd75a549e73e2cdd47685462b374bb37e3b1acd61426096d5ad948d880f142a1",
+    "build/validation/uart-session-foundation-02/Control.log": "d77320f39feb1c8d904c48763519d696ea5c3652fe9f4aa7e9592c9e1eba4a1e",
+    "build/validation/uart-session-foundation-02/Counted.log": "5e770e1b5e1b939bfeddbe69e700070832008cd508842db8ad3d3d45ca943570",
+    "build/validation/uart-session-foundation-02/Enables.log": "f00c9cd4f3ca2949d34fb04f2c878db3571b68e8cc6eeb9d3c669bde6b97a552",
+    "build/validation/uart-session-foundation-02/Encoding.log": "7c23955f361d33bd69788cf2411af1669954aa9fff01f38190dbe302b1e4e1e3",
+    "build/validation/uart-session-foundation-02/Engine.log": "d17f65bd5859f25efbd4685f1d4b451582fc2a25eac4fc76438f4f2119c30bfe",
+    "build/validation/uart-session-foundation-02/FetchChoice.log": "aab4ccd1f4dd2bbadf45ae32483888feff8ff8bead9f9a2ef5fadbec75051ffc",
+    "build/validation/uart-session-foundation-02/FetchContract.log": "dbe795b7ef6906ce8bfcb98d633d21f2456a553ae1e17bcef9b33259a0e9c2fc",
+    "build/validation/uart-session-foundation-02/Hardware.log": "ff16b755b5f3851d696667631648d838c5a07c038442bd9fbb4962ff4756cde9",
+    "build/validation/uart-session-foundation-02/HostResult.log": "a217d266adf91e53172e3a3cddb2c1638d68058d9546aba8d4ec71f5dda2f687",
+    "build/validation/uart-session-foundation-02/I2C.log": "8e972d950ea7dd2692b29c840fe769304a3abac5837be64f149e0031112a7776",
+    "build/validation/uart-session-foundation-02/I2CRead.log": "36021b54113c19a349af427eb32248142ebd8c83bfeecf44d5b2152b3a2ee598",
+    "build/validation/uart-session-foundation-02/I2CRecovery.log": "4d9e4d5c54930b7ef775e1ce3e62c5e5e0e160d32812b0bfc8475bb5cd9e2579",
+    "build/validation/uart-session-foundation-02/I2CWriteTransactions.log": "e3c4c05ff9bfd1cf65250e347ac86fdad5e39a4e62a42a039787fb15f9e58d3c",
+    "build/validation/uart-session-foundation-02/Interfaces.log": "7cd8ba6ea7f51af576940ccf61a209d1327fb7727570610f70d35c6dc3c570e1",
+    "build/validation/uart-session-foundation-02/Latency.log": "1f7fa2bda0cae2f7a7b0de4a63eecfd3afb92f6a856948f8f993ca4e9af44616",
+    "build/validation/uart-session-foundation-02/Memory.log": "784d920697f7a6866542cd60602c886e09543b3d4eb4e26abdb6e99c68ff6d49",
+    "build/validation/uart-session-foundation-02/PairedStream.log": "c9255b84d2453a40f0334061ce59c307e79c16413b0d3097216c95c2eb1b2006",
+    "build/validation/uart-session-foundation-02/PairedStreamSession.log": "a3492f01e899d6dbb84851c835244a36ef3a598c187ab41e03906fd9b37ed8d8",
+    "build/validation/uart-session-foundation-02/PinSampler.log": "47289db63a9a500bc78ca4aa200b6d5a4b4a8252f148828e01e2e2de20d2f67e",
+    "build/validation/uart-session-foundation-02/Reactive.log": "1c0ade49f8566bf16fe220cd5c017bc84ea4066873bb51cc308ee32e1fd98f8a",
+    "build/validation/uart-session-foundation-02/SPI.log": "a3da21f80ecd6432815df3d9050b31a9942af58f3389aa36d96433d63da8c668",
+    "build/validation/uart-session-foundation-02/SPITransactions.log": "0268a6885856579ba9abbec25b8bc001514128efdcda925c3ed31d5eaef8d117",
+    "build/validation/uart-session-foundation-02/SerialUpload.log": "0a6698a362b252817367922d7aed052cca36d78ca3e7106643c8f5a0321eadfb",
+    "build/validation/uart-session-foundation-02/StorageCapacity.log": "fb18f816159f5407e5d44b08c36a08d67bc4986ef2a22ee16a7a15479b882a01",
+    "build/validation/uart-session-foundation-02/StorageRepetition.log": "abf89d7464d90721e9d9d62b9e52c1c9c384165954deb0a465cce0c7babfee5e",
+    "build/validation/uart-session-foundation-02/StructuralTiming.log": "6b78ebc49957b754e2b33e606ba4a00ebb061d54ec0b3e8253aa4111ff076d3f",
+    "build/validation/uart-session-foundation-02/TimedContracts.log": "24f208fb88946acebcaedb2f712a9211ff3305bf56b8e655ed82accd4a1b1b9c",
+    "build/validation/uart-session-foundation-02/UART.log": "0d06dc8d9ac5da11824d8d07b0e129e3d9cb02ec65f2094c373b2957b1b00b95",
+    "build/validation/uart-session-foundation-02/UARTBufferedSupervisor.log": "8af26600ec3007d7eacf2f50c244f2b5a7349c696ede7ae57f72760220bd6ca3",
+    "build/validation/uart-session-foundation-02/UARTBufferedSupervisorPhase.log": "d0e45a947a6cd6ddd54b30b5f06b419d3d3a760ad42aeb06946f987c687ab6ba",
+    "build/validation/uart-session-foundation-02/UARTLink.log": "6d4ec49b51feebae644c5acb80973a797469f74d8ce150b95544354e0c53001f",
+    "build/validation/uart-session-foundation-02/UARTRx.log": "e6baf52230ebfe674dacd1bc2b0a379b881a5fafe2d25dc7f4c3e4f9f867e3f1",
+    "build/validation/uart-session-foundation-02/UARTStream.log": "51e83895873bdbbbda5dc10c9bac448e1a9d2ff8f1e04e1d6a0bca756b4e3253",
+    "build/validation/uart-session-foundation-02/UARTStreamClocks.log": "7234c6d1b1775a7294a5787cece4a4d320a7e8c2e3c8732758c3f7b14c5a446b",
+    "build/validation/uart-session-foundation-02/axioms.log": "8b9451b8c9848ec11df654f8cef2a97d088aa474dbe5d66b08e942965ab4d223",
+    "build/validation/uart-session-foundation-02/build.log": "e1d9207c067c2413ac6120a37c7149797af55f24db6219b4a1ee491e8524deeb",
+    "build/validation/uart-session-foundation-02/independent-binary.log": "420f0e614e1eef1588e473154064f36119e47f35e9fc1fe32c3976fbd9e15e30",
+    "build/validation/uart-session-foundation-02/independent-uart-rx.log": "74a205731502d5709cd776cb54fcf427dd0caa566db530b4cfd6eda3a24bf9c4",
+    "build/validation/uart-session-foundation-02/reject-untrusted-axiom.log": "90f964b02c158ca683564d473785885a21038347258d62875561025e5187b80e",
+    "build/validation/uart-session-foundation-02/version.log": "4762d596346ad354e28668de62b7eeae7de5d531b9a7b1c182ca59cfacd81bdd",
+    "build/host/uart-session-wire-01/buffer-clear-after-drop-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/host/uart-session-wire-01/buffer-clear-after-drop-rejected.log": "497b682d315cdab561f16b48c108a67237491eb77dadb0dc5169e3f4a00a395b",
+    "build/host/uart-session-wire-01/buffer-overwrite-unread-compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/host/uart-session-wire-01/buffer-overwrite-unread-rejected.log": "c010107d5728511650d71e5d48d53b1c3354cf7cbbd54f5f5982cd95d6e2a3df",
+    "build/host/uart-session-wire-01/buffer-rtl.log": "b5bb044aaa5901e19d75a77895439a868f93fcfdad0ed6856f35066614da1469",
+    "build/host/uart-session-wire-01/build.log": "e1d9207c067c2413ac6120a37c7149797af55f24db6219b4a1ee491e8524deeb",
+    "build/host/uart-session-wire-01/compile-buffer.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/host/uart-session-wire-01/compile-compatibility-i2c.log": "e3c4c05ff9bfd1cf65250e347ac86fdad5e39a4e62a42a039787fb15f9e58d3c",
+    "build/host/uart-session-wire-01/compile-compatibility-spi.log": "0268a6885856579ba9abbec25b8bc001514128efdcda925c3ed31d5eaef8d117",
+    "build/host/uart-session-wire-01/compile-simulation.log": "48f241fb8ae2edbc93cceb38fd263130f6d4fbc02fdb0772d6f0a8370da51516",
+    "build/host/uart-session-wire-01/compile.log": "ffe1d19f2ee78798cdd5e9d1e01156fba93c48ee202eaaec9fb682d703ca3649",
+    "build/host/uart-session-wire-01/disabled-i2c-write-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/disabled-spi-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/disabled-uart-rx-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/emit.log": "a0cfe6b6b5c777b8e7bab8a5839a025f04d21f967718ca393eb4701f9c4c295c",
+    "build/host/uart-session-wire-01/export-chip.log": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+    "build/host/uart-session-wire-01/export-host-result-component.log": "9ac2c74d2959600c70f717458c0892b43b7b9be02b1ccd81ee0efd2403c03363",
+    "build/host/uart-session-wire-01/lean-version-closeout.log": "4762d596346ad354e28668de62b7eeae7de5d531b9a7b1c182ca59cfacd81bdd",
+    "build/host/uart-session-wire-01/lean-version.log": "4762d596346ad354e28668de62b7eeae7de5d531b9a7b1c182ca59cfacd81bdd",
+    "build/host/uart-session-wire-01/rx-b16-pin0-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b16-pin0-tick103-phase0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin0-tick103-phase99-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin0-tick97-phase0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin0-tick97-phase99-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin1-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b16-pin1-tick103-phase0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin1-tick103-phase99-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin1-tick97-phase0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin1-tick97-phase99-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b16-pin1-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b257-pin0-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b257-pin0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b257-pin1-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b257-pin1-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b6656-pin0-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b6656-pin0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b6656-pin1-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b6656-pin1-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b8-pin0-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b8-pin0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b8-pin1-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b8-pin1-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b9-pin0-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b9-pin0-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/rx-b9-pin1-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/rx-b9-pin1-timing.log": "ad5b1c25904ca023329292c9d433c5f1c60d122295104602a153e9afc9c79dc5",
+    "build/host/uart-session-wire-01/supervisor-no-rearm-compile.log": "27db2075a2a7c9020700234065f6ac0a6d297bcb38fd4dc661afa9f07362ad55",
+    "build/host/uart-session-wire-01/supervisor-no-rearm-source-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/supervisor-no-reservation-compile.log": "cc612164e4c5b8a3d794fef41314475cedccf2333b354cfa479acb7369f13780",
+    "build/host/uart-session-wire-01/supervisor-no-reservation-source-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-active-stop-source-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-after-active-reset-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-control-source-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-rearm-spacing-control-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-reservation-source-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-supervisor-terminal6-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-supervisor-terminal7-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/uart-wrong-capture-slots-certificate.log": "29f87b786822c251cf4d682d5d85e989b360d4fd9017d774c3a862129f46e896",
+    "build/host/uart-session-wire-01/unsafe-clock-rejected.log": "7f43fdaeff00afeb62688890b6fc2727a3990609389dc81ad472f758f205b3f1",
+    "build/validation/uart-session-readback-02/build.log": "e1d9207c067c2413ac6120a37c7149797af55f24db6219b4a1ee491e8524deeb",
+    "build/validation/uart-session-readback-02/chip/Audit.log": "d35ee7e8cba52da536cd320fd5a222f23bbc20ff1dea474f1e02fffd682474af",
+    "build/validation/uart-session-readback-02/chip/Design.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/Endpoints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/Equations.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/HintEquations.log": "4066ba68c44a5bc312df07b16e70ae120b4ba4b1acd088f384baa83ac2cdf528",
+    "build/validation/uart-session-readback-02/chip/Hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/Links.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/LocalProofs.log": "66673cdbd3cd2e00b3a468cd1b2c67c57625d610e5f778fe168651618cb30566",
+    "build/validation/uart-session-readback-02/chip/Model.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/Proof.log": "6f334e2f6b0c76a5cfd3147f68a6a39b1c2c1b6b93224943d8e05bfb339e9564",
+    "build/validation/uart-session-readback-02/chip/RejectAxiom.log": "bbd39f63231648b9dbdb9b8701093c867135f36d5c67493c341fbd64a76f175e",
+    "build/validation/uart-session-readback-02/chip/Sources.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/import.log": "f0d2708ebc6fb9226ad2446631c33f19af05401055b3b746e8b7a214277c1241",
+    "build/validation/uart-session-readback-02/chip/mutations/mailbox-valid/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/mailbox-valid/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/mailbox-valid/Reject.log": "c0bdbe041b1085cab1c0425bff51976949d8f6917b7335e29807e0c908b4246d",
+    "build/validation/uart-session-readback-02/chip/mutations/mailbox-valid/import.log": "58a4c5bb4631f4a9a7cb5afab39609fbed18aa3a96b38883852732e96fb17941",
+    "build/validation/uart-session-readback-02/chip/mutations/package-output/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/package-output/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/package-output/Reject.log": "fbae753646927997f7225a3a14dfe9a1016550b76593c8e8ff7452dc2de16836",
+    "build/validation/uart-session-readback-02/chip/mutations/package-output/import.log": "bc7844191611c0f3ca78186ff83154128d9bcd351da17dbc1ac1dafe1dea929c",
+    "build/validation/uart-session-readback-02/chip/mutations/sampler/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/sampler/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/sampler/Reject.log": "c1f89a527c19ba3a1300929624f106354a79cec8d1b652c9a1705a57c7d0f121",
+    "build/validation/uart-session-readback-02/chip/mutations/sampler/import.log": "e51e42b7e2ffcdaa1cd66eaeb92d311a902382df36095d7cd92cf4783bc33160",
+    "build/validation/uart-session-readback-02/chip/mutations/stream-enabled/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/stream-enabled/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/stream-enabled/Reject.log": "febe3f3cc6ecb37ff57c62d9b0f796ebcc17b96fdb32a866231477d601a08bbc",
+    "build/validation/uart-session-readback-02/chip/mutations/stream-enabled/import.log": "8b6f530c7667742079efbbb2fd958fd890dd584124d91761439efdd58cdbd5fa",
+    "build/validation/uart-session-readback-02/chip/mutations/unchanged/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/unchanged/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/unchanged/Reject.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/chip/mutations/unchanged/import.log": "42fd4cff4557e4e612691431d55db957f912c68e1258df6c411d0540cdefc49b",
+    "build/validation/uart-session-readback-02/chip-export.log": "ac8fe5861a8536ffca5d6b5d500c04e618cb5e45400a00d62b02fc52b2e77806",
+    "build/validation/uart-session-readback-02/circt-version.log": "e3046e1d1c3c205582a596311cac2bc7680ecd927ea01326b0b5400c6090ed82",
+    "build/validation/uart-session-readback-02/core/Audit.log": "9c771f9317daaa961fc09f0892cbdef55b34ac61c09dadf89472ac754f0b6aad",
+    "build/validation/uart-session-readback-02/core/Design.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/Endpoints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/Equations.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/Graphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/HintEquations.log": "4066ba68c44a5bc312df07b16e70ae120b4ba4b1acd088f384baa83ac2cdf528",
+    "build/validation/uart-session-readback-02/core/Hints.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/Links.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/LocalProofs.log": "ee381181fc16bc04ca7e007aa5b7b2f905e460cd331eec88b526ae27685ac700",
+    "build/validation/uart-session-readback-02/core/Model.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/Proof.log": "ae96a571eec6c0e1f4e7749e45e1255bad594d0fee2b316ea95e6739c683f31e",
+    "build/validation/uart-session-readback-02/core/RejectAxiom.log": "0cf730db033d4ab08c1a7f00eeb4eca5454c45d140d086bc528963d3c149c673",
+    "build/validation/uart-session-readback-02/core/Sources.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/import.log": "0cf0c8478b84661bff299005a6f8d634bce27e88e33c85558a061bb1d8cc474c",
+    "build/validation/uart-session-readback-02/core/mutations/parameter-bank/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/parameter-bank/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/parameter-bank/Reject.log": "cc686582d4ddad18266c8672116d2bed555776653272dec2f2ddab23c4c5a213",
+    "build/validation/uart-session-readback-02/core/mutations/parameter-bank/import.log": "00daf3597c7d5f402236c98d5889bd94ddea863fb2c1d453ca4ae8f530fe84b4",
+    "build/validation/uart-session-readback-02/core/mutations/sram-write/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/sram-write/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/sram-write/Reject.log": "d4e377e7c67a36814c2283530f1627e612291a274698d408eeaee5b73986c80d",
+    "build/validation/uart-session-readback-02/core/mutations/sram-write/import.log": "ff166eb0f4dae5f338419ebd188e260437b4b894cae4edbaa37d945e28103b8f",
+    "build/validation/uart-session-readback-02/core/mutations/stream-enabled/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/stream-enabled/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/stream-enabled/Reject.log": "15774070006db113e7fd9509ba84cd9a152c2860fff040d1dc2285d39e2c6832",
+    "build/validation/uart-session-readback-02/core/mutations/stream-enabled/import.log": "5c2a3238fd2051d3e2a40059859f313d99e4814c527bdf72fcc97c35e30415da",
+    "build/validation/uart-session-readback-02/core/mutations/unchanged/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/unchanged/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/unchanged/Reject.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/unchanged/import.log": "121b5a6dfa037cc2391bb97f4b53c669f0db755e70ff4299d1b8698ef8f391fa",
+    "build/validation/uart-session-readback-02/core/mutations/upload-cursor/MutantGraphs.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/upload-cursor/MutantModel.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/core/mutations/upload-cursor/Reject.log": "edc3d3383ee2554f192865d43e6a0ffac84969fcd67d402ec28a7f0c7c1d16db",
+    "build/validation/uart-session-readback-02/core/mutations/upload-cursor/import.log": "068f04311ed57a0c556c77bfd39d00f2eaf620966bcf89a873cac8a14932cee9",
+    "build/validation/uart-session-readback-02/core-export.log": "61f414c5654f887b3aa8b119459cef37683e5c2191d8b646f48bf8d006da78a5",
+    "build/validation/uart-session-readback-02/emit.log": "a0cfe6b6b5c777b8e7bab8a5839a025f04d21f967718ca393eb4701f9c4c295c",
+    "build/validation/uart-session-readback-02/guards-optimized.log": "293932d7a8a16512f50142ab4160d6549ef7f32c03fe561f79758f2b0f2be5c9",
+    "build/validation/uart-session-readback-02/guards.log": "89a5f3c712cd09593d40574f16a8a73be4afcbb968181abe4d86c603031d2f2a",
+    "build/validation/uart-session-readback-02/hint-labels.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/validation/uart-session-readback-02/lean-version.log": "4762d596346ad354e28668de62b7eeae7de5d531b9a7b1c182ca59cfacd81bdd",
+    "build/validation/uart-session-readback-02/yosys-version.log": "aa2953a8d566e13b4659cfba91e2da7ecb77e6b76a1117ff842deb09bae24bc4",
+    "build/validation/uart-session-readback-02/z3-version.log": "094fd53c158700cbf948038ecca553a997cb8117a02b0574c8fec54549051a55",
+    "build/validation/uart-session-python-01/full-suite.log": "81128914c13b0aceb28c960039cdcadafdf7539dd0da06ecfb220cfcbb30d31d",
+    "build/validation/uart-session-python-01/test_host_receipts-optimized.log": "477ad282aa040ae42eabe4941e37814f264f9bdb4c58bc0ec1cc086f0bf534d4",
+    "build/validation/uart-session-python-01/test_pinwheel_host-optimized.log": "707d17a2ecf45983575cc9d2d20fe00349a2d6d7cf4702da14f6835a9115eaa6",
+    "build/validation/uart-session-python-01/test_resolved_pads-optimized.log": "d489c9f6b385683febc70594a52251e88ddeb654bde72986c1fbcc54fa65ae36",
+    "build/validation/uart-session-python-01/test_stream_readback-optimized.log": "8193a2448947e24673eaba6e2091290695b770d8d74a30efcac940c5128fca60",
+    "build/validation/uart-session-python-01/test_uart_stream-optimized.log": "1be6f9ecae9d5c4d615cda795e3740f13a0b3daf02c42f0a103348b5c4a42759"
+  },
+  "physical_boundary": {
+    "A_accepted": false,
+    "cad_seconds_added": 0,
+    "routes_added": 0,
+    "historical_physical_files_unchanged": 230,
+    "unmet_requirements": [
+      "authoritative SRAM internal qualification",
+      "compatible fast-corner characterization",
+      "package-power integration"
+    ]
+  },
+  "artifact_custody": "Generated receipts and focused diagnostics remain ignored local dependencies. Tracked hashes do not provide a remote artifact backup.",
+  "document_link_checker": {
+    "path": "build/validation/uart-session-continuation-01/document-link-checker.py",
+    "sha256": "b23d491fba05b30d7b432fcddcdcb92ab00c36f06fe12159f30fdd8ddc281eda"
+  },
+  "document_finalizer": {
+    "path": "build/validation/uart-session-continuation-01/finalize-docs.py",
+    "sha256": "e86af61830c66324cb6150544cc4fd7d8d40537124b7fc4ba382b793edb9f6e2"
+  },
+  "document_links": {
+    "path": "build/validation/uart-session-continuation-01/document-links.json",
+    "sha256": "82a2d9f943f0e4f179d8bc9c32803d76d30e6a926fb8797f6a0363fc1f401d2b"
+  },
+  "document_finalization": {
+    "path": "build/validation/uart-session-continuation-01/document-finalization.json",
+    "sha256": "a898d9070afb8c833480efbaae6bb2e3052745a61d1090e32b1984ee9edea850"
+  },
+  "manifest_finalization": {
+    "path": "build/validation/uart-session-continuation-01/manifest-finalization.json",
+    "sha256": "a1f9bc48b72ee0113dce8eb2ce3060bb718fc99a884750ff4fc8d2576f18b7e1"
+  }
+}

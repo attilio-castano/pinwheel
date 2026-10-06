@@ -7,6 +7,7 @@ import subprocess
 import time
 
 from pinwheel_host import Pins
+from pad_io import PadDrive, PadObservation
 
 
 class Simulation:
@@ -15,15 +16,17 @@ class Simulation:
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=0)
         self.buffer = bytearray()
         self.pins = Pins(0, 0, 0)
+        self.observation = PadObservation(0, 0, 0, 255, 255)
         self.cycle = 0
         self.incoming = 3
         # Optional external device. It sees only package pins and chip-edge
-        # count; it supplies the next external input levels.
+        # count; it supplies external drivers, never independent uio_in values.
         self.device = None
         self.log = deque(maxlen=100)
 
-    def _advance(self, ui, incoming, cycles, rst_n):
-        self.process.stdin.write(f'{rst_n} {ui} {incoming} {cycles}\n'.encode())
+    def _advance(self, ui, drive, cycles, rst_n):
+        self.process.stdin.write(f'{rst_n} {ui} {drive.levels} {drive.enabled} '
+                                f'{drive.links} {drive.pullups} {cycles}\n'.encode())
         deadline = time.monotonic() + 30
         while True:
             # TextIOWrapper.readline may read ahead. select would then wait on
@@ -42,7 +45,9 @@ class Simulation:
             self.log.append(line.strip())
             if line.startswith('PINWHEEL '):
                 try:
-                    self.pins = Pins(*map(int, line.split()[1:]))
+                    self.observation = PadObservation(*map(int, line.split()[1:]))
+                    self.observation.validate_drive(drive)
+                    self.pins = self.observation.logical
                 except ValueError as error:
                     raise RuntimeError('Unknown RTL pins after a host operation: ' + line) from error
                 self.cycle += cycles
@@ -50,10 +55,12 @@ class Simulation:
 
     def advance(self, ui, cycles, *, rst_n=1):
         if self.device is None:
-            return self._advance(ui, self.incoming, cycles, rst_n)
+            return self._advance(ui, PadDrive(self.incoming, 3), cycles, rst_n)
         for _ in range(cycles):
-            incoming = self.device(self.cycle, self.pins, ui)
-            self._advance(ui, incoming, 1, rst_n)
+            drive = self.device.drive(self.cycle, self.observation, ui)
+            if not isinstance(drive, PadDrive):
+                raise TypeError('Resolved-pad peer must return PadDrive')
+            self._advance(ui, drive, 1, rst_n)
         return self.pins
 
     def close(self):

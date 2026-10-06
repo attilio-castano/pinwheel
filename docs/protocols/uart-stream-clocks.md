@@ -1,5 +1,12 @@
 # Continuous UART reception with unequal clocks
 
+
+The later [circuit continuation](uart-supervisor.md) adds an opt-in paired UART
+supervisor and reuses the host mailbox. Its observer sees pre-edge completion,
+so arrivals occur one edge after this model's newly stepped result. Control
+alignment and active program ownership are explicit premises; the fresh finite
+wire gate and universal circuit interpretation retain separate scope.
+
 Validated 2026-09-15 by `uart-stream-clocks-01`. The Lean receiver now has a
 finite-stream correctness theorem for unequal TX/RX clocks and bounded,
 varying digital observation age. The theorem includes enough time to rearm and

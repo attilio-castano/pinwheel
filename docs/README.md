@@ -44,6 +44,8 @@ examples provide context without replacing the [current decision](research/statu
 | [Competition brief](competition.md) | Official constraints and source links, which must be rechecked before relying on a live external rule. |
 | [Architecture and ownership](architecture.md) | The design layers, Lean's role, module map, and boundaries between proof and implementation. |
 | [Complete design iteration](research/complete-design-iteration.md) | The planned path to one physically validated, formally connected reference and a second capacity variant through the same workflow. |
+| [Local iteration continuation](research/local-iteration-continuation.md) | Authorized local work on portable current-A replay, fresh-source interpretation and a concrete power request, with physical acceptance still separate. |
+| [Established-protocol continuation](research/established-protocol-continuation.md) | Delivered four-mode SPI, bounded I²C writes/bus clear, UART supervisor/result ownership and resolved package wiring. |
 | [Processor verification obligations](engine/processor-verification.md) | The acceptance gates from protocol semantics to a physically feasible chip. |
 | [Submission plan](submission-plan.md) | The dated hybrid implementation sequence and durable acceptance gates; use research status for the current work queue. |
 | [Chip-contract integration record](history/branch-integration.md) | A dated account of how retained interfaces and experimental branches were reviewed together. |
@@ -58,13 +60,16 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | Record | Use it for |
 | --- | --- |
 | [UART transmitter model](protocols/uart-model.md) | The original byte transmitter, its timing specification, proofs, and runnable trace. |
-| [SPI model](protocols/spi-model.md) | Full-duplex bit sampling and the exact timing assumptions for one controller and peripheral. |
+| [SPI model](protocols/spi-model.md) | Original mode-0 byte model and its sampling/timing proofs. |
+| [SPI transactions](protocols/spi-transactions.md) | All four modes, one/two-byte continuous-CS transactions, program/refinement and resolved-pad evidence. |
 | [I²C reference model](protocols/i2c-model.md) | Open-drain writes, acknowledgment, and clock stretching in an ideal bus model. |
 | [Compiled I²C write](protocols/compiled-i2c.md) | Guarded timing, ACK branches, and correspondence of a loaded write program to the reference. |
 | [Reusable I²C byte loop](protocols/looped-i2c.md) | Cycle-preserving repetition and its instruction-storage tradeoff. |
 | [I²C register read](protocols/i2c-register-read.md) | A bounded combined transaction with repeated START and received data. |
+| [Bounded I²C writes and bus clear](protocols/i2c-capabilities.md) | One/two payload bytes, first-NACK STOP, nine-attempt recovery, universal digital proofs and fresh resolved-wire evidence. |
 | [One-byte UART receive](protocols/uart-receive.md) | Receive timing, framing errors, compiler proofs, and storage integration. |
 | [UART link proof](uart-link.md) | TX-to-RX roundtrip under independent clocks and bounded observation delay. |
+| [UART supervisor and retained results](protocols/uart-supervisor.md) | Opt-in circuitry, one-edge mailbox phase, explicit ownership and fresh RTL/wire receipts. |
 | [Continuous UART receive](protocols/uart-stream.md) | Rearming, one-slot result buffering, overrun accounting, and finite frame sequences. |
 | [UART stream with unequal clocks](protocols/uart-stream-clocks.md) | The clock and observation-age bounds needed for finite-stream correctness. |
 | [Input latency](input-latency.md) | The pin-level latency parameter and its consequences for UART, SPI, and I²C programs. |
@@ -119,6 +124,7 @@ experimental SRAM/paired formats distinct.
 | [Certified paired upload admission](storage/paired-upload-admission.md) | Qualified delivery of any certified image reaches accepted commit, then E64 package observations; arbitrary quiet gaps and stopped replacements are covered. |
 | [Paired RTL interpretation](storage/paired-rtl-interpretation.md) | Both retained emitted modules equal their typed components and inherit the certified session theorem; standard-axiom audits and actual RTL fault rejection pass. |
 | [Combined implementation acceptance](research/implementation-acceptance.md) | One reproducible report binds host certificates, conditional proof, interpreted RTL and physical implementation; SRAM, fast conditions and package power still prevent A acceptance. |
+| [Current-A replay](research/current-a-replay.md) | Preflight every retained dependency, recover an immutable source/evidence snapshot and replay current v2 without relying on retired worktree paths. |
 | [Program-bank selection experiment](storage/bank-selection-study.md) | Why a proved and RTL-checked parallel-bank candidate did not pass its mapping advance gate. |
 | [Cache-update enable experiment](storage/cache-enable-study.md) | A matched screen with mapping gains, but no physical run or default promotion. |
 
@@ -140,6 +146,7 @@ remain separate gates; a useful diagnosis is not whole-chip closure.
 | [Physical targets and paired comparison](physical-targets.md) | Checked state-to-pin ownership and the staged local, route, and electrical gates. |
 | [Seven-net electrical repair](physical/balanced-electrical-experiment.md) | Seven buffers clear the complete coarse electrical screen; original placements, clock routes and all SRAM write holds are preserved. |
 | [Power boundary sensitivity](physical/power-boundary-results.md) | Saved-layout source, resistance and checked-workload comparisons; full activity annotation and rejection of silent fallback. Includes the [frozen protocol](physical/power-boundary-experiment.md) and [audit recipe](../physical/fixtures/power-boundary/README.md). |
+| [Package-power contract](physical/package-power-contract.md) | Candidate-bound analysis request, input responsibility, activity limits and voltage-budget checks; missing provider or integration evidence prevents readiness. |
 | [Qualification follow-ups](physical/qualification-followups.md) | Current local tracking for the three physical requirements, needed inputs and closure criteria; links the [prepared upstream SRAM follow-up](physical/sram-maintainer-followup.md). |
 | [Physical qualification assessment](physical/physical-qualification-assessment.md) | Frozen September 28 library inventory, SRAM proposal limits, and the source/activity contract for the subsequent power experiment. Includes a [read-only audit recipe](../physical/fixtures/physical-qualification/README.md). |
 | [SRAM provenance and trust boundary](physical/sram-trust-results.md) | Exact release identity, native abstraction coverage and an explicit component-contract proposal. Includes the [unsent maintainer report](physical/sram-maintainer-report.md) and [audit scripts](../physical/fixtures/sram-trust/README.md). |
