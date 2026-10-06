@@ -81,6 +81,86 @@ class HostTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'rejected UART'):
             host.arm_uart_stream()
 
+    def test_stream_stop_rejects_unsupported_idle_backends(self):
+        for before, after, error in ((0xb1, 0xb5, 'rejected UART stream stop'),
+                                     (0xb5, 0xb5, 'Cannot verify UART stream stop acceptance'),
+                                     (0xb7, 0xb7, 'Cannot verify UART stream stop acceptance')):
+            with self.subTest(before=before):
+                transport = Transport((2, 0x53, 2, before))
+                commands = []
+                def reject(command, data):
+                    commands.append((command, data))
+                    transport.pages = (2, 0x53, 2, after)
+                host = Host(transport)
+                host.command = reject
+                with self.assertRaisesRegex(RuntimeError, error):
+                    host.stop_uart_stream()
+                self.assertEqual(commands, [(Command.STREAM, 0)])
+                self.assertEqual(transport.pages, (2, 0x53, 2, after))
+                self.assertFalse(any(ui & 0x60 for ui in transport.controls))
+
+    def test_stream_stop_aborts_active_reception_with_sticky_flags(self):
+        transport = Transport((0x23, 0x53, 2, 0xbf))
+        commands = []
+        def stop(command, data):
+            commands.append((command, data))
+            transport.pages = (2, 0x53, 2, 0xb7)
+        host = Host(transport)
+        host.command = stop
+        host.stop_uart_stream()
+        result = host.read_result(timeout_cycles=0, consume=False)
+        self.assertEqual((result.samples, result.outcome, result.overrun, result.rejected),
+                         (0x253, 5, True, True))
+        self.assertEqual(commands, [(Command.STREAM, 0)])
+        self.assertFalse(any(ui & 0x60 for ui in transport.controls))
+
+    def test_stream_stop_accepts_disabled_repeats_and_aborts(self):
+        for state, live in (('disabled', 2), ('staged upload', 6), ('one-shot', 0x23)):
+            with self.subTest(state=state):
+                transport = Transport((live, 0x53, 2, 0xb1))
+                commands = []
+                def stop(command, data):
+                    commands.append((command, data))
+                    transport.pages = (2, 0x53, 2, 0xb1)
+                host = Host(transport)
+                host.command = stop
+                host.stop_uart_stream()
+                if state == 'disabled':
+                    host.stop_uart_stream()
+                self.assertEqual(commands, [(Command.STREAM, 0)] * (2 if state == 'disabled' else 1))
+                self.assertEqual(host.read_uart_result(timeout_cycles=0, consume=False).byte, 0x53)
+                self.assertFalse(any(ui & 0x60 for ui in transport.controls))
+
+    def test_stream_stop_requires_complete_abort_postconditions(self):
+        for state, live, status in (('enabled', 2, 0xb9), ('busy', 3, 0xb1),
+                                    ('terminal mode', 0xa2, 0xb1), ('fault mode', 0xe2, 0xb1),
+                                    ('staged upload', 6, 0xb1)):
+            with self.subTest(state=state):
+                transport = Transport((0x23, 0x53, 2, 0xb9))
+                commands = []
+                def incomplete_stop(command, data):
+                    commands.append((command, data))
+                    transport.pages = (live, 0x53, 2, status)
+                host = Host(transport)
+                host.command = incomplete_stop
+                with self.assertRaisesRegex(RuntimeError, 'did not stop the UART stream'):
+                    host.stop_uart_stream()
+                self.assertEqual(commands, [(Command.STREAM, 0)])
+                self.assertFalse(any(ui & 0x60 for ui in transport.controls))
+
+    def test_stream_stop_rejects_new_rejection_even_after_enabled_abort(self):
+        transport = Transport((0x23, 0x53, 2, 0xb9))
+        commands = []
+        def reject(command, data):
+            commands.append((command, data))
+            transport.pages = (2, 0x53, 2, 0xb5)
+        host = Host(transport)
+        host.command = reject
+        with self.assertRaisesRegex(RuntimeError, 'rejected UART stream stop'):
+            host.stop_uart_stream()
+        self.assertEqual(commands, [(Command.STREAM, 0)])
+        self.assertFalse(any(ui & 0x60 for ui in transport.controls))
+
     def test_formats_cannot_be_cross_uploaded(self):
         for target, supplied in [(LEGACY_FORMAT, PAIRED_FORMAT), (PAIRED_FORMAT, LEGACY_FORMAT)]:
             transport = Transport()

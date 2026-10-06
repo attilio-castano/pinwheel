@@ -201,11 +201,23 @@ class Host:
             raise RuntimeError('Chip rejected UART stream arm')
 
     def stop_uart_stream(self):
-        """Abort reception and disarm; the retained outcome is preserved."""
-        self.stream_status()
+        """Abort execution/staging and disarm without consuming or clearing flags.
+
+        STOP is valid while already disabled. An existing rejection obscures
+        its acceptance unless the enabled flag witnesses stream support. When
+        support is unknown, STOP is sent before reporting unverifiable acceptance.
+        """
+        before = self.stream_status()
         self.command(Command.STREAM, 0)
-        if self.stream_status() & 8 or self.page(0) & 1:
+        after = self.stream_status()
+        live = self.page(0)
+        # Idle alone does not establish that STOP reset execution and staging.
+        if after & 8 or live & 0xe5:
             raise RuntimeError('Chip did not stop the UART stream')
+        if after & 4 and not before & 4:
+            raise RuntimeError('Chip rejected UART stream stop')
+        if before & 4 and not before & 8:
+            raise RuntimeError('Cannot verify UART stream stop acceptance with an existing rejection and no enabled stream')
 
     def read_uart_result(self, *, timeout_cycles=100_000, consume=True):
         self._stream_access = True

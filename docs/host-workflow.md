@@ -22,6 +22,14 @@ STOP/reset or a terminal timeout/fault, with automatic rearm, retained results
 and sticky dropped-arrival overrun. Its page-3 bit 3 reports enabled state; bit 4 retains the interface
 marker. Ordinary upload/start calls refuse enabled streaming.
 
+`Host.stop_uart_stream()` also accepts repeated STOP and aborts disabled
+execution or a staged upload on a stream-capable chip. It verifies the reset
+execution, cleared staging and disabled supervisor, and reports fresh command
+rejection. If rejection was already set while streaming was disabled, the
+common result marker cannot establish stream support: STOP is still sent, but
+the host reports that acceptance cannot be verified. It preserves the retained
+result, rejection and overrun flags; it never clears diagnostics to probe support.
+
 ## Reproduce the demonstration
 
 Install the pinned Lean/CIRCT/Icarus tools described in [development](development.md).
