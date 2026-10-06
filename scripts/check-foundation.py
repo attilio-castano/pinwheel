@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES = [
     ('UART', []), ('UARTRx', []), ('UARTLink', []), ('UARTStream', []), ('UARTStreamClocks', []),
     ('SPI', []), ('SPITransactions', []),
-    ('Engine', []), ('I2C', []), ('I2CWriteTransactions', []), ('I2CRecovery', []), ('Reactive', []),
+    ('Engine', []), ('I2C', []), ('I2CWriteTransactions', []), ('I2CReadTransactions', []),
+    ('I2CRecovery', []), ('Reactive', []),
     ('Control', []), ('CompiledI2C', []), ('Counted', []),
     ('CompiledI2C', ['--looped']), ('Binary', []),
     ('CompiledI2C', ['--binary-explicit']), ('CompiledI2C', ['--binary-looped']),
@@ -30,6 +31,7 @@ SUITES = [
     ('HostResult', []),
     ('UARTBufferedSupervisor', []), ('UARTBufferedSupervisorPhase', []),
     ('PairedStream', []), ('PairedStreamSession', []),
+    ('ResidentEffects', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
