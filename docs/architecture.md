@@ -125,8 +125,9 @@ invariants. A separate generic timed Python target exercises four-byte SPI
 and 32-bit/non-byte JTAG with independent resolved-pin peers. The target has
 no paired upload encoding or circuit integration; current SRAM allocation,
 host command/readback format and physical evidence are unchanged. Data bits
-and scratch/control captures are separate. Hardware counted lookup, admission,
-indexed result readback and measured storage cost are the next engine contract.
+and scratch/control captures are separate. The counted hardware continuation
+below implements timed lookup, admission and indexed result readback; reactive
+decisions and memory-backed fetch remain the next engine contract.
 
 The [buffered reactive continuation](protocols/buffered-reactive.md) now composes
 owned TX/RX entry effects with `Reactive.Fetch` execution and a generalized
@@ -142,7 +143,17 @@ linear timed programs, dedicated 32-bit TX/RX, coverage-checked image loading,
 finite identities and retained indexed readback in a typed circuit. Its writable
 128-by-32 register store supplies a measurable baseline. Actual emitted and saved
 gate RTL exercise SPI; this parallel target does not extend the paired SRAM
-image or serial package. Compact lookup and reactive control still need lowering.
+image or serial package.
+
+The [counted hardware continuation](protocols/buffered-counted-hardware.md) lowers
+the shared timed schedule to 64 packed instruction/control rows. Two nested
+loop counters select up to 1,024 virtual positions, entering the next leaf on
+the dispatch edge without an extra waveform clock. The host binds the complete
+source tree and exact row metadata; local circuit guards reject malformed
+entry before data effects. SPI and JTAG are uploaded programs in the same
+emitted circuit, with the same owned TX/RX and retained readback. Reactive
+decisions and a memory/serial backend still need their own implementation and
+fetch-timing contract.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit

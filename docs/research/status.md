@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-06 after shared buffered reactive execution and the first
-buffered SPI digital implementation, following the unified transaction workflow.
+Updated 2026-10-06 after compact counted buffered hardware, following shared
+reactive execution, the linear SPI baseline and the unified transaction workflow.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -98,17 +98,24 @@ versioned writable programs, finite ownership and retained indexed readback.
 Emitted RTL and saved generic/CMOS5L gates establish a measurable register-store
 baseline. The retained paired SRAM/serial chip is unchanged.
 
-**Next decision: how should compact reactive programs use hardware storage?**
-Use the measured register-store baseline to design SRAM-backed instruction
-lookup, compact counted control and versioned serial operations. Hardware must
-prevent active/retained storage reuse and preserve exact wire/failure timing.
-The counted reference schedule solves the unrolled I²C storage problem at the
-model layer; hardware must implement its lookup/timing and encode its nodes.
-The first circuit owns 64 data bits alongside its instruction/control state;
-4,096 of its 4,389 flip-flops store instructions. Typical mapped cell area is
-400,519.6524 µm²; this does not establish routed fit or timing. Complete
-initialized resident lifecycle refinement, physical sampling, SRAM qualification
-and package power retain their existing gates.
+**Implemented continuation: [compact counted buffered hardware](../protocols/buffered-counted-hardware.md).**
+The shared timed schedule now lowers to a circuit with 64 packed leaves, two
+nested repeats and up to 1,024 virtual positions. Rollover enters the next timed
+leaf on the dispatch edge. Four-byte SPI uploads four rows; JTAG is a different
+program on the same emitted circuit. Owned buffers, retained indexed reads and
+finite identities remain explicit. Saved mapping gives an early cost check.
+Typical cell area is 350,479.332 µm² with 3,860 retained state bits; this is a
+64-leaf target, compared with 128 rows in the linear baseline.
+
+**Next decision: reactive control and the corresponding memory fetch contract.**
+Implement buffered reactive I²C on this ownership/lookup contract, exercising
+ACK scratch, early NACK, stretch timeout and exact partial results. Then choose
+register/SRAM fetch against measured entry deadlines, including one-cycle
+instructions and loop exits, and design versioned serial operations. Hardware
+must prevent active/retained storage reuse and preserve wire/failure timing.
+Neither compact upload size nor standard-cell mapping establishes routed fit
+or timing. Complete initialized resident lifecycle refinement, physical sampling,
+SRAM qualification and package power retain their existing gates.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

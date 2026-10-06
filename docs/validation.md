@@ -61,6 +61,16 @@ next-state equivalence and measured. It adds no paired SRAM/serial package or
 physical timing qualification. The portable foundation includes its local
 proofs and `BufferedHardware` executable.
 
+The [counted buffered hardware gate](protocols/buffered-counted-hardware.md),
+`python3 -B scripts/check-buffered-counted-hardware.py --tag <fresh-tag>`, adds
+actual loop/environment traces, duration-one rollover, both input selectors and
+physical/virtual falloff guards. Compact SPI/JTAG wire programs use the same
+emitted circuit and saved mappings; all 23 public fields and 3,860 next-state
+bits are compared at the represented state cut. Loop, sampler and mapped-output
+mutations must reject. The portable foundation includes its local proofs and
+`BufferedCountedHardware` executable. Reactive/SRAM/serial and routed physical
+timing remain separate gates.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

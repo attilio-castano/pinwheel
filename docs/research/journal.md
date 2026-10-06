@@ -6145,3 +6145,64 @@ SRAM-backed instruction storage and compact counted/reactive lookup with exact
 entry/failure timing, followed by serial operations and initialized package
 composition. Clock distribution, placement, routing, physical timing, SRAM
 qualification and package power remain separate gates.
+
+## 2026-10-06 — Compact counted timed buffered hardware
+
+Implemented the [counted hardware continuation](../protocols/buffered-counted-hardware.md)
+on `codex/buffered-counted-hardware`, starting from `f1a036f`; implementation
+commit `eb38133` adds the typed circuit, 43 local proofs, canonical source/image
+lowering, host, RTL transport and validation gate. The target
+`pinwheel-buffered-counted32-v1` uses 64 packed 56-bit rows and two nested
+repeat counters. Rollover enters the next timed leaf on the dispatch edge.
+Four-byte SPI uploads four rows; a 17-bit JTAG scan uploads twenty. Both load
+different programs into the same emitted circuit and retain the same owned
+32-bit TX/RX and indexed read/release lifecycle.
+
+The initial development mapping `counted-transport-dev-01` passed its limited
+wire smoke but failed exact state intake: declared cached control was 24 bits,
+while emitted readback represented 22. The corrected cache stores only its
+22 meaningful bits; uploaded descriptors still retain all 24 bits and reject
+reserved fields. Failed assembly/readback and peer smoke bytes are preserved.
+
+The accepted hardware run `buffered-counted-hardware-01` passes in 525.507 s;
+report SHA-256 is
+`8bfa4ec9183c4eadae71af7ceeaf18982b54e440fc2dd96e56d9096bed8500ad`.
+Actual circuit/RTL states agree on all 23 public fields for 96 command cases,
+3,878 edges and 1,275 independent checks. Fixtures cover duration-one and
+256-edge holds, nested/adjacent loops, both input selectors, retained failures,
+physical row 63 and virtual position 1,023 without wrapped data effects.
+Typed Lean witnesses separately check `Counted.Schedule.locate` for a
+SPI-shaped nested schedule and a nested-loop/tail/adjacent-loop schedule.
+
+Emitted RTL passes 1,027 SPI and 242 JTAG cases. The source comparison covers
+407,666 observations, including retained result reads, and 332,692 active
+lookup/environment checks. JTAG widths 1/7/13/17/32 start from all 16 TAP states.
+Each saved generic/CMOS5L mapping passes all 96 control cases and 39 SPI/JTAG
+wire cases, plus arbitrary-state SAT comparison of all 23 outputs and all 3,860
+next-state bits. No state bit is pruned or derived. Sampler-age, input-selection,
+rollover and mapped-output controls reject. Normal and optimized Python each
+discover 964 tests: 962 pass and two Linux-specific checks skip on this host.
+
+Generic mapping has 23,638 cells; typical CMOS5L has 20,674 cells and
+350,479.332 µm² summed cell area. All 3,860 flip-flops survive, including 2,048
+timed-word bits, 1,536 control bits, 64 coverage bits and 32-bit TX/RX each.
+The matched-library area reduction versus Linear is 12.49%; distinct-row
+capacity changes 128→64 while the virtual-position bound grows 128→1,024.
+Four-byte SPI uploaded bits fall 2,112→224. These are complete-target costs,
+not an isolated loop-cost or routed-fit claim.
+
+The [accepted manifest](../../physical/experiments/buffered-counted-hardware-results.json)
+binds reports, source/tools, saved artifacts, predecessor hashes and the failed
+development record. All 236 prior physical files and 178 hardware files preserve
+their bytes. Reactive buffered I²C is the next programming/hardware test, then
+a memory/serial implementation preserving the measured fetch deadlines.
+Complete initialized compiler/package refinement, routed timing, component
+qualification and package power retain their own gates.
+
+Full portable run `buffered-counted-foundation-01` passes in 1,505.787 s:
+273 library modules, 47 executable suites and one kernel suite; standard-axiom
+audit checks 23,409 declarations and 12,541 theorems and rejects the injected
+custom axiom. Report SHA-256 is
+`8f57b5c7484ae944e07292865f27a9cb0af08d5391fc10481139b8694611ce15`.
+The final manifest binds 669 frozen inputs and 124 generated artifacts across
+the two completed runs, verified unchanged at closeout.

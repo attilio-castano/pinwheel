@@ -139,15 +139,26 @@ ACK/NACK cleanup, clock stretching and failed STOP qualification preserve exact
 diagnostic prefixes. This establishes the reference programming contract;
 that reference gate does not establish versioned hardware encoding, counted
 lookup timing, circuit storage/readback or mapped cost. The digital continuation
-below implements a first linear subset.
+below implements linear and counted timed subsets.
 
 The [first buffered digital slice — October 6](../protocols/buffered-hardware.md)
 implements owned 32-bit TX/RX and retained indexed readback in a reloadable
 linear parallel circuit. It supplies actual SPI RTL and saved-gate evidence
 plus register-store cost: 4,389 flip-flops and 400,519.6524 µm² typical cell area.
-The 4,096-bit instruction bank makes SRAM-backed compact lookup the next cost
-question. Counted/reactive hardware, paired SRAM/serial package integration
-and routed timing remain the next stages.
+The 4,096-bit instruction bank supplies the baseline for compact lookup and
+memory-backed execution.
+
+The [counted digital continuation — October 6](../protocols/buffered-counted-hardware.md)
+implements two nested timed repeats with no extra dispatch clocks. Four-byte
+SPI occupies four physical rows and JTAG loads a different program into the
+same circuit. Source-bound images, retained ownership and actual circuit/RTL
+lookup/environment checks keep programming semantics explicit. Its 64 packed
+rows support up to 1,024 virtual positions; reactive control, paired SRAM/serial
+package integration and routed timing remain the next stages.
+All 3,860 state bits survive saved generic/CMOS5L mapping; typical cell area is
+350,479.332 µm², 12.49% below the linear baseline at a different distinct-row
+capacity. Ninety-six command cases and 1,269 emitted SPI/JTAG wire cases pass,
+with complete state-cut comparison and saved-gate replay on both mappings.
 
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
