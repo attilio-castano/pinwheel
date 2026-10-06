@@ -120,6 +120,8 @@ import Pinwheel.UART.BufferedSupervisorPhase
 import Pinwheel.Program.Requests
 import Pinwheel.Program.ResidentProofs
 import Pinwheel.Program.TransferProofs
+import Pinwheel.Program.BufferedProofs
+import Pinwheel.Program.BufferedI2C
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
