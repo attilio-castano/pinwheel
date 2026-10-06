@@ -37,6 +37,7 @@ SUITES = [
     ('Buffered', []),
     ('BufferedHardware', []),
     ('BufferedCountedHardware', []),
+    ('BufferedReactiveHardware', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
@@ -136,7 +137,7 @@ def main():
                            'compiled UART link/stream timing, independent PWL lookup and UART RX/E64 oracle, '
                            'retained-result ownership and stream-control circuitry; '
                            'parametric finite-transfer ownership and shared reactive/counted buffered '
-                           'execution models (no buffered circuit claim). '
+                           'execution models, local buffered circuit equations and directed typed circuit tests. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')

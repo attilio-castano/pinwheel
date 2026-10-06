@@ -124,6 +124,7 @@ import Pinwheel.Program.BufferedProofs
 import Pinwheel.Program.BufferedI2C
 import Pinwheel.Hardware.Buffered.LinearProofs
 import Pinwheel.Hardware.Buffered.CountedProofs
+import Pinwheel.Hardware.Buffered.ReactiveProofs
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
