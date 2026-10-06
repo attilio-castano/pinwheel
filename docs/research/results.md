@@ -160,6 +160,18 @@ All 3,860 state bits survive saved generic/CMOS5L mapping; typical cell area is
 capacity. Ninety-six command cases and 1,269 emitted SPI/JTAG wire cases pass,
 with complete state-cut comparison and saved-gate replay on both mappings.
 
+The [reactive counted continuation — October 6](../protocols/buffered-reactive-hardware.md)
+adds sampled decisions and loop-aware branches to the same owned-buffer
+contract. SPI, JTAG and I²C execute as programs in one generic circuit; NACK and
+stretch/STOP timeout retain exact prefixes and scratch. The four-byte I²C
+frontend uploads 50 leaves for 270 virtual positions. Inline endpoints grow
+the register store to 64×144 bits and total state to 9,599 bits; saved CMOS5L
+area is 876,881.3004 µm². Full saved-state comparisons and independent wire
+fixtures establish a digital baseline for choosing memory/fetch implementation.
+The [tracked manifest](../../physical/experiments/buffered-reactive-hardware-results.json)
+records the completed acceptance runs and their scope. Serial/SRAM integration,
+initialized compiler/package refinement and routed timing remain open.
+
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
 Lean ownership proofs and 2,630 differential transitions cover local bounds,

@@ -107,8 +107,10 @@ four-byte SPI with dedicated TX/RX registers, a writable linear program store,
 retained indexed readback and matching release. The
 [counted hardware continuation](docs/protocols/buffered-counted-hardware.md) runs
 compact SPI and JTAG programs on the same circuit, including nested loops with
-no extra dispatch clocks. These are opt-in parallel targets; reactive execution
-and paired serial/SRAM integration remain the next gates.
+no extra dispatch clocks. The [reactive hardware continuation](docs/protocols/buffered-reactive-hardware.md)
+adds ACK decisions, waits and branches, running SPI, JTAG and multi-byte I²C on
+one circuit with retained prefixes. These are opt-in parallel targets; memory
+and paired serial/package integration remain the next gates.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
@@ -126,7 +128,7 @@ dated milestones; a next-step statement in an older study is historical context.
 | --- | --- |
 | Try the programmable chip | [Host workflow](docs/host-workflow.md): load UART TX/RX, SPI, I²C, and a custom trigger into one unchanged RTL chip, then retrieve results. |
 | Program a transaction | [Unified workflow](docs/protocols/transaction-workflow.md): compile a request, inspect capacity and pins, load once, run and decode through one API. |
-| Explore longer data transfers | [Buffered ownership](docs/protocols/buffered-transfers.md) defines preload/reserve/submit/wait/read/release; [counted hardware](docs/protocols/buffered-counted-hardware.md) runs compact SPI/JTAG with that lifecycle. |
+| Explore longer data transfers | [Buffered ownership](docs/protocols/buffered-transfers.md) defines preload/reserve/submit/wait/read/release; [reactive counted hardware](docs/protocols/buffered-reactive-hardware.md) runs compact SPI/JTAG/I²C with that lifecycle. |
 | Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |

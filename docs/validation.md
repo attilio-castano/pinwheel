@@ -68,8 +68,19 @@ physical/virtual falloff guards. Compact SPI/JTAG wire programs use the same
 emitted circuit and saved mappings; all 23 public fields and 3,860 next-state
 bits are compared at the represented state cut. Loop, sampler and mapped-output
 mutations must reject. The portable foundation includes its local proofs and
-`BufferedCountedHardware` executable. Reactive/SRAM/serial and routed physical
-timing remain separate gates.
+`BufferedCountedHardware` executable. The later reactive target has its own
+gate; SRAM/serial and routed physical timing remain separate.
+
+The [reactive buffered hardware gate](protocols/buffered-reactive-hardware.md),
+`python3 -B scripts/check-buffered-reactive-hardware.py --tag <fresh-tag>`,
+binds actual typed source/circuit states, absolute loop destinations, reactive
+hold/failure priorities and all 26 public fields. It runs SPI/JTAG/I²C peers on
+the same emitted circuit, with a sampler FIFO derived from preclock resolved
+wires, and compares saved generic/CMOS5L next state at the exact state cut.
+Scratch/guard/timeout/endpoint and existing execution mutations must reject.
+The portable foundation adds 42 local lemmas and `BufferedReactiveHardware`,
+including the target-local native emitter comparison. A full initialized
+compiler/package refinement and physical qualification remain separate.
 
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and

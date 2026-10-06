@@ -107,15 +107,22 @@ finite identities remain explicit. Saved mapping gives an early cost check.
 Typical cell area is 350,479.332 µm² with 3,860 retained state bits; this is a
 64-leaf target, compared with 128 rows in the linear baseline.
 
-**Next decision: reactive control and the corresponding memory fetch contract.**
-Implement buffered reactive I²C on this ownership/lookup contract, exercising
-ACK scratch, early NACK, stretch timeout and exact partial results. Then choose
-register/SRAM fetch against measured entry deadlines, including one-cycle
-instructions and loop exits, and design versioned serial operations. Hardware
-must prevent active/retained storage reuse and preserve wire/failure timing.
-Neither compact upload size nor standard-cell mapping establishes routed fit
-or timing. Complete initialized resident lifecycle refinement, physical sampling,
-SRAM qualification and package power retain their existing gates.
+**Implemented continuation: [reactive counted buffered hardware](../protocols/buffered-reactive-hardware.md).**
+SPI, JTAG and I²C now load programs into the same generic circuit. WAIT,
+CHECKED and QUALIFY, independent scratch and explicit branch environments
+preserve the owned TX/RX lifecycle, including partial failure results. Four-byte
+I²C uses 50 rows and 270 virtual positions. Saved generic/CMOS5L comparisons
+retain all 9,599 state bits; typical cell area is 876,881.3004 µm². Wider uploaded
+rows account for 5,632 of the 5,739 added state bits versus the timed target.
+This measures a programmability cost, without establishing routed chip fit.
+
+**Next decision: memory fetch under the established reactive deadlines.**
+Choose register/SRAM lookup while preserving one-cycle instructions, checked
+branches, wait release and nested-loop exits. Include metadata, prefetch,
+staging/coverage and owned TX/RX in that comparison; an isolated SRAM bit count
+is insufficient. Then design versioned serial loading and result operations.
+Complete initialized compiler/package refinement, physical sampling, SRAM
+qualification and package power retain their existing gates.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

@@ -6206,3 +6206,83 @@ custom axiom. Report SHA-256 is
 `8f57b5c7484ae944e07292865f27a9cb0af08d5391fc10481139b8694611ce15`.
 The final manifest binds 669 frozen inputs and 124 generated artifacts across
 the two completed runs, verified unchanged at closeout.
+
+## 2026-10-06 — Reactive counted programs in owned buffered hardware
+
+The [reactive hardware continuation](../protocols/buffered-reactive-hardware.md)
+on `codex/buffered-reactive-hardware` starts from `3db651f`. Commit `8c6b6ee`
+adds source-bound images and retained diagnostic results; `e8c0c73` adds the
+circuit, proofs, RTL transport and gate. SPI, JTAG and one-through-four-byte
+I²C register reads are programs in the same generic circuit, using the same
+load/submit/wait/read/release interface. WAIT, CHECKED and QUALIFY operate on
+sampled inputs; scratch capture and absolute branches restore virtual/physical
+location and both loop indices. Failed transfers retain raw prefixes and
+scratch without decoding a success payload.
+
+The target stores 64 packed 144-bit rows, with two counted loop levels and up
+to 1,024 virtual positions. Four-byte SPI uploads four rows; 17-bit JTAG uploads
+twenty; four-byte I²C uploads fifty for 270 virtual positions, including fault
+cleanup. Submission reserves the declared maximum RX, which may exceed the
+successful RX demand. Bounded syntax does not imply termination: branch cycles
+and repeated qualification blockage can remain active. Host wait timeout keeps
+the pending transfer owned.
+
+Forty-two named local lemmas cover ownership, conditional data bounds, entry
+priority, sampled input age, reactive hold/dispatch and fresh terminal-capture
+branch forwarding. The logical emitter remains the safe existing implementation;
+a target-local native implementation memoizes retained expression objects before
+traversal. Small expression graphs compare both emitters. The native optimization
+and finite circuit/RTL witnesses do not establish universal emitter or complete
+initialized compiler/package refinement.
+
+
+The interpreted full export `buffered-reactive-hardware-01` timed out after
+1,800 s; its source/input/log/report bytes remain preserved. Commit `2a7b487`
+compiles the unchanged typed exporter natively, preserving `Circuit.step` and
+`Expr.eval`, and requires byte-identical vectors, MLIR and register metadata
+on five cases and 83 edges before the full export. A separate typed snapshot
+prototype proves two extensional equalities and matches the same fixture,
+but its single concurrent timing improvement is modest; it is not applied to
+the accepted sources. Failed emitter/harness and prototype attempts retain
+separate receipts and do not count as final acceptance.
+
+Accepted run `buffered-reactive-hardware-02` passes in 1,759.371 s, report
+SHA-256 `c19b04ce9b1abf08728288aa958e99e707459fc52b459fa04df85d589e27ca4c`.
+Actual typed reference/Python execution matches 143 cases and 12,240 edges;
+seven frontend bindings compare all 270 I²C factory positions, including
+untaken fault cleanup. Actual circuit/RTL states agree on all 26 public fields
+for 222 command cases and 7,427 edges, with 5,951 independent expectations and
+64 raw-input histories. Emitted RTL passes 2,311 wire cases: 1,027 SPI, 242 JTAG
+and 1,042 I²C. The gate compares 1,509,697 source observations, 1,366,449 active
+lookup/environment states and 1,515,012 independently derived sampler states.
+Three NACK stages finish lawful STOP; five timeout fixtures preserve diagnostic
+prefixes, including nine bits under a held clock and all 32 bits after failed
+STOP qualification. Result reads retain the same owner and bytes twice.
+
+Saved generic and typical CMOS5L artifacts each retain all 9,599 state bits,
+with no pruned or derived coordinates. Each passes arbitrary represented-state
+SAT comparison of all public outputs and next-state bits, all 222 command cases
+and 58 wire cases (19 SPI, 20 JTAG, 19 I²C). Each wire replay independently
+checks 47,077 sampler states. Sampler age, input choice, loop rollover, restored
+branch environment, stale scratch, disabled guard, timeout priority and mapped
+output controls reject. Normal and optimized Python each pass 997 of 999 tests;
+two Linux-specific checks skip on this host.
+
+Generic mapping has 57,639 cells; typical CMOS5L has 51,602 cells and
+876,881.3004 µm² summed cell area, including 470,243.4912 µm² sequential area.
+The complete-target cost is 2.502 times the timed target's matched-library area.
+Wider instruction/branch rows account for 5,632 of the 5,739 added state bits;
+this motivates a memory/fetch comparison rather than a routed-fit claim.
+
+Full foundation `buffered-reactive-foundation-02` passes in 1,534.043 s:
+276 modules, 48 executable suites and one kernel suite. Its standard-axiom
+audit checks 24,105 declarations and 12,893 theorems and rejects an injected
+custom axiom. Report SHA-256 is
+`96a3ac94a89b56cc86dadacd72e824117dd48b19e2d8b6f25eeca0910edfb1fe`.
+The [accepted manifest](../../physical/experiments/buffered-reactive-hardware-results.json)
+binds both reports, 680 frozen inputs, 163 accepted generated artifacts and
+all 417 predecessor hardware/physical hashes, verified unchanged at closeout.
+The next decision is memory fetch under one-cycle, checked-branch, WAIT-release
+and nested-loop deadlines, then versioned serial loading and retained results.
+Initialized compiler/package refinement, physical pads, routing, component
+qualification and package power retain separate gates.

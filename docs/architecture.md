@@ -151,9 +151,16 @@ loop counters select up to 1,024 virtual positions, entering the next leaf on
 the dispatch edge without an extra waveform clock. The host binds the complete
 source tree and exact row metadata; local circuit guards reject malformed
 entry before data effects. SPI and JTAG are uploaded programs in the same
-emitted circuit, with the same owned TX/RX and retained readback. Reactive
-decisions and a memory/serial backend still need their own implementation and
-fetch-timing contract.
+emitted circuit, with the same owned TX/RX and retained readback.
+
+The [reactive counted continuation](protocols/buffered-reactive-hardware.md) adds
+WAIT, CHECKED and QUALIFY, scratch capture, inverted enable shifts and explicit
+branch endpoints that restore the physical row, virtual PC and loop indices.
+SPI, JTAG and multi-byte I²C load different programs into this same circuit.
+Its 64 rows are 144 bits each; host admission binds declared successful demands
+and maximum RX reservation to the full source tree. Fault/timeout retain raw
+prefixes and scratch until release. The register-backed target now supplies
+a measured fetch/ownership baseline for a memory and serial implementation.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
