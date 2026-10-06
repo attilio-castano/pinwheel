@@ -270,13 +270,23 @@ class BufferedHardwareHost:
             raise RuntimeError('Warm reset did not cancel the owned image and transfer')
         return dict(status)
 
-    def load(self, source):
+    def _prepare_image(self, source):
         # Reconstructing an image validates its full canonical bytes and source
         # identity before even a status observation advances the transport.
         image = lower_buffered(source) if type(source) is BufferedProgram else source
         if type(image) is not BufferedHardwareImage:
             raise ValueError('Hardware load requires a versioned buffered image')
-        image = BufferedHardwareImage.from_bytes(image.to_bytes())
+        return BufferedHardwareImage.from_bytes(image.to_bytes())
+
+    def _write_fields(self, image, address):
+        return dict(command=1, address=address, word=image.words[address])
+
+    def _commit_fields(self, image):
+        return dict(command=2, count=len(image.words),
+                    idle_levels=image.idle_levels, idle_enabled=image.idle_enabled)
+
+    def load(self, source):
+        image = self._prepare_image(source)
         if self._pending is not None:
             raise TransferError('Release or reset the owned transfer before loading an image')
         before = self._edge(command=0)
@@ -285,12 +295,11 @@ class BufferedHardwareHost:
         if before['generation'] == MAX_ID:
             raise TransferError('Hardware generation is exhausted; cold initialize a new epoch')
         self._image = self._generation = None
-        for address, word in enumerate(image.words):
-            written = self._edge(command=1, address=address, word=word)
+        for address in range(len(image.words)):
+            written = self._edge(**self._write_fields(image, address))
             if written['rejected'] or written['busy'] or written['retained'] or not written['pending']:
                 raise TransferError('Hardware rejected buffered instruction upload')
-        committed = self._edge(command=2, count=len(image.words),
-            idle_levels=image.idle_levels, idle_enabled=image.idle_enabled)
+        committed = self._edge(**self._commit_fields(image))
         if (committed['rejected'] or not committed['valid'] or committed['pending'] or
                 committed['busy'] or committed['retained'] or
                 committed['generation'] != before['generation'] + 1 or

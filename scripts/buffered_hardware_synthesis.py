@@ -16,6 +16,9 @@ from validation_run import sha
 ROOT = Path(__file__).resolve().parents[1]
 CAD = ROOT / 'build/tools/oss-cad-suite/bin'
 TOP = 'pinwheel_buffered_linear'
+DEFAULT_STORAGE = dict(tx=[('r_tx_data', 32)], rx=[('r_rx_data', 32)],
+    program_bank=[(f'r_word{row}', 32) for row in range(128)],
+    written_mask=[('r_written', 128)])
 LIBRARY = 'sg13cmos5l_stdcell_typ_1p20V_25C.lib'
 MODEL_REVISION = '607e18d4bd9214a52575c194b4181ef449f9252f'
 MODEL_SHA256 = {
@@ -68,9 +71,45 @@ def stage_pdk(destination=None, pdk_root=None):
     return receipt()
 
 
-def resource_metrics(data, *, mapped=False):
+def storage_coordinates(storage):
+    """Validate named register slices before counting saved storage.
+
+    Entries are (register, declared_width) for a whole register or
+    (register, declared_width, offset, width) for a slice. Disjoint slices allow
+    a packed row to report its timed word and loop descriptor separately.
+    """
+    if type(storage) is not dict or not storage:
+        raise ValueError('Buffered storage must be a nonempty named mapping')
+    occupied, widths, result = set(), {}, {}
+    for label, entries in storage.items():
+        if type(label) is not str or not label or type(entries) not in (list, tuple) or not entries:
+            raise ValueError('Invalid buffered storage label or register list')
+        selected = []
+        for entry in entries:
+            if type(entry) not in (list, tuple) or len(entry) not in (2, 4):
+                raise ValueError('Invalid buffered storage register slice')
+            name, declared = entry[:2]
+            offset, width = (0, declared) if len(entry) == 2 else entry[2:]
+            if (type(name) is not str or not name or type(declared) is not int or declared <= 0 or
+                type(offset) is not int or type(width) is not int or offset < 0 or width <= 0 or
+                offset + width > declared):
+                raise ValueError('Invalid buffered storage register slice')
+            if name in widths and widths[name] != declared:
+                raise ValueError('Conflicting buffered storage register widths')
+            widths[name] = declared
+            for index in range(offset, offset + width):
+                coordinate = (name, index)
+                if coordinate in occupied:
+                    raise ValueError('Overlapping buffered storage register slices')
+                occupied.add(coordinate)
+            selected.append((name, declared, offset, width))
+        result[label] = selected
+    return result
+
+
+def resource_metrics(data, *, mapped=False, top=TOP, storage=None):
     """Count saved actual cells, their state bits and mapped area fail closed."""
-    module = data['modules'][TOP]
+    module = data['modules'][top]
     cells = {name: cell for name, cell in module['cells'].items() if cell['type'] != '$scopeinfo'}
     counts = Counter(cell['type'] for cell in cells.values())
     sequential = {name: cell for name, cell in cells.items()
@@ -89,10 +128,13 @@ def resource_metrics(data, *, mapped=False):
             raise ValueError('Normalize all saved buffered sequential cell forms')
     named = {}
     root_set = set(roots)
-    for label, names in [('tx', ['r_tx_data']), ('rx', ['r_rx_data']),
-                         ('program_bank', [f'r_word{row}' for row in range(128)]),
-                         ('written_mask', ['r_written'])]:
-        bits = [bit for name in names for bit in module['netnames'][name]['bits']]
+    for label, entries in storage_coordinates(DEFAULT_STORAGE if storage is None else storage).items():
+        bits = []
+        for name, declared, offset, width in entries:
+            register = module['netnames'].get(name, {}).get('bits')
+            if type(register) is not list or len(register) != declared:
+                raise ValueError('Saved buffered storage register has wrong declared width: ' + name)
+            bits.extend(register[offset:offset + width])
         named[label] = dict(logical_bits=len(bits), physical_state_bits=len(set(bits) & root_set))
     result = dict(cells=len(cells), cell_types=dict(sorted(counts.items())),
                   flip_flops=len(sequential), physical_state_bits=len(roots), named_storage=named)
@@ -112,23 +154,32 @@ def resource_metrics(data, *, mapped=False):
     return result
 
 
-def compile_rtl(run, out, source, label, *, cells=()):
+def compile_rtl(run, out, source, label, *, cells=(), bridge=None,
+                testbench='buffered_hardware_tb'):
+    bridge = ROOT / 'test/buffered_hardware_tb.sv' if bridge is None else Path(bridge)
     executable = Path(out) / (label + '.vvp')
-    run([CAD / 'iverilog', '-g2012', '-DFUNCTIONAL', '-s', 'buffered_hardware_tb',
-         '-o', executable, source, ROOT / 'test/buffered_hardware_tb.sv', *cells],
+    run([CAD / 'iverilog', '-g2012', '-DFUNCTIONAL', '-s', testbench,
+         '-o', executable, source, bridge, *cells],
         label + '-compile')
     return executable
 
 
-def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence=True):
+def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence=True,
+               top=TOP, storage=None, bridge=None, testbench='buffered_hardware_tb'):
     out, source = Path(out), Path(source)
     pdk = stage_pdk(pdk_root=pdk_root)
     library = Path(pdk['library'])
     source_digest = sha(source)
     if description is None:
         description = json.loads((source.parent / 'assembly.json').read_text())
-    if description.get('module') != TOP:
+    if description.get('module') != top:
         raise ValueError('Wrong buffered circuit state description')
+    coordinates = storage_coordinates(DEFAULT_STORAGE if storage is None else storage)
+    declared = {item['name']: item['width'] for item in description['registers']}
+    for entries in coordinates.values():
+        for name, width, _, _ in entries:
+            if declared.get(name) != width:
+                raise ValueError('Buffered storage is absent or differs from declared state: ' + name)
 
     def yosys(label, lines, *, reject=None):
         script = out / (label + '.ys')
@@ -141,12 +192,12 @@ def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence
                  'pads, serial transport, SRAM integration, clock tree, placement, routing, '
                  'parasitics or timing qualification.')
     yosys('synthesis-source-readback', [f'read_verilog -sv {source}',
-        f'synth -top {TOP} -flatten -noabc', 'dffunmap', 'clean', 'check -assert',
+        f'synth -top {top} -flatten -noabc', 'dffunmap', 'clean', 'check -assert',
         f'write_json {out}/source-readback.json'])
     for variant in ('generic', 'typical'):
         target = out / variant
         target.mkdir(exist_ok=False)
-        lines = [f'read_verilog -sv {source}', f'synth -top {TOP} -flatten -noabc',
+        lines = [f'read_verilog -sv {source}', f'synth -top {top} -flatten -noabc',
                  'dffunmap']
         if variant == 'typical':
             constraint = target / 'abc.constr'
@@ -162,16 +213,16 @@ def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence
                   f' {target}/netlist.v']
         yosys('synthesis-' + variant, lines)
         data = json.loads((target / 'netlist.json').read_text())
-        metrics = resource_metrics(data, mapped=variant == 'typical')
+        metrics = resource_metrics(data, mapped=variant == 'typical', top=top, storage=storage)
         readback = ([f'read_liberty -lib {library}'] if variant == 'typical' else [])
         readback += [f'read_verilog -sv {target}/netlist.v',
-                     f'hierarchy -check -top {TOP}']
+                     f'hierarchy -check -top {top}']
         if variant == 'generic':
             readback += ['proc', 'opt_clean', 'techmap', 'dffunmap', 'clean']
         readback += ['check -assert', f'write_json {target}/readback.json']
         yosys('synthesis-' + variant + '-readback', readback)
         saved = json.loads((target / 'readback.json').read_text())
-        saved_metrics = resource_metrics(saved, mapped=variant == 'typical')
+        saved_metrics = resource_metrics(saved, mapped=variant == 'typical', top=top, storage=storage)
         if variant == 'typical' and saved_metrics != metrics:
             raise ValueError('Saved buffered Verilog resource readback differs from synthesis')
         if saved_metrics['physical_state_bits'] != metrics['physical_state_bits']:
@@ -179,7 +230,8 @@ def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence
         metrics = saved_metrics
         models = ([ROOT / 'build/tools/oss-cad-suite/share/yosys/simcells.v']
                   if variant == 'generic' else [Path(name) for name in pdk['models']])
-        executable = compile_rtl(run, target, target / 'netlist.v', variant + '-gates', cells=models)
+        executable = compile_rtl(run, target, target / 'netlist.v', variant + '-gates',
+                                 cells=models, bridge=bridge, testbench=testbench)
         result['variants'][variant] = dict(metrics=metrics, executable=str(executable),
             netlist_json=str(target / 'netlist.json'), netlist_verilog=str(target / 'netlist.v'),
             netlist_sha256=sha(target / 'netlist.v'), json_sha256=sha(target / 'netlist.json'),
@@ -187,17 +239,17 @@ def synthesize(run, out, source, *, description=None, pdk_root=None, equivalence
             simulation_models_sha256={str(path): sha(path) for path in models})
         if equivalence:
             result['variants'][variant]['equivalence'] = prove_saved_mapping(
-                yosys, out, target, description, saved, variant, library)
+                yosys, out, target, description, saved, variant, library, top=top)
     if sha(source) != source_digest:
         raise ValueError('Buffered source artifact changed during synthesis')
     return result
 
 
-def prove_saved_mapping(yosys, out, target, description, data, variant, library):
+def prove_saved_mapping(yosys, out, target, description, data, variant, library, *, top=TOP):
     """Compare source and saved gates after exact, checked physical state intake."""
     source = json.loads((out / 'source-readback.json').read_text())
-    reference, source_projection = state_cut(source['modules'][TOP], description, True)
-    candidate, projection = state_cut(data['modules'][TOP], description, True)
+    reference, source_projection = state_cut(source['modules'][top], description, True)
+    candidate, projection = state_cut(data['modules'][top], description, True)
     reference = project_pruned_state(reference, candidate, projection,
                                      projection['pruned_state_positions'])
     write(target / 'source-cut.json', dict(modules=dict(reference=reference)))
