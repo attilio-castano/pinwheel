@@ -35,6 +35,7 @@ SUITES = [
     ('ProgramExport', []), ('ResidentProgram', []),
     ('Transfer', []),
     ('Buffered', []),
+    ('BufferedHardware', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
