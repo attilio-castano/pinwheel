@@ -37,17 +37,24 @@ class CapabilityEvidence:
         return digest
 
     def certify(self, name, source, run):
-        image = compile_e64(source.words, (source.idle_levels, source.idle_enabled), source.last)
+        from pinwheel_host import RESIDENT_FORMAT
+        renderer, marker = render, 'Paired image certificate: kernel checked; standard axioms only.'
+        compiler = compile_e64
+        if getattr(source, 'image_format', None) == RESIDENT_FORMAT:
+            from paired_execution import compile_resident
+            from resident_image_certificate import render as resident_render, MARKER
+            compiler, renderer, marker = compile_resident, resident_render, MARKER
+        image = compiler(source.words, (source.idle_levels, source.idle_enabled), source.last)
         path = self.out / (name + '-certificate.lean')
         if path.exists():
             raise FileExistsError('Preserve upload certificate: ' + str(path))
-        path.write_text(render(name.replace('-', '_'), source.words, source.last,
+        path.write_text(renderer(name.replace('-', '_'), source.words, source.last,
                                (source.idle_levels, source.idle_enabled), image, source.upload_words()))
         digest = self.freeze_generated(path)
         log = run(['lake', 'env', 'lean', '-DwarningAsError=true', path], name + '-certificate')
         if sha(path) != digest:
             raise RuntimeError('Certificate changed during kernel check: ' + path.name)
-        if 'Paired image certificate: kernel checked; standard axioms only.' not in log:
+        if marker not in log:
             raise RuntimeError('Missing image certificate audit')
         self.image_certificates.append(dict(program=name, path=path.name, sha256=digest,
             populated_positions=source.last + 1, canonical_records=len(set(source.words))))
