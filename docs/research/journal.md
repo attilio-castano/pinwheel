@@ -5976,3 +5976,52 @@ and I²C candidates respectively. SRAM qualification, compatible fast timing and
 package power remain open; the new software capabilities add zero hardware bits
 and zero physical runs. A JTAG sequence can next exercise the generic builder;
 longer dynamic payloads require a separate buffer and ownership decision.
+
+## 2026-10-06 — Unified transactions and a bounded JTAG challenge
+
+Implemented the [transaction workflow](../protocols/transaction-workflow.md)
+on `codex/unified-transactions`, with incremental commits. A shared request,
+compile, load, run and decode API carries exact program bytes, named pin
+requirements, timing, capacities and result interpretation. Fixed SPI/I²C
+requests use a static production Lean exporter; resident UART/SPI/JTAG use the
+generic builder. Artifacts recompile their request on import. Compiler-owned
+construction rejects unrelated request/program pairs before I/O; host image
+generations reject stale sessions, including identical reloads. Failed decoding
+preserves the unread packet.
+
+The typed resident language adds SHIFT/KEEP beside ordinary Reactive
+instructions. Fifteen public proofs cover canonical encoding, source validity,
+ordinary compatibility, entry/hold effects and START/reset ownership. Local
+selected-graph checks pass 4,608 SHIFT cases, 640 KEEP cases and 35 control edges.
+These are admitted-source execution snapshots, not a complete initialized
+loader/SRAM/mailbox protocol lifecycle theorem.
+
+The shared package gate passes every START byte for UART, SPI and JTAG without
+reuploading between transfers, eight fixed SPI mode/length cases and fourteen
+I²C success/stretch/NACK/timeout/guard cases. Eleven controls include pre-I/O
+capacity/payload/session refusals and three canonical JTAG semantic negatives;
+nineteen actual images receive fresh kernel upload certificates. The independent
+JTAG target covers all sixteen initial TAP states and checks a nineteen-clock,
+eight-bit LSB-first DR scan. Its 39-half-period wire sequence is distinct from
+exact package busy completion. The fixture assumes an eight-bit DR selected by
+reset; IR selection, chains and 32-bit IDCODE remain absent. Larger requests
+expose the actual eight-bit operand/sixteen-capture limits before chip I/O.
+
+Fresh foundation passes 264 modules, 21,045 declarations, 11,332 standard-axiom
+theorems, 43 executable suites, one kernel suite and the untrusted-axiom
+rejection. Normal and optimized Python discovery each pass 799 tests with two
+platform skips. The public CLI passes UART compile/inspect/run with `0xa6` and
+two-byte I²C compile/inspect through the production frontend. Its elapsed host
+edge count includes framing, polling, readback and consumption.
+
+The [manifest](../../physical/experiments/unified-workflow-results.json) binds
+five completed reports and their source/artifact closeout across 611 unchanged
+inputs. Earlier probes and
+the failed optimized package-name invocation retain separate records; final
+discovery and frozen-source replacements supply acceptance. Chip MLIR/RTL are
+byte-identical to the prior paired-stream candidate, whose exact-artifact RTL
+interpretation is retained without a new proof or broader lifecycle claim.
+All 232 preceding physical files remain unchanged. Zero hardware bits or
+physical runs are added; SRAM qualification, compatible fast timing and package
+power remain open. The next programming decision is longer data ownership and
+its hardware cost, alongside initialized resident refinement.

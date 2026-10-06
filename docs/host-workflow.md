@@ -6,6 +6,12 @@ are data: UART TX/RX, SPI, I²C and a conditional trigger use the same RTL. The
 assignments, synchronization and mailbox semantics; this page owns the client,
 demonstration and its limits.
 
+For bound requests and automatic result interpretation, start with the
+[transaction workflow](protocols/transaction-workflow.md). It layers a common
+compile/load/run/decode API over this host and records pin, capacity and timing
+requirements. UART receive and raw custom programs remain available through
+the interfaces documented here.
+
 Current source uses the [version-2 protocol pad contract](engine/whole-chip.md#protocol-pad-contract-version-2):
 separate input pads `uio0–1`, output pads `uio2–4`, and explicit I²C sense/drive
 joins. The interactive bridge now resolves external drivers against enabled chip

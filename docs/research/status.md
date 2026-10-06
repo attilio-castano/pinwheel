@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-06 after implementing reusable payload programs, a named program
-builder and compact I²C register reads, following the initialized UART lifecycle.
+Updated 2026-10-06 after the unified transaction workflow and bounded JTAG
+flexibility experiment, following reusable programs and initialized UART sessions.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -11,8 +11,9 @@ linked studies for measurements and reproduction.
 Make a complete chip-design iteration possible for someone without hardware
 expertise. Pinwheel's reloadable protocol engine is the test case: preserve pin
 timing, capture, branching and atomic replacement while connecting one exact
-implementation to formal meaning and physical feasibility. Deepen UART, SPI
-and I²C before adding protocols; the larger iteration also retains its declared
+implementation to formal meaning and physical feasibility. Use UART, SPI and
+I²C as the main contracts and bounded new waveforms to challenge their shared
+abstractions; the larger iteration also retains its declared
 capacity-change gate. Competition admission remains separate.
 
 **Delivered local capability: [four SPI modes and bounded transactions](../protocols/spi-transactions.md).**
@@ -56,12 +57,31 @@ guarded bus fault through terminal status, discarding partial captures. The
 capacity and resolved-pin behavior are checked per declared upload/scenario.
 No circuit or emitter changes are allocated.
 
-**Next flexibility decision: exercise a new waveform using the generic builder.**
-A small JTAG sequence can test whether naming, branching, timing and capture
-are sufficient without protocol-specific circuitry. A universal initialized
-resident UART/SPI lifecycle proof and longer-payload ownership remain separate
-continuations. Physical sampling, SRAM qualification and package power remain
-their existing gates.
+**Implemented programming layer: [bound transaction workflow](../protocols/transaction-workflow.md).**
+One compile/load/run/decode API carries the request, exact program, pin and
+timing requirements, result layout and capacity. Fixed SPI/I²C requests go
+through a static production Lean frontend; reusable UART/SPI/JTAG use the
+generic builder. Artifacts are recompiled against their request on import.
+Session ownership rejects replacement/reset before START and failed decoding
+preserves the unread packet. Typed resident instructions include SHIFT/KEEP,
+reuse ordinary Reactive semantics and encode canonically; their local proofs
+do not establish a complete initialized resident package lifecycle.
+
+**Flexibility experiment: an eight-bit JTAG data-register fixture.**
+It uses the existing three outputs, one sampled input, START operand and
+captures on unchanged circuit bytes. The independent target starts in any of
+the sixteen TAP states, resets, scans LSB first, updates and returns to idle.
+This assumes an eight-bit DR selected by reset; it does not select an IR or
+support a chain/32-bit IDCODE. A request needing a 32-bit operand or result is
+refused before chip I/O: the current engine has an eight-bit START operand and
+sixteen captures.
+
+**Next decision: how should longer transaction data be owned and transferred?**
+The bounded scan exposes a concrete capacity question. Compare repeated byte
+transactions with a buffer/stream interface, including framing, capture/result
+ownership and hardware cost, before changing the chip. Complete initialized
+resident lifecycle refinement remains the formal continuation. Physical
+sampling, SRAM qualification and package power retain their existing gates.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

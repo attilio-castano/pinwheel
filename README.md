@@ -86,6 +86,14 @@ captures and labels, with resident UART/SPI programs whose payload comes from
 circuitry; their source certificates, formal contracts and package tests have
 separate scopes.
 
+The [transaction workflow](docs/protocols/transaction-workflow.md) binds requests,
+compiled programs, pin requirements and decoded results to one compile/load/run
+API and CLI. A bounded eight-bit JTAG data-register fixture tests that interface
+on the same engine. Fixed SPI and I²C requests use a static Lean frontend;
+resident UART/SPI/JTAG use the generic builder. The shared typed resident model
+now includes SHIFT/KEEP. Longer payloads and complete initialized resident
+lifecycle proofs remain separate work.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).
@@ -101,6 +109,7 @@ dated milestones; a next-step statement in an older study is historical context.
 | I want to... | Start here |
 | --- | --- |
 | Try the programmable chip | [Host workflow](docs/host-workflow.md): load UART TX/RX, SPI, I²C, and a custom trigger into one unchanged RTL chip, then retrieve results. |
+| Program a transaction | [Unified workflow](docs/protocols/transaction-workflow.md): compile a request, inspect capacity and pins, load once, run and decode through one API. |
 | Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |

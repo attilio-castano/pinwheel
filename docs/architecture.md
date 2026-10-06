@@ -89,7 +89,8 @@ Lean structural circuit -> hardware MLIR -> CIRCT -> SystemVerilog
                                                 -> simulation / synthesis / physical flow
 
 Program:
-Lean protocol compiler -> load image / execution records -> writable engine memory
+Transaction request -> Lean compiler or named resident builder
+                    -> execution records / paired load image -> writable engine memory
 ```
 
 The circuit path uses a restricted width-indexed language with explicit register
@@ -100,6 +101,22 @@ literal execution words. Counted load images can be expanded before execution;
 the [bounded repetition prototype](storage/storage-study.md#bounded-runtime-repetition)
 separately investigates reconstruction at runtime. Load-image byte counts and
 allocated hardware storage are different measurements.
+
+The [transaction layer](protocols/transaction-workflow.md) gives these program
+paths one public compile/load/run/decode interface. It binds request data to
+the compiled image, named pins, timing units, resource use and result layout.
+Fixed SPI and compact I²C use `Program.Requests`; resident UART/SPI/JTAG use
+the Python builder. This common workflow preserves independent protocol
+references; it does not turn every frontend into one Lean compiler.
+
+`Program.Resident` extends the typed Reactive instruction language with SHIFT
+and KEEP. It lowers their entry effects to ordinary timed actions using the
+pre-edge operand and output levels, while delegating waits, guards, captures
+and successors to Reactive semantics. Canonical encoding and local transition
+proofs are checked separately from complete initialized package lifecycle
+refinement. Requests exceeding the operand or result capacity fail at this
+programming boundary before pin I/O; a future buffer/stream change would need
+an explicit ownership and hardware-cost decision.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
@@ -446,6 +463,7 @@ modules rather than defining their contracts.
 | `Pinwheel/UART/`, `Pinwheel/SPI/`, `Pinwheel/I2C/` | Independent protocol specifications, reference controllers, and proofs. |
 | `Pinwheel/Engine/` | Original and reactive instruction semantics, loading/execution, compatibility, functional fetch, and counted programs. |
 | `Pinwheel/Compile/` | Protocol compilers and correspondence; `Readiness.lean` owns compiler-specific admission certificates. |
+| `Pinwheel/Program/` | Pure JSON request frontend and typed resident SHIFT/KEEP semantics, encoding and local proofs. The static export executable lives under `scripts/`. |
 | `Pinwheel/Binary/` | PWL codecs, layout, round trips, decoded execution, and serialized-size accounting. |
 | `Pinwheel/Hardware/Circuit.lean` | Width-indexed expressions, register updates, and their digital semantics. |
 | `Pinwheel/Hardware/Netlist.lean`, `NetlistEmit.lean` | Typed shared combinational bindings, their semantics, and generic MLIR serialization. |

@@ -28,6 +28,14 @@ actual typed-core resident SHIFT/KEEP effects. The separate
 check resident source certificates, resolved UART/SPI and I²C package pins, and
 fresh RTL interpretation for both paired package variants.
 
+The [transaction gate](protocols/transaction-workflow.md) exercises the public
+API on one freshly emitted paired-stream package. It uses the static Lean
+frontend for fixed SPI/I²C, independent pin peers for UART/SPI/I²C/JTAG, and
+kernel certificates for every distinct uploaded image. Its exact chip hash
+comparison binds the prior accepted RTL interpretation; it does not rerun or
+extend that proof to a complete initialized resident lifecycle. The foundation
+adds the production request checks and typed resident transition suite.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative
