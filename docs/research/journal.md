@@ -6061,3 +6061,42 @@ All earlier hardware evidence remains preserved. Dedicated registers versus
 an explicit SRAM partition/schedule, versioned engine operations and indexed
 readback are the next implementation decision. Longer I²C also exceeds the
 current unrolled program limit; physical qualifications retain their gates.
+
+## 2026-10-06 — Shared buffered reactive execution
+
+The [shared execution study](../protocols/buffered-reactive.md) closes the split
+between linear buffered data and reactive control. `Program.Buffered` normalizes
+into Reactive/Fetch and composes instruction-entry TX consumption/RX append with
+Transfer ownership. A generalized counted schedule retains reusable bodies;
+the old counted grammar has proved equal span and lookup. Fifteen composed
+safety/entry/retention statements, two embedding statements and three I²C
+geometry statements use standard axioms. The executable suite checks seven
+I²C raw-control scenarios and 4,096 input histories.
+
+Actual Lean/Python differential execution passes 143 cases and 12,240 edges,
+including self reentry, wait deadline, guard/capture/dispatch priority, malformed
+normalization, exhaustion and partial results. All 270 virtual instructions and
+stored geometry of the default four-byte typed I²C factory agree with the
+independently wire-checked Python factory in seven cases, with four-cycle phases
+and a 32-cycle wait budget. This is finite differential and frontend-binding
+evidence; it is not a universal Python or protocol-success theorem.
+
+The same reference interpreter executes the prior SPI/JTAG programs and a
+four-byte I²C combined register read. That I²C program stores 50 instruction
+leaves and 55 control descriptors for 270 virtual positions without expanding a
+bank; quiet wire duration is 993 modeled edges. The independent gate passes
+1,036 I²C cases: 1,029 complete, three lawful-STOP NACK faults and four timeouts.
+A held clock retains nine RX bits without claiming STOP; failed STOP qualification
+retains all 32 bits with timeout. Six framing/data/timing mutations are rejected.
+Combined with 1,216 retained SPI/JTAG cases, the gate covers 2,252 wire cases and
+1,333,640 modeled edges. Normal and optimized Python each pass 889 tests with
+two skips. The full foundation gate builds 269 modules and passes all 45
+executable suites, one kernel suite and the whole-library axiom audit.
+
+Review corrected malformed-normalization data effects and distinguished them
+from invalid terminal dispatch, which preserves the current instruction's effects.
+The [accepted manifest](../../physical/experiments/buffered-reactive-model-results.json)
+binds the focused and foundation reports and preserves the preceding physical
+evidence. No buffered circuit, current paired image extension, serial transport,
+mapped area or physical timing is established. The next gate is a versioned
+digital engine with counted lookup, owned data admission and indexed readback.

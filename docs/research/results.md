@@ -130,6 +130,16 @@ Start here for the programmable engine, compiler and digital protocol
 contracts. The historical storage alternatives establish the complete cost
 context for the later hybrid SRAM choice.
 
+The [shared buffered reactive continuation — October 6](../protocols/buffered-reactive.md)
+closes the split between linear buffered transfers and reactive control. Lean
+composes Reactive/Fetch with owned data effects and compact counted lookup;
+one Python interpreter runs SPI/JTAG and four-byte I²C. The I²C schedule stores
+50 instruction leaves and 55 control descriptors for 270 virtual positions.
+ACK/NACK cleanup, clock stretching and failed STOP qualification preserve exact
+diagnostic prefixes. This establishes the reference programming contract;
+versioned hardware encoding, counted lookup timing, storage/readback and mapped
+cost remain the next implementation gate.
+
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
 Lean ownership proofs and 2,630 differential transitions cover local bounds,
@@ -138,7 +148,8 @@ pass 1,024 continuous four-byte SPI cases and 192 JTAG cases across all TAP stat
 and widths 1/7/13/32. Normal/optimized Python each pass 849 tests with two skips.
 This establishes the model contract; current chip widths and circuitry are
 unchanged. Integrate versioned engine data/readback operations and measure
-storage cost before claiming hardware capacity; longer I²C also needs loops.
+storage cost before claiming hardware capacity; the reactive continuation adds
+I²C loops at the reference-model layer.
 
 | Study / evidence owner | Conclusion and disposition | Reopening condition or remaining obligation |
 | --- | --- | --- |

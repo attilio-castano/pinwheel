@@ -125,8 +125,17 @@ invariants. A separate generic timed Python target exercises four-byte SPI
 and 32-bit/non-byte JTAG with independent resolved-pin peers. The target has
 no paired upload encoding or circuit integration; current SRAM allocation,
 host command/readback format and physical evidence are unchanged. Data bits
-and scratch/control captures are separate. Program loops, hardware admission,
+and scratch/control captures are separate. Hardware counted lookup, admission,
 indexed result readback and measured storage cost are the next engine contract.
+
+The [buffered reactive continuation](protocols/buffered-reactive.md) now composes
+owned TX/RX entry effects with `Reactive.Fetch` execution and a generalized
+`Counted.Schedule`. The old counted grammar has a proved equal-span/equal-lookup
+embedding. A single Python interpreter executes linear SPI/JTAG and reactive
+I²C programs. Four-byte I²C uses 50 instruction leaves and 55 sequence/repeat
+descriptors for 270 virtual positions, with distinct ACK scratch and RX data.
+This is a reference schedule, not a larger admitted paired image. Its lowering,
+data storage, command admission and indexed readback need a new circuit contract.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit

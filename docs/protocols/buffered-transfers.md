@@ -21,7 +21,7 @@ existing circuit, upload formats, capabilities and evidence.
 | Completed, unread | Repeated host reads return frozen descriptor, status and RX prefix. No engine mutation or replacement. |
 | Released | Storage is free; a later prepare allocates a different identity. |
 
-Admission validates exact program TX demand, minimum RX demand and model buffer
+Admission validates exact program TX demand, declared RX reservation and model buffer
 capacities before execution. Low-level capacity, identity, phase, exhaustion
 and generation rejections do not change any stored value. A reserved RX limit
 is a maximum, not a statement that every bit was received. The engine turns
@@ -97,9 +97,12 @@ Failure and recovery rules:
 `BufferedProgram` is immutable and hashes its target, protocol interpretation,
 wire order, idle profile and every instruction field. Its generic timed
 operations drive pins, consume a TX bit, preserve outputs, append a sampled
-input bit, or finish. The engine has no SPI/JTAG cases. This linear timed model
-does not yet add Reactive waits/guards, branches or counted loops; those belong
-in the subsequent engine/encoding integration.
+input bit, or finish. The engine has no protocol cases. The
+[shared reactive continuation](buffered-reactive.md) now adds waits/guards,
+scratch branches, qualification and compact counted schedules to this same
+Python engine and composes the effects with Reactive/Fetch in Lean. The SPI/JTAG
+programs below retain their linear schedules and wire timing. Circuit encoding
+and integration remain separate.
 
 | Frontend | Data and timing contract |
 | --- | --- |
@@ -175,8 +178,10 @@ not an admitted existing image. Framed host subcommands also need a real receipt
 pulse; the core's ordinary no-command value cannot double as a delivered frame.
 Compare mapped cost and exact entry effects before choosing this organization.
 
-Longer I²C additionally needs reusable loops or a more compact schedule. Its
-current two-byte program uses 196 positions; two more byte/ACK groups in the
-same four-instruction-per-bit schedule would reach 268, exceeding 256. Buffer
-capacity alone does not solve program capacity. Live streaming, concurrent
-transfers and double buffering remain separate throughput decisions.
+The current unrolled two-byte I²C program uses 196 positions; two more byte/ACK
+groups in that schedule would reach 268, exceeding 256. The
+[reactive continuation](buffered-reactive.md) implements reusable counted bodies
+in the reference model, with stored syntax distinct from virtual positions.
+Hardware still needs an encoding and lookup implementation for that schedule.
+Live streaming, concurrent transfers and double buffering remain separate
+throughput decisions.

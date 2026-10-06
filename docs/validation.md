@@ -44,6 +44,14 @@ SPI and 32-bit/non-byte JTAG wire models. The foundation includes the universal
 ownership proofs and adversarial `Transfer` suite. This adds no buffered circuit,
 package transport, RTL interpretation or physical-cost qualification.
 
+The [buffered reactive gate](protocols/buffered-reactive.md),
+`python3 -B scripts/check-buffered-reactive.py --tag <fresh-tag>`, additionally
+compares actual Lean/Python control, sampler, scratch and data state on compact
+counted schedules. It retains the old wire fixtures and adds independent I²C
+with ACK/NACK, stretching, lawful STOP and retained timeout prefixes. The
+foundation includes the composed `Buffered` suite and safety proofs. Virtual
+positions and stored syntax counts do not establish hardware image capacity.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

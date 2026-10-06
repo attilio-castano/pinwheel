@@ -85,12 +85,20 @@ JTAG scans, with independent timing/capture/framing mutations and recoverable
 host waits. Current chip widths, SRAM, serial transport and emitted circuitry
 are unchanged; this model does not establish their extension.
 
-**Next decision: how should the finite data path enter the retained engine?**
+**Implemented continuation: [shared buffered reactive execution](../protocols/buffered-reactive.md).**
+Buffered entry effects now compose with the existing Reactive/Fetch rules and
+compact counted lookup. The same Python engine handles timed SPI/JTAG and
+reactive I²C, including scratch ACK decisions, clock stretching and diagnostic
+RX prefixes. Four-byte I²C uses 105 stored syntax nodes for 270 virtual positions;
+it does not expand a bank or fit the existing paired image by assumption.
+
+**Next decision: how should this shared data/control contract enter hardware?**
 Compare dedicated data registers with an explicit SRAM partition/schedule, then
 design versioned data operations and indexed readback. Hardware must prevent
 active/unread storage reuse; protocol programs must retain exact wire timing.
-Longer I²C also needs reusable loops: the current unrolled four-byte extension
-would exceed 256 program positions. Model storage starts at 64 data bits, with
+The counted reference schedule solves the unrolled I²C storage problem at the
+model layer; hardware must implement its lookup/timing and encode its nodes.
+Model storage starts at 64 data bits, with
 metadata/control and mapped cost still unmeasured. Complete initialized resident
 lifecycle refinement, physical sampling, SRAM qualification and package power
 retain their existing gates.

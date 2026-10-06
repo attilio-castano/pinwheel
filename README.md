@@ -97,7 +97,10 @@ lifecycle proofs remain separate work.
 The [finite-transfer model](docs/protocols/buffered-transfers.md) gives longer
 data explicit TX/RX ownership, retained completion and recoverable handles.
 Independent model peers exercise continuous four-byte SPI and 32-bit/non-byte
-JTAG scans. It is a reference target; current chip capacities are unchanged.
+JTAG scans. Its [shared reactive continuation](docs/protocols/buffered-reactive.md)
+adds waits, decisions and counted loops to the same engine, demonstrated by a
+four-byte I²C read with NACK and clock-stretch failure prefixes. It is a reference
+target; current chip capacities are unchanged.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
