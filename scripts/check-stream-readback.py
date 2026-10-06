@@ -114,7 +114,11 @@ def mutation_controls(rb, directory, rtl_text, kind, records, *, freeze, compile
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--proof-timeout-seconds', type=int, default=600,
+                        help='Per Lean module compilation bound, 1..3600 (default: 600)')
     args = parser.parse_args()
+    if not 1 <= args.proof_timeout_seconds <= 3600:
+        parser.error('proof-timeout-seconds must be 1..3600')
     out = fresh_directory(ROOT / 'build/validation', args.tag)
     run = commands.ScopedCommands(ROOT, out, default_timeout=600)
     started = time.monotonic()
@@ -135,7 +139,15 @@ def main():
         for path in dependencies:
             freeze(path)
         freeze(directory / (name + '.lean'))
-        result = original_compile(run, directory, name, paths, reject)
+        def bounded(command, label, *positional, **options):
+            options['timeout'] = args.proof_timeout_seconds
+            index = len(run.records)
+            try:
+                return run(command, label, *positional, **options)
+            finally:
+                if len(run.records) > index:
+                    run.records[index]['timeout_seconds'] = args.proof_timeout_seconds
+        result = original_compile(bounded, directory, name, paths, reject)
         freeze(directory / (name + '.lean'))
         for path in dependencies:
             freeze(path)
@@ -148,6 +160,7 @@ def main():
     tool_files = [*closure.files, YOSYS, SOLVER, YOSYS.parent.parent / 'libexec/yosys', SOLVER.parent.parent / 'libexec/z3']
     tool_hashes = {str(p.relative_to(ROOT)): sha(p.resolve()) for p in tool_files}
     report = dict(schema=1, implementation='PairedStream', status='running',
+        proof_timeout_seconds=args.proof_timeout_seconds,
         date=datetime.now(timezone.utc).isoformat(), source_sha256=source_hashes,
         tools_sha256=tool_hashes, commands=run.records, modules={},
         placement_or_routing=False, cad_seconds=0,
