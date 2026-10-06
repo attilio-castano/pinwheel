@@ -244,9 +244,10 @@ class BufferedModelHost:
             raise TransferError('Release the current transfer before replacing its program')
         if type(program) is not BufferedProgram or program.target != 'buffered-reference-v1':
             raise ValueError('BufferedModelHost requires a buffered reference program')
-        if program.tx_bits > self.slot.tx_capacity_bits or program.rx_bits > self.slot.rx_capacity_bits:
+        if (program.tx_bits > self.slot.tx_capacity_bits or
+                program.rx_reservation_bits > self.slot.rx_capacity_bits):
             raise ValueError('Program data requirements exceed model buffer capacities')
-        program.validate_transfer((False,) * program.tx_bits, program.rx_bits)
+        program.validate_transfer((False,) * program.tx_bits, program.rx_reservation_bits)
         self._program, self._program_key = program, program.key
         self._generation += 1
         return LoadedBufferedTransaction(self, program, program.key, self._generation)
@@ -262,7 +263,7 @@ class BufferedModelHost:
             raise ValueError('TX payload must be bytes or a byte buffer')
         bits = loaded.program.encode_tx(bytes(tx))
         if rx_limit is None:
-            rx_limit = loaded.program.rx_bits
+            rx_limit = loaded.program.rx_reservation_bits
         _natural(rx_limit, 'RX limit')
         loaded.program.validate_transfer(bits, rx_limit)
         if peer is not None and not callable(getattr(peer, 'drive', None)):
