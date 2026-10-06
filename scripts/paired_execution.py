@@ -148,6 +148,50 @@ def compile_e64(words, idle=(0, 0), last=None):
     return assemble(operations, successors, idle)
 
 
+def resident_valid(word):
+    """Explicit resident source grammar; canonical E64 remains unchanged.
+
+    SHIFT uses entry[1:0] for its output and entry[2] for bit order.
+    KEEP uses the usual entry capture and terminal[2:0] as a preserve mask.
+    These are source operands, not a claim that E64 v1 admits either operation.
+    """
+    if type(word) is not int or not 0 <= word < 1 << 64:
+        return False
+    d = fields(word)
+    if d['kind'] not in (SHIFT, KEEP):
+        return bool(GRAMMAR['decode'](word))
+    if word >> 63 or any(d[name] for name in ('budget', 'check', 'finish', 'sample', 'yes', 'no')):
+        return False
+    if d['kind'] == SHIFT:
+        return d['entry'] < 8 and d['entry'] % 4 < 3 and d['terminal'] == 0
+    return capture_valid(d['entry']) and d['terminal'] < 8
+
+
+def compile_resident(words, idle=(0, 0), last=None):
+    """Lower resident source records to the existing paired-token hardware ABI.
+
+    All supplied records, including unreachable records, are grammar checked.
+    Parameter capacity is checked independently by assemble; resident programs
+    do not borrow the canonical E64 dictionary-cardinality theorem.
+    """
+    if not 1 <= len(words) <= ROWS or not all(resident_valid(w) for w in words):
+        raise ValueError('Resident grammar or size')
+    last = len(words) - 1 if last is None else last
+    if type(last) is not int or not 0 <= last < len(words):
+        raise ValueError('Resident last address')
+    operations, successors = [], []
+    for pc, word in enumerate(words[:last + 1]):
+        d = fields(word)
+        operations.append((d['kind'], d['levels'], d['enabled'], d['duration'], parameter(d)))
+        no = yes = pc + 1
+        if d['kind'] == 2 and d['finish']:
+            no = yes = d['yes']
+        if d['kind'] == 2 and d['finish'] == 2:
+            no = d['no']
+        successors.append((no if no <= last else None, yes if yes <= last else None))
+    return assemble(operations, successors, idle)
+
+
 def linear(operations, idle):
     ops = [*operations, (HALT, 0, 0, 0, 0)]
     return assemble(ops, [(k+1, k+1) if k+1 < len(ops) else (None, None)
