@@ -14,7 +14,7 @@ import re
 import time
 
 from host_demo import compiler_images, demonstrate
-from pinwheel_host import Host, Program, LEGACY_FORMAT, PAIRED_FORMAT
+from pinwheel_host import Host, Program, LEGACY_FORMAT, PAIRED_FORMAT, RESIDENT_FORMAT
 from pinwheel_sim import Simulation
 from pad_io import PAD_MAP
 from validation_run import Commands, fresh_directory, sha
@@ -31,17 +31,29 @@ def capture_input(path, destination):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=['demo', 'run'])
+    parser.add_argument('action', choices=['demo', 'run', 'resident-demo'])
     parser.add_argument('--tag', required=True)
     parser.add_argument('--backend', choices=['hybrid', 'reference', 'paired', 'paired-validation', 'paired-stream'], default='hybrid')
     parser.add_argument('--program', type=Path)
     parser.add_argument('--incoming', type=lambda n: int(n, 0), default=3)
+    parser.add_argument('--payload', type=lambda n: int(n, 0), default=0,
+                        help='Accepted START byte for a resident program (0..255)')
     parser.add_argument('--timeout-cycles', type=int, default=100_000)
     args = parser.parse_args()
     if (args.action == 'run') != (args.program is not None):
-        parser.error('run requires --program; demo uses the compiler examples')
-    if not 0 <= args.incoming < 4 or args.timeout_cycles < 0:
-        parser.error('incoming must be 0..3 and timeout-cycles nonnegative')
+        parser.error('run requires --program; demonstrations generate their programs')
+    if not 0 <= args.incoming < 4 or args.timeout_cycles < 0 or not 0 <= args.payload <= 255:
+        parser.error('incoming must be 0..3, payload 0..255 and timeout-cycles nonnegative')
+    if args.payload and args.action != 'run':
+        parser.error('--payload applies to run; resident-demo checks every payload')
+    if args.payload and args.backend not in ('paired', 'paired-validation', 'paired-stream'):
+        parser.error('--payload requires a paired backend')
+    if args.action == 'resident-demo':
+        if args.backend not in ('paired', 'paired-stream'):
+            parser.error('resident-demo requires --backend paired or paired-stream')
+        from runpy import run_path
+        run_path(str(ROOT / 'scripts/check-resident-programs.py'))['run_gate'](args.tag, args.backend)
+        return
     out = fresh_directory(ROOT / 'build/host', args.tag)
     paired = args.backend in ('paired', 'paired-validation', 'paired-stream')
     image_format = PAIRED_FORMAT if paired else LEGACY_FORMAT
@@ -52,7 +64,7 @@ def main():
         program_bytes, program_digest = capture_input(args.program, out / 'program.json')
         program = Program.from_bytes(program_bytes)
         captured_inputs['program.json'] = program_digest
-        if program.image_format != image_format:
+        if program.image_format != image_format and not (paired and program.image_format == RESIDENT_FORMAT):
             raise ValueError('Program image format does not match --backend')
     sources = [ROOT / 'Pinwheel.lean', *sorted((ROOT / 'Pinwheel').rglob('*.lean')), ROOT / 'lakefile.toml',
         ROOT / 'lake-manifest.json',
@@ -67,6 +79,8 @@ def main():
     if args.backend == 'paired-stream':
         sources += [ROOT/'test/PairedStreamEmit.lean',ROOT/'tools/hardware-toolchain.json',
                     ROOT/'scripts/protocol_tool_closure.py']
+    if program is not None and program.image_format == RESIDENT_FORMAT:
+        sources += [ROOT/'scripts/resident_image_certificate.py']
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     run = Commands(ROOT, out, default_timeout=600)
     lean_version = None
@@ -125,9 +139,15 @@ def main():
     certificates = []
 
     def certify(name, source):
-        from paired_execution import compile_e64
-        from paired_image_certificate import render
-        image = compile_e64(source.words, (source.idle_levels, source.idle_enabled), source.last)
+        if source.image_format == RESIDENT_FORMAT:
+            from paired_execution import compile_resident as compile_image
+            from resident_image_certificate import render
+            marker = 'Resident image certificate: kernel checked; standard axioms only.'
+        else:
+            from paired_execution import compile_e64 as compile_image
+            from paired_image_certificate import render
+            marker = 'Paired image certificate: kernel checked; standard axioms only.'
+        image = compile_image(source.words, (source.idle_levels, source.idle_enabled), source.last)
         path = out/(name+'-certificate.lean')
         path.write_text(render(name.replace('-', '_'), source.words, source.last,
             (source.idle_levels, source.idle_enabled), image, source.upload_words()))
@@ -135,7 +155,7 @@ def main():
         log = run(['lake', 'env', 'lean', '-DwarningAsError=true', path], name+'-certificate')
         if sha(path) != certificate_digest:
             raise RuntimeError('Certificate changed during kernel check: ' + path.name)
-        if 'Paired image certificate: kernel checked; standard axioms only.' not in log:
+        if marker not in log:
             raise RuntimeError('Missing paired image certificate audit')
         certificates.append(dict(program=name, path=path.name, sha256=certificate_digest))
 
@@ -150,11 +170,14 @@ def main():
             host = Host(simulation, image_format=image_format)
             host.reset()
             host.upload(program)
-            host.start()
+            if args.payload:
+                host.start(payload=args.payload)
+            else:
+                host.start()
             result = dict(result=asdict(host.read_result(timeout_cycles=args.timeout_cycles)),
                           image_format=image_format,
                           program_sha256=program_digest, program_snapshot='program.json',
-                          edges=host.edges, frames=host.frames)
+                          edges=host.edges, frames=host.frames, payload=args.payload)
     result.setdefault('pad_map', PAD_MAP)
     for path in sources:
         if sha(path) != hashes[str(path.relative_to(ROOT))]:
