@@ -135,10 +135,28 @@ class Host:
         self.ui = 4  # serial select inactive, controls low, live status page
         self.edges = self.frames = 0
         self._stream_access = False
+        self._committed_program = None
+        self._program_generation = 0
+
+    @property
+    def committed_program(self):
+        """Image last committed through this host; external programming is outside this ownership."""
+        return self._committed_program
+
+    @property
+    def program_generation(self):
+        """Software ownership epoch, including resets and raw commit attempts."""
+        return self._program_generation
+
+    def _invalidate_program(self):
+        self._committed_program = None
+        self._program_generation += 1
 
     def advance(self, cycles=1, *, rst_n=1):
         if cycles < 1:
             raise ValueError('An advance requires at least one edge')
+        if not rst_n:
+            self._invalidate_program()
         pins = self.transport.advance(self.ui, cycles, rst_n=rst_n)
         self.edges += cycles
         return pins
@@ -152,6 +170,8 @@ class Host:
     def command(self, command: Command, data=0):
         if not 0 <= data < 1 << 64:
             raise ValueError('Command payload must fit 64 bits')
+        if command in (Command.COMMIT, Command.RESET):
+            self._invalidate_program()
         # Each frame has an 8-bit command followed by a big-endian 64-bit word.
         for byte in bytes([command]) + data.to_bytes(8, 'big'):
             for shift in range(7, -1, -1):
@@ -254,6 +274,7 @@ class Host:
         live = self.page(0)
         if live & 7 != 2 or self.result_status() & 4:
             raise RuntimeError('Chip did not accept program commit')
+        self._committed_program = program
 
     def start(self, payload=0):
         """Start once, supplying one byte to a resident paired program.

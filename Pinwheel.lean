@@ -117,6 +117,8 @@ import Pinwheel.Hardware.Storage.PairedStreamArm
 import Pinwheel.Hardware.Storage.PairedStreamProgram
 import Pinwheel.Hardware.Storage.PairedStreamUART
 import Pinwheel.UART.BufferedSupervisorPhase
+import Pinwheel.Program.Requests
+import Pinwheel.Program.ResidentProofs
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
