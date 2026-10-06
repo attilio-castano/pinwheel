@@ -56,6 +56,43 @@ def compile_reactive(run, out, source, label):
                        testbench='buffered_reactive_host_bridge')
 
 
+def native_export_vectors(run, out, request):
+    """Compile the unchanged typed exporter; keep a finite interpreter parity gate."""
+    source = 'test/BufferedReactiveHardwareExport.lean'
+    run(['lake', 'build', 'Pinwheel:static'], 'native-library')
+    run(['lake', 'env', 'lean', '-DwarningAsError=true', '-c', out / 'export.c', source],
+        'native-export-c')
+    # Keep the exact library used for linking beside the executable and C source.
+    library = out / 'libpinwheel_Pinwheel.a'
+    library.write_bytes((ROOT / '.lake/build/lib/libpinwheel_Pinwheel.a').read_bytes())
+    compiler = run(['lake', 'env', 'leanc', '--version'], 'native-compiler-version').strip()
+    executable = out / 'export'
+    run(['lake', 'env', 'leanc', '-O3', '-o', executable, out / 'export.c', library],
+        'native-export-link')
+    names = {'coverage-and-retained-owner', 'wait-last-budget-readiness-priority',
+             'first-entry-second-input-selected', 'nested-sampler-history-0',
+             'reference-branch-loop-environment-19'}
+    cases = [case for case in request['cases'] if case['name'] in names]
+    require(len(cases) == len(names), 'Missing native/interpreter parity fixtures')
+    smoke = out / 'native-parity-input.json'
+    smoke.write_text(json.dumps(dict(schema=request['schema'], cases=cases), indent=2) + '\n')
+    interpreted, native = out / 'interpreted-parity', out / 'native-parity'
+    run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', source, smoke, interpreted],
+        'interpreted-parity')
+    run([executable, smoke, native], 'native-parity')
+    for name in ('vectors.json', 'core.mlir', 'assembly.json'):
+        require((interpreted / name).read_bytes() == (native / name).read_bytes(),
+                'Native/interpreter export parity differs: ' + name)
+    run([executable, out / 'input.json', out], 'emit-vectors')
+    return dict(compiler=compiler, cases=len(cases),
+        edges=sum(len(case['vectors']) for case in cases),
+        byte_identical=['vectors.json', 'core.mlir', 'assembly.json'],
+        c_sha256=sha(out / 'export.c'), executable_sha256=sha(executable),
+        library_sha256=sha(library),
+        scope='Unchanged typed circuit and Expr.eval, compiled natively; finite byte parity '
+              'with the interpreter. No universal native compiler or emitter proof.')
+
+
 def loop_control(depth, *, outer_start=0, outer_count=1, inner_start=0,
                  inner_count=1, outer_end=False, inner_end=False):
     """Independent bit packing; do not reuse the host's control encoder."""
@@ -527,7 +564,7 @@ def main():
         (out / 'model-vectors.json').write_text(json.dumps(model_vectors,indent=2)+'\n')
         request = command_cases(model_vectors)
         (out / 'input.json').write_text(json.dumps(request, indent=2) + '\n')
-        run([*lean, 'test/BufferedReactiveHardwareExport.lean', out / 'input.json', out], 'emit-vectors')
+        report['native_export'] = native_export_vectors(run, out, request)
         exported = json.loads((out / 'vectors.json').read_text())
         report['command_expectations'] = check_export(request, exported)
         assembly = json.loads((out / 'assembly.json').read_text())
