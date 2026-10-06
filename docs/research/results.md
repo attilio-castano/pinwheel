@@ -130,6 +130,16 @@ Start here for the programmable engine, compiler and digital protocol
 contracts. The historical storage alternatives establish the complete cost
 context for the later hybrid SRAM choice.
 
+The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
+chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
+Lean ownership proofs and 2,630 differential transitions cover local bounds,
+identity, immutable data, rejection, reuse and reset. Independent reference peers
+pass 1,024 continuous four-byte SPI cases and 192 JTAG cases across all TAP states
+and widths 1/7/13/32. Normal/optimized Python each pass 849 tests with two skips.
+This establishes the model contract; current chip widths and circuitry are
+unchanged. Integrate versioned engine data/readback operations and measure
+storage cost before claiming hardware capacity; longer I²C also needs loops.
+
 | Study / evidence owner | Conclusion and disposition | Reopening condition or remaining obligation |
 | --- | --- | --- |
 | [Initialized UART package sessions — October 5](../protocols/uart-session.md) | Actual reset, certified upload and qualified serial ARM establish the independent receiver/core/SRAM relation from arbitrary represented state. Every finite prefix of the declared resident/STOP/reload/external-reset lifecycle matches the emitted package and exact owned receipts. Strong pin timing includes the two-stage sampler and original ARM suffix; fresh proof, wire and RTL gates pass on unchanged circuit bytes. | Lawful SRAM, canonical certificates and qualified delivery remain explicit contracts. Reload starts at decoded STOP and a settled serial boundary. Non-UART replacement ends UART interpretation; physical sampling and SRAM/fast-corner/package-power qualification remain open. |

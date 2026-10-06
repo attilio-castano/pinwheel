@@ -6025,3 +6025,39 @@ All 232 preceding physical files remain unchanged. Zero hardware bits or
 physical runs are added; SRAM qualification, compatible fast timing and package
 power remain open. The next programming decision is longer data ownership and
 its hardware cost, alongside initialized resident refinement.
+
+## 2026-10-06 — Finite-transfer ownership and longer wire models
+
+The [buffered-transfer study](../protocols/buffered-transfers.md) implements the
+decision to preload one finite transaction. TX is copied before START, RX space
+is reserved, engine access is exclusive and completion stays immutable until
+matching release. A pending handle separates submit/wait/read/release; the normal
+run copies a result before release. Host timeout preserves execution. Engine
+failure preserves diagnostic RX separately from successful payload. Reset and
+slot reuse reject stale handles; Python also rejects handles from another slot.
+
+Twenty-three Lean proofs establish parametric per-step/history bounds and
+identity provenance, exact TX consumption/RX append, retained completion,
+admission, release/reuse/reset. The executable suite checks 21 lifecycle cases,
+494 engine bit operations and 798,660 adversarial command edges. Actual Lean
+exports agree with Python on 75 cases and 2,630 transitions, including 1,475
+rejections. This is finite differential evidence, not a universal Python proof.
+
+The reference engine has generic timed operations and no protocol cases.
+Independent resolved-pin peers pass 1,024 four-byte SPI transfers on one unchanged
+program and 192 JTAG scans over widths 1/7/13/32 and all sixteen initial TAP
+states. Total accepted modeled wire duration is 304,256 edges. Sampling, CS,
+final-bit TMS and wire-order mutations are rejected. Normal and optimized Python
+each pass 849 tests with two platform skips. Review found and repaired stranded
+ownership after callback failure and cross-slot identity collision. A callback
+failure after engine completion remains an observation error; the published
+completion is not rewritten.
+
+The [manifest](../../physical/experiments/buffered-transfer-model-results.json)
+binds the buffered and foundation reports. The target is `buffered-reference-v1`,
+with no paired upload/command encoding or changed chip. Its 32 TX + 32 RX bits
+are a 64-bit data storage floor before metadata/control, not measured area.
+All earlier hardware evidence remains preserved. Dedicated registers versus
+an explicit SRAM partition/schedule, versioned engine operations and indexed
+readback are the next implementation decision. Longer I²C also exceeds the
+current unrolled program limit; physical qualifications retain their gates.

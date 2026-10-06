@@ -76,12 +76,24 @@ support a chain/32-bit IDCODE. A request needing a 32-bit operand or result is
 refused before chip I/O: the current engine has an eight-bit START operand and
 sixteen captures.
 
-**Next decision: how should longer transaction data be owned and transferred?**
-The bounded scan exposes a concrete capacity question. Compare repeated byte
-transactions with a buffer/stream interface, including framing, capture/result
-ownership and hardware cost, before changing the chip. Complete initialized
-resident lifecycle refinement remains the formal continuation. Physical
-sampling, SRAM qualification and package power retain their existing gates.
+**Implemented decision: [one finite transfer owns TX, RX and completion](../protocols/buffered-transfers.md).**
+Outgoing data is copied before START, receive capacity is reserved, engine access
+is exclusive and terminal data stays frozen until matching release. Lean proves
+local bounds/identity/retention; finite exported transitions agree with Python.
+The separate reference target exercises continuous four-byte SPI and 32-bit/non-byte
+JTAG scans, with independent timing/capture/framing mutations and recoverable
+host waits. Current chip widths, SRAM, serial transport and emitted circuitry
+are unchanged; this model does not establish their extension.
+
+**Next decision: how should the finite data path enter the retained engine?**
+Compare dedicated data registers with an explicit SRAM partition/schedule, then
+design versioned data operations and indexed readback. Hardware must prevent
+active/unread storage reuse; protocol programs must retain exact wire timing.
+Longer I²C also needs reusable loops: the current unrolled four-byte extension
+would exceed 256 program positions. Model storage starts at 64 data bits, with
+metadata/control and mapped cost still unmeasured. Complete initialized resident
+lifecycle refinement, physical sampling, SRAM qualification and package power
+retain their existing gates.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

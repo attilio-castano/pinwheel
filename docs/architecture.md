@@ -115,8 +115,18 @@ pre-edge operand and output levels, while delegating waits, guards, captures
 and successors to Reactive semantics. Canonical encoding and local transition
 proofs are checked separately from complete initialized package lifecycle
 refinement. Requests exceeding the operand or result capacity fail at this
-programming boundary before pin I/O; a future buffer/stream change would need
-an explicit ownership and hardware-cost decision.
+programming boundary before pin I/O.
+
+The [finite-transfer model](protocols/buffered-transfers.md) makes the next data
+ownership decision explicit: one preloaded TX value, reserved RX capacity,
+exclusive engine access during execution and immutable retained completion
+until matching release. `Program.Transfer` proves bounded lifecycle/identity
+invariants. A separate generic timed Python target exercises four-byte SPI
+and 32-bit/non-byte JTAG with independent resolved-pin peers. The target has
+no paired upload encoding or circuit integration; current SRAM allocation,
+host command/readback format and physical evidence are unchanged. Data bits
+and scratch/control captures are separate. Program loops, hardware admission,
+indexed result readback and measured storage cost are the next engine contract.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit

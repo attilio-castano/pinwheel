@@ -94,6 +94,11 @@ resident UART/SPI/JTAG use the generic builder. The shared typed resident model
 now includes SHIFT/KEEP. Longer payloads and complete initialized resident
 lifecycle proofs remain separate work.
 
+The [finite-transfer model](docs/protocols/buffered-transfers.md) gives longer
+data explicit TX/RX ownership, retained completion and recoverable handles.
+Independent model peers exercise continuous four-byte SPI and 32-bit/non-byte
+JTAG scans. It is a reference target; current chip capacities are unchanged.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).
@@ -110,6 +115,7 @@ dated milestones; a next-step statement in an older study is historical context.
 | --- | --- |
 | Try the programmable chip | [Host workflow](docs/host-workflow.md): load UART TX/RX, SPI, I²C, and a custom trigger into one unchanged RTL chip, then retrieve results. |
 | Program a transaction | [Unified workflow](docs/protocols/transaction-workflow.md): compile a request, inspect capacity and pins, load once, run and decode through one API. |
+| Explore longer data transfers | [Buffered reference model](docs/protocols/buffered-transfers.md): preload TX, reserve RX, submit/wait/read/release, and separate ownership from circuit integration. |
 | Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |

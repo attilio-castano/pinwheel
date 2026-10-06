@@ -36,6 +36,14 @@ comparison binds the prior accepted RTL interpretation; it does not rerun or
 extend that proof to a complete initialized resident lifecycle. The foundation
 adds the production request checks and typed resident transition suite.
 
+The [finite-transfer reference gate](protocols/buffered-transfers.md),
+`python3 -B scripts/check-buffered-transfers.py --tag <fresh-tag>`, builds and
+audits source, compares Lean-exported lifecycle transitions with Python,
+runs Python normally/optimized and checks independent continuous four-byte
+SPI and 32-bit/non-byte JTAG wire models. The foundation includes the universal
+ownership proofs and adversarial `Transfer` suite. This adds no buffered circuit,
+package transport, RTL interpretation or physical-cost qualification.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

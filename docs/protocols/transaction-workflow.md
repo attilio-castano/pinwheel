@@ -217,7 +217,10 @@ current JTAG frontend admits exactly eight outgoing and eight captured bits:
 32-bit dynamic operand or captured result exceeds the declared hardware width.
 These errors are reported before chip I/O. Longer resident payloads need an
 explicit data-buffer and ownership decision; sixteen captures alone do not
-provide a general long-transfer API.
+provide a general long-transfer API. The [finite-transfer reference model](buffered-transfers.md)
+now implements that decision with separate TX/RX and retained completion,
+including four-byte SPI and 32-bit JTAG witnesses. It targets a different model
+interface; this paired hardware workflow retains the widths above.
 
 ## Evidence boundaries
 
