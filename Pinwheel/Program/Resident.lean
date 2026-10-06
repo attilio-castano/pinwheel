@@ -64,7 +64,8 @@ def lower (p : Program) (operand : BitVec 8) (old : Pins) : Engine.Reactive.Prog
   ⟨p.memory.map (normalize operand old), p.idle, p.last⟩
 
 /-- An entry event is independent of whether its target differs from the old PC.
-In particular, a terminal self branch can enter SHIFT again. The timer, guard,
+A terminal self branch re-enters its ordinary checked instruction; dispatch to
+SHIFT consumes the next owned bit. The timer, guard,
 capture and successor computation themselves are delegated to Reactive.advance. -/
 def dispatching (p : Program) (s : State) (inputs : Inputs) : Bool :=
   match s.core.control with

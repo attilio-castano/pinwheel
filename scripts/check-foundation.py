@@ -32,6 +32,7 @@ SUITES = [
     ('UARTBufferedSupervisor', []), ('UARTBufferedSupervisorPhase', []),
     ('PairedStream', []), ('PairedStreamSession', []),
     ('ResidentEffects', []),
+    ('ProgramExport', []), ('ResidentProgram', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
