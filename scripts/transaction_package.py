@@ -213,17 +213,19 @@ def run_transaction(tag, transaction, payload=0, incoming=3, timeout_cycles=100_
         result = loaded.run(payload=payload, timeout_cycles=timeout_cycles)
         package.simulation.device = None
         observation = asdict(package.simulation.observation)
-        execution_edges = package.host.edges - before
+        host_run_edges = package.host.edges - before
     report = dict(action='transaction-run', **package.receipt,
         transaction=compiled.artifact(), incoming_artifact_sha256=incoming_digest,
         artifact_binding_recompiled=True, payload=payload,
         constant_external_input=incoming, result=asdict(result),
-        execution_edges=execution_edges, edges=package.host.edges, frames=package.host.frames,
+        host_run_edges=host_run_edges, edges=package.host.edges, frames=package.host.frames,
+        edge_count_boundary='host_run_edges includes START preflight/framing, busy polling, readback and consume; '
+            'it is not the protocol wire duration.',
         final_observation=observation,
         run_boundary='Constant external drivers only; I2C high means release through the declared links. '
             'No protocol target reply or independent waveform acceptance is supplied by this command.')
     path = package.out / 'report.json'
     _require(not path.exists(), 'Preserve existing transaction report')
     path.write_text(json.dumps(report, indent=2) + '\n')
-    print(json.dumps(dict(result=report['result'], execution_edges=execution_edges, report=str(path)), indent=2))
+    print(json.dumps(dict(result=report['result'], host_run_edges=host_run_edges, report=str(path)), indent=2))
     return report

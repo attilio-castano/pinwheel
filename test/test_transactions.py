@@ -4,6 +4,7 @@ Injected fixed-protocol exporters are plumbing fixtures, not protocol oracles.
 Resident programs use the public production factories and need no ignored files.
 """
 from copy import deepcopy
+from dataclasses import replace
 import json
 from pathlib import Path
 import sys
@@ -299,6 +300,76 @@ class TransactionArtifactTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Transaction.from_bytes(json.dumps(artifact).encode(), exporter=exporter)
         self.assertEqual(exporter.call_count, 0)
+
+
+class TransactionBindingTests(unittest.TestCase):
+    def test_direct_construction_rejects_matching_and_mismatched_programs_without_io(self):
+        uart, spi = compiled(uart_tx()), compiled(spi_transfer())
+        host = FakeHost()
+        with patch('pinwheel_transactions.compile_transaction', side_effect=AssertionError('compiler I/O')) as compiler, \
+             patch('pinwheel_transactions.export_lean', side_effect=AssertionError('exporter I/O')) as exporter:
+            for program in (uart.program, spi.program):
+                with self.subTest(program=program), self.assertRaisesRegex(
+                        ValueError, r'use compile_transaction\(\) or Transaction.from_bytes\(\)'):
+                    Transaction(uart.spec, program).load(host)
+            compiler.assert_not_called()
+            exporter.assert_not_called()
+        self.assertEqual(host.calls, [])
+
+    def test_replacement_cannot_change_bound_request_or_program_without_io(self):
+        transaction = compiled(jtag_scan())
+        host = FakeHost()
+        mutations = (
+            dict(spec=jtag_scan(half_cycles=8)),
+            dict(spec=spi_transfer()),
+            dict(spec=TransactionSpec(json.dumps(transaction.spec.request, indent=2))),
+            dict(program=compiled(spi_transfer()).program),
+            dict(program=replace(transaction.program, idle_levels=1)),
+            # False equals zero in Python; a different Program must not inherit
+            # the stamp even when ordinary dataclass equality overlooks its type.
+            dict(program=replace(transaction.program, idle_levels=False)),
+        )
+        with patch('pinwheel_transactions.compile_transaction', side_effect=AssertionError('compiler I/O')) as compiler, \
+             patch('pinwheel_transactions.export_lean', side_effect=AssertionError('exporter I/O')) as exporter:
+            for change in mutations:
+                with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'compiler-owned binding'):
+                    replace(transaction, **change).load(host)
+            compiler.assert_not_called()
+            exporter.assert_not_called()
+        self.assertEqual(host.calls, [])
+
+    def test_unchanged_replace_loads_without_recompiling_and_binding_is_not_serialized(self):
+        transaction = compiled(i2c_register_read(0x53, 0xa6, byte_count=2))
+        host = FakeHost()
+        with patch('pinwheel_transactions.compile_transaction', side_effect=AssertionError('compiler I/O')) as compiler, \
+             patch('pinwheel_transactions.export_lean', side_effect=AssertionError('exporter I/O')) as exporter:
+            unchanged = replace(transaction)
+            loaded = unchanged.load(host)
+            compiler.assert_not_called()
+            exporter.assert_not_called()
+        self.assertEqual(unchanged, transaction)
+        self.assertIs(loaded.transaction, unchanged)
+        self.assertEqual(host.calls, [('upload', transaction.program)])
+        self.assertEqual(set(transaction.artifact()), {'schema', 'request', 'program', 'description'})
+        self.assertNotIn('_binding', repr(transaction))
+
+    def test_load_rechecks_lost_or_changed_binding_before_transport_or_compiler_io(self):
+        for change in ('lost_stamp', 'changed_program'):
+            transaction = compiled(jtag_scan())
+            # Exercise the load-time backstop after bypassing the frozen
+            # dataclass constructor; reflection is not a security boundary.
+            if change == 'lost_stamp':
+                object.__setattr__(transaction, '_binding', None)
+            else:
+                object.__setattr__(transaction, 'program', compiled(spi_transfer()).program)
+            host = FakeHost()
+            with patch('pinwheel_transactions.compile_transaction', side_effect=AssertionError('compiler I/O')) as compiler, \
+                 patch('pinwheel_transactions.export_lean', side_effect=AssertionError('exporter I/O')) as exporter:
+                with self.subTest(change=change), self.assertRaisesRegex(ValueError, 'compiler-owned binding'):
+                    transaction.load(host)
+                compiler.assert_not_called()
+                exporter.assert_not_called()
+            self.assertEqual(host.calls, [])
 
 
 class LoadedTransactionOwnershipTests(unittest.TestCase):

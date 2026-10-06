@@ -163,12 +163,19 @@ def semantic_controls(runtime):
         runtime.evidence.freeze_generated(runtime.out/(name+'.json'))
         runtime.simulation.device = None
         runtime.host.reset()
-        # This deliberate mutant bypasses artifact rebinding to exercise the wire/result oracles.
-        loaded = replace(original, program=program).load(runtime.host)
+        # Deliberate raw uploads exercise wire/result oracles independently of
+        # the public transaction admission check, which refuses such mismatches.
+        runtime.host.upload(program)
         peer = JTAGPeer(0x53, 0xa5)
         runtime.simulation.device = peer
         try:
-            loaded.run(payload=0x53)
+            runtime.host.start(payload=0x53)
+            deadline = runtime.host.edges + 100_000
+            while runtime.host.page(0) & 1:
+                require(runtime.host.edges < deadline, 'Canonical JTAG mutation exceeded host timeout')
+                runtime.host.advance(16)
+            raw = runtime.host.read_result(timeout_cycles=16, consume=False)
+            original.decode(raw)
             peer.check()
         except (ValueError, RuntimeError) as error:
             reason = str(error)

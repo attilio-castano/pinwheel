@@ -4,7 +4,7 @@ Protocols keep independent Lean specifications. This layer binds their compiled
 image to pin requirements, START payload capacity and result interpretation.
 Timing is in chip edges; board electrical and sampling assumptions are separate.
 """
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 import json
 from pathlib import Path
 import subprocess
@@ -17,6 +17,7 @@ from protocol_results import i2c_read_result
 ROOT = Path(__file__).resolve().parents[1]
 REQUEST_SCHEMA = 'pinwheel-protocol-request-v1'
 ARTIFACT_SCHEMA = 'pinwheel-transaction-v1'
+_COMPILER_BINDING_TOKEN = object()
 
 
 class CapabilityError(ValueError):
@@ -162,9 +163,32 @@ class TransactionResult:
 
 
 @dataclass(frozen=True)
+class _CompilerBinding:
+    token: object
+    request_json: str
+    program: Program
+
+
+@dataclass(frozen=True)
 class Transaction:
     spec: TransactionSpec
     program: Program
+    _binding: _CompilerBinding | None = field(default=None, repr=False, compare=False)
+
+    def __post_init__(self):
+        self._check_binding()
+
+    def _check_binding(self):
+        # This guards accidental construction/replacement through the public API;
+        # private fields and reflection are outside its ownership contract.
+        binding = self._binding
+        if (not isinstance(binding, _CompilerBinding)
+                or binding.token is not _COMPILER_BINDING_TOKEN
+                or not isinstance(self.spec, TransactionSpec)
+                or self.spec.request_json != binding.request_json
+                or self.program is not binding.program):
+            raise ValueError('Transaction has no matching compiler-owned binding; '
+                             'use compile_transaction() or Transaction.from_bytes()')
 
     @property
     def protocol(self):
@@ -234,6 +258,7 @@ class Transaction:
         return TransactionResult(self.protocol, 'success', payload, raw.overrun, raw.rejected)
 
     def load(self, host: Host):
+        self._check_binding()
         if host.image_format != PAIRED_FORMAT:
             raise CapabilityError('Transaction workflow requires a paired engine')
         host.upload(self.program)
@@ -305,4 +330,5 @@ def compile_transaction(spec: TransactionSpec, *, exporter=None):
         if program.image_format != PAIRED_FORMAT:
             raise ValueError('Lean frontend returned a different target format')
     program.upload_words()
-    return Transaction(spec, program)
+    return Transaction(spec, program,
+        _CompilerBinding(_COMPILER_BINDING_TOKEN, spec.request_json, program))

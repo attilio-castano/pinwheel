@@ -10,16 +10,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import transaction_package as package
 from capability_receipt import CapabilityEvidence
-from pinwheel_host import PAIRED_FORMAT, Program
-from pinwheel_transactions import Transaction, compile_transaction, i2c_register_read, uart_tx
+from pinwheel_host import PAIRED_FORMAT
+from pinwheel_transactions import compile_transaction, i2c_register_read, uart_tx
 from validation_run import sha
 
 
 class PackageAdmissionTests(unittest.TestCase):
     def test_input_capability_errors_precede_package_creation(self):
         resident = compile_transaction(uart_tx())
-        fixed = Transaction(i2c_register_read(45, 113, byte_count=2),
-                            Program((4,), 0, image_format=PAIRED_FORMAT))
+        fixed = compile_transaction(i2c_register_read(45, 113, byte_count=2),
+            exporter=lambda request: dict(schema='pinwheel-compiled-program-v1', request=request,
+                program=dict(format=PAIRED_FORMAT, words=[4], last=0, idle_levels=0, idle_enabled=0)))
         with patch.object(package, 'paired_package') as create:
             for transaction, kwargs in [(resident, dict(payload=256)), (fixed, dict(payload=1)),
                                         (resident, dict(incoming=4)), (resident, dict(timeout_cycles=-1))]:
