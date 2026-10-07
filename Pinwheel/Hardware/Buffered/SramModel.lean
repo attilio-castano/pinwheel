@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.Buffered.Sram
+import Pinwheel.Hardware.Buffered.MemoEval
 
 /-! Executable closed-loop digital SRAM/controller model. The arrays and Q may
 start unrelated. Snapshotting prevents expression evaluation from retaining a
@@ -18,6 +19,19 @@ def Snapshot.values (s : Snapshot) : Values Sram.Register := fun {w} r =>
 
 def snapshot (s : Values Sram.Register) : Snapshot :=
   ⟨Sram.registers.map fun ⟨_,r⟩ => (s r).toNat⟩
+
+def nextExpressions : Array (Sigma (Expr Sram.Input Sram.Register)) :=
+  Sram.registers.map fun ⟨w,r⟩ => ⟨w,Sram.circuit.next r⟩
+
+/-- The logical batch evaluates exactly the ordinary typed next-state equations.
+Its native implementation caches shared nodes only within this one edge. -/
+def nextSnapshot (i : Values Sram.Input) (s : Values Sram.Register) : Snapshot :=
+  ⟨MemoEval.evalMany i s nextExpressions⟩
+
+theorem nextSnapshot_eq (i : Values Sram.Input) (s : Values Sram.Register) :
+    (nextSnapshot i s).bank = (snapshot (Sram.circuit.step i s)).bank := by
+  simp only [nextSnapshot, MemoEval.evalMany_eq, nextExpressions, snapshot,
+    Circuit.step, Array.map_map, Function.comp_def]
 
 structure State where
   registers : Snapshot
@@ -46,7 +60,7 @@ Request addresses use that materialized post-edge state, rather than evaluating
 the same next-state expressions repeatedly through register closures. -/
 def State.step (s : State) (i : Values Reactive.Input) : State := Id.run do
   let inputs : Values Sram.Input := s.inputs i
-  let after := snapshot (Sram.circuit.step inputs s.registers.values)
+  let after := nextSnapshot inputs s.registers.values
   let writing := (Sram.rowWriting.eval inputs s.registers.values) == 1
   let address := (i .address).toNat
   let data := (i .word).toNat

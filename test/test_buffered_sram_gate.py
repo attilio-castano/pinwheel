@@ -127,10 +127,17 @@ class BufferedSramGateTests(unittest.TestCase):
                 gate.binding_readback(data)
         data = self.binding(); data['modules'][gate.TOP]['ports']['rx_data']['bits'][0] = 10000
         with self.assertRaisesRegex(RuntimeError, 'public port wire'): gate.binding_readback(data)
-        data = self.binding()
-        data['modules'][gate.TOP]['cells']['wrapper_response_register'] = dict(type='$dff',
-            connections={}, port_directions={})
-        with self.assertRaisesRegex(RuntimeError, 'outside controller'): gate.binding_readback(data)
+        for name in ('controller.$dff$1', '$flatten\\controller.$eq$12',
+                '$flatten\\controller.$not$13', '$flatten\\controller.$xor$14'):
+            data = self.binding()
+            data['modules'][gate.TOP]['cells'][name] = dict(type='$xor', connections={}, port_directions={})
+            self.assertEqual(gate.binding_readback(data)['macros'], 2)
+        for name in ('wrapper_response_register', '$flatten\\memory.$dff$1',
+                '$flatten\\controllerx.$eq$12', 'controller_response.$dff$1'):
+            data = self.binding()
+            data['modules'][gate.TOP]['cells'][name] = dict(type='$dff', connections={}, port_directions={})
+            with self.subTest(name=name), self.assertRaisesRegex(RuntimeError, 'outside controller'):
+                gate.binding_readback(data)
 
     def test_poison_fixture_varies_each_replica_and_preserves_normal_bridge(self):
         original = gate.BRIDGE.read_bytes()

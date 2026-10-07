@@ -44,6 +44,7 @@ SUITES = [
     ('BufferedSramHardware', []),
     ('BufferedSramCandidates', []),
     ('BufferedSramMemoBind', []),
+    ('BufferedSramMemoEval', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 

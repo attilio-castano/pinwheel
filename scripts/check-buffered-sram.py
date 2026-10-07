@@ -303,7 +303,8 @@ def binding_readback(data):
         if name in public:
             BASE.require(ports[name]['bits'] == net(name, width),
                          'Changed transparent SRAM public port wire: ' + name)
-    BASE.require(all(cell['type'] == '$scopeinfo' or name in macros or name.startswith('controller.')
+    BASE.require(all(cell['type'] == '$scopeinfo' or name in macros or
+        name.startswith(('controller.', '$flatten\\controller.'))
         for name, cell in module['cells'].items()), 'Circuitry outside controller and SRAM macros')
     common = dict(A_CLK=net('clk', 1), A_MEN=['1'], A_DLY=['1'],
         A_WEN=net('mem_write', 1), A_REN=net('mem_read', 1), A_DIN=net('mem_data', 64),
@@ -426,7 +427,7 @@ def main():
         count = re.search(r'Pinwheel audit: (\d+) declarations, (\d+) theorems;', audit)
         BASE.require(count is not None, 'Missing whole-library axiom audit')
         report['audit'] = dict(declarations=int(count[1]), theorems=int(count[2]))
-        for suite in ('BufferedSramHardware', 'BufferedSramCandidates', 'BufferedSramMemoBind'):
+        for suite in ('BufferedSramHardware', 'BufferedSramCandidates', 'BufferedSramMemoBind', 'BufferedSramMemoEval'):
             log = run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', f'test/{suite}.lean'], suite)
             if suite == 'BufferedSramMemoBind':
                 finite = re.search(r'(\d+) fixtures; (\d+) Expr.bind evaluations; (\d+) byte-identical emitter comparisons', log)
@@ -436,6 +437,11 @@ def main():
                     byte_identical_emitter_comparisons=int(finite[3]),
                     composed_fixtures=int(composed[1]), composed_evaluations=int(composed[2]),
                     boundary='Finite public/direct executable substitution and emitter parity; no universal native bind proof.')
+            if suite == 'BufferedSramMemoEval':
+                count = re.search(r'(\d+) roots; (\d+) ordinary Expr.eval comparisons', log)
+                BASE.require(count is not None, 'Missing memo evaluation parity counts')
+                report['memo_evaluation'] = dict(heterogeneous_roots=int(count[1]), ordinary_comparisons=int(count[2]),
+                    boundary='Finite public/direct executable batch parity against ordinary Expr.eval; no universal native or compiler proof.')
         request, oracle, oracle_path = prepare_oracle(run, out, baseline_dir)
         report['native_export'] = native_export(run, out, request, oracle, oracle_path)
         exported = json.loads((out / 'vectors.json').read_text())

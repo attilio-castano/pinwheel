@@ -39,6 +39,9 @@ private def SourceSnapshot.values (s : SourceSnapshot) : Values SharedBranches.R
 private def sourceSnapshot (s : Values SharedBranches.Register) : SourceSnapshot :=
   ⟨SharedBranches.registers.map fun ⟨_,r⟩ => (s r).toNat⟩
 
+private def sourceNextExpressions : Array (Sigma (Expr Reactive.Input SharedBranches.Register)) :=
+  SharedBranches.registers.map fun ⟨w,r⟩ => ⟨w,SharedBranches.circuit.next r⟩
+
 private def runCase (c : Lean.Json) (seed : Nat) : IO Nat := do
   let name := (c.getObjValAs? String "name").toOption.getD "unnamed"
   let vectors ← IO.ofExcept ((c.getObjVal? "vectors").bind Lean.Json.getArr?)
@@ -48,7 +51,12 @@ private def runCase (c : Lean.Json) (seed : Nat) : IO Nat := do
     let inputBank := inputSnapshot vectors[edge]!
     let i : Values Reactive.Input := inputValues inputBank
     let after := s.step i
-    let oldSnapshot := sourceSnapshot (SharedBranches.circuit.step i old)
+    let oldSnapshot : SourceSnapshot := ⟨MemoEval.evalMany i old sourceNextExpressions⟩
+    if edge < 2 || edge + 2 >= vectors.size then
+      check (after.registers.bank == (SramModel.snapshot (Sram.circuit.step (s.inputs i) s.registers.values)).bank)
+        "batch actual controller versus ordinary Expr.eval boundary"
+      check (oldSnapshot.bank == (sourceSnapshot (SharedBranches.circuit.step i old)).bank)
+        "batch predecessor versus ordinary Expr.eval boundary"
     let oldAfter : Values SharedBranches.Register := oldSnapshot.values
     for ⟨_,o⟩ in Reactive.outputs do
       let observed := if Reactive.outputLabel o == "rejected" then s.observe i o else after.observe i o
@@ -99,4 +107,4 @@ def main : IO Unit := do
   let mut edges := 0
   for seed in [0,7,12345] do
     for c in cases do edges := edges + (← runCase c seed)
-  IO.println s!"Buffered SRAM hardware: {cases.size*3} independently seeded closed-loop cases, {edges} edges; all26 public fields, kernel-identified prospective addresses with actual expression boundary witnesses, broadcast writes, retained Q, live candidate availability and START mirror passed."
+  IO.println s!"Buffered SRAM hardware: {cases.size*3} independently seeded closed-loop cases, {edges} edges; all26 public fields, kernel-identified prospective addresses with ordinary evaluation boundary witnesses, broadcast writes, retained Q, live candidate availability and START mirror passed."
