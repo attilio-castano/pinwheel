@@ -38,6 +38,8 @@ SUITES = [
     ('BufferedHardware', []),
     ('BufferedCountedHardware', []),
     ('BufferedReactiveHardware', []),
+    ('BufferedSharedBranches', []),
+    ('BufferedFetchDeadline', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
