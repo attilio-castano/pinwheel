@@ -13,6 +13,8 @@ import Pinwheel.Engine.Compatibility
 import Pinwheel.Engine.ControlProofs
 import Pinwheel.Compile.StretchedPulse
 import Pinwheel.Compile.I2CReadProofs
+import Pinwheel.I2C.RegisterReadTransactionProofs
+import Pinwheel.Compile.I2CReadTransactionProofs
 import Pinwheel.Compile.I2CWriteTransactionProofs
 import Pinwheel.Compile.I2CRecoveryProofs
 import Pinwheel.Compile.I2CProofs
@@ -95,6 +97,8 @@ import Pinwheel.Hardware.Storage.FetchContract
 import Pinwheel.Hardware.Storage.PairedController
 import Pinwheel.Hardware.Storage.PairedValidation
 import Pinwheel.Hardware.Storage.PairedImage
+import Pinwheel.Hardware.Storage.PairedResidentImage
+import Pinwheel.Hardware.Storage.PairedResidentEffects
 import Pinwheel.Hardware.Storage.PairedClosed
 import Pinwheel.Hardware.Storage.PairedCoverage
 import Pinwheel.Hardware.Storage.PairedRuntime
@@ -113,6 +117,21 @@ import Pinwheel.Hardware.Storage.PairedStreamArm
 import Pinwheel.Hardware.Storage.PairedStreamProgram
 import Pinwheel.Hardware.Storage.PairedStreamUART
 import Pinwheel.UART.BufferedSupervisorPhase
+import Pinwheel.Program.Requests
+import Pinwheel.Program.ResidentProofs
+import Pinwheel.Program.TransferProofs
+import Pinwheel.Program.BufferedProofs
+import Pinwheel.Program.BufferedI2C
+import Pinwheel.Hardware.Buffered.LinearProofs
+import Pinwheel.Hardware.Buffered.CountedProofs
+import Pinwheel.Hardware.Buffered.ReactiveProofs
+import Pinwheel.Hardware.Buffered.SharedBranchProofs
+import Pinwheel.Hardware.Buffered.FetchDeadline
+import Pinwheel.Hardware.Buffered.SramModel
+import Pinwheel.Hardware.Buffered.SramProofs
+import Pinwheel.Hardware.Buffered.SerialModel
+import Pinwheel.Hardware.Buffered.SerialProofs
+import Pinwheel.Hardware.Buffered.SramCorrespondence
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.

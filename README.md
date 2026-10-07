@@ -79,6 +79,49 @@ programs reuse the SPI circuitry. An opt-in [UART receive supervisor](docs/proto
 adds automatic rearm and explicit retained-result/drop ownership. Retained
 physical results keep their original source identity.
 
+[Reusable programs](docs/protocols/reusable-programs.md) now expose named pins,
+captures and labels, with resident UART/SPI programs whose payload comes from
+`start(payload=...)`. A compact one/two-byte I²C read frontend uses the full
+16-bit result for successful data. These capabilities use existing paired
+circuitry; their source certificates, formal contracts and package tests have
+separate scopes.
+
+The [transaction workflow](docs/protocols/transaction-workflow.md) binds requests,
+compiled programs, pin requirements and decoded results to one compile/load/run
+API and CLI. A bounded eight-bit JTAG data-register fixture tests that interface
+on the same engine. Fixed SPI and I²C requests use a static Lean frontend;
+resident UART/SPI/JTAG use the generic builder. The shared typed resident model
+now includes SHIFT/KEEP. Longer payloads and complete initialized resident
+lifecycle proofs remain separate work.
+
+The [finite-transfer model](docs/protocols/buffered-transfers.md) gives longer
+data explicit TX/RX ownership, retained completion and recoverable handles.
+Independent model peers exercise continuous four-byte SPI and 32-bit/non-byte
+JTAG scans. Its [shared reactive continuation](docs/protocols/buffered-reactive.md)
+adds waits, decisions and counted loops to the same engine, demonstrated by a
+four-byte I²C read with NACK and clock-stretch failure prefixes. It is a reference
+target; current chip capacities are unchanged.
+
+The [first buffered hardware slice](docs/protocols/buffered-hardware.md) executes
+four-byte SPI with dedicated TX/RX registers, a writable linear program store,
+retained indexed readback and matching release. The
+[counted hardware continuation](docs/protocols/buffered-counted-hardware.md) runs
+compact SPI and JTAG programs on the same circuit, including nested loops with
+no extra dispatch clocks. The [reactive hardware continuation](docs/protocols/buffered-reactive-hardware.md)
+adds ACK decisions, waits and branches, running SPI, JTAG and multi-byte I²C on
+one circuit with retained prefixes. The [storage/fetch comparison](docs/protocols/buffered-storage-fetch.md)
+adds a separately admitted shared-branch bank with the same execution edges
+and owned-result interface. Its [latency-one SRAM continuation](docs/protocols/buffered-sram-hardware.md)
+uses two instruction replicas and a START mirror below the same programming
+layer. Its [versioned serial continuation](docs/protocols/buffered-sram-serial.md)
+carries complete row uploads and retained results over sampled serial pins.
+One frozen response returns the owned RX prefix, outcome and diagnostics;
+matching release permits another transfer with the resident image. The
+[initialized loading proof](docs/protocols/buffered-sram-loading.md) derives
+resident storage and fetch readiness from accepted uploads, then proves binary
+execution agrees with the register reference. These are opt-in targets with
+separate compiler, serial composition and physical qualification gates.
+
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).
@@ -94,6 +137,8 @@ dated milestones; a next-step statement in an older study is historical context.
 | I want to... | Start here |
 | --- | --- |
 | Try the programmable chip | [Host workflow](docs/host-workflow.md): load UART TX/RX, SPI, I²C, and a custom trigger into one unchanged RTL chip, then retrieve results. |
+| Program a transaction | [Unified workflow](docs/protocols/transaction-workflow.md): compile a request, inspect capacity and pins, load once, run and decode through one API. |
+| Explore longer data transfers | [Buffered ownership](docs/protocols/buffered-transfers.md) defines preload/reserve/submit/wait/read/release; [reactive counted hardware](docs/protocols/buffered-reactive-hardware.md) runs compact SPI/JTAG/I²C with that lifecycle. |
 | Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |

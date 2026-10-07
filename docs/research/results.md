@@ -1,6 +1,6 @@
 # Research results
 
-This index records conclusions through 2026-09-29 and what could justify
+This index records conclusions through 2026-10-07 and what could justify
 reopening them. Start with [status](status.md) for the active decision, then
 choose a topic below. Each linked study owns measurements, assumptions,
 commands, and proof boundaries; the [journal](journal.md) keeps dated receipts.
@@ -130,12 +130,119 @@ Start here for the programmable engine, compiler and digital protocol
 contracts. The historical storage alternatives establish the complete cost
 context for the later hybrid SRAM choice.
 
+The [shared buffered reactive continuation — October 6](../protocols/buffered-reactive.md)
+closes the split between linear buffered transfers and reactive control. Lean
+composes Reactive/Fetch with owned data effects and compact counted lookup;
+one Python interpreter runs SPI/JTAG and four-byte I²C. The I²C schedule stores
+50 instruction leaves and 55 control descriptors for 270 virtual positions.
+ACK/NACK cleanup, clock stretching and failed STOP qualification preserve exact
+diagnostic prefixes. This establishes the reference programming contract;
+that reference gate does not establish versioned hardware encoding, counted
+lookup timing, circuit storage/readback or mapped cost. The digital continuation
+below implements linear and counted timed subsets.
+
+The [first buffered digital slice — October 6](../protocols/buffered-hardware.md)
+implements owned 32-bit TX/RX and retained indexed readback in a reloadable
+linear parallel circuit. It supplies actual SPI RTL and saved-gate evidence
+plus register-store cost: 4,389 flip-flops and 400,519.6524 µm² typical cell area.
+The 4,096-bit instruction bank supplies the baseline for compact lookup and
+memory-backed execution.
+
+The [counted digital continuation — October 6](../protocols/buffered-counted-hardware.md)
+implements two nested timed repeats with no extra dispatch clocks. Four-byte
+SPI occupies four physical rows and JTAG loads a different program into the
+same circuit. Source-bound images, retained ownership and actual circuit/RTL
+lookup/environment checks keep programming semantics explicit. Its 64 packed
+rows support up to 1,024 virtual positions; reactive control, paired SRAM/serial
+package integration and routed timing remain the next stages.
+All 3,860 state bits survive saved generic/CMOS5L mapping; typical cell area is
+350,479.332 µm², 12.49% below the linear baseline at a different distinct-row
+capacity. Ninety-six command cases and 1,269 emitted SPI/JTAG wire cases pass,
+with complete state-cut comparison and saved-gate replay on both mappings.
+
+The [reactive counted continuation — October 6](../protocols/buffered-reactive-hardware.md)
+adds sampled decisions and loop-aware branches to the same owned-buffer
+contract. SPI, JTAG and I²C execute as programs in one generic circuit; NACK and
+stretch/STOP timeout retain exact prefixes and scratch. The four-byte I²C
+frontend uploads 50 leaves for 270 virtual positions. Inline endpoints grow
+the register store to 64×144 bits and total state to 9,599 bits; saved CMOS5L
+area is 876,881.3004 µm². Full saved-state comparisons and independent wire
+fixtures establish a digital baseline for choosing memory/fetch implementation.
+The [tracked manifest](../../physical/experiments/buffered-reactive-hardware-results.json)
+records the completed acceptance runs and their scope. Serial/SRAM integration,
+initialized compiler/package refinement and routed timing remain open.
+
+The [storage/fetch comparison — October 7](../protocols/buffered-storage-fetch.md)
+adds a separately admitted sixteen-descriptor dictionary beneath the same
+generic execution and owned-result contract. Kernel-checked expression
+factorization and expanded-state runtime correspondence preserve waveform
+edges. State falls from 9,599 to 7,183 declared bits, with an explicit source
+capacity tradeoff and increased loading traffic for small SPI programs.
+Matched typical cell area falls 26.45% to 644,939.6310 µm²; next-state logic
+depth rises from 40 to 43 cell levels, without a timing claim. The linked study
+owns full emitted/saved replay results and the pinned acceptance manifest. Fetch
+laws establish a fixed-response deadline and dual-candidate selection;
+actual-step sampler lookahead makes a single-port alternative plausible,
+subject to complete controller, address timing and synchronizer qualification.
+
+The [buffered latency-one SRAM continuation — October 7](../protocols/buffered-sram-hardware.md)
+implements two replicated 64×64 instruction memories below that same admitted
+source/interface. A START mirror, combinational metadata/dictionary and both
+prospective successors preserve the execution edges without first-stage sampler
+prediction. Controller FF state falls from 7,183 to 3,151 bits. Matched typical
+controller cell area plus two complete macro footprints is 395,524.3706 µm²,
+38.67% below the register baseline; physical routing/clocking remain excluded.
+Full hardware acceptance passes 232 command cases, 2,311 emitted wire cases and
+both saved mapping/closed-loop gates. Local kernel scheduling/array/mirror/tail
+laws and independent memo evaluator/oracle comparisons support the digital
+implementation. At that hardware checkpoint, initialized loader/trace and
+serial/package refinement remain open; the later core proof is recorded below.
+Physical qualification remains separate. The linked study owns the hardware
+receipts and their exact scope.
+
+The [versioned buffered serial continuation — October 7](../protocols/buffered-sram-serial.md)
+carries atomic row/dictionary loading, generation-checked START and matching
+RELEASE to the same two-macro engine. One frozen response returns identity,
+outcome, valid RX prefix and diagnostics together; repeated reads preserve the
+owned result. Explicit uncertain-delivery recovery does not resend START or
+RELEASE, and convenience `run` retains the already-read result if release
+transport fails. Independent protocol peers exercise different uploaded
+SPI/JTAG/I²C programs through the same serial interface. The linked study
+owns the acceptance receipts and distinguishes local kernel laws, finite
+initialized traces, optimized source-state mapping SAT and open physical gates.
+This supplies a concrete programming interface while initialized source/package
+refinement and electrical serial/SRAM qualification remain open.
+
+The [initialized buffered SRAM loading proof — October 7](../protocols/buffered-sram-loading.md)
+derives resident instruction replicas, metadata, dictionary, START mirror and
+prospective fetch responses from actual accepted uploads after initialization.
+Any loading history ending VALID establishes a nonempty image of at most 64
+rows; every fixed-image runtime prefix then matches the full-register Reactive
+circuit in complete reference state and all public outputs. The reference core
+at the cut is the actual core; its image comes from the independent upload ledger.
+The study distinguishes this universal binary boundary from finite successful
+SPI/JTAG/I²C source/peer witnesses and open source compiler, serial composition
+and physical qualification. Hardware and host behavior are unchanged.
+
+The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
+chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
+Lean ownership proofs and 2,630 differential transitions cover local bounds,
+identity, immutable data, rejection, reuse and reset. Independent reference peers
+pass 1,024 continuous four-byte SPI cases and 192 JTAG cases across all TAP states
+and widths 1/7/13/32. Normal/optimized Python each pass 849 tests with two skips.
+This establishes the model contract; current chip widths and circuitry are
+unchanged. Integrate versioned engine data/readback operations and measure
+storage cost before claiming hardware capacity; the reactive continuation adds
+I²C loops at the reference-model layer.
+
 | Study / evidence owner | Conclusion and disposition | Reopening condition or remaining obligation |
 | --- | --- | --- |
 | [Initialized UART package sessions — October 5](../protocols/uart-session.md) | Actual reset, certified upload and qualified serial ARM establish the independent receiver/core/SRAM relation from arbitrary represented state. Every finite prefix of the declared resident/STOP/reload/external-reset lifecycle matches the emitted package and exact owned receipts. Strong pin timing includes the two-stage sampler and original ARM suffix; fresh proof, wire and RTL gates pass on unchanged circuit bytes. | Lawful SRAM, canonical certificates and qualified delivery remain explicit contracts. Reload starts at decoded STOP and a settled serial boundary. Non-UART replacement ends UART interpretation; physical sampling and SRAM/fast-corner/package-power qualification remain open. |
+| [Reusable programs and register reads — October 6](../protocols/reusable-programs.md) | Named pins/captures/labels expose existing instructions. Resident UART/SPI send all 256 changing START payloads through fixed chip/program images. Separate source/upload/dispatch certificates and local START/SHIFT/KEEP proofs accompany independent package controls. Compact one/two-byte I²C reads have universal reference/compiler/E64 refinement and per-upload capacity certificates. | Resident whole-protocol lifecycle composition remains open. NACK and guard fault intentionally share terminal status and discard captures. The read fixtures use all 32 canonical E64 records. Longer dynamic payloads, analog/board timing and physical qualification need separate work. |
+| [Unified transactions and bounded JTAG — October 6](../protocols/transaction-workflow.md) | Shared request/compile/load/run/decode API binds exact program bytes to pin, timing, capacity and result metadata. Static production Lean export handles fixed SPI/I²C. Typed SHIFT/KEEP preserve ordinary Reactive operations and encode canonically. The JTAG fixture resets all sixteen TAP states, shifts one START byte LSB first and returns decoded captures on unchanged circuitry. | JTAG assumes an eight-bit DR selected by reset; IR selection, chains and 32-bit IDCODE are absent. The actual eight-bit operand/sixteen-capture bounds reject larger requests before I/O. Resident compilers still use the Python builder, while fixed requests use Lean. Complete initialized resident refinement, longer data ownership and physical qualification remain open. |
 | [UART supervisor and retained results — September 29](../protocols/uart-supervisor.md) | One enabled bit adds explicit arm/stop, quiet automatic rearm and retained-old/drop-newest ownership with sticky overrun. Exact mailbox history/occurrence proofs, conditional UART/E64 correspondence and logical one-edge stream-delay proofs pass. 30 finite resolved streams, 148 actual-mailbox vectors, control/fault/corruption checks and fresh universal core/package interpretation pass; wire/readback chip bytes match. | Initialized composition is closed for the [declared UART lifecycle](../protocols/uart-session.md). Physical sampling must qualify the digital age envelope. No lossless guarantee under arbitrary stalls, FIFO, concurrent TX/RX or inherited physical acceptance. |
 | [Four-mode SPI transactions — September 29](../protocols/spi-transactions.md) | Universal reference/compiler/E64 proofs cover all modes, both lengths, periods 1–256, all payloads and arbitrary consumed input histories. Twenty actual resolved-wire cases, timing and reset controls, nine legacy cases and 33 fresh upload certificates pass. The interpreted chip RTL is byte-identical to the wire-tested artifact. The five-pad repair makes MISO and MOSI independent package wires. | Extend external timing proofs to every mode before claiming a universal peripheral-delay bound. Dictionary capacity is checked per upload; the universal theorem bounds positions at 34. Longer bursts need result ownership beyond 16 captures. New pin wiring has no inherited physical qualification. The I²C capability extension below is separately delivered. |
-| [Bounded I²C writes and bus clear — September 29](../protocols/i2c-capabilities.md) | Universal compiler/reference/E64 proofs cover both payload lengths, all payloads, H/W 1–256 and arbitrary consumed digital histories. Eleven writes, twelve recovery cases, guarded faults, reset/reload and recovery→write without an intervening reset pass on actual resolved wires. Thirty-three actual uploads receive fresh kernel certificates, including four canonical semantic negatives. Fresh chip MLIR/RTL match the SPI checkpoint byte-for-byte. | External timing and target liveness remain declared finite fixture assumptions. Recovery bounds controller release attempts, with no universal raw-wire edge or total elapsed-time bound under arbitrary interference. Two-byte reads exceed current capture ownership; automatic partial-write retries remain absent. UART supervisor/buffer circuitry is delivered separately above. No physical qualification. |
+| [Bounded I²C writes and bus clear — September 29](../protocols/i2c-capabilities.md) | Universal compiler/reference/E64 proofs cover both payload lengths, all payloads, H/W 1–256 and arbitrary consumed digital histories. Eleven writes, twelve recovery cases, guarded faults, reset/reload and recovery→write without an intervening reset pass on actual resolved wires. Thirty-three actual uploads receive fresh kernel certificates, including four canonical semantic negatives. Fresh chip MLIR/RTL match the SPI checkpoint byte-for-byte. | External timing and target liveness remain declared finite fixture assumptions. Recovery bounds controller release attempts, with no universal raw-wire edge or total elapsed-time bound under arbitrary interference. Preserving precise ACK flags alongside two payload bytes exceeds the 16 capture slots; the October 6 [compact read policy](../protocols/reusable-programs.md) resolves the payload capacity tradeoff. Automatic partial-write retries remain absent. UART supervisor/buffer circuitry is delivered separately above. No physical qualification. |
 | [UART/SPI shared engine](../engine/engine-model.md), [original complete core](../engine/core-hardware.md) | Timed actions and precise capture support both protocols on one reloadable machine, with compiler/core proofs and independent RTL checks. Retain as the original baseline. | New protocol needs must be expressed in the semantics and validated; this original core alone does not cover reactive I²C. |
 | [One-byte UART receive](../protocols/uart-receive.md) | Digital 8N1 receive, false-start rejection at midpoint, and framing-error results compile to existing reactive instructions. All 13,298 period/input configurations fit 256 addresses and 32 dictionary records; mixed-protocol structural and four-backend RTL checks pass. | Asynchronous input synchronization, concurrent TX/RX, and serial program loading need their own contracts and evidence. Continuous supervision is recorded separately below; the circuit continuation above reuses the existing host mailbox. Physical operating frequency remains unqualified. |
 | [UART link timing](../uart-link.md) | Numerical clock and bounded observation-age conditions imply start detection, all samples, and one-byte roundtrip through both compilers. Ideal reception covers all shared periods 8–256; executable checks cover 3,872 frames and 1,136 safe timing combinations. | A physical sampler must justify the digital age bound. Single-frame bounds alone do not guarantee time to rearm between frames. Sufficient bounds are not claimed optimal. |
@@ -207,7 +314,7 @@ controller; the hybrid backend's proof is not borrowed.
 | [Shared SRAM controller and request bridge](../../Pinwheel/Hardware/Storage/SramController.lean) | The emitter uses library-owned expressions. Proofs cover accepted hybrid writes, actual address-port mux/truncation, selected-bank index reads, commit reads, broadcast data, active-bank preservation and actual loader-control updates. | `SramExecution` now composes scheduler/start-response ownership. Full emitted-chip composition and direct address/expansion correctness remain separate. |
 | [SRAM upload coverage](../../Pinwheel/Hardware/Storage/SramCoverage.lean) | The accepted cursor initializes the inactive dictionary prefix; commit selects a fully initialized bank. Coverage survives every command history after reset without clearing SRAM. Actual controller requests name defined words on usable reads, and related physical copies return the partial model's values. | Initializedness alone says nothing about chosen successor correctness; `SramContents` and `SramExecution` supply that connection below. Full chip translation is separate. |
 | [Closed-loop hybrid execution](../storage-primitives.md#closed-loop-hybrid-execution-2026-09-21) | Defined SRAM words agree with the existing loader image. Actual array Q, selected lookup addresses, write holding and commit/start bypass preserve the two-port execution invariant. Every controller register matches the shared netlist; after one initializing edge, every subsequent observation matches the capacity-adapted atomic reference. Arbitrary initial arrays and Q are allowed. | The external Verilog macro binding, package-wrapper composition and emitted-chip read-back remain distinct obligations. Direct SRAM does not inherit the proof. No physical or default-backend promotion. |
-| [Interactive host workflow](../host-workflow.md) | Hybrid and unrestricted FF chips each pass nine same-chip protocol/custom/recovery cases across 855,975 edges and 2,925 serial frames. Full upload is 94,629 edges; the TX example executes in 40. | RTL pins only. The resident-payload proposal uses the existing START data word and one shift per instruction entry; it is specified, not implemented. Hardware cost, board transport and continuous supervision remain open. |
+| [Interactive host workflow](../host-workflow.md) | Hybrid and unrestricted FF chips each pass nine same-chip protocol/custom/recovery cases across 855,975 edges and 2,925 serial frames. Full upload is 94,629 edges; the TX example executes in 40. | RTL pins only. The original resident-payload proposal is now implemented by the October 6 reusable-program checkpoint above, through existing paired circuitry. Board transport and physical qualification remain open. |
 | [Whole-chip SRAM physical experiment](../chip-physical-study.md) | Official 6×4 pins, pinned views and both supply domains are integrated. A verified half-height placement corridor lowers global overflow 1,255→870 and Metal4 body-overlapping guides 129→45 at essentially unchanged repair area; the full strip is rejected. Matched first-pass iteration-59 markers improve 126→92. The first pass ends at 73 macro-interior markers; antenna repair triggers a second pass, interrupted by the 90-minute cap after iteration 35 with 230 markers. The corridor stays empty. | Screen macro-body routing obstructions before regenerating global guides. Complete antenna/routing closure, extracted multi-corner timing/electrical checks, required layout checks, grid/corner qualification and final layout-netlist regression. First-pass and antenna-reroute counts are different workloads. No physical closure or backend promotion. |
 
 ## Outside research and adoption

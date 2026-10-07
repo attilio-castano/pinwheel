@@ -22,6 +22,122 @@ python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
 
+The default foundation now includes compact one/two-byte I²C register reads and
+actual typed-core resident SHIFT/KEEP effects. The separate
+[reusable-program gates](protocols/reusable-programs.md#evidence-and-reproduction)
+check resident source certificates, resolved UART/SPI and I²C package pins, and
+fresh RTL interpretation for both paired package variants.
+
+The [transaction gate](protocols/transaction-workflow.md) exercises the public
+API on one freshly emitted paired-stream package. It uses the static Lean
+frontend for fixed SPI/I²C, independent pin peers for UART/SPI/I²C/JTAG, and
+kernel certificates for every distinct uploaded image. Its exact chip hash
+comparison binds the prior accepted RTL interpretation; it does not rerun or
+extend that proof to a complete initialized resident lifecycle. The foundation
+adds the production request checks and typed resident transition suite.
+
+The [finite-transfer reference gate](protocols/buffered-transfers.md),
+`python3 -B scripts/check-buffered-transfers.py --tag <fresh-tag>`, builds and
+audits source, compares Lean-exported lifecycle transitions with Python,
+runs Python normally/optimized and checks independent continuous four-byte
+SPI and 32-bit/non-byte JTAG wire models. The foundation includes the universal
+ownership proofs and adversarial `Transfer` suite. This adds no buffered circuit,
+package transport, RTL interpretation or physical-cost qualification.
+
+The [buffered reactive gate](protocols/buffered-reactive.md),
+`python3 -B scripts/check-buffered-reactive.py --tag <fresh-tag>`, additionally
+compares actual Lean/Python control, sampler, scratch and data state on compact
+counted schedules. It retains the old wire fixtures and adds independent I²C
+with ACK/NACK, stretching, lawful STOP and retained timeout prefixes. The
+foundation includes the composed `Buffered` suite and safety proofs. Virtual
+positions and stored syntax counts do not establish hardware image capacity.
+
+The [buffered hardware gate](protocols/buffered-hardware.md),
+`python3 -B scripts/check-buffered-hardware.py --tag <fresh-tag>`, emits the
+opt-in linear parallel target. It binds actual circuit/RTL command traces,
+reference SPI execution, independent resolved-pad peers and retained indexed
+readback. Saved generic/CMOS5L Verilog is read back, compared for arbitrary-state
+next-state equivalence and measured. It adds no paired SRAM/serial package or
+physical timing qualification. The portable foundation includes its local
+proofs and `BufferedHardware` executable.
+
+The [counted buffered hardware gate](protocols/buffered-counted-hardware.md),
+`python3 -B scripts/check-buffered-counted-hardware.py --tag <fresh-tag>`, adds
+actual loop/environment traces, duration-one rollover, both input selectors and
+physical/virtual falloff guards. Compact SPI/JTAG wire programs use the same
+emitted circuit and saved mappings; all 23 public fields and 3,860 next-state
+bits are compared at the represented state cut. Loop, sampler and mapped-output
+mutations must reject. The portable foundation includes its local proofs and
+`BufferedCountedHardware` executable. The later reactive target has its own
+gate; SRAM/serial and routed physical timing remain separate.
+
+The [reactive buffered hardware gate](protocols/buffered-reactive-hardware.md),
+`python3 -B scripts/check-buffered-reactive-hardware.py --tag <fresh-tag>`,
+binds actual typed source/circuit states, absolute loop destinations, reactive
+hold/failure priorities and all 26 public fields. It runs SPI/JTAG/I²C peers on
+the same emitted circuit, with a sampler FIFO derived from preclock resolved
+wires, and compares saved generic/CMOS5L next state at the exact state cut.
+Scratch/guard/timeout/endpoint and existing execution mutations must reject.
+The portable foundation adds 42 local lemmas and `BufferedReactiveHardware`,
+including the target-local native emitter comparison. A full initialized
+compiler/package refinement and physical qualification remain separate.
+
+The [shared-branch storage gate](protocols/buffered-storage-fetch.md),
+`python3 -B scripts/check-buffered-shared-branches.py --tag <fresh-tag>`,
+checks the separately versioned sixteen-descriptor target against typed source
+expectations, joint upload coverage and the same resolved SPI/JTAG/I²C peers.
+It includes full-dictionary reference15 execution, stale-generation/range and
+active/retained mutation checks. Saved generic/CMOS5L mappings compare arbitrary
+represented next state, then replay all command fixtures and the wire subset.
+The complete mapped-area and logic-depth comparison verifies the retained
+inline report/artifacts and identical tools/library. It needs that baseline
+run directory; it is separate from the portable foundation. The foundation adds
+`BufferedSharedBranches`, `BufferedSharedBranchesMemo` and
+`BufferedFetchDeadline`, including eighteen named runtime/representation proofs,
+finite logical/executable adapter and emitter comparisons, eight named
+memory/fetch laws and sampler lookahead witnesses. Loader trace refinement,
+synchronizer qualification and initialized loader trace refinement remain
+separate.
+
+The [buffered SRAM gate](protocols/buffered-sram-hardware.md),
+`python3 -B scripts/check-buffered-sram.py --tag <fresh-tag>`, checks the
+separately versioned two-candidate hybrid against the unchanged accepted
+shared-bank oracle. It compares interpreter/native artifacts, all public command
+fields, independent protocol peers, poisoned initial states and complete macro
+bindings. Saved controller mappings use unrestricted Q inputs for arbitrary-state
+SAT, then reattach both pinned macros for command and wire replays. Macro count,
+port directions, controller aliases and broadcast/full-word wiring are checked
+explicitly with rejection controls. The portable foundation adds
+`BufferedSramHardware`, `BufferedSramCandidates`, `BufferedSramMemoBind` and
+`BufferedSramMemoEval`:
+local scheduling/array/mirror/tail proofs and finite executable binding and
+closed-loop comparisons. A complete initialized compiler/loader/package
+refinement and physical qualification remain separate.
+
+The [buffered serial gate](protocols/buffered-sram-serial.md),
+`python3 -B scripts/check-buffered-sram-serial.py --tag <fresh-tag>`, checks
+atomic versioned requests, frozen receipts and retained ownership through the
+complete serial/controller/two-macro package. A separate sampled-wire schedule
+reconstructs every delivered command and compares public pins and receipt bits
+with the unchanged typed SRAM oracle. Independent SPI/JTAG/I²C peers, malformed
+frames, upload coverage, busy/retained reset, replacement and uncertain delivery
+exercise the host lifecycle. Saved frontend mappings have separate optimized
+source-state SAT and initialized finite replay gates. They are reattached to
+the accepted mapped controller and macros for public-wire checks. The portable
+foundation adds `BufferedSramSerial` and its local kernel laws. Electrical
+serial sampling and complete initialized source/package refinement remain open.
+
+The [initialized SRAM loading gate](protocols/buffered-sram-loading.md),
+`python3 -B scripts/check-buffered-sram-loading.py --tag <fresh-tag>`, requires
+only the pinned Lean toolchain and Python. It kernel-checks accepted upload
+coverage, resident image/fetch readiness and every fixed-image binary runtime
+prefix against the full-register reference. Interpreted/native witnesses use
+independently poisoned storage, complete entry records, three successful protocol
+captures and explicit missing-initialization/coverage/stale-response
+counterexamples. Canonical source-image admission has separate tamper controls;
+these finite source witnesses do not prove universal source lowering. The
+portable foundation includes `BufferedSramLoading` and all new proof modules.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

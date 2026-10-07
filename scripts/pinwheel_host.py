@@ -12,7 +12,9 @@ from typing import Protocol
 
 LEGACY_FORMAT = 'pinwheel-e64-v1'
 PAIRED_FORMAT = 'pinwheel-paired32-v1'
-IMAGE_FORMATS = (LEGACY_FORMAT, PAIRED_FORMAT)
+RESIDENT_FORMAT = 'pinwheel-resident32-v1'
+IMAGE_FORMATS = (LEGACY_FORMAT, PAIRED_FORMAT, RESIDENT_FORMAT)
+HARDWARE_FORMATS = (LEGACY_FORMAT, PAIRED_FORMAT)
 
 
 class Command(IntEnum):
@@ -56,6 +58,9 @@ class Program:
             raise ValueError('Execution words must be unsigned 64-bit integers')
         if not (0 <= self.idle_levels < 8 and 0 <= self.idle_enabled < 8):
             raise ValueError('Idle levels/enables must fit three pins')
+        if self.image_format == RESIDENT_FORMAT:
+            from paired_execution import compile_resident
+            return compile_resident(self.words, (self.idle_levels, self.idle_enabled), self.last).upload()
         if self.image_format == PAIRED_FORMAT:
             from paired_execution import compile_e64
             return compile_e64(self.words, (self.idle_levels, self.idle_enabled), self.last).upload()
@@ -122,7 +127,7 @@ class Host:
     def __init__(self, transport: Transport, phase_cycles: int = 2, *, image_format=LEGACY_FORMAT):
         if type(phase_cycles) is not int or phase_cycles < 2:
             raise ValueError('Serial phases require at least two chip edges')
-        if image_format not in IMAGE_FORMATS:
+        if image_format not in HARDWARE_FORMATS:
             raise ValueError('Unsupported host image format')
         self.transport = transport
         self.image_format = image_format
@@ -130,10 +135,28 @@ class Host:
         self.ui = 4  # serial select inactive, controls low, live status page
         self.edges = self.frames = 0
         self._stream_access = False
+        self._committed_program = None
+        self._program_generation = 0
+
+    @property
+    def committed_program(self):
+        """Image last committed through this host; external programming is outside this ownership."""
+        return self._committed_program
+
+    @property
+    def program_generation(self):
+        """Software ownership epoch, including resets and raw commit attempts."""
+        return self._program_generation
+
+    def _invalidate_program(self):
+        self._committed_program = None
+        self._program_generation += 1
 
     def advance(self, cycles=1, *, rst_n=1):
         if cycles < 1:
             raise ValueError('An advance requires at least one edge')
+        if not rst_n:
+            self._invalidate_program()
         pins = self.transport.advance(self.ui, cycles, rst_n=rst_n)
         self.edges += cycles
         return pins
@@ -147,6 +170,8 @@ class Host:
     def command(self, command: Command, data=0):
         if not 0 <= data < 1 << 64:
             raise ValueError('Command payload must fit 64 bits')
+        if command in (Command.COMMIT, Command.RESET):
+            self._invalidate_program()
         # Each frame has an 8-bit command followed by a big-endian 64-bit word.
         for byte in bytes([command]) + data.to_bytes(8, 'big'):
             for shift in range(7, -1, -1):
@@ -227,7 +252,9 @@ class Host:
         return decoded
 
     def upload(self, program: Program):
-        if program.image_format != self.image_format:
+        compatible = program.image_format == self.image_format or (
+            self.image_format == PAIRED_FORMAT and program.image_format == RESIDENT_FORMAT)
+        if not compatible:
             raise ValueError('Program image format does not match the selected chip')
         words = program.upload_words()  # reject capacity before touching the chip
         if self.result_status() & 8:
@@ -247,8 +274,18 @@ class Host:
         live = self.page(0)
         if live & 7 != 2 or self.result_status() & 4:
             raise RuntimeError('Chip did not accept program commit')
+        self._committed_program = program
 
-    def start(self):
+    def start(self, payload=0):
+        """Start once, supplying one byte to a resident paired program.
+
+        The paired hardware snapshots this byte only on accepted START. Legacy
+        hardware accepts the existing zero-payload start only.
+        """
+        if type(payload) is not int or not 0 <= payload < 256:
+            raise ValueError('Start payload must be an unsigned byte')
+        if payload and self.image_format != PAIRED_FORMAT:
+            raise ValueError('Start payload requires the paired hardware format')
         status = self.result_status()
         if status & 8:
             raise RuntimeError('Stop the UART stream before a one-shot start')
@@ -258,7 +295,7 @@ class Host:
         if live & 3 != 2:
             raise RuntimeError('Start requires a valid program and an idle engine')
         self.clear_flags()
-        self.command(Command.START)
+        self.command(Command.START, payload)
         if self.result_status() & 4:
             raise RuntimeError('Chip rejected start')
 

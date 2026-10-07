@@ -66,6 +66,17 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | [Compiled I²C write](protocols/compiled-i2c.md) | Guarded timing, ACK branches, and correspondence of a loaded write program to the reference. |
 | [Reusable I²C byte loop](protocols/looped-i2c.md) | Cycle-preserving repetition and its instruction-storage tradeoff. |
 | [I²C register read](protocols/i2c-register-read.md) | A bounded combined transaction with repeated START and received data. |
+| [Reusable programs and bounded register reads](protocols/reusable-programs.md) | Named pins/captures/labels, resident UART/SPI payloads through START, compact one/two-byte I²C reads and separate source/kernel/package evidence. |
+| [Unified transaction workflow](protocols/transaction-workflow.md) | Bound request/program/pin/result metadata, compile/load/run/decode API and CLI, typed resident semantics and a bounded JTAG flexibility test. |
+| [Finite buffered transfers](protocols/buffered-transfers.md) | Single-transfer TX/RX ownership, retained completion, timeout recovery and independent four-byte SPI/32-bit JTAG reference-model witnesses; hardware integration remains separate. |
+| [Shared buffered reactive execution](protocols/buffered-reactive.md) | Compose Reactive timing/decisions with owned data and compact counted schedules; four-byte I²C, early NACK, clock-stretch timeout and partial results on the same reference engine. |
+| [First buffered hardware slice](protocols/buffered-hardware.md) | Reloadable linear circuit, dedicated 32-bit TX/RX, retained indexed result reads and release; emitted/gate SPI traces and measured register-store cost. |
+| [Compact counted buffered hardware](protocols/buffered-counted-hardware.md) | Nested timed loops, same-edge rollover and shared SPI/JTAG circuitry; source-bound images, retained results and measured saved-gate cost. |
+| [Versioned buffered serial interface](protocols/buffered-sram-serial.md) | Atomic image loading, one owned transfer and frozen retained-result responses over sampled serial pins, sharing the SRAM execution engine. |
+| [Initialized buffered SRAM loading](protocols/buffered-sram-loading.md) | Accepted-upload coverage derives the resident image and candidate responses from arbitrary startup; universal binary execution and public-output correspondence. |
+| [Reactive counted buffered hardware](protocols/buffered-reactive-hardware.md) | Shared SPI/JTAG/I²C circuit, sampled decisions, loop-aware branches and retained partial results; measured register-store cost. |
+| [Buffered storage and fetch comparison](protocols/buffered-storage-fetch.md) | Shared-descriptor storage below the same source/owned-result interface; explicit capacity tradeoff, kernel runtime correspondence, complete mapped cost and synchronous-fetch deadlines. |
+| [Production Lean frontend](protocols/program-export.md) | Static JSON request/response schemas for fixed SPI and compact I²C programs; no generated Lean request source. |
 | [Bounded I²C writes and bus clear](protocols/i2c-capabilities.md) | One/two payload bytes, first-NACK STOP, nine-attempt recovery, universal digital proofs and fresh resolved-wire evidence. |
 | [One-byte UART receive](protocols/uart-receive.md) | Receive timing, framing errors, compiler proofs, and storage integration. |
 | [UART link proof](uart-link.md) | TX-to-RX roundtrip under independent clocks and bounded observation delay. |

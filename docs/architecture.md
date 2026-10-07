@@ -89,7 +89,8 @@ Lean structural circuit -> hardware MLIR -> CIRCT -> SystemVerilog
                                                 -> simulation / synthesis / physical flow
 
 Program:
-Lean protocol compiler -> load image / execution records -> writable engine memory
+Transaction request -> Lean compiler or named resident builder
+                    -> execution records / paired load image -> writable engine memory
 ```
 
 The circuit path uses a restricted width-indexed language with explicit register
@@ -100,6 +101,109 @@ literal execution words. Counted load images can be expanded before execution;
 the [bounded repetition prototype](storage/storage-study.md#bounded-runtime-repetition)
 separately investigates reconstruction at runtime. Load-image byte counts and
 allocated hardware storage are different measurements.
+
+The [transaction layer](protocols/transaction-workflow.md) gives these program
+paths one public compile/load/run/decode interface. It binds request data to
+the compiled image, named pins, timing units, resource use and result layout.
+Fixed SPI and compact I²C use `Program.Requests`; resident UART/SPI/JTAG use
+the Python builder. This common workflow preserves independent protocol
+references; it does not turn every frontend into one Lean compiler.
+
+`Program.Resident` extends the typed Reactive instruction language with SHIFT
+and KEEP. It lowers their entry effects to ordinary timed actions using the
+pre-edge operand and output levels, while delegating waits, guards, captures
+and successors to Reactive semantics. Canonical encoding and local transition
+proofs are checked separately from complete initialized package lifecycle
+refinement. Requests exceeding the operand or result capacity fail at this
+programming boundary before pin I/O.
+
+The [finite-transfer model](protocols/buffered-transfers.md) makes the next data
+ownership decision explicit: one preloaded TX value, reserved RX capacity,
+exclusive engine access during execution and immutable retained completion
+until matching release. `Program.Transfer` proves bounded lifecycle/identity
+invariants. A separate generic timed Python target exercises four-byte SPI
+and 32-bit/non-byte JTAG with independent resolved-pin peers. The target has
+no paired upload encoding or circuit integration; current SRAM allocation,
+host command/readback format and physical evidence are unchanged. Data bits
+and scratch/control captures are separate. The counted hardware continuation
+below implements timed lookup, admission and indexed result readback; reactive
+decisions and memory-backed fetch remain the next engine contract.
+
+The [buffered reactive continuation](protocols/buffered-reactive.md) now composes
+owned TX/RX entry effects with `Reactive.Fetch` execution and a generalized
+`Counted.Schedule`. The old counted grammar has a proved equal-span/equal-lookup
+embedding. A single Python interpreter executes linear SPI/JTAG and reactive
+I²C programs. Four-byte I²C uses 50 instruction leaves and 55 sequence/repeat
+descriptors for 270 virtual positions, with distinct ACK scratch and RX data.
+This is a reference schedule, not a larger admitted paired image. Its lowering,
+data storage, command admission and indexed readback need a new circuit contract.
+
+The [first buffered hardware slice](protocols/buffered-hardware.md) implements
+linear timed programs, dedicated 32-bit TX/RX, coverage-checked image loading,
+finite identities and retained indexed readback in a typed circuit. Its writable
+128-by-32 register store supplies a measurable baseline. Actual emitted and saved
+gate RTL exercise SPI; this parallel target does not extend the paired SRAM
+image or serial package.
+
+The [counted hardware continuation](protocols/buffered-counted-hardware.md) lowers
+the shared timed schedule to 64 packed instruction/control rows. Two nested
+loop counters select up to 1,024 virtual positions, entering the next leaf on
+the dispatch edge without an extra waveform clock. The host binds the complete
+source tree and exact row metadata; local circuit guards reject malformed
+entry before data effects. SPI and JTAG are uploaded programs in the same
+emitted circuit, with the same owned TX/RX and retained readback.
+
+The [reactive counted continuation](protocols/buffered-reactive-hardware.md) adds
+WAIT, CHECKED and QUALIFY, scratch capture, inverted enable shifts and explicit
+branch endpoints that restore the physical row, virtual PC and loop indices.
+SPI, JTAG and multi-byte I²C load different programs into this same circuit.
+Its 64 rows are 144 bits each; host admission binds declared successful demands
+and maximum RX reservation to the full source tree. Fault/timeout retain raw
+prefixes and scratch until release. The register-backed target now supplies
+a measured fetch/ownership baseline for a memory and serial implementation.
+
+The [storage/fetch comparison](protocols/buffered-storage-fetch.md) substitutes
+64 × 92-bit rows and a sixteen-entry full branch dictionary below those same
+execution equations. A kernel-checked rewrite factors the dictionary read after
+row selection and preserves expanded-state runtime steps and public outputs.
+Source-bound images enforce the additional distinct-descriptor capacity limit;
+the inline target remains available. Both stores share the same source language
+and owned-result lifecycle. Fetch laws and actual sampler-lookahead fixtures
+make the synchronous-memory deadlines explicit, without claiming an SRAM
+controller or physical timing qualification.
+
+The [buffered SRAM continuation](protocols/buffered-sram-hardware.md) implements
+two-candidate latency-one fetch with two replicated 64×64 instruction memories.
+The controller retains metadata, dictionary, execution/owned data state and a
+row-zero START mirror: 3,151 FF bits. Requests use both successors of the actual
+prospective core step, supporting consecutive one-cycle branches and loop
+rollover without sampler lookahead. Registered branch selection and actual
+entry-PC metadata align responses without tags. Count projection masks stale
+compact rows before dictionary expansion. Local kernel laws connect actual
+requests and array edges; complete behavior is checked by closed-loop typed and
+macro-bound finite RTL replay.
+
+The [initialized loading-to-execution proof](protocols/buffered-sram-loading.md)
+starts from arbitrary controller, macro-bank and response state. Cold
+initialization followed by any loading command history establishes coverage from
+actual accepted uploads, including replacement writes and rejected writes. A
+valid endpoint derives live bank, metadata, dictionary and START-mirror agreement
+(`Resident`) and both registered responses' availability (`Ready`). For every
+permitted execution suffix that keeps the resident image fixed, all execution
+state and public outputs match an independently evolving Reactive FF circuit.
+That reference starts with the actual cut's nonword core state and the derived
+resident binary image. Universal source-compiler correspondence, serial
+packet-to-core composition and physical timing remain separate gates.
+
+The [versioned serial continuation](protocols/buffered-sram-serial.md) places a
+160-bit atomic command receiver and 192-bit held receipt beside that unchanged
+controller and its two macros. The common source language and image admission
+still define SPI/JTAG/I²C behavior; this boundary defines how a host loads and
+owns it. Exact-length response reads acknowledge receipts, while explicit
+identity-matched RELEASE frees a retained transfer. A complete frozen response
+returns RX data and diagnostics together. Serial clocks advance execution, so
+host wait budgets count polls separately from physical edges. Partial reads
+retain the receipt, and explicit recovery never resends START automatically.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
@@ -446,6 +550,7 @@ modules rather than defining their contracts.
 | `Pinwheel/UART/`, `Pinwheel/SPI/`, `Pinwheel/I2C/` | Independent protocol specifications, reference controllers, and proofs. |
 | `Pinwheel/Engine/` | Original and reactive instruction semantics, loading/execution, compatibility, functional fetch, and counted programs. |
 | `Pinwheel/Compile/` | Protocol compilers and correspondence; `Readiness.lean` owns compiler-specific admission certificates. |
+| `Pinwheel/Program/` | Pure JSON request frontend and typed resident SHIFT/KEEP semantics, encoding and local proofs. The static export executable lives under `scripts/`. |
 | `Pinwheel/Binary/` | PWL codecs, layout, round trips, decoded execution, and serialized-size accounting. |
 | `Pinwheel/Hardware/Circuit.lean` | Width-indexed expressions, register updates, and their digital semantics. |
 | `Pinwheel/Hardware/Netlist.lean`, `NetlistEmit.lean` | Typed shared combinational bindings, their semantics, and generic MLIR serialization. |

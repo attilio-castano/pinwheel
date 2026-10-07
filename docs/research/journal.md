@@ -5924,3 +5924,626 @@ historical physical inputs are preserved; zero hardware bits, CAD seconds or
 routes are added. The lawful-memory and digital timing contracts remain explicit;
 SRAM internal qualification, fast-corner characterization and package power are
 separate open gates.
+
+## 2026-10-06 — Reusable programs and compact register reads
+
+Implemented the [reusable-program continuation](../protocols/reusable-programs.md)
+on `codex/reusable-protocol-programs`. Named outputs, sampled inputs, captures
+and labels expose the existing instructions. A separate resident source grammar
+lowers SHIFT/KEEP to the existing paired upload ABI; accepted START supplies a
+new byte while the UART/SPI program remains resident. The chip and emitter
+sources remain unchanged.
+
+The one/two-byte I²C register-read frontend resolves the capture-capacity
+decision: successful payload owns all sixteen slots; timeout or aggregate
+NACK/guard fault discards captures. Prefix ACK slots are overwritten only after
+all three succeed. Each prefix NACK emits STOP before structural fault. Exact
+NACK stage is a reference diagnostic rather than part of the public result;
+the earlier precise-ACK one-byte frontend remains available.
+
+The foundation gate passes 261 modules, 20,800 declarations and 11,224
+standard-axiom theorems, 41 executable suites, one kernel suite and the
+untrusted-axiom rejection. Python has 740 passes, two Linux-only skips and 34
+new optimized passes. Resident image certificates cover two positives and eight
+proved corruptions. Typed graph tests cover 4,608 SHIFT and 640 KEEP cases.
+The source dispatch theorem and local node equations do not yet compose a
+universal initialized resident UART/SPI lifecycle proof.
+
+Resolved resident package tests cover every UART/SPI byte, 19 ownership/serial/
+reset controls, two certified semantic negatives and five upload certificates.
+Actual CLI runs carry `0xa6` through the same UART image and exercise one custom
+named ready/branch/pulse image in completed and timeout cases. Sixteen I²C
+scenarios, all three first-NACK stages, stretching/timeout, guard loss and
+reset/reload pass with 23 certified uploads and four semantic negatives.
+Success uses 36/45 clocks; prefix NACK uses 9/18/27. The I²C reference/compiler/
+E64 refinement and 196-position bound are universal; fixture capacity is
+certified per upload, with 32 canonical records and 23 paired parameters.
+
+Fresh paired core/package interpretation passes all 1,082 local equalities,
+standard-axiom audits and corruption controls. Its chip MLIR/RTL match the I²C
+pin gate byte-for-byte. Fresh stream core/package interpretation passes all 984
+local equalities, standard-axiom audits and corruption controls; its chip bytes
+match the resident pin gate and actual CLI runs. The additive
+[manifest](../../physical/experiments/reusable-protocol-results.json) binds all
+ten final reports. Their closeout rechecks 601 source inputs and preserves all
+231 historical physical files. Interrupted source-freeze attempts, failed peer
+probes and the 600-second stream proof timeout retain separate diagnostics;
+the fresh stream gate passes with the same proof/checks and a recorded
+1,800-second per-module bound, in 1,351.138 s.
+
+Resident and I²C chip bytes also match the previous UART
+and I²C candidates respectively. SRAM qualification, compatible fast timing and
+package power remain open; the new software capabilities add zero hardware bits
+and zero physical runs. A JTAG sequence can next exercise the generic builder;
+longer dynamic payloads require a separate buffer and ownership decision.
+
+## 2026-10-06 — Unified transactions and a bounded JTAG challenge
+
+Implemented the [transaction workflow](../protocols/transaction-workflow.md)
+on `codex/unified-transactions`, with incremental commits. A shared request,
+compile, load, run and decode API carries exact program bytes, named pin
+requirements, timing, capacities and result interpretation. Fixed SPI/I²C
+requests use a static production Lean exporter; resident UART/SPI/JTAG use the
+generic builder. Artifacts recompile their request on import. Compiler-owned
+construction rejects unrelated request/program pairs before I/O; host image
+generations reject stale sessions, including identical reloads. Failed decoding
+preserves the unread packet.
+
+The typed resident language adds SHIFT/KEEP beside ordinary Reactive
+instructions. Fifteen public proofs cover canonical encoding, source validity,
+ordinary compatibility, entry/hold effects and START/reset ownership. Local
+selected-graph checks pass 4,608 SHIFT cases, 640 KEEP cases and 35 control edges.
+These are admitted-source execution snapshots, not a complete initialized
+loader/SRAM/mailbox protocol lifecycle theorem.
+
+The shared package gate passes every START byte for UART, SPI and JTAG without
+reuploading between transfers, eight fixed SPI mode/length cases and fourteen
+I²C success/stretch/NACK/timeout/guard cases. Eleven controls include pre-I/O
+capacity/payload/session refusals and three canonical JTAG semantic negatives;
+nineteen actual images receive fresh kernel upload certificates. The independent
+JTAG target covers all sixteen initial TAP states and checks a nineteen-clock,
+eight-bit LSB-first DR scan. Its 39-half-period wire sequence is distinct from
+exact package busy completion. The fixture assumes an eight-bit DR selected by
+reset; IR selection, chains and 32-bit IDCODE remain absent. Larger requests
+expose the actual eight-bit operand/sixteen-capture limits before chip I/O.
+
+Fresh foundation passes 264 modules, 21,045 declarations, 11,332 standard-axiom
+theorems, 43 executable suites, one kernel suite and the untrusted-axiom
+rejection. Normal and optimized Python discovery each pass 799 tests with two
+platform skips. The public CLI passes UART compile/inspect/run with `0xa6` and
+two-byte I²C compile/inspect through the production frontend. Its elapsed host
+edge count includes framing, polling, readback and consumption.
+
+The [manifest](../../physical/experiments/unified-workflow-results.json) binds
+five completed reports and their source/artifact closeout across 611 unchanged
+inputs. Earlier probes and
+the failed optimized package-name invocation retain separate records; final
+discovery and frozen-source replacements supply acceptance. Chip MLIR/RTL are
+byte-identical to the prior paired-stream candidate, whose exact-artifact RTL
+interpretation is retained without a new proof or broader lifecycle claim.
+All 232 preceding physical files remain unchanged. Zero hardware bits or
+physical runs are added; SRAM qualification, compatible fast timing and package
+power remain open. The next programming decision is longer data ownership and
+its hardware cost, alongside initialized resident refinement.
+
+## 2026-10-06 — Finite-transfer ownership and longer wire models
+
+The [buffered-transfer study](../protocols/buffered-transfers.md) implements the
+decision to preload one finite transaction. TX is copied before START, RX space
+is reserved, engine access is exclusive and completion stays immutable until
+matching release. A pending handle separates submit/wait/read/release; the normal
+run copies a result before release. Host timeout preserves execution. Engine
+failure preserves diagnostic RX separately from successful payload. Reset and
+slot reuse reject stale handles; Python also rejects handles from another slot.
+
+Twenty-three Lean proofs establish parametric per-step/history bounds and
+identity provenance, exact TX consumption/RX append, retained completion,
+admission, release/reuse/reset. The executable suite checks 21 lifecycle cases,
+494 engine bit operations and 798,660 adversarial command edges. Actual Lean
+exports agree with Python on 75 cases and 2,630 transitions, including 1,475
+rejections. This is finite differential evidence, not a universal Python proof.
+
+The reference engine has generic timed operations and no protocol cases.
+Independent resolved-pin peers pass 1,024 four-byte SPI transfers on one unchanged
+program and 192 JTAG scans over widths 1/7/13/32 and all sixteen initial TAP
+states. Total accepted modeled wire duration is 304,256 edges. Sampling, CS,
+final-bit TMS and wire-order mutations are rejected. Normal and optimized Python
+each pass 849 tests with two platform skips. Review found and repaired stranded
+ownership after callback failure and cross-slot identity collision. A callback
+failure after engine completion remains an observation error; the published
+completion is not rewritten.
+
+The [manifest](../../physical/experiments/buffered-transfer-model-results.json)
+binds the buffered and foundation reports. The target is `buffered-reference-v1`,
+with no paired upload/command encoding or changed chip. Its 32 TX + 32 RX bits
+are a 64-bit data storage floor before metadata/control, not measured area.
+All earlier hardware evidence remains preserved. Dedicated registers versus
+an explicit SRAM partition/schedule, versioned engine operations and indexed
+readback are the next implementation decision. Longer I²C also exceeds the
+current unrolled program limit; physical qualifications retain their gates.
+
+## 2026-10-06 — Shared buffered reactive execution
+
+The [shared execution study](../protocols/buffered-reactive.md) closes the split
+between linear buffered data and reactive control. `Program.Buffered` normalizes
+into Reactive/Fetch and composes instruction-entry TX consumption/RX append with
+Transfer ownership. A generalized counted schedule retains reusable bodies;
+the old counted grammar has proved equal span and lookup. Fifteen composed
+safety/entry/retention statements, two embedding statements and three I²C
+geometry statements use standard axioms. The executable suite checks seven
+I²C raw-control scenarios and 4,096 input histories.
+
+Actual Lean/Python differential execution passes 143 cases and 12,240 edges,
+including self reentry, wait deadline, guard/capture/dispatch priority, malformed
+normalization, exhaustion and partial results. All 270 virtual instructions and
+stored geometry of the default four-byte typed I²C factory agree with the
+independently wire-checked Python factory in seven cases, with four-cycle phases
+and a 32-cycle wait budget. This is finite differential and frontend-binding
+evidence; it is not a universal Python or protocol-success theorem.
+
+The same reference interpreter executes the prior SPI/JTAG programs and a
+four-byte I²C combined register read. That I²C program stores 50 instruction
+leaves and 55 control descriptors for 270 virtual positions without expanding a
+bank; quiet wire duration is 993 modeled edges. The independent gate passes
+1,036 I²C cases: 1,029 complete, three lawful-STOP NACK faults and four timeouts.
+A held clock retains nine RX bits without claiming STOP; failed STOP qualification
+retains all 32 bits with timeout. Six framing/data/timing mutations are rejected.
+Combined with 1,216 retained SPI/JTAG cases, the gate covers 2,252 wire cases and
+1,333,640 modeled edges. Normal and optimized Python each pass 889 tests with
+two skips. The full foundation gate builds 269 modules and passes all 45
+executable suites, one kernel suite and the whole-library axiom audit.
+
+Review corrected malformed-normalization data effects and distinguished them
+from invalid terminal dispatch, which preserves the current instruction's effects.
+The [accepted manifest](../../physical/experiments/buffered-reactive-model-results.json)
+binds the focused and foundation reports and preserves the preceding physical
+evidence. No buffered circuit, current paired image extension, serial transport,
+mapped area or physical timing is established. The next gate is a versioned
+digital engine with counted lookup, owned data admission and indexed readback.
+
+## 2026-10-06 — First owned buffered SPI circuit
+
+The [buffered hardware study](../protocols/buffered-hardware.md) implements a
+reloadable linear parallel circuit with 32-bit owned TX, 32-bit retained RX,
+indexed reads and matching release. Five generic operations express the first
+four-byte SPI slice without protocol dispatch. Four-byte SPI occupies 66 of
+128 writable 32-bit rows. Unsupported reactive/counting operations reject
+before host I/O; the retained paired SRAM/serial package remains unchanged.
+
+Twenty-six named local circuit proofs cover entry effects, conditional bounds,
+sampler age, retention, admission and saturating identities. Directed Lean tests
+cover cold/warm reset, counter limits, malformed/underflow/overflow priority,
+PC128 falloff and retained read/release. The whole-library audit passes 22,887
+declarations and 12,273 standard-axiom theorems and rejects a custom axiom.
+These are local equations and finite lifecycle cases, not complete initialized
+compiler/package refinement.
+
+Actual Lean circuit traces match emitted RTL for 76 cases and 1,920 edges across
+all twenty public state fields, with 714 independent state expectations and 64
+raw-input histories. The SPI gate passes 1,027 transfers and compares 350,864
+reference execution edges, alongside an independent resolved-pad peer. The
+sweep varies every byte in each of four lanes; three further cases reload
+length/timing on the same circuit. All cases recover the same pending handle
+after host wait timeout, read retained RX twice and release it. The reference
+comparison binds sampler state at START; first-entry RX with pads primed low
+has separate actual circuit/RTL vectors. An early-sampling mutant is rejected.
+
+Saved generic and typical CMOS5L Verilog are read back before census. Each
+passes all control cases, nineteen SPI cases and SAT comparison of every
+public output and all 4,389 next-state bits for arbitrary defined inputs/state;
+no state coordinates are pruned. Inverted-output controls are rejected.
+Generic mapping has 26,438 cells; typical mapping has 24,671 cells and
+400,519.6524 µm² summed cell area. Both retain all 4,389 flip-flops, including
+4,096 instruction bits and 64 TX/RX bits. Normal and optimized Python each
+pass 926 tests with two platform skips.
+
+The [accepted manifest](../../physical/experiments/buffered-hardware-results.json)
+binds the completed gate to implementation commit `d67fbe0`, 659 frozen inputs
+and sixty generated artifacts. All 235 preceding physical and 176 hardware
+files retain their bytes. This measured register-bank baseline motivates
+SRAM-backed instruction storage and compact counted/reactive lookup with exact
+entry/failure timing, followed by serial operations and initialized package
+composition. Clock distribution, placement, routing, physical timing, SRAM
+qualification and package power remain separate gates.
+
+## 2026-10-06 — Compact counted timed buffered hardware
+
+Implemented the [counted hardware continuation](../protocols/buffered-counted-hardware.md)
+on `codex/buffered-counted-hardware`, starting from `f1a036f`; implementation
+commit `eb38133` adds the typed circuit, 43 local proofs, canonical source/image
+lowering, host, RTL transport and validation gate. The target
+`pinwheel-buffered-counted32-v1` uses 64 packed 56-bit rows and two nested
+repeat counters. Rollover enters the next timed leaf on the dispatch edge.
+Four-byte SPI uploads four rows; a 17-bit JTAG scan uploads twenty. Both load
+different programs into the same emitted circuit and retain the same owned
+32-bit TX/RX and indexed read/release lifecycle.
+
+The initial development mapping `counted-transport-dev-01` passed its limited
+wire smoke but failed exact state intake: declared cached control was 24 bits,
+while emitted readback represented 22. The corrected cache stores only its
+22 meaningful bits; uploaded descriptors still retain all 24 bits and reject
+reserved fields. Failed assembly/readback and peer smoke bytes are preserved.
+
+The accepted hardware run `buffered-counted-hardware-01` passes in 525.507 s;
+report SHA-256 is
+`8bfa4ec9183c4eadae71af7ceeaf18982b54e440fc2dd96e56d9096bed8500ad`.
+Actual circuit/RTL states agree on all 23 public fields for 96 command cases,
+3,878 edges and 1,275 independent checks. Fixtures cover duration-one and
+256-edge holds, nested/adjacent loops, both input selectors, retained failures,
+physical row 63 and virtual position 1,023 without wrapped data effects.
+Typed Lean witnesses separately check `Counted.Schedule.locate` for a
+SPI-shaped nested schedule and a nested-loop/tail/adjacent-loop schedule.
+
+Emitted RTL passes 1,027 SPI and 242 JTAG cases. The source comparison covers
+407,666 observations, including retained result reads, and 332,692 active
+lookup/environment checks. JTAG widths 1/7/13/17/32 start from all 16 TAP states.
+Each saved generic/CMOS5L mapping passes all 96 control cases and 39 SPI/JTAG
+wire cases, plus arbitrary-state SAT comparison of all 23 outputs and all 3,860
+next-state bits. No state bit is pruned or derived. Sampler-age, input-selection,
+rollover and mapped-output controls reject. Normal and optimized Python each
+discover 964 tests: 962 pass and two Linux-specific checks skip on this host.
+
+Generic mapping has 23,638 cells; typical CMOS5L has 20,674 cells and
+350,479.332 µm² summed cell area. All 3,860 flip-flops survive, including 2,048
+timed-word bits, 1,536 control bits, 64 coverage bits and 32-bit TX/RX each.
+The matched-library area reduction versus Linear is 12.49%; distinct-row
+capacity changes 128→64 while the virtual-position bound grows 128→1,024.
+Four-byte SPI uploaded bits fall 2,112→224. These are complete-target costs,
+not an isolated loop-cost or routed-fit claim.
+
+The [accepted manifest](../../physical/experiments/buffered-counted-hardware-results.json)
+binds reports, source/tools, saved artifacts, predecessor hashes and the failed
+development record. All 236 prior physical files and 178 hardware files preserve
+their bytes. Reactive buffered I²C is the next programming/hardware test, then
+a memory/serial implementation preserving the measured fetch deadlines.
+Complete initialized compiler/package refinement, routed timing, component
+qualification and package power retain their own gates.
+
+Full portable run `buffered-counted-foundation-01` passes in 1,505.787 s:
+273 library modules, 47 executable suites and one kernel suite; standard-axiom
+audit checks 23,409 declarations and 12,541 theorems and rejects the injected
+custom axiom. Report SHA-256 is
+`8f57b5c7484ae944e07292865f27a9cb0af08d5391fc10481139b8694611ce15`.
+The final manifest binds 669 frozen inputs and 124 generated artifacts across
+the two completed runs, verified unchanged at closeout.
+
+## 2026-10-06 — Reactive counted programs in owned buffered hardware
+
+The [reactive hardware continuation](../protocols/buffered-reactive-hardware.md)
+on `codex/buffered-reactive-hardware` starts from `3db651f`. Commit `8c6b6ee`
+adds source-bound images and retained diagnostic results; `e8c0c73` adds the
+circuit, proofs, RTL transport and gate. SPI, JTAG and one-through-four-byte
+I²C register reads are programs in the same generic circuit, using the same
+load/submit/wait/read/release interface. WAIT, CHECKED and QUALIFY operate on
+sampled inputs; scratch capture and absolute branches restore virtual/physical
+location and both loop indices. Failed transfers retain raw prefixes and
+scratch without decoding a success payload.
+
+The target stores 64 packed 144-bit rows, with two counted loop levels and up
+to 1,024 virtual positions. Four-byte SPI uploads four rows; 17-bit JTAG uploads
+twenty; four-byte I²C uploads fifty for 270 virtual positions, including fault
+cleanup. Submission reserves the declared maximum RX, which may exceed the
+successful RX demand. Bounded syntax does not imply termination: branch cycles
+and repeated qualification blockage can remain active. Host wait timeout keeps
+the pending transfer owned.
+
+Forty-two named local lemmas cover ownership, conditional data bounds, entry
+priority, sampled input age, reactive hold/dispatch and fresh terminal-capture
+branch forwarding. The logical emitter remains the safe existing implementation;
+a target-local native implementation memoizes retained expression objects before
+traversal. Small expression graphs compare both emitters. The native optimization
+and finite circuit/RTL witnesses do not establish universal emitter or complete
+initialized compiler/package refinement.
+
+
+The interpreted full export `buffered-reactive-hardware-01` timed out after
+1,800 s; its source/input/log/report bytes remain preserved. Commit `2a7b487`
+compiles the unchanged typed exporter natively, preserving `Circuit.step` and
+`Expr.eval`, and requires byte-identical vectors, MLIR and register metadata
+on five cases and 83 edges before the full export. A separate typed snapshot
+prototype proves two extensional equalities and matches the same fixture,
+but its single concurrent timing improvement is modest; it is not applied to
+the accepted sources. Failed emitter/harness and prototype attempts retain
+separate receipts and do not count as final acceptance.
+
+Accepted run `buffered-reactive-hardware-02` passes in 1,759.371 s, report
+SHA-256 `c19b04ce9b1abf08728288aa958e99e707459fc52b459fa04df85d589e27ca4c`.
+Actual typed reference/Python execution matches 143 cases and 12,240 edges;
+seven frontend bindings compare all 270 I²C factory positions, including
+untaken fault cleanup. Actual circuit/RTL states agree on all 26 public fields
+for 222 command cases and 7,427 edges, with 5,951 independent expectations and
+64 raw-input histories. Emitted RTL passes 2,311 wire cases: 1,027 SPI, 242 JTAG
+and 1,042 I²C. The gate compares 1,509,697 source observations, 1,366,449 active
+lookup/environment states and 1,515,012 independently derived sampler states.
+Three NACK stages finish lawful STOP; five timeout fixtures preserve diagnostic
+prefixes, including nine bits under a held clock and all 32 bits after failed
+STOP qualification. Result reads retain the same owner and bytes twice.
+
+Saved generic and typical CMOS5L artifacts each retain all 9,599 state bits,
+with no pruned or derived coordinates. Each passes arbitrary represented-state
+SAT comparison of all public outputs and next-state bits, all 222 command cases
+and 58 wire cases (19 SPI, 20 JTAG, 19 I²C). Each wire replay independently
+checks 47,077 sampler states. Sampler age, input choice, loop rollover, restored
+branch environment, stale scratch, disabled guard, timeout priority and mapped
+output controls reject. Normal and optimized Python each pass 997 of 999 tests;
+two Linux-specific checks skip on this host.
+
+Generic mapping has 57,639 cells; typical CMOS5L has 51,602 cells and
+876,881.3004 µm² summed cell area, including 470,243.4912 µm² sequential area.
+The complete-target cost is 2.502 times the timed target's matched-library area.
+Wider instruction/branch rows account for 5,632 of the 5,739 added state bits;
+this motivates a memory/fetch comparison rather than a routed-fit claim.
+
+Full foundation `buffered-reactive-foundation-02` passes in 1,534.043 s:
+276 modules, 48 executable suites and one kernel suite. Its standard-axiom
+audit checks 24,105 declarations and 12,893 theorems and rejects an injected
+custom axiom. Report SHA-256 is
+`96a3ac94a89b56cc86dadacd72e824117dd48b19e2d8b6f25eeca0910edfb1fe`.
+The [accepted manifest](../../physical/experiments/buffered-reactive-hardware-results.json)
+binds both reports, 680 frozen inputs, 163 accepted generated artifacts and
+all 417 predecessor hardware/physical hashes, verified unchanged at closeout.
+The next decision is memory fetch under one-cycle, checked-branch, WAIT-release
+and nested-loop deadlines, then versioned serial loading and retained results.
+Initialized compiler/package refinement, physical pads, routing, component
+qualification and package power retain separate gates.
+
+## 2026-10-07 — Shared branch storage and reactive fetch deadlines
+
+The [storage/fetch comparison](../protocols/buffered-storage-fetch.md) on
+`codex/reactive-memory-fetch-study` starts from `f694ef6`. Commit `8d79dbb`
+adds separately admitted images and owned host uploads; `53c8507` adds the
+shared-descriptor circuit, kernel correspondence, fetch laws and hardware gate.
+The same `BufferedProgram` sources and load/submit/wait/read/release contract
+program SPI, JTAG and I²C. The candidate stores 64 × 92-bit rows and sixteen
+56-bit descriptors, with joint upload coverage and unchanged waveform edges.
+It has 7,183 declared state bits versus the inline target's 9,599, but admits
+at most sixteen distinct complete descriptors. The inline target retains the
+larger source capacity. Uploading all sixteen entries increases four-byte SPI
+program payload from 576 to 1,264 bits; JTAG and I²C examples shrink.
+
+Eighteen named logical proofs establish expression factorization, expanded-state
+runtime correspondence and register geometry. Eight fetch laws establish the
+fixed-response deadline and immutable-bank dual-candidate selection. Twenty-four
+actual circuit-step fixtures explore sampler lookahead across CHECKED, WAIT and
+QUALIFY; first-stage address prediction still requires synchronizer and timing
+qualification. Neither the logical adapter nor these deadline witnesses prove
+a whole-upload trace, complete SRAM controller or universal native compiler.
+
+The first export `shared-branches-01` was interrupted after 1,268.05 s when
+recursive expression rewriting copied shared graphs; a process sample recorded
+30.3 GB footprint. Commit `d5a8ca3` preserves sharing through a target-local
+memoized executable adapter. Forty independent `Expr.bind` fixtures compare
+25,600 evaluations; four small module comparisons are byte-identical across
+logical/executable adapters and safe/memoized emitters. A bounded interpreted
+three-case, 123-edge probe then passes.
+
+The sequential native full export `shared-branches-02` still exceeds its
+1,800 s bound, with a sampled 54.0 MB footprint. Commit `bb9273b` supervises
+independent complete-case exports with strict transcript, coverage, metadata
+and exact-checker validation before ordered publication. It leaves the circuit
+and `Expr.eval` unchanged. A three-worker, three-case development probe passes
+in 7.404 s. Failure, timeout and cancellation tests verify worker cleanup.
+Both failed full runs and the development probes retain separate source-bound
+receipts; they do not count as acceptance.
+
+Accepted full hardware run `shared-branches-03` passes in 1,756.039 s, report
+SHA-256 `bfcea3f349526299f9471387101d55d567c6f08b3ea86da64032fd0cfb35caf2`.
+Three interpreted/native cases and 123 edges produce byte-identical vectors,
+MLIR and register metadata. Four native workers export 227 cases and 11,120
+edges in 816.039 s; the independent checker verifies 9,558 expectations and
+64 raw-input histories. Actual emitted RTL agrees on all 26 public fields
+and passes 2,311 wire cases, with 1,509,697 source observations, 1,366,449
+fetch/environment comparisons and 1,515,348 independent sampler checks.
+Retained reads and diagnostic STOP/prefix behavior remain intact.
+
+Both saved mappings retain all 7,183 state bits, pass arbitrary represented-state
+SAT comparison of every public output and next-state bit, and replay all 227
+command cases plus 58 wire cases. Each mapped wire replay checks 47,381 sampler
+states. Branch-index and mapped-output negative controls reject. Normal and
+optimized Python each pass 1,036 of 1,038 tests, with two Linux-specific skips.
+Generic mapping has 43,065 cells; typical CMOS5L has 37,428 cells and
+644,939.6310 µm² summed cell area, including 351,886.5504 µm² sequential area.
+Compared with the matched inline run, declared state falls 25.17% and typical
+area 26.45%; maximum next-state cell levels rise from 90 to 91 generically
+and 40 to 43 typically. Those graph depths are not electrical timing.
+
+Final portable foundation `shared-branches-foundation-02` passes in 1,535.931 s:
+279 modules, 51 executable suites and one kernel suite; standard-axiom audit
+checks 24,711 declarations and 13,276 theorem constants and rejects the injected
+custom axiom. Report SHA-256 is
+`eaf37579f00d341fdf640259ea78afe0cec5775cf3784c3643e538fb436012e6`.
+The [acceptance manifest](../../physical/experiments/buffered-shared-branches-results.json)
+binds 693 frozen inputs, 152 accepted generated artifacts and all 422 predecessor
+hardware/physical hashes, checked against current bytes and the base snapshot.
+Its separate development receipts preserve the interrupted/timed-out exports.
+
+Next, implement one latency-one buffered row-fetch controller. Geometry screens
+put the hybrid instruction-only two-candidate organization at two 64×64 macros
+and 3,087 remaining FF bits before START/alignment/added control; complete92-bit
+rows need four macros and leave 1,295 FF bits. These are allocation calculations,
+not SRAM qualification or complete target area. First-stage prediction,
+initialized package refinement, serial loading/results, routed timing,
+component qualification and package power retain separate evidence gates.
+
+## 2026-10-07 — Buffered latency-one instruction SRAM
+
+The [SRAM continuation](../protocols/buffered-sram-hardware.md) on
+`codex/buffered-sram-fetch` starts from `2aa8692`. Commit `cbf375b` adds the
+versioned host and two broadcast-written 64×64 macro bindings. Commit `d34de6e`
+adds the typed prospective two-candidate controller, actual schedule/array and
+mirror/tail laws, closed-loop model and acceptance checks. It preserves the
+shared programming layer, sixteen-descriptor admission, owned TX/RX and original
+waveform edges. The controller has 117 registers / 3,151 FF bits, including a
+64-bit START mirror; the two instruction arrays allocate 8,192 bits separately.
+
+Initial full interpreted fixture evaluation was interrupted, then three bounded
+attempts exceeded 180, 180 and 600 seconds. Process samples showed bounded
+memory and CPU-bound ordinary recursive evaluation. A 32-edge diagnostic
+preserved every public/array/availability check and measured ~6.9 seconds per
+active interpreted dual-controller edge, or ~1.69 seconds natively. The source
+capture boundary for each failed probe is explicit in its development receipt;
+nearby commits are not asserted to be exact uncaptured fixture sources.
+The first foundation/hardware attempts were stopped to address that cost and a
+Yosys anonymous-controller ownership intake gap. Their logs remain development
+evidence, not acceptance.
+
+Commit `867d4ba` batches expression evaluation with a native cache local to one
+edge, retaining objects and checking widths. Its logical definition maps the
+unchanged `Expr.eval`; a kernel equality connects the model's snapshot to the
+actual circuit step. Independent comparisons cover 197,280 ordinary results,
+and the full 1,410-edge fixture keeps every public-field/array/availability check
+plus ordinary snapshot/request boundary witnesses. The frozen predecessor oracle
+and emitted RTL provide separate full behavioral comparisons. The corrected
+readback accepts exact Yosys controller prefixes and rejects foreign circuitry,
+extra macros, wrong directions and disconnected controller aliases.
+
+Full hardware run `buffered-sram-02` passes in 1,027.204 s, report SHA-256
+`49bbe82bc6a85131e1ab10917c12c25701bb0cdaa5375b4567c5982260ed92e1`.
+Three interpreted/native cases and 123 edges match vectors, MLIR and register
+metadata byte-for-byte. Four workers export 232 cases / 11,892 edges in 6.416 s,
+checking 309,192 public fields and 10,144 independent expectations across 64 raw
+histories. Full emitted RTL passes 2,311 SPI/JTAG/I²C wire cases and 1,515,348
+independent sampler checks. Both independently poisoned macro-startup witnesses
+pass. Each saved mapping passes unrestricted-Q controller SAT, 232 macro-bound
+command replays and 58 wire cases; all macro/wiring and mapped-output controls
+reject. Python passes 1,057 of 1,059 tests normally and under `-O`, with two
+Linux-specific skips per mode.
+
+Both mappings retain all 3,151 controller FF bits. Typical CMOS5L controller
+cell area is 294,546.1050 µm²; two macro footprints add 100,978.2656 µm². Their
+sum, 395,524.3706 µm², is 38.67% below the unchanged shared-bank cell baseline.
+FF bits fall 56.13%. Typical next-state depth is 42 cell levels; prospective
+address outputs are 43 levels. These structural screens exclude macro timing,
+electrical loading, interconnect, clock tree, placement/routing and package.
+Independent closeout verifies all 733 hardware source hashes, 145 generated
+artifact hashes, 152 predecessor artifact pins and 427 unchanged predecessor
+hardware/physical files.
+
+The next interface decision is versioned serial loading and retained results.
+Deriving resident bank agreement from initialized upload coverage and composing
+selected instruction/metadata/dictionary with the execution relation remains
+formal work. Local availability assumes that agreement; finite replay and native
+cache checks do not replace a universal initialized/compiler/package theorem.
+Physical macro, sampling, package power and routed timing retain separate gates.
+
+Final portable foundation `buffered-sram-foundation-02` passes in 1,758.924 s:
+285 modules, 55 executable suites and one kernel suite. The standard-axiom audit
+checks 25,185 declarations and 13,492 theorem constants and rejects the injected
+custom axiom. Report SHA-256 is
+`b3277d9ddf146a6ffc0df5b2e7ef3efa3b72375804428ec25201d717929de72e`.
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-results.json)
+binds both reports, 733 frozen inputs, 212 accepted artifacts, all 427 predecessor
+hardware/physical hashes and 47 separately retained development files. Current
+bytes match those pins and the `2aa8692` snapshot. These local artifact hashes do
+not themselves establish durable backup custody.
+
+## 2026-10-07 — Versioned serial loading and retained results
+
+The [serial continuation](../protocols/buffered-sram-serial.md) stays on
+`codex/buffered-sram-fetch`. Commit `3a6bf41` records the 160-bit request and
+192-bit response ABI. Commit `c724c79` implements the typed frontend, local
+kernel laws, public-pin RTL composition and source-bound host. Commit `8eae57b`
+adds atomic frozen RX reads, independent delivery/receipt reconstruction,
+saved binding/mapping checks and explicit lost START/RELEASE recovery. A lost
+release acknowledgement during convenience `run` retains the already-read
+immutable result on the error. No uncertain owned command is retried
+automatically. Commit `9284120` settles the released external peer drive before
+the next peer observes the bus, correcting the first full gate's I²C fixture.
+
+Development receipts preserve the initial mixed compiler-output capture,
+optimized named-width and aliased-state intake failures, and first full gate
+`buffered-sram-serial-01`. The accepted mapping boundary is explicit: thirteen
+declared registers / 389 coordinates become 370 physical classes, fourteen
+constants, four extra aliases and one omitted response bit. Both saved mappings
+compare all nineteen outputs and all 370 physical next-state bits at the
+optimized source boundary, and reject MISO inversion and alias/constant changes.
+This does not establish equality over all arbitrary typed 389-bit states.
+
+Full hardware run `buffered-sram-serial-02` passes in 1,981.385 seconds, report
+SHA-256 `58ecc12165865ee5a49ddb4ecfe39013614fec89396b0d86dfe50978ecce13ae`.
+The initialized frontend checks 69 cases / 53,775 edges; one case / 1,111 edges
+matches native and interpreted emission byte-for-byte. Twenty-one independent
+SPI/JTAG/I²C cases agree with the typed oracle over 283,623 physical serial
+edges. Lifecycle checks add 262,140 edges, including incomplete upload, busy
+and retained reset, replacement and exactly one delivered START/RELEASE under
+lost receipt observation. Both varied macro startup patterns and both complete
+mapped packages pass three protocol cases / 107,064 edges each. Normal and
+optimized Python each pass 1,123 tests with two platform-specific skips.
+
+The typical frontend adds 370 FF bits and 32,545.9134 µm² of cell area. Combining
+its saved cells with the accepted controller and macro footprints yields a
+428,070.2840 µm² allocation screen, excluding routing, clock tree, pads and
+electrical timing. This measures the interface cost of programming different
+protocols into the same engine, without claiming a qualified physical chip.
+
+Portable foundation `buffered-sram-serial-foundation-01` passes in 1,784.866
+seconds: 288 modules, 56 executable suites and one kernel suite. The serial
+fixture checks 16,269 ordinary typed edges and 224 independently seeded
+represented states. The whole-library audit checks 25,596 declarations and
+13,690 theorem constants with standard axioms and rejects the custom axiom.
+Report SHA-256 is
+`74d2c9caafd04a689db1ce21da6d8c63ffcb4de956fa24829dbc4feee56fadb0`.
+
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-serial-results.json)
+binds both reports, 722 frozen inputs, 211 accepted artifacts, 639 unchanged
+predecessor files and 163 development files. The experiment index intentionally
+adds this study; its previous content remains bound to its Git blob. The serial gate verifies its
+predecessor at intake; joint closeout verifies all predecessor pins again.
+The next formal gate derives resident bank agreement from initialized loading
+and composes source execution with the serial ownership lifecycle. Complete
+initialized package refinement, physical serial sampling, SRAM timing and
+qualification, routing and package power remain separate gates.
+
+## 2026-10-07 — Initialized SRAM loading-to-execution correspondence
+
+The [initialized loading continuation](../protocols/buffered-sram-loading.md)
+stays on `codex/buffered-sram-fetch`. Commit `cbc420a` records the actual
+function-valued controller/two-array state and accepted-upload knowledge from
+arbitrary startup. Commit `8410135` derives current mask/count admission,
+resident instructions/metadata/dictionary/mirror and prospective responses,
+then proves every permitted binary runtime prefix and public observation agrees
+with the independently evolving full-register Reactive circuit. No execution
+hardware, host, image ABI or serial frontend changes are introduced.
+
+Commit `9aafe9c` adds the loading suite and source-pinned narrow gate. Three
+kernel counterexamples establish the need for initialized upload knowledge,
+admitted coverage and response readiness; they are replayed across three seeds.
+The first narrow run passes its interpreted witnesses but rejects a reporting
+mismatch between three distinct scenarios and nine recorded checks. Commit
+`91eb337` reconciles that count; the first run's receipt is retained separately
+from the accepted fresh run.
+
+The reference begins with the actual valid-cut nonword core state and the
+independently tracked accepted image. The theorem does not independently
+specify the entire source loader's core/cache/generation trace. COMMIT admits
+complete binary storage, not semantic validity or canonical source provenance.
+The next formal gate is common source-to-resident compiler correspondence;
+serial delivery and owned receipt composition remain separate. SRAM, serial
+sampling/CDC, routing and package power retain their physical gates.
+
+Fresh loading gate `initialized-loading-02` passes in 669.971 seconds, with
+identical interpreted/native statistics: 15 cases / 4,476 edges, 156,660 core
+checks, 116,376 public-output checks, 1,050 complete entry records, nine
+successful source/peer result checks, fifteen equality mutations and nine
+premise checks (three distinct scenarios). SPI returns four bytes `a6 9b 42 e1`,
+JTAG returns seventeen bits `0x142e1`, and I²C returns `0x96` with qualified
+STOP. Twelve altered source images are refused. Loading report SHA-256 is
+`1c4221ed3457a126dd3ed13b55fd88fa20fcf0c7fb579e8e3e487e29319ff037`.
+
+Portable foundation `buffered-sram-loading-foundation-01` passes in 2,018.372
+seconds: 294 modules, 57 executable suites and one kernel suite. The whole-library
+audit checks 26,145 declarations and 14,093 theorem constants with standard
+axioms only and rejects the custom axiom. Its directed loading suite checks six
+cases / 798 edges. Foundation report SHA-256 is
+`2cd143ef6f5e0c6d91156781b91cd77e48593cf2e15a4f825ba44247a53e3977`.
+Normal and optimized Python each pass 1,123 tests with two platform-specific
+skips. The normal result was observed; the full optimized log is retained.
+
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-loading-results.json)
+binds 430 frozen inputs, 83 accepted artifacts, 851 preserved predecessor pins
+and nine separately retained first-run files. All 211 accepted serial artifacts
+and 639 inherited files remain unchanged; 720 of 722 previous frozen sources
+remain unchanged, with only the proof import and foundation suite list extended.
+All 163 serial development files remain intact. Independent joint closeout
+rechecks the new receipts and predecessor evidence. Local SHA-256 integrity
+does not itself establish durable custody.

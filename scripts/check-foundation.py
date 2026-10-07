@@ -18,7 +18,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES = [
     ('UART', []), ('UARTRx', []), ('UARTLink', []), ('UARTStream', []), ('UARTStreamClocks', []),
     ('SPI', []), ('SPITransactions', []),
-    ('Engine', []), ('I2C', []), ('I2CWriteTransactions', []), ('I2CRecovery', []), ('Reactive', []),
+    ('Engine', []), ('I2C', []), ('I2CWriteTransactions', []), ('I2CReadTransactions', []),
+    ('I2CRecovery', []), ('Reactive', []),
     ('Control', []), ('CompiledI2C', []), ('Counted', []),
     ('CompiledI2C', ['--looped']), ('Binary', []),
     ('CompiledI2C', ['--binary-explicit']), ('CompiledI2C', ['--binary-looped']),
@@ -30,6 +31,22 @@ SUITES = [
     ('HostResult', []),
     ('UARTBufferedSupervisor', []), ('UARTBufferedSupervisorPhase', []),
     ('PairedStream', []), ('PairedStreamSession', []),
+    ('ResidentEffects', []),
+    ('ProgramExport', []), ('ResidentProgram', []),
+    ('Transfer', []),
+    ('Buffered', []),
+    ('BufferedHardware', []),
+    ('BufferedCountedHardware', []),
+    ('BufferedReactiveHardware', []),
+    ('BufferedSharedBranches', []),
+    ('BufferedSharedBranchesMemo', []),
+    ('BufferedFetchDeadline', []),
+    ('BufferedSramHardware', []),
+    ('BufferedSramCandidates', []),
+    ('BufferedSramMemoBind', []),
+    ('BufferedSramMemoEval', []),
+    ('BufferedSramSerial', []),
+    ('BufferedSramLoading', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
@@ -127,7 +144,9 @@ def main():
                   elapsed_seconds=round(time.monotonic()-started, 3),
                   boundary='Fresh-source-capable Lean/model gate, initialized finite UART package/lifecycle and owned receipts, '
                            'compiled UART link/stream timing, independent PWL lookup and UART RX/E64 oracle, '
-                           'retained-result ownership and stream-control circuitry. '
+                           'retained-result ownership and stream-control circuitry; '
+                           'parametric finite-transfer ownership and shared reactive/counted buffered '
+                           'execution models, local buffered circuit equations and directed typed circuit tests. '
                            'Does not run RTL simulation, technology mapping, physical tools, '
                            'or prove emitter/CIRCT equivalence.')
     (out / 'report.json').write_text(json.dumps(report, indent=2)+'\n')

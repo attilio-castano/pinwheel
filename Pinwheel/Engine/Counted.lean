@@ -146,6 +146,64 @@ def Code.locate : Code → Environment → Nat → Option (Template × Environme
       body.locate #v[Fin.ofNat 8 (pc / body.span), env[0]] (pc % body.span)
     else none
 
+/-- The counted address decoder generalized over its stored leaf type. This
+shares the existing two-index environment and geometry; a new leaf type does
+not require materializing its repeated virtual execution addresses. -/
+inductive Schedule (α : Type) where
+  | emit (instruction : α)
+  | seq (first rest : Schedule α)
+  | repeat (countMinusOne : Fin 8) (body : Schedule α)
+  deriving DecidableEq, Repr
+
+def Schedule.span : Schedule α → Nat
+  | .emit _ => 1
+  | .seq a b => a.span + b.span
+  | .repeat n body => (n.val + 1) * body.span
+
+def Schedule.words : Schedule α → Nat
+  | .emit _ => 1
+  | .seq a b => a.words + b.words
+  | .repeat _ body => body.words
+
+def Schedule.loops : Schedule α → Nat
+  | .emit _ => 0
+  | .seq a b => a.loops + b.loops
+  | .repeat _ body => 1 + body.loops
+
+def Schedule.nodes : Schedule α → Nat
+  | .emit _ => 1
+  | .seq a b => 1 + a.nodes + b.nodes
+  | .repeat _ body => 1 + body.nodes
+
+def Schedule.nesting : Schedule α → Nat
+  | .emit _ => 0
+  | .seq a b => max a.nesting b.nesting
+  | .repeat _ body => 1 + body.nesting
+
+def Schedule.locate : Schedule α → Environment → Nat → Option (α × Environment)
+  | .emit t, env, pc => if pc = 0 then some (t, env) else none
+  | .seq a b, env, pc => if pc < a.span then a.locate env pc else b.locate env (pc - a.span)
+  | .repeat n body, env, pc =>
+    if pc < (n.val + 1) * body.span then
+      body.locate #v[Fin.ofNat 8 (pc / body.span), env[0]] (pc % body.span)
+    else none
+
+/-- The old two-byte template schedule embeds without changing its limits or
+its instruction/data semantics. -/
+def Code.schedule : Code → Schedule Template
+  | .emit t => .emit t
+  | .seq a b => .seq a.schedule b.schedule
+  | .repeat n body => .repeat n body.schedule
+
+theorem Code.schedule_span (code : Code) : code.schedule.span = code.span := by
+  induction code <;> simp_all [Code.schedule, Schedule.span, Code.span]
+  done
+
+theorem Code.schedule_locate (code : Code) (env : Environment) (pc : Nat) :
+    code.schedule.locate env pc = code.locate env pc := by
+  induction code generalizing env pc <;> simp_all [Code.schedule, Schedule.locate, Code.locate, Code.schedule_span]
+  done
+
 structure Program where
   code : Code
   data : Vector (BitVec 8) 2

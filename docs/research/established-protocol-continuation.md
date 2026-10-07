@@ -60,6 +60,10 @@ consumed histories is not a universal external-peripheral timing theorem.
 
 ## Next capabilities and stopping boundaries
 
+This section records the original September 29 scope. The fourth and fifth
+checkpoints below subsequently close the declared initialized UART lifecycle
+and choose a compact result policy for two-byte I²C reads.
+
 SPI, bounded I²C recovery/write and the UART supervisor/buffer milestone are
 delivered below. The next formal gate composes continuous initialized paired
 package execution from the active UART-image, supervisor and SRAM premises.
@@ -205,3 +209,19 @@ The circuit bytes and all 230 historical physical inputs are unchanged. SRAM,
 fast-corner and package-power qualification remain open. The next local
 capability decision remains result capacity for bounded two-byte I²C reads,
 under the current established-protocol direction in [status](status.md).
+
+## Fifth implementation checkpoint — 2026-10-06
+
+[Reusable programs and bounded register reads](../protocols/reusable-programs.md)
+resolve that capacity decision: success owns all sixteen payload captures;
+NACK or guarded bus fault owns terminal status and discards captures. The
+reference/compiler/E64 contract covers one/two-byte requests and arbitrary
+consumed bus histories. Actual uploads certify capacity independently.
+
+The same checkpoint makes resident UART/SPI programs usable through
+`start(payload=...)`, with a named builder for custom pin programs and a separate
+resident source grammar/certificate. START/SHIFT/KEEP have local actual-node
+proofs; their initialized universal protocol lifecycle remains a further gate.
+No circuit changes or new physical runs are introduced. The additive
+[manifest](../../physical/experiments/reusable-protocol-results.json) records
+the final source, package, regression and RTL receipts.
