@@ -181,8 +181,19 @@ rollover without sampler lookahead. Registered branch selection and actual
 entry-PC metadata align responses without tags. Count projection masks stale
 compact rows before dictionary expansion. Local kernel laws connect actual
 requests and array edges; complete behavior is checked by closed-loop typed and
-macro-bound RTL replay. Loader trace refinement and physical timing remain
-separate.
+macro-bound finite RTL replay.
+
+The [initialized loading-to-execution proof](protocols/buffered-sram-loading.md)
+starts from arbitrary controller, macro-bank and response state. Cold
+initialization followed by any loading command history establishes coverage from
+actual accepted uploads, including replacement writes and rejected writes. A
+valid endpoint derives live bank, metadata, dictionary and START-mirror agreement
+(`Resident`) and both registered responses' availability (`Ready`). For every
+permitted execution suffix that keeps the resident image fixed, all execution
+state and public outputs match an independently evolving Reactive FF circuit.
+That reference starts with the actual cut's nonword core state and the derived
+resident binary image. Universal source-compiler correspondence, serial
+packet-to-core composition and physical timing remain separate gates.
 
 The [versioned serial continuation](protocols/buffered-sram-serial.md) places a
 160-bit atomic command receiver and 192-bit held receipt beside that unchanged

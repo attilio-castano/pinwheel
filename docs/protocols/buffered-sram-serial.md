@@ -284,7 +284,11 @@ establish local field decodes, command suppression, CS-close deactivation,
 dispatch/capture staging, POR clearing and held-response retention under their
 stated edge hypotheses. There is no universal theorem identifying every
 frontend trace with the independent record model, or proving the complete
-initialized serial/controller/SRAM package refinement.
+initialized serial/controller/SRAM package refinement. The subsequent
+[initialized loading proof](buffered-sram-loading.md) closes the core
+accepted-upload-to-binary-runtime boundary. Its reference begins with the actual
+valid-cut core state; serial packet delivery and source compiler composition
+remain separate obligations.
 
 Executable comparisons have a separate scope. The record fixtures compare
 ordinary `Circuit.step` and `Circuit.observe` with the Boolean/natural-number

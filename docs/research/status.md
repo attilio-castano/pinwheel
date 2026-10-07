@@ -136,9 +136,9 @@ requests, array edges, mirror and tail projection. Full hardware acceptance
 passes 232 command cases and 2,311 emitted wire cases plus both saved mappings;
 the 55-suite portable foundation also passes.
 Typical cell area plus macro footprints is 395,524.3706 µm², 38.67% below the
-shared-branch FF baseline, excluding routing/clock tree. Complete behavior relies on
-finite comparison with the unchanged predecessor oracle and macro-bound RTL;
-initialized loader/trace and universal native/compiler refinement remain open.
+shared-branch FF baseline, excluding routing/clock tree. Generated RTL behavior is
+checked by finite comparison with the unchanged predecessor oracle and
+macro-bound RTL; the initialized core proof is recorded below.
 
 **Implemented interface: [versioned serial loading and retained results](../protocols/buffered-sram-serial.md).**
 Atomic 160-bit requests load the unchanged SRAM execution engine; a held
@@ -151,12 +151,22 @@ I/O, so the host counts polls separately from physical edges. Kernel laws,
 finite initialized frontend/package replays and optimized-state saved mapping
 checks have separate scopes, recorded in the linked study.
 
-**Next decision: initialized loading and resident execution correspondence.**
-Derive live resident bank agreement from initialized upload coverage, then
-compose the selected response/metadata/dictionary with the source execution
-relation and this serial ownership lifecycle. The current local availability
-law assumes that agreement. The new serial interface gives this proof a concrete
-external command and result boundary; it does not establish that theorem.
+**Implemented formal continuation: [initialized loading and execution correspondence](../protocols/buffered-sram-loading.md).**
+From arbitrary controller, macro-bank and response state, cold initialization
+and any actual loading command history ending valid derive `Resident` and
+`Ready` from accepted-upload coverage. The history can contain replacement and
+rejected writes. Every permitted runtime suffix that keeps that binary image
+fixed then matches all execution state and public outputs of an independently
+evolving Reactive FF circuit. Its starting nonword core is the actual loading
+cut's core; resident words come from the accepted-upload ledger. No live-bank
+or initial-response agreement is assumed at that cut.
+
+**Next formal gate: source-to-resident compiler correspondence.**
+Connect the shared SPI/JTAG/I²C source language and compiler to the accepted
+resident rows, metadata and dictionary, then compose source execution with the
+proved binary-image suffix. Universal source-compiler correspondence and serial
+packet-to-core composition remain open. The common program and retained-result
+interface give that work a concrete programmable boundary.
 Actual SRAM return/address timing, physical sampling, SRAM qualification and
 package power retain their distinct evidence gates. First-stage prediction is
 a separate alternative and still requires synchronizer qualification.

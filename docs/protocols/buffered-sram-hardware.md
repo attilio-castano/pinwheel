@@ -84,11 +84,14 @@ materializing the actual core step and then evaluating each candidate gives
 exactly the emitted request address. The executable closed-loop model uses
 that identity to avoid repeatedly interpreting the full composed core graph.
 
-The candidate availability law assumes resident bank agreement on live words.
-It does not derive that agreement from a complete COMMIT/upload history. There
-is no kernel proof relating the complete SRAM/controller execution trace to
-the predecessor, nor a complete initialized source compiler/package refinement.
-Those behavior claims use finite independent replay evidence.
+At this hardware checkpoint, candidate availability assumes resident bank
+agreement on live words, and complete behavior uses finite independent replay.
+The subsequent [initialized loading proof](buffered-sram-loading.md) derives
+that agreement and both candidate responses from any initialized accepted-upload
+history ending VALID. It proves every fixed-image binary runtime prefix and
+public observation agrees with the full-register Reactive circuit. The reference
+starts with the actual cut core and independently tracked image. Universal source
+compiler, serial delivery/package and physical refinement remain separate.
 
 `MemoEval` batches the actual next-state expressions. Its logical definition
 maps ordinary `Expr.eval`, and `nextSnapshot_eq` identifies the controller

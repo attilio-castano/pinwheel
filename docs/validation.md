@@ -127,6 +127,17 @@ the accepted mapped controller and macros for public-wire checks. The portable
 foundation adds `BufferedSramSerial` and its local kernel laws. Electrical
 serial sampling and complete initialized source/package refinement remain open.
 
+The [initialized SRAM loading gate](protocols/buffered-sram-loading.md),
+`python3 -B scripts/check-buffered-sram-loading.py --tag <fresh-tag>`, requires
+only the pinned Lean toolchain and Python. It kernel-checks accepted upload
+coverage, resident image/fetch readiness and every fixed-image binary runtime
+prefix against the full-register reference. Interpreted/native witnesses use
+independently poisoned storage, complete entry records, three successful protocol
+captures and explicit missing-initialization/coverage/stale-response
+counterexamples. Canonical source-image admission has separate tamper controls;
+these finite source witnesses do not prove universal source lowering. The
+portable foundation includes `BufferedSramLoading` and all new proof modules.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

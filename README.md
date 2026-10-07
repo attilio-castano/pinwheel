@@ -116,8 +116,11 @@ uses two instruction replicas and a START mirror below the same programming
 layer. Its [versioned serial continuation](docs/protocols/buffered-sram-serial.md)
 carries complete row uploads and retained results over sampled serial pins.
 One frozen response returns the owned RX prefix, outcome and diagnostics;
-matching release permits another transfer with the resident image. These are
-opt-in targets with separate formal and physical qualification gates.
+matching release permits another transfer with the resident image. The
+[initialized loading proof](docs/protocols/buffered-sram-loading.md) derives
+resident storage and fetch readiness from accepted uploads, then proves binary
+execution agrees with the register reference. These are opt-in targets with
+separate compiler, serial composition and physical qualification gates.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

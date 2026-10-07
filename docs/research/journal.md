@@ -6493,3 +6493,57 @@ The next formal gate derives resident bank agreement from initialized loading
 and composes source execution with the serial ownership lifecycle. Complete
 initialized package refinement, physical serial sampling, SRAM timing and
 qualification, routing and package power remain separate gates.
+
+## 2026-10-07 — Initialized SRAM loading-to-execution correspondence
+
+The [initialized loading continuation](../protocols/buffered-sram-loading.md)
+stays on `codex/buffered-sram-fetch`. Commit `cbc420a` records the actual
+function-valued controller/two-array state and accepted-upload knowledge from
+arbitrary startup. Commit `8410135` derives current mask/count admission,
+resident instructions/metadata/dictionary/mirror and prospective responses,
+then proves every permitted binary runtime prefix and public observation agrees
+with the independently evolving full-register Reactive circuit. No execution
+hardware, host, image ABI or serial frontend changes are introduced.
+
+Commit `9aafe9c` adds the loading suite and source-pinned narrow gate. Three
+kernel counterexamples establish the need for initialized upload knowledge,
+admitted coverage and response readiness; they are replayed across three seeds.
+The first narrow run passes its interpreted witnesses but rejects a reporting
+mismatch between three distinct scenarios and nine recorded checks. Commit
+`91eb337` reconciles that count; the first run's receipt is retained separately
+from the accepted fresh run.
+
+The reference begins with the actual valid-cut nonword core state and the
+independently tracked accepted image. The theorem does not independently
+specify the entire source loader's core/cache/generation trace. COMMIT admits
+complete binary storage, not semantic validity or canonical source provenance.
+The next formal gate is common source-to-resident compiler correspondence;
+serial delivery and owned receipt composition remain separate. SRAM, serial
+sampling/CDC, routing and package power retain their physical gates.
+
+Fresh loading gate `initialized-loading-02` passes in 669.971 seconds, with
+identical interpreted/native statistics: 15 cases / 4,476 edges, 156,660 core
+checks, 116,376 public-output checks, 1,050 complete entry records, nine
+successful source/peer result checks, fifteen equality mutations and nine
+premise checks (three distinct scenarios). SPI returns four bytes `a6 9b 42 e1`,
+JTAG returns seventeen bits `0x142e1`, and I²C returns `0x96` with qualified
+STOP. Twelve altered source images are refused. Loading report SHA-256 is
+`1c4221ed3457a126dd3ed13b55fd88fa20fcf0c7fb579e8e3e487e29319ff037`.
+
+Portable foundation `buffered-sram-loading-foundation-01` passes in 2,018.372
+seconds: 294 modules, 57 executable suites and one kernel suite. The whole-library
+audit checks 26,145 declarations and 14,093 theorem constants with standard
+axioms only and rejects the custom axiom. Its directed loading suite checks six
+cases / 798 edges. Foundation report SHA-256 is
+`2cd143ef6f5e0c6d91156781b91cd77e48593cf2e15a4f825ba44247a53e3977`.
+Normal and optimized Python each pass 1,123 tests with two platform-specific
+skips. The normal result was observed; the full optimized log is retained.
+
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-loading-results.json)
+binds 430 frozen inputs, 83 accepted artifacts, 851 preserved predecessor pins
+and nine separately retained first-run files. All 211 accepted serial artifacts
+and 639 inherited files remain unchanged; 720 of 722 previous frozen sources
+remain unchanged, with only the proof import and foundation suite list extended.
+All 163 serial development files remain intact. Independent joint closeout
+rechecks the new receipts and predecessor evidence. Local SHA-256 integrity
+does not itself establish durable custody.

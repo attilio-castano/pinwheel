@@ -195,8 +195,10 @@ controller cell area plus two complete macro footprints is 395,524.3706 µm²,
 Full hardware acceptance passes 232 command cases, 2,311 emitted wire cases and
 both saved mapping/closed-loop gates. Local kernel scheduling/array/mirror/tail
 laws and independent memo evaluator/oracle comparisons support the digital
-implementation; initialized loader/trace, serial/package and physical
-qualification remain separate. The linked study owns receipts and exact scope.
+implementation. At that hardware checkpoint, initialized loader/trace and
+serial/package refinement remain open; the later core proof is recorded below.
+Physical qualification remains separate. The linked study owns the hardware
+receipts and their exact scope.
 
 The [versioned buffered serial continuation — October 7](../protocols/buffered-sram-serial.md)
 carries atomic row/dictionary loading, generation-checked START and matching
@@ -210,6 +212,17 @@ owns the acceptance receipts and distinguishes local kernel laws, finite
 initialized traces, optimized source-state mapping SAT and open physical gates.
 This supplies a concrete programming interface while initialized source/package
 refinement and electrical serial/SRAM qualification remain open.
+
+The [initialized buffered SRAM loading proof — October 7](../protocols/buffered-sram-loading.md)
+derives resident instruction replicas, metadata, dictionary, START mirror and
+prospective fetch responses from actual accepted uploads after initialization.
+Any loading history ending VALID establishes a nonempty image of at most 64
+rows; every fixed-image runtime prefix then matches the full-register Reactive
+circuit in complete reference state and all public outputs. The reference core
+at the cut is the actual core; its image comes from the independent upload ledger.
+The study distinguishes this universal binary boundary from finite successful
+SPI/JTAG/I²C source/peer witnesses and open source compiler, serial composition
+and physical qualification. Hardware and host behavior are unchanged.
 
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
