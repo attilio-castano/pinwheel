@@ -121,7 +121,7 @@ def parse_stats(output):
     stats = json.loads(matches[0])
     if stats['cases'] != 15 or stats['negativeWitnesses'] != 15:
         raise RuntimeError('Expected six directed and nine source-bound independently seeded cases')
-    if stats['negativePremiseWitnesses'] != 3:
+    if stats['negativePremiseWitnesses'] != 9:
         raise RuntimeError('Expected initialized coverage and response premise counterexamples')
     if stats['sourceResultChecks'] != 9:
         raise RuntimeError('Expected nine successful source/independent peer retained-result checks')
