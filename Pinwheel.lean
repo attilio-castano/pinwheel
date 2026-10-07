@@ -127,6 +127,8 @@ import Pinwheel.Hardware.Buffered.CountedProofs
 import Pinwheel.Hardware.Buffered.ReactiveProofs
 import Pinwheel.Hardware.Buffered.SharedBranchProofs
 import Pinwheel.Hardware.Buffered.FetchDeadline
+import Pinwheel.Hardware.Buffered.SramModel
+import Pinwheel.Hardware.Buffered.SramProofs
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
