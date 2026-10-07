@@ -1,6 +1,6 @@
 # Research results
 
-This index records conclusions through 2026-10-06 and what could justify
+This index records conclusions through 2026-10-07 and what could justify
 reopening them. Start with [status](status.md) for the active decision, then
 choose a topic below. Each linked study owns measurements, assumptions,
 commands, and proof boundaries; the [journal](journal.md) keeps dated receipts.
@@ -171,6 +171,19 @@ fixtures establish a digital baseline for choosing memory/fetch implementation.
 The [tracked manifest](../../physical/experiments/buffered-reactive-hardware-results.json)
 records the completed acceptance runs and their scope. Serial/SRAM integration,
 initialized compiler/package refinement and routed timing remain open.
+
+The [storage/fetch comparison — October 7](../protocols/buffered-storage-fetch.md)
+adds a separately admitted sixteen-descriptor dictionary beneath the same
+generic execution and owned-result contract. Kernel-checked expression
+factorization and expanded-state runtime correspondence preserve waveform
+edges. State falls from 9,599 to 7,183 declared bits, with an explicit source
+capacity tradeoff and increased loading traffic for small SPI programs.
+Matched typical cell area falls 26.45% to 644,939.6310 µm²; next-state logic
+depth rises from 40 to 43 cell levels, without a timing claim. The linked study
+owns full emitted/saved replay results and the pinned acceptance manifest. Fetch
+laws establish a fixed-response deadline and dual-candidate selection;
+actual-step sampler lookahead makes a single-port alternative plausible,
+subject to complete controller, address timing and synchronizer qualification.
 
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three

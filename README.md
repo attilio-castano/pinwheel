@@ -109,8 +109,10 @@ retained indexed readback and matching release. The
 compact SPI and JTAG programs on the same circuit, including nested loops with
 no extra dispatch clocks. The [reactive hardware continuation](docs/protocols/buffered-reactive-hardware.md)
 adds ACK decisions, waits and branches, running SPI, JTAG and multi-byte I²C on
-one circuit with retained prefixes. These are opt-in parallel targets; memory
-and paired serial/package integration remain the next gates.
+one circuit with retained prefixes. The [storage/fetch comparison](docs/protocols/buffered-storage-fetch.md)
+adds a separately admitted shared-branch bank with the same execution edges
+and owned-result interface. These are opt-in parallel targets; synchronous
+memory and paired serial/package integration retain their own gates.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

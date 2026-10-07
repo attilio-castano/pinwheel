@@ -82,6 +82,23 @@ The portable foundation adds 42 local lemmas and `BufferedReactiveHardware`,
 including the target-local native emitter comparison. A full initialized
 compiler/package refinement and physical qualification remain separate.
 
+The [shared-branch storage gate](protocols/buffered-storage-fetch.md),
+`python3 -B scripts/check-buffered-shared-branches.py --tag <fresh-tag>`,
+checks the separately versioned sixteen-descriptor target against typed source
+expectations, joint upload coverage and the same resolved SPI/JTAG/I²C peers.
+It includes full-dictionary reference15 execution, stale-generation/range and
+active/retained mutation checks. Saved generic/CMOS5L mappings compare arbitrary
+represented next state, then replay all command fixtures and the wire subset.
+The complete mapped-area and logic-depth comparison verifies the retained
+inline report/artifacts and identical tools/library. It needs that baseline
+run directory; it is separate from the portable foundation. The foundation adds
+`BufferedSharedBranches`, `BufferedSharedBranchesMemo` and
+`BufferedFetchDeadline`, including eighteen named runtime/representation proofs,
+finite logical/executable adapter and emitter comparisons, eight named
+memory/fetch laws and sampler lookahead witnesses. Loader trace refinement,
+synchronizer qualification and complete latency-one buffered SRAM execution
+remain separate.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

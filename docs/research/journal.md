@@ -6286,3 +6286,81 @@ The next decision is memory fetch under one-cycle, checked-branch, WAIT-release
 and nested-loop deadlines, then versioned serial loading and retained results.
 Initialized compiler/package refinement, physical pads, routing, component
 qualification and package power retain separate gates.
+
+## 2026-10-07 — Shared branch storage and reactive fetch deadlines
+
+The [storage/fetch comparison](../protocols/buffered-storage-fetch.md) on
+`codex/reactive-memory-fetch-study` starts from `f694ef6`. Commit `8d79dbb`
+adds separately admitted images and owned host uploads; `53c8507` adds the
+shared-descriptor circuit, kernel correspondence, fetch laws and hardware gate.
+The same `BufferedProgram` sources and load/submit/wait/read/release contract
+program SPI, JTAG and I²C. The candidate stores 64 × 92-bit rows and sixteen
+56-bit descriptors, with joint upload coverage and unchanged waveform edges.
+It has 7,183 declared state bits versus the inline target's 9,599, but admits
+at most sixteen distinct complete descriptors. The inline target retains the
+larger source capacity. Uploading all sixteen entries increases four-byte SPI
+program payload from 576 to 1,264 bits; JTAG and I²C examples shrink.
+
+Eighteen named logical proofs establish expression factorization, expanded-state
+runtime correspondence and register geometry. Eight fetch laws establish the
+fixed-response deadline and immutable-bank dual-candidate selection. Twenty-four
+actual circuit-step fixtures explore sampler lookahead across CHECKED, WAIT and
+QUALIFY; first-stage address prediction still requires synchronizer and timing
+qualification. Neither the logical adapter nor these deadline witnesses prove
+a whole-upload trace, complete SRAM controller or universal native compiler.
+
+The first export `shared-branches-01` was interrupted after 1,268.05 s when
+recursive expression rewriting copied shared graphs; a process sample recorded
+30.3 GB footprint. Commit `d5a8ca3` preserves sharing through a target-local
+memoized executable adapter. Forty independent `Expr.bind` fixtures compare
+25,600 evaluations; four small module comparisons are byte-identical across
+logical/executable adapters and safe/memoized emitters. A bounded interpreted
+three-case, 123-edge probe then passes.
+
+The sequential native full export `shared-branches-02` still exceeds its
+1,800 s bound, with a sampled 54.0 MB footprint. Commit `bb9273b` supervises
+independent complete-case exports with strict transcript, coverage, metadata
+and exact-checker validation before ordered publication. It leaves the circuit
+and `Expr.eval` unchanged. A three-worker, three-case development probe passes
+in 7.404 s. Failure, timeout and cancellation tests verify worker cleanup.
+Both failed full runs and the development probes retain separate source-bound
+receipts; they do not count as acceptance.
+
+Accepted full hardware run `shared-branches-03` passes in 1,756.039 s, report
+SHA-256 `bfcea3f349526299f9471387101d55d567c6f08b3ea86da64032fd0cfb35caf2`.
+Three interpreted/native cases and 123 edges produce byte-identical vectors,
+MLIR and register metadata. Four native workers export 227 cases and 11,120
+edges in 816.039 s; the independent checker verifies 9,558 expectations and
+64 raw-input histories. Actual emitted RTL agrees on all 26 public fields
+and passes 2,311 wire cases, with 1,509,697 source observations, 1,366,449
+fetch/environment comparisons and 1,515,348 independent sampler checks.
+Retained reads and diagnostic STOP/prefix behavior remain intact.
+
+Both saved mappings retain all 7,183 state bits, pass arbitrary represented-state
+SAT comparison of every public output and next-state bit, and replay all 227
+command cases plus 58 wire cases. Each mapped wire replay checks 47,381 sampler
+states. Branch-index and mapped-output negative controls reject. Normal and
+optimized Python each pass 1,036 of 1,038 tests, with two Linux-specific skips.
+Generic mapping has 43,065 cells; typical CMOS5L has 37,428 cells and
+644,939.6310 µm² summed cell area, including 351,886.5504 µm² sequential area.
+Compared with the matched inline run, declared state falls 25.17% and typical
+area 26.45%; maximum next-state cell levels rise from 90 to 91 generically
+and 40 to 43 typically. Those graph depths are not electrical timing.
+
+Final portable foundation `shared-branches-foundation-02` passes in 1,535.931 s:
+279 modules, 51 executable suites and one kernel suite; standard-axiom audit
+checks 24,711 declarations and 13,276 theorem constants and rejects the injected
+custom axiom. Report SHA-256 is
+`eaf37579f00d341fdf640259ea78afe0cec5775cf3784c3643e538fb436012e6`.
+The [acceptance manifest](../../physical/experiments/buffered-shared-branches-results.json)
+binds 693 frozen inputs, 152 accepted generated artifacts and all 422 predecessor
+hardware/physical hashes, checked against current bytes and the base snapshot.
+Its separate development receipts preserve the interrupted/timed-out exports.
+
+Next, implement one latency-one buffered row-fetch controller. Geometry screens
+put the hybrid instruction-only two-candidate organization at two 64×64 macros
+and 3,087 remaining FF bits before START/alignment/added control; complete92-bit
+rows need four macros and leave 1,295 FF bits. These are allocation calculations,
+not SRAM qualification or complete target area. First-stage prediction,
+initialized package refinement, serial loading/results, routed timing,
+component qualification and package power retain separate evidence gates.

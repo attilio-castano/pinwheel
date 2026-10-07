@@ -162,6 +162,16 @@ and maximum RX reservation to the full source tree. Fault/timeout retain raw
 prefixes and scratch until release. The register-backed target now supplies
 a measured fetch/ownership baseline for a memory and serial implementation.
 
+The [storage/fetch comparison](protocols/buffered-storage-fetch.md) substitutes
+64 × 92-bit rows and a sixteen-entry full branch dictionary below those same
+execution equations. A kernel-checked rewrite factors the dictionary read after
+row selection and preserves expanded-state runtime steps and public outputs.
+Source-bound images enforce the additional distinct-descriptor capacity limit;
+the inline target remains available. Both stores share the same source language
+and owned-result lifecycle. Fetch laws and actual sampler-lookahead fixtures
+make the synchronous-memory deadlines explicit, without claiming an SRAM
+controller or physical timing qualification.
+
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
 definition. Its netlist semantics evaluates all bindings from the same pre-edge

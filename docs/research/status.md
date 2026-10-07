@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-06 after compact counted buffered hardware, following shared
-reactive execution, the linear SPI baseline and the unified transaction workflow.
+Updated 2026-10-07 after the buffered storage/fetch comparison, following
+reactive counted hardware and the unified owned-transfer workflow.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -116,11 +116,24 @@ retain all 9,599 state bits; typical cell area is 876,881.3004 µm². Wider uplo
 rows account for 5,632 of the 5,739 added state bits versus the timed target.
 This measures a programmability cost, without establishing routed chip fit.
 
-**Next decision: memory fetch under the established reactive deadlines.**
-Choose register/SRAM lookup while preserving one-cycle instructions, checked
-branches, wait release and nested-loop exits. Include metadata, prefetch,
-staging/coverage and owned TX/RX in that comparison; an isolated SRAM bit count
-is insufficient. Then design versioned serial loading and result operations.
+**Implemented comparison: [shared branch storage and fetch deadlines](../protocols/buffered-storage-fetch.md).**
+A separately admitted target replaces inline descriptors with a sixteen-entry
+dictionary below the same execution equations and owned-result interface.
+Its declared state is 7,183 bits; programs needing more distinct descriptors
+retain the inline target. Kernel rewriting/runtime correspondence, joint
+upload coverage and actual fetch-deadline fixtures establish the comparison
+contract. Complete mapping and replay measurements belong to the linked study.
+Matched typical cell area falls 26.45% to 644,939.6310 µm², while maximum
+next-state cell levels rise from 40 to 43. Full emitted wires, saved mapping
+equivalence/replays and the portable foundation pass; timing remains unqualified.
+
+**Next decision: one explicit latency-one buffered fetch organization.**
+Compare both-candidate prefetch against sampler lookahead under one-cycle
+instructions, checked branches, wait release and nested-loop exits. Include
+actual macro width/replication, cached start row, branch metadata, upload
+coverage and owned TX/RX. Using the first sampler stage for address prediction
+requires its own synchronizer and timing evidence. Then design versioned serial
+loading and result operations.
 Complete initialized compiler/package refinement, physical sampling, SRAM
 qualification and package power retain their existing gates.
 
