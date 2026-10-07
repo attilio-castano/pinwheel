@@ -27,15 +27,6 @@ class SerialPortFixture(SharedBranchesPortFixture):
     def fresh():
         return dict(SharedBranchesPortFixture.fresh(), stage1=0, stage2=0)
 
-    def edge(self, **fields):
-        generation = self.state['generation']
-        result = super().edge(**fields)
-        if fields.get('command') == 7 and not fields.get('initialize'):
-            self.state['generation'] = generation
-            result = dict(self.state)
-        return result
-
-
 class SerialEndpointFixture:
     """Only tick pins are visible to the transport; packing is independently read."""
     def __init__(self):
@@ -271,6 +262,71 @@ class SerialTransportTests(unittest.TestCase):
         with self.assertRaises(TransferError): next_pending.read()
         with self.assertRaises(TransferError): loaded.submit(tx=b'\x96')
 
+    def test_full_rx_word_read_uses_one_atomic_request(self):
+        loaded = self.host.load(compact_spi(4))
+        pending = loaded.submit(tx=b'\x96\xa5\x3c\xc3')
+        expected = b'\xa6\x9b\x42\xe1'
+        bits = tuple(bool((byte >> bit) & 1) for byte in expected for bit in range(7, -1, -1))
+        self.endpoint.port.finish(bits, 32, scratch=0x5AA5)
+        for _ in range(2):
+            requests, deliveries = self.transport.requests, len(self.endpoint.delivered)
+            result = pending.read()
+            self.assertEqual((result.payload, result.raw_rx_bits, result.rx_valid_bits,
+                result.tx_consumed_bits, result.scratch), (expected, bits, 32, 32, 0x5AA5))
+            self.assertEqual(self.transport.requests, requests + 1)
+            self.assertEqual(len(self.endpoint.delivered), deliveries + 1)
+            self.assertEqual(self.endpoint.delivered[-1], dict(command=0, read_index=0))
+        pending.release()
+
+    def test_empty_and_fault_prefix_atomic_reads_preserve_diagnostics(self):
+        loaded = self.host.load(compact_spi(1))
+        pending = loaded.submit(tx=b'\x96')
+        self.endpoint.port.finish((), 0, outcome='timeout', scratch=0x8000)
+        requests = self.transport.requests
+        empty = pending.read()
+        self.assertEqual((empty.outcome, empty.payload, empty.raw_rx_bits, empty.scratch),
+                         ('timeout', None, (), 0x8000))
+        self.assertEqual(self.transport.requests, requests + 1)
+        pending.release()
+        pending = loaded.submit(tx=b'\xA5')
+        self.endpoint.port.finish((True, False, True), 2, outcome='fault', scratch=3)
+        # Prefix ownership makes no new claim about unused high RX bits.
+        self.endpoint.port.state['rx_data'] |= 1 << 31
+        requests = self.transport.requests
+        prefix = pending.read()
+        self.assertEqual((prefix.outcome, prefix.payload, prefix.raw_rx_bits,
+            prefix.tx_consumed_bits, prefix.scratch), ('fault', None, (True, False, True), 2, 3))
+        self.assertEqual(self.transport.requests, requests + 1)
+
+    def test_atomic_read_rejects_wrong_identity_and_result_bounds(self):
+        loaded = self.host.load(compact_spi(1))
+        pending = loaded.submit(tx=b'\x96')
+        self.endpoint.port.finish((True, False), 2, outcome='fault')
+        original = dict(self.endpoint.port.state)
+        for field in ('generation', 'transfer'):
+            self.endpoint.port.state = dict(original, **{field: original[field] + 1})
+            with self.subTest(field=field), self.assertRaises(TransferError): pending.read()
+        self.endpoint.port.state = dict(original, rx_length=9)
+        with self.assertRaises(BufferedHardwareTransportError) as error: pending.read()
+        self.assertIsInstance(error.exception.cause, RuntimeError)
+        self.endpoint.port.state = original
+
+    def test_atomic_read_rejects_invalid_window_and_inconsistent_first_bit(self):
+        loaded = self.host.load(compact_spi(1))
+        pending = loaded.submit(tx=b'\x96')
+        self.endpoint.port.finish((True, False), 2, outcome='fault')
+        # Mutate only the received public fields; status remains width-correct.
+        for bit in (73, 74):
+            self.endpoint.mutate_response = lambda packet, bit=bit: packet ^ (1 << bit)
+            with self.subTest(bit=bit), self.assertRaises(RuntimeError): pending.read()
+        self.endpoint.mutate_response = None
+        self.endpoint.port.finish((), 0, outcome='fault')
+        self.endpoint.mutate_response = lambda packet: packet | (1 << 73)
+        with self.assertRaises(RuntimeError): pending.read()
+        self.endpoint.mutate_response = None
+        self.endpoint.port.finish((True, False), 2, outcome='complete')
+        with self.assertRaises(ValueError): pending.read()
+
     def test_uncertain_start_recovers_receipt_without_repeating_start(self):
         loaded = self.host.load(compact_spi(1))
         self.endpoint.drop_after_start = True
@@ -328,6 +384,125 @@ class SerialTransportTests(unittest.TestCase):
         self.assertEqual(recovered['transfer'], 1)
         self.assertEqual(self.transport.requests, requests)
         self.assertEqual(sum(v.get('command') == 3 for v in self.endpoint.delivered), 1)
+
+    def test_lost_release_receipt_frees_local_owner_without_reset_or_retry(self):
+        for failure in ('capture', 'close'):
+            with self.subTest(failure=failure):
+                endpoint = SerialEndpointFixture()
+                transport = BufferedSramSerialTransport(endpoint)
+                host = BufferedSramSerialHost(transport)
+                host.initialize()
+                loaded = host.load(compact_spi(1))
+                pending = loaded.submit(tx=b'\x96')
+                endpoint.port.finish((), 0, outcome='fault')
+                original = endpoint._reply
+                armed = [True]
+                def lose_release(sequence, code, status):
+                    original(sequence, code, status)
+                    if armed[0] and endpoint.delivered[-1].get('command') == 4:
+                        armed[0] = False
+                        if failure == 'capture':
+                            raise OSError('RELEASE delivered, receipt publication acknowledgement lost')
+                        endpoint.drop_response_close = True
+                endpoint._reply = lose_release
+                with self.assertRaises(BufferedHardwareTransportError) as error: pending.release()
+                self.assertIs(error.exception.pending, pending)
+                self.assertIs(host._pending, pending)
+                requests = transport.requests
+                recovered = pending.recover()
+                self.assertEqual((recovered['busy'], recovered['retained'], recovered['valid']), (0, 0, 1))
+                self.assertIsNone(host._pending)
+                self.assertIsNone(host._release_attempt)
+                self.assertEqual(transport.requests, requests)
+                self.assertEqual(sum(v.get('command') == 4 for v in endpoint.delivered), 1)
+                with self.assertRaises(TransferError): pending.read()
+                restarted = loaded.submit(tx=b'\xA5')
+                self.assertEqual(restarted.identity.transfer, pending.identity.transfer + 1)
+                self.assertEqual(restarted.identity.generation, pending.identity.generation)
+
+    def test_run_release_transport_error_keeps_already_read_result(self):
+        for failure in ('capture', 'close'):
+            with self.subTest(failure=failure):
+                endpoint = SerialEndpointFixture()
+                host = BufferedSramSerialHost(BufferedSramSerialTransport(endpoint))
+                host.initialize()
+                loaded = host.load(compact_spi(1))
+                bits = tuple(bool((0xA6 >> bit) & 1) for bit in range(7, -1, -1))
+                endpoint.port.complete_after = 1
+                endpoint.port.completion = (bits, 8, False)
+                original = endpoint._reply
+                armed = [True]
+                def lose_release(sequence, code, status):
+                    original(sequence, code, status)
+                    if armed[0] and endpoint.delivered[-1].get('command') == 4:
+                        armed[0] = False
+                        if failure == 'capture':
+                            raise OSError('Run RELEASE delivered; receipt acknowledgement lost')
+                        endpoint.drop_response_close = True
+                endpoint._reply = lose_release
+                with self.assertRaises(BufferedHardwareTransportError) as raised:
+                    loaded.run(tx=b'\x96', timeout_polls=1)
+                error = raised.exception
+                result, pending = error.result, error.pending
+                self.assertEqual((result.payload, result.raw_rx_bits, result.outcome),
+                                 (b'\xA6', bits, 'complete'))
+                self.assertEqual(result.identity, pending.identity)
+                self.assertIsInstance(error.cause, OSError)
+                self.assertIs(host._pending, pending)
+                self.assertFalse(pending.recover()['retained'])
+                self.assertIsNone(host._pending)
+                self.assertEqual(sum(v.get('command') == 4 for v in endpoint.delivered), 1)
+                restarted = loaded.submit(tx=b'\x3C')
+                self.assertEqual(restarted.identity.transfer, result.identity.transfer + 1)
+                # Recovery/new START cannot mutate the caller's immutable copy.
+                self.assertEqual((error.result.payload, error.result.raw_rx_bits), (b'\xA6', bits))
+
+    def test_rejected_release_recovery_keeps_owner_for_explicit_retry(self):
+        loaded = self.host.load(compact_spi(1))
+        pending = loaded.submit(tx=b'\x96')
+        self.endpoint.port.finish((), 0, outcome='fault')
+        self.endpoint.port.reject_command = 4
+        original = self.endpoint._reply
+        armed = [True]
+        def lose_release(sequence, code, status):
+            original(sequence, code, status)
+            if armed[0] and self.endpoint.delivered[-1].get('command') == 4:
+                armed[0] = False
+                self.endpoint.drop_response_close = True
+        self.endpoint._reply = lose_release
+        with self.assertRaises(BufferedHardwareTransportError): pending.release()
+        recovered = pending.recover()
+        self.assertEqual((recovered['retained'], recovered['rejected']), (1, 1))
+        self.assertIs(self.host._pending, pending)
+        self.assertIsNone(self.host._release_attempt)
+        with self.assertRaises(TransferError): loaded.submit(tx=b'\x96')
+        self.endpoint.port.reject_command = None
+        pending.release()
+        self.assertIsNone(self.host._pending)
+
+    def test_release_recovery_requires_matching_identity_and_valid_free_image(self):
+        for corrupt in ('identity', 'invalid_image'):
+            with self.subTest(corrupt=corrupt):
+                endpoint = SerialEndpointFixture()
+                host = BufferedSramSerialHost(BufferedSramSerialTransport(endpoint))
+                host.initialize()
+                loaded = host.load(compact_spi(1))
+                pending = loaded.submit(tx=b'\x96')
+                endpoint.port.finish((), 0, outcome='fault')
+                original = endpoint._reply
+                def lose_release(sequence, code, status):
+                    original(sequence, code, status)
+                    if endpoint.delivered[-1].get('command') == 4:
+                        endpoint.drop_response_close = True
+                        if corrupt == 'identity':
+                            endpoint.response ^= 1 << 91
+                        else:
+                            endpoint.response &= ~1
+                endpoint._reply = lose_release
+                with self.assertRaises(BufferedHardwareTransportError): pending.release()
+                with self.assertRaises((TransferError, BufferedHardwareTransportError)): pending.recover()
+                self.assertIs(host._pending, pending)
+                with self.assertRaises(TransferError): loaded.submit(tx=b'\x96')
 
     def test_corrupt_complete_start_receipt_recovers_with_status_only(self):
         loaded = self.host.load(compact_spi(1))

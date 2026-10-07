@@ -142,9 +142,10 @@ class BufferedSramSerialTransport:
     """Public pin transport with one outstanding request and explicit recovery.
 
     ``tick`` returns integer pre-edge ``miso`` and post-edge ``ready``. A failed
-    transaction remains outstanding; ``recover_response`` only reads its held
-    receipt and never repeats the request. Backend initialization and protocol
-    input sampling are the backend's responsibility.
+    transaction remains outstanding. ``recover_response`` drains its held
+    receipt or uses a fresh STATUS after a corrupt complete receipt was consumed
+    and idle CS/READY were established. It never retries an owned command.
+    Backend initialization and protocol input sampling are its responsibility.
     """
     def __init__(self, backend, *, phase_cycles=1, ready_timeout_edges=8):
         if not callable(getattr(backend, 'tick', None)):
@@ -274,16 +275,39 @@ class BufferedSramSerialTransport:
 @dataclass(frozen=True)
 class LoadedBufferedSramSerial(LoadedBufferedHardware):
     def run(self, *, tx, rx_limit=None, timeout_polls=100_000):
+        """Run and release; release transport errors also carry immutable ``result``.
+
+        That completion was already read successfully. The existing ``pending``
+        and ``cause`` still describe the uncertain RELEASE and its recovery.
+        """
         _integer(timeout_polls, 0, (1 << 63) - 1, 'Host serial poll budget')
         pending = self.submit(tx=tx, rx_limit=rx_limit)
         pending.wait(timeout_polls=timeout_polls)
         result = pending.read()
-        pending.release()
+        try:
+            pending.release()
+        except BufferedHardwareTransportError as error:
+            error.result = result
+            raise
         return result
 
 
 @dataclass(frozen=True)
 class PendingBufferedSramSerial(PendingBufferedHardware):
+    def _edge(self, **fields):
+        releasing = fields == dict(command=4,
+            expected_generation=self.identity.generation,
+            expected_transfer=self.identity.transfer)
+        if releasing:
+            self._require_local()
+            self.host._release_attempt = self
+        status = super()._edge(**fields)
+        if releasing:
+            # A returned command receipt is handled by release() normally. An
+            # exception keeps this exact local operation available for recovery.
+            self.host._release_attempt = None
+        return status
+
     def wait(self, *, timeout_polls=100_000):
         _integer(timeout_polls, 0, (1 << 63) - 1, 'Host serial poll budget')
         self._require_local()
@@ -298,13 +322,52 @@ class PendingBufferedSramSerial(PendingBufferedHardware):
             raise TransferError('Hardware no longer retains this transfer')
         return dict(status)
 
+    def read(self):
+        """Read the retained prefix atomically from one complete frozen receipt.
+
+        The serial response already snapshots the whole RX word, bounds,
+        outcome, scratch and identity on one edge. Indexed polls are unnecessary
+        for this ABI; the index-zero window still witnesses the public read port.
+        """
+        status = self._edge(command=0, read_index=0)
+        if not status['retained'] or status['busy']:
+            raise TransferError('Result read requires a retained hardware completion')
+        length, data = status['rx_length'], status['rx_data']
+        if status['read_valid'] != int(length > 0):
+            raise RuntimeError('Serial retained result has an invalid read window')
+        if length and status['read_bit'] != (data & 1):
+            raise RuntimeError('Serial indexed first bit differs from its frozen RX word')
+        raw = tuple(bool(data & (1 << index)) for index in range(length))
+        outcome = self.host._result_outcome(status)
+        if outcome == 'complete' and status['tx_consumed'] != self.image.tx_bits:
+            raise ValueError('Completed hardware transfer did not consume the declared TX demand')
+        payload = self.image.decode_rx(raw) if outcome == 'complete' else None
+        return self.host._make_result(self, status, outcome, raw, payload)
+
     def recover(self):
-        """Recover only the outstanding receipt, then verify the owned identity."""
+        """Recover a receipt without retrying the command; finalize known RELEASE.
+
+        A matching accepted RELEASE can already have freed the hardware slot
+        when its acknowledgement was lost. Its recovered free-state receipt
+        also releases this host's local handle. Other commands retain ownership.
+        """
         self._require_local()
         try:
             status = self.host.transport.recover_response()
             self.host._last = _checked_status(status)
-            return dict(self._owned(self.host._last))
+            status = self._owned(self.host._last)
+            if self.host._release_attempt is self:
+                if status['retained']:
+                    # The result is still owned, so an explicit release attempt
+                    # remains possible after a rejected or undelivered command.
+                    self.host._release_attempt = None
+                elif (status['valid'] and not status['pending'] and
+                      not status['busy'] and not status['rejected'] and
+                      status['mode'] == 0 and status['phase'] == 0):
+                    self.host._pending = self.host._release_attempt = None
+                else:
+                    raise SerialProtocolError('Recovered RELEASE did not establish the matching free slot')
+            return dict(status)
         except TransferError:
             raise
         except Exception as error:
@@ -317,6 +380,19 @@ class BufferedSramSerialHost(BufferedSramHardwareHost):
         if type(transport) is not BufferedSramSerialTransport:
             raise ValueError('Serial SRAM host requires its versioned transport')
         super().__init__(transport)
+        self._release_attempt = None
+
+    def _invalidate(self):
+        super()._invalidate()
+        self._release_attempt = None
+
+    def _edge(self, **fields):
+        status = self.transport.edge(**fields)
+        self.edges += 1
+        # The parallel base host deliberately drops bulk RX data from its
+        # observation. This ABI validates and retains the complete frozen word.
+        self._last = _checked_status(status)
+        return self._last
 
     def initialize(self):
         # A partially delivered physical reset must invalidate software handles
