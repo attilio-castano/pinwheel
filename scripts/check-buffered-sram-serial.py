@@ -297,6 +297,9 @@ def wire_cases(executable, *, bounded=False):
             results.append(dict(checked,outcome=outcome,rx_valid_bits=result.rx_valid_bits,
                                 tx_consumed_bits=result.tx_consumed_bits))
             pending.release(); rtl.device=None
+            # Sample the released external drive before a new peer interprets
+            # the bus. The previous snapshot may include its old SDA/SCL sink.
+            rtl.tick(csn=1,sck=0,mosi=0)
         report=dict(cases=len(results),spi_cases=sum(p=='spi' for p,*_ in fixtures),
             jtag_cases=sum(p=='jtag' for p,*_ in fixtures),i2c_cases=sum(p=='i2c' for p,*_ in fixtures),
             physical_edges=rtl.cycle,requests=transport.requests,responses=transport.responses,
