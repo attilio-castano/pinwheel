@@ -185,10 +185,29 @@ def native_export(run, out, request):
     for name in ('vectors.json', 'core.mlir', 'assembly.json'):
         BASE.require((interpreted / name).read_bytes() == (native / name).read_bytes(),
                      'Native/interpreted exporter differs: ' + name)
-    run([executable, out / 'input.json', out], 'export')
+    supervisor_report = out / 'export-shards/report.json'
+    try:
+        run([sys.executable, ROOT / 'scripts/buffered_shared_branches_export.py',
+            executable, out / 'input.json', out, native, '--checker',
+            ROOT / 'scripts/check-buffered-shared-branches.py'], 'export', timeout=1805)
+    finally:
+        # Child records survive failure/cancellation as well as successful export.
+        if supervisor_report.exists():
+            run.records.extend(json.loads(supervisor_report.read_text())['commands'])
+    shards = json.loads(supervisor_report.read_text())
+    BASE.require(shards['status'] == 'passed' and 1 <= shards['jobs'] <= 4 and
+                 shards['cases'] == len(request['cases']) and
+                 shards['edges'] == sum(len(c['vectors']) for c in request['cases']) and
+                 all(c.get('direct_child_reaped') and c.get('exit_code') == 0
+                     for c in shards['commands']), 'Incomplete supervised native export')
     return dict(compiler=compiler, cases=len(small['cases']),
         edges=sum(len(c['vectors']) for c in small['cases']),
         byte_identical=['vectors.json', 'core.mlir', 'assembly.json'],
+        full_export_shards=dict(report=str(supervisor_report.relative_to(out)),
+            report_sha256=sha(supervisor_report), jobs=shards['jobs'],
+            cases=shards['cases'], edges=shards['edges'], full_check=shards['full_check'],
+            artifact_sha256=shards['artifact_sha256'],
+            boundary='Whole independent cases; exact transcript and original-order merge; all shards equal native parity MLIR/metadata. Same typed circuit and Expr.eval.'),
         library_sha256=sha(library), executable_sha256=sha(executable), c_sha256=sha(out / 'export.c'),
         boundary='Finite interpreter/native parity; no universal native compiler or emitter proof.')
 
