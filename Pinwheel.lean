@@ -131,6 +131,7 @@ import Pinwheel.Hardware.Buffered.SramModel
 import Pinwheel.Hardware.Buffered.SramProofs
 import Pinwheel.Hardware.Buffered.SerialModel
 import Pinwheel.Hardware.Buffered.SerialProofs
+import Pinwheel.Hardware.Buffered.SramLoading
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
