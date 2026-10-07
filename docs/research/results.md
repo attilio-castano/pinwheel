@@ -198,6 +198,19 @@ laws and independent memo evaluator/oracle comparisons support the digital
 implementation; initialized loader/trace, serial/package and physical
 qualification remain separate. The linked study owns receipts and exact scope.
 
+The [versioned buffered serial continuation — October 7](../protocols/buffered-sram-serial.md)
+carries atomic row/dictionary loading, generation-checked START and matching
+RELEASE to the same two-macro engine. One frozen response returns identity,
+outcome, valid RX prefix and diagnostics together; repeated reads preserve the
+owned result. Explicit uncertain-delivery recovery does not resend START or
+RELEASE, and convenience `run` retains the already-read result if release
+transport fails. Independent protocol peers exercise different uploaded
+SPI/JTAG/I²C programs through the same serial interface. The linked study
+owns the acceptance receipts and distinguishes local kernel laws, finite
+initialized traces, optimized source-state mapping SAT and open physical gates.
+This supplies a concrete programming interface while initialized source/package
+refinement and electrical serial/SRAM qualification remain open.
+
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
 Lean ownership proofs and 2,630 differential transitions cover local bounds,

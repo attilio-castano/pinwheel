@@ -6436,3 +6436,60 @@ binds both reports, 733 frozen inputs, 212 accepted artifacts, all 427 predecess
 hardware/physical hashes and 47 separately retained development files. Current
 bytes match those pins and the `2aa8692` snapshot. These local artifact hashes do
 not themselves establish durable backup custody.
+
+## 2026-10-07 — Versioned serial loading and retained results
+
+The [serial continuation](../protocols/buffered-sram-serial.md) stays on
+`codex/buffered-sram-fetch`. Commit `3a6bf41` records the 160-bit request and
+192-bit response ABI. Commit `c724c79` implements the typed frontend, local
+kernel laws, public-pin RTL composition and source-bound host. Commit `8eae57b`
+adds atomic frozen RX reads, independent delivery/receipt reconstruction,
+saved binding/mapping checks and explicit lost START/RELEASE recovery. A lost
+release acknowledgement during convenience `run` retains the already-read
+immutable result on the error. No uncertain owned command is retried
+automatically. Commit `9284120` settles the released external peer drive before
+the next peer observes the bus, correcting the first full gate's I²C fixture.
+
+Development receipts preserve the initial mixed compiler-output capture,
+optimized named-width and aliased-state intake failures, and first full gate
+`buffered-sram-serial-01`. The accepted mapping boundary is explicit: thirteen
+declared registers / 389 coordinates become 370 physical classes, fourteen
+constants, four extra aliases and one omitted response bit. Both saved mappings
+compare all nineteen outputs and all 370 physical next-state bits at the
+optimized source boundary, and reject MISO inversion and alias/constant changes.
+This does not establish equality over all arbitrary typed 389-bit states.
+
+Full hardware run `buffered-sram-serial-02` passes in 1,981.385 seconds, report
+SHA-256 `58ecc12165865ee5a49ddb4ecfe39013614fec89396b0d86dfe50978ecce13ae`.
+The initialized frontend checks 69 cases / 53,775 edges; one case / 1,111 edges
+matches native and interpreted emission byte-for-byte. Twenty-one independent
+SPI/JTAG/I²C cases agree with the typed oracle over 283,623 physical serial
+edges. Lifecycle checks add 262,140 edges, including incomplete upload, busy
+and retained reset, replacement and exactly one delivered START/RELEASE under
+lost receipt observation. Both varied macro startup patterns and both complete
+mapped packages pass three protocol cases / 107,064 edges each. Normal and
+optimized Python each pass 1,123 tests with two platform-specific skips.
+
+The typical frontend adds 370 FF bits and 32,545.9134 µm² of cell area. Combining
+its saved cells with the accepted controller and macro footprints yields a
+428,070.2840 µm² allocation screen, excluding routing, clock tree, pads and
+electrical timing. This measures the interface cost of programming different
+protocols into the same engine, without claiming a qualified physical chip.
+
+Portable foundation `buffered-sram-serial-foundation-01` passes in 1,784.866
+seconds: 288 modules, 56 executable suites and one kernel suite. The serial
+fixture checks 16,269 ordinary typed edges and 224 independently seeded
+represented states. The whole-library audit checks 25,596 declarations and
+13,690 theorem constants with standard axioms and rejects the custom axiom.
+Report SHA-256 is
+`74d2c9caafd04a689db1ce21da6d8c63ffcb4de956fa24829dbc4feee56fadb0`.
+
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-serial-results.json)
+binds both reports, 722 frozen inputs, 211 accepted artifacts, 639 unchanged
+predecessor files and 163 development files. The experiment index intentionally
+adds this study; its previous content remains bound to its Git blob. The serial gate verifies its
+predecessor at intake; joint closeout verifies all predecessor pins again.
+The next formal gate derives resident bank agreement from initialized loading
+and composes source execution with the serial ownership lifecycle. Complete
+initialized package refinement, physical serial sampling, SRAM timing and
+qualification, routing and package power remain separate gates.

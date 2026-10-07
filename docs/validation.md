@@ -114,6 +114,19 @@ local scheduling/array/mirror/tail proofs and finite executable binding and
 closed-loop comparisons. A complete initialized compiler/loader/package
 refinement and physical qualification remain separate.
 
+The [buffered serial gate](protocols/buffered-sram-serial.md),
+`python3 -B scripts/check-buffered-sram-serial.py --tag <fresh-tag>`, checks
+atomic versioned requests, frozen receipts and retained ownership through the
+complete serial/controller/two-macro package. A separate sampled-wire schedule
+reconstructs every delivered command and compares public pins and receipt bits
+with the unchanged typed SRAM oracle. Independent SPI/JTAG/I²C peers, malformed
+frames, upload coverage, busy/retained reset, replacement and uncertain delivery
+exercise the host lifecycle. Saved frontend mappings have separate optimized
+source-state SAT and initialized finite replay gates. They are reattached to
+the accepted mapped controller and macros for public-wire checks. The portable
+foundation adds `BufferedSramSerial` and its local kernel laws. Electrical
+serial sampling and complete initialized source/package refinement remain open.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-07 after the buffered latency-one SRAM implementation, following
-the storage/fetch comparison and unified owned-transfer workflow.
+Updated 2026-10-07 after the versioned buffered serial interface, following
+the latency-one SRAM implementation and unified owned-transfer workflow.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -140,13 +140,23 @@ shared-branch FF baseline, excluding routing/clock tree. Complete behavior relie
 finite comparison with the unchanged predecessor oracle and macro-bound RTL;
 initialized loader/trace and universal native/compiler refinement remain open.
 
-**Next decision: a concrete versioned serial command/result package.**
-Carry the common load/submit/wait/read/release lifecycle to a serial boundary,
-including framing, backpressure, reset, rejected uploads and retained results.
-Keep image admission and one transfer owner explicit. In parallel, derive live
-resident bank agreement from initialized upload coverage and compose the
-selected response/metadata/dictionary with the execution relation. The current
-local availability law assumes that agreement.
+**Implemented interface: [versioned serial loading and retained results](../protocols/buffered-sram-serial.md).**
+Atomic 160-bit requests load the unchanged SRAM execution engine; a held
+192-bit response returns all engine fields, including the full valid RX prefix
+and diagnostics. SPI/JTAG/I²C share image admission, submit/wait/read/release and
+one retained owner. Partial reads preserve the receipt. Explicit recovery never
+resends an uncertain START or RELEASE; an accepted release frees local ownership
+and permits resident-image reuse. Protocol execution continues during serial
+I/O, so the host counts polls separately from physical edges. Kernel laws,
+finite initialized frontend/package replays and optimized-state saved mapping
+checks have separate scopes, recorded in the linked study.
+
+**Next decision: initialized loading and resident execution correspondence.**
+Derive live resident bank agreement from initialized upload coverage, then
+compose the selected response/metadata/dictionary with the source execution
+relation and this serial ownership lifecycle. The current local availability
+law assumes that agreement. The new serial interface gives this proof a concrete
+external command and result boundary; it does not establish that theorem.
 Actual SRAM return/address timing, physical sampling, SRAM qualification and
 package power retain their distinct evidence gates. First-stage prediction is
 a separate alternative and still requires synchronizer qualification.

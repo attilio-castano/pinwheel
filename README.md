@@ -113,8 +113,11 @@ one circuit with retained prefixes. The [storage/fetch comparison](docs/protocol
 adds a separately admitted shared-branch bank with the same execution edges
 and owned-result interface. Its [latency-one SRAM continuation](docs/protocols/buffered-sram-hardware.md)
 uses two instruction replicas and a START mirror below the same programming
-layer. These are opt-in parallel targets; serial/package integration and
-physical qualification retain their own gates.
+layer. Its [versioned serial continuation](docs/protocols/buffered-sram-serial.md)
+carries complete row uploads and retained results over sampled serial pins.
+One frozen response returns the owned RX prefix, outcome and diagnostics;
+matching release permits another transfer with the resident image. These are
+opt-in targets with separate formal and physical qualification gates.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

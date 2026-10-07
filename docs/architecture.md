@@ -181,8 +181,18 @@ rollover without sampler lookahead. Registered branch selection and actual
 entry-PC metadata align responses without tags. Count projection masks stale
 compact rows before dictionary expansion. Local kernel laws connect actual
 requests and array edges; complete behavior is checked by closed-loop typed and
-macro-bound RTL replay. Loader trace refinement, serial/package integration and
-physical timing remain separate.
+macro-bound RTL replay. Loader trace refinement and physical timing remain
+separate.
+
+The [versioned serial continuation](protocols/buffered-sram-serial.md) places a
+160-bit atomic command receiver and 192-bit held receipt beside that unchanged
+controller and its two macros. The common source language and image admission
+still define SPI/JTAG/I²C behavior; this boundary defines how a host loads and
+owns it. Exact-length response reads acknowledge receipts, while explicit
+identity-matched RELEASE frees a retained transfer. A complete frozen response
+returns RX data and diagnostics together. Serial clocks advance execution, so
+host wait budgets count polls separately from physical edges. Partial reads
+retain the receipt, and explicit recovery never resends START automatically.
 
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
