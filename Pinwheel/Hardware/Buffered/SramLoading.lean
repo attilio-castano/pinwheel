@@ -1,9 +1,10 @@
 import Pinwheel.Hardware.Buffered.SramState
+import Pinwheel.Hardware.Buffered.SramCoverage
 
 /-! An accepted-upload ledger for the actual closed-loop SRAM controller.
 Unknown startup cells, metadata, dictionary entries and the START mirror remain
 unspecified. Only actual accepted writes establish ledger values. COMMIT's tail
-clearing is recorded independently of instruction storage.+-/
+clearing is recorded independently of instruction storage. -/
 namespace Pinwheel.Hardware.Buffered.SramLoading
 open Pinwheel.Hardware
 open SramState
@@ -131,7 +132,7 @@ def run (s : State) (t : Ledger) (inputs : List (Values Reactive.Input)) : State
   inputs.foldl advance (s,t)
 
 /-- Actual accepted requests, rather than a supplied write schedule, determine
-every ledger update. This relation covers reset, rejected commands and runtime.+-/
+every ledger update. This relation covers reset, rejected commands and runtime. -/
 theorem agrees_run (inputs : List (Values Reactive.Input)) (s : State) (t : Ledger)
     (h : Agrees s t) : Agrees (run s t inputs).1 (run s t inputs).2 := by
   induction inputs generalizing s t with
@@ -139,6 +140,9 @@ theorem agrees_run (inputs : List (Values Reactive.Input)) (s : State) (t : Ledg
   | cons i rest ih => exact ih (s.step i) (t.step s i) (agrees_step s t i h)
   done
 
+/-- Initializing the unknown ledger alone establishes memory agreement; this
+does not initialize the hardware coverage masks. Use `initialized_loading` for
+the initialized controller contract. -/
 theorem independently_initialized_history (s : State)
     (inputs : List (Values Reactive.Input)) :
     Agrees (run s Ledger.initial inputs).1 (run s Ledger.initial inputs).2 :=
@@ -214,5 +218,107 @@ def Ledger.rows (t : Ledger) : Memory.Contents 6 92 :=
   fun k => (t.metadata k).getD 0 ++ t.instructions k
 def Ledger.dictionaryWords (t : Ledger) : Memory.Contents 4 56 :=
   fun k => (t.dictionary k).getD 0
+
+theorem row_defined_write (s : State) (t : Ledger) (i : Values Reactive.Input)
+    (k : BitVec 6) (hw : rowAccepted s i = true) (ha : i .address = k) :
+    (t.step s i).words.Defined k := by
+  exact ⟨i .word, by simp [word_contents_step, hw, ha]⟩
+
+theorem dictionary_defined_write (s : State) (t : Ledger) (i : Values Reactive.Input)
+    (k : BitVec 4) (hw : tableAccepted s i = true)
+    (ha : (i .address).extractLsb' 0 4 = k) :
+    ∃ v, (t.step s i).dictionary k = some v := by
+  exact ⟨i .branch, by simp [Ledger.step, hw, ha]⟩
+
+theorem known_word (s : State) (t : Ledger) (h : Agrees s t)
+    (k : BitVec 6) (hk : t.words.Defined k) (port : Fin 2) :
+    (s.arrays port).contents k = t.instructions k := by
+  obtain ⟨v,hv⟩ := hk
+  simpa [Ledger.instructions, hv] using (h.words port).1 k v hv
+  done
+
+theorem known_metadata (s : State) (t : Ledger) (h : Agrees s t) (hc : Coherent t)
+    (k : BitVec 6) (hk : t.words.Defined k) :
+    s.registers (.metadata k) = (t.rows k).extractLsb' 64 28 := by
+  obtain ⟨v,hv⟩ := hc.metadata k hk
+  change s.registers (.metadata k) =
+    (((t.metadata k).getD 0 : BitVec 28) ++ t.instructions k).extractLsb' 64 28
+  rw [BitVec.extractLsb'_append_eq_left, hv]
+  exact h.metadata k v hv
+  done
+
+theorem row_word (t : Ledger) (k : BitVec 6) :
+    (t.rows k).extractLsb' 0 64 = t.instructions k := by
+  change (((t.metadata k).getD 0 : BitVec 28) ++ t.instructions k).extractLsb' 0 64 = _
+  simp only [BitVec.extractLsb'_append_eq_of_add_le (by decide : 0+64 ≤ 64),
+    BitVec.extractLsb'_eq_self]
+  done
+
+theorem known_dictionary (s : State) (t : Ledger) (h : Agrees s t)
+    (k : BitVec 4) (hk : ∃ v, t.dictionary k = some v) :
+    s.registers (.branch k) = t.dictionaryWords k := by
+  obtain ⟨v,hv⟩ := hk
+  simpa only [Ledger.dictionaryWords, hv, Option.getD_some] using h.dictionary k v hv
+  done
+
+theorem known_start (s : State) (t : Ledger) (h : Agrees s t) (hc : Coherent t)
+    (hk : t.words.Defined 0) : s.registers .startWord = t.instructions 0 := by
+  obtain ⟨v,hv⟩ := hk
+  simpa only [Ledger.instructions, hv, Option.getD_some] using h.start v (hc.start v hv)
+  done
+
+structure Covered (s : State) (t : Ledger) : Prop where
+  rows : ∀ k, (s.registers (.core .written)).getLsbD k.toNat = true → t.words.Defined k
+  dictionary : ∀ k, (s.registers .branchWritten).getLsbD k.toNat = true →
+    ∃ v, t.dictionary k = some v
+
+theorem covered_cold (s : State) (i : Values Reactive.Input) (hi : i .initialize = 1)
+    (t : Ledger) : Covered (s.step i) t := by
+  have h := SramCoverage.cold_masks (s.inputs i) s.registers hi
+  constructor <;> simp only [State.step, h.1, h.2]
+  all_goals simp
+  done
+
+theorem covered_rows_step (s : State) (t : Ledger) (i : Values Reactive.Input)
+    (h : Covered s t) (k : BitVec 6)
+    (hk : ((s.step i).registers (.core .written)).getLsbD k.toNat = true) :
+    (t.step s i).words.Defined k := by
+  rcases SramCoverage.row_mask_provenance (s.inputs i) s.registers k hk with hw | hold
+  · exact row_defined_write s t i k (by simpa only [rowAccepted, decide_eq_true_eq] using hw.1) hw.2
+  · exact t.words.defined_step _ k (h.rows k hold)
+  done
+
+theorem covered_dictionary_step (s : State) (t : Ledger) (i : Values Reactive.Input)
+    (h : Covered s t) (k : BitVec 4)
+    (hk : ((s.step i).registers .branchWritten).getLsbD k.toNat = true) :
+    ∃ v, (t.step s i).dictionary k = some v := by
+  rcases SramCoverage.dictionary_mask_provenance (s.inputs i) s.registers k hk with hw | hold
+  · exact dictionary_defined_write s t i k
+      (by simpa only [tableAccepted, decide_eq_true_eq] using hw.1) hw.2
+  · exact dictionary_defined_step s t i k (h.dictionary k hold)
+  done
+
+theorem covered_step (s : State) (t : Ledger) (i : Values Reactive.Input)
+    (h : Covered s t) : Covered (s.step i) (t.step s i) :=
+  ⟨covered_rows_step s t i h, covered_dictionary_step s t i h⟩
+
+theorem covered_run (inputs : List (Values Reactive.Input)) (s : State) (t : Ledger)
+    (h : Covered s t) : Covered (run s t inputs).1 (run s t inputs).2 := by
+  induction inputs generalizing s t with
+  | nil => exact h
+  | cons i rest ih => exact ih (s.step i) (t.step s i) (covered_step s t i h)
+  done
+
+/-- Cold initialization discards arbitrary coverage bits; accepted history then
+establishes every covered word and dictionary slot. It never assumes cleared
+SRAM contents or equal memory copies, metadata, dictionary values or Q.
+-/
+theorem initialized_loading (s : State) (i : Values Reactive.Input)
+    (hi : i .initialize = 1) (inputs : List (Values Reactive.Input)) :
+    let after := run (s.step i) Ledger.initial inputs
+    Agrees after.1 after.2 ∧ Coherent after.2 ∧ Covered after.1 after.2 :=
+  ⟨agrees_run inputs (s.step i) Ledger.initial (agrees_initial _),
+    coherent_run inputs (s.step i) Ledger.initial coherent_initial,
+    covered_run inputs (s.step i) Ledger.initial (covered_cold s i hi _)⟩
 
 end Pinwheel.Hardware.Buffered.SramLoading
