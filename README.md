@@ -111,8 +111,10 @@ no extra dispatch clocks. The [reactive hardware continuation](docs/protocols/bu
 adds ACK decisions, waits and branches, running SPI, JTAG and multi-byte I²C on
 one circuit with retained prefixes. The [storage/fetch comparison](docs/protocols/buffered-storage-fetch.md)
 adds a separately admitted shared-branch bank with the same execution edges
-and owned-result interface. These are opt-in parallel targets; synchronous
-memory and paired serial/package integration retain their own gates.
+and owned-result interface. Its [latency-one SRAM continuation](docs/protocols/buffered-sram-hardware.md)
+uses two instruction replicas and a START mirror below the same programming
+layer. These are opt-in parallel targets; serial/package integration and
+physical qualification retain their own gates.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

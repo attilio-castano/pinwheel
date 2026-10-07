@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-07 after the buffered storage/fetch comparison, following
-reactive counted hardware and the unified owned-transfer workflow.
+Updated 2026-10-07 after the buffered latency-one SRAM implementation, following
+the storage/fetch comparison and unified owned-transfer workflow.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -127,15 +127,29 @@ Matched typical cell area falls 26.45% to 644,939.6310 µm², while maximum
 next-state cell levels rise from 40 to 43. Full emitted wires, saved mapping
 equivalence/replays and the portable foundation pass; timing remains unqualified.
 
-**Next decision: one explicit latency-one buffered fetch organization.**
-Compare both-candidate prefetch against sampler lookahead under one-cycle
-instructions, checked branches, wait release and nested-loop exits. Include
-actual macro width/replication, cached start row, branch metadata, upload
-coverage and owned TX/RX. Using the first sampler stage for address prediction
-requires its own synchronizer and timing evidence. Then design versioned serial
-loading and result operations.
-Complete initialized compiler/package refinement, physical sampling, SRAM
-qualification and package power retain their existing gates.
+**Implemented continuation: [buffered latency-one SRAM](../protocols/buffered-sram-hardware.md).**
+Two replicated 64×64 instruction memories serve both prospective branch
+successors. Metadata/dictionary stay in FFs; a row-zero mirror supports immediate
+START. The controller declares 3,151 FF bits and preserves the shared program,
+owned-result interface and waveform edges. Local kernel laws connect actual
+requests, array edges, mirror and tail projection. Full hardware acceptance
+passes 232 command cases and 2,311 emitted wire cases plus both saved mappings;
+the 55-suite portable foundation also passes.
+Typical cell area plus macro footprints is 395,524.3706 µm², 38.67% below the
+shared-branch FF baseline, excluding routing/clock tree. Complete behavior relies on
+finite comparison with the unchanged predecessor oracle and macro-bound RTL;
+initialized loader/trace and universal native/compiler refinement remain open.
+
+**Next decision: a concrete versioned serial command/result package.**
+Carry the common load/submit/wait/read/release lifecycle to a serial boundary,
+including framing, backpressure, reset, rejected uploads and retained results.
+Keep image admission and one transfer owner explicit. In parallel, derive live
+resident bank agreement from initialized upload coverage and compose the
+selected response/metadata/dictionary with the execution relation. The current
+local availability law assumes that agreement.
+Actual SRAM return/address timing, physical sampling, SRAM qualification and
+package power retain their distinct evidence gates. First-stage prediction is
+a separate alternative and still requires synchronizer qualification.
 
 The larger [complete design iteration](complete-design-iteration.md) remains open.
 The merged contribution collects the conditional proofs, retained RTL

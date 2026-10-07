@@ -185,6 +185,19 @@ laws establish a fixed-response deadline and dual-candidate selection;
 actual-step sampler lookahead makes a single-port alternative plausible,
 subject to complete controller, address timing and synchronizer qualification.
 
+The [buffered latency-one SRAM continuation — October 7](../protocols/buffered-sram-hardware.md)
+implements two replicated 64×64 instruction memories below that same admitted
+source/interface. A START mirror, combinational metadata/dictionary and both
+prospective successors preserve the execution edges without first-stage sampler
+prediction. Controller FF state falls from 7,183 to 3,151 bits. Matched typical
+controller cell area plus two complete macro footprints is 395,524.3706 µm²,
+38.67% below the register baseline; physical routing/clocking remain excluded.
+Full hardware acceptance passes 232 command cases, 2,311 emitted wire cases and
+both saved mapping/closed-loop gates. Local kernel scheduling/array/mirror/tail
+laws and independent memo evaluator/oracle comparisons support the digital
+implementation; initialized loader/trace, serial/package and physical
+qualification remain separate. The linked study owns receipts and exact scope.
+
 The [finite-transfer continuation — October 6](../protocols/buffered-transfers.md)
 chooses one preloaded TX/reserved RX slot and retained completion. Twenty-three
 Lean ownership proofs and 2,630 differential transitions cover local bounds,

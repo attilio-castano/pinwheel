@@ -172,6 +172,18 @@ and owned-result lifecycle. Fetch laws and actual sampler-lookahead fixtures
 make the synchronous-memory deadlines explicit, without claiming an SRAM
 controller or physical timing qualification.
 
+The [buffered SRAM continuation](protocols/buffered-sram-hardware.md) implements
+two-candidate latency-one fetch with two replicated 64×64 instruction memories.
+The controller retains metadata, dictionary, execution/owned data state and a
+row-zero START mirror: 3,151 FF bits. Requests use both successors of the actual
+prospective core step, supporting consecutive one-cycle branches and loop
+rollover without sampler lookahead. Registered branch selection and actual
+entry-PC metadata align responses without tags. Count projection masks stale
+compact rows before dictionary expansion. Local kernel laws connect actual
+requests and array edges; complete behavior is checked by closed-loop typed and
+macro-bound RTL replay. Loader trace refinement, serial/package integration and
+physical timing remain separate.
+
 The [composed dense cached backend](engine/hardware-closure.md#composed-backend) uses
 typed combinational bindings so shared successor/PC logic has one explicit
 definition. Its netlist semantics evaluates all bindings from the same pre-edge

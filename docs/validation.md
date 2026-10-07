@@ -96,8 +96,23 @@ run directory; it is separate from the portable foundation. The foundation adds
 `BufferedFetchDeadline`, including eighteen named runtime/representation proofs,
 finite logical/executable adapter and emitter comparisons, eight named
 memory/fetch laws and sampler lookahead witnesses. Loader trace refinement,
-synchronizer qualification and complete latency-one buffered SRAM execution
-remain separate.
+synchronizer qualification and initialized loader trace refinement remain
+separate.
+
+The [buffered SRAM gate](protocols/buffered-sram-hardware.md),
+`python3 -B scripts/check-buffered-sram.py --tag <fresh-tag>`, checks the
+separately versioned two-candidate hybrid against the unchanged accepted
+shared-bank oracle. It compares interpreter/native artifacts, all public command
+fields, independent protocol peers, poisoned initial states and complete macro
+bindings. Saved controller mappings use unrestricted Q inputs for arbitrary-state
+SAT, then reattach both pinned macros for command and wire replays. Macro count,
+port directions, controller aliases and broadcast/full-word wiring are checked
+explicitly with rejection controls. The portable foundation adds
+`BufferedSramHardware`, `BufferedSramCandidates`, `BufferedSramMemoBind` and
+`BufferedSramMemoEval`:
+local scheduling/array/mirror/tail proofs and finite executable binding and
+closed-loop comparisons. A complete initialized compiler/loader/package
+refinement and physical qualification remain separate.
 
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and

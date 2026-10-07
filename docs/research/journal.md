@@ -6364,3 +6364,75 @@ rows need four macros and leave 1,295 FF bits. These are allocation calculations
 not SRAM qualification or complete target area. First-stage prediction,
 initialized package refinement, serial loading/results, routed timing,
 component qualification and package power retain separate evidence gates.
+
+## 2026-10-07 — Buffered latency-one instruction SRAM
+
+The [SRAM continuation](../protocols/buffered-sram-hardware.md) on
+`codex/buffered-sram-fetch` starts from `2aa8692`. Commit `cbf375b` adds the
+versioned host and two broadcast-written 64×64 macro bindings. Commit `d34de6e`
+adds the typed prospective two-candidate controller, actual schedule/array and
+mirror/tail laws, closed-loop model and acceptance checks. It preserves the
+shared programming layer, sixteen-descriptor admission, owned TX/RX and original
+waveform edges. The controller has 117 registers / 3,151 FF bits, including a
+64-bit START mirror; the two instruction arrays allocate 8,192 bits separately.
+
+Initial full interpreted fixture evaluation was interrupted, then three bounded
+attempts exceeded 180, 180 and 600 seconds. Process samples showed bounded
+memory and CPU-bound ordinary recursive evaluation. A 32-edge diagnostic
+preserved every public/array/availability check and measured ~6.9 seconds per
+active interpreted dual-controller edge, or ~1.69 seconds natively. The source
+capture boundary for each failed probe is explicit in its development receipt;
+nearby commits are not asserted to be exact uncaptured fixture sources.
+The first foundation/hardware attempts were stopped to address that cost and a
+Yosys anonymous-controller ownership intake gap. Their logs remain development
+evidence, not acceptance.
+
+Commit `867d4ba` batches expression evaluation with a native cache local to one
+edge, retaining objects and checking widths. Its logical definition maps the
+unchanged `Expr.eval`; a kernel equality connects the model's snapshot to the
+actual circuit step. Independent comparisons cover 197,280 ordinary results,
+and the full 1,410-edge fixture keeps every public-field/array/availability check
+plus ordinary snapshot/request boundary witnesses. The frozen predecessor oracle
+and emitted RTL provide separate full behavioral comparisons. The corrected
+readback accepts exact Yosys controller prefixes and rejects foreign circuitry,
+extra macros, wrong directions and disconnected controller aliases.
+
+Full hardware run `buffered-sram-02` passes in 1,027.204 s, report SHA-256
+`49bbe82bc6a85131e1ab10917c12c25701bb0cdaa5375b4567c5982260ed92e1`.
+Three interpreted/native cases and 123 edges match vectors, MLIR and register
+metadata byte-for-byte. Four workers export 232 cases / 11,892 edges in 6.416 s,
+checking 309,192 public fields and 10,144 independent expectations across 64 raw
+histories. Full emitted RTL passes 2,311 SPI/JTAG/I²C wire cases and 1,515,348
+independent sampler checks. Both independently poisoned macro-startup witnesses
+pass. Each saved mapping passes unrestricted-Q controller SAT, 232 macro-bound
+command replays and 58 wire cases; all macro/wiring and mapped-output controls
+reject. Python passes 1,057 of 1,059 tests normally and under `-O`, with two
+Linux-specific skips per mode.
+
+Both mappings retain all 3,151 controller FF bits. Typical CMOS5L controller
+cell area is 294,546.1050 µm²; two macro footprints add 100,978.2656 µm². Their
+sum, 395,524.3706 µm², is 38.67% below the unchanged shared-bank cell baseline.
+FF bits fall 56.13%. Typical next-state depth is 42 cell levels; prospective
+address outputs are 43 levels. These structural screens exclude macro timing,
+electrical loading, interconnect, clock tree, placement/routing and package.
+Independent closeout verifies all 733 hardware source hashes, 145 generated
+artifact hashes, 152 predecessor artifact pins and 427 unchanged predecessor
+hardware/physical files.
+
+The next interface decision is versioned serial loading and retained results.
+Deriving resident bank agreement from initialized upload coverage and composing
+selected instruction/metadata/dictionary with the execution relation remains
+formal work. Local availability assumes that agreement; finite replay and native
+cache checks do not replace a universal initialized/compiler/package theorem.
+Physical macro, sampling, package power and routed timing retain separate gates.
+
+Final portable foundation `buffered-sram-foundation-02` passes in 1,758.924 s:
+285 modules, 55 executable suites and one kernel suite. The standard-axiom audit
+checks 25,185 declarations and 13,492 theorem constants and rejects the injected
+custom axiom. Report SHA-256 is
+`b3277d9ddf146a6ffc0df5b2e7ef3efa3b72375804428ec25201d717929de72e`.
+The [tracked acceptance manifest](../../physical/experiments/buffered-sram-results.json)
+binds both reports, 733 frozen inputs, 212 accepted artifacts, all 427 predecessor
+hardware/physical hashes and 47 separately retained development files. Current
+bytes match those pins and the `2aa8692` snapshot. These local artifact hashes do
+not themselves establish durable backup custody.
