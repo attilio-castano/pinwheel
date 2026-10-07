@@ -280,8 +280,14 @@ def main():
         counts = re.search(r'Pinwheel audit: (\d+) declarations, (\d+) theorems;', audit)
         BASE.require(counts is not None, 'Missing whole-library axiom audit')
         report['audit'] = dict(declarations=int(counts[1]), theorems=int(counts[2]))
-        for suite in ('BufferedSharedBranches', 'BufferedFetchDeadline'):
-            run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', f'test/{suite}.lean'], suite)
+        for suite in ('BufferedSharedBranches', 'BufferedSharedBranchesMemo', 'BufferedFetchDeadline'):
+            output = run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', f'test/{suite}.lean'], suite)
+            if suite == 'BufferedSharedBranchesMemo':
+                counts = re.search(r'(\d+) fixtures; (\d+) Expr.bind evaluations; (\d+) byte-identical emitter comparisons', output)
+                BASE.require(counts is not None, 'Missing memoized adapter parity counts')
+                report['memo_adaptation'] = dict(fixtures=int(counts[1]), evaluations=int(counts[2]),
+                    byte_identical_emitter_comparisons=int(counts[3]),
+                    boundary='Finite executable adapter/Expr.bind and safe/native emitter parity; no universal native rewrite proof.')
         model = json.loads(run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run',
                                'test/BufferedExport.lean'], 'model-export'))
         request = convert_request(BASE.command_cases(model))

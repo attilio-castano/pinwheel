@@ -91,6 +91,110 @@ def rewrite : Reactive.E w → Rewritten w
   | .zero x => .plain (.zero (rewrite x).expression)
   | .mux c t f => merge (rewrite c).expression (rewrite t) (rewrite f)
 
+/-! Executable graph-sharing optimization. The kernel still sees the ordinary
+rewrite above. A per-adaptation cache retains source expression objects, checks
+cached widths, and expands each packed node at most once. Finite evaluation and
+emitter parity checks guard this implementation boundary; no universal native
+correctness theorem is claimed. -/
+namespace MemoAdapt
+structure Entry (w : Nat) where
+  rewritten : Rewritten w
+  expression : Option (E w) := none
+
+structure Cache where
+  entries : Std.HashMap (Nat × USize) (Sigma Entry) := {}
+  retained : Array (Sigma Reactive.E) := #[]
+
+abbrev M := StateM Cache
+
+private def checked (w : Nat) : Sigma Entry → Option (Entry w)
+  | ⟨v, e⟩ => if h : v = w then some (h ▸ e) else none
+
+private unsafe def force (e : Reactive.E w) (r : Rewritten w) : M (E w) := do
+  let key := (w, ptrAddrUnsafe e)
+  if let some entry := ((← get).entries[key]?).bind (checked w) then
+    if let some value := entry.expression then return value
+  let value := r.expression
+  modify fun s => {s with entries := s.entries.insert key ⟨w, ⟨r, some value⟩⟩}
+  return value
+
+private unsafe def merged (c : E 1) (told fold : Reactive.E w)
+    (t f : Rewritten w) : M (Rewritten w) :=
+  match t, f with
+    | .packed x, .packed y => pure (.packed (.mux c x y))
+    | t, f => do
+      let et ← force told t
+      let ef ← force fold f
+      pure (.plain (.mux c et ef))
+
+private unsafe def visit (e : Reactive.E w) : M (Rewritten w) := do
+  let key := (w, ptrAddrUnsafe e)
+  if let some entry := ((← get).entries[key]?).bind (checked w) then
+    return entry.rewritten
+  -- The same source object stays alive throughout this rewrite invocation.
+  modify fun s => {s with retained := s.retained.push ⟨w, e⟩}
+  let value ← (match (motive := (w : Nat) → Reactive.E w → M (Rewritten w)) w, e with
+    | _, .input p => pure (.plain (inputExpr p))
+    | _, .reg (.word k) => pure (.packed (.reg (.row k)))
+    | _, .reg r => pure (.plain (.reg (.core r)))
+    | _, .lit v => pure (.plain (.lit v))
+    | _, .concat x y => do
+      let rx ← visit x
+      let ry ← visit y
+      let ex ← force x rx
+      let ey ← force y ry
+      pure (.plain (.concat ex ey))
+    | _, .inv x => do
+      let r ← visit x
+      pure (.plain (.inv (← force x r)))
+    | _, .band x y => do
+      let rx ← visit x
+      let ry ← visit y
+      let ex ← force x rx
+      let ey ← force y ry
+      pure (.plain (.band ex ey))
+    | _, .sub x y => do
+      let rx ← visit x
+      let ry ← visit y
+      let ex ← force x rx
+      let ey ← force y ry
+      pure (.plain (.sub ex ey))
+    | _, .slice start len h x => do
+      let r ← visit x
+      pure (.plain (.slice start len h (← force x r)))
+    | _, .equal x y => do
+      let rx ← visit x
+      let ry ← visit y
+      let ex ← force x rx
+      let ey ← force y ry
+      pure (.plain (.equal ex ey))
+    | _, .ult x y => do
+      let rx ← visit x
+      let ry ← visit y
+      let ex ← force x rx
+      let ey ← force y ry
+      pure (.plain (.ult ex ey))
+    | _, .zero x => do
+      let r ← visit x
+      pure (.plain (.zero (← force x r)))
+    | _, .mux c t f => do
+      let rc ← visit c
+      let ec ← force c rc
+      let rt ← visit t
+      let rf ← visit f
+      merged ec t f rt rf)
+  modify fun s => {s with entries := s.entries.insert key ⟨w, ⟨value, none⟩⟩}
+  return value
+
+unsafe def adaptMemo (e : Reactive.E w) : E w :=
+  let build : M (E w) := do
+    let r ← visit e
+    force e r
+  build.run' {}
+
+end MemoAdapt
+
+@[implemented_by MemoAdapt.adaptMemo]
 def adapt (e : Reactive.E w) : E w := (rewrite e).expression
 def writing : E 1 := adapt Reactive.writing
 def rowWriting : E 1 := both writing (cmd 1)
