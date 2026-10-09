@@ -1,0 +1,311 @@
+{
+  "digestConvention": "sha256-canonical-json-v1",
+  "digestEncoding": "UTF-8 JSON; sorted object keys; compact separators; unescaped Unicode; finite numbers",
+  "recordings": {
+    "buffered-session.json": {
+      "checks": {
+        "acceptedSourceOperandChecks": 42,
+        "canonicalImageMutations": [
+          {
+            "field": "words",
+            "imageId": "spi-four-byte",
+            "rejected": true
+          },
+          {
+            "field": "controls",
+            "imageId": "spi-four-byte",
+            "rejected": true
+          },
+          {
+            "field": "branch_indices",
+            "imageId": "spi-four-byte",
+            "rejected": true
+          },
+          {
+            "field": "branch_table",
+            "imageId": "spi-four-byte",
+            "rejected": true
+          },
+          {
+            "field": "words",
+            "imageId": "spi-one-byte",
+            "rejected": true
+          },
+          {
+            "field": "controls",
+            "imageId": "spi-one-byte",
+            "rejected": true
+          },
+          {
+            "field": "branch_indices",
+            "imageId": "spi-one-byte",
+            "rejected": true
+          },
+          {
+            "field": "branch_table",
+            "imageId": "spi-one-byte",
+            "rejected": true
+          }
+        ],
+        "coreFieldChecks": 24185,
+        "edges": 691,
+        "expectedCommandChecks": 68,
+        "ordinaryBoundaries": 7,
+        "passed": true,
+        "publicOutputChecks": 17966,
+        "residentFieldChecks": 18792,
+        "sourceStateChecks": 7494,
+        "sourceWireChecks": 1250,
+        "sourceWireTransfers": 3,
+        "storageMutationControls": 2,
+        "typedConstructorCases": [
+          {
+            "byteCount": 4,
+            "fieldsChecked": 9,
+            "halfCycles": 4,
+            "imageId": "spi-four-byte",
+            "passed": true
+          },
+          {
+            "byteCount": 1,
+            "fieldsChecked": 9,
+            "halfCycles": 6,
+            "imageId": "spi-one-byte",
+            "passed": true
+          }
+        ]
+      },
+      "executionDigests": {
+        "producerSHA256": "0a04f102ce392bd710bc91e5deba2e76835e729bc2d13d3cdd6bb6d72f4a3ecf",
+        "recordedOutputSHA256": "61182aa7e817a26c3b15a0f19694de98697a280bb91d9d61dd9aab974016aeed",
+        "transcriptSHA256": "c069f52f1d2f4c4de8311b67bae8fe34dc48159558ecce349e1f80d36f591b6e"
+      },
+      "frameCount": 691,
+      "id": "buffered-spi-session",
+      "imageCount": 2,
+      "sha256": "9701199c4fb33861ac74787f22384c069539d2b8da3e9223a5779dd40de9f399",
+      "sourceHashes": {
+        "Pinwheel/Engine/Counted.lean": "3ef891ee6606cb6b9c4ef592f074e29e24f04136f21629b410d22d20663e175c",
+        "Pinwheel/Engine/Fetch.lean": "abea7dc2fcecb588740dd6ccd7547177a2fda502d0f44646ee38358fcfbd3559",
+        "Pinwheel/Engine/ISA.lean": "8c8249fbfbfb13b97e4e5f0d6da86cab00a0cc4ce0d69deaf38c96101e390e0b",
+        "Pinwheel/Engine/Proofs.lean": "1833ab1d3d192135965f27e63ec8e15878f1aeb8cfce5b4813088cebff917070",
+        "Pinwheel/Engine/Reactive.lean": "5b5162e359dbeb96b8df2e57455eb064e7bfdb9a944df1b5e416fc04c43d715b",
+        "Pinwheel/Engine/Step.lean": "b06d0f22061d28b2b86689350964914092198d981717e38196012a8bf6992d74",
+        "Pinwheel/Hardware/Buffered/MemoBind.lean": "b3294d650ac909293c466639e04d705ee85e008bf11b12d6e067393faab763e3",
+        "Pinwheel/Hardware/Buffered/MemoEval.lean": "0c2c07a821b1a6c7b7f4efed9a03bd4ed3b9ba0390549f9538780ebc12ff2a56",
+        "Pinwheel/Hardware/Buffered/Reactive.lean": "1a6e1bc6b4468ddb0766386bdf24dec911a65ebd48c0cd3ace7fac1e661854f9",
+        "Pinwheel/Hardware/Buffered/ReactiveEmit.lean": "707e65a5c7db6686495afd4aee0f7f4cfa47bb2add05a440aa361e6dc282553e",
+        "Pinwheel/Hardware/Buffered/SharedBranchProofs.lean": "1472cc5bcc986699f2b3639e5c3bea997a7bee851d232346542f259d36c1d43e",
+        "Pinwheel/Hardware/Buffered/SharedBranches.lean": "f7da6bbe8e4865a859c9d8eb490d3df0c276038d4c34ab3f31159a195baa0efb",
+        "Pinwheel/Hardware/Buffered/SpiSource.lean": "ef0ecfb0447a49c5ae47fc344f6d5d7f17f05bf7cdec518895f6df40dd1ff1be",
+        "Pinwheel/Hardware/Buffered/Sram.lean": "1830f49d99618be0db695e5f823e63a1a24fc6932252e6935bbe543611dc8d7c",
+        "Pinwheel/Hardware/Buffered/SramCandidates.lean": "eda38f603334b5bea90535f8ec355f69aa1ecb85900f95d76d5b7321e97d522a",
+        "Pinwheel/Hardware/Buffered/SramCorrespondence.lean": "3f8381a807b02099d09aa65f92b1b60c2c34f9f01613fe8b9ac9bd3367764a38",
+        "Pinwheel/Hardware/Buffered/SramCoverage.lean": "6f5c9a8db8566831db8dbf67b463c9aa77cf13bdad3a2cff6e1980ca2d39d680",
+        "Pinwheel/Hardware/Buffered/SramExecution.lean": "5f0d3f3be1ce7248efb480d5f2f439219ad1b8fe15bfcf71b1762e77a93bd64f",
+        "Pinwheel/Hardware/Buffered/SramExecutionSupport.lean": "5c04f6b0515fcbfc3ded9e4f5b74c7e2a94661f36582521518a63a8b86fff996",
+        "Pinwheel/Hardware/Buffered/SramLoading.lean": "273f0158d80036337184e0ecb8eeed098154625ebdd6107b5403b41ee0553fac",
+        "Pinwheel/Hardware/Buffered/SramModel.lean": "7f77677ffc5e74a90d31b5dfbe7c7ebcc896bf9a3f6e6199c4484bbb723b822c",
+        "Pinwheel/Hardware/Buffered/SramProofs.lean": "01eb57f737cfe8be2e9877fe9a3a5156dd9c15c34ff5726924498854de82f580",
+        "Pinwheel/Hardware/Buffered/SramState.lean": "7144975b182207c84f7bdaec1529d93a9d7333fc3586cc2bfb77709cceb10497",
+        "Pinwheel/Hardware/Circuit.lean": "3e9d5dc81fd81e0e9f98ec23b58270dba08264b05da04e1651dc4d81aa2b4a2a",
+        "Pinwheel/Hardware/Core.lean": "6864cbfbee71b8f595bd4c1df15b57d4989bf00741d4589f11d62cb2e8895099",
+        "Pinwheel/Hardware/CoreState.lean": "e1e55950572801cbcf610a6b3cb7f4821bcfb42fc54fda8aec793bb286104205",
+        "Pinwheel/Hardware/Countdown.lean": "f30c68c2a892c7b1bcd1fb22bff89cc1682422129aa18d2baf3f62abe571e6d6",
+        "Pinwheel/Hardware/Decode.lean": "619a333980ff162f21c215b06082f5db99eed0ff577830b4295ecb5837ad7fdd",
+        "Pinwheel/Hardware/Emit.lean": "012f9501d34323a4569851d4e0eafa723abde5afafe98ea3bdc3d23c4c96e0e9",
+        "Pinwheel/Hardware/Encoding.lean": "1c884def2d571b43472eec80c0949479609cb2f60dd894bb76185a5304ffd248",
+        "Pinwheel/Hardware/Execution/Memory.lean": "5a8160687b65cf3dcf1f1e9a30e2942586019ab496be47c01e9b7c0cce3b1451",
+        "Pinwheel/Hardware/Memory.lean": "5c49886f572dcbe16ef45dbc39efaed1a073b448519687983c472f572fac9fd9",
+        "Pinwheel/Hardware/Memory/Sram.lean": "e48e3bd69fdc057a2d6d007ec9e04089e941831a14232aea1a9bfd7b474753d3",
+        "Pinwheel/Hardware/RawProgram.lean": "3266943bddcb81951c5238e2dc0b6c580fabf71bf42882e88281caf063c728ae",
+        "Pinwheel/Hardware/Store.lean": "85435f27bcab282140202d526c085c64128f2fab3bace3d7f296c3da4be7d940",
+        "Pinwheel/Hardware/Timed.lean": "690256827cd3798d9c51fd619d053ad5bd79107ab7e6393080e973f9a70380e2",
+        "Pinwheel/Program/Buffered.lean": "69dd455948dee5883299bb6ed9dd1adda9ece5e0fcc0fff4d5e1687000b9f6aa",
+        "Pinwheel/Program/BufferedSPI.lean": "36dc6ea2cc979be9f80271807bfd1103e3fd671f5ad7a8d118f4c876b37a1fe2",
+        "Pinwheel/Program/Transfer.lean": "391adfeaf3351b85869cc72d8702ef52814471b155d7267f1527d829499846e3",
+        "lake-manifest.json": "7b47d2076da3d9996d7d0536ae7e17f7aaa9cdbaff5ae01ff000f6bfa61c2371",
+        "lakefile.toml": "e920399e1b4f770a57c1357b47cd5dcecfb6acbe71db27b75c0d72b8a6d4850d",
+        "lean-toolchain": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71",
+        "scripts/ExplorerBufferedSession.py": "9211cfb44b8d030b84f3ab74e05f967b13aa0ea5baf50ec9db728b93d3a2d7fe",
+        "scripts/buffered_counted_hardware.py": "02afc2202ab5da886a361749fb5dcb096a7d82266a2eb897237625e0e2dfaf28",
+        "scripts/buffered_engine.py": "43fe60f54b9e865bbeb1c31c239971c3ea93d5767b7aa484c4a78dfa22de3f81",
+        "scripts/buffered_hardware.py": "59e6f9691e80042334e29549c5ed4cac69655b664a95d1f5de5c4d1000ee0267",
+        "scripts/buffered_i2c.py": "60bbbc19f1fa45bc01a99b3528f06cdd5d3e5c4c13a0adba99b4336fb1a4a710",
+        "scripts/buffered_i2c_peer.py": "a0c2bc1bf3ee9025f9dca10ded4529cf2483aeb0c67dcf7dc995ba76c3be7ae1",
+        "scripts/buffered_peers.py": "ce5623d5165ca62c48f04831f6f8622908a43a9c344051f27603053d28102c63",
+        "scripts/buffered_reactive_hardware.py": "03750990c18e7df6cc602b9076c561461890858ced226a7277750fa47a3584e2",
+        "scripts/buffered_shared_branches.py": "18391713dfc819eaa50afede59690381ee906e2947c32698e18f1d9c1f152e8d",
+        "scripts/buffered_sram_hardware.py": "e4cf2d472a2176ca62f779c42b98a6f094f60fbe805a246eb960748b33cb6fac",
+        "scripts/jtag_peers.py": "2c9f055c1a218803312729d1d1caee39534595d03b4ced9b30147f6b685e03fa",
+        "scripts/pad_io.py": "8b114fe0fb3ed229cd2f0a1fba7e2ba0915a1691e52e12b407a210f2a58f2bf0",
+        "scripts/pad_peers.py": "a92803e293258519eb7426b4465753ad8465ff142b7885b7145ab021370a155c",
+        "scripts/paired_execution.py": "000b722f89de9c51b179a1a31f9e1597e16021748db67952b404a3674774a75c",
+        "scripts/pinwheel_buffers.py": "1629df379b184cfc094d6f1bb013bd798f9422c8a62c26ea17ebf767f2d42585",
+        "scripts/pinwheel_host.py": "dd6fa6edf816a7cb8554c7758df6263322f2709e507e877f577754f71d84e0c6",
+        "test/BufferedSpiSource.lean": "75eb05d5f5589b54d9e5ef9788d85277380cc823ebdc777ebf3970d1161b265e"
+      },
+      "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e",
+      "stageCount": 16,
+      "target": "pinwheel-buffered-shared-branches32-sram64-v1",
+      "transfers": [
+        {
+          "completeFrame": 284,
+          "decodedRxHex": "a69b42e1",
+          "expectedRxHex": "a69b42e1",
+          "id": "transfer-1",
+          "imageId": "spi-four-byte",
+          "startFrame": 24
+        },
+        {
+          "completeFrame": 553,
+          "decodedRxHex": "deadbeef",
+          "expectedRxHex": "deadbeef",
+          "id": "transfer-2",
+          "imageId": "spi-four-byte",
+          "startFrame": 293
+        },
+        {
+          "completeFrame": 684,
+          "decodedRxHex": "3c",
+          "expectedRxHex": "3c",
+          "id": "transfer-3",
+          "imageId": "spi-one-byte",
+          "startFrame": 582
+        }
+      ]
+    },
+    "i2c-traces.json": {
+      "frameCount": 745,
+      "scenarioCount": 4,
+      "scenarios": [
+        {
+          "activeCycles": 255,
+          "frameCount": 257,
+          "id": "i2c-success",
+          "outcome": {
+            "engine": "complete",
+            "protocol": "success",
+            "summary": "Address and payload were acknowledged, then STOP completed. Capture slots 0 and 1 are both 0 (ACK); the other 14 slots remain untouched."
+          },
+          "parameters": {
+            "ackBits": [
+              0,
+              0
+            ],
+            "address": 83,
+            "payload": [
+              166
+            ],
+            "phaseCycles": 4,
+            "stretchCycles": 0,
+            "stuckSCL": false,
+            "waitCycles": 32
+          },
+          "scenario": "Target acknowledges the address and payload.",
+          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+        },
+        {
+          "activeCycles": 312,
+          "frameCount": 314,
+          "id": "i2c-stretch",
+          "outcome": {
+            "engine": "complete",
+            "protocol": "success",
+            "summary": "Address and payload were acknowledged, then STOP completed. Capture slots 0 and 1 are both 0 (ACK); the other 14 slots remain untouched."
+          },
+          "parameters": {
+            "ackBits": [
+              0,
+              0
+            ],
+            "address": 83,
+            "payload": [
+              166
+            ],
+            "phaseCycles": 4,
+            "stretchCycles": 3,
+            "stuckSCL": false,
+            "waitCycles": 32
+          },
+          "scenario": "Target holds SCL low for three extra cycles after every controller release, including STOP.",
+          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+        },
+        {
+          "activeCycles": 138,
+          "frameCount": 140,
+          "id": "i2c-nack",
+          "outcome": {
+            "engine": "complete",
+            "protocol": "nack",
+            "summary": "The engine completed a STOP after address NACK. Capture slot 0 is 1; the payload was skipped. Engine completion does not mean protocol success."
+          },
+          "parameters": {
+            "ackBits": [
+              1,
+              1
+            ],
+            "address": 83,
+            "payload": [
+              166
+            ],
+            "phaseCycles": 4,
+            "stretchCycles": 0,
+            "stuckSCL": false,
+            "waitCycles": 32
+          },
+          "scenario": "Target leaves the address ACK high. The same program branches directly to STOP and skips the payload.",
+          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+        },
+        {
+          "activeCycles": 32,
+          "frameCount": 34,
+          "id": "i2c-timeout",
+          "outcome": {
+            "engine": "timeout",
+            "protocol": "timeout",
+            "summary": "Bus qualification timed out before START. The controller released both lines; there is no completed result and zero clocks were sent."
+          },
+          "parameters": {
+            "ackBits": [
+              0,
+              0
+            ],
+            "address": 83,
+            "payload": [
+              166
+            ],
+            "phaseCycles": 4,
+            "stretchCycles": 0,
+            "stuckSCL": true,
+            "waitCycles": 32
+          },
+          "scenario": "Target holds SCL low from the beginning. Bus qualification consumes its 32-cycle budget before START.",
+          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+        }
+      ],
+      "sha256": "af98bb5925aab8601c3d7029f9d4c784c26f5dd23622d8f27a8ee19ec4b0366c",
+      "sourceHashes": {
+        "Pinwheel/Compile/I2C.lean": "675a8907193588adcfe9c06186be72e50125468a7a69d9c7204fad41c7da2d53",
+        "Pinwheel/Compile/I2CPhases.lean": "a9ef352bd8dae9701c8b4b8d154476932cb22c998e22a79b413e95ed09f9ae23",
+        "Pinwheel/Compile/I2CWriteTransaction.lean": "65473090d692acd74d72cf51170c5c098c7d0eb2cc4bfa969b45a5379d5b69b9",
+        "Pinwheel/Compile/I2CWriteTransactionProofs.lean": "b3169b5f320edc2e70bd8fea741c4d7f14f6fbc5da539845aaeb7d567501eed6",
+        "Pinwheel/Engine/Fetch.lean": "abea7dc2fcecb588740dd6ccd7547177a2fda502d0f44646ee38358fcfbd3559",
+        "Pinwheel/Engine/FetchProofs.lean": "3d7b3ff67fc51d699562ce97288138e19dfae4f7f58a3a07778f80e638b7cbdf",
+        "Pinwheel/Engine/ISA.lean": "8c8249fbfbfb13b97e4e5f0d6da86cab00a0cc4ce0d69deaf38c96101e390e0b",
+        "Pinwheel/Engine/Reactive.lean": "5b5162e359dbeb96b8df2e57455eb064e7bfdb9a944df1b5e416fc04c43d715b",
+        "Pinwheel/Engine/Step.lean": "b06d0f22061d28b2b86689350964914092198d981717e38196012a8bf6992d74",
+        "Pinwheel/Hardware/Execution/Images.lean": "e80a971b5adceea4232b759d9d0bacee96afc3c71542b80f8df74b1cded69f20",
+        "Pinwheel/Hardware/Execution/Record.lean": "86a00e874d71c7a13b7bd25b2b4cbd1af4c274ff463d82a11320a3e5a142bc0b",
+        "Pinwheel/Hardware/Execution/RecordProofs.lean": "ea094dd5ca82b13dda8f07bcc06d0f51ac87f2374447236da0a291917ea55281",
+        "Pinwheel/I2C/Bus.lean": "7ad59ff3d78e0d96e97eaf81890562cd6b1cce55202785de7351c5682bf04406",
+        "Pinwheel/I2C/Spec.lean": "7e6ecf916236fafc8bad384af92af67507f0d7abf4748c4bb6f0ebf458d405de",
+        "Pinwheel/I2C/WriteTransaction.lean": "4a159a7fc44559f020d7bcec5374213a493688062f7d35ba4abe47e2bb9a3f34",
+        "Pinwheel/I2C/WriteTransactionProofs.lean": "20cefa861e8280e35f23bfeae53e45dfd5cb6807cd9389dc336d7f3ac0dfd463",
+        "scripts/ExplorerI2CTrace.lean": "75c66e678e924dd0c9c74a6847cfc244ec2d1f41a3b9a408bcbb96a52c1f9fd0",
+        "test/I2CWriteTransactions.lean": "b1d0c72d0a7de35b70db0865b305783a99addfb4cc97855d84bde4baa84895d1"
+      }
+    }
+  },
+  "schema": "pinwheel-explorer-recording-receipts-v1"
+}
