@@ -10,7 +10,7 @@ The browser only replays those states. This finite executable witness is not a
 universal compiler, serial delivery, RTL, electrical or physical-chip theorem.
 
 Run from the repository root after the narrow imports are built:
-  lake build Pinwheel.Hardware.Buffered.SramState Pinwheel.Hardware.Buffered.SramModel
+  lake build Pinwheel.Hardware.Buffered.SpiSource Pinwheel.Hardware.Buffered.SramModel
   python3 -B scripts/ExplorerBufferedSession.py
 """
 from dataclasses import asdict
@@ -32,7 +32,7 @@ from buffered_sram_hardware import FORMAT, BufferedSramHardwareImage, lower_sram
 from pinwheel_buffers import TransferSlot
 
 ROOT = Path(__file__).resolve().parents[1]
-OUTPUT = ROOT / 'docs/explorer/buffered-session.json'
+OUTPUT = ROOT / 'build/explorer/buffered-session.json'
 
 LEAN_WORKER = r'''import Pinwheel.Hardware.Buffered.SramModel
 import Pinwheel.Hardware.Buffered.SramState
@@ -615,6 +615,7 @@ def refresh_metadata():
     and their proof dependency hashes are checked afresh. Runtime changes require
     the normal full generation path.
     """
+    require(OUTPUT.is_file(), 'Generate the local recording before refreshing metadata: '+str(OUTPUT.relative_to(ROOT)))
     recorded=json.loads(OUTPUT.read_text())
     evidence=recorded['executionEvidence']
     require(hashlib.sha256(evidence['producerSource'].encode()).hexdigest()==evidence['producerSHA256'],
@@ -659,6 +660,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--refresh-metadata',action='store_true',help='Refresh only prose/navigation after exact retained-execution checks')
     args=parser.parse_args()
+    OUTPUT.parent.mkdir(parents=True,exist_ok=True)
     if args.refresh_metadata:
         refresh_metadata()
         return

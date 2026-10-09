@@ -83,7 +83,7 @@
       "frameCount": 691,
       "id": "buffered-spi-session",
       "imageCount": 2,
-      "sha256": "9701199c4fb33861ac74787f22384c069539d2b8da3e9223a5779dd40de9f399",
+      "sha256": "f0dafb6a6701bf082b005160cf828aa6f6023491c1e203eace77056e6c32c9f9",
       "sourceHashes": {
         "Pinwheel/Engine/Counted.lean": "3ef891ee6606cb6b9c4ef592f074e29e24f04136f21629b410d22d20663e175c",
         "Pinwheel/Engine/Fetch.lean": "abea7dc2fcecb588740dd6ccd7547177a2fda502d0f44646ee38358fcfbd3559",
@@ -127,7 +127,7 @@
         "lake-manifest.json": "7b47d2076da3d9996d7d0536ae7e17f7aaa9cdbaff5ae01ff000f6bfa61c2371",
         "lakefile.toml": "e920399e1b4f770a57c1357b47cd5dcecfb6acbe71db27b75c0d72b8a6d4850d",
         "lean-toolchain": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71",
-        "scripts/ExplorerBufferedSession.py": "9211cfb44b8d030b84f3ab74e05f967b13aa0ea5baf50ec9db728b93d3a2d7fe",
+        "scripts/ExplorerBufferedSession.py": "1ed14490f3f862e3a928cd944f23d73ec565b3232c7b7b8da93019e69de42392",
         "scripts/buffered_counted_hardware.py": "02afc2202ab5da886a361749fb5dcb096a7d82266a2eb897237625e0e2dfaf28",
         "scripts/buffered_engine.py": "43fe60f54b9e865bbeb1c31c239971c3ea93d5767b7aa484c4a78dfa22de3f81",
         "scripts/buffered_hardware.py": "59e6f9691e80042334e29549c5ed4cac69655b664a95d1f5de5c4d1000ee0267",
@@ -145,7 +145,7 @@
         "scripts/pinwheel_host.py": "dd6fa6edf816a7cb8554c7758df6263322f2709e507e877f577754f71d84e0c6",
         "test/BufferedSpiSource.lean": "75eb05d5f5589b54d9e5ef9788d85277380cc823ebdc777ebf3970d1161b265e"
       },
-      "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e",
+      "sourceRevision": "ba7da30901f18b715079a0b1973866d0853f9b37",
       "stageCount": 16,
       "target": "pinwheel-buffered-shared-branches32-sram64-v1",
       "transfers": [
@@ -203,7 +203,7 @@
             "waitCycles": 32
           },
           "scenario": "Target acknowledges the address and payload.",
-          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+          "sourceRevision": "ba7da30901f18b715079a0b1973866d0853f9b37"
         },
         {
           "activeCycles": 312,
@@ -229,7 +229,7 @@
             "waitCycles": 32
           },
           "scenario": "Target holds SCL low for three extra cycles after every controller release, including STOP.",
-          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+          "sourceRevision": "ba7da30901f18b715079a0b1973866d0853f9b37"
         },
         {
           "activeCycles": 138,
@@ -255,7 +255,7 @@
             "waitCycles": 32
           },
           "scenario": "Target leaves the address ACK high. The same program branches directly to STOP and skips the payload.",
-          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+          "sourceRevision": "ba7da30901f18b715079a0b1973866d0853f9b37"
         },
         {
           "activeCycles": 32,
@@ -281,10 +281,10 @@
             "waitCycles": 32
           },
           "scenario": "Target holds SCL low from the beginning. Bus qualification consumes its 32-cycle budget before START.",
-          "sourceRevision": "6c3233654f3054bc370e024677d76dbd3d37324e"
+          "sourceRevision": "ba7da30901f18b715079a0b1973866d0853f9b37"
         }
       ],
-      "sha256": "af98bb5925aab8601c3d7029f9d4c784c26f5dd23622d8f27a8ee19ec4b0366c",
+      "sha256": "e21d278642aaa3e9cf38629d257aa2085d254a55f9c4954c6c6ed3d37bd7dfc0",
       "sourceHashes": {
         "Pinwheel/Compile/I2C.lean": "675a8907193588adcfe9c06186be72e50125468a7a69d9c7204fad41c7da2d53",
         "Pinwheel/Compile/I2CPhases.lean": "a9ef352bd8dae9701c8b4b8d154476932cb22c998e22a79b413e95ed09f9ae23",
@@ -302,7 +302,7 @@
         "Pinwheel/I2C/Spec.lean": "7e6ecf916236fafc8bad384af92af67507f0d7abf4748c4bb6f0ebf458d405de",
         "Pinwheel/I2C/WriteTransaction.lean": "4a159a7fc44559f020d7bcec5374213a493688062f7d35ba4abe47e2bb9a3f34",
         "Pinwheel/I2C/WriteTransactionProofs.lean": "20cefa861e8280e35f23bfeae53e45dfd5cb6807cd9389dc336d7f3ac0dfd463",
-        "scripts/ExplorerI2CTrace.lean": "75c66e678e924dd0c9c74a6847cfc244ec2d1f41a3b9a408bcbb96a52c1f9fd0",
+        "scripts/ExplorerI2CTrace.lean": "8f0cc3988a1c91c93a6f23594afa7d9f3fe663478d7ad7d0823a0be81302ba33",
         "test/I2CWriteTransactions.lean": "b1d0c72d0a7de35b70db0865b305783a99addfb4cc97855d84bde4baa84895d1"
       }
     }

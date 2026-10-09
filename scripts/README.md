@@ -8,6 +8,7 @@ tags are repository relative.
 
 | Task | Entry points | What they establish |
 | --- | --- | --- |
+| Offline design explorer | [`build-explorer.py`](build-explorer.py), [`test-explorer-recordings.py`](test-explorer-recordings.py) | Source/image/provenance checks, verified cached or embedded recordings, and receipt rejection controls. [Refresh and replay](../docs/explorer/README.md). |
 | Initialized buffered SRAM loading | [`check-buffered-sram-loading.py`](check-buffered-sram-loading.py), [`BufferedSramLoading.lean`](../test/BufferedSramLoading.lean) | Kernel initialized upload/coverage and binary execution correspondence; source-pinned interpreted/native witnesses, successful SPI/JTAG/I²C captures and premise counterexamples. [Scope and reproduction](../docs/protocols/buffered-sram-loading.md). |
 | Buffered source execution | [`check-buffered-source-execution.py`](check-buffered-source-execution.py) | Kernel source/decoded-image interpreter correspondence for parametric SPI and fixed reactive I²C; exact typed/Python image comparisons and source-pinned audit. [Scope and next state relation](../docs/protocols/buffered-source-execution.md). |
 | Portable local gate | [`check-foundation.py`](check-foundation.py) | Pinned Lean build, axiom audit, and executable model contracts without CAD tools or prior fixtures. Run the Python unit suite separately as shown in the root README. |

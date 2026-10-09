@@ -1,0 +1,4 @@
+# Keep generated explorer artifacts out of default code review diffs.
+docs/explorer/index.html linguist-generated=true
+docs/explorer/uart-trace.json linguist-generated=true
+docs/explorer/spi-traces.json linguist-generated=true

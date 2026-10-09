@@ -112,16 +112,26 @@ lake env lean -DwarningAsError=true test/ProofAudit.lean
 lake env lean --run test/BufferedSpiSource.lean 4 4
 lake env lean --run test/BufferedSpiSource.lean 1 6
 python3 -B scripts/ExplorerBufferedSession.py
+python3 -B scripts/build-explorer.py --refresh-receipts
 python3 -B scripts/build-explorer.py --check
-python3 -B scripts/build-explorer.py
 ```
 
-The session exporter executes the comparisons. Bundle validation checks source
-freshness, canonical image bytes, decoded display fields, structural
-consistency and source navigation; it does not rerun Lean execution. After
-refresh, inspect loading rejection, both completed payloads, matching releases,
-replacement and input/fetch details in the browser. The [explorer workflow](../explorer/README.md)
-describes the other recordings and the offline artifact.
+The session exporter executes the comparisons and writes the ignored local
+output `build/explorer/buffered-session.json`. `--refresh-receipts` validates
+the regenerated evidence and updates the concise tracked
+[recording receipts](../explorer/recordings.json) and standalone HTML. Normal
+builds and `--check` require the recording to match those receipts. Bundle
+validation checks source freshness, canonical image bytes, decoded display
+fields, structural consistency and source navigation; it does not rerun Lean
+execution.
+
+On a fresh checkout, the builder can recover this frozen session from the
+committed HTML and validate or rebuild the bundle using Python alone. When a
+local export exists it takes precedence; changed recording source bytes require
+the full exporter/replay above. After refresh, inspect loading rejection, both
+completed payloads, matching releases, replacement and input/fetch details in
+the browser. The [explorer workflow](../explorer/README.md) describes the other
+recordings and the offline artifact.
 
 The [source/image interpreter continuation](buffered-source-execution.md) now
 proves arbitrary SPI execution prefixes after independently decoding this

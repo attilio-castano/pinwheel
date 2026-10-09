@@ -100,6 +100,29 @@ the last allowed one. Use event jumps to find ACK captures, branches and STOP,
 or the 48-interval window to inspect a short part of a transfer. The program pane
 follows the current PC; its full view also shows rows skipped by the selected case.
 
+## Validate or rebuild the retained snapshot
+
+The committed `index.html` retains the frozen recordings needed for offline
+use. [recordings.json](recordings.json) keeps concise source and semantic-hash
+receipts for them. The large I²C and buffered-session JSON exports are local
+build outputs under the ignored `build/explorer/` directory.
+
+From a fresh checkout, Python can validate the retained recordings or rebuild
+the page without running Lean:
+
+```sh
+python3 -B scripts/build-explorer.py --check
+python3 -B scripts/test-explorer-recordings.py
+python3 -B scripts/build-explorer.py
+```
+
+The builder uses a local `build/explorer/` recording when present; otherwise
+it reads the matching frozen recording embedded in `index.html`. Both paths
+check the tracked receipts, source bytes, image fields, session structure and
+source references. Rebuilding refreshes the presentation and source excerpts;
+it does not execute the model again. Changed recording sources require the
+corresponding exporter and replay below.
+
 ## Refresh from source
 
 From the repository root, using the existing pinned Lean toolchain:
@@ -108,11 +131,18 @@ From the repository root, using the existing pinned Lean toolchain:
 lake build Pinwheel.Compile.UART Pinwheel.Compile.SPITransaction Pinwheel.Compile.I2CWriteTransactionProofs
 lake env lean --run scripts/ExplorerTrace.lean docs/explorer/uart-trace.json
 lake env lean --run scripts/ExplorerSPITrace.lean docs/explorer/spi-traces.json
-lake env lean --run scripts/ExplorerI2CTrace.lean docs/explorer/i2c-traces.json
+mkdir -p build/explorer
+lake env lean --run scripts/ExplorerI2CTrace.lean build/explorer/i2c-traces.json
 lake build Pinwheel.Hardware.Buffered.SpiSource Pinwheel.Hardware.Buffered.SramModel
 python3 -B scripts/ExplorerBufferedSession.py
-python3 scripts/build-explorer.py
+python3 -B scripts/build-explorer.py --refresh-receipts
 ```
+
+The buffered exporter writes `build/explorer/buffered-session.json`. After
+the exporters have rerun their comparisons, `--refresh-receipts` validates
+the regenerated recordings and updates both `recordings.json` and the
+standalone HTML. Normal builds and `--check` require matching receipts;
+they do not accept a changed recording as a new result.
 
 The trace exporter records the repository base and SHA-256 hashes of its source
 inputs. Generation is deterministic for those inputs. The page builder refuses
@@ -133,12 +163,9 @@ checks do not re-execute the Lean model; regenerate the recording for that.
 decisions. Review those descriptions and their line references when the design
 changes; excerpt validation alone cannot establish that prose is still accurate.
 `explorer.template.html` owns the UI, while `index.html` is its generated bundle.
-
-Validate the inputs without writing the bundle:
-
-```sh
-python3 scripts/build-explorer.py --check
-```
+The generated HTML and UART/SPI waveform snapshots are collapsed in GitHub
+diffs; the template, descriptions, exporters and recording receipts remain
+visible for review.
 
 After refresh, inspect both targets, source dialogs, all four SPI modes, I²C
 ACK/NACK/timeout outcomes, the buffered loading/reuse/replacement session,

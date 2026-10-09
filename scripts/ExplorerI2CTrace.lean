@@ -11,7 +11,7 @@ independent I2C.WriteTransaction reference. No transition logic runs in the brow
 
 Reproduce from the repository root:
   lake build Pinwheel.Compile.I2CWriteTransactionProofs
-  lake env lean --run scripts/ExplorerI2CTrace.lean docs/explorer/i2c-traces.json
+  lake env lean --run scripts/ExplorerI2CTrace.lean
 
 This is the digital consumed-input model, with ideal open-drain resolution and no
 input synchronizer delay. It is not paired RTL simulation or physical-chip evidence.
@@ -358,7 +358,8 @@ def main (args : List String) : IO UInt32 := do
   if args.length > 1 then
     IO.eprintln "Usage: lake env lean --run scripts/ExplorerI2CTrace.lean [output.json]"
     return 1
-  let output := args.headD "docs/explorer/i2c-traces.json"
+  let output := System.FilePath.mk (args.headD "build/explorer/i2c-traces.json")
+  if let some parent := output.parent then IO.FS.createDirAll parent
   let program ← checkedProgram
   let revision ← revision
   let sourceHashes ← hashes
