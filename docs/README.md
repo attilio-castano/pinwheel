@@ -19,6 +19,7 @@ the [physical inputs](../physical/README.md) and
 | --- | --- | --- |
 | Recover the present question and avoid repeating work | [Research status](research/status.md) | The relevant [result](research/results.md), then its owning study and manifest |
 | Understand the design and what is proved | [Architecture and ownership](architecture.md) | [Verification obligations](engine/processor-verification.md), then the relevant contract below |
+| Explore components and execution visually | [Local design explorer](explorer/index.html) | [Source and refresh scope](explorer/README.md); open the HTML in a browser |
 | Run programs on the chip | [Host workflow](host-workflow.md) | [Whole-chip interface](engine/whole-chip.md) and [external timing](engine/external-interface.md) |
 | Change a protocol or pin timing | [Protocol models](#protocols-and-pin-timing) | The shared [engine contract](engine/engine-model.md) and [input latency](input-latency.md) |
 | Compare storage, fetch, or paired execution | [Storage primitives](storage-primitives.md) | [Fetch deadlines](fetch-contract-study.md) and [paired execution](storage/compact-execution-study.md) |
@@ -74,6 +75,8 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | [Compact counted buffered hardware](protocols/buffered-counted-hardware.md) | Nested timed loops, same-edge rollover and shared SPI/JTAG circuitry; source-bound images, retained results and measured saved-gate cost. |
 | [Versioned buffered serial interface](protocols/buffered-sram-serial.md) | Atomic image loading, one owned transfer and frozen retained-result responses over sampled serial pins, sharing the SRAM execution engine. |
 | [Initialized buffered SRAM loading](protocols/buffered-sram-loading.md) | Accepted-upload coverage derives the resident image and candidate responses from arbitrary startup; universal binary execution and public-output correspondence. |
+| [Buffered SPI source-to-resident bridge](protocols/buffered-spi-source.md) | Bounded typed SPI source, accepted-image/kernel correspondence and a design explorer session checking payload reuse, result ownership and program replacement. |
+| [Buffered source and decoded-image execution](protocols/buffered-source-execution.md) | Parametric SPI and fixed reactive I²C source/interpreter correspondence for arbitrary input histories and execution prefixes; packed circuit state remains a separate relation. |
 | [Reactive counted buffered hardware](protocols/buffered-reactive-hardware.md) | Shared SPI/JTAG/I²C circuit, sampled decisions, loop-aware branches and retained partial results; measured register-store cost. |
 | [Buffered storage and fetch comparison](protocols/buffered-storage-fetch.md) | Shared-descriptor storage below the same source/owned-result interface; explicit capacity tradeoff, kernel runtime correspondence, complete mapped cost and synchronous-fetch deadlines. |
 | [Production Lean frontend](protocols/program-export.md) | Static JSON request/response schemas for fixed SPI and compact I²C programs; no generated Lean request source. |
