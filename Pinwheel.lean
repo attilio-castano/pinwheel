@@ -133,6 +133,8 @@ import Pinwheel.Hardware.Buffered.SerialModel
 import Pinwheel.Hardware.Buffered.SerialProofs
 import Pinwheel.Hardware.Buffered.SramCorrespondence
 import Pinwheel.Hardware.Buffered.SpiSource
+import Pinwheel.Hardware.Buffered.SpiExecution
+import Pinwheel.Hardware.Buffered.I2cSource
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.
