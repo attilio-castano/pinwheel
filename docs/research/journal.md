@@ -6547,3 +6547,78 @@ remain unchanged, with only the proof import and foundation suite list extended.
 All 163 serial development files remain intact. Independent joint closeout
 rechecks the new receipts and predecessor evidence. Local SHA-256 integrity
 does not itself establish durable custody.
+
+## 2026-10-09 — Buffered SPI bridge and design explorer session
+
+The [bounded SPI source bridge](../protocols/buffered-spi-source.md) connects
+the typed four-leaf counted source to an accepted resident image. From cold
+initialization, actual accepted-operand history and a VALID cut, the kernel
+derives source words/count and composes every permitted fixed-image runtime
+public observation with the independent full-register circuit. General
+`Buffered.run` source-execution simulation remains open. Mixed configuration
+replacement and rejected runtime writes have finite recording evidence.
+
+The offline [Program to pins explorer](../explorer/index.html#session) records
+691 actual typed SRAM/controller edges and three independently checked SPI
+results. It includes same-image payload reuse, result reads, stale/matching
+release and one-byte slower-clock replacement. The exporter compares 24,185
+core fields, 17,966 public outputs and 18,792 resident fields, plus seven
+ordinary controller boundaries and 42 accepted source operands. Two canonical
+images match fresh typed constructor exports; eight changed image fields and
+two physical/reference storage mutations are rejected. The recording pins
+59 sources and preserves producer, worker, transcript and state/fetch hashes.
+Metadata-only refresh verifies unchanged execution before updating navigation.
+
+Fresh default build passes with 296 reachable library modules. The whole-library
+audit covers 26,298 declarations and 14,185 theorems with standard axioms only;
+the injected custom axiom is rejected. Sixteen Lean/Python constructor cases
+(one through four bytes; half-periods 3, 4, 6 and 256) compare 144 fields, and
+seven invalid exporter arguments are refused. The new suite is registered in
+the portable foundation; this continuation did not rerun the full foundation.
+The focused SRAM Python tests pass 75 tests with three platform skips.
+
+Offline browser checks pass all 691 session frames, sixteen stage source
+dialogs, both resident images and all three transfers. Existing architecture,
+UART, SPI and I²C walkthroughs also pass; five viewport widths from 320 to
+1,440 pixels show no horizontal overflow, page errors or network requests.
+Eight bundle mutation controls reject changed decoded instructions, loops,
+storage, words, stage sources, raw inputs, SRAM responses and receive results.
+The builder validates structure/provenance rather than rerunning execution.
+No new RTL, CAD, electrical timing or physical-chip result is claimed.
+
+## 2026-10-09 — Source execution through independently decoded SPI and I²C images
+
+The [source-execution continuation](../protocols/buffered-source-execution.md)
+proves parametric SPI and a fixed four-byte phase-4/wait-32 I²C source agree
+with independently decoded resident-image interpreters. START and every
+execution prefix are quantified over arbitrary capacity, complete interpreter
+state and incoming samples. SPI also derives the decoded bytes from actual
+initialized accepted loading; I²C certifies successful compact-loop parsing,
+all 1,024 virtual fetch positions and its NACK fault STOP coordinates.
+No execution-equality premise or successful peer trace is assumed.
+
+The relation between interpreter state and packed-register circuit state is
+still open. SPI adds local SHIFT/KEEP pin and pre-edge RX append lemmas to
+support that relation; I²C also needs initialized source-history composition.
+These results do not establish universal Python compiler, serial, RTL or
+physical correctness. The explorer now lets the reader select SPI or I²C proof
+scope and draws the open connection explicitly. Its recorded SRAM waveform
+continues to show the same 691 SPI edges. A prominent README link makes the
+offline HTML an early entry point for newcomers.
+
+Focused gate `buffered-source-execution-01` built successfully but rejected a
+generated native axiom in a local pin lemma. The tactic was replaced by an
+explicit bitwise proof. Fresh gate `buffered-source-execution-02` passes in
+20.987 seconds: 299 reachable modules; 26,569 declarations / 14,357 theorems
+with approved standard axioms; injected custom axiom rejection; five malformed
+SPI image controls and three geometry controls; seventeen typed/Python image
+comparisons and four altered-field comparison controls. Its report SHA-256 is
+`0ae5f2a2066b9d1f65e7c9d5af1912cec663f93d670fda36c655a1c0a86510e5`.
+The two new suites are registered in the 60-suite portable gate; this
+continuation runs the focused gate, not the complete portable suite.
+
+Offline browser checks pass both proof selectors and all six proof source
+dialogs, all 691 session frames, existing architecture/protocol walkthroughs,
+and five widths from 320 to 1,440 pixels without page errors, network requests
+or horizontal overflow. Source/presentation checks do not rerun Lean proofs;
+the linked gate does. No execution circuit, image ABI or physical result changes.

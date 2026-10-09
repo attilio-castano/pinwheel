@@ -178,3 +178,10 @@ serial sampling/CDC, placement/routing or package power. The accepted hardware
 and host bytes are unchanged; prior hardware measurements retain their original
 scope. Local artifact hashes establish integrity rather than durable backup
 custody.
+
+The [bounded SPI continuation](buffered-spi-source.md) now connects a typed
+four-leaf source to its accepted resident image and composes the binary runtime
+observations. The [source-execution continuation](buffered-source-execution.md)
+proves decoded-image interpreter agreement; its packed circuit state relation
+remains open. The [Program to pins explorer](../explorer/index.html#session) follows
+finite source/image/actual-model evidence, payload reuse and replacement.

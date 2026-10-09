@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-07 after the versioned buffered serial interface, following
-the latency-one SRAM implementation and unified owned-transfer workflow.
+Updated 2026-10-09 after SPI and reactive I²C decoded-image execution proofs,
+following the bounded SPI resident bridge and source-pinned explorer session.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -161,12 +161,33 @@ evolving Reactive FF circuit. Its starting nonword core is the actual loading
 cut's core; resident words come from the accepted-upload ledger. No live-bank
 or initial-response agreement is assumed at that cut.
 
-**Next formal gate: source-to-resident compiler correspondence.**
-Connect the shared SPI/JTAG/I²C source language and compiler to the accepted
-resident rows, metadata and dictionary, then compose source execution with the
-proved binary-image suffix. Universal source-compiler correspondence and serial
-packet-to-core composition remain open. The common program and retained-result
-interface give that work a concrete programmable boundary.
+**Implemented bounded source-to-resident correspondence.**
+The [bounded SPI continuation](../protocols/buffered-spi-source.md) now derives
+the source-constructed four-row image from actual accepted loading and composes
+its public runtime observations with the independent full-register circuit.
+It covers mode-0, one through four bytes and the stated sampled timing range;
+source virtual fetch and supported-leaf encoding have kernel proofs. A finite
+[Program to pins session](../explorer/index.html#session) checks payload reuse,
+retained ownership and replacement by a different SPI configuration across
+the actual digital SRAM model. The HTML remains an instrument for inspecting
+these connections and identifying the next obligation.
+
+**Implemented source/image interpreter execution: [SPI then reactive I²C](../protocols/buffered-source-execution.md).**
+Independent binary decoders recover SPI's counted source and the fixed four-byte
+I²C phase-4/wait-32 source. Kernel theorems equate START and execution prefixes
+for arbitrary interpreter state, capacity and input history. SPI also derives
+the decoded bytes from actual initialized accepted loading. I²C certifies all
+1,024 virtual fetch positions, compact-loop parsing and its NACK fault target;
+its initialized source-history composition remains open.
+
+**Next formal gate: interpreter-to-packed-circuit state relation.**
+Establish source/circuit agreement at admitted START, preserve it for one edge,
+then compose all prefixes with the initialized binary SRAM theorem. Relate
+virtual PC to physical row/loop counters, list prefixes to packed TX/RX and
+sampler timing at START/after stopping. Reactive I²C additionally needs wait,
+qualification and terminal-capture/branch preservation. The new interpreter
+proof does not close that circuit relation. General Python compiler correctness
+and serial packet-to-core composition retain separate gates.
 Actual SRAM return/address timing, physical sampling, SRAM qualification and
 package power retain their distinct evidence gates. First-stage prediction is
 a separate alternative and still requires synchronizer qualification.

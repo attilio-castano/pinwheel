@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore Pinwheel's programmable protocol engine, its timing, design decisions and supporting evidence.">
+  <title>Pinwheel · Design explorer</title>
+  <style>
+    :root{color-scheme:light;--paper:#f7f6f2;--panel:#fff;--ink:#242720;--muted:#64685e;--line:#dedfd7;--accent:#b84b25;--soft:#f8ebe3;--green:#52705c;--code:#eff0e9;--rail:#efeee7;--sans:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--mono:ui-monospace,SFMono-Regular,Consolas,monospace}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--sans)}button,input,select{font:inherit}button{cursor:pointer;color:inherit}button,a,input{touch-action:manipulation}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:4px}a{color:var(--accent);text-underline-offset:3px}button:disabled{cursor:default;opacity:.4}h1,h2,h3,p{margin:0}h1{font-size:clamp(27px,3.2vw,40px);line-height:1.2;font-weight:550;letter-spacing:-1.3px}h2{font-size:23px;line-height:1.25;font-weight:550;letter-spacing:-.6px}h3{font-size:17px;font-weight:600;line-height:1.35}p+p{margin-top:10px}code,.mono{font-family:var(--mono);font-size:.85em}small,.small{font-size:12px;color:var(--muted)}[hidden]{display:none!important}.muted{color:var(--muted)}.eyebrow{font:11px/1.5 var(--mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}.shell{display:grid;grid-template-columns:214px minmax(0,1fr);min-height:100vh}.rail{background:var(--rail);border-right:1px solid var(--line);padding:30px 22px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:32px}.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:600;letter-spacing:-.6px}.brand-mark{width:31px;height:31px;position:relative;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:22px;font-weight:400;border-radius:6px}.rail-caption{font-size:12px;color:var(--muted);margin-top:8px}.nav{display:flex;flex-direction:column;gap:7px}.nav button{background:none;border:0;text-align:left;padding:10px 9px;border-radius:5px;color:var(--muted);font-size:14px;display:flex;align-items:center;gap:12px}.nav button[aria-current="page"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px #2427200b}.nav-index{font:11px var(--mono);opacity:.65}.rail-foot{margin-top:auto;font-size:12px;color:var(--muted)}.rail-foot strong{display:block;color:var(--ink);font-weight:500;margin-bottom:6px}.main{padding:24px 34px 40px;min-width:0;max-width:1530px;width:100%;margin:auto}.topline{display:flex;gap:12px;align-items:center;justify-content:space-between;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:28px;flex-wrap:wrap}.snapshot{font:11px var(--mono);color:var(--muted)}.snapshot span{color:var(--ink)}.page-head{margin-bottom:25px;max-width:760px}.page-head .eyebrow{margin-bottom:10px}.page-head p{color:var(--muted);margin-top:12px;max-width:680px}.target-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.target-button{background:none;border:1px solid var(--line);border-radius:6px;padding:9px 14px;font-size:13px}.target-button[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);color:var(--accent)}.target-summary{padding:0 0 23px;display:flex;gap:25px;align-items:start;justify-content:space-between}.target-summary p{color:var(--muted);font-size:13px;max-width:720px}.status-note{border-left:2px solid var(--accent);padding-left:12px;font-size:12px;max-width:400px;flex:0 0 32%}.status-note b{font-weight:500;color:var(--ink);display:block;margin-bottom:3px}.architecture-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"diagram inspector" "paths inspector";gap:25px;align-items:start}.architecture-layout>div:first-child{grid-area:diagram}.architecture-layout>.inspector{grid-area:inspector}.architecture-layout>.paths{grid-area:paths;margin-top:0}.figure-heading{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:13px}.figure-heading h2{font-size:17px;letter-spacing:-.3px}.figure-heading small{font-size:11px}.map{position:relative;background:radial-gradient(var(--line) .7px,transparent .7px) 0 0/16px 16px;border:1px solid var(--line);border-radius:7px;min-height:275px;padding:35px 22px}.map-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"host loader storage fetch" "result pins engine sampler";gap:54px 17px;position:relative;z-index:1}.map-node{background:var(--panel);border:1px solid var(--line);border-radius:5px;text-align:left;padding:13px 10px;min-height:80px;box-shadow:0 3px 6px #24272008;position:relative;overflow-wrap:anywhere}.map-node[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:#fffaf6}.map-node .eyebrow{font-size:9px;letter-spacing:.8px;display:block;margin-bottom:6px}.map-node strong{font-size:13px;font-weight:550;display:block;line-height:1.3}.map-node[aria-pressed="true"] .eyebrow{color:var(--accent)}.map-wires{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}.wire{stroke:#a3a89c;stroke-width:1.4;fill:none}.wire.active{stroke:var(--accent);stroke-width:1.8}.connection-list{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.connection{border:0;background:none;padding:4px 6px;font-size:11px;color:var(--muted);border-radius:3px}.connection[aria-pressed="true"]{background:var(--soft);color:var(--accent)}.diagram-note{font-size:12px;color:var(--muted);margin-top:13px;line-height:1.55}.inspector{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:23px;min-width:0}.inspector h2{margin:7px 0 12px;font-size:23px}.inspector .purpose{font-size:14px;line-height:1.65}.definition{margin:21px 0 0;border-top:1px solid var(--line);padding-top:17px}.definition dt{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:17px}.definition dt:first-child{margin-top:0}.definition dd{margin:4px 0 0;font-size:13px;line-height:1.65}.source-list{display:flex;flex-direction:column;gap:7px;margin-top:13px}.source-link{border:0;background:none;text-align:left;color:var(--accent);padding:0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.source-link:hover{text-decoration:underline;text-underline-offset:3px}.source-link .source-path{display:block;font:10px/1.6 var(--mono);color:var(--muted)}details{margin-top:19px;border-top:1px solid var(--line);padding-top:14px}summary{cursor:pointer;font-size:13px;font-weight:500}.evidence-item{margin-top:15px;font-size:12px}.evidence-kind{font:10px var(--mono);text-transform:uppercase;letter-spacing:.6px;color:var(--green);display:inline-block;margin-bottom:5px}.evidence-item p{margin:0}.evidence-item .limit{color:var(--muted);margin-top:7px}.paths{margin-top:30px}.path-row{margin-top:15px;padding:15px 0;border-top:1px solid var(--line)}.path-row .eyebrow{margin-bottom:8px}.path-steps{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:12px}.path-steps span{display:inline-block}.path-steps i{font-style:normal;color:var(--muted)}.path-row p{font-size:12px;color:var(--muted);margin-top:8px}.capacities{display:flex;gap:20px;flex-wrap:wrap;margin-top:25px;padding-top:17px;border-top:1px solid var(--line)}.capacity dt{font:10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.4px}.capacity dd{margin:4px 0 0;font-size:14px}.walkthrough-layout{display:grid;grid-template-columns:minmax(0,1fr) 295px;gap:25px;align-items:start}.lesson-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}.pill{font:11px var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:4px 8px;display:inline-block}.pill.accent{background:var(--soft);border-color:transparent;color:var(--accent)}.wave-panel{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:23px 20px}.wave-title{display:flex;align-items:center;justify-content:space-between;gap:10px}.wave-title h2{font-size:17px}.wave-title .mono{font-size:12px}.waveform{width:100%;display:block;height:230px}.transport{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.button{background:var(--panel);border:1px solid var(--line);padding:8px 12px;border-radius:5px;font-size:12px;min-height:38px}.button.primary{background:var(--ink);border-color:var(--ink);color:var(--panel)}.button.ghost{background:none}.range-row{margin-top:18px}.range-row label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}input[type=range]{width:100%;accent-color:var(--accent);height:24px;cursor:pointer}.cycle-explainer{margin-top:22px;border-left:2px solid var(--accent);padding-left:15px}.cycle-explainer h3{font-size:16px;margin-bottom:7px}.cycle-explainer p{font-size:13px;color:var(--muted)}.state-readout{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}.state-value{font-size:21px;line-height:1.6;font-family:var(--mono);color:var(--ink)}.state-label{font-size:11px;color:var(--muted)}.instruction-panel{background:var(--panel);border:1px solid var(--line);border-radius:7px;overflow:hidden}.instruction-panel h2{font-size:16px;padding:18px 17px;border-bottom:1px solid var(--line)}.instruction-row{width:100%;display:grid;grid-template-columns:27px minmax(0,1fr) 18px 32px;gap:7px;align-items:center;text-align:left;padding:10px 14px;background:none;border:0;border-bottom:1px solid #efefe9;font-size:12px}.instruction-row:last-child{border:0}.instruction-row[aria-pressed="true"]{background:var(--soft);color:var(--accent)}.instruction-row .pc{font:11px var(--mono);color:var(--muted)}.instruction-row .duration{font:10px var(--mono);color:var(--muted);text-align:right}.lesson-scope{margin-top:23px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}.lesson-scope strong{font-weight:500;color:var(--ink)}.lesson-scope .source-list{max-width:650px}.decision-list{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:30px}.decision-picker{display:flex;flex-direction:column;gap:12px}.decision-button{text-align:left;border:1px solid var(--line);border-radius:6px;padding:19px;background:none;display:grid;grid-template-columns:30px minmax(0,1fr) 16px;gap:14px;align-items:center}.decision-button[aria-pressed="true"]{background:var(--panel);border-color:var(--accent)}.decision-button .decision-number{color:var(--accent);font:13px var(--mono)}.decision-button h3{font-size:16px}.decision-button p{font-size:12px;color:var(--muted);margin-top:5px}.decision-detail{background:var(--panel);padding:24px;border:1px solid var(--line);border-radius:7px}.decision-detail h2{font-size:23px;margin:8px 0 18px}.causal-step{position:relative;border-left:1px solid var(--line);padding:0 0 22px 18px;font-size:13px}.causal-step:before{content:"";position:absolute;left:-4px;top:6px;width:7px;height:7px;border-radius:50%;background:var(--accent)}.causal-step:last-of-type{padding-bottom:0;border-left-color:transparent}.causal-step b{display:block;color:var(--muted);font-size:10px;font-weight:400;text-transform:uppercase;letter-spacing:.9px;margin-bottom:5px}.evidence-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.evidence-card{background:var(--panel);padding:23px;border:1px solid var(--line);border-radius:7px}.evidence-card h2{font-size:19px;margin:8px 0 12px}.evidence-card p{font-size:13px}.evidence-card .limits{margin-top:15px;padding-top:13px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.evidence-intro{font-size:13px;color:var(--muted);margin:0 0 22px;max-width:850px}.footer{margin-top:35px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;font-size:11px;color:var(--muted)}.footer button{border:0;background:none;padding:0;color:var(--accent);font-size:11px}.source-dialog{width:min(820px,calc(100% - 30px));max-height:85vh;padding:0;border:1px solid var(--line);border-radius:9px;color:var(--ink);background:var(--panel)}.source-dialog::backdrop{background:#24272066}.dialog-head{padding:22px 25px;display:flex;align-items:start;justify-content:space-between;gap:18px}.dialog-head h2{font-size:20px;overflow-wrap:anywhere}.dialog-head p{font:11px var(--mono);color:var(--muted);margin-top:9px;overflow-wrap:anywhere}.dialog-code{margin:0;padding:20px 25px;background:var(--code);font:12px/1.75 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;max-height:49vh;overflow:auto}.dialog-foot{padding:17px 25px;display:flex;gap:15px;align-items:center;flex-wrap:wrap;font-size:12px}.dialog-foot small{width:100%;overflow-wrap:anywhere}.close-button{border:1px solid var(--line);background:none;border-radius:4px;width:32px;height:32px;flex-shrink:0;font-size:20px;line-height:1}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.warning{background:var(--soft);border-left:2px solid var(--accent);padding:13px 16px;font-size:12px;margin-bottom:19px}.stage-nav{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.stage-nav span{font-size:12px;color:var(--muted)}.stage-nav strong{font-weight:500;color:var(--accent)}
+    @media(min-width:1450px){.main{padding-left:48px;padding-right:48px}.architecture-layout{grid-template-columns:minmax(0,1fr) 360px}.map-node strong{font-size:15px}.map-node .eyebrow{font-size:10px}}
+    @media(max-width:1160px){.shell{grid-template-columns:185px minmax(0,1fr)}.rail{padding:27px 15px}.main{padding:22px}.architecture-layout{grid-template-columns:minmax(0,1fr);grid-template-areas:"diagram" "inspector" "paths"}.inspector{display:block}.definition{display:grid;grid-template-columns:135px 1fr;gap:12px 18px}.definition dt{margin:0}.definition dd{margin:0}.walkthrough-layout{grid-template-columns:minmax(0,1fr) 255px}.decision-list{grid-template-columns:minmax(0,1fr)}.decision-picker{display:grid;grid-template-columns:repeat(2,1fr)}.decision-detail{max-width:none}.target-summary{flex-direction:column;gap:12px}.status-note{max-width:none;flex:auto}}
+    @media(max-width:780px){.shell{display:block}.rail{position:relative;height:auto;padding:18px 20px;gap:17px;border-right:0;border-bottom:1px solid var(--line)}.rail-caption,.rail-foot{display:none}.brand{font-size:18px}.brand-mark{width:26px;height:26px;font-size:19px}.nav{flex-direction:row;gap:4px;flex-wrap:wrap}.nav button{font-size:12px;padding:8px 9px;gap:7px}.main{padding:20px}.topline{margin-bottom:22px;padding-bottom:12px}.page-head{margin-bottom:21px}.page-head p{font-size:14px}.walkthrough-layout{grid-template-columns:minmax(0,1fr)}.instruction-panel{max-width:none}.instruction-row{grid-template-columns:30px 1fr 30px 45px}.evidence-grid{grid-template-columns:minmax(0,1fr)}.map{padding:27px 15px;min-height:250px}.map-grid{gap:45px 12px}.map-node{padding:11px 8px;min-height:77px}.map-node strong{font-size:12px}.decision-picker{grid-template-columns:minmax(0,1fr)}.source-dialog{max-height:90vh}.dialog-head,.dialog-foot{padding:17px}.dialog-code{padding:17px;font-size:11px}}
+    @media(max-width:440px){.main{padding:17px}.nav-index{display:none}.nav button{font-size:11px}.nav{gap:0}.map-grid{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"host loader" "storage fetch" "engine sampler" "pins result";gap:30px 20px}.map{padding:25px 17px}.map-node strong{font-size:13px}.map-node .eyebrow{font-size:10px}.definition{display:block}.definition dt{margin-top:15px}.definition dd{margin-top:5px}.inspector{padding:20px}.wave-panel{padding:17px 13px}.state-readout{gap:8px}.state-value{font-size:18px}.transport .button{padding:9px 11px}.figure-heading{align-items:start}.figure-heading small{max-width:125px;text-align:right}.lesson-meta .pill{font-size:10px}.target-button{font-size:12px;padding:9px 11px}.brand{font-size:17px}.page-head h1{letter-spacing:-.6px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+    @media print{.rail,.transport,.source-dialog{display:none}.shell{display:block}.main{max-width:none}.architecture-layout{grid-template-columns:1fr}.map-node,.inspector{break-inside:avoid}body{background:#fff}}
+    .scenario-row{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:17px}.scenario-row label{font-size:11px;color:var(--muted);display:flex;flex-direction:column;gap:6px;min-width:200px;max-width:100%}.scenario-row select{background:var(--panel);border:1px solid var(--line);border-radius:5px;color:var(--ink);padding:9px 30px 9px 11px;font-size:13px;max-width:100%}.event-controls{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:8px}.event-controls .button{padding:6px 8px;min-height:32px;font-size:11px}.signal-note{color:var(--muted);font-size:11px;margin:0 0 15px;line-height:1.55}.capture-panel{margin-top:19px;padding-top:16px;border-top:1px solid var(--line)}.capture-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}.capture-heading h3{font-size:13px;font-weight:500}.capture-grid{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:5px;margin-bottom:9px}.capture-slot{border:1px solid var(--line);background:var(--paper);border-radius:3px;text-align:center;padding:5px 0;color:var(--muted)}.capture-slot.observed{background:#edf2ec;color:var(--green)}.capture-slot.current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.capture-slot .slot-number{font:9px var(--mono);display:block;margin-bottom:3px}.capture-slot .slot-bit{font:13px var(--mono)}.outcome-box{margin-top:18px;padding:15px 17px;background:var(--panel);border:1px solid var(--line);border-radius:5px;font-size:12px}.outcome-box .outcome-label{font:10px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.outcome-box p{margin-top:5px;color:var(--muted)}.program-toggle{width:100%;border:0;border-top:1px solid var(--line);background:none;padding:12px;color:var(--accent);font-size:12px;text-align:left}.instruction-row.unvisited{opacity:.5}.instruction-row{grid-template-columns:27px minmax(0,1fr) 38px}.instruction-row .instruction-kind{font:10px var(--mono);color:var(--muted)}.instruction-row .duration{font-size:10px}.instruction-panel h2 .small{display:block;font-size:10px;margin-top:5px;font-weight:400}.stage-nav button{border:0;background:none;padding:0;font-size:12px;color:var(--muted)}.stage-nav button[aria-pressed="true"]{color:var(--accent)}
+    @media(max-width:780px){.scenario-row label{min-width:0;flex:1 1 220px}.instruction-row{grid-template-columns:30px minmax(0,1fr) 48px}.capture-grid{gap:4px}.capture-slot .slot-number{font-size:9px}}
+    @media(max-width:440px){.capture-grid{grid-template-columns:repeat(8,minmax(0,1fr))}.scenario-row{gap:12px}.scenario-row select{font-size:14px}.wave-title{flex-wrap:wrap}.scenario-row label{flex-basis:100%}.signal-note{font-size:11px}}
+    .session-stages{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:23px}.session-stage{position:relative;text-align:left;border:1px solid var(--line);border-radius:5px;padding:12px 11px;background:none;min-width:0}.session-stage[aria-pressed="true"]{background:var(--panel);border-color:var(--accent)}.session-stage .eyebrow{display:block;font-size:9px;letter-spacing:.4px;margin-bottom:5px}.session-stage strong{display:block;font-size:12px;font-weight:550;line-height:1.35}.session-stage .stage-detail{display:block;font-size:10px;color:var(--muted);margin-top:5px}.session-layout{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:23px;align-items:start;margin-bottom:23px}.session-article{background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:23px;min-width:0}.session-article h2{font-size:22px;margin:7px 0 12px}.session-article p{font-size:13px}.session-expression{font:11px/1.75 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code);border-radius:4px;padding:13px;margin:15px 0}.session-boundary{padding:0 0 0 12px;border-left:2px solid var(--accent);font-size:12px;color:var(--muted);margin-bottom:21px;max-width:1000px}.session-boundary strong{font-weight:500;color:var(--ink)}.session-obligations h2{font-size:16px;margin:0 0 14px}.session-obligation{margin:0 0 15px;padding-top:15px;border-top:1px solid var(--line)}.session-obligation h3{font-size:13px}.session-obligation p{font-size:12px;color:var(--muted);margin-top:7px}.session-obligation .evidence-kind{font-size:9px;margin-bottom:6px}.session-obligation .source-link{font-size:11px}.session-obligation .source-path{display:none}.session-readout{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:20px;padding-top:17px;border-top:1px solid var(--line)}.session-readout .state-value{font-size:17px;overflow-wrap:anywhere;line-height:1.45}.session-readout .state-label{margin-bottom:5px}.session-readout .small{font-size:10px;display:block;margin-top:5px}.session-events{display:flex;gap:6px;flex-wrap:wrap;margin:15px 0 0}.session-event{background:none;border:1px solid var(--line);border-radius:4px;padding:5px 7px;font-size:10px;color:var(--muted)}.session-event[aria-pressed="true"]{border-color:var(--accent);background:var(--soft);color:var(--accent)}.session-frame-note{margin-top:20px;max-width:950px}.session-frame-note h3{font-size:16px;margin-bottom:7px}.session-frame-note p{font-size:12px;color:var(--muted)}.session-image{margin-top:23px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:21px;min-width:0}.session-image .target-row{margin:13px 0}.session-image h2{font-size:17px}.session-image p{font-size:12px;color:var(--muted)}.session-image-meta{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.session-row-picker{display:flex;flex-direction:column;gap:0;margin-top:16px;border:1px solid var(--line);border-radius:4px;overflow:hidden}.session-image-row{display:grid;grid-template-columns:32px minmax(0,1fr) minmax(155px,.9fr);gap:12px;align-items:center;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;padding:11px 12px;font-size:11px;min-width:0}.session-image-row:last-child{border-bottom:0}.session-image-row[aria-pressed="true"]{background:var(--soft)}.session-image-row .row-word{font:10px/1.6 var(--mono);color:var(--muted);overflow-wrap:anywhere}.session-image-row .row-operation{font-size:12px;overflow-wrap:anywhere}.session-row-detail{font-size:12px;padding:14px;background:var(--code);margin-top:13px;border-radius:4px;overflow-wrap:anywhere}.session-row-detail .mono{font-size:10px;display:block;margin-top:4px}.session-checks{margin-top:20px}.session-checks pre{font:10px/1.65 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}.session-empty{font-size:13px;color:var(--muted)}
+    @media(max-width:1160px){.session-layout{grid-template-columns:minmax(0,1fr)}.session-obligations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.session-obligations h2{grid-column:1/-1;margin-bottom:0}.session-obligation{margin:0}.session-stages{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    @media(max-width:780px){.session-stages{grid-template-columns:repeat(3,minmax(0,1fr))}.session-readout{grid-template-columns:repeat(2,minmax(0,1fr))}.session-obligations{grid-template-columns:minmax(0,1fr);gap:13px}.session-image-row{grid-template-columns:26px minmax(0,1fr)}.session-image-row .row-word{grid-column:2}.session-article,.session-image{padding:19px}}
+    @media(max-width:440px){.session-stages{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.session-stage{padding:10px}.session-readout{gap:13px}.session-readout .state-value{font-size:15px}.session-image{padding:16px}.session-boundary{font-size:11px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Explorer navigation">
+      <div><div class="brand"><span class="brand-mark" aria-hidden="true">p</span>pinwheel</div><p class="rail-caption">A programmable protocol engine.<br>A design you can follow.</p></div>
+      <nav class="nav" aria-label="Views">
+        <button type="button" data-view="architecture" aria-current="page"><span class="nav-index">01</span>Architecture</button>
+        <button type="button" data-view="session"><span class="nav-index">02</span>Program to pins</button>
+        <button type="button" data-view="uart"><span class="nav-index">03</span>Protocol walkthroughs</button>
+        <button type="button" data-view="decisions"><span class="nav-index">04</span>Design decisions</button>
+        <button type="button" data-view="evidence"><span class="nav-index">05</span>Evidence & source</button>
+      </nav>
+      <div class="rail-foot"><strong>Fixed circuit. Reloadable programs.</strong>The instructions change what the pins do. The hardware provides the timing, storage and control.</div>
+    </aside>
+    <main class="main" id="main">
+      <div class="topline"><span class="eyebrow">Design explorer</span><span class="snapshot">Repository base <span id="revision"></span> · local snapshot</span></div>
+      <section id="architecture-view" aria-labelledby="architecture-title">
+        <header class="page-head"><p class="eyebrow">01 / Understand the machine</p><h1 id="architecture-title">From a program to a pin.</h1><p>Follow the connections. Select a component to see what it owns, how it changes, and where to find it in the repo.</p></header>
+        <div class="target-row" id="target-controls" role="group" aria-label="Implementation"></div>
+        <div class="target-summary"><div style="min-width:0"><p id="target-description"></p><p id="target-subtitle" class="mono small" style="margin-top:8px;overflow-wrap:anywhere"></p></div><div class="status-note"><b id="target-status"></b><span id="target-scope"></span></div></div>
+        <div class="architecture-layout">
+          <div>
+            <div class="figure-heading"><h2>Conceptual circuit map</h2><small>Component relationships, not placement</small></div>
+            <div class="map" id="map"><svg class="map-wires" id="map-wires" aria-hidden="true"></svg><div class="map-grid" id="map-grid"></div></div>
+            <div id="connections" class="connection-list" role="group" aria-label="Connections"></div>
+            <p class="diagram-note" id="connection-note">Select a component or a connection to follow its role in the machine.</p>
+            <dl class="capacities" id="capacities"></dl>
+          </div>
+          <aside id="inspector" class="inspector" aria-label="Selected component"></aside>
+          <div class="paths"><div class="figure-heading"><h2>Two connected paths</h2><small>Building versus programming</small></div>
+              <div class="path-row"><div class="eyebrow">Build the circuit</div><div class="path-steps"><span>Lean circuit</span><i>→</i><span>MLIR / CIRCT</span><i>→</i><span>SystemVerilog</span><i>→</i><span>Physical implementation</span></div><p>Structural hardware generation fixes the machine. Physical tools expose wire, clock, area and electrical costs.</p></div>
+              <div class="path-row"><div class="eyebrow">Program the machine</div><div class="path-steps"><span>Request</span><i>→</i><span>Protocol compiler / builder</span><i>→</i><span>Load image</span><i>→</i><span>Writable storage</span></div><p>A new program supplies new behavior through the same instruction and pin interface.</p></div>
+              <div id="path-source" class="source-list"></div>
+          </div>
+        </div>
+      </section>
+      <section id="session-view" aria-labelledby="session-title" hidden>
+        <header class="page-head"><p class="eyebrow">02 / Follow one exact target</p><h1 id="session-title">A program becomes a resident image.</h1><p id="session-intro">Follow a buffered SPI program through lowering, accepted upload, execution and retained results. Then reuse and replace it on the same controller.</p></header>
+        <div id="session-meta" class="lesson-meta"></div>
+        <p id="session-scope" class="session-boundary"></p>
+        <article id="execution-proof-panel" class="wave-panel" hidden aria-labelledby="execution-proof-title">
+          <div class="figure-heading"><h2 id="execution-proof-title">Which execution links are proved?</h2><small>Source meaning and circuit behavior</small></div>
+          <div id="execution-proof-controls" class="target-row" role="group" aria-label="Source execution proof"></div>
+          <div id="execution-proof-detail"></div>
+        </article>
+        <div id="session-empty" class="session-empty" hidden>The integrated recording has not been included in this snapshot. Source and image claims will appear here when their recorded session is bundled.</div>
+        <div id="session-content">
+          <div id="session-stages" class="session-stages" role="group" aria-label="Program to pins stages"></div>
+          <div class="session-layout"><article id="session-stage-detail" class="session-article" aria-label="Selected stage"></article><aside id="session-obligations" class="session-obligations" aria-label="Design obligations"></aside></div>
+          <div class="wave-panel">
+            <div class="wave-title"><h2>One controller session</h2><span id="session-edge-counter" class="mono"></span></div>
+            <svg id="session-waveform" class="waveform" role="img" aria-label="Recorded buffered SRAM controller signals with selected edge"></svg>
+            <p class="signal-note" id="session-signal-note"></p>
+            <div class="transport" role="group" aria-label="Session playback"><button id="session-play" class="button primary" type="button">Play session</button><button id="session-previous" class="button" type="button">← Previous edge</button><button id="session-next" class="button" type="button">Next edge →</button><button id="session-restart" class="button ghost" type="button">Restart</button></div>
+            <div class="event-controls"><button id="session-previous-event" class="button ghost" type="button">← Previous event</button><button id="session-next-event" class="button ghost" type="button">Next event →</button><label class="small" for="session-window">Waveform <select id="session-window"><option value="full">Whole session</option><option value="64">64 edges around cursor</option></select></label></div>
+            <div class="range-row"><label for="session-range"><span>Controller state after the recorded edge</span><span id="session-range-value" class="mono"></span></label><input id="session-range" type="range" min="0" max="0" step="1" value="0"></div>
+            <div id="session-transfer" class="outcome-box" hidden></div>
+            <div id="session-readout" class="session-readout"></div>
+            <div id="session-frame-note" class="session-frame-note" aria-live="polite"></div>
+            <div id="session-events" class="session-events" role="group" aria-label="Session milestones"></div>
+            <details class="session-checks"><summary id="session-internals-label">Inspect sampling and controller state</summary><p class="small" id="session-internals-note"></p><pre id="session-internals"></pre></details>
+          </div>
+          <div class="session-image"><div class="figure-heading"><h2>Source and resident rows</h2><small>Compact image, expanded meaning</small></div><div id="session-image-controls" class="target-row" role="group" aria-label="Resident images"></div><p id="session-image-description"></p><div id="session-image-meta" class="session-image-meta"></div><pre id="session-image-expression" class="session-expression"></pre><div id="session-image-rows" class="session-row-picker" role="group" aria-label="Resident instruction rows"></div><div id="session-row-detail" class="session-row-detail"></div><details class="session-checks"><summary>Inspect recording checks</summary><pre id="session-checks"></pre></details></div>
+        </div>
+      </section>
+      <section id="uart-view" aria-labelledby="uart-title" hidden>
+        <header class="page-head"><p class="eyebrow">03 / Follow a loaded program</p><h1 id="uart-title">One byte. Forty clock intervals.</h1><p id="protocol-intro"></p></header>
+        <div class="target-row" id="protocol-controls" role="group" aria-label="Protocol"></div>
+        <div class="scenario-row"><label for="scenario-select">Recorded scenario<select id="scenario-select"></select></label><label for="trace-window">Waveform window<select id="trace-window"><option value="full">Whole transfer</option><option value="48">48 intervals around cursor</option></select></label></div>
+        <p id="scenario-note" class="signal-note" hidden></p>
+        <div class="lesson-meta" id="lesson-meta"></div>
+        <div class="walkthrough-layout">
+          <div>
+            <div class="wave-panel">
+              <div class="wave-title"><h2>Pin activity & execution</h2><span class="mono" id="cycle-counter"></span></div>
+              <svg class="waveform" id="waveform" role="img" aria-label="Recorded protocol signals and engine busy state, with a cursor at the selected interval"></svg>
+              <p class="signal-note" id="signal-note"></p>
+              <div class="transport" role="group" aria-label="Playback"><button class="button primary" id="play" type="button">Play trace</button><button class="button" id="previous" type="button">← Previous</button><button class="button" id="next" type="button">Next →</button><button class="button ghost" id="restart" type="button">Restart</button></div>
+              <div class="event-controls"><button class="button ghost" id="previous-event" type="button">← Previous event</button><button class="button ghost" id="next-event" type="button">Next event →</button><span id="event-name" class="small"></span></div>
+              <div class="range-row"><label for="cycle-range"><span>Interval immediately after an edge</span><span id="range-value" class="mono"></span></label><input id="cycle-range" type="range" min="0" max="41" step="1" value="0"></div>
+              <div class="state-readout"><div><div class="state-label">Program counter</div><div class="state-value" id="pc-value"></div></div><div><div class="state-label" id="remaining-label">Remaining counter</div><div class="state-value" id="remaining-value"></div></div><div><div class="state-label">Engine</div><div class="state-value" id="busy-value"></div></div></div>
+              <div id="capture-panel" class="capture-panel" hidden><div class="capture-heading"><h3>Capture slots</h3><span id="capture-result" class="small mono"></span></div><div id="captures" class="capture-grid"></div><p class="small" id="capture-legend"></p></div>
+            </div>
+            <div class="cycle-explainer" aria-live="polite" id="cycle-explainer"></div>
+            <div id="outcome-box" class="outcome-box"></div>
+            <div class="stage-nav" id="stage-nav"></div>
+            <div class="lesson-scope"><p><strong>What this recording represents.</strong> <span id="trace-scope"></span></p><p id="trace-convention"></p><div class="source-list" id="trace-sources"></div></div>
+          </div>
+          <div><div class="instruction-panel"><h2>Compiled program <span id="program-size" class="small"></span></h2><div id="instructions" role="group" aria-label="Program instructions; select to jump to their first recorded entry"></div><button id="show-all-instructions" class="program-toggle" type="button" hidden>Show full program</button></div><p class="diagram-note" id="instruction-note"></p></div>
+        </div>
+      </section>
+      <section id="decisions-view" aria-labelledby="decisions-title" hidden>
+        <header class="page-head"><p class="eyebrow">04 / Follow the reasoning</p><h1 id="decisions-title">Why does it look like this?</h1><p>Each architectural change answers a concrete problem. Explore the capability it enables and the costs or obligations it leaves behind.</p></header>
+        <div class="decision-list"><div id="decision-picker" class="decision-picker" role="group" aria-label="Design decisions"></div><article id="decision-detail" class="decision-detail"></article></div>
+      </section>
+      <section id="evidence-view" aria-labelledby="evidence-title" hidden>
+        <header class="page-head"><p class="eyebrow">05 / Inspect the support</p><h1 id="evidence-title">Different checks. Different claims.</h1><p>Follow a result to the implementation, assumptions and source that give it meaning.</p></header>
+        <p class="evidence-intro">A proof relates specified models under its premises. An independent simulation tests a digital artifact. Physical measurements describe a particular implementation and tool setup. Each has its own scope.</p>
+        <div id="evidence-grid" class="evidence-grid"></div>
+      </section>
+      <footer class="footer"><span>Self-contained · no network needed · source excerpts included</span><button id="snapshot-details" type="button">Inspect snapshot provenance ↗</button></footer>
+    </main>
+  </div>
+  <dialog id="source-dialog" class="source-dialog" aria-labelledby="source-title"><div class="dialog-head"><div><h2 id="source-title"></h2><p id="source-location"></p></div><button type="button" id="close-source" class="close-button" aria-label="Close source excerpt">×</button></div><pre id="source-code" class="dialog-code"></pre><div id="source-footer" class="dialog-foot"></div></dialog>
+  <p id="selection-announcement" class="sr-only" aria-live="polite"></p>
+  <noscript><p style="padding:25px">This explorer needs JavaScript for the local interactions. Read the repository's <a href="../README.md">technical topic map</a> for the same design and evidence sources.</p></noscript>
+  <script id="explorer-data" type="application/json">__PINWHEEL_DATA__</script>
+  <script>
+    'use strict';
+    const DATA=JSON.parse(document.getElementById('explorer-data').textContent);
+    const $=id=>document.getElementById(id);
+    const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    let targetId='paired',nodeId='engine',connectionIndex=null,view='architecture',cycle=0,playback=null,decisionId=DATA.decisions[0].id;
+    let protocolId='uart',scenarioId=DATA.trace.id,showAllInstructions=false;
+    let sessionFrame=0,sessionStageId=DATA.bufferedSession?.stages?.[0]?.id,sessionImageId=DATA.bufferedSession?.images?.[0]?.id,sessionRowPC=0,sessionPlayback=null;
+    const hex=(value,digits=2)=>'0x'+Number(value).toString(16).toUpperCase().padStart(digits,'0');
+    function uartRecording(trace){
+      return {...trace,protocol:'uart',scenario:'Transmit 0x53',parameters:{byte:trace.byte,cyclesPerBit:trace.cyclesPerBit},signals:[{key:'tx',label:'TX'}],outcome:{engine:'complete',protocol:'success',summary:'The start bit, eight LSB-first data bits and stop bit occupy 40 engine intervals. No input capture is requested.'},program:trace.program.map(p=>({...p,label:p.symbol,description:p.kind==='halt'?'Stop execution and expose completion.':`Drive TX ${p.tx} for ${p.durationCycles} intervals.`})),frames:trace.frames.map(f=>{
+        let annotation;
+        if(!f.busy)annotation='The engine is stopped and TX is high. PC and countdown have no active value. HALT exposes completion after forty timed intervals.';
+        else if(f.remaining===3)annotation=`Action ${f.pc} has entered. It drives TX ${f.tx?'high':'low'} and loads remaining = 3, giving four intervals including this one.`;
+        else if(f.remaining===0)annotation=`This is the action's final interval. The next edge enters ${f.pc===9?'HALT':'the successor'} with no extra fetch interval.`;
+        else annotation=`TX stays ${f.tx?'high':'low'} while the counter decrements. ${f.remaining} more ${f.remaining===1?'interval follows':'intervals follow'} before the successor enters.`;
+        return {...f,fault:false,signals:{tx:f.tx},captures:[],rawResult:0,decoded:null,validSlots:[],captureIndex:null,phase:f.busy?f.symbol:'Completed',event:f.busy?(f.remaining===3?'entry':'hold'):(f.cycle===40?'complete':'idle'),annotation};
+      })};
+    }
+    const RECORDINGS=[uartRecording(DATA.trace),...(DATA.protocolTraces||[])];
+    const recording=()=>RECORDINGS.find(t=>t.id===scenarioId);
+    const PROTOCOL_COPY={
+      uart:{name:'UART',title:'One byte. Forty clock intervals.',intro:'Follow timed instructions as they turn a byte into a start bit, eight data bits and a stop bit.',lesson:'timed output'},
+      spi:{name:'SPI',title:'Watch a clock edge become a bit.',intro:'Compare all four modes. Follow clock polarity, setup and sampling edges, then decode the captured input into a received byte.',lesson:'input capture'},
+      i2c:{name:'I²C',title:'Wait, acknowledge, or stop.',intro:'Keep the loaded write program fixed while the target responds differently. Watch open-drain ownership, wait budgets and ACK branches.',lesson:'waits and decisions'}
+    };
+    const SCENARIO_LABELS={'i2c-success':'ACK · address and payload','i2c-stretch':'Clock stretching · 3 extra cycles','i2c-nack':'Address NACK · skip the payload','i2c-timeout':'Stuck SCL · timeout before START'};
+    const target=()=>DATA.targets.find(t=>t.id===targetId);
+    const sourceKey=r=>`${r.path}:${r.start}:${r.end}`;
+    const sourceLinks=refs=>(refs||[]).map(r=>`<button type="button" class="source-link" data-source="${esc(sourceKey(r))}">${esc(r.label||r.path)} <span aria-hidden="true">↗</span><span class="source-path">${esc(r.path)}:${r.start}–${r.end}</span></button>`).join('');
+    const announce=text=>{$('selection-announcement').textContent=text;};
+    $('revision').textContent=DATA.snapshot.revision.slice(0,7);
+    function setView(next){
+      if(!['architecture','session','uart','decisions','evidence'].includes(next))return;
+      view=next;if(next!=='uart')stopPlayback();if(next!=='session')stopSessionPlayback();
+      for(const name of ['architecture','session','uart','decisions','evidence'])$(`${name}-view`).hidden=name!==next;
+      document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-current',b.dataset.view===next?'page':'false'));
+      if(location.hash!==`#${next}`)history.replaceState(null,'',`#${next}`);
+      if(next==='architecture')requestAnimationFrame(drawWires);
+      if(next==='uart')requestAnimationFrame(()=>renderFrame(true));
+      if(next==='session')requestAnimationFrame(drawSessionWaveform);
+    }
+    document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+    const session=()=>DATA.bufferedSession;
+    const sessionImage=()=>session()?.images.find(i=>i.id===sessionImageId)||session()?.images[0];
+    const sessionText=value=>typeof value==='object'&&value!==null?JSON.stringify(value,null,2):String(value??'');
+    function sessionInstructionLabel(instruction){
+      if(!instruction||typeof instruction!=='object')return sessionText(instruction);
+      const i=instruction,hold=i.duration?` · ${i.duration} edges`:'';
+      if(i.kind==='shift')return `SHIFT · next TX bit to ${i.shift_pin===0?'MOSI':'pin '+i.shift_pin}${hold}`;
+      if(i.kind==='keep')return `KEEP · SCLK ${i.levels&2?'high':'low'}${i.append_input!==null&&i.append_input!==undefined?' · append sampled MISO':''}${hold}`;
+      if(i.kind==='drive')return `DRIVE · CS_N ${i.levels&4?'high':'low'}, SCLK ${i.levels&2?'high':'low'}${hold}`;
+      if(i.kind==='halt')return 'HALT · idle pins and retain result';
+      return `${String(i.kind||'instruction').toUpperCase()}${hold}`;
+    }
+    function sessionLoopLabel(loop){
+      if(!loop||typeof loop!=='object')return sessionText(loop)||'No enclosing counted loop.';
+      if(!loop.depth)return 'No enclosing counted loop.';
+      const loops=[`Outer: ${loop.outer_count} iterations from row ${loop.outer_start}${loop.outer_end?' (closes here)':''}`];
+      if(loop.depth>=2)loops.push(`inner: ${loop.inner_count} iterations from row ${loop.inner_start}${loop.inner_end?' (closes here)':''}`);
+      return loops.join(' · ')+'.';
+    }
+    const sessionBool=value=>value===true||value===1;
+    const sessionState=()=>session()?.frames[sessionFrame]?.state||{};
+    function stopSessionPlayback(){if(sessionPlayback!==null){clearInterval(sessionPlayback);sessionPlayback=null;}$('session-play').textContent='Play session';$('session-play').setAttribute('aria-pressed','false');}
+    function sessionEventFrames(){return (session()?.frames||[]).map((f,i)=>f.event?i:-1).filter(i=>i>=0);}
+    function setSessionFrame(value,spoken=true){
+      if(!session())return;sessionFrame=Math.max(0,Math.min(session().frames.length-1,Number(value)));
+      const f=session().frames[sessionFrame];if(session().stages.some(s=>s.id===f.stage))sessionStageId=f.stage;
+      if(f.imageId&&session().images.some(i=>i.id===f.imageId))sessionImageId=f.imageId;
+      if(sessionBool(f.state.busy))sessionRowPC=f.state.pc;
+      renderSessionStages();renderSessionStage();renderSessionFrame(spoken);renderSessionImage();
+    }
+    function renderSession(){
+      const s=session();$('session-empty').hidden=!!s;$('session-content').hidden=!s;
+      if(!s){$('session-scope').textContent='An integrated recording is required to connect a source program to this controller session.';return;}
+      $('session-title').textContent=s.title||'One circuit. New programs.';
+      $('session-meta').innerHTML=['Recorded Lean model',s.target,`${s.images.length} resident images`,`${s.transfers.length} transfers`].map((v,i)=>`<span class="pill${i===0?' accent':''}">${esc(v)}</span>`).join('');
+      $('session-scope').innerHTML=`<strong>Evidence boundary.</strong> ${esc(s.scope)}`;
+      $('session-obligations').innerHTML='<h2>Use this to guide the design</h2>'+(s.obligations||[]).map(o=>`<div class="session-obligation"><span class="evidence-kind">${esc(o.status)}</span><h3>${esc(o.title)}</h3><p>${esc(o.description)}</p><div class="source-list">${sourceLinks(o.sources)}</div></div>`).join('');
+      $('session-range').max=s.frames.length-1;
+      $('session-signal-note').textContent='The recording applies controller commands directly to the digital SRAM model. Pin rows show commanded levels; Drive en. shows whether the outputs drive them. State is after each edge; command rejection reports admission before that edge. Raw inputs enter sampler stage 1 on the edge, while RX append uses the previous stage-2 sample. Upload packet delivery, pad delay and electrical SRAM timing have separate evidence obligations.';
+      $('session-checks').textContent=JSON.stringify(s.checks,null,2);
+      renderExecutionProof();
+      renderSessionStages();renderSessionStage();renderSessionFrame();renderSessionImage();
+    }
+    let executionProofId='spi';
+    function renderExecutionProof(){
+      const proofs=DATA.executionProofs||[],p=proofs.find(v=>v.id===executionProofId)||proofs[0];
+      $('execution-proof-panel').hidden=!p;if(!p)return;
+      executionProofId=p.id;
+      $('execution-proof-controls').innerHTML=proofs.map(v=>`<button type="button" class="target-button" data-execution-proof="${esc(v.id)}" aria-pressed="${v.id===p.id}">${esc(v.name)}</button>`).join('');
+      $('execution-proof-detail').innerHTML=`<p>${esc(p.scope)}</p><div class="path-row"><div class="path-steps"><span>Source program</span><i>=</i><span>Decoded image interpreter</span></div><p><strong>Kernel theorem.</strong> ${esc(p.proved)}</p><div class="source-list">${sourceLinks(p.sources)}</div></div><div class="path-row"><div class="path-steps"><span>Decoded image interpreter</span><i>?</i><span>Packed-register circuit</span></div><p><strong>Open state relation.</strong> ${esc(p.open)}</p></div><div class="path-row"><div class="path-steps"><span>Packed-register circuit</span><i>=</i><span>Initialized digital SRAM</span></div><p><strong>Existing kernel theorem.</strong> Accepted loading establishes the resident image and ready responses. Permitted fixed-image runtime observations agree between the two hardware representations.</p></div><p class="small">The waveform below is the recorded SPI SRAM session. Selecting I²C here changes the proof scope, not that recording. Serial, emitted RTL and physical timing retain their separate gates.</p>`;
+      $('execution-proof-controls').querySelectorAll('[data-execution-proof]').forEach(button=>button.addEventListener('click',()=>{executionProofId=button.dataset.executionProof;renderExecutionProof();}));
+    }
+    function renderSessionStages(){
+      if(!session())return;$('session-stages').innerHTML=session().stages.map((s,i)=>`<button class="session-stage" type="button" data-session-stage="${esc(s.id)}" aria-pressed="${s.id===sessionStageId}"><span class="eyebrow">${String(i+1).padStart(2,'0')} / ${s.firstFrame===null?'source relation':'controller history'}</span><strong>${esc(s.title)}</strong><span class="stage-detail">${s.firstFrame===null?'Inspect the contract':`Edges ${s.firstFrame}–${s.lastFrame}`}</span></button>`).join('');
+    }
+    function renderSessionStage(){
+      const s=session()?.stages.find(v=>v.id===sessionStageId);if(!s)return;
+      const image=sessionImage(),frame=s.firstFrame===null?null:session().frames[s.firstFrame];
+      let extra='';
+      if(s.firstFrame===null&&image){
+        extra=`<pre class="session-expression">${esc(image.source?.expression||image.source?.definition)}</pre><p class="muted">${image.rows.length} stored rows represent ${esc(image.virtualSpan)} virtual instruction entries. The TX data belongs to each transfer, so reusing the image can change the payload.</p><details><summary>Inspect source and image identity</summary><p class="mono small" style="overflow-wrap:anywhere">Program key: ${esc(image.programKey)}<br>Image key: ${esc(image.imageKey)}</p></details>`;
+      }else if(frame){
+        extra=`<dl class="definition"><dt>Recorded entry</dt><dd>Edge ${frame.edge} · ${esc(frame.event||'controller transition')}</dd><dt>Command</dt><dd class="mono">${esc(sessionText(frame.command))}</dd></dl>`;
+      }
+      $('session-stage-detail').innerHTML=`<p class="eyebrow">${s.firstFrame===null?'Program and representation':'Accepted controller history'}</p><h2>${esc(s.title)}</h2><p>${esc(s.description)}</p>${extra}<div class="source-list">${sourceLinks(s.sources)}</div>`;
+    }
+    function renderSessionFrame(spoken=false){
+      const s=session();if(!s)return;const f=s.frames[sessionFrame],state=f.state,last=s.frames.length-1;
+      const busy=sessionBool(state.busy),retained=sessionBool(state.retained),pending=sessionBool(state.pending);
+      const ownership=busy?'Running':retained?'Result retained':pending?'Pending':'Available';
+      const image=s.images.find(v=>v.id===f.imageId),transfer=s.transfers.filter(t=>t.startFrame<=sessionFrame).at(-1);
+      const counters=`Generation ${state.generation??'—'} · transfer ${state.transfer??'—'}`;
+      const completed=transfer&&sessionFrame>=transfer.completeFrame;
+      $('session-transfer').hidden=!transfer;
+      const wireBytes=value=>String(value??'').match(/.{1,2}/g)?.join(' ')||'—';
+      if(transfer)$('session-transfer').innerHTML=`<div class="outcome-label">${completed?'Completed transfer':'Active transfer'} · ${esc(transfer.id)}</div><strong class="mono">TX ${esc(wireBytes(transfer.txHex))}</strong><p>Expected peer reply: <span class="mono">${esc(wireBytes(transfer.expectedRxHex))}</span>. ${completed?`Recorded decoded RX: <span class="mono">${esc(wireBytes(transfer.decodedRxHex))}</span>.`:'The receive buffer below shows only the bits collected so far.'}</p>`;
+      $('session-edge-counter').textContent=`Edge ${f.edge} / ${s.frames[last].edge}`;$('session-range').value=sessionFrame;$('session-range-value').textContent=f.edge;
+      $('session-previous').disabled=sessionFrame===0;$('session-next').disabled=sessionFrame===last;
+      const events=sessionEventFrames();$('session-previous-event').disabled=!events.some(i=>i<sessionFrame);$('session-next-event').disabled=!events.some(i=>i>sessionFrame);
+      const fields=[
+        ['Ownership',ownership,counters],
+        ['Resident image',sessionBool(state.valid)?(image?.label||'Valid'):'Not committed',image?`${image.rows.length} stored rows · ${image.virtualSpan} virtual entries`:'Accepted upload establishes live coverage'],
+        ['Execution',busy?`PC ${state.pc} · virtual ${state.virtual_pc}`:'Stopped',busy?`Remaining ${state.remaining} · consumed TX ${state.tx_consumed}`:`TX consumed ${state.tx_consumed??0} bits`],
+        ['Raw receive buffer',`${state.rx_length??0} bits · ${hex(state.rx_data??0,8)}`,completed&&retained?`Decoded ${transfer.decodedRxHex}`:completed&&!busy?'Ownership release can clear the receive buffer':'Result accumulates as sampled bits append']
+      ];
+      $('session-readout').innerHTML=fields.map(([label,value,note])=>`<div><div class="state-label">${esc(label)}</div><div class="state-value">${esc(value)}</div><span class="small">${esc(note)}</span></div>`).join('');
+      $('session-frame-note').setAttribute('aria-live',spoken?'polite':'off');
+      const annotation=f.annotation||(busy?`Resident row ${state.pc} holds the current pin commands at virtual position ${state.virtual_pc}. The duration-minus-one counter is ${state.remaining}; input sampling continues on this edge.`:retained?'The completed receive prefix and owner identity remain available until a matching RELEASE.':pending?'Upload coverage is pending. Execution cannot start until an admitted COMMIT establishes VALID.':'No transfer owns the result slot. The admitted image can be started again or replaced through a new upload epoch.');
+      $('session-frame-note').innerHTML=`<h3>${esc(f.event||f.transferLabel||'Controller execution')} · edge ${f.edge}</h3><p>${esc(annotation)}</p><p class="mono small">Command: ${esc(sessionText(f.command))} · raw inputs: ${esc(f.rawInputs)}${sessionBool(state.rejected)?' · command rejected':''}${sessionBool(state.read_valid)?` · result read bit: ${state.read_bit}`:''}</p>${f.fetch?`<p class="small">SRAM candidate addresses ${esc(f.fetch.addr0)} and ${esc(f.fetch.addr1)} · ${sessionBool(f.fetch.ready)?'live responses ready':'readiness not established for this cut'}. Inspect the registered responses below.</p>`:''}`;
+      $('session-internals-label').textContent=f.fetch?'Inspect SRAM fetch and input sampling':'Inspect input sampling and controller state';
+      $('session-internals-note').textContent='stage1 and stage2 are the input sampling registers. env0 and env1 are the active loop counters. Stopped PC/counters retain raw hardware reset values. SRAM candidate addresses are computed from the state after this edge; Q is the actual registered response. Readiness is checked at VALID cuts for live addresses; pending uploads can hold earlier Q values.';
+      $('session-internals').textContent=JSON.stringify({rawInputs:f.rawInputs,pinCommands:{levels:state.levels,enabled:state.enabled},sampling:{stage1:state.stage1,stage2:state.stage2},execution:{pc:state.pc,virtualPC:state.virtual_pc,remaining:state.remaining,loop0:state.env0,loop1:state.env1,phase:state.phase,waitLeft:state.wait_left,scratch:state.scratch},...(f.fetch?{sramFetch:f.fetch}:{})},null,2);
+      const milestones=s.stages.filter(v=>Number.isInteger(v.firstFrame)).map(v=>({at:v.firstFrame,title:v.title}));
+      $('session-events').innerHTML=milestones.map(m=>`<button class="session-event" type="button" data-session-frame="${m.at}" aria-pressed="${s.frames[sessionFrame].stage===s.frames[m.at].stage}">${esc(m.title)} · ${s.frames[m.at].edge}</button>`).join('');
+      drawSessionWaveform();
+    }
+    function renderSessionImage(){
+      const s=session(),image=sessionImage();if(!s||!image)return;
+      if(!image.rows.some(r=>r.pc===sessionRowPC))sessionRowPC=image.rows[0]?.pc;
+      const selected=image.rows.find(r=>r.pc===sessionRowPC),storage=image.storage||{};
+      $('session-image-controls').innerHTML=s.images.map(i=>`<button class="target-button" type="button" data-session-image="${esc(i.id)}" aria-pressed="${i.id===image.id}">${esc(i.label)}</button>`).join('');
+      $('session-image-description').textContent=`${image.label}: each ${storage.instructionWordBits||64}-bit instruction lives in both SRAM replicas. Its ${storage.metadataBits||28} metadata bits stay in controller registers: 24 loop-control bits and a 4-bit dictionary index. Select a row to inspect the uploaded encoding and loop meaning.`;
+      const meta=[`${image.rows.length} / ${storage.instruction_sram_words||64} stored rows`,`${image.virtualSpan} virtual entries`,`${image.txBits} TX bits / ${image.rxBits} RX bits`];
+      if(storage.physicalRowBits)meta.push(`${storage.physicalRowBits} bits / compact row`);if(storage.instructionReplicas)meta.push(`${storage.instructionReplicas} SRAM replicas`);
+      if(storage.allocatedInstructionSRAMBits)meta.push(`${storage.allocatedInstructionSRAMBits.toLocaleString()} allocated SRAM bits`);
+      $('session-image-meta').innerHTML=meta.map(v=>`<span class="pill">${esc(v)}</span>`).join('');
+      $('session-image-expression').textContent=image.source?.expression||sessionText(image.source?.definition);
+      $('session-image-rows').innerHTML=image.rows.map(r=>`<button class="session-image-row" type="button" data-session-row="${r.pc}" aria-pressed="${r.pc===sessionRowPC}"><span class="mono">${String(r.pc).padStart(2,'0')}</span><span class="row-operation">${esc(sessionInstructionLabel(r.instruction))}</span><span class="row-word">word ${esc(r.wordHex)}<br>control ${esc(r.controlHex)} · dictionary ${esc(r.branchIndex)}</span></button>`).join('');
+      const descriptor=image.dictionary?.find(d=>d.index===selected?.branchIndex);
+      $('session-row-detail').innerHTML=selected?`<strong>Stored row ${selected.pc}</strong><p>${esc(sessionLoopLabel(selected.loop))}</p><span class="mono">Instruction: ${esc(selected.wordHex)} · control: ${esc(selected.controlHex)} · branch index: ${esc(selected.branchIndex)}</span>${descriptor?`<span class="mono">Dictionary descriptor ${descriptor.index}: ${esc(descriptor.wordHex)}</span>`:''}`:'';
+    }
+    function drawSessionWaveform(){
+      const s=session();if(view!=='session'||!s)return;
+      const svg=$('session-waveform'),W=Math.max(245,svg.clientWidth),left=71,right=13,count=s.frames.length,windowed=$('session-window').value==='64';
+      const start=windowed?Math.max(0,Math.min(sessionFrame-32,Math.max(0,count-64))):0,end=windowed?Math.min(count,start+64):count,step=(W-left-right)/(end-start),x=i=>left+(i-start)*step;
+      const lanes=[['VALID',f=>sessionBool(f.state.valid)],['Busy',f=>sessionBool(f.state.busy)],['Retained',f=>sessionBool(f.state.retained)],['Drive en.',f=>Number(f.state.enabled)!==0],['CS_N cmd',f=>((Number(f.state.levels)>>2)&1)===1],['SCLK cmd',f=>((Number(f.state.levels)>>1)&1)===1],['MOSI cmd',f=>(Number(f.state.levels)&1)===1]],H=lanes.length*42+60;
+      svg.style.height=H+'px';svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+      let markup=`<title>Buffered SRAM session.</title><desc>Controller state after edges ${s.frames[start].edge} to ${s.frames[end-1].edge}. Cursor at edge ${s.frames[sessionFrame].edge}.</desc><rect x="${x(sessionFrame)}" y="10" width="${Math.max(1,step)}" height="${H-49}" fill="#f8ebe3"/>`;
+      const tickStep=Math.max(1,Math.ceil((end-start)/(W<460?4:9)/4)*4);
+      for(let i=Math.ceil(start/tickStep)*tickStep;i<end;i+=tickStep)markup+=`<line x1="${x(i)}" x2="${x(i)}" y1="13" y2="${H-42}" stroke="#eff0e9"/><text x="${x(i)}" y="${H-20}" fill="#64685e" font-size="10" font-family="ui-monospace,monospace" text-anchor="middle">${s.frames[i].edge}</text>`;
+      lanes.forEach(([label,value],lane)=>{
+        const high=17+lane*42,low=high+20;let d=`M${x(start)},${value(s.frames[start])?high:low}`;
+        for(let i=start;i<end;i++){const y=value(s.frames[i])?high:low;if(i>start)d+=` V${y}`;d+=` H${x(i+1)}`;}
+        markup+=`<text x="0" y="${high+13}" fill="#64685e" font-size="11">${label}</text><line x1="${left}" x2="${W-right}" y1="${low}" y2="${low}" stroke="#eff0e9"/><path d="${d}" fill="none" stroke="${lane<4?'#52705c':'#b84b25'}" stroke-width="1.7"/>`;
+      });
+      markup+=`<line x1="${x(sessionFrame)+step/2}" x2="${x(sessionFrame)+step/2}" y1="8" y2="${H-38}" stroke="#b84b25" stroke-width="1"/><text x="${left}" y="${H-1}" fill="#64685e" font-size="10">Controller edges · select the waveform to seek</text>`;svg.innerHTML=markup;
+      svg.onclick=e=>{const r=svg.getBoundingClientRect();stopSessionPlayback();setSessionFrame(Math.floor((e.clientX-r.left-left)/step)+start);};
+    }
+    function renderArchitecture(){
+      const t=target();if(!t.nodes.some(n=>n.id===nodeId))nodeId=t.nodes[0].id;
+      $('target-controls').innerHTML=DATA.targets.map(v=>`<button class="target-button" type="button" data-target="${esc(v.id)}" aria-pressed="${v.id===targetId}">${esc(v.name)}</button>`).join('');
+      $('target-description').textContent=t.description;$('target-subtitle').textContent=t.subtitle;$('target-status').textContent=t.status;$('target-scope').textContent=t.scope;
+      $('map-grid').innerHTML=t.nodes.map(n=>`<button type="button" class="map-node" style="grid-area:${n.id}" data-node="${n.id}" aria-pressed="${n.id===nodeId}"><span class="eyebrow">${esc(n.kicker)}</span><strong>${esc(n.name)}</strong></button>`).join('');
+      $('capacities').innerHTML=(t.capacities||[]).map(c=>`<div class="capacity"><dt>${esc(c.label)}</dt><dd>${esc(c.value)}</dd></div>`).join('');
+      $('connections').innerHTML=t.edges.map((e,i)=>`<button class="connection" type="button" data-connection="${i}" aria-pressed="${connectionIndex===i}">${esc(e.label)}</button>`).join('');
+      $('connection-note').textContent=connectionIndex===null?'Select a component or a connection to follow its role in the machine.':`${t.nodes.find(n=>n.id===t.edges[connectionIndex].from).name} → ${t.nodes.find(n=>n.id===t.edges[connectionIndex].to).name}: ${t.edges[connectionIndex].label}.`;
+      renderInspector();requestAnimationFrame(drawWires);
+    }
+    function renderInspector(){
+      const n=target().nodes.find(n=>n.id===nodeId);
+      $('inspector').innerHTML=`<p class="eyebrow">${esc(n.kicker)}</p><h2>${esc(n.name)}</h2><p class="purpose">${esc(n.purpose)}</p><dl class="definition"><dt>State it owns</dt><dd>${esc(n.state)}</dd><dt>Who updates it</dt><dd>${esc(n.updates)}</dd><dt>Who consumes it</dt><dd>${esc(n.consumers)}</dd><dt>Timing obligation</dt><dd>${esc(n.timing)}</dd></dl><div class="source-list">${sourceLinks(n.sources)}</div><details><summary>Claims & supporting checks</summary>${(n.evidence||[]).map(e=>`<div class="evidence-item"><span class="evidence-kind">${esc(e.kind)}</span><p>${esc(e.claim)}</p><p class="limit">${esc(e.limit)}</p><div class="source-list">${sourceLinks(e.sources)}</div></div>`).join('')}</details>`;
+    }
+    function drawWires(){
+      if(view!=='architecture')return;
+      const map=$('map'),svg=$('map-wires'),box=map.getBoundingClientRect(),t=target();
+      svg.setAttribute('viewBox',`0 0 ${box.width} ${box.height}`);
+      let markup='<defs><marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#a3a89c"/></marker><marker id="active-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6" fill="#b84b25"/></marker></defs>';
+      t.edges.forEach((e,i)=>{
+        const a=map.querySelector(`[data-node="${e.from}"]`).getBoundingClientRect(),b=map.querySelector(`[data-node="${e.to}"]`).getBoundingClientRect();
+        let x1=a.left-box.left+a.width/2,y1=a.top-box.top+a.height/2,x2=b.left-box.left+b.width/2,y2=b.top-box.top+b.height/2;
+        const dx=x2-x1,dy=y2-y1,sameRow=Math.abs(dy)<10,sameColumn=Math.abs(dx)<10;
+        let d;
+        if(sameRow&&Math.abs(dx)>a.width*1.6){
+          const lane=Math.max(a.bottom,b.bottom)-box.top+12+(i%3)*5;
+          y1=a.bottom-box.top;y2=b.bottom-box.top+3;
+          d=`M${x1},${y1} V${lane} H${x2} V${y2}`;
+        }else if(!sameRow&&Math.abs(dy)>a.height*2.1){
+          const direction=Math.sign(dy),lane=box.width-7-(i%2)*5;
+          y1+=(direction*a.height/2);y2-=direction*(b.height/2+3);
+          const gap1=y1+direction*13,gap2=y2-direction*13;
+          d=`M${x1},${y1} V${gap1} H${lane} V${gap2} H${x2} V${y2}`;
+        }else if(sameRow){
+          const offset=(e.from<e.to?-1:1)*3;y1+=offset;y2+=offset;
+          x1+=Math.sign(dx)*a.width/2;x2-=Math.sign(dx)*(b.width/2+3);
+          d=`M${x1},${y1} H${x2}`;
+        }else{
+          const offset=sameColumn?(e.from<e.to?-1:1)*3:0;x1+=offset;x2+=offset;
+          y1+=Math.sign(dy)*a.height/2;y2-=Math.sign(dy)*(b.height/2+3);
+          d=`M${x1},${y1} V${(y1+y2)/2} H${x2} V${y2}`;
+        }
+        const selected=connectionIndex===null?(e.from===nodeId||e.to===nodeId):connectionIndex===i;
+        markup+=`<path d="${d}" class="wire${selected?' active':''}" marker-end="url(#${selected?'active-arrow':'arrow'})"/>`;
+      });svg.innerHTML=markup;
+    }
+    function stopPlayback(){if(playback!==null){clearInterval(playback);playback=null;}$('play').textContent='Play trace';$('play').setAttribute('aria-pressed','false');}
+    function setCycle(value,spoken=true){cycle=Math.min(recording().frames.length-1,Math.max(0,Number(value)));renderFrame(spoken);}
+    function eventCycles(){
+      return recording().frames.filter((f,i)=>f.event&&!['hold','idle'].includes(f.event)&&(f.event!=='wait'||i===0||recording().frames[i-1].pc!==f.pc||recording().frames[i-1].event!=='wait')).map(f=>f.cycle);
+    }
+    function renderRecording(){
+      const t=recording(),copy=PROTOCOL_COPY[protocolId];
+      $('uart-title').textContent=copy.title;$('protocol-intro').textContent=copy.intro;
+      $('protocol-controls').innerHTML=Object.entries(PROTOCOL_COPY).map(([id,c])=>`<button class="target-button" type="button" data-protocol="${id}" aria-pressed="${id===protocolId}">${esc(c.name)} · ${esc(c.lesson)}</button>`).join('');
+      $('scenario-select').innerHTML=RECORDINGS.filter(r=>r.protocol===protocolId).map(r=>`<option value="${esc(r.id)}"${r.id===scenarioId?' selected':''}>${esc(SCENARIO_LABELS[r.id]||r.scenario)}</option>`).join('');
+      $('scenario-note').hidden=protocolId!=='i2c';$('scenario-note').textContent=t.scenario;
+      const p=t.parameters||{},meta=['Recorded Lean model'];
+      if(protocolId==='uart')meta.push('TX '+hex(t.byte),'4 cycles / symbol','32-slot timed Engine reference');
+      if(protocolId==='spi')meta.push('Mode '+p.mode,'TX '+hex(p.txByte)+' / RX '+hex(p.rxByte),'Half-period '+p.halfCycles+' cycles');
+      if(protocolId==='i2c')meta.push('Same loaded program','Address '+hex(p.address),'Payload '+p.payload.map(b=>hex(b)).join(' '),'Phase '+p.phaseCycles+' cycles','Wait budget '+p.waitCycles+' edges');
+      $('lesson-meta').innerHTML=meta.map((v,i)=>`<span class="pill${i===0?' accent':''}">${esc(v)}</span>`).join('');
+      $('cycle-range').max=t.frames.length-1;$('trace-scope').textContent=t.scope;$('trace-convention').textContent=t.convention;
+      $('trace-sources').innerHTML=sourceLinks(t.sources);
+      $('signal-note').textContent=protocolId==='spi'?'MISO is the input value consumed by this model at the displayed edge. Package sampling delay is outside this recording.':protocolId==='i2c'?'Chip / peer low = 1 means pulling the wire low. Either driver can hold it low; it is high when both release. The displayed resolved wires feed the next engine edge.':'Each row shows the interval immediately after an engine edge.';
+      $('stage-nav').innerHTML=Object.entries(PROTOCOL_COPY).map(([id,c],i)=>`${i?'<span aria-hidden="true">→</span>':''}<button type="button" data-protocol="${id}" aria-pressed="${id===protocolId}">${esc(c.name)} · ${esc(c.lesson)}</button>`).join('');
+      $('program-size').textContent=`${t.program.length} source rows`;
+      $('instruction-note').textContent=protocolId==='i2c'?'Select an executed row to jump to its first recorded entry. Faded rows were not visited in this scenario. The nearby view follows the current PC.':'Select an instruction to jump to its first recorded entry. HALT is highlighted at successful completion; the stopped PC itself is absent.';
+      renderFrame(true);
+    }
+    function renderInstructions(){
+      const t=recording(),f=t.frames[cycle],halt=t.program.find(p=>p.kind==='halt');
+      const active=f.pc??(f.complete?halt?.pc:null);
+      let rows=t.program;
+      if(t.program.length>24&&!showAllInstructions){
+        const lastPC=t.frames.slice(0,cycle+1).findLast(v=>v.pc!==null)?.pc;
+        const at=Math.max(0,t.program.findIndex(p=>p.pc===(active??lastPC)));
+        rows=t.program.slice(Math.max(0,at-4),Math.min(t.program.length,at+7));
+      }
+      $('instructions').innerHTML=rows.map(p=>{
+        let first=t.frames.findIndex(v=>v.pc===p.pc);
+        if(p.kind==='halt'&&first<0)first=t.frames.findIndex(v=>v.complete);
+        return `<button class="instruction-row${first<0?' unvisited':''}" type="button" data-instruction="${p.pc}" data-entry="${first}" aria-pressed="${p.pc===active}" ${first<0?'disabled':''} aria-label="Instruction ${p.pc}, ${esc(p.label||p.symbol)}, ${first<0?'not visited':`entry interval ${first}`}"><span class="pc">${String(p.pc).padStart(2,'0')}</span><span>${esc(p.label||p.symbol)}<span class="instruction-kind"> · ${esc(p.kind)}</span></span><span class="duration">${p.durationCycles?`${p.durationCycles} cyc`:p.kind==='halt'?'HALT':'—'}</span></button>`;
+      }).join('');
+      $('show-all-instructions').hidden=t.program.length<=24;
+      $('show-all-instructions').textContent=showAllInstructions?'Show nearby instructions':`Show all ${t.program.length} rows`;
+    }
+    function renderFrame(spoken=false){
+      const t=recording(),f=t.frames[cycle],last=t.frames.length-1;
+      $('cycle-counter').textContent=`Interval ${cycle} / ${last}`;$('cycle-range').value=cycle;$('range-value').textContent=cycle;
+      $('pc-value').textContent=f.pc===null?'Stopped':String(f.pc).padStart(2,'0');
+      const waiting=f.busy&&f.waitLeft!==null&&f.waitLeft!==undefined;
+      $('remaining-label').textContent=waiting?'Wait budget (edges)':'Remaining counter';
+      $('remaining-value').textContent=waiting?String(f.waitLeft+1):f.remaining===null?'—':String(f.remaining);
+      $('busy-value').textContent=f.busy?'Busy':f.complete?'Complete':f.fault?'Fault':'Timeout';
+      $('previous').disabled=cycle===0;$('next').disabled=cycle===last;
+      const events=eventCycles();$('previous-event').disabled=!events.some(c=>c<cycle);$('next-event').disabled=!events.some(c=>c>cycle);$('event-name').textContent=f.event?f.event.replaceAll('-',' '):'';
+      $('cycle-explainer').setAttribute('aria-live',spoken?'polite':'off');$('cycle-explainer').innerHTML=`<h3>${esc(f.phase||f.symbol||'Execution')} · interval ${cycle}</h3><p>${esc(f.annotation)}</p>`;
+      $('capture-panel').hidden=!f.captures?.length;
+      const observed=f.validSlots||[];
+      $('captures').innerHTML=(f.captures||[]).map((value,i)=>`<div class="capture-slot${observed.includes(i)?' observed':''}${f.captureIndex===i?' current':''}" aria-label="Capture slot ${i}, ${observed.includes(i)?'observed '+value:'not observed'}"><span class="slot-number">${i}</span><span class="slot-bit">${observed.includes(i)?value:'·'}</span></div>`).join('');
+      $('capture-result').textContent='Raw '+hex(f.rawResult||0,4)+(protocolId==='spi'&&observed.length>=8?' · decoded '+hex(f.decoded):'');
+      $('capture-legend').textContent=protocolId==='spi'?'Slots fill in wire order; slot 0 becomes integer bit 0. Eight observed slots decode MSB-first into the received byte. A dot means the slot has not been observed.':'ACK slots record NACK = 1 or ACK = 0. A dot means the slot has not been observed; it is not an ACK. Engine completion after STOP can still report a rejected byte.';
+      const end=t.frames.at(-1),engine=t.outcome.engine,protocol=t.outcome.protocol;
+      $('outcome-box').innerHTML=`<div class="outcome-label">${f.busy?'Outcome at recording end':'Recorded outcome'}</div><strong>Engine ${esc(engine)} · protocol ${esc(protocol)}</strong><p>${esc(t.outcome.summary)}</p>${protocolId==='spi'?`<p>Final raw slots: ${hex(end.rawResult,4)} → received byte ${hex(end.decoded)}.</p>`:''}`;
+      renderInstructions();drawWaveform();
+    }
+    function drawWaveform(){
+      if(view!=='uart')return;
+      const t=recording(),svg=$('waveform'),W=Math.max(245,svg.clientWidth),left=protocolId==='i2c'?99:57,right=13;
+      const count=t.frames.length,windowed=$('trace-window').value==='48';
+      const start=windowed?Math.max(0,Math.min(cycle-24,count-48)):0,end=windowed?Math.min(count,start+48):count;
+      const step=(W-left-right)/(end-start),x=c=>left+(c-start)*step;
+      const signals=[...t.signals,{key:'busy',label:'Busy'}],H=signals.length*42+65;
+      svg.style.height=H+'px';svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+      const short={scl:'SCL wire',sda:'SDA wire',sclEnable:'Chip SCL low',sdaEnable:'Chip SDA low',peerHeldSCL:'Peer SCL low',peerHeldSDA:'Peer SDA low',miso:'MISO in'};
+      let out=`<title>${esc(t.title)}.</title><desc>Recorded intervals ${start} to ${end-1}. Cursor at ${cycle}; ${t.frames[cycle].busy?'engine busy':'engine stopped'}. Values are recorded model outputs.</desc><rect x="${x(cycle)}" y="10" width="${Math.max(1,step)}" height="${H-51}" fill="#f8ebe3"/>`;
+      const tickStep=Math.max(1,Math.ceil((end-start)/(W<460?4:9)/4)*4);
+      for(let c=Math.ceil(start/tickStep)*tickStep;c<end;c+=tickStep)out+=`<line x1="${x(c)}" x2="${x(c)}" y1="13" y2="${H-43}" stroke="#eff0e9"/><text x="${x(c)}" y="${H-22}" fill="#64685e" font-size="11" font-family="ui-monospace,monospace" text-anchor="middle">${c}</text>`;
+      signals.forEach((s,lane)=>{
+        const high=17+lane*42,low=high+20,colour=s.key==='busy'||s.key==='miso'?'#52705c':s.key.startsWith('peer')?'#64685e':'#b84b25';
+        out+=`<text x="0" y="${high+13}" fill="#64685e" font-size="11">${esc(short[s.key]||s.label)}</text><line x1="${left}" x2="${W-right}" y1="${low}" y2="${low}" stroke="#eff0e9"/>`;
+        let d='';for(let i=start;i<end;i++){const f=t.frames[i],value=s.key==='busy'?f.busy:f.signals[s.key],y=value?high:low;d+=(i===start?`M${x(i)},${y}`:` V${y}`)+` H${x(i+1)}`;}
+        const current=s.key==='busy'?t.frames[cycle].busy:t.frames[cycle].signals[s.key];
+        out+=`<path d="${d}" fill="none" stroke="${colour}" stroke-width="1.8"/><circle cx="${x(cycle+.5)}" cy="${current?high:low}" r="3" fill="${colour}"/>`;
+      });
+      out+=`<line x1="${x(cycle+.5)}" x2="${x(cycle+.5)}" y1="10" y2="${H-43}" stroke="#b84b25" stroke-width="1" stroke-dasharray="3 3"/><text x="${left}" y="${H-3}" fill="#64685e" font-size="11">Engine clock intervals</text>`;svg.innerHTML=out;
+    }
+    function renderDecisions(){
+      $('decision-picker').innerHTML=DATA.decisions.map((d,i)=>`<button class="decision-button" type="button" data-decision="${esc(d.id)}" aria-pressed="${d.id===decisionId}"><span class="decision-number">${String(i+1).padStart(2,'0')}</span><span><h3>${esc(d.title)}</h3><p>${esc(d.problem)}</p></span><span aria-hidden="true">↗</span></button>`).join('');
+      const d=DATA.decisions.find(v=>v.id===decisionId);
+      $('decision-detail').innerHTML=`<p class="eyebrow">${esc(d.target==='shared'?'Across design layers':d.target+' design')}</p><h2>${esc(d.title)}</h2>${[['Problem',d.problem],['Change',d.change],['Benefit',d.benefit],['Cost / remaining obligation',d.cost]].map(([label,text])=>`<div class="causal-step"><b>${esc(label)}</b>${esc(text)}</div>`).join('')}<div class="source-list">${sourceLinks(d.sources)}</div>`;
+    }
+    function renderEvidence(){
+      $('evidence-grid').innerHTML=DATA.evidenceTracks.map(e=>`<article class="evidence-card"><span class="evidence-kind">${esc(e.kind)}</span><h2>${esc(e.name)}</h2><p>${esc(e.summary)}</p><p class="limits">${esc(e.limits)}</p><div class="source-list">${sourceLinks(e.sources)}</div></article>`).join('');
+    }
+    function showSource(key){
+      const s=DATA.sources[key];if(!s)return;
+      $('source-title').textContent=s.label||s.path;$('source-location').textContent=`${s.path} · lines ${s.start}–${s.end}`;
+      $('source-code').textContent=s.text.split('\n').map((line,i)=>`${String(s.start+i).padStart(4,' ')}  ${line}`).join('\n');
+      const local='../../'+s.path.split('/').map(encodeURIComponent).join('/');
+      const remote=DATA.snapshot.repository+'/blob/'+DATA.snapshot.revision+'/'+s.path.split('/').map(encodeURIComponent).join('/')+`#L${s.start}-L${s.end}`;
+      $('source-footer').innerHTML=`<a href="${esc(local)}" target="_blank" rel="noopener">Open local source</a>${s.atRevision===true&&DATA.snapshot.revisionOnRemote===true?`<a href="${esc(remote)}" target="_blank" rel="noopener">Open repository revision ↗</a>`:''}<small>Excerpt bundled with the explorer. File SHA-256: <span class="mono">${esc(s.sha256)}</span></small>`;
+      $('source-dialog').showModal();
+    }
+    document.addEventListener('click',event=>{
+      const b=event.target.closest('button');if(!b)return;
+      if(b.dataset.target){targetId=b.dataset.target;connectionIndex=null;renderArchitecture();document.querySelector(`[data-target="${targetId}"]`).focus({preventScroll:true});announce(`Selected ${target().name}.`);}
+      if(b.dataset.node){nodeId=b.dataset.node;connectionIndex=null;renderArchitecture();document.querySelector(`[data-node="${nodeId}"]`).focus({preventScroll:true});announce(`Selected ${target().nodes.find(n=>n.id===nodeId).name}.`);}
+      if(b.dataset.connection!==undefined){connectionIndex=Number(b.dataset.connection);nodeId=target().edges[connectionIndex].to;renderArchitecture();document.querySelector(`[data-connection="${connectionIndex}"]`).focus({preventScroll:true});announce($('connection-note').textContent);}
+      if(b.dataset.instruction!==undefined&&Number(b.dataset.entry)>=0){stopPlayback();setCycle(Number(b.dataset.entry));document.querySelector(`[data-instruction="${b.dataset.instruction}"]`)?.focus({preventScroll:true});}
+      if(b.dataset.protocol){chooseProtocol(b.dataset.protocol);document.querySelector(`#protocol-controls [data-protocol="${protocolId}"]`).focus({preventScroll:true});}
+      if(b.dataset.sessionStage){
+        stopSessionPlayback();const stage=session()?.stages.find(s=>s.id===b.dataset.sessionStage);if(stage){sessionStageId=stage.id;if(Number.isInteger(stage.firstFrame))setSessionFrame(stage.firstFrame);else{renderSessionStages();renderSessionStage();}document.querySelector(`[data-session-stage="${stage.id}"]`)?.focus({preventScroll:true});announce(`Selected ${stage.title}.`);}
+      }
+      if(b.dataset.sessionFrame!==undefined){stopSessionPlayback();setSessionFrame(b.dataset.sessionFrame);}
+      if(b.dataset.sessionImage){sessionImageId=b.dataset.sessionImage;sessionRowPC=0;renderSessionImage();renderSessionStage();document.querySelector(`[data-session-image="${sessionImageId}"]`)?.focus({preventScroll:true});}
+      if(b.dataset.sessionRow!==undefined){sessionRowPC=Number(b.dataset.sessionRow);renderSessionImage();document.querySelector(`[data-session-row="${sessionRowPC}"]`)?.focus({preventScroll:true});announce(`Selected resident row ${sessionRowPC}.`);}
+      if(b.dataset.decision){decisionId=b.dataset.decision;renderDecisions();document.querySelector(`[data-decision="${decisionId}"]`).focus({preventScroll:true});announce(`Selected ${DATA.decisions.find(d=>d.id===decisionId).title}.`);}
+      if(b.dataset.source)showSource(b.dataset.source);
+    });
+    $('play').addEventListener('click',()=>{
+      if(playback!==null){stopPlayback();return;}if(cycle===recording().frames.length-1)setCycle(0,false);
+      $('play').textContent='Pause';$('play').setAttribute('aria-pressed','true');
+      playback=setInterval(()=>{setCycle(cycle+1,false);if(cycle===recording().frames.length-1){stopPlayback();announce('Trace complete.');}},180);
+    });
+    $('previous').addEventListener('click',()=>{stopPlayback();setCycle(cycle-1);});$('next').addEventListener('click',()=>{stopPlayback();setCycle(cycle+1);});$('restart').addEventListener('click',()=>{stopPlayback();setCycle(0);});$('cycle-range').addEventListener('input',e=>{stopPlayback();setCycle(e.target.value);});
+    function chooseProtocol(id){
+      if(!PROTOCOL_COPY[id])return;stopPlayback();protocolId=id;scenarioId=RECORDINGS.find(t=>t.protocol===id).id;cycle=0;showAllInstructions=false;renderRecording();announce(`Selected ${PROTOCOL_COPY[id].name}.`);
+    }
+    $('scenario-select').addEventListener('change',e=>{stopPlayback();scenarioId=e.target.value;cycle=0;showAllInstructions=false;renderRecording();announce(`Selected ${recording().scenario}.`);});
+    $('trace-window').addEventListener('change',drawWaveform);
+    $('previous-event').addEventListener('click',()=>{stopPlayback();const at=eventCycles().filter(c=>c<cycle).at(-1);if(at!==undefined)setCycle(at);});
+    $('next-event').addEventListener('click',()=>{stopPlayback();const at=eventCycles().find(c=>c>cycle);if(at!==undefined)setCycle(at);});
+    $('show-all-instructions').addEventListener('click',()=>{showAllInstructions=!showAllInstructions;renderInstructions();});
+    $('session-play').addEventListener('click',()=>{
+      if(!session())return;if(sessionPlayback!==null){stopSessionPlayback();return;}if(sessionFrame===session().frames.length-1)setSessionFrame(0,false);
+      $('session-play').textContent='Pause';$('session-play').setAttribute('aria-pressed','true');
+      sessionPlayback=setInterval(()=>{setSessionFrame(sessionFrame+1,false);if(sessionFrame===session().frames.length-1){stopSessionPlayback();announce('Controller session complete.');}},100);
+    });
+    $('session-previous').addEventListener('click',()=>{stopSessionPlayback();setSessionFrame(sessionFrame-1);});$('session-next').addEventListener('click',()=>{stopSessionPlayback();setSessionFrame(sessionFrame+1);});$('session-restart').addEventListener('click',()=>{stopSessionPlayback();setSessionFrame(0);});$('session-range').addEventListener('input',e=>{stopSessionPlayback();setSessionFrame(e.target.value);});
+    $('session-previous-event').addEventListener('click',()=>{stopSessionPlayback();const at=sessionEventFrames().filter(i=>i<sessionFrame).at(-1);if(at!==undefined)setSessionFrame(at);});$('session-next-event').addEventListener('click',()=>{stopSessionPlayback();const at=sessionEventFrames().find(i=>i>sessionFrame);if(at!==undefined)setSessionFrame(at);});$('session-window').addEventListener('change',drawSessionWaveform);
+    $('close-source').addEventListener('click',()=>$('source-dialog').close());
+    $('source-dialog').addEventListener('click',e=>{if(e.target===$('source-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
+    $('snapshot-details').addEventListener('click',()=>{
+      $('source-title').textContent='Snapshot provenance';$('source-location').textContent='Generated from the local repository';
+      const t=view==='session'&&session()?session():recording();$('source-code').textContent=JSON.stringify({repositoryBase:DATA.snapshot.revision,revisionOnRemote:DATA.snapshot.revisionOnRemote,generatedAt:DATA.snapshot.generatedAt,selectedRecording:t.id,target:t.target,traceGenerationBase:t.sourceRevision,traceOrigin:t.origin,traceScope:t.scope,recordingHashes:DATA.snapshot.recordingHashes,recordingDigestConventions:DATA.snapshot.recordingDigestConventions,traceSourceHashes:t.sourceHashes,...(view==='session'?{recordingChecks:t.checks}:{}),sourceExcerpts:Object.keys(DATA.sources).length},null,2);
+      $('source-footer').innerHTML='<small>Refresh instructions live in docs/explorer/README.md. This is a frozen explanatory snapshot; playback does not run the proof checker or hardware tools.</small>';$('source-dialog').showModal();
+    });
+    $('path-source').innerHTML=sourceLinks(DATA.pathSources);
+    renderArchitecture();renderDecisions();renderEvidence();renderRecording();renderSession();
+    new ResizeObserver(()=>{drawWires();drawWaveform();drawSessionWaveform();}).observe($('main'));
+    window.addEventListener('hashchange',()=>setView(location.hash.slice(1)));
+    if(['architecture','session','uart','decisions','evidence'].includes(location.hash.slice(1)))setView(location.hash.slice(1));
+  </script>
+</body>
+</html>

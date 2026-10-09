@@ -1,0 +1,1204 @@
+{
+  "targets": [
+    {
+      "id": "paired",
+      "name": "Paired protocol chip",
+      "subtitle": "Current source · protocol pads v2",
+      "description": "A reloadable timed engine with two atomic program images, one paired-successor SRAM and a one-result host mailbox. UART, SPI and I²C behavior comes from uploaded programs.",
+      "status": "Digital implementation; physical qualification remains separate",
+      "scope": "Conceptual dataflow, not a floorplan. Nodes group responsibilities; fetch and execution share controller registers. Current v2 wiring is distinct from historical physical A.",
+      "capacities": [
+        {
+          "label": "Program positions / image",
+          "value": "256"
+        },
+        {
+          "label": "Distinct canonical E64 records",
+          "value": "32"
+        },
+        {
+          "label": "Atomic program images",
+          "value": "2"
+        },
+        {
+          "label": "Instruction SRAM",
+          "value": "1 × 512 × 64"
+        },
+        {
+          "label": "START operand",
+          "value": "8 bits"
+        },
+        {
+          "label": "Capture slots",
+          "value": "16 bits"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "host",
+          "name": "Host & program",
+          "kicker": "Software",
+          "purpose": "Choose a transaction, compile its pin behavior into an image, upload it, then retrieve the retained result. Changing the program reuses the same chip.",
+          "state": "The Python host tracks the last committed program, software generation, serial controls and elapsed edges. This state belongs to the host, outside the ASIC.",
+          "updates": "The caller selects a program; Host.upload checks its format and capacity, sends BEGIN and the words, then verifies COMMIT. Host.start requires an idle valid image and an empty result slot.",
+          "consumers": "The serial receiver consumes the host frames. The caller consumes decoded capture data and the terminal outcome.",
+          "timing": "Each frame contains 8 command bits plus 64 data bits, most significant bit first. Host page reads and consume pulses allow the input sampling pipeline to settle.",
+          "sources": [
+            {
+              "path": "scripts/pinwheel_host.py",
+              "start": 254,
+              "end": 277,
+              "label": "Upload and commit"
+            },
+            {
+              "path": "scripts/pinwheel_host.py",
+              "start": 279,
+              "end": 325,
+              "label": "Start and read a result"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "contract",
+              "claim": "Hardware generation and program compilation are separate paths. A program image changes execution without changing RTL.",
+              "limit": "A supported frontend and an admitted image are required; the explorer does not infer support for arbitrary protocols.",
+              "sources": [
+                {
+                  "path": "docs/architecture.md",
+                  "start": 84,
+                  "end": 110,
+                  "label": "Hardware and program paths"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "loader",
+          "name": "Serial receiver & loader",
+          "kicker": "Command boundary",
+          "purpose": "Turn sampled host bits into one command, validate staged words, and switch to a complete new program at COMMIT.",
+          "state": "Serial framing state holds the partially received command. Loader state owns the active-bank selector, validity, pending upload and 290-word cursor.",
+          "updates": "A completed serial frame delivers one command edge. Accepted PUSH writes the inactive image; accepted COMMIT switches the bank and resets execution to the new idle profile.",
+          "consumers": "Program storage receives admitted writes. Execution uses the committed image; host status reports pending, valid and rejected commands.",
+          "timing": "Upload cannot steal the SRAM port while the engine is busy. Incomplete serial frames are abandoned when select rises; COMMIT requires the full accepted word sequence.",
+          "sources": [
+            {
+              "path": "docs/engine/whole-chip.md",
+              "start": 65,
+              "end": 92,
+              "label": "Serial command delivery"
+            },
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 193,
+              "end": 219,
+              "label": "Memory requests and loader state"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "The certified paired-session theorem derives accepted upload and ready execution from a qualified BEGIN / 290-word / COMMIT session.",
+              "limit": "The digital serial and SRAM contracts are explicit premises. The certificate covers canonical E64; resident SHIFT/KEEP has a separate scope.",
+              "sources": [
+                {
+                  "path": "docs/storage/paired-upload-admission.md",
+                  "start": 18,
+                  "end": 42,
+                  "label": "Certified session"
+                },
+                {
+                  "path": "docs/storage/paired-upload-admission.md",
+                  "start": 56,
+                  "end": 69,
+                  "label": "Premises and limits"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "storage",
+          "name": "Banked program storage",
+          "kicker": "Instructions & parameters",
+          "purpose": "Keep the running program separate from a replacement being uploaded. Store both possible successors together so one SRAM read supplies either branch.",
+          "state": "One 512 × 64 SRAM holds two 256-row atomic images. Each image also owns 32 parameter entries of 20 bits, a boot token and idle pin commands in registers.",
+          "updates": "Accepted uploads write the inactive rows and parameter table. COMMIT selects that image; execution leaves its stored contents fixed.",
+          "consumers": "The fetch logic selects a successor token from the current SRAM response and looks up its parameter. START uses the selected boot token.",
+          "timing": "The synchronous SRAM response and combinational parameter lookup must both meet the next execution edge. Reset establishes validity; it does not require cleared SRAM cells.",
+          "sources": [
+            {
+              "path": "docs/storage/compact-execution-study.md",
+              "start": 160,
+              "end": 185,
+              "label": "Paired image representation"
+            },
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 205,
+              "end": 219,
+              "label": "Banked register updates"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Running-state ownership keeps the current token, cached parameter and usable SRAM response tied to the active image.",
+              "limit": "Stopped Q may be stale. The theorem assumes the stated memory behavior; it does not qualify a physical macro.",
+              "sources": [
+                {
+                  "path": "docs/storage/paired-runtime-ownership.md",
+                  "start": 21,
+                  "end": 60,
+                  "label": "Running ownership and response timing"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fetch",
+          "name": "Successor fetch",
+          "kicker": "No spare waveform cycle",
+          "purpose": "Supply the instruction that must enter on this edge. A branch chooses one half of the already available 64-bit successor pair.",
+          "state": "The current 32-bit token and cached 20-bit parameter are execution registers. The SRAM holds registered Q; fetch is a conceptual grouping of the selection and request logic.",
+          "updates": "Terminal capture selects the branch before successor entry capture can overwrite a slot. The entered token supplies the row address to read for the following edge.",
+          "consumers": "The engine consumes the selected token and parameter. The SRAM consumes the next active-bank row address.",
+          "timing": "Consecutive one-cycle instructions cannot wait for an extra read. Countdown and blocked-wait edges still renew the current row; START refreshes Q from its boot token.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 65,
+              "end": 105,
+              "label": "Capture, half selection and parameter lookup"
+            },
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 193,
+              "end": 203,
+              "label": "Next memory request"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Timed execution proves the ordering of terminal capture, branch choice and next entry across each certified segment.",
+              "limit": "Digital edge correspondence assumes the SRAM response law. Propagation delay, setup and hold are physical obligations.",
+              "sources": [
+                {
+                  "path": "docs/storage/paired-timed-execution.md",
+                  "start": 48,
+                  "end": 72,
+                  "label": "Execution obligations"
+                },
+                {
+                  "path": "docs/storage/paired-runtime-ownership.md",
+                  "start": 50,
+                  "end": 60,
+                  "label": "Response schedule"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "engine",
+          "name": "Timed execution",
+          "kicker": "Generic reactive machine",
+          "purpose": "Run uploaded actions, waits, guarded phases and qualification without a protocol-specific controller. Instructions set the pins and decide when the next instruction enters.",
+          "state": "Execution owns mode, current token, cached parameter, remaining duration, qualification budget, three levels/enables, sixteen capture bits and an eight-bit operand.",
+          "updates": "START enters the boot token. Each engine edge counts down, observes a condition, captures input, dispatches or stops according to the instruction; reset takes priority.",
+          "consumers": "Output commands feed the pad map. Samples and outcome feed the result observer; branch selection uses the designated capture bit.",
+          "timing": "A duration includes entry and terminal edges under the engine convention; there is no implicit fetch gap. Wait readiness wins at its deadline, while a failed checked guard wins over dispatch.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 12,
+              "end": 19,
+              "label": "Owned execution registers"
+            },
+            {
+              "path": "Pinwheel/Hardware/Storage/PairedController.lean",
+              "start": 220,
+              "end": 238,
+              "label": "Execution state updates"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Canonical E64 and the paired controller agree on mode, address, counters, pin commands and captures before and after each permitted edge.",
+              "limit": "The segment keeps one certified image fixed and assumes the memory law. Finite-prefix equality does not guarantee every program terminates.",
+              "sources": [
+                {
+                  "path": "docs/storage/paired-timed-execution.md",
+                  "start": 21,
+                  "end": 39,
+                  "label": "Timed theorem scope"
+                },
+                {
+                  "path": "docs/storage/paired-timed-execution.md",
+                  "start": 62,
+                  "end": 72,
+                  "label": "Guard and capture behavior"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sampler",
+          "name": "Input samplers",
+          "kicker": "Observed input history",
+          "purpose": "Bring consumed serial, reset and protocol inputs through two registers before the inner circuit reads them. The engine sees sampled external values, independently of what it commands.",
+          "state": "First and second sampling stages hold two earlier values of every consumed input. These stages are distinct from the sixteen captured result bits.",
+          "updates": "Every clock edge copies raw inputs to stage one and the previous stage one to stage two. Inner logic reads stage two.",
+          "consumers": "The serial receiver consumes sampled host pins; waits, checks and captures consume sampled protocol inputs.",
+          "timing": "The two-stage history delays observations. Protocol timing and host framing must account for that age; digital sampling alone does not establish analog margins or metastability behavior.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Feeder.lean",
+              "start": 240,
+              "end": 270,
+              "label": "Two-stage sampler"
+            },
+            {
+              "path": "docs/engine/whole-chip.md",
+              "start": 48,
+              "end": 63,
+              "label": "Sampler composition"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Feeder composition preserves the inner circuit edges on the fed history, without adding or removing an execution edge.",
+              "limit": "The statement concerns two-valued sampled histories. Electrical synchronization and board timing remain outside it.",
+              "sources": [
+                {
+                  "path": "docs/engine/whole-chip.md",
+                  "start": 50,
+                  "end": 63,
+                  "label": "Fed-history theorem"
+                },
+                {
+                  "path": "docs/engine/whole-chip.md",
+                  "start": 89,
+                  "end": 92,
+                  "label": "Digital sampling boundary"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pins",
+          "name": "Protocol pads",
+          "kicker": "Version 2 wiring",
+          "purpose": "Expose three logical output lanes and two independent input lanes. A fixed pad map supports UART, SPI and I²C through different uploaded programs and external connections.",
+          "state": "The map owns no registers. Engine levels and enables drive uio2–4; uio0–1 remain input pads, and unused pads remain released.",
+          "updates": "Execution changes the level/enable registers. The output map translates those commands; an external peer and wiring determine resolved observed levels.",
+          "consumers": "A peripheral observes driven wires. The input sampler receives uio0–1; I²C explicitly joins each drive lane to its sense lane on the board.",
+          "timing": "Output levels are digital commands, not measured voltage. I²C sense/drive joins must be opened for independent SPI or UART wiring.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Chip.lean",
+              "start": 90,
+              "end": 124,
+              "label": "Logical lane packing"
+            },
+            {
+              "path": "docs/engine/whole-chip.md",
+              "start": 215,
+              "end": 238,
+              "label": "Version 2 pad contract"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "contract",
+              "claim": "UART TX/RX use uio2/uio0; SPI uses uio2–4 for MOSI/SCLK/CS_N and uio0 for MISO. The fixed map separates input and output ownership.",
+              "limit": "The current v2 package is a distinct digital candidate. Historical physical A used the original mapping and does not qualify these pads.",
+              "sources": [
+                {
+                  "path": "docs/engine/whole-chip.md",
+                  "start": 215,
+                  "end": 238,
+                  "label": "Pad identity and wiring"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "result",
+          "name": "Retained result mailbox",
+          "kicker": "Host ownership",
+          "purpose": "Preserve captures and the reason execution stopped until the host consumes them. Slow reads cannot silently replace the oldest unread result.",
+          "state": "The observer owns sixteen retained sample bits, outcome, valid, sticky overrun/rejection and sampled page/consume controls. This is separate from live engine capture state.",
+          "updates": "An execution completion, timeout or fault arrives one observer edge after the core stops. An empty mailbox accepts it; a full mailbox preserves the old result and sets overrun.",
+          "consumers": "The host selects data and status pages, reads the retained snapshot, then sends a consume pulse. Live status remains separately readable.",
+          "timing": "Consume happens before arrival on the same edge, allowing replacement. Reading does not consume; paired mailbox ownership has no transaction-ID deduplication.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/HostResult.lean",
+              "start": 29,
+              "end": 76,
+              "label": "Mailbox state and transition"
+            },
+            {
+              "path": "docs/engine/whole-chip.md",
+              "start": 253,
+              "end": 287,
+              "label": "Readback and lifetime"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "The mailbox model has structural next-state/output correspondence and leaves core register transitions unchanged.",
+              "limit": "The one-shot mailbox is distinct from the opt-in continuous UART supervisor. Board transport and physical qualification remain separate.",
+              "sources": [
+                {
+                  "path": "docs/engine/whole-chip.md",
+                  "start": 191,
+                  "end": 209,
+                  "label": "Observer proof boundary"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "host",
+          "to": "loader",
+          "label": "72-bit serial frames"
+        },
+        {
+          "from": "loader",
+          "to": "storage",
+          "label": "Validated inactive-image writes"
+        },
+        {
+          "from": "storage",
+          "to": "fetch",
+          "label": "Successor pair + parameters"
+        },
+        {
+          "from": "fetch",
+          "to": "engine",
+          "label": "Selected entry instruction"
+        },
+        {
+          "from": "engine",
+          "to": "fetch",
+          "label": "Current row + branch decision"
+        },
+        {
+          "from": "engine",
+          "to": "pins",
+          "label": "Levels + enables"
+        },
+        {
+          "from": "pins",
+          "to": "sampler",
+          "label": "External observed inputs"
+        },
+        {
+          "from": "sampler",
+          "to": "engine",
+          "label": "Two-stage input history"
+        },
+        {
+          "from": "engine",
+          "to": "result",
+          "label": "Captures + terminal outcome"
+        },
+        {
+          "from": "result",
+          "to": "host",
+          "label": "Status/data pages"
+        },
+        {
+          "from": "host",
+          "to": "result",
+          "label": "Page select + consume"
+        }
+      ]
+    },
+    {
+      "id": "buffered",
+      "name": "Buffered SRAM engine",
+      "subtitle": "pinwheel-buffered-shared-branches32-sram64-v1",
+      "description": "A separately versioned engine with owned TX/RX, counted programs, shared branch descriptors and two-candidate instruction fetch. Its serial frontend holds atomic command receipts.",
+      "status": "Initialized binary execution proof + finite serial/package replay",
+      "scope": "Conceptual dataflow of the serial SRAM target. One resident image and one transfer owner; this is an opt-in continuation with its own image and wire format, not added paired capacity.",
+      "capacities": [
+        {
+          "label": "Stored instruction leaves",
+          "value": "64"
+        },
+        {
+          "label": "Virtual positions",
+          "value": "1,024"
+        },
+        {
+          "label": "Nested loops",
+          "value": "2"
+        },
+        {
+          "label": "Shared branch descriptors",
+          "value": "16"
+        },
+        {
+          "label": "TX / RX capacity",
+          "value": "32 / 32 bits"
+        },
+        {
+          "label": "Instruction SRAM",
+          "value": "2 × 64 × 64"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "host",
+          "name": "Host & program",
+          "kicker": "Software ownership",
+          "purpose": "Lower a shared BufferedProgram into the versioned SRAM image, admit it before I/O, then submit copied TX data and an RX reservation.",
+          "state": "Loaded and pending host handles track image identity, reset epoch and the finite generation/transfer owner. Their wait budget counts serial polls.",
+          "updates": "load verifies source and image agreement; submit establishes ownership. read returns the immutable completion; matching release frees it. Recovery inspects an uncertain receipt without resending START.",
+          "consumers": "The serial frontend consumes framed requests. The caller consumes decoded payload or diagnostic RX prefix and scratch data.",
+          "timing": "The engine keeps stepping during serial traffic. A short transfer may finish before its START receipt is read; a host timeout preserves its pending owner.",
+          "sources": [
+            {
+              "path": "docs/protocols/buffered-sram-serial.md",
+              "start": 94,
+              "end": 117,
+              "label": "Admission and retained ownership"
+            },
+            {
+              "path": "docs/protocols/buffered-sram-serial.md",
+              "start": 144,
+              "end": 165,
+              "label": "Host operations and recovery"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "simulation",
+              "claim": "Recorded serial lifecycle fixtures exercise uncertain START/RELEASE acknowledgement, retry reads and resident-image reuse.",
+              "limit": "These are finite digital replays with frozen source/tool identities. They do not establish physical transport or a universal serial-to-source theorem.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-serial.md",
+                  "start": 222,
+                  "end": 233,
+                  "label": "Lifecycle replay"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "loader",
+          "name": "Serial commands & coverage",
+          "kicker": "Atomic requests",
+          "purpose": "Deliver complete row/table commands and refuse incomplete packets. Track fresh upload coverage so COMMIT cannot reuse uninitialized or prior-image words.",
+          "state": "Frontend registers hold request bits, count, sequence and one pending response. Controller masks record accepted row and dictionary writes; pending/valid/count describe the resident image.",
+          "updates": "Exactly 160 request bits followed by CS close may deliver one command. An accepted first write invalidates the prior image; COMMIT requires all live rows and all sixteen dictionary slots.",
+          "consumers": "Storage receives broadcast instruction writes and register metadata writes. The host receives a 192-bit held receipt with acceptance or rejection.",
+          "timing": "Requests are atomic at CS close. Active and retained transfers block image changes. A pending receipt blocks another request until an exact response read closes.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Buffered/Serial.lean",
+              "start": 15,
+              "end": 62,
+              "label": "Frontend state and command delivery"
+            },
+            {
+              "path": "docs/protocols/buffered-sram-serial.md",
+              "start": 23,
+              "end": 57,
+              "label": "Frame and receipt rules"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Initialized loading derives live image coverage and residency from the actual accepted writes, including duplicate, partial and replacement histories.",
+              "limit": "The proof begins at the decoded core boundary. Packet-to-core composition and source compiler correctness remain subsequent gates.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 16,
+                  "end": 43,
+                  "label": "Initialized upload history"
+                },
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 45,
+                  "end": 59,
+                  "label": "Coverage and residency"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "storage",
+          "name": "Replicated instruction SRAM",
+          "kicker": "One resident image",
+          "purpose": "Store the same instruction bank twice so both successor choices can be read simultaneously. Keep metadata and shared branch descriptors in registers.",
+          "state": "Two 64 × 64 instruction macros allocate 8,192 bits. Registers retain 64 × 28 metadata bits, sixteen × 56 branch descriptors, coverage and a 64-bit row-zero START mirror.",
+          "updates": "Accepted row writes broadcast the instruction to both macros and update metadata. Accepted dictionary writes update descriptors; WRITE0 also updates the START mirror.",
+          "consumers": "Fetch consumes both registered macro responses and expands the selected row with its descriptor. START consumes the mirror, even when macro Q is stale.",
+          "timing": "Physical SRAM contents are not cleared at COMMIT. Count projection masks dead compact rows before dictionary expansion; entry bounds separately block execution there.",
+          "sources": [
+            {
+              "path": "docs/protocols/buffered-sram-hardware.md",
+              "start": 15,
+              "end": 29,
+              "label": "Memory and retained registers"
+            },
+            {
+              "path": "Pinwheel/Hardware/Buffered/Sram.lean",
+              "start": 159,
+              "end": 179,
+              "label": "Actual upload and request logic"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "measurement",
+              "claim": "The retained SRAM allocation screen reports 3,151 controller FF bits plus two macros, compared with 7,183 bits in the shared-branch FF baseline.",
+              "limit": "These are historical mapping/allocation measurements, not routed fit or frequency. Macro geometry and controller area are counted separately.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-hardware.md",
+                  "start": 131,
+                  "end": 156,
+                  "label": "Matched allocation screen"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fetch",
+          "name": "Two-candidate fetch",
+          "kicker": "Latency-one schedule",
+          "purpose": "Fetch both possible next instructions ahead of the input-dependent branch. This preserves the existing waveform edge even across consecutive one-cycle branches.",
+          "state": "The macros own registered responses Q0/Q1. Current execution control and cached branch endpoints produce candidate addresses; metadata and dictionary lookup remain combinational.",
+          "updates": "Each read address is evaluated from the actual prospective post-edge core state. On the following edge, the registered branch decision selects Q and entry-PC metadata.",
+          "consumers": "Execution consumes the selected instruction. The two macros consume independent candidate addresses on every read edge.",
+          "timing": "Candidate addresses include nested-loop rollover and exit. They do not predict raw input or sampler stages; START uses its mirror and adds no dispatch bubble.",
+          "sources": [
+            {
+              "path": "docs/protocols/buffered-sram-hardware.md",
+              "start": 31,
+              "end": 43,
+              "label": "Prospective candidate schedule"
+            },
+            {
+              "path": "Pinwheel/Hardware/Buffered/Sram.lean",
+              "start": 149,
+              "end": 157,
+              "label": "Actual candidate expressions"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "Initialized execution derives both candidate responses from actual macro edges and connects fixed-image runtime to the full-register Reactive circuit.",
+              "limit": "The digital Memory.Sram law is explicit. Native evaluation, emitted RTL and physical SRAM timing retain separate evidence boundaries.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 16,
+                  "end": 36,
+                  "label": "Resident and Ready theorem"
+                },
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 175,
+                  "end": 179,
+                  "label": "Remaining physical and implementation gates"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "engine",
+          "name": "Buffered reactive execution",
+          "kicker": "Timed control & owned data",
+          "purpose": "Execute generic DRIVE, SHIFT, KEEP, WAIT, CHECKED and QUALIFY operations with counted repeats and input-dependent branches. Data bits and control captures have separate storage.",
+          "state": "Execution owns physical/virtual PCs, two loop indices, duration and wait counters, cached control, three levels/enables, 32-bit TX/RX buffers, sixteen scratch bits and finite owner identities.",
+          "updates": "START copies the TX value and reserves RX capacity. SHIFT consumes a bit on entry; RX appends a sampled bit on entry. Dispatch restores row, virtual PC and loop coordinates together.",
+          "consumers": "Pin commands feed the external interface; candidate fetch uses prospective control. Completion retains data, prefix length, consumption count and scratch for the owner.",
+          "timing": "Entry data effects require valid bounds. A terminal capture precedes branch selection and next entry; loop rollover adds no waveform clock. Underflow or overflow becomes a retained fault.",
+          "sources": [
+            {
+              "path": "docs/protocols/buffered-reactive-hardware.md",
+              "start": 18,
+              "end": 33,
+              "label": "Operations and data demands"
+            },
+            {
+              "path": "Pinwheel/Hardware/Buffered/Reactive.lean",
+              "start": 30,
+              "end": 66,
+              "label": "Owned controller state"
+            },
+            {
+              "path": "Pinwheel/Hardware/Buffered/Reactive.lean",
+              "start": 353,
+              "end": 365,
+              "label": "TX/RX and sampler updates"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "proof",
+              "claim": "The binary initialized-execution theorem covers complete execution state and public outputs for every permitted fixed-image runtime prefix.",
+              "limit": "Its independent FF reference begins with the actual valid cut’s nonword core state and accepted image. It is not universal BufferedProgram source-lowering correctness.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 24,
+                  "end": 43,
+                  "label": "Binary execution scope"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "sampler",
+          "name": "Protocol input sampler",
+          "kicker": "Two observed lanes",
+          "purpose": "Register the two external protocol inputs before waits, guards, captures or RX append consume them. Commanded outputs are not substituted for observations.",
+          "state": "Two 2-bit registers, stage1 and stage2, hold sampled protocol input history inside the Reactive controller.",
+          "updates": "Each non-reset edge writes rawInputs to stage1 and the old stage1 to stage2. Reset clears both stages; operation input selection reads stage2.",
+          "consumers": "WAIT/CHECKED/QUALIFY, scratch capture and RX appends consume stage2. Candidate fetch uses control state without predicting either stage.",
+          "timing": "External readiness arrives with sampling delay. Protocol peer fixtures must respect the declared digital timing assumptions; this does not establish electrical sampling margins.",
+          "sources": [
+            {
+              "path": "Pinwheel/Hardware/Buffered/Reactive.lean",
+              "start": 116,
+              "end": 133,
+              "label": "Consumed input selection"
+            },
+            {
+              "path": "Pinwheel/Hardware/Buffered/Reactive.lean",
+              "start": 353,
+              "end": 365,
+              "label": "Two sampling stages"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "contract",
+              "claim": "The serial wrapper passes raw protocol inputs directly to the existing two-stage engine sampler while all units share the engine clock.",
+              "limit": "The serial host pins are a sampled digital interface; serial sampling/CDC and physical protocol input timing remain unqualified.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-serial.md",
+                  "start": 17,
+                  "end": 21,
+                  "label": "Serial and protocol input boundary"
+                },
+                {
+                  "path": "docs/protocols/buffered-sram-loading.md",
+                  "start": 175,
+                  "end": 179,
+                  "label": "Physical sampling limit"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "pins",
+          "name": "Protocol wires & serial port",
+          "kicker": "Buffered wrapper boundary",
+          "purpose": "Expose three levels/enables and two protocol inputs beside serial CS/SCK/MOSI, MISO and READY. These are the buffered wrapper’s ports.",
+          "state": "The wrapper owns no added pin-map state. Protocol output registers live in the controller; request/receipt registers live in the serial frontend.",
+          "updates": "The frontend generates core commands and frozen response bits. The wrapper directly connects controller levels/enables and both memory instances.",
+          "consumers": "The external peer observes protocol drives and supplies raw input values. The host observes MISO, READY and receipts.",
+          "timing": "All composed units use the engine clock. This wrapper has its own versioned serial contract; its ports are not the paired Tiny Tapeout v2 pad assignment.",
+          "sources": [
+            {
+              "path": "physical/buffered_sram_serial_wrapper.sv",
+              "start": 1,
+              "end": 21,
+              "label": "Public wrapper ports"
+            },
+            {
+              "path": "physical/buffered_sram_serial_wrapper.sv",
+              "start": 36,
+              "end": 64,
+              "label": "Frontend, controller and memory composition"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "simulation",
+              "claim": "The retained mapped package replays three independent protocol cases against the typed SRAM oracle; binding checks cover core ports and both exact macro instances.",
+              "limit": "Finite digital package replay and binding do not establish pad placement, routing, electrical timing or board operation.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-serial.md",
+                  "start": 246,
+                  "end": 252,
+                  "label": "Mapped package and binding checks"
+                },
+                {
+                  "path": "docs/protocols/buffered-sram-serial.md",
+                  "start": 240,
+                  "end": 244,
+                  "label": "Allocation exclusions"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "result",
+          "name": "Owned completion & receipt",
+          "kicker": "Two retention layers",
+          "purpose": "Keep a transfer’s result until identity-matched RELEASE, and separately keep each serial response until its exact read is acknowledged.",
+          "state": "The core owns retained outcome, generation/transfer, RX prefix and length, TX consumption and scratch. The frontend owns a frozen 192-bit receipt and READY flag.",
+          "updates": "A terminal core edge freezes completion; repeated observations preserve it. Exact serial response read clears the receipt, while matching RELEASE frees the core transfer.",
+          "consumers": "The host reads the full RX prefix and diagnostics from one frozen response, then explicitly releases the matching transfer identity.",
+          "timing": "Reading a receipt does not release the result. Busy and retained transfers reject START and upload; partial or overlong response reads preserve the receipt for retry.",
+          "sources": [
+            {
+              "path": "docs/protocols/buffered-sram-serial.md",
+              "start": 53,
+              "end": 57,
+              "label": "Held command receipt"
+            },
+            {
+              "path": "docs/protocols/buffered-sram-serial.md",
+              "start": 92,
+              "end": 117,
+              "label": "Retained transfer ownership"
+            }
+          ],
+          "evidence": [
+            {
+              "kind": "contract",
+              "claim": "Completion data and owner identity remain stable during slow/repeated reads. Warm reset cancels ownership; cold initialization invalidates old host handles.",
+              "limit": "A retained RX prefix can accompany failure. TX consumption alone does not prove that a peer accepted bits or that partial external effects can be rolled back.",
+              "sources": [
+                {
+                  "path": "docs/protocols/buffered-sram-serial.md",
+                  "start": 101,
+                  "end": 111,
+                  "label": "Reset and frozen result"
+                },
+                {
+                  "path": "docs/protocols/buffered-transfers.md",
+                  "start": 72,
+                  "end": 86,
+                  "label": "Consumption and failure scope"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "host",
+          "to": "loader",
+          "label": "160-bit atomic requests"
+        },
+        {
+          "from": "loader",
+          "to": "storage",
+          "label": "Rows + descriptors + COMMIT"
+        },
+        {
+          "from": "loader",
+          "to": "engine",
+          "label": "START TX / RX reservation"
+        },
+        {
+          "from": "storage",
+          "to": "fetch",
+          "label": "Q0/Q1 + metadata"
+        },
+        {
+          "from": "fetch",
+          "to": "engine",
+          "label": "Selected entry row"
+        },
+        {
+          "from": "engine",
+          "to": "fetch",
+          "label": "Prospective control state"
+        },
+        {
+          "from": "engine",
+          "to": "pins",
+          "label": "Levels + enables"
+        },
+        {
+          "from": "pins",
+          "to": "sampler",
+          "label": "External protocol observations"
+        },
+        {
+          "from": "sampler",
+          "to": "engine",
+          "label": "Sampled input lanes"
+        },
+        {
+          "from": "engine",
+          "to": "result",
+          "label": "Owned completion + diagnostics"
+        },
+        {
+          "from": "result",
+          "to": "host",
+          "label": "Frozen 192-bit response"
+        },
+        {
+          "from": "host",
+          "to": "result",
+          "label": "Read acknowledgement / RELEASE"
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "reactive-input",
+      "title": "Let input observations control execution",
+      "target": "shared",
+      "problem": "A fixed sequence of timed outputs cannot wait for a released line, distinguish an ACK from a NACK, or branch on a captured input.",
+      "change": "Add drive/release enables, sampled-input waits, checked phases, qualification and terminal capture before conditional dispatch.",
+      "benefit": "The same execution hardware can express input-dependent timing and failure paths as uploaded programs.",
+      "cost": "Timing contracts must specify observation age, guard priority, timeout and the order of capture and branch effects. Open-drain safety still depends on the chosen program.",
+      "sources": [
+        {
+          "path": "docs/engine/reactive-engine.md",
+          "start": 15,
+          "end": 31,
+          "label": "Reactive entry, wait and reset semantics"
+        },
+        {
+          "path": "docs/storage/paired-timed-execution.md",
+          "start": 58,
+          "end": 72,
+          "label": "Guard, capture and branch order"
+        }
+      ]
+    },
+    {
+      "id": "paired-successors",
+      "title": "Return both successors in one read",
+      "target": "paired",
+      "problem": "An input-dependent branch needs its successor at the dispatch edge. An extra SRAM read interval would change short pin waveforms.",
+      "change": "Store the false and true successor tokens together in a 64-bit row, with banked 20-bit parameters and a boot token.",
+      "benefit": "One synchronous macro read supports consecutive dispatches while retaining 256 positions and 32 canonical records per image.",
+      "cost": "Operations can be duplicated across rows, and two combinational deadlines remain: next-row address and parameter/entry lookup. The larger macro geometry is not proof of routed fit.",
+      "sources": [
+        {
+          "path": "docs/storage/compact-execution-study.md",
+          "start": 160,
+          "end": 185,
+          "label": "Restored-capacity paired representation"
+        },
+        {
+          "path": "docs/storage/compact-execution-study.md",
+          "start": 199,
+          "end": 218,
+          "label": "Geometry and execution deadlines"
+        }
+      ]
+    },
+    {
+      "id": "owned-buffers",
+      "title": "Give each finite transfer its own data",
+      "target": "buffered",
+      "problem": "The paired eight-bit operand and sixteen capture bits cannot represent longer TX/RX payloads while preserving separate ACK and failure diagnostics.",
+      "change": "Copy a bounded TX value at submission, reserve separate RX capacity, and retain one identity-bound completion until matching release.",
+      "benefit": "Payload length, partial RX, scratch observations and ownership become explicit. A slow caller can read a stable result and recover the same transfer.",
+      "cost": "Active and retained owners block replacement and START. The hardware has bounded 32-bit buffers and saturating identities; continuous streams require another ownership contract.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-transfers.md",
+          "start": 3,
+          "end": 34,
+          "label": "Data and ownership decision"
+        },
+        {
+          "path": "docs/protocols/buffered-reactive-hardware.md",
+          "start": 27,
+          "end": 59,
+          "label": "Bounded hardware lifecycle"
+        }
+      ]
+    },
+    {
+      "id": "shared-descriptors",
+      "title": "Share repeated branch descriptions",
+      "target": "buffered",
+      "problem": "Storing a full 56-bit branch descriptor in every reactive row repeats information and increases retained program state.",
+      "change": "Use 92-bit compact rows with a four-bit reference into sixteen complete descriptors. Expand the row after selection while preserving execution equations.",
+      "benefit": "The register baseline allocates 6,784 program bits instead of 9,216 inline bits, with the same waveform edges for admitted programs.",
+      "cost": "Programs needing more than sixteen distinct descriptors are rejected. All sixteen descriptors must be uploaded, so small programs can use more loading traffic despite smaller allocated storage.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-storage-fetch.md",
+          "start": 18,
+          "end": 48,
+          "label": "Representation and capacity choice"
+        },
+        {
+          "path": "docs/protocols/buffered-storage-fetch.md",
+          "start": 56,
+          "end": 64,
+          "label": "Program traffic tradeoff"
+        },
+        {
+          "path": "docs/protocols/buffered-storage-fetch.md",
+          "start": 104,
+          "end": 125,
+          "label": "Runtime rewrite scope"
+        }
+      ]
+    },
+    {
+      "id": "candidate-sram",
+      "title": "Read both candidates before the next branch",
+      "target": "buffered",
+      "problem": "Synchronous instruction memory returns data one edge later. Consecutive one-cycle branches and loop rollover leave no spare waveform cycle for demand fetch.",
+      "change": "Replicate the 64 × 64 instruction bank, request both successors of the actual prospective core state, and keep a row-zero mirror for immediate START.",
+      "benefit": "The selected instruction is available at the existing entry edge without predicting sampled inputs or adding response tags.",
+      "cost": "Both instruction replicas must receive each upload. Metadata and descriptor lookup remain register logic; address-path delay, macro timing and complete physical fit require separate qualification.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-sram-hardware.md",
+          "start": 15,
+          "end": 43,
+          "label": "Replicated candidate schedule"
+        },
+        {
+          "path": "docs/protocols/buffered-sram-hardware.md",
+          "start": 131,
+          "end": 156,
+          "label": "Allocation measurement and timing limits"
+        }
+      ]
+    }
+  ],
+  "evidenceTracks": [
+    {
+      "id": "specifications",
+      "name": "Protocol and machine contracts",
+      "kind": "contract",
+      "summary": "The specification, program/machine and structural circuit layers have distinct responsibilities. Exact pin timing and observation assumptions constrain implementation choices.",
+      "limits": "A digital contract or model proof does not establish board electrical behavior. Each compiler and supported protocol subset retains its own scope.",
+      "sources": [
+        {
+          "path": "docs/architecture.md",
+          "start": 22,
+          "end": 40,
+          "label": "Three design layers"
+        },
+        {
+          "path": "docs/architecture.md",
+          "start": 66,
+          "end": 82,
+          "label": "Timing and loading obligations"
+        }
+      ]
+    },
+    {
+      "id": "paired-digital",
+      "name": "Paired certified execution",
+      "kind": "proof",
+      "summary": "The paired session theorem derives admitted loading and cycle-by-cycle E64 package observations from a certified image and qualified delivery. Pad packing in current source releases input and unused pads.",
+      "limits": "Canonical E64, explicit memory/digital delivery premises and a fixed certified execution segment. Resident SHIFT/KEEP, analog sampling and physical qualification are separate; retained measurement receipts keep their source identities.",
+      "sources": [
+        {
+          "path": "docs/storage/paired-upload-admission.md",
+          "start": 18,
+          "end": 54,
+          "label": "Admission and timed package theorem"
+        },
+        {
+          "path": "docs/storage/paired-upload-admission.md",
+          "start": 56,
+          "end": 69,
+          "label": "Explicit proof boundary"
+        },
+        {
+          "path": "Pinwheel/Hardware/Chip.lean",
+          "start": 99,
+          "end": 124,
+          "label": "Current pad packing lemmas"
+        }
+      ]
+    },
+    {
+      "id": "buffered-binary",
+      "name": "Buffered initialized binary execution",
+      "kind": "proof",
+      "summary": "After cold initialization and any accepted-upload history ending VALID, the binary theorem derives resident storage and ready responses, then equates fixed-image runtime and public outputs to an independent FF circuit.",
+      "limits": "The reference starts with the actual valid cut’s nonword core state. Source/decoded-image interpreter proofs now exist for bounded SPI and I²C; their packed-circuit state relation, serial composition, native evaluation/emission and electrical timing remain separate.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-sram-loading.md",
+          "start": 14,
+          "end": 43,
+          "label": "Initialized theorem scope"
+        },
+        {
+          "path": "docs/protocols/buffered-sram-loading.md",
+          "start": 170,
+          "end": 179,
+          "label": "Next proof and physical gates"
+        }
+      ]
+    },
+    {
+      "id": "buffered-source-execution",
+      "name": "Buffered source and decoded-image execution",
+      "kind": "proof",
+      "summary": "Independent resident-image interpreters preserve parametric SPI and one fixed reactive I²C source through START and every execution prefix for arbitrary state, capacity and incoming samples.",
+      "limits": "These are Buffered interpreter semantics. The state relation to the actual packed-register circuit remains open; I²C also needs initialized accepted-loading composition. Constructor/Python byte agreement is finite compiler evidence.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-source-execution.md",
+          "start": 1,
+          "end": 52,
+          "label": "Exact source/interpreter theorem scope"
+        },
+        {
+          "path": "docs/protocols/buffered-source-execution.md",
+          "start": 54,
+          "end": 75,
+          "label": "Remaining circuit state relation"
+        }
+      ]
+    },
+    {
+      "id": "buffered-serial",
+      "name": "Buffered serial and mapped replay",
+      "kind": "simulation",
+      "summary": "Retained finite digital fixtures check atomic requests, response retention, ownership recovery and independent SPI/JTAG/I²C package behavior. Saved mapping comparisons use an explicit optimized-state projection.",
+      "limits": "Historical source-pinned finite replay is distinct from a universal end-to-end theorem. Allocation sums exclude pads, clocks, placement, routing and electrical timing.",
+      "sources": [
+        {
+          "path": "docs/protocols/buffered-sram-serial.md",
+          "start": 213,
+          "end": 233,
+          "label": "Projection and lifecycle replay"
+        },
+        {
+          "path": "docs/protocols/buffered-sram-serial.md",
+          "start": 235,
+          "end": 252,
+          "label": "Saved mapping and allocation boundaries"
+        }
+      ]
+    },
+    {
+      "id": "historical-a",
+      "name": "Historical routed design A",
+      "kind": "measurement",
+      "summary": "A retained source/evidence chain connects the original paired chip through mapping, routing and measured physical artifacts. The documented acceptance intake still refuses design A.",
+      "limits": "Historical A used the earlier pad mapping. It is not qualification of current v2 pads or the buffered SRAM target. Exact-version SRAM, compatible fast timing conditions and package power remain blockers; retained checks are not a fresh route or silicon result.",
+      "sources": [
+        {
+          "path": "docs/research/implementation-acceptance.md",
+          "start": 62,
+          "end": 86,
+          "label": "Retained implementation evidence chain"
+        },
+        {
+          "path": "docs/research/implementation-acceptance.md",
+          "start": 88,
+          "end": 105,
+          "label": "A acceptance blockers"
+        },
+        {
+          "path": "docs/engine/whole-chip.md",
+          "start": 3,
+          "end": 6,
+          "label": "Historical pad identity"
+        },
+        {
+          "path": "docs/engine/whole-chip.md",
+          "start": 235,
+          "end": 238,
+          "label": "New pad candidate boundary"
+        }
+      ]
+    }
+  ],
+  "executionProofs": [
+    {
+      "id": "spi",
+      "name": "SPI · counted transfer",
+      "scope": "Mode-0 SPI: one through four bytes, half-period 3–256. The decoder reads the resident words, counted-loop controls, indices and branch dictionary.",
+      "proved": "For every source state, capacity, incoming input history and execution prefix, the independently decoded image interpreter agrees with the source. Initialized accepted loading derives the decoded bytes without assuming image equality.",
+      "open": "Map the interpreter state to the actual packed circuit at START and preserve the relation each edge: virtual PC, physical loops, countdown, shifted TX, packed RX and sampler timing. Local pin and RX append lemmas support this next step.",
+      "sources": [
+        {
+          "path": "Pinwheel/Hardware/Buffered/SpiExecution.lean",
+          "start": 14,
+          "end": 79,
+          "label": "Independent compact image decoder and source reconstruction"
+        },
+        {
+          "path": "Pinwheel/Hardware/Buffered/SpiExecution.lean",
+          "start": 81,
+          "end": 162,
+          "label": "Arbitrary execution prefixes and initialized accepted-image decoding"
+        },
+        {
+          "path": "Pinwheel/Hardware/Buffered/SpiExecution.lean",
+          "start": 211,
+          "end": 251,
+          "label": "Actual pre-edge RX sampling and circuit append step"
+        }
+      ]
+    },
+    {
+      "id": "i2c",
+      "name": "I²C · reactive register read",
+      "scope": "Fixed four-byte register read, phase period 4 and wait budget 32: 50 stored leaves, 270 virtual entries. The decoder reads instructions, compact loop intervals and the shared branch dictionary.",
+      "proved": "The canonical image parses successfully and matches source fetch at all 1,024 virtual PCs. START and every following prefix agree for arbitrary interpreter state, capacity and incoming input history, including waits, NACK decisions, faults and partial results.",
+      "open": "Connect this interpreter to packed circuit state through waits, qualification and terminal capture before branching. Derive I²C source identity from initialized accepted loading. The loop parser certifies this bounded image; general compiler and metadata validation remain separate.",
+      "sources": [
+        {
+          "path": "Pinwheel/Hardware/Buffered/I2cSource.lean",
+          "start": 94,
+          "end": 178,
+          "label": "Independent instruction, branch and compact-loop decoding"
+        },
+        {
+          "path": "Pinwheel/Hardware/Buffered/I2cSource.lean",
+          "start": 180,
+          "end": 234,
+          "label": "Successful parse, every virtual fetch and arbitrary execution prefixes"
+        },
+        {
+          "path": "Pinwheel/Hardware/Buffered/I2cSource.lean",
+          "start": 236,
+          "end": 278,
+          "label": "Source branch coordinates, resident expansion and rejected corruptions"
+        }
+      ]
+    }
+  ]
+}
