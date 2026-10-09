@@ -47,6 +47,7 @@ SUITES = [
     ('BufferedSramMemoEval', []),
     ('BufferedSramSerial', []),
     ('BufferedSramLoading', []),
+    ('BufferedSpiSource', []),
 ]
 KERNEL_SUITES = ['ChipPinMap']
 
