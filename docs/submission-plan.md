@@ -150,8 +150,9 @@ repeatability or board-level electrical behavior.
 
 Use the [official template and competition brief](competition.md), rechecked
 at packaging time. Set the actual tile allocation, source list, pin map and
-clock information. **Licensing is pending by user decision**; do not add an
-implied license or describe the repository as submission-ready open source.
+clock information. Pinwheel's original material uses [Apache-2.0](../LICENSE),
+with existing third-party terms retained in [NOTICE](../NOTICE). Licensing alone
+does not establish submission readiness.
 The reproducible host upload/readback tools and UART/SPI/I²C/custom-trigger
 examples are implemented, with declared digital roles and cycle counts. Keep
 proved, simulated and physically measured behavior distinct.
