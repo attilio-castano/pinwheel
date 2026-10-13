@@ -1,10 +1,12 @@
 # Pinwheel design explorer
 
-Open [index.html](index.html) in a browser. The page contains its data, styles,
+Open the [interactive design explorer](https://attilio-castano.github.io/pinwheel/)
+directly in your browser. After cloning the repository, you can also open
+[index.html](index.html) from the checkout. The page contains its data, styles,
 scripts and source excerpts, so it works offline without a server or dependencies.
-Source dialogs also link to the full local file. They offer the corresponding
-GitHub revision when its bytes match the snapshot and that revision is reachable
-from a local `origin` tracking ref.
+Source dialogs offer the corresponding GitHub revision when its bytes match the
+snapshot and that revision is reachable from a local `origin` tracking ref at
+build time. When opened as a local file, they also link to the full local source.
 
 The architecture view explains both current paired and buffered SRAM designs.
 It groups components by purpose; it is not a physical floorplan. Component
@@ -122,6 +124,19 @@ check the tracked receipts, source bytes, image fields, session structure and
 source references. Rebuilding refreshes the presentation and source excerpts;
 it does not execute the model again. Changed recording sources require the
 corresponding exporter and replay below.
+
+## Publish with GitHub Pages
+
+The [Pages workflow](../../.github/workflows/explorer-pages.yml) publishes the
+explorer when changes reach `main`; it can also be dispatched manually on `main`.
+GitHub Actions validates the retained recordings and source inputs, rebuilds the
+page while preserving its frozen recordings, then deploys only `index.html` at
+the website root. Source excerpts are embedded, and online source links open the
+verified GitHub revision.
+
+Pages uses GitHub Actions as its publishing source. Publishing the page does not
+rerun the Lean models or extend the recordings' evidence scope. Refresh changed
+recordings and their receipts with the commands below before publishing.
 
 ## Refresh from source
 

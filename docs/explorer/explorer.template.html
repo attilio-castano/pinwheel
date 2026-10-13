@@ -37,7 +37,7 @@
       <div class="rail-foot"><strong>Fixed circuit. Reloadable programs.</strong>The instructions change what the pins do. The hardware provides the timing, storage and control.</div>
     </aside>
     <main class="main" id="main">
-      <div class="topline"><span class="eyebrow">Design explorer</span><span class="snapshot">Repository base <span id="revision"></span> · local snapshot</span></div>
+      <div class="topline"><span class="eyebrow">Design explorer</span><span class="snapshot">Repository base <span id="revision"></span> · source snapshot</span></div>
       <section id="architecture-view" aria-labelledby="architecture-title">
         <header class="page-head"><p class="eyebrow">01 / Understand the machine</p><h1 id="architecture-title">From a program to a pin.</h1><p>Follow the connections. Select a component to see what it owns, how it changes, and where to find it in the repo.</p></header>
         <div class="target-row" id="target-controls" role="group" aria-label="Implementation"></div>
@@ -127,7 +127,7 @@
   </div>
   <dialog id="source-dialog" class="source-dialog" aria-labelledby="source-title"><div class="dialog-head"><div><h2 id="source-title"></h2><p id="source-location"></p></div><button type="button" id="close-source" class="close-button" aria-label="Close source excerpt">×</button></div><pre id="source-code" class="dialog-code"></pre><div id="source-footer" class="dialog-foot"></div></dialog>
   <p id="selection-announcement" class="sr-only" aria-live="polite"></p>
-  <noscript><p style="padding:25px">This explorer needs JavaScript for the local interactions. Read the repository's <a href="../README.md">technical topic map</a> for the same design and evidence sources.</p></noscript>
+  <noscript><p style="padding:25px">This explorer needs JavaScript for the interactions. Read the repository's <a href="https://github.com/attilio-castano/pinwheel/blob/main/docs/README.md">technical topic map</a> for the same design and evidence sources.</p></noscript>
   <script id="explorer-data" type="application/json">__PINWHEEL_DATA__</script>
   <script>
     'use strict';
@@ -442,7 +442,9 @@
       $('source-code').textContent=s.text.split('\n').map((line,i)=>`${String(s.start+i).padStart(4,' ')}  ${line}`).join('\n');
       const local='../../'+s.path.split('/').map(encodeURIComponent).join('/');
       const remote=DATA.snapshot.repository+'/blob/'+DATA.snapshot.revision+'/'+s.path.split('/').map(encodeURIComponent).join('/')+`#L${s.start}-L${s.end}`;
-      $('source-footer').innerHTML=`<a href="${esc(local)}" target="_blank" rel="noopener">Open local source</a>${s.atRevision===true&&DATA.snapshot.revisionOnRemote===true?`<a href="${esc(remote)}" target="_blank" rel="noopener">Open repository revision ↗</a>`:''}<small>Excerpt bundled with the explorer. File SHA-256: <span class="mono">${esc(s.sha256)}</span></small>`;
+      const localLink=location.protocol==='file:'?`<a href="${esc(local)}" target="_blank" rel="noopener">Open local source</a>`:'';
+      const remoteLink=s.atRevision===true&&DATA.snapshot.revisionOnRemote===true?`<a href="${esc(remote)}" target="_blank" rel="noopener">Open repository revision ↗</a>`:'';
+      $('source-footer').innerHTML=`${localLink}${remoteLink}<small>Excerpt bundled with the explorer. File SHA-256: <span class="mono">${esc(s.sha256)}</span></small>`;
       $('source-dialog').showModal();
     }
     document.addEventListener('click',event=>{
