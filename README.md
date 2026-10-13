@@ -182,3 +182,12 @@ the validation scope, hardware prerequisites, and evidence boundaries.
 Hardware checks additionally require the pinned tools and prerequisite artifacts
 described in the relevant study. Generated evidence lives under ignored `build/`;
 source, tests, concise research records, and selected result manifests are tracked.
+
+## License and contributions
+
+Pinwheel's original source, documentation and hardware designs are licensed under
+[Apache-2.0](LICENSE). Third-party material retains its existing licenses; see
+[NOTICE](NOTICE).
+
+Questions and focused contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for local validation and the maintainer approval required for changes to `main`.

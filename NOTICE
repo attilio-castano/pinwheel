@@ -1,0 +1,16 @@
+Pinwheel
+Copyright 2026 Attilio Castano
+
+Pinwheel's original source, documentation and hardware designs are licensed
+under the Apache License, Version 2.0. See LICENSE.
+
+Third-party material retains its existing copyright and license notices:
+
+- OpenROAD code adapted in tools/openroad-hold/ and
+  tools/openroad-route-import/: Copyright (c) 2018-2025, The OpenROAD Authors.
+  BSD 3-Clause; see each directory's OPENROAD-LICENSE and source notices.
+- IHP PDK-derived SRAM fixtures in physical/fixtures/sram-context/ and
+  physical/fixtures/sram-tile/: Copyright 2023 IHP PDK Authors.
+  Apache-2.0; see each directory's NOTICE and source notices.
+
+This notice does not replace or modify those third-party license terms.
