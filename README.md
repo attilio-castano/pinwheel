@@ -3,10 +3,11 @@
 An experiment in learning chip design through mathematics, formal verification,
 and AI-assisted development.
 
-**Start with the [interactive design explorer](docs/explorer/index.html).**
+**Start with the [interactive design explorer](https://attilio-castano.github.io/pinwheel/).**
 Click through the architecture, follow a program from source to pins, and
 inspect protocol waveforms, design decisions and the evidence behind them.
-After cloning the repo, open `docs/explorer/index.html` in a browser; it works
+The website opens directly in your browser. After cloning the repo, you can also
+open `docs/explorer/index.html` in a browser; it works
 offline with no setup. [How to use and refresh it](docs/explorer/README.md).
 
 I started this project as a former mathematician with no experience designing
@@ -152,7 +153,7 @@ dated milestones; a next-step statement in an older study is historical context.
 | Program a transaction | [Unified workflow](docs/protocols/transaction-workflow.md): compile a request, inspect capacity and pins, load once, run and decode through one API. |
 | Explore longer data transfers | [Buffered ownership](docs/protocols/buffered-transfers.md) defines preload/reserve/submit/wait/read/release; [reactive counted hardware](docs/protocols/buffered-reactive-hardware.md) runs compact SPI/JTAG/I²C with that lifecycle. |
 | Understand a topic quickly | [Technical documentation](docs/README.md): short lessons and paths to the owning studies. |
-| Explore the design visually | [Local design explorer](docs/explorer/index.html): clickable components, a buffered SPI source-to-pins session, recorded UART/SPI/I²C execution, design decisions and source excerpts. Open the HTML in a browser; [refresh instructions](docs/explorer/README.md) keep its source snapshot explicit. |
+| Explore the design visually | [Interactive design explorer](https://attilio-castano.github.io/pinwheel/): clickable components, a buffered SPI source-to-pins session, recorded UART/SPI/I²C execution, design decisions and source excerpts. The cloned HTML also works offline; [use and refresh instructions](docs/explorer/README.md) keep its source snapshot explicit. |
 | See what has been learned | [Research results](docs/research/results.md): conclusions, limits, and reasons to reopen them. |
 | Check completion criteria | [Submission plan](docs/submission-plan.md): a dated implementation sequence and durable acceptance gates; use research status for current priority. |
 | Reproduce or extend work | [Development setup](docs/development.md), [validation](docs/validation.md), and the [research workflow](docs/research/README.md). |

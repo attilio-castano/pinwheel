@@ -14,8 +14,10 @@ go through pull requests, and contributions require his code-owner approval.
 Maintainer-authored pull requests use an owner-only review bypass at merge time;
 they still go through a pull request. New commits dismiss earlier approvals.
 
-Routine CI is not configured. Report the local checks you ran, skipped tests and
-remaining assumptions. Follow the [validation guide](docs/validation.md) and,
+The design explorer workflow validates recordings and source references on pull
+requests and publishes the website from `main`. Broader hardware and proof CI
+is not configured. Report the local checks you ran, skipped tests and remaining
+assumptions. Follow the [validation guide](docs/validation.md) and,
 for experiments, the [research workflow](docs/research/README.md). Keep model,
 RTL and physical evidence distinct, and preserve historical experiment records.
 
