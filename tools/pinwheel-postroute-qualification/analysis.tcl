@@ -1,0 +1,5 @@
+puts "%OL_CREATE_REPORT qualification-clock.rpt"
+puts "PINWHEEL_CLOCK_COUNT [llength [get_clocks *]]"
+puts "PINWHEEL_PROPAGATED_CLOCK [get_property [get_clocks clk] is_propagated]"
+puts "PINWHEEL_CLOCK_PERIOD [get_property [get_clocks clk] period]"
+puts "%OL_END_REPORT"
