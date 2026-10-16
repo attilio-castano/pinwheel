@@ -1,0 +1,163 @@
+{
+  "CAS_verified_UTC": "2026-10-16T12:43:02.781664+00:00",
+  "archive_root": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259",
+  "copy_command": [
+    "/bin/cp",
+    "-cRpP",
+    "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build",
+    "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/build"
+  ],
+  "copy_verified_UTC": "2026-10-16T12:42:13.109678+00:00",
+  "entry_counts": {
+    "directory": 2737,
+    "file": 39573,
+    "symlink": 284
+  },
+  "external_input_retention": {
+    "c6eb_snapshot": {
+      "all_existing_files_present_in_retained_CAS": true,
+      "historical_root": "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/hold-repair-01",
+      "regular_file_bytes": 146983514,
+      "regular_files": 15914
+    },
+    "f14f_inputs": {
+      "fresh_original_to_local_SHA256_comparison": "all_five_matched_before_retention",
+      "historical_root": "/Users/attiliocastano/.codex/worktrees/f14f/pinwheel/build",
+      "retained_local_copies": {
+        "build/tt-buffered/tt-buffered-boundary-01/inputs/RM_IHPSG13_1P_64x64_c2_bm_bist.v": {
+          "sha256": "85b38148ba6a455b22ff93a5290f7bd366395033c33956d0a9e2fd5f16fef59c",
+          "size": 7472
+        },
+        "build/tt-buffered/tt-buffered-boundary-01/inputs/RM_IHPSG13_1P_core_behavioral_bm_bist.v": {
+          "sha256": "d0a6258f8e9c93d1d5b1f78c0a1d66f30d28b1ad8037e5e07f53d1a4e3670b12",
+          "size": 3951
+        },
+        "build/tt-buffered/tt-buffered-boundary-01/inputs/controller-oracle": {
+          "sha256": "7737eba239acc2085d66aaf8713891a284a8179767965d6cea0c4d1249d2300e",
+          "size": 103107472
+        },
+        "build/tt-buffered/tt-buffered-boundary-01/inputs/core.sv": {
+          "sha256": "ec0eedf6396ca37b3099190c53d798582b4fae3967265bae0b299e2b792c5868",
+          "size": 57776
+        },
+        "build/tt-buffered/tt-buffered-boundary-01/inputs/frontend.sv": {
+          "sha256": "2e387df32414e14cb8de3c8c134b6f851ca00ff26869202e9b44d05a97ecbaec",
+          "size": 76295
+        }
+      }
+    },
+    "ignored_observer_dump_aliases": {
+      "tools/pinwheel-drt-logger-observer-02/source-evidence/native-ELF-probe-01/execution.log": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "14c17c104ee7cb0ce2d81754dff3663078df49b93e6e09f6dc7bf017b2662874",
+        "size": 840
+      },
+      "tools/pinwheel-drt-logger-observer-02/source-evidence/native-ELF-probe-01/native-dynamic-section.txt": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "084d905b3de87a52f9b66de584f83fae2b8b5c0f4f46add3c8f1e5cd254371f8",
+        "size": 14195
+      },
+      "tools/pinwheel-drt-logger-observer-02/source-evidence/native-ELF-probe-01/native-dynamic-symbols.txt": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "8ce71ac75424d2431992a8de8ebe0f4ea3f99ec44ec5dfc1c514839ac4844a1a",
+        "size": 9770403
+      },
+      "tools/pinwheel-drt-logger-observer-02/source-evidence/native-ELF-probe-01/processWorkersBatch.asm": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "0a4bc54fa615f46e256c37d2368c8154e64a5afbb07ceb3b536f0eecf181ab3a",
+        "size": 4478
+      },
+      "tools/pinwheel-drt-logger-observer-03/source-evidence/native-ELF-probe-01/execution.log": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "14c17c104ee7cb0ce2d81754dff3663078df49b93e6e09f6dc7bf017b2662874",
+        "size": 840
+      },
+      "tools/pinwheel-drt-logger-observer-03/source-evidence/native-ELF-probe-01/native-dynamic-section.txt": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "084d905b3de87a52f9b66de584f83fae2b8b5c0f4f46add3c8f1e5cd254371f8",
+        "size": 14195
+      },
+      "tools/pinwheel-drt-logger-observer-03/source-evidence/native-ELF-probe-01/native-dynamic-symbols.txt": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "8ce71ac75424d2431992a8de8ebe0f4ea3f99ec44ec5dfc1c514839ac4844a1a",
+        "size": 9770403
+      },
+      "tools/pinwheel-drt-logger-observer-03/source-evidence/native-ELF-probe-01/processWorkersBatch.asm": {
+        "content_present_in_verified_CAS": true,
+        "sha256": "0a4bc54fa615f46e256c37d2368c8154e64a5afbb07ceb3b536f0eecf181ab3a",
+        "size": 4478
+      }
+    }
+  },
+  "external_runtime": {
+    "OS": "linux",
+    "architecture": "arm64",
+    "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+    "inspection_anchor": "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build/physical/tt-overnight-campaign-20261015/image-inspect-verified-01.json",
+    "native_ELF_sha256": "6ba87b45c762ee8c9670375c204cd03d801a6da98cd6e056a1c73027aad68a7c",
+    "observed_local_repo_digest": "ghcr.io/librelane/librelane@sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+    "packed": false,
+    "remote_availability_proven": false
+  },
+  "known_missing_historical_tools": [
+    "/Users/attiliocastano/.codex/worktrees/a2b1/pinwheel/build/tools/oss-cad-suite/bin/iverilog",
+    "/Users/attiliocastano/.codex/worktrees/a2b1/pinwheel/build/tools/oss-cad-suite/bin/vvp",
+    "/Users/attiliocastano/.codex/worktrees/f14f/pinwheel/build/tools/oss-cad-suite/bin"
+  ],
+  "manifest": {
+    "path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/manifest.json",
+    "sha256": "507f38a7ab6b8f420e747c1c771105f39fc72484f4b52723098986d229c08c60"
+  },
+  "new_CAD_or_chip_qualification_run": false,
+  "original_files_deleted_or_moved": false,
+  "physical_acceptance_claim": false,
+  "regular_file_bytes": 62468604101,
+  "retained_CAS": {
+    "no_live_original_paths_required": true,
+    "offline_verification": {
+      "external_runtime_packed": false,
+      "files": 23076,
+      "objects": 18530,
+      "physical_acceptance_claim": false,
+      "producer_receipts": 57,
+      "status": "verified_pack_payloads"
+    },
+    "path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/build/physical/tt-overnight-campaign-20261015/evidence-pack-01",
+    "seal_sha256": "3a7c60d14c91db628260a7b55449a46034d5994903baf645577f866537d62716",
+    "verification_receipt": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/cas-offline-verification.json",
+    "verification_receipt_sha256": "6d9c096588eefa5ba3372e0ae1e9cc2a4929af19ee7c31ac90a7bfc215290f9c"
+  },
+  "retention_helper_sha256": "6477256bee54059df423ad7e3577d24295eac3a2faae2663e06aa3dc00152c0e",
+  "retention_limits": [
+    "Local APFS clone copy is independent of source-file inodes but remains on the same physical disk; this is not an offsite backup.",
+    "The complete build tree and sealed CAS are retained locally, not embedded in Git.",
+    "CAD container images and host Python/Lean/runtime installations are not exported; clean-machine executable replay is not established.",
+    "Earlier receipt paths remain historical identities; a future replay needs an explicit relocation and currently available matching tools.",
+    "Small-JSON external-path audit examined 4397 build JSON files <=1 MiB and all 62 new buffered result/selection/configuration manifests; 570 larger JSON files were not independently scanned for additional external runtime references."
+  ],
+  "retention_report": {
+    "path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/retention-report.json",
+    "sha256": "f12bf8500b2dc171f00382c654d5b0c48fd9c206dd2051862fdc2da108e38a84"
+  },
+  "schema": "pinwheel-whole-build-retention-receipt-v1",
+  "source_before_inventory": {
+    "path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/source-before.json",
+    "sha256": "6b6aa7ec61184bd6d4ab4fddbad7c096b8f11c3c0d2dca4fec572ad0f5f8ffed"
+  },
+  "source_root": "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build",
+  "source_to_archive_mapping": {
+    "historical_receipt_paths_rewritten": false,
+    "historical_root": "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build",
+    "relative_paths_preserved": true,
+    "retained_root": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259/build"
+  },
+  "started_UTC": "2026-10-16T12:38:23.695205+00:00",
+  "status": "fully_verified_local_archive",
+  "verified_gates": {
+    "all_directory_modes_match": true,
+    "all_regular_file_SHA256_and_modes_match": true,
+    "all_relative_symlinks_and_resolved_targets_match": true,
+    "destination_file_inodes_independent_from_all_source_files": true,
+    "source_inventory_and_all_file_hashes_unchanged": true
+  }
+}

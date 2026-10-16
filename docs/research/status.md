@@ -44,6 +44,11 @@ is not. A new positive acceptance wrapper must precede a repair trial; the old
 expected-failure diagnostic launcher cannot accept success. No next CAD run is
 launched or authorized by these records.
 
+The [branch closeout](../history/tt-buffered-branch-closeout.md) records the
+progressive commits, artifact custody and passing final host checks. The fresh
+Lean library build and axiom audit pass; the complete executable foundation
+gate remains a pre-push requirement in an isolated source snapshot.
+
 **Retained earlier buffered studies:** the [TT wrapper](../protocols/tt-buffered-sram.md)
 owns finite upload-to-pins and mapped evidence; the [locality repair](../physical/tt-buffered-locality.md)
 owns its earlier positive timing estimates. The [SRAM orientation](../physical/tt-buffered-sram-access.md),
