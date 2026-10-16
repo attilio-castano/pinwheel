@@ -1,0 +1,50 @@
+{
+  "schema": "pinwheel-buffered-tt-sram-access-coarse-selection-v1",
+  "date": "2026-10-12",
+  "status": "additive_matched_diagnostic_selected",
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-sram-access-intake-01/report.json",
+      "sha256": "ec887da0b808c5d3662da0e073f0913289abcedaa9b65fbb5f0ee842783babc0"
+    },
+    "route_tools": {
+      "path": "build/physical/tt-buffered-sram-access-route-tools-03/prepared.json",
+      "sha256": "52bae7f13936ffd596dac87703302ac7bdfb1f3ff0b29eab699bdb77e1989519"
+    },
+    "full_selection": {
+      "path": "physical/experiments/tt-buffered-sram-access-selection-03.json",
+      "sha256": "ca7041f5832eb77cf93c71d881039a4b1d355f8f68f0d36e827250e3574dff7d"
+    },
+    "timedout_full_control": {
+      "path": "build/physical/tt-buffered-sram-access-control-route-01/report.json",
+      "sha256": "b8e2490aefc99e9292a44e33c7ec17bd050d92f630dbd3b5d571ccae0fdb28c1"
+    },
+    "timedout_full_candidate": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-route-01/report.json",
+      "sha256": "673dee952bab2500738fd6260193eb03eb40d5eb6f08c8810f3919b8ba55ff01"
+    },
+    "route_admission": {
+      "path": "build/physical/tt-buffered-sram-access-execution-01/route-admission.json",
+      "sha256": "317ca1077b8d66f0eb655ba37b94767652ce1e4018708163cdc8cccbbed6a2ee"
+    }
+  },
+  "one_macro_policy_and_one_placement_continuation": true,
+  "physical_elapsed_before_coarse_seconds": 1362.422,
+  "physical_allocation_seconds": 1800,
+  "remaining_seconds": 437.578,
+  "coarse_pair": {
+    "older_work_seconds": 80,
+    "candidate_work_seconds": 160,
+    "cleanup_seconds_each": 50,
+    "host_closeout_reserve_seconds": 30,
+    "all_in_pair_plus_closeout_at_most": 370,
+    "unallocated_reserve_seconds": 67.578
+  },
+  "routing": {
+    "native_extra_iterations_each_segment": 5,
+    "automatic_ndr_fallback": "retained",
+    "routing_capacity_clock_rules_libraries_sdc": "identicalforbotharms",
+    "manual_ndr_waiver": false
+  },
+  "references_boundary": "Oldercoarsereplaysactualolder2255layout. CandidatecoarsereplayssameMXcheckpoint; nonewplacement/synthesis/repair. Full50iterationcomparisons remainunavailable. Coarsepair canindicate relativeaccess/routingbehavior underone matchedboundedpolicy; cannotreplace2255 benchmark or establishisolatedorientation causality againstolderAREA0/GPL recipe."
+}

@@ -1,0 +1,252 @@
+{
+  "schema": "pinwheel-buffered-tt-locality-results-v1",
+  "date": "2026-10-10",
+  "status": "mapped_and_power_passed_setup_hold_estimates_passed_routing_rejected",
+  "submission_ready": false,
+  "decision": "Reject the joint placement bundle because measured routing worsens; retain mapped acceptance, fresh power connectivity and setup/hold diagnostic evidence. Isolate macro access and placement changes against the older routing reference before another candidate.",
+  "previous_milestone": {
+    "path": "physical/experiments/tt-buffered-power-route-results.json",
+    "sha256": "2beedd6dbe0b4ab5e93745fee5d476599238379a3b554d94e932238fd3fbd421"
+  },
+  "scope": {
+    "top": "tt_um_pinwheel_buffered",
+    "core_rtl_or_serial_abi_changed": false,
+    "full_baseline_attempts": 1,
+    "checkpoint_recoveries": 1,
+    "initial_seconds": 147.496,
+    "recovery_seconds": 1062.927,
+    "cumulative_baseline_seconds": 1210.423,
+    "baseline_allocation_seconds": 1800,
+    "cpus": 4,
+    "memory": "6g",
+    "network": "none",
+    "new_kernel_proof_run": false,
+    "remaining_budget_used_for_another_flow": false
+  },
+  "congestion_map": {
+    "status": "previous_failed_route_reproduced_and_mapped",
+    "native_overflow": 2255,
+    "saved_preferred_grid_overflow": 2252,
+    "bottom_216um_saved_overflow": 2123,
+    "bottom_fraction": 0.9427175843694494,
+    "map": {
+      "path": "docs/physical/figures/tt-buffered-congestion-before.png",
+      "sha256": "48c8b1b60266e4c7ecf00522997d30d6718498dd8c0053d464d220eed242cec1"
+    },
+    "replay_seconds": 105.38,
+    "boundary": "Observed macro obstruction/access localization; Metal4 overlaps both macro and supply geometry. No single causal net, supply thinning justification or new-placement after-map."
+  },
+  "physical": {
+    "status": "failed_global_routing",
+    "initial_failure": "Pinned virtual GPL timing-resizer legalization assertion; no accepted placement state.",
+    "recovery_delta": {
+      "PL_TIMING_DRIVEN": [
+        true,
+        false
+      ]
+    },
+    "synthesis_floorplan_power_rerun": false,
+    "overflow_before": {
+      "Metal2": 1108,
+      "Metal3": 581,
+      "Metal4": 566,
+      "total": 2255
+    },
+    "overflow_after": {
+      "Metal2": 1628,
+      "Metal3": 4068,
+      "Metal4": 1028,
+      "total": 6724
+    },
+    "aggregate_route_usage_pct": 69.4,
+    "wirelength_um": 2825942,
+    "routed_nets": 28940,
+    "routing_vias": 244175,
+    "native_clock_ndr_fallback_retries": 8,
+    "setup_buffers": 87,
+    "hold_buffers": 2323,
+    "resizes": 398,
+    "pin_swaps": 57,
+    "accepted_global_route": false,
+    "after_map_retained": false,
+    "routed_odb_emitted": false,
+    "detailed_route": false,
+    "signoff": false,
+    "last_accepted_odb": {
+      "path": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+      "sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e"
+    }
+  },
+  "timing": {
+    "status": "fresh_setup_hold_passed_pre_route",
+    "clock_period_ns": 20,
+    "io_delay_max_ns": 4,
+    "io_delay_min_ns": 0.2,
+    "parasitics": "pre_route_estimate",
+    "slow_setup_before_ns": -0.734781,
+    "slow_setup_failures_before": 12,
+    "all_setup_hold_violations_after": 0,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "setup_worst_slack_ns": 6.36164,
+        "hold_worst_slack_ns": 0.164109,
+        "qualification": "matched_declared_library_corner",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 254,
+        "cap_violations": 0
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_worst_slack_ns": 1.00825,
+        "hold_worst_slack_ns": 0.278249,
+        "qualification": "matched_declared_library_corner",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 2,
+        "fanout_violations": 254,
+        "cap_violations": 0
+      },
+      "nom_fast_1p32V_m40C": {
+        "setup_worst_slack_ns": 9.58829,
+        "hold_worst_slack_ns": 0.0960465,
+        "qualification": "conditional_temperature_mismatch",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 254,
+        "cap_violations": 0
+      }
+    },
+    "fresh_libraries": 9,
+    "nominal_import_control": "exact_match",
+    "report": {
+      "path": "build/physical/tt-buffered-recovery-postcts-timing-01/report.json",
+      "sha256": "fd64597791a9484bf9da8449bff691ee52ce05b4398c4e6d14eede5bff5c133d"
+    },
+    "boundary": "Fresh native post-CTS checkpoint STA with no inherited corner metrics; no routed/extracted signoff. Conditional fast combines -40 C logic/I/O and -55 C SRAM."
+  },
+  "power": {
+    "status": "fresh_both_net_checkpoint_connectivity_passed",
+    "nets": {
+      "VGND": {
+        "all_shapes_connected": true
+      },
+      "VPWR": {
+        "all_shapes_connected": true
+      }
+    },
+    "elapsed_seconds": 5.982,
+    "report": {
+      "path": "build/physical/tt-buffered-recovery-power-01/invocation.json",
+      "sha256": "a47cca265e0d4d2b5c7bb8c99449cb2aecc5f5caba0748d449ec6d1ac0e1d111"
+    },
+    "geometry_and_wildcard_terms_match_prior_pass": true,
+    "boundary": "Whole-grid connectivity on exact latest ODB; no IR-drop, current-capacity or routed geometric signoff."
+  },
+  "mapped_upload": {
+    "status": "passed",
+    "cases": 21,
+    "protocols": {
+      "spi": 9,
+      "jtag": 3,
+      "i2c": 9
+    },
+    "request_response_pairs": 400,
+    "parser_negatives": 3,
+    "total_edges": 336426,
+    "elapsed_seconds": 111.329,
+    "latest_odb_match_established": true,
+    "bound_inputs": 510,
+    "inputs_unchanged": true,
+    "report": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-recovery-postcts-01/report.json",
+      "sha256": "94d0f9cbd5be9c68d6c3551b4a8fabaca36175597ebdd44b94d27743bda89cb8"
+    },
+    "export": {
+      "path": "build/tt-buffered/netlist/recovery-postcts-export-01/report.json",
+      "sha256": "552aeb733a300b1e8d46532a814631c1173a8bb2c424abd126e72f462fb753eb"
+    },
+    "boundary": "Finite exact-TT-port zero-delay functional simulation of the explicitly identified mapped NL, using vendor functional SRAM and standard-cell/UDP models. No SDF, routed timing, sequential equivalence, power-connectivity proof, electrical qualification or physical/submission closure claim. A checkpoint may inherit an earlier NL; matching the latest ODB requires a separate verified export."
+  },
+  "focused_controls": {
+    "physical_and_recipe": 27,
+    "mapped_checker": 16,
+    "total": 43
+  },
+  "source_custody": {
+    "path": "build/physical/tt-buffered-locality-closeout-01/report.json",
+    "sha256": "9dddddc4e5510fb19dd9dba1f4a1b073bfbd7924b4f14e5d63ce487a78ecc106"
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "1898f33d70c3caa6a3b9680b10884224ca2ed410a08bc0a0a615dad26b019606",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "e6c447af397bd450915197a9ccaa63fdca4e47b157898e17b52aed60a8bd9f4b",
+    "physical/buffered_tt/connect_sram_power.py": "6aa64653a38a1e8922f410f7f98a4689aead18ec4d0592ec1b230e2bb4fa1d6a",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "4c18b0a1b060b1a8c3301fc67bca115d4447e49c06674e28587ef275d107378e",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36",
+    "scripts/check-tt-buffered-netlist.py": "7d783cbac937e988ff5159a126473ba4dd8d2b2e9190f7e1060bf843dba5168b",
+    "test/test_tt_buffered_netlist.py": "06d7b1442ac845398fe915bfcf40c9341e6c1cd4d9b91389bc06e5c2e27e183c",
+    "physical/buffered_tt/gpl_capacity.tcl": "7b597beed0b41b9008b6a2dd805d5f29a59bb99d7e590aab05ed997c0ba6b2a6",
+    "scripts/apply-buffered-tt-physical-recipe.py": "386fc9a5d1ed0e73fd1a82f18f0d3e38bd91127b9b5b5f10aace2545b4b258e4",
+    "test/test_buffered_tt_physical_recipe.py": "0b2beda40c84411554cbf4793f4d403ce2f615976ea005e2b8935c73954ece0c"
+  },
+  "evidence_sha256": {
+    "physical/experiments/tt-buffered-results.json": "4b7765cbb0a1a39ea227c2598bfb0282e87b48eee0561e3ee924fc8433a54f5e",
+    "physical/experiments/tt-buffered-power-route-results.json": "2beedd6dbe0b4ab5e93745fee5d476599238379a3b554d94e932238fd3fbd421",
+    "build/physical/tt-buffered-locality-intake-01/report.json": "b18a78fee0b9ef20d24651c70d6c9ff590dd6d405455ee6b7d04c606c7719629",
+    "build/physical/tt-buffered-locality-intake-01/spatial-selection.json": "720e27e22b9717e8ee6c2f2071f1b7d88c92dc3e9dce54bc3fac1ec3357f356c",
+    "build/physical/tt-buffered-congestion-map-01/invocation.json": "1f2d883ed0d6ff132ca2ef2f0b62773498e7223ba3129c748eab5fc802149706",
+    "build/physical/tt-buffered-congestion-map-01/analysis.json": "36a2948f9bcf05cf06def3662903523e267e3f791c142baf2b6478d7e83c5578",
+    "build/physical/tt-buffered-congestion-map-01/geometry.json": "81db370e774163283e91e839089b5ad97790e48994746cd9f9655dc26db81b6e",
+    "build/physical/tt-buffered-congestion-map-01/visualization.json": "496192008407def14459c8dda40cf7accd11122890dfbd11ba68e134b6a539bb",
+    "docs/physical/figures/tt-buffered-congestion-before.png": "48c8b1b60266e4c7ecf00522997d30d6718498dd8c0053d464d220eed242cec1",
+    "build/physical/tt-buffered-local-repair-01/report.json": "6dee38ba02ea640abaf4bca9707b4dd10f212f0676be66538fa5edee9ae025ec",
+    "build/physical/tt-buffered-delay1-synthesis-01/report.json": "3c3827560cdac629d74863cad3a1aba02f13254da121d2e72c0a3202ad9c7176",
+    "build/physical/tt-buffered-delay1-synthesis-01/mapping-comparison.json": "5170576943d835227de9bedc1397c4d545f81df6a6873ab70fd75c40cf1eb7a0",
+    "build/physical/tt-buffered-delay1-slowsta-03/report.json": "0f72ccca9754666dd6be10c9e8e4569bb2aacb6d0a560ae0b4965fc28b8c95a7",
+    "physical/experiments/tt-buffered-locality-repair.json": "d6f226d92bd0d823b87e35607c82251ef5527ec0b2c02e7194e9f6203cfce5ad",
+    "physical/experiments/tt-buffered-locality-recovery.json": "2e165aac9dd9c3584b1f60ae45a81a66a4a2b10df0ed2ea75f16f1e6533d1cbb",
+    "build/physical/tt-buffered-locality-repair-02/physical-recipe-receipt.json": "a3ef4b48dd94edfd0107a521462b13cf469c1f3a48d2063104c6209e0b979a60",
+    "build/physical/tt-buffered-locality-repair-02/inputs.json": "c22ce9c0997b4ab803f793496828498b65e902a02af3bedd418c49ea26d96b0a",
+    "build/physical/tt-buffered-physical-05-invocation.json": "d1fdb5d2a9c1aea99b39ea08b1f7e750e488dd89697e39c3be603bdf891ca91e",
+    "build/physical/tt-buffered-physical-05-outcome/report.json": "0f7db2fbb1f77be7d857f42d6fd186519ecccf3cef1d330f6ed904d14fd4a18f",
+    "build/physical/tt-buffered-locality-repair-02/runs/tt-buffered-physical-05/29-project-bufferedcapacityplacement/project-bufferedcapacityplacement.log": "a27b6fac8769b80e096c1d30e6237119b8dea5e3111c2427ec2ebc80908c3a4a",
+    "build/physical/tt-buffered-locality-repair-02/runs/tt-buffered-physical-05/06-yosys-synthesis/tt_um_pinwheel_buffered.nl.v": "69c5bf5d1488fd68b3001f1ecba282d95e2abcd092e2fe30c3765dbc0b440d70",
+    "build/physical/tt-buffered-locality-recovery-02/preparation.json": "36955bfa600a684a56df43f42f50893d363a95fa159434529d10cab42e372ff2",
+    "build/physical/tt-buffered-locality-recovery-02/driver.py": "b84618c338fa2ad0199d2aded8b7045c1faf4745c7debe53be260e95f09cfaa4",
+    "build/physical/tt-buffered-locality-recovery-02/preflight-invocation.json": "8bbd6c57cbc3ac39a7f423a704cd7848742b72b86ac80ec3c9d19d6ddd54d9cc",
+    "build/physical/tt-buffered-locality-recovery-02/continuation-invocation.json": "30685765b15552ba5710ad10a0b20c146913c657688d718df3f559d595d16677",
+    "build/physical/tt-buffered-locality-recovery-02/continuation.log": "f39f6ca22eab608d69171ecfb89713cf25b5b1fc65c2cf7832f2fb138a4fe1dc",
+    "build/physical/tt-buffered-recovery-outcome-01/report.json": "8715278a3f8f1b92c1aac21e10a1d6ba00dd1fa83cb0f6136aafe02ec7e918d1",
+    "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/resolved.json": "f4b99103ad845dbd029794c09d113ba21d642f28a89677ddef794ecc4e69ccfa",
+    "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/12-openroad-globalrouting/openroad-globalrouting.log": "aa9123ccbd9eb454f071cb0db3ac3ac7e6bb88fd30428a423b98bdcc14112ecd",
+    "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/12-openroad-globalrouting/or_metrics_out.json": "d82aaafe01c43a06988d5ace6ead3584c25ad76c6f2174dcdfaa66a4555558eb",
+    "build/physical/tt-buffered-recovery-postcts-timing-01/report.json": "fd64597791a9484bf9da8449bff691ee52ce05b4398c4e6d14eede5bff5c133d",
+    "build/tt-buffered/netlist/tt-buffered-netlist-recovery-postcts-01/report.json": "94d0f9cbd5be9c68d6c3551b4a8fabaca36175597ebdd44b94d27743bda89cb8",
+    "build/tt-buffered/netlist/recovery-postcts-export-01/report.json": "552aeb733a300b1e8d46532a814631c1173a8bb2c424abd126e72f462fb753eb",
+    "build/physical/tt-buffered-recovery-power-01/invocation.json": "a47cca265e0d4d2b5c7bb8c99449cb2aecc5f5caba0748d449ec6d1ac0e1d111",
+    "build/tt-buffered/netlist/tt-buffered-netlist-recovery-postcts-01/source-closeout.json": "d778811030f90e6989a6e8adc26a9d2ec2f9be6a735303c02d3a377a953be494",
+    "build/tt-buffered/netlist/checker-recovery-root-01/archive.json": "168772f9e37b6022fa547847d4d3a80225a5534e69cd0ca962f6f58ebaee80bf",
+    "build/tt-buffered/netlist/checker-recovery-root-01/report.json": "a897d0c33573145d69005ecd4d3b01dcb89e4d0bfaa1959dcdbeac428d4d9164",
+    "build/tt-buffered/netlist/checker-recovery-root-01/focused-tests.log": "110f42a04d627a8b237a6e9471de149101e98cca56abaf7b4fe0304934ecabff",
+    "build/physical/tt-buffered-locality-intake-01/physical-controls.log": "890d76f04f929cff05b1334043f4c4b492f7b58d53c399d62c60af0eb5b8d4c2",
+    "build/tt-buffered/checkpoint-tools-01/prepared.json": "d3150770e9c5ca57bffe15a95cf536bbc1a22c9b1686e801cdef4d9b74dbfb2b",
+    "build/physical/tt-buffered-recovery-outcome-02/report.json": "ad5f8b448c2ee9bc41eb90ac083acfd50521a0d2b45367685e500dccb63d2996"
+  },
+  "remaining": [
+    "Macro access/congestion repair and accepted global/detailed routing",
+    "Two slow slew and 254 fanout violations per corner",
+    "Extracted timing with qualified corners",
+    "DRC/LVS and official Tiny Tapeout precheck"
+  ],
+  "artifact_custody": "SHA-bound local retained build artifacts. Checksums establish integrity, not remote availability."
+}

@@ -1,0 +1,207 @@
+{
+  "schema": "pinwheel-buffered-tt-access-placement-selection-v1",
+  "date": "2026-10-12",
+  "decision": "Test one exclusive regional placement policy for twelve bank-specific SRAM address drivers with original N/R0 macros and unchanged RTL/serial ABI. Compare exact repaired control and this candidate using matched coarse5 routing; no full50 or second candidate.",
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-access-placement-intake-01/report.json",
+      "sha256": "cb8af50486058564106cd3b7ff3ba87fccfb9dc5ef3f1c07af8d8ec09d057864"
+    },
+    "route_tools": {
+      "path": "build/physical/tt-buffered-access-placement-route-tools-01/prepared.json",
+      "sha256": "512884925c03c884b2029c450f43933ff655dadf13b747f3d08d584ea98a489c"
+    },
+    "native_inspection": {
+      "path": "build/physical/tt-buffered-access-placement-inspect-01/native-01/report.json",
+      "sha256": "c2ff9d6fc726e7e91665c3de85a54411f9c44bbdb98d3d0631c28c0e99ac990e"
+    },
+    "postcts_context": {
+      "path": "build/physical/tt-buffered-access-placement-inspect-01/native-01/postcts-context.json",
+      "sha256": "b7f24a6f54e619301e297aee910396c326f3530461e404175be10dab696ce8a3"
+    },
+    "pregpl_context": {
+      "path": "build/physical/tt-buffered-access-placement-inspect-01/native-01/pregpl-context.json",
+      "sha256": "5045c2d97ffd6389a02b9aed7befc158dc778d8bd3c545f4028fe1422e1b5b87"
+    },
+    "repaired_reference": {
+      "path": "physical/experiments/tt-buffered-locality-results.json",
+      "sha256": "b5691e63523a0d0a2574d02397e843b975d2a293dee5db23f94fdf579c0edc77"
+    },
+    "previous_rejected_mirror": {
+      "path": "physical/experiments/tt-buffered-sram-access-results.json",
+      "sha256": "c70ce6f9741b0c51c733c9a010f419d7a8336d0b2fc2f41a37d7e34d96d75667"
+    }
+  },
+  "hypothesis": "Twelve exclusive address drivers now lie north y264.6..302.4um while their SRAM pins face south. Constraining those drivers near each south pin cluster can reduce the twelve long terminal tails and local crossing demand; their incoming nets may become longer. Measure all timing and congestion gates rather than assuming an improvement.",
+  "physical_policy": {
+    "regions": [
+      {
+        "macro": "engine.memory.storage0",
+        "members": [
+          "_21850_",
+          "_21865_",
+          "_21878_",
+          "_21891_",
+          "_21901_",
+          "_21910_"
+        ],
+        "bbox_um": [
+          641.28,
+          7.56,
+          657.6,
+          18.9
+        ],
+        "actual_row_origins_um": [
+          7.56,
+          11.34,
+          15.12
+        ],
+        "baseline_collateral_instances": 11,
+        "baseline_collateral_clipped_area_um2": 117.936,
+        "type": "FENCE",
+        "area_um2": 185.0688,
+        "site_width_um": 0.48,
+        "row_height_um": 3.78
+      },
+      {
+        "macro": "engine.memory.storage1",
+        "members": [
+          "_21914_",
+          "_21917_",
+          "_21920_",
+          "_21923_",
+          "_21926_",
+          "_21929_"
+        ],
+        "bbox_um": [
+          641.28,
+          120.96,
+          657.6,
+          132.3
+        ],
+        "actual_row_origins_um": [
+          120.96,
+          124.74,
+          128.52
+        ],
+        "baseline_collateral_instances": 15,
+        "baseline_collateral_clipped_area_um2": 139.7088,
+        "type": "FENCE",
+        "area_um2": 185.0688,
+        "site_width_um": 0.48,
+        "row_height_um": 3.78
+      }
+    ],
+    "apply_before": "Project.BufferedCapacityPlacement",
+    "mechanism": "New metadata-only OpenDB region/group step after exact accepted ApplyDEFTemplate checkpoint; use region.addGroup/group.addInst. No initial cell positions/status/masters/logical terminals, rows, macros, pins or power shapes change at insertion. GPL/DPL reserves these real fence rectangles exclusively from nongroup cells; this is not a soft guide.",
+    "targeted_members": 12,
+    "excluded_from_members": [
+      "shared REN/WEN drivers",
+      "data paths",
+      "clock and power/tie networks"
+    ],
+    "fence_members_survival_and_actual_final_boxes_required": true,
+    "collateral_placement": "Twenty-six baseline nongroup cells overlap the two reservations and may be displaced. Report this physical side effect and upstream wire/timing change."
+  },
+  "protected": {
+    "core_RTL_and_serial_ABI_unchanged": true,
+    "canonical_sources_unchanged": true,
+    "synthesis_mapping": "DELAY 1; no synthesis rerun",
+    "PL_TIMING_DRIVEN": false,
+    "PL_TARGET_DENSITY_PCT": 55,
+    "actual_routing_capacity_GPL_retained": true,
+    "setup_then_hold_repair_and_native_knobs_unchanged": true,
+    "macro_orientations": "N/OpenDB R0",
+    "macro_bboxes_um": {
+      "engine.memory.storage0": [
+        252,
+        30,
+        1036.48,
+        94.36
+      ],
+      "engine.memory.storage1": [
+        252,
+        144,
+        1036.48,
+        208.36
+      ]
+    },
+    "row_halos_and_sites_unchanged": true,
+    "power_grid_and_43_TT_template_pins_unchanged": true,
+    "clock_period_ns": 20,
+    "io_max_min_ns": [
+      4,
+      0.2
+    ],
+    "clock_uncertainty_ns": 0.2,
+    "output_load_fF": 10,
+    "all_nine_libraries_unchanged": true
+  },
+  "comparison": {
+    "control": "Exact repaired R0 postCTS checkpoint ODB95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "candidate": "One preGPL-to-postCTS continuation with only the selected region policy added",
+    "route_iterations_per_native_segment": 5,
+    "native_clock_NDR_fallback": "Unmodified automatic policy; same route Tcl/env/libs/SDC/capacities/image/CPUs/memory for both arms",
+    "work_seconds_each": 175,
+    "historical_full_native_references": {
+      "older": 2255,
+      "repaired": 6724
+    },
+    "historical_full_counts_are_not_equivalent_to_coarse": true,
+    "if_either_arm_times_out": "No completed paired total/map or favorable extrapolation; retain every failed receipt.",
+    "accepted_routing_claimed": false
+  },
+  "execution": {
+    "physical_allocation_seconds": 1800,
+    "reserved_all_in_caps_seconds": {
+      "native_inspection": 80,
+      "no_optimization_preflight": 60,
+      "one_candidate_placement_repair": 650,
+      "matched_coarse_control": 230,
+      "matched_coarse_candidate": 230,
+      "fresh_three_corner_STA": 170,
+      "logical_export": 105,
+      "fresh_power_and_fence_readback": 80,
+      "host_custody_analysis_closeout": 30
+    },
+    "reserved_total_seconds": 1635,
+    "unallocated_seconds": 165,
+    "candidate_work_seconds_at_most": 595,
+    "candidate_cleanup_seconds": 50,
+    "route_work_seconds_each": 175,
+    "route_cleanup_seconds_each": 50,
+    "route_staging_hash_reserve_seconds_each": 5,
+    "CAD_cpus_at_most": 4,
+    "network": "none",
+    "one_candidate_continuation": true,
+    "no_full50_routing_attempt": true,
+    "no_second_policy_or_placement": true,
+    "mapped_host_cap_seconds": 900,
+    "mapped_scope": "Separate finite zero-delay functional gate after exact physical checkpoint, no physical optimization.",
+    "previous_failed_stage_receipts_preserved": true
+  },
+  "acceptance": {
+    "native_coarse_overflow_strictly_less_than_matched_control": true,
+    "full_setup_gains_preserved_if_each_corner_slack_at_least_ns": {
+      "nom_typ_1p20V_25C": 6.36164,
+      "nom_slow_1p08V_125C": 1.00825,
+      "nom_fast_1p32V_m40C": 9.58829
+    },
+    "setup_tolerance_ns": 1e-05,
+    "slow_setup_target_ns": 1,
+    "setup_and_hold_failures_each_corner": 0,
+    "positive_hold_slack_each_corner": true,
+    "slew_violations_at_most_each_corner": {
+      "nom_typ_1p20V_25C": 0,
+      "nom_slow_1p08V_125C": 2,
+      "nom_fast_1p32V_m40C": 0
+    },
+    "fanout_violations_at_most_each_corner": 254,
+    "cap_violations_each_corner": 0,
+    "power_connectivity_both_nets": true,
+    "unchanged_complete_power_geometry": true,
+    "fences_present_and_twelve_members_within_actual_boxes": true,
+    "same_ODB_fresh_export_mapped_and_three_corner_STA": true
+  },
+  "boundary": "Selection only. One physical policy and one candidate. Coarse diagnostic routes do not establish accepted global/detail routing or extracted timing, SRAM qualification, DRC/LVS or official precheck. Fast screening remains conditional -40C logic/I/O with -55C SRAM. Native producer may retain inherited30396power metrics; fresh connectivity cannot waive or relabel that producer failure."
+}

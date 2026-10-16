@@ -1,0 +1,571 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout2803-results-v1",
+  "date": "2026-10-12",
+  "status": "comparison_complete_candidate_rejected",
+  "submission_ready": false,
+  "decision": "Reject the single-buffer candidate; retain the original repaired R0 checkpoint. Native coarse overflow 5840 \u2192 5955 (+115); zero-capacity overflow 3328 \u2192 3415 (+87). Submission remains unready.",
+  "comparison_gates_passed": false,
+  "scope": "ONE original95f0 local DPL candidate; only fanout2803 moves. fanout2903 retains original MX placement. No neighbors, resizing, GPL, CTS, synthesis or second physical candidate. Core RTL/serial ABI unchanged.",
+  "selection": {
+    "path": "physical/experiments/tt-buffered-fanout2803-selection.json",
+    "sha256": "19cf03cc647a8fe2a786ff6d466d3ffece7c01eea685b6bd58da498294ef7e9d"
+  },
+  "source_checkpoint": {
+    "design": "build/physical/tt-buffered-locality-recovery-02",
+    "state": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json",
+    "state_sha256": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "database": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+    "database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "environment": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/_env.tcl",
+    "environment_sha256": "d8dc217b202d18685d84c37bc6e963663e05e980316711d859484e5f63342e8e",
+    "core_recipe_sha256": "2448e568062399396597654457292410028de19bc2625e9eb4f411f7125676d3",
+    "original_views_count": 10,
+    "reference_native_flow_status": "failed",
+    "reference_native_flow_exit_code": 2,
+    "inherited_power_count": 30396,
+    "nominal_metrics_are_reference_only": true
+  },
+  "candidate_checkpoint": {
+    "path": "build/physical/tt-buffered-fanout2803-candidate-01/checkpoint.json",
+    "sha256": "0414c71ec7aad2e02a7a75a1d1ef708a8773ad883d5340697f08a62f7455b55b"
+  },
+  "candidate_database_sha256": "5b1facdfe0466e09b580e97454d2a33c62601cd911df84a4efe5f257434348b2",
+  "candidate_native_producer": {
+    "status": "passed",
+    "all_in_seconds": 10.814,
+    "report": {
+      "path": "build/physical/tt-buffered-fanout2803-candidate-01/report.json",
+      "sha256": "e6d71d324d13481b2afa4a9a176d857c0b95eb297dd9adf732643f6ed3e607b2"
+    }
+  },
+  "original_native_flow": {
+    "status": "failed",
+    "exit_code": 2,
+    "inherited_pre_helper_power_grid_count": 30396,
+    "fresh_PSM_not_a_waiver": true
+  },
+  "placement": {
+    "actual_moved_instances": [
+      "fanout2803"
+    ],
+    "other_instances_unchanged": 28961,
+    "whole_instance_count": 28962,
+    "zero_neighbors": true,
+    "exact_seed_positions_and_orientations": true,
+    "fanout2903_original_placement_retained": true,
+    "logical_netlist_SHA256": "dbf792b35c639503b164b6f92a2fb897efc180922698d84f26c9c91dab24db83",
+    "full_incident_HPWL_proxy_um": {
+      "net_names": [
+        "_09502_",
+        "net2803"
+      ],
+      "before_per_net": {
+        "_09502_": 597.9,
+        "net2803": 710.88
+      },
+      "after_per_net": {
+        "_09502_": 386.22,
+        "net2803": 710.88
+      },
+      "before_total": 1308.78,
+      "after_total": 1097.1,
+      "improvement": 211.68000000000006,
+      "placement_proxy_only": true
+    },
+    "proxy_is_not_routed_length": true,
+    "movement_report": {
+      "path": "build/physical/tt-buffered-fanout2803-candidate-01/movement.json",
+      "sha256": "34ede7aa51f8024b2bf53eb76f303a5a193ca32a0a61c03f46a79f7220aaee49"
+    }
+  },
+  "routing": {
+    "control": {
+      "status": "measured",
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 84042,
+          "usage_percent": 70.96,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 6,
+          "overflow": 1330
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 143677,
+          "usage_percent": 84.4,
+          "max_horizontal_overflow": 11,
+          "max_vertical_overflow": 1,
+          "overflow": 3108
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 26614,
+          "usage_percent": 24.5,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1402
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254333,
+          "usage_percent": 64.02,
+          "max_horizontal_overflow": 13,
+          "max_vertical_overflow": 10,
+          "overflow": 5840
+        }
+      },
+      "native_overflow": 5840,
+      "saved_preferred_grid_overflow": 5831.0,
+      "spatial_assigned_overflow": 5831.0,
+      "unassigned_edge_overflow": 0,
+      "wirelength_um": 2516270,
+      "routed_nets": 28940,
+      "fresh_native_metrics": {
+        "global_route__vias": 222914,
+        "global_route__wirelength": 2516270,
+        "flow__warnings__count": 9,
+        "flow__errors__count": 0,
+        "flow__warnings__count:GRT-0115": 1,
+        "flow__warnings__count:GRT-0273": 8,
+        "flow__warnings__type_count": 2
+      },
+      "macros": {
+        "engine.memory.storage0": {
+          "bbox_dbu": [
+            252000,
+            30000,
+            1036480,
+            94360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        },
+        "engine.memory.storage1": {
+          "bbox_dbu": [
+            252000,
+            144000,
+            1036480,
+            208360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        }
+      },
+      "inventory_unchanged": true,
+      "exported_netlist_unchanged": true,
+      "native_clock_ndr_fallback_retries": 8,
+      "boundary": "One native5-iteration-per-segment coarse congestion-allowed diagnostic; not equivalent to full50-iteration benchmark. Native automatic clock-NDR fallback retained; no cell mutation, accepted route or signoff claim. Unchanged inventory covers masters/positions/orientations/logical terminals, not routing-rule state. Saved grid and directional native totals are independent representations."
+    },
+    "candidate": {
+      "status": "measured",
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 83911,
+          "usage_percent": 70.85,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 6,
+          "overflow": 1323
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 143911,
+          "usage_percent": 84.54,
+          "max_horizontal_overflow": 9,
+          "max_vertical_overflow": 1,
+          "overflow": 3252
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 26844,
+          "usage_percent": 24.72,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1380
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254666,
+          "usage_percent": 64.1,
+          "max_horizontal_overflow": 11,
+          "max_vertical_overflow": 10,
+          "overflow": 5955
+        }
+      },
+      "native_overflow": 5955,
+      "saved_preferred_grid_overflow": 5940.0,
+      "spatial_assigned_overflow": 5940.0,
+      "unassigned_edge_overflow": 0,
+      "wirelength_um": 2520079,
+      "routed_nets": 28940,
+      "fresh_native_metrics": {
+        "global_route__vias": 223131,
+        "global_route__wirelength": 2520079,
+        "flow__warnings__count": 9,
+        "flow__errors__count": 0,
+        "flow__warnings__count:GRT-0115": 1,
+        "flow__warnings__count:GRT-0273": 8,
+        "flow__warnings__type_count": 2
+      },
+      "macros": {
+        "engine.memory.storage0": {
+          "bbox_dbu": [
+            252000,
+            30000,
+            1036480,
+            94360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        },
+        "engine.memory.storage1": {
+          "bbox_dbu": [
+            252000,
+            144000,
+            1036480,
+            208360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        }
+      },
+      "inventory_unchanged": true,
+      "exported_netlist_unchanged": true,
+      "native_clock_ndr_fallback_retries": 8,
+      "boundary": "One native5-iteration-per-segment coarse congestion-allowed diagnostic; not equivalent to full50-iteration benchmark. Native automatic clock-NDR fallback retained; no cell mutation, accepted route or signoff claim. Unchanged inventory covers masters/positions/orientations/logical terminals, not routing-rule state. Saved grid and directional native totals are independent representations."
+    },
+    "routing_gate": false,
+    "native_overflow_delta": 115,
+    "native_overflow_delta_percent": 1.9691780821917808,
+    "saved_preferred_grid_delta": 109.0,
+    "identical_native_resource_totals": true,
+    "native_automatic_NDR_policy_unchanged": true,
+    "actual_NDR_fallbacks": {
+      "control": 8,
+      "candidate": 8
+    },
+    "post_GRT_NDR_state_not_asserted_identical": true,
+    "coarse_iterations_per_native_segment": 5,
+    "accepted_route": false
+  },
+  "timing": {
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "control_setup_ns": 6.36164,
+        "candidate_setup_ns": 6.36164,
+        "control_hold_ns": 0.164109,
+        "candidate_hold_ns": 0.164109,
+        "control_electrical_counts": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "candidate_electrical_counts": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "qualification": "matched_declared_library_corner",
+        "gates": {
+          "full_setup_margin_preserved": true,
+          "zero_setup_violations": true,
+          "zero_hold_violations": true,
+          "positive_hold": true,
+          "slew_no_worse": true,
+          "fanout_no_worse": true,
+          "zero_capacitance_violations": true
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "control_setup_ns": 1.00825,
+        "candidate_setup_ns": 1.00825,
+        "control_hold_ns": 0.278249,
+        "candidate_hold_ns": 0.278249,
+        "control_electrical_counts": {
+          "design__max_slew_violation__count": 2,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "candidate_electrical_counts": {
+          "design__max_slew_violation__count": 2,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "qualification": "matched_declared_library_corner",
+        "gates": {
+          "full_setup_margin_preserved": true,
+          "zero_setup_violations": true,
+          "zero_hold_violations": true,
+          "positive_hold": true,
+          "slew_no_worse": true,
+          "fanout_no_worse": true,
+          "zero_capacitance_violations": true,
+          "slow_one_ns_target": true
+        }
+      },
+      "nom_fast_1p32V_m40C": {
+        "control_setup_ns": 9.58829,
+        "candidate_setup_ns": 9.58829,
+        "control_hold_ns": 0.0960465,
+        "candidate_hold_ns": 0.0960465,
+        "control_electrical_counts": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "candidate_electrical_counts": {
+          "design__max_slew_violation__count": 0,
+          "design__max_fanout_violation__count": 254,
+          "design__max_cap_violation__count": 0
+        },
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "qualification": "conditional_temperature_mismatch",
+        "gates": {
+          "full_setup_margin_preserved": true,
+          "zero_setup_violations": true,
+          "zero_hold_violations": true,
+          "positive_hold": true,
+          "slew_no_worse": true,
+          "fanout_no_worse": true,
+          "zero_capacitance_violations": true
+        }
+      }
+    },
+    "timing_gate": true,
+    "all_setup_hold_margins_exactly_preserved": true,
+    "electrical_counts_unchanged": true,
+    "estimated_placement_parasitics_only": true,
+    "setup_margin_report_precision_tolerance_ns": 1e-05,
+    "fast_corner_qualification": "Conditional -40C logic/IO with -55C SRAM; no universal fast qualification."
+  },
+  "power_geometry_and_movement": {
+    "both_nets_connected": true,
+    "full_native_movement_gate": true,
+    "complete_supply_geometry_SHA256": "1598525bac6715417b1c54500a99a5751cdb53f0d83a0348f5f570531ec1ebb7",
+    "43_TT_signal_pins_unchanged": 43,
+    "TechLEF_NDR_initial_rules_geometry_unchanged": true,
+    "report": {
+      "path": "build/physical/tt-buffered-fanout2803-power-01/report.json",
+      "sha256": "46f385148e35f92f174dae4d0754e4979a21ea145a382f1bb3b9be0df598fc10"
+    }
+  },
+  "mapped_upload": {
+    "status": "passed",
+    "peers": 21,
+    "request_response_pairs": 400,
+    "zero_delay_edges": 336426,
+    "parser_negatives": 3,
+    "canonical_elapsed_seconds": 119.037,
+    "all_in_elapsed_seconds": 119.093,
+    "report": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-fanout2803-01/report.json",
+      "sha256": "a6b5d1fc07bb1e6a5deb1d7c61859a8d2f7c405eed452924beadb2082a3dd7b5"
+    },
+    "boundary": "Finite zero-delay acceptance; no extracted timing, silicon signoff or universal equivalence claim."
+  },
+  "marker_diagnosis": {
+    "report": {
+      "path": "build/physical/tt-buffered-fanout2803-marker-analysis-01/report.json",
+      "sha256": "a5c7bbf63c826b2026aeab410be2b9f03aefcb43d2eec5c00238e63f93fe9aa3"
+    },
+    "control_zero_capacity_overflow": 3328,
+    "candidate_zero_capacity_overflow": 3415,
+    "focused_two_nets": {
+      "control": {
+        "marker_count": 74,
+        "cooccurring_overflow": 113,
+        "source_incidences": 74,
+        "zero_capacity_source_incidences": 51,
+        "zero_capacity_marker_count": 51
+      },
+      "candidate": {
+        "marker_count": 58,
+        "cooccurring_overflow": 83,
+        "source_incidences": 58,
+        "zero_capacity_source_incidences": 4,
+        "zero_capacity_marker_count": 4
+      }
+    },
+    "focused_nets": {
+      "control": {
+        "_09502_": {
+          "marker_count": 51,
+          "cooccurring_overflow": 73,
+          "zero_capacity_source_incidences": 51
+        },
+        "net2803": {
+          "marker_count": 23,
+          "cooccurring_overflow": 40,
+          "zero_capacity_source_incidences": 0
+        }
+      },
+      "candidate": {
+        "_09502_": {
+          "marker_count": 24,
+          "cooccurring_overflow": 34,
+          "zero_capacity_source_incidences": 0
+        },
+        "net2803": {
+          "marker_count": 34,
+          "cooccurring_overflow": 49,
+          "zero_capacity_source_incidences": 4
+        }
+      }
+    },
+    "observed_unselected_nets": {
+      "control": {
+        "_05129_": {
+          "marker_count": 52,
+          "cooccurring_overflow": 60,
+          "zero_capacity_source_incidences": 49
+        },
+        "_12686_": {
+          "marker_count": 42,
+          "cooccurring_overflow": 69,
+          "zero_capacity_source_incidences": 2
+        },
+        "_12695_": {
+          "marker_count": 36,
+          "cooccurring_overflow": 56,
+          "zero_capacity_source_incidences": 0
+        },
+        "net2903": {
+          "marker_count": 25,
+          "cooccurring_overflow": 43,
+          "zero_capacity_source_incidences": 0
+        }
+      },
+      "candidate": {
+        "_05129_": {
+          "marker_count": 34,
+          "cooccurring_overflow": 63,
+          "zero_capacity_source_incidences": 0
+        },
+        "_12686_": {
+          "marker_count": 33,
+          "cooccurring_overflow": 62,
+          "zero_capacity_source_incidences": 0
+        },
+        "_12695_": {
+          "marker_count": 89,
+          "cooccurring_overflow": 118,
+          "zero_capacity_source_incidences": 89
+        },
+        "net2903": {
+          "marker_count": 27,
+          "cooccurring_overflow": 38,
+          "zero_capacity_source_incidences": 0
+        }
+      }
+    },
+    "boundary": "Participation describes net-edge exposure, not causal ownership or guaranteed removable overflow. Global rerouting can change unselected nets."
+  },
+  "resource_accounting": {
+    "wall_start_utc": "2026-10-12T20:10:22Z",
+    "wall_deadline_utc": "2026-10-12T20:35:22Z",
+    "all_scheduled_work_cleanup_completed_utc": "2026-10-12T20:26:10.677930+00:00",
+    "scheduled_work_completion_wall_seconds": 948.67793,
+    "publication_snapshot_utc": "2026-10-12T20:28:04.448962+00:00",
+    "publication_snapshot_wall_seconds": 1062.448962,
+    "wall_cap_seconds": 1500,
+    "sum_native_all_in_seconds": 196.717,
+    "sum_scheduled_supervisor_all_in_seconds": 316.39,
+    "one_candidate_no_full50_no_additional_physical_runs": true,
+    "owned_native_containers_absent": 7,
+    "mapped_process_group_stopped": true,
+    "cleanup_included": true
+  },
+  "source_custody": {
+    "prior_custody_paths_rehashed": 768,
+    "protected_source_count": 507,
+    "core_ABI_source_intakes": {
+      "tt-buffered-boundary-01": {
+        "receipt": "build/tt-buffered/tt-buffered-boundary-01/report.json",
+        "receipt_sha256": "cb8458d4978f097656fb65438d263f1c9f680147cd20955e270649fcc1935afc",
+        "source_count": 495,
+        "all_current": true
+      },
+      "tt-buffered-digital-04": {
+        "receipt": "build/tt-buffered/tt-buffered-digital-04/report.json",
+        "receipt_sha256": "514fb59782bc5cee2d96fea35e405be7aa0653541c20e0ae98e23d3aabac8a88",
+        "source_count": 494,
+        "all_current": true
+      }
+    },
+    "unique_fresh_artifact_and_input_paths_rehashed": 1125,
+    "independent_final_review": {
+      "path": "build/physical/tt-buffered-fanout2803-review-01/final-custody-review.json",
+      "sha256": "2a2aec933456555e5752f149fab660005f7a6fe5c66bbfe7be73022311a06d6e"
+    }
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "1898f33d70c3caa6a3b9680b10884224ca2ed410a08bc0a0a615dad26b019606",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "e6c447af397bd450915197a9ccaa63fdca4e47b157898e17b52aed60a8bd9f4b",
+    "physical/buffered_tt/connect_sram_power.py": "6aa64653a38a1e8922f410f7f98a4689aead18ec4d0592ec1b230e2bb4fa1d6a",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "4c18b0a1b060b1a8c3301fc67bca115d4447e49c06674e28587ef275d107378e",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36",
+    "scripts/check-tt-buffered-netlist.py": "7d783cbac937e988ff5159a126473ba4dd8d2b2e9190f7e1060bf843dba5168b",
+    "test/test_tt_buffered_netlist.py": "06d7b1442ac845398fe915bfcf40c9341e6c1cd4d9b91389bc06e5c2e27e183c",
+    "physical/buffered_tt/gpl_capacity.tcl": "7b597beed0b41b9008b6a2dd805d5f29a59bb99d7e590aab05ed997c0ba6b2a6",
+    "scripts/apply-buffered-tt-physical-recipe.py": "386fc9a5d1ed0e73fd1a82f18f0d3e38bd91127b9b5b5f10aace2545b4b258e4",
+    "test/test_buffered_tt_physical_recipe.py": "0b2beda40c84411554cbf4793f4d403ce2f615976ea005e2b8935c73954ece0c"
+  },
+  "evidence_sha256": {
+    "build/physical/tt-buffered-fanout2803-candidate-01/report.json": "e6d71d324d13481b2afa4a9a176d857c0b95eb297dd9adf732643f6ed3e607b2",
+    "build/physical/tt-buffered-fanout2803-control-route-01/report.json": "f651d83152d16ee66f03ee5e9003624799ed38df90b18d254226e069f3650682",
+    "build/physical/tt-buffered-fanout2803-candidate-route-01/report.json": "fc57cee059875c9038918e0b1fa11c4d64a561eb1c47ea45680227e9bb8d0083",
+    "build/physical/tt-buffered-fanout2803-control-timing-01/report.json": "057c261aa55e649ae5d8afbe694ec781576eba253dd4ab009edb484a7a7690fa",
+    "build/physical/tt-buffered-fanout2803-candidate-timing-01/report.json": "3e6d9513f276272f1c6f29c0ed694f5a97335bbe16a5ba50f7ebf7d6ce81ddd9",
+    "build/physical/tt-buffered-fanout2803-power-01/report.json": "46f385148e35f92f174dae4d0754e4979a21ea145a382f1bb3b9be0df598fc10",
+    "build/tt-buffered/netlist/fanout2803-export-01/report.json": "76acc71ff40ba3af85c92ec92c6314fa19ed1e88b9f90d87a9f849e92c851788",
+    "build/tt-buffered/netlist/tt-buffered-netlist-fanout2803-01/report.json": "a6b5d1fc07bb1e6a5deb1d7c61859a8d2f7c405eed452924beadb2082a3dd7b5",
+    "physical/experiments/tt-buffered-fanout2803-selection.json": "19cf03cc647a8fe2a786ff6d466d3ffece7c01eea685b6bd58da498294ef7e9d",
+    "build/physical/tt-buffered-fanout2803-intake-01/report.json": "86e60432dc7842e05e436c51c2f59a1c17ef14417395c254126e73cace7affa4",
+    "build/physical/tt-buffered-fanout2803-candidate-01/movement.json": "34ede7aa51f8024b2bf53eb76f303a5a193ca32a0a61c03f46a79f7220aaee49",
+    "build/physical/tt-buffered-fanout2803-review-01/final-custody-review.json": "2a2aec933456555e5752f149fab660005f7a6fe5c66bbfe7be73022311a06d6e",
+    "build/physical/tt-buffered-fanout2803-analysis-01/results-01/analysis.json": "d23b09cd5e08d76720793d24dd49c7ca0f0f856a4fa95a765e1833c9fe372ad1",
+    "build/physical/tt-buffered-fanout2803-marker-analysis-01/report.json": "a5c7bbf63c826b2026aeab410be2b9f03aefcb43d2eec5c00238e63f93fe9aa3",
+    "build/physical/tt-buffered-fanout2803-helper-01/policy.json": "bfa3e574cdfae21c5ed557d4dd30205d1edc805f4c97908b9debaf6b77f160c6",
+    "build/physical/tt-buffered-fanout2803-helper-01/host-controls.json": "0bf18c3c9d5788d6d206bd6dae6aab81e1b58d82074095d7044fc36c86a9c71b",
+    "build/physical/tt-buffered-fanout2803-candidate-01/prepared.json": "b2209f6c09562dd0044d1a5b86d424fffdc2f43c08c0da482663bcdaca5beaf9",
+    "build/physical/tt-buffered-fanout2803-candidate-01/checkpoint.json": "0414c71ec7aad2e02a7a75a1d1ef708a8773ad883d5340697f08a62f7455b55b",
+    "build/physical/tt-buffered-fanout2803-checkpoint-admission-01/admission.json": "a0c4f212ecbc114ec12ece1ec5a99b534d23bce3f7940edc5be81458d810b760",
+    "build/physical/tt-buffered-fanout2803-checkpoint-admission-01/creation.json": "bf74348db3d3b13a8e4f28a950bea75f3e963b459e59467084ee018986a92848",
+    "build/physical/tt-buffered-fanout2803-validation-tools-01/prepared.json": "110b44ff6356eff9b163b42556be606998face37a9978d7217d602615c141ca1",
+    "build/physical/tt-buffered-fanout2803-admission-tools-01/prepared.json": "1a8c119e1e190c5ec7ee1df509076fa5b3fe6d72ab65ea8c20fd127e68ad2767",
+    "build/physical/tt-buffered-fanout2803-root-01/execution-plan.json": "e0274268ab1733dee6d59ff6d7d1f0f8d5a13c657cb2b54214fedd5916df6874",
+    "build/physical/tt-buffered-fanout2803-root-01/phase-commands.json": "1dd3714b23b4087af35480f6c0c274ea0324e2ed7a59bab15095353aebe44d8c",
+    "build/physical/tt-buffered-fanout2803-root-01/launch.py": "7d7529a3986148dbee1bbeadb7a393cbe227ea3bda8d1078eb9965d3790020dc",
+    "build/physical/tt-buffered-fanout2803-root-01/publish.py": "62b5b04becbe8a9d6af3df75a78546104dd562544365d602ea751a4f918c01a5",
+    "build/physical/tt-buffered-fanout2803-root-01/candidate-launch.json": "9a5afb17c52b45b55297b8c2ca1262c1ca4aa18a53cc32aed5d8d387f7a9aff6",
+    "build/physical/tt-buffered-fanout2803-root-01/control_route-launch.json": "554509c2b749d4608773a1f72bb11988e4ce321bc366baf8f2048712f8a0f9af",
+    "build/physical/tt-buffered-fanout2803-root-01/candidate_route-launch.json": "cd217ed88e715e2cb8495713d3542366f1bdfa3c58f007b722561b3b66ea37a8",
+    "build/physical/tt-buffered-fanout2803-root-01/control_STA-launch.json": "25b5345b0c5e37b352ea56c4f2ab836e7215cc39eb7e20205ef857a245436a8b",
+    "build/physical/tt-buffered-fanout2803-root-01/candidate_STA-launch.json": "56ae423169ed789b5103f647c64ba5a08a4bdabf3a608d12b5853eb27605084c",
+    "build/physical/tt-buffered-fanout2803-root-01/candidate_power-launch.json": "574fac34f98ce51738a27d67d9e94105206f4ad95a9df56bfe6753041d57d63f",
+    "build/physical/tt-buffered-fanout2803-root-01/candidate_export-launch.json": "2f0a1e89a59ca292e8580a55387b6dc571ba2229e5a16e5c26ef3fd2835e5499",
+    "build/physical/tt-buffered-fanout2803-root-01/mapped-launch.json": "ee65a89415576d4960145ff8d60b4ee9044a7d75222b3b3f953aa6ffc6cb62e7",
+    "build/physical/tt-buffered-fanout2803-analysis-01/results-01/comparison.png": "5256fd63e812e51cce77fcedd172bab6eef1e1ad9b6593b69fefae39660356a9",
+    "build/physical/tt-buffered-fanout2803-analysis-01/results-01/comparison.svg": "6c50cb4311cd5245a74ccb32b94e13d49dddf443658fda465b0a0f5356247f9b",
+    "docs/physical/figures/tt-buffered-fanout2803-coarse.png": "5256fd63e812e51cce77fcedd172bab6eef1e1ad9b6593b69fefae39660356a9",
+    "docs/physical/figures/tt-buffered-fanout2803-coarse.svg": "6c50cb4311cd5245a74ccb32b94e13d49dddf443658fda465b0a0f5356247f9b"
+  },
+  "remaining": {
+    "accepted_routing": false,
+    "detailed_routing_extracted_STA_DRC_LVS_official_precheck": false,
+    "original_flow_power_metric_provenance_gap": true
+  }
+}

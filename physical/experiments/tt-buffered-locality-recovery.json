@@ -1,0 +1,72 @@
+{
+  "schema": "pinwheel-buffered-tt-checkpoint-recovery-selection-v1",
+  "date": "2026-10-10",
+  "decision": "Continue the sole bounded baseline from its accepted pre-placement checkpoint, avoiding the pinned native virtual-resizer legalization assertion while retaining actual routing-capacity feedback and active native physical repair.",
+  "baseline_selection": {
+    "path": "physical/experiments/tt-buffered-locality-repair.json",
+    "sha256": "d6f226d92bd0d823b87e35607c82251ef5527ec0b2c02e7194e9f6203cfce5ad"
+  },
+  "initial_attempt": {
+    "path": "build/physical/tt-buffered-physical-05-invocation.json",
+    "sha256": "d1fdb5d2a9c1aea99b39ea08b1f7e750e488dd89697e39c3be603bdf891ca91e"
+  },
+  "checkpoint": {
+    "path": "build/physical/tt-buffered-locality-repair-02/runs/tt-buffered-physical-05/28-odb-applydeftemplate/state_out.json",
+    "sha256": "354c068f4f3652bba8c30ea0db9bb109c0f9bb3c37c51d448cf3c57bfb2fa861"
+  },
+  "preparation": {
+    "path": "build/physical/tt-buffered-locality-recovery-02/preparation.json",
+    "sha256": "36955bfa600a684a56df43f42f50893d363a95fa159434529d10cab42e372ff2"
+  },
+  "driver": {
+    "path": "build/physical/tt-buffered-locality-recovery-02/driver.py",
+    "sha256": "b84618c338fa2ad0199d2aded8b7045c1faf4745c7debe53be260e95f09cfaa4"
+  },
+  "initialization_control": {
+    "path": "build/physical/tt-buffered-locality-recovery-02/preflight.py",
+    "sha256": "cf9f5204bc56531f0b60f62f3fd894a3c9cef648516094b7127b86ddb42e1c9a"
+  },
+  "configuration_delta": {
+    "PL_TIMING_DRIVEN": {
+      "before": true,
+      "after": false
+    }
+  },
+  "resume_from": "Project.BufferedCapacityPlacement",
+  "excluded_stages": [
+    "synthesis",
+    "floorplan",
+    "macro placement",
+    "power generation"
+  ],
+  "limits": {
+    "initial_consumed_seconds": 147.496,
+    "continuation_container_seconds_at_most": 1590,
+    "cleanup_validation_reserve_seconds": 60,
+    "continuation_all_in_seconds": 1650,
+    "cumulative_allocation_seconds": 1800,
+    "cpus": 4,
+    "memory": "6g",
+    "network": "none"
+  },
+  "protected": {
+    "core_rtl_and_serial_abi_unchanged": true,
+    "original_checkpoint_readonly": true,
+    "clock_period_ns": 20,
+    "io_delay_max_ns": 4,
+    "io_delay_min_ns": 0.2,
+    "macro_positions_and_power_geometry_unchanged": true,
+    "actual_routing_capacity_feedback_retained": true,
+    "post_gpl_design_repair": true,
+    "post_cts_timing_repair": true,
+    "post_grt_design_repair": false,
+    "post_grt_timing_repair": false,
+    "setup_then_hold_retained": true,
+    "timing_libraries_and_foundry_checks_unchanged": true
+  },
+  "boundary": "Selection only. This is one checkpoint continuation of the original allocation, not a second synthesis or full baseline. No congestion or timing closure is asserted before measured results.",
+  "accepted_no_cad_preflight": {
+    "path": "build/physical/tt-buffered-locality-recovery-02/preflight-invocation.json",
+    "sha256": "8bbd6c57cbc3ac39a7f423a704cd7848742b72b86ac80ec3c9d19d6ddd54d9cc"
+  }
+}
