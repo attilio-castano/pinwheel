@@ -9,3 +9,22 @@ The proof boundary matters: this captures the route box and master AP set availa
 Pinned call sites: `FlexDR.cpp` 206–274 and 705–726/793–808; `FlexDR_init.cpp` 1215–1276/3208–3231; `frInst.cpp` 29–33. Public getters are in `TritonRoute.h` 96–97, `frInstTerm.h`, `frPin.h` and `frAccess.h`. Source identity, callback lifetime and recursion review is retained separately in the source-bound feasibility report. Logger `addSink` preserves existing sinks but resets their formatter to the same stock `%v` used by the pinned native Logger. No other custom formatter is qualified here.
 
 Execution must follow `cards.json` in order, under the root's single heavy-job lock, 4 CPU/6 GiB and absolute campaign native cutoff. The separate four-thread fixture must prove distinct nonzero IDs and preserve the original Logger exception; it deliberately emits one synthetic DRT-1231 in its own process and is not a physical pin failure. A fresh saved-C14 end0 control must preserve complete NETS/SPECIALNETS geometry and path rules, all scope/custody gates and its native 1731-marker table. Only then may an ordinary saved-C14 end4 error probe be launched. Its complete iteration 0–3 tables must match the previous failed restart, and the original DRT-1231 must remain fatal. No partial checkpoint is promoted. All native loading, ABI, four-thread and physical parity gates remain unmeasured until root launches and independently reviews them.
+
+
+## Portable host tests
+
+Run from the repository root:
+
+```sh
+python3 -B -m unittest discover -s tools/pinwheel-drt-logger-observer/tests -v
+```
+
+These tests need only Python and tracked repository files. They use the shared
+[fixture provenance](../pinwheel-drt-logger-observer-03/tests/fixtures/provenance.json) to verify the exact captured build-05 recipe
+and existing physical-history native bootstrap, then generate and parse real
+stage/observer Python against a temporary input root. Current checkout paths
+supply the campaign stage and runner; the historical absolute checkout,
+`build/` artifacts, native headers and binaries are not needed. Runner execution
+remains fake; no compiler, CAD or native bootstrap is executed. Passing this
+host suite does not rerun native fixtures/controls or repair historical failed
+observation gates.

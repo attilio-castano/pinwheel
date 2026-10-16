@@ -2,3 +2,7 @@
 docs/explorer/index.html linguist-generated=true
 docs/explorer/uart-trace.json linguist-generated=true
 docs/explorer/spi-traces.json linguist-generated=true
+
+# Preserve captured host-fixture bytes and the native logs' original whitespace.
+tools/pinwheel-physical-campaign/tests/fixtures/*.log.txt -text -whitespace
+tools/pinwheel-drt-logger-observer-03/tests/fixtures/native-build-05.json -text

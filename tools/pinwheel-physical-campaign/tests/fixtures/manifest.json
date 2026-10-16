@@ -1,0 +1,100 @@
+{
+  "schema": "pinwheel-campaign-host-fixtures-v1",
+  "capture_date": "2026-10-16",
+  "native_or_physical_acceptance_claim": false,
+  "runtime": {
+    "image_id": "sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92",
+    "native_binary_sha256": "6ba87b45c762ee8c9670375c204cd03d801a6da98cd6e056a1c73027aad68a7c",
+    "native_revision": "dcf36133a369abc8f3c5e5738cd4d82e4903c0e0"
+  },
+  "source_records_verified_against_original_producer_artifact_maps": true,
+  "files": {
+    "p2-onepass-native": {
+      "stored_path": "p2-onepass-native.log.txt",
+      "encoding": "utf-8",
+      "stored_sha256": "520251d1bd4d52dc1aad19e18d56cfb9089415ff4741a899c2cbad53172d1b07",
+      "stored_bytes": 9712,
+      "raw_sha256": "520251d1bd4d52dc1aad19e18d56cfb9089415ff4741a899c2cbad53172d1b07",
+      "raw_bytes": 9712,
+      "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/native.log",
+      "producer_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/report.json",
+        "sha256": "39d71690723668eb69339a58947602be1f330801d037dbf2670bead8fbb90f81",
+        "status": "passed",
+        "exit_code": 0,
+        "artifact_key": "native.log"
+      },
+      "capability_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/capability-admission.json",
+        "sha256": "3202c170bf22cf2982d9335bad55f970357c62af553f117255073b6369169a54"
+      }
+    },
+    "p2-control-native": {
+      "stored_path": "p2-control-native.log.txt",
+      "encoding": "utf-8",
+      "stored_sha256": "336bd766a0d372fde817b4324bf180c0caf394ce187c97611d6560fb9fa756fb",
+      "stored_bytes": 9809,
+      "raw_sha256": "336bd766a0d372fde817b4324bf180c0caf394ce187c97611d6560fb9fa756fb",
+      "raw_bytes": 9809,
+      "origin_relative_path": "build/physical/tt-p2-legalization-trial-02/control/native.log",
+      "producer_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-legalization-trial-02/control/report.json",
+        "sha256": "db146f04ce61da30673ec8f3c5a20a30447c1bed054542a9a8a35e0956327f54",
+        "status": "failed",
+        "exit_code": 1,
+        "artifact_key": "native.log"
+      },
+      "capability_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-legalization-trial-02/control/capability-admission.json",
+        "sha256": "3202c170bf22cf2982d9335bad55f970357c62af553f117255073b6369169a54"
+      }
+    },
+    "p2-partial-native": {
+      "stored_path": "p2-partial-native.log.txt",
+      "encoding": "utf-8",
+      "stored_sha256": "e2613312ca9d6bef15bbac4a53cc85f060ee4f4377a8d3b5d13606e9319e6a99",
+      "stored_bytes": 7399,
+      "raw_sha256": "e2613312ca9d6bef15bbac4a53cc85f060ee4f4377a8d3b5d13606e9319e6a99",
+      "raw_bytes": 7399,
+      "origin_relative_path": "build/physical/tt-p2-drt-probe-02/native.log",
+      "producer_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-probe-02/report.json",
+        "sha256": "958f49e2bf9bde323e2416edaae0bd37c3fe5d5c4d121bf43f8e7a82517833e5",
+        "status": "timed_out",
+        "exit_code": 124,
+        "artifact_key": "native.log"
+      },
+      "capability_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-probe-02/capability-admission.json",
+        "sha256": "0f876fe8e7aecd7f1013c8eb5b1f1577c1ca60ffe68be0cd7a5dcf0b4e9637fb"
+      }
+    },
+    "p2-onepass-report": {
+      "stored_path": "p2-onepass-violations.rpt.gz",
+      "encoding": "gzip",
+      "stored_sha256": "d1d427d67600cb8974b6a8fe63453c647712e3c0477288fb321fe40862765bba",
+      "stored_bytes": 302642,
+      "raw_sha256": "6dd464cf3b95a19b0c1d987b3ab39d5b671a160f04ad7e90d85729f238ec4afa",
+      "raw_bytes": 2886725,
+      "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/drt/violations.rpt",
+      "producer_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/report.json",
+        "sha256": "39d71690723668eb69339a58947602be1f330801d037dbf2670bead8fbb90f81",
+        "status": "passed",
+        "exit_code": 0,
+        "artifact_key": "drt/violations.rpt"
+      },
+      "capability_receipt": {
+        "origin_relative_path": "build/physical/tt-p2-drt-onepass-route-01/capability-admission.json",
+        "sha256": "3202c170bf22cf2982d9335bad55f970357c62af553f117255073b6369169a54"
+      }
+    }
+  },
+  "native_program": {
+    "repository_relative_path": "tools/pinwheel-physical-history/snapshots/tt-p2-drt-onepass-route-01/native.py",
+    "sha256": "a1f6cce78d7249c8111f748ea0543fdbf512183e983efe700f88716d813884ee",
+    "bytes": 9073,
+    "original_relative_path": "build/physical/tt-p2-drt-onepass-route-01/native.py"
+  },
+  "boundary": "These exact historical parser inputs and the tracked source template are host-test fixtures. Receipt statuses remain passed, failed and timed_out as recorded; tests do not rerun CAD or qualify a physical checkpoint."
+}

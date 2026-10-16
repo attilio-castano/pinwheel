@@ -22,6 +22,39 @@ python3 -B -m unittest discover -s test -p 'test_*.py'
 python3 scripts/check-foundation.py --tag first-check
 ```
 
+## Portable physical-tool host regressions
+
+These four suites use Python's standard library and tracked source/fixtures.
+Run each command in a separate interpreter because the observer versions share
+module names:
+
+```sh
+python3 -B scripts/check-physical-host-tests.py --self-test-guards
+python3 -B scripts/check-physical-host-tests.py --suite campaign
+python3 -B scripts/check-physical-host-tests.py --suite drt-logger-observer
+python3 -B scripts/check-physical-host-tests.py --suite drt-logger-observer-02
+python3 -B scripts/check-physical-host-tests.py --suite drt-logger-observer-03
+```
+
+The [host-test workflow](../.github/workflows/physical-host-tests.yml) runs the
+four suites as separate Python 3.12 jobs on Ubuntu. It adds
+`--require-fresh-checkout` to each suite command, requiring the checkout's
+ignored `build/` tree to be absent before and after the tests. The same option
+can verify a local source-only checkout. A populated development checkout can
+run the commands above: the runner still blocks reads or writes within its real
+`build/`, including symlink aliases, and rejects other captured Codex worktrees.
+Disposable temporary `repo/build/` fixtures remain allowed, including directory
+descriptor access during cleanup.
+
+The runner installs audit guards before test discovery, forbids child-process,
+shell and CAD execution, records forbidden attempts even when caught by a test,
+and requires every discovered test to run with zero skips. Current suite counts
+are 52, 16, 21 and 26. These are regression guards for cooperative project code,
+not a security sandbox for hostile Python. Passing them establishes no new
+routing, timing, GDS, LVS or tapeout result.
+
+## Foundation and protocol gates
+
 The default foundation now includes compact one/two-byte I²C register reads and
 actual typed-core resident SHIFT/KEEP effects. The separate
 [reusable-program gates](protocols/reusable-programs.md#evidence-and-reproduction)

@@ -11,3 +11,22 @@ Pinned call sites: `FlexDR.cpp` 206–274 and 705–726/793–808; `FlexDR_init.
 Execution must follow `cards.json` in order, under the root's single heavy-job lock, 4 CPU/6 GiB and absolute campaign native cutoff. The separate four-thread fixture must prove distinct nonzero IDs and preserve the original Logger exception; it deliberately emits one synthetic DRT-1231 in its own process and is not a physical pin failure. A fresh saved-C14 end0 control must preserve complete NETS/SPECIALNETS geometry and path rules, all scope/custody gates and its native 1731-marker table. Only then may an ordinary saved-C14 end4 error probe be launched. Its complete iteration 0–3 tables must match the previous failed restart, and the original DRT-1231 must remain fatal. No partial checkpoint is promoted. All native loading, ABI, four-thread and physical parity gates remain unmeasured until root launches and independently reviews them.
 
 Version02 records direct Linux kernel caller IDs and raw spdlog IDs separately; only kernel IDs correlate worker/error records. Actual control still requires at least four distinct kernel worker IDs. Native worker headers must reconcile completely with the normal native log. This is a prospective independent rebuild/fixture/control/probe; failed01 remains unchanged.
+
+
+## Portable host tests
+
+Run from the repository root:
+
+```sh
+python3 -B -m unittest discover -s tools/pinwheel-drt-logger-observer-02/tests -v
+```
+
+These tests need only Python and tracked repository files. They use the shared
+[fixture provenance](../pinwheel-drt-logger-observer-03/tests/fixtures/provenance.json) to verify the exact captured build-05 recipe
+and existing physical-history native bootstrap, then generate and parse real
+stage/observer Python against a temporary input root. Current checkout paths
+supply the campaign stage and runner; the historical absolute checkout,
+`build/` artifacts, native headers and binaries are not needed. Runner execution
+remains fake; no compiler, CAD or native bootstrap is executed. Passing this
+host suite does not rerun native fixtures/controls or repair historical failed
+observation gates.

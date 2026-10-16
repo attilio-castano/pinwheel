@@ -75,6 +75,23 @@ No helper buys compute, pulls images, or enables container networking.
 python3 -B -m unittest discover -s tools/pinwheel-physical-campaign/tests -v
 ```
 
-Tests read retained four-row/three-row/partial native logs and capped marker
-reports, and use fake process executors for all Docker execution, timeout,
-interruption, cleanup, lock and custody cases. They do not launch CAD.
+The 52 tests run from a fresh checkout with no ignored `build/`, CAD installation
+or Docker daemon. None is skipped. Tests use fake process executors for Docker,
+timeout, interruption, cleanup, lock and custody cases; no CAD is launched.
+
+The fixture directory retains three exact historical native logs and the exact
+2,886,725-byte capped marker report, stored as a gzip stream with `mtime=0`.
+Its manifest records raw/stored sizes and SHA256 values, original producer and
+capability receipt identities, producer outcomes, and the actual pinned native
+commit, binary and image. The bounded fixture loader checks those payload
+identities before parsing. Failed producer status, partial progress, completed
+native tables and capped spatial records remain separate assertions. These
+small parser inputs do not reproduce a physical run or change its acceptance.
+
+Stage admission tests create synthetic temporary guides and control payloads.
+Their generator uses the SHA-bound native source already tracked in
+[`pinwheel-physical-history`](../pinwheel-physical-history/README.md). The real
+hashing, tamper checks, template transformations and production admission gates
+are exercised, while native execution and scope readback are simulated. This
+test isolation does not change the campaign launcher's historical replay-input
+requirements.

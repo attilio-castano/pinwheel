@@ -11,6 +11,11 @@ from unittest import mock
 from types import SimpleNamespace
 
 TOOLS = Path(__file__).resolve().parents[1]
+REPOSITORY = TOOLS.parents[1]
+SHARED_TESTS = REPOSITORY / 'tools/pinwheel-drt-logger-observer-03/tests'
+sys.path.insert(0, str(SHARED_TESTS))
+from host_fixtures import build_reference, local_stage
+
 sys.path.insert(0, str(TOOLS))
 from analyze import analyze_events, read_events, reconcile_native_log, qualify_context
 import launch
@@ -45,7 +50,7 @@ def events(mode='threads'):
 
 class ObserverTest(unittest.TestCase):
     def test_simple_build_uses_absolute_staging_inclusive_cap_and_owned_runner(self):
-        p = launch.ROOT / 'tools/pinwheel-physical-campaign/runner.py'
+        p = REPOSITORY / 'tools/pinwheel-physical-campaign/runner.py'
         spec = importlib.util.spec_from_file_location('observer_test_runner', p)
         runner = importlib.util.module_from_spec(spec); sys.modules[spec.name] = runner; spec.loader.exec_module(runner)
         with tempfile.TemporaryDirectory() as d:
@@ -134,22 +139,19 @@ class ObserverTest(unittest.TestCase):
                 with self.assertRaises(AssertionError): read_events(p)
 
     def test_native_program_only_loads_separate_sink_and_verbose(self):
-        p = launch.ROOT / 'tools/pinwheel-physical-campaign/stage.py'
-        spec = importlib.util.spec_from_file_location('observer_test_stage', p)
-        sys.path.insert(0, str(p.parent)); stage = importlib.util.module_from_spec(spec); spec.loader.exec_module(stage)
-        for iteration, control in [(0, True), (4, False)]:
-            source = launch.observer_native(stage.native_program, iteration, control)
-            ast.parse(source)
-            self.assertIn(f'detailed_route -droute_end_iter {iteration} -verbose 2 ', source)
-            self.assertEqual(source.count('pinwheel_logger_observer_install'), 1)
-            self.assertEqual(source.count('pinwheel_logger_observer_remove'), 1)
-            self.assertIn("error=tcl(cmd,allow_error=True)\ntcl('pinwheel_logger_observer_remove')", source)
-            self.assertNotIn('detailed_route_debug', source)
-            self.assertIn('mode=os.RTLD_NOW|os.RTLD_GLOBAL', source)
-            self.assertIn("if error is not None:raise RuntimeError", source)
-
+        with local_stage() as stage:
+            for iteration, control in [(0, True), (4, False)]:
+                source = launch.observer_native(stage.native_program, iteration, control)
+                ast.parse(source)
+                self.assertIn(f'detailed_route -droute_end_iter {iteration} -verbose 2 ', source)
+                self.assertEqual(source.count('pinwheel_logger_observer_install'), 1)
+                self.assertEqual(source.count('pinwheel_logger_observer_remove'), 1)
+                self.assertIn("error=tcl(cmd,allow_error=True)\ntcl('pinwheel_logger_observer_remove')", source)
+                self.assertNotIn('detailed_route_debug', source)
+                self.assertIn('mode=os.RTLD_NOW|os.RTLD_GLOBAL', source)
+                self.assertIn("if error is not None:raise RuntimeError", source)
     def test_compiler_only_compiles_sink_not_DRT_or_preservation_implementation(self):
-        ref = json.loads((launch.HEADERS / 'native-05/build.json').read_text())
+        ref = build_reference()
         cmd = native_build.command(ref, Path('/work/diagnostic'))
         self.assertEqual([v for v in cmd if v.endswith(('.cc', '.cpp'))], ['/work/diagnostic/observer.cc'])
         self.assertIn('-fvisibility=hidden', cmd)
@@ -205,9 +207,8 @@ class ContextTest(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError,'four-thread fixture kernel ID'):
             analyze_events(rows,'threads')
     def test_context_queries_inside_design_tcl_and_no_forcing(self):
-        p=launch.ROOT/'tools/pinwheel-physical-campaign/stage.py'
-        spec=importlib.util.spec_from_file_location('observer03_test_stage',p);sys.path.insert(0,str(p.parent));m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-        source=launch.observer_native(m.native_program,0,True)
+        with local_stage() as stage:
+            source=launch.observer_native(stage.native_program,0,True)
         self.assertIn("design.evalTclString('pinwheel_logger_observer_context')",source)
         self.assertNotIn('set_thread_count',source)
         self.assertIn('observer-context-after-load.json',source)

@@ -88,7 +88,15 @@ The following check reads source mirrors and originals without launching CAD:
 python3 -B tools/pinwheel-physical-history/verify.py --origins
 ```
 
-Pure host test suites in the individual tool READMEs can be run separately.
-Some deliberately consume retained ignored native captures, so a clean clone
-alone does not provide their complete fixture set. Source retention, control
-agreement, functional behavior and physical qualification are separate gates.
+The campaign and three observer host suites run from a fresh checkout using
+tracked fixtures and temporary test inputs. The
+[host-test runner](../scripts/check-physical-host-tests.py) rejects skipped tests,
+process execution and reads from the checkout's ignored `build/` tree; the
+[CI workflow](../.github/workflows/physical-host-tests.yml) runs each suite
+separately. See [validation](../docs/validation.md) for commands and scope.
+
+Other tool suites deliberately consume retained native artifacts. In particular,
+the postroute qualification suite explicitly skips its actual-capture checks
+when their retained package is unavailable. These optional replays are separate
+from the portable host gate. Source retention, control agreement, functional
+behavior and physical qualification remain separate gates.

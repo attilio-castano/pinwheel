@@ -6,16 +6,13 @@ import unittest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 from drc import compare_native_stages, parse_native_log, parse_report_subset
-
-REPO = TOOLS.parents[1]
-HISTORY = REPO / "build/physical"
+from campaign_fixtures import load_manifest, load_text
 
 
 class NativeDRCTest(unittest.TestCase):
     def test_actual_four_row_native_final_and_capped_report(self):
-        root = HISTORY / "tt-p2-drt-onepass-route-01"
-        result = parse_native_log((root / "native.log").read_text(),
-                                  (root / "drt/violations.rpt").read_text(), category_limit=10000)
+        result = parse_native_log(load_text("p2-onepass-native"),
+                                  load_text("p2-onepass-report"), category_limit=10000)
         self.assertEqual(result["completed_native_final_count"], 30218)
         self.assertEqual(result["completed_native_type_counts"],
                          {"Short": 17252, "Cut Short": 690, "Metal Spacing": 6829,
@@ -27,8 +24,8 @@ class NativeDRCTest(unittest.TestCase):
         self.assertFalse(result["all_native_terminal_connectivity_proven"])
 
     def test_actual_three_row_control_not_error_or_fixed_row_crash(self):
-        root = HISTORY / "tt-p2-legalization-trial-02/control"
-        result = parse_native_log((root / "native.log").read_text(), producer_status="failed")
+        status = load_manifest()["files"]["p2-control-native"]["producer_receipt"]["status"]
+        result = parse_native_log(load_text("p2-control-native"), producer_status=status)
         self.assertEqual(result["completed_native_final_count"], 22149)
         self.assertEqual(len(result["completed_native_final_table"]["rows"]), 3)
         self.assertEqual(result["producer_status_retained"], "failed")
@@ -36,10 +33,11 @@ class NativeDRCTest(unittest.TestCase):
         self.assertFalse(result["native_modified_mapped_pin_checker_failure_lines"])
 
     def test_actual_partial_progress_is_not_native_final(self):
-        text = (HISTORY / "tt-p2-drt-probe-02/native.log").read_text()
-        result = parse_native_log(text)
+        status = load_manifest()["files"]["p2-partial-native"]["producer_receipt"]["status"]
+        result = parse_native_log(load_text("p2-partial-native"), producer_status=status)
         self.assertTrue(result["progress_observations"])
         self.assertIsNone(result["completed_native_final_count"])
+        self.assertEqual(result["producer_status_retained"], "timed_out")
 
     def test_truncated_or_inconsistent_table_never_falls_back(self):
         text = """Start 0th optimization iteration.

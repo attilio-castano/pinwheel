@@ -16,6 +16,7 @@ from unittest import mock
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 import stage
+from campaign_fixtures import native_program_bytes
 
 IMAGE = "sha256:" + "a" * 64
 CASES = [("plain", "original", True), ("plain", "patched", True),
@@ -36,6 +37,15 @@ class StageAdmissionTest(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name).resolve()
+        # Host tests own their input guide. The production generator still sees
+        # the exact tracked native template, without depending on ignored build/.
+        original = self.root / "original"
+        original.mkdir()
+        (original / "input.guide").write_text("synthetic host-test routing guide\n")
+        (original / "native.py").write_bytes(native_program_bytes())
+        original_patch = mock.patch.object(stage, "ORIGINAL", original)
+        original_patch.start()
+        self.addCleanup(original_patch.stop)
         self.build_root, self.fixtures_root = self.root / "buildjob", self.root / "fixturejob"
         self.build_root.mkdir(); self.fixtures_root.mkdir()
         self.adapter = self.build_root / "patched.so"
