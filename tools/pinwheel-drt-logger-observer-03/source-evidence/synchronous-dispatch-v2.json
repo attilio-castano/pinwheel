@@ -1,0 +1,23 @@
+{
+  "status": "source_proven_synchronous_sink_dispatch_native_control_runtime_pending",
+  "chain": [
+    "Pinned Logger.cpp constructs std::make_shared<spdlog::logger>, not an async_logger.",
+    "Logger.h report calls logger_->log synchronously.",
+    "spdlog logger::sink_it_ loops sinks and calls sink->log directly.",
+    "base_sink::log acquires its mutex and invokes sink_it_ on the same caller stack.",
+    "SYS_gettid is taken inside sink_it_; worker/error correlation uses this direct kernel caller ID, never rawmsg.thread_id.",
+    "No asynchronous logger queue is created by this observer; existing native sinks/exception remain."
+  ],
+  "bound_source_sha256": {
+    "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/tools/pinwheel-drt-logger-observer-02/source-evidence/Logger.cpp": "ec7bbfd6052a523aa381ddba0b155496d3dade5ac20c31a4c873a496f12e105d",
+    "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build/physical/tt-overnight-taper-tools-01/source/src/utl/include/utl/Logger.h": "64dba062fbc1e55ca1cebf624b83dbd118f7cb5e2cc26b151a7cfde5a57ed93a",
+    "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/hold-repair-01/headers/spdlog/include/spdlog/logger-inl.h": "1507122f5c8bc7428fd5a606c29bc0fff42b6f55c602311d1891e45d23afb7a7",
+    "/Users/attiliocastano/.codex/worktrees/c6eb/pinwheel/build/validation/hold-repair-01/headers/spdlog/include/spdlog/sinks/base_sink-inl.h": "7fe3e5bb453018d03e2b850384b18f8c00a1b64be363bb22c4b9b92082d9bcc7"
+  },
+  "runtime_required": [
+    "New exactELF+observer source rebuild and eagerload.",
+    "Four distinct kernel IDs in nativefixture with originalexception preserved.",
+    "Fresh C14noeditcontrol:>=4actualkernelworkerIDs and fullnativeheaderledger exact, count/scope/wires/rules parity."
+  ],
+  "native_binary_OMP_proof": "source-evidence/native-ELF-probe-01/processWorkersBatch.asm contains actual BL __kmpc_fork_call; only routing algorithm remains resident; no native recompile."
+}

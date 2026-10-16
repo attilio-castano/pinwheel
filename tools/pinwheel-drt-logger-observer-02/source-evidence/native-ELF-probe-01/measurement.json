@@ -1,0 +1,15 @@
+{
+  "status": "measured_binary_only",
+  "binary_sha256": "6ba87b45c762ee8c9670375c204cd03d801a6da98cd6e056a1c73027aad68a7c",
+  "selected_symbol": "_ZN3drt6FlexDR19processWorkersBatchERSt6vectorISt10unique_ptrINS_12FlexDRWorkerESt14default_deleteIS3_EESaIS6_EERNS0_17IterationProgressE",
+  "tools": {
+    "/nix/store/80qdvnjd83wlh75pds2mp21h9l3a7ny7-binutils-wrapper-2.46/bin/nm": "0c4ae1e9d126965132817d321ebd9fbfb6eb8b9f981978f609f6f8935cab6736",
+    "/nix/store/80qdvnjd83wlh75pds2mp21h9l3a7ny7-binutils-wrapper-2.46/bin/objdump": "8d17bc9fdf21905457259a5e2df4f93b11a967c74a7da234aaea6ce12ce7271e",
+    "/nix/store/80qdvnjd83wlh75pds2mp21h9l3a7ny7-binutils-wrapper-2.46/bin/readelf": "bc197142ae9c45a756c1ec78739ba2157d03363bf0f63e8450666b5a241e97f1"
+  },
+  "function_assembly_bytes": 4478,
+  "OMP_tokens_present": [
+    "__kmpc_fork_call"
+  ],
+  "physical_acceptance": false
+}
