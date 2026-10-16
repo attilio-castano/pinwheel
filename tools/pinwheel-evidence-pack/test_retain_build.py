@@ -1,6 +1,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -25,6 +26,7 @@ class WholeBuildRetentionTests(unittest.TestCase):
         (self.source / "directory-link").symlink_to("nested", target_is_directory=True)
         self.archive = self.base / "archive"
 
+    @unittest.skipUnless(sys.platform == "darwin", "Collection uses macOS clone-copy")
     def test_clone_independence_links_and_later_offline_tamper_detection(self):
         report = retain.collect(self.source, self.archive)
         self.assertEqual(report["status"], "copied_and_fully_verified")
@@ -49,6 +51,7 @@ class WholeBuildRetentionTests(unittest.TestCase):
         self.assertEqual(list(self.archive.iterdir()), [sentinel])
         self.assertEqual(sentinel.read_text(), "keep")
 
+    @unittest.skipUnless(sys.platform == "darwin", "Collection uses macOS clone-copy")
     def test_source_edit_during_copy_rejects_partial_archive(self):
         real_copy = retain.clone_copy
         def edit_after_copy(source, destination, log):
@@ -77,6 +80,7 @@ class WholeBuildRetentionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "shares source file inodes"):
             retain.independent_inodes(before, retain.inventory(destination))
 
+    @unittest.skipUnless(sys.platform == "darwin", "Collection uses macOS clone-copy")
     def test_mode_and_manifest_tampering_are_rejected(self):
         report = retain.collect(self.source, self.archive)
         (self.archive / "build" / "empty").chmod(0o600)
@@ -87,6 +91,7 @@ class WholeBuildRetentionTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "external pin"):
             retain.verify(self.archive, report["manifest_sha256"])
 
+    @unittest.skipUnless(sys.platform == "darwin", "Collection uses macOS clone-copy")
     def test_offline_verifier_rejects_build_root_retargeted_to_source(self):
         report = retain.collect(self.source, self.archive)
         (self.archive / "build").rename(self.archive / "retained-original")
