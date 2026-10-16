@@ -6,9 +6,16 @@ under the Apache License, Version 2.0. See LICENSE.
 
 Third-party material retains its existing copyright and license notices:
 
-- OpenROAD code adapted in tools/openroad-hold/ and
-  tools/openroad-route-import/: Copyright (c) 2018-2025, The OpenROAD Authors.
+- OpenROAD code adapted in tools/openroad-hold/, tools/openroad-route-import/,
+  tools/openroad-drt-preservation/, tools/pinwheel-drt-logger-observer/,
+  tools/pinwheel-drt-logger-observer-02/,
+  tools/pinwheel-drt-logger-observer-03/ and OpenROAD-derived parts of
+  tools/pinwheel-physical-history/: Copyright (c) 2018-2025, The OpenROAD Authors.
   BSD 3-Clause; see each directory's OPENROAD-LICENSE and source notices.
+- LibreLane/OpenLane-derived flow scripts in physical/buffered_tt/gpl_capacity.tcl
+  and tools/pinwheel-physical-history/snapshots/: Copyright 2026 LibreLane
+  Contributors; Copyright 2020-2023 Efabless Corporation. Apache-2.0; original
+  source notices are retained.
 - IHP PDK-derived SRAM fixtures in physical/fixtures/sram-context/ and
   physical/fixtures/sram-tile/: Copyright 2023 IHP PDK Authors.
   Apache-2.0; see each directory's NOTICE and source notices.
