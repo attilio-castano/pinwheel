@@ -1,4 +1,74 @@
 {
+  "progress": {
+    "date": "2026-10-16",
+    "title": "What works, and what comes next",
+    "summary": "The buffered design runs different uploaded programs in digital tests. Proofs connect important parts of the design; making its physical layout pass remains open.",
+    "milestones": [
+      {
+        "kind": "capability",
+        "title": "One circuit, different conversations",
+        "description": "The buffered SRAM engine runs uploaded SPI, JTAG and I²C programs through the same circuit. The host loads a program, starts a transfer and reads a result that stays available until released. These are checked digital behaviors.",
+        "sources": [
+          {
+            "path": "docs/protocols/tt-buffered-sram.md",
+            "start": 3,
+            "end": 6,
+            "label": "Same buffered circuit, different programs"
+          },
+          {
+            "path": "docs/research/status.md",
+            "start": 192,
+            "end": 201,
+            "label": "Serial loading and retained results"
+          }
+        ]
+      },
+      {
+        "kind": "proof",
+        "title": "More of the journey is checked",
+        "description": "After initialization and accepted uploads, Lean proves the digital SRAM engine matches an independent reference circuit while the uploaded image stays fixed. Separate proofs connect bounded SPI and one fixed four-byte I²C source program to decoded-image execution. The link from those interpreters to the circuit's registers remains open.",
+        "sources": [
+          {
+            "path": "docs/protocols/buffered-sram-loading.md",
+            "start": 14,
+            "end": 43,
+            "label": "Initialized upload and reference-circuit agreement"
+          },
+          {
+            "path": "docs/protocols/buffered-source-execution.md",
+            "start": 3,
+            "end": 8,
+            "label": "Supported source-program proof links"
+          },
+          {
+            "path": "docs/protocols/buffered-source-execution.md",
+            "start": 49,
+            "end": 60,
+            "label": "Remaining connection to circuit state"
+          }
+        ]
+      },
+      {
+        "kind": "measurement",
+        "title": "Better wiring, still an unfinished chip",
+        "description": "The latest buffered Tiny Tapeout routing study reduced native routing violations from 22,115 to 1,732 on C14, with the design fixed. C14 still fails layout, connectivity, antenna and conditional timing checks. Official Tiny Tapeout precheck has not run.",
+        "sources": [
+          {
+            "path": "docs/physical/tt-buffered-overnight-campaign.md",
+            "start": 10,
+            "end": 32,
+            "label": "Matched routing improvement and fixed design"
+          },
+          {
+            "path": "docs/physical/tt-buffered-overnight-campaign.md",
+            "start": 45,
+            "end": 65,
+            "label": "Failed physical checks and timing limits"
+          }
+        ]
+      }
+    ]
+  },
   "targets": [
     {
       "id": "paired",
@@ -1108,6 +1178,33 @@
           "start": 235,
           "end": 252,
           "label": "Saved mapping and allocation boundaries"
+        }
+      ]
+    },
+    {
+      "id": "buffered-tt-physical",
+      "name": "Current buffered Tiny Tapeout layout",
+      "kind": "measurement",
+      "summary": "The 2026-10-16 routing campaign kept the buffered design fixed and reduced native routing violations from the matched control's 22,115 to 1,732 on C14. C14 is retained as the best completed routing checkpoint, with physical acceptance rejected.",
+      "limits": "Router counts use different rules from independent GDS checks. C14 fails public GDS design rules (4,053 records), boundary connectivity (LVS), antenna and conditional extracted timing. Official Tiny Tapeout precheck was not run. Timing models remain unqualified, and this buffered design is distinct from historical design A; no silicon result or overall superiority is claimed.",
+      "sources": [
+        {
+          "path": "docs/physical/tt-buffered-overnight-campaign.md",
+          "start": 3,
+          "end": 32,
+          "label": "Current C14 disposition and matched routing results"
+        },
+        {
+          "path": "docs/physical/tt-buffered-overnight-campaign.md",
+          "start": 45,
+          "end": 65,
+          "label": "Independent physical failures and conditional timing"
+        },
+        {
+          "path": "docs/physical/tt-buffered-overnight-campaign.md",
+          "start": 76,
+          "end": 82,
+          "label": "Reproduction limits and distinct buffered design"
         }
       ]
     },
