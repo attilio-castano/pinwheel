@@ -45,9 +45,11 @@ expected-failure diagnostic launcher cannot accept success. No next CAD run is
 launched or authorized by these records.
 
 The [branch closeout](../history/tt-buffered-branch-closeout.md) records the
-progressive commits, artifact custody and passing final host checks. The fresh
-Lean library build and axiom audit pass; the complete executable foundation
-gate remains a pre-push requirement in an isolated source snapshot.
+progressive commits, artifact custody and passing final host checks. The full
+foundation gate now passes in an isolated source snapshot: 60 executable suites,
+one kernel suite, current-source build/import coverage and standard-axiom audit.
+The [PR validation receipt](../../physical/experiments/tt-buffered-pr-validation.json)
+owns this later result; it changes no physical acceptance verdict.
 
 **Retained earlier buffered studies:** the [TT wrapper](../protocols/tt-buffered-sram.md)
 owns finite upload-to-pins and mapped evidence; the [locality repair](../physical/tt-buffered-locality.md)

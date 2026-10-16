@@ -6,6 +6,12 @@ were merged locally. The executable source snapshot validated below is
 `af64522134f000abb89ceead5a46d69f7cdab671`. Later custody and documentation
 records do not change those executable sources.
 
+Subsequent pre-push validation of `17457ab7428968dfc57d97781a72f3e7d63179a2`
+completed the full foundation gate in an isolated source snapshot. The
+[PR validation receipt](../../physical/experiments/tt-buffered-pr-validation.json)
+records its report, source checks and separate evidence archive. The earlier
+interrupted attempt remains preserved below.
+
 The progressive commits separate the TT wrapper and public-pin gates, frozen
 physical preparation, historical helper sources, placement comparisons,
 routing/RC/timing studies, native preservation and campaign execution,
@@ -23,7 +29,8 @@ they are not 936 newly accepted implementations.
 | Historical helper retention | All **936** mirrors match their original files and manifest. |
 | Campaign evidence anchors | All **34** explicitly listed anchors rehashed exactly; this is distinct from full CAS verification. |
 | Fresh Lean library and axiom audit | Build passed **301 jobs**; audit passed **26,569 declarations / 14,357 theorems**, standard axioms only. The injected untrusted axiom was rejected. |
-| Full foundation executable gate | **Incomplete.** The in-worktree attempt was stopped during UARTRx after recognizing shared fixture paths. Run the complete gate in a fresh isolated source snapshot before pushing, as required by the [validation guide](../validation.md). No new formal theorem or full-gate pass is claimed. |
+| Full foundation executable gate | **Passed in an isolated snapshot:** all 60 executable suites, one kernel suite, the 299-module build/import coverage, whole-library audit and injected-axiom rejection. All 423 recorded source inputs match the working branch. The run took 2,296.098 seconds; this is model/proof validation, with no new formal theorem or physical qualification claim. |
+| Explorer pre-push checks | All nine recording tests and `build-explorer.py --check` pass in the isolated snapshot. |
 
 The first final-snapshot Python run failed one unchanged EOF test: the child
 process did not exit within its 50 ms deadline, yielding `TimeoutError` instead
@@ -32,11 +39,12 @@ scheduling cause, not a demonstrated one. The serialized complete rerun passed
 without a code change. Both logs are retained; the scheduling-sensitive test
 remains a future test-maintenance issue.
 
-The stopped foundation attempt created `build/uart/0x53-4cycles.csv` and an empty
+The earlier stopped foundation attempt created `build/uart/0x53-4cycles.csv` and an empty
 `build/uart-rx/`. Source review and filesystem birth times indicate new outputs,
 with no observed overwritten historical evidence. The partial gate's receipt
-records the limit; the full executable gate remains pending. Lean sources,
-core RTL and the serial ABI were unchanged by this closeout.
+records that attempt's limit; the later isolated gate closes the pre-push
+requirement. Lean sources, core RTL and the serial ABI were unchanged by this
+closeout.
 
 Validation logs and JSON receipts are under ignored
 `build/validation/tt-research-closeout-20261016-01/`,
@@ -56,5 +64,6 @@ is not an offsite backup or a complete executable environment.
 Use the [campaign study](../physical/tt-buffered-overnight-campaign.md) for
 physical results and the [research backlog](../research/tt-buffered-next-experiments.md)
 for remaining competition and stronger research gates. C14 is a routing
-reference, not a physically accepted chip. No new CAD experiment, push, pull
-request, submission or worktree removal was performed during this closeout.
+reference, not a physically accepted chip. The closeout and pre-push validation
+ran no CAD, submitted no chip and removed no worktree. PR creation and merging
+are separate repository actions.

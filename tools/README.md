@@ -1,7 +1,7 @@
 # Physical tools and captured replay
 
 The [branch closeout](../docs/history/tt-buffered-branch-closeout.md) records
-local commits, final host validation and the remaining full foundation gate.
+local commits, final host validation and the completed isolated foundation gate.
 
 The buffered Tiny Tapeout work has three complementary records: source and
 selected research manifests in Git; historical source mirrors; and ignored
