@@ -1,0 +1,3668 @@
+{
+  "schema": "pinwheel-buffered-tt-idempotent-pinaccess-ECO-results-v1",
+  "producer_status": "passed",
+  "started_utc": "2026-10-13T17:45:41Z",
+  "published_utc": "2026-10-13T18:09:20.643169+00:00",
+  "deadline_utc": "2026-10-13T18:10:41+00:00",
+  "runtime_fix_scope": "Guarded per-process once-only SRAM/pad pin-access credits after originalbaseline; fixedmacro/pin-grid fingerprint. No rebuiltupstream fix or persistentnativebinarychange.",
+  "same_ECO_scope": "Exactly2driverresizes8terminalDdelays, originalR0 source95/plan4412, unchangedRTL/serialABI/clock/unrelatedroutes/SDC/Lib/PG/SRAM/pins.",
+  "native_measurement": {
+    "schema": "pinwheel-buffered-tt-incremental-eco-measurement-v1",
+    "status": "measured",
+    "dirty_noop_pre_edit_gate_passed": true,
+    "noop_pre_edit_gate_passed": true,
+    "candidate_exact_edit_gate_passed": true,
+    "baseline": {
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 84973,
+          "usage_percent": 71.75,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1175
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 142464,
+          "usage_percent": 83.69,
+          "max_horizontal_overflow": 5,
+          "max_vertical_overflow": 1,
+          "overflow": 2281
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27123,
+          "usage_percent": 24.97,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1770
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254560,
+          "usage_percent": 64.08,
+          "max_horizontal_overflow": 7,
+          "max_vertical_overflow": 7,
+          "overflow": 5226
+        }
+      },
+      "native_overflow": 5226,
+      "native_clock_ndr_fallback_retries": 6,
+      "native_clock_ndr_fallback_net_order": [
+        "clk",
+        "clknet_0_clk_regs",
+        "delaynet_5_clk",
+        "delaynet_2_clk",
+        "delaynet_3_clk",
+        "delaynet_1_clk"
+      ],
+      "saved_preferred_grid_overflow": 5206.0,
+      "native_grid_capacity_usage_sha256": "111d772dd38551638463a74abffd1a1aeb2aec412cfe81604897030ac44267fe",
+      "live_router_pointer": "187650395340656",
+      "live_process_pid": 7,
+      "CLOCK_net_count": 332
+    },
+    "noop": {
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 84973,
+          "usage_percent": 71.75,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1175
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 142464,
+          "usage_percent": 83.69,
+          "max_horizontal_overflow": 5,
+          "max_vertical_overflow": 1,
+          "overflow": 2281
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27123,
+          "usage_percent": 24.97,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1770
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254560,
+          "usage_percent": 64.08,
+          "max_horizontal_overflow": 7,
+          "max_vertical_overflow": 7,
+          "overflow": 5226
+        }
+      },
+      "native_overflow": 5226,
+      "native_clock_ndr_fallback_retries": 6,
+      "native_clock_ndr_fallback_net_order": [
+        "clk",
+        "clknet_0_clk_regs",
+        "delaynet_5_clk",
+        "delaynet_2_clk",
+        "delaynet_3_clk",
+        "delaynet_1_clk"
+      ],
+      "saved_preferred_grid_overflow": 5206.0,
+      "native_grid_capacity_usage_sha256": "111d772dd38551638463a74abffd1a1aeb2aec412cfe81604897030ac44267fe",
+      "live_router_pointer": "187650395340656",
+      "live_process_pid": 7,
+      "CLOCK_net_count": 332
+    },
+    "candidate": {
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 84982,
+          "usage_percent": 71.75,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1175
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 142472,
+          "usage_percent": 83.69,
+          "max_horizontal_overflow": 5,
+          "max_vertical_overflow": 1,
+          "overflow": 2285
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27136,
+          "usage_percent": 24.99,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1770
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254590,
+          "usage_percent": 64.08,
+          "max_horizontal_overflow": 7,
+          "max_vertical_overflow": 7,
+          "overflow": 5230
+        }
+      },
+      "native_overflow": 5230,
+      "native_clock_ndr_fallback_retries": 6,
+      "native_clock_ndr_fallback_net_order": [
+        "clk",
+        "clknet_0_clk_regs",
+        "delaynet_5_clk",
+        "delaynet_2_clk",
+        "delaynet_3_clk",
+        "delaynet_1_clk"
+      ],
+      "saved_preferred_grid_overflow": 5210.0,
+      "native_grid_capacity_usage_sha256": "4361b8a01792f5b3ac3fcc35317bcfceea5e32721da9d1c98632d6a99d4b4e38",
+      "live_router_pointer": "187650395340656",
+      "live_process_pid": 7,
+      "CLOCK_net_count": 332
+    },
+    "native_clock_route_preservation_passed": true,
+    "CLOCK_net_count": 332,
+    "all_unrelated_route_preservation_passed": true,
+    "allowed_route_change_nets": [
+      "_03216_",
+      "_03283_",
+      "_10826_",
+      "_12220_",
+      "_12231_",
+      "_12232_",
+      "net1603",
+      "net1946",
+      "net7992",
+      "net7995",
+      "net7998",
+      "net8056",
+      "net8072",
+      "net8088",
+      "timing_eco_hold_30616_D",
+      "timing_eco_hold_30617_D",
+      "timing_eco_hold_30684_D",
+      "timing_eco_hold_30685_D",
+      "timing_eco_hold_30686_D",
+      "timing_eco_hold_30712_D",
+      "timing_eco_hold_30753_D",
+      "timing_eco_hold_30779_D"
+    ],
+    "actual_changed_original_route_nets": [
+      "_03216_",
+      "_03283_",
+      "net7992",
+      "net7995",
+      "net7998",
+      "net8056"
+    ],
+    "actual_dirty_signal_nets": [
+      "_03216_",
+      "_03283_",
+      "net7992",
+      "net7995",
+      "net7998",
+      "net8056",
+      "timing_eco_hold_30616_D",
+      "timing_eco_hold_30617_D",
+      "timing_eco_hold_30684_D",
+      "timing_eco_hold_30685_D",
+      "timing_eco_hold_30686_D",
+      "timing_eco_hold_30712_D",
+      "timing_eco_hold_30753_D",
+      "timing_eco_hold_30779_D"
+    ],
+    "all_corner_signal_identity": {
+      "original_cells": 28962,
+      "added_instances": [
+        "timing_eco_hold_30616",
+        "timing_eco_hold_30617",
+        "timing_eco_hold_30684",
+        "timing_eco_hold_30685",
+        "timing_eco_hold_30686",
+        "timing_eco_hold_30712",
+        "timing_eco_hold_30753",
+        "timing_eco_hold_30779"
+      ],
+      "buffer_contracted_connectivity": true,
+      "added_cells": {
+        "timing_eco_hold_30616": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30617": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30684": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30685": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30686": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30712": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30753": "sg13cmos5l_dlygate4sd3_1",
+        "timing_eco_hold_30779": "sg13cmos5l_dlygate4sd3_1"
+      },
+      "pinned_transport_functions_checked": true,
+      "resized_cells": {
+        "_18965_": {
+          "before": "sg13cmos5l_or3_1",
+          "after": "sg13cmos5l_or3_2"
+        },
+        "fanout1946": {
+          "before": "sg13cmos5l_buf_1",
+          "after": "sg13cmos5l_buf_4"
+        }
+      },
+      "pinned_resize_functions_checked": true
+    },
+    "live_native_elapsed_seconds": 155.702,
+    "fresh_PSM_both_nets_passed": true,
+    "native_noop_typ_RC_timing_exact": true,
+    "source_database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "boundary": "ONElive10baseline\u2192noeditincrementalcontrol\u2192same2resizes8delayECO\u2192incremental22netmaxscope; no coldrouteimport/extraGPL/DPL/CTS/repair; all332CLOCKandunrelatedroutes invariant. Actual3cornertiming andfinitefunctionalvalidation separate."
+  },
+  "source_inputs_unchanged": true,
+  "timing": {
+    "control": {
+      "execution_status": "passed",
+      "diagnostic_only": false,
+      "all_in_elapsed_seconds": 149.46,
+      "measurement": {
+        "status": "measured",
+        "corners": {
+          "nom_typ_1p20V_25C": {
+            "setup_worst_slack_ns": 5.67447,
+            "hold_worst_slack_ns": 0.00191225,
+            "setup_met": true,
+            "hold_met": true,
+            "qualification": "matched_declared_library_corner",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+              "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+              "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+              "power__internal__total": 0.0107847,
+              "power__switching__total": 0.00171718,
+              "power__leakage__total": 5.78699e-06,
+              "power__total": 0.0125077,
+              "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+              "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+              "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.00191225,
+              "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+              "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+              "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+              "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28940,
+                "segment_count": 265886,
+                "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 20.185,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/noop/nom_typ_1p20V_25C/metrics.json",
+              "/work/diagnostic/noop/route-corner.tcl"
+            ]
+          },
+          "nom_slow_1p08V_125C": {
+            "setup_worst_slack_ns": -0.375264,
+            "hold_worst_slack_ns": 0.1028,
+            "setup_met": false,
+            "hold_met": true,
+            "qualification": "matched_declared_library_corner",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+              "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+              "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+              "power__internal__total": 0.00858206,
+              "power__switching__total": 0.00133072,
+              "power__leakage__total": 2.49679e-05,
+              "power__total": 0.00993775,
+              "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+              "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+              "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.1028,
+              "timing__setup__ws__corner:nom_slow_1p08V_125C": -0.375264,
+              "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup__tns__corner:nom_slow_1p08V_125C": -4.07379,
+              "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup__wns__corner:nom_slow_1p08V_125C": -0.375264,
+              "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+              "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 20,
+              "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": -0.375264,
+              "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 20,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28940,
+                "segment_count": 265886,
+                "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 18.997,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/noop/nom_slow_1p08V_125C/metrics.json",
+              "/work/diagnostic/noop/route-corner.tcl"
+            ]
+          },
+          "nom_fast_1p32V_m40C": {
+            "setup_worst_slack_ns": 9.0682,
+            "hold_worst_slack_ns": -0.0548931,
+            "setup_met": true,
+            "hold_met": false,
+            "qualification": "conditional_temperature_mismatch",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+              "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+              "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+              "power__internal__total": 0.0132256,
+              "power__switching__total": 0.00219048,
+              "power__leakage__total": 1.36565e-05,
+              "power__total": 0.0154298,
+              "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+              "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+              "timing__hold__ws__corner:nom_fast_1p32V_m40C": -0.0548931,
+              "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+              "timing__hold__tns__corner:nom_fast_1p32V_m40C": -0.238891,
+              "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__hold__wns__corner:nom_fast_1p32V_m40C": -0.0548931,
+              "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 8,
+              "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+              "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+              "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28940,
+                "segment_count": 265886,
+                "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 18.957,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/noop/nom_fast_1p32V_m40C/metrics.json",
+              "/work/diagnostic/noop/route-corner.tcl"
+            ]
+          }
+        },
+        "native_script_sha256": {
+          "openroad/sta/corner.tcl": "e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53",
+          "openroad/common/io.tcl": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f",
+          "openroad/common/set_rc.tcl": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece",
+          "openroad/common/set_global_connections.tcl": "80c6f145ee34a241e089c916656d5586da2c330cdcca5ae7004b1786a1e3b599",
+          "openroad/common/set_routing_layers.tcl": "7c242c22370546c1c93c542f93ceed6b898f8fe825dbb28b3822b748d5c7d233",
+          "openroad/common/set_layer_adjustments.tcl": "c6a0080d7b136b5fc9b0698a5dfe9e1b64678b61194a2952b077c90210a5d716"
+        },
+        "route_import": {
+          "nom_typ_1p20V_25C": {
+            "segment_roundtrip": {
+              "net_count": 28940,
+              "segment_count": 265886,
+              "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          },
+          "nom_slow_1p08V_125C": {
+            "segment_roundtrip": {
+              "net_count": 28940,
+              "segment_count": 265886,
+              "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          },
+          "nom_fast_1p32V_m40C": {
+            "segment_roundtrip": {
+              "net_count": 28940,
+              "segment_count": 265886,
+              "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          }
+        },
+        "route_based_only": true,
+        "parasitic_model": "estimate_parasitics -global_routing",
+        "route_source_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+        "routed_database_sha256": "ce970eab945eaec7af16758fb68c14954bf9882301d1bdf895329248b53746b1",
+        "route_segments_sha256": "1cd575c7daf9cd642f0ce82963cb128c9f001847e0c938a4680203412fd81f05",
+        "nominal_reference": {
+          "same_database": null,
+          "reproduced": null,
+          "reason": "Route-derived5/10 RC; no comparison or reproduction of prior placement estimates."
+        },
+        "all_three_setup_hold_met": false,
+        "scope": "FreshrouteRC nooptimization/placementfallback; matched9libs/SDC, conditionalfast-40logic/-55SRAM. No-op electricalinputidentity plusindependentnumericcorners; notextracted/signoff.",
+        "operation": "Freshmatched3cornerrouteRC; six native baseline/noop processes forcontrol or3candidate; no optimizer/reroute",
+        "producer_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+        "baseline_noop_native_input_identity": {
+          "native_inventory_exact": true,
+          "netlist_byte_equal": true,
+          "segment_netset_multiset_equal": true,
+          "native_grid_capacity_usage_and_all_geometry_equal": true,
+          "live_typ_RC_clock_equality": true,
+          "raw_ODB_byte_equal": false,
+          "all_corner_RC_input_identity": true
+        },
+        "all_corner_noop_numeric_equality_proof": {
+          "nom_typ_1p20V_25C": {
+            "fresh_metric_equality": true,
+            "estimated_SPEF_equal_except_DATE": true,
+            "normalized_SPEF_sha256": "577da1919d5bf64d95b5d3eedc6df1c608ca07a594b603d32a72ad8040d7627c",
+            "baseline_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "noop_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "baseline_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "noop_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "SPEF_normalization_only_DATE": true,
+            "DBNDR_map_equality": true,
+            "exact_segment_roundtrip_equality": true,
+            "annotation_equality": true,
+            "baseline_setup_ns": 5.67447,
+            "noop_setup_ns": 5.67447,
+            "baseline_hold_ns": 0.00191225,
+            "noop_hold_ns": 0.00191225
+          },
+          "nom_slow_1p08V_125C": {
+            "fresh_metric_equality": true,
+            "estimated_SPEF_equal_except_DATE": true,
+            "normalized_SPEF_sha256": "577da1919d5bf64d95b5d3eedc6df1c608ca07a594b603d32a72ad8040d7627c",
+            "baseline_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "noop_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "baseline_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "noop_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "SPEF_normalization_only_DATE": true,
+            "DBNDR_map_equality": true,
+            "exact_segment_roundtrip_equality": true,
+            "annotation_equality": true,
+            "baseline_setup_ns": -0.375264,
+            "noop_setup_ns": -0.375264,
+            "baseline_hold_ns": 0.1028,
+            "noop_hold_ns": 0.1028
+          },
+          "nom_fast_1p32V_m40C": {
+            "fresh_metric_equality": true,
+            "estimated_SPEF_equal_except_DATE": true,
+            "normalized_SPEF_sha256": "577da1919d5bf64d95b5d3eedc6df1c608ca07a594b603d32a72ad8040d7627c",
+            "baseline_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "noop_actual_SPEF_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+            "baseline_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "noop_DATE_header": "*DATE \"11:11:11 Fri 11 11, 1111\"",
+            "SPEF_normalization_only_DATE": true,
+            "DBNDR_map_equality": true,
+            "exact_segment_roundtrip_equality": true,
+            "annotation_equality": true,
+            "baseline_setup_ns": 9.0682,
+            "noop_setup_ns": 9.0682,
+            "baseline_hold_ns": -0.0548931,
+            "noop_hold_ns": -0.0548931
+          }
+        },
+        "stage_measurements": {
+          "baseline": {
+            "status": "measured",
+            "corners": {
+              "nom_typ_1p20V_25C": {
+                "setup_worst_slack_ns": 5.67447,
+                "hold_worst_slack_ns": 0.00191225,
+                "setup_met": true,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+                  "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+                  "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+                  "power__internal__total": 0.0107847,
+                  "power__switching__total": 0.00171718,
+                  "power__leakage__total": 5.78699e-06,
+                  "power__total": 0.0125077,
+                  "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+                  "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+                  "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.00191225,
+                  "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+                  "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+                  "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+                  "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 25.29,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/baseline/nom_typ_1p20V_25C/metrics.json",
+                  "/work/diagnostic/baseline/route-corner.tcl"
+                ]
+              },
+              "nom_slow_1p08V_125C": {
+                "setup_worst_slack_ns": -0.375264,
+                "hold_worst_slack_ns": 0.1028,
+                "setup_met": false,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+                  "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+                  "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+                  "power__internal__total": 0.00858206,
+                  "power__switching__total": 0.00133072,
+                  "power__leakage__total": 2.49679e-05,
+                  "power__total": 0.00993775,
+                  "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+                  "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+                  "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.1028,
+                  "timing__setup__ws__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__tns__corner:nom_slow_1p08V_125C": -4.07379,
+                  "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__wns__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+                  "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 20,
+                  "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 20,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 23.851,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/baseline/nom_slow_1p08V_125C/metrics.json",
+                  "/work/diagnostic/baseline/route-corner.tcl"
+                ]
+              },
+              "nom_fast_1p32V_m40C": {
+                "setup_worst_slack_ns": 9.0682,
+                "hold_worst_slack_ns": -0.0548931,
+                "setup_met": true,
+                "hold_met": false,
+                "qualification": "conditional_temperature_mismatch",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+                  "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+                  "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+                  "power__internal__total": 0.0132256,
+                  "power__switching__total": 0.00219048,
+                  "power__leakage__total": 1.36565e-05,
+                  "power__total": 0.0154298,
+                  "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+                  "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+                  "timing__hold__ws__corner:nom_fast_1p32V_m40C": -0.0548931,
+                  "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+                  "timing__hold__tns__corner:nom_fast_1p32V_m40C": -0.238891,
+                  "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold__wns__corner:nom_fast_1p32V_m40C": -0.0548931,
+                  "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 8,
+                  "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+                  "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+                  "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 23.651,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/baseline/nom_fast_1p32V_m40C/metrics.json",
+                  "/work/diagnostic/baseline/route-corner.tcl"
+                ]
+              }
+            },
+            "native_script_sha256": {
+              "openroad/sta/corner.tcl": "e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53",
+              "openroad/common/io.tcl": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f",
+              "openroad/common/set_rc.tcl": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece",
+              "openroad/common/set_global_connections.tcl": "80c6f145ee34a241e089c916656d5586da2c330cdcca5ae7004b1786a1e3b599",
+              "openroad/common/set_routing_layers.tcl": "7c242c22370546c1c93c542f93ceed6b898f8fe825dbb28b3822b748d5c7d233",
+              "openroad/common/set_layer_adjustments.tcl": "c6a0080d7b136b5fc9b0698a5dfe9e1b64678b61194a2952b077c90210a5d716"
+            },
+            "route_import": {
+              "nom_typ_1p20V_25C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_slow_1p08V_125C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_fast_1p32V_m40C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              }
+            },
+            "route_based_only": true,
+            "parasitic_model": "estimate_parasitics -global_routing",
+            "route_source_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+            "routed_database_sha256": "d7bce3f5864efc15f51a600ab2126718007b63bef80ea25f9bcba5e9790f52af",
+            "route_segments_sha256": "1cd575c7daf9cd642f0ce82963cb128c9f001847e0c938a4680203412fd81f05",
+            "nominal_reference": {
+              "same_database": null,
+              "reproduced": null,
+              "reason": "Route-derived5/10 RC; no comparison or reproduction of prior placement estimates."
+            },
+            "all_three_setup_hold_met": false,
+            "scope": "FreshrouteRC nooptimization/placementfallback; matched9libs/SDC, conditionalfast-40logic/-55SRAM. No-op electricalinputidentity plusindependentnumericcorners; notextracted/signoff."
+          },
+          "noop": {
+            "status": "measured",
+            "corners": {
+              "nom_typ_1p20V_25C": {
+                "setup_worst_slack_ns": 5.67447,
+                "hold_worst_slack_ns": 0.00191225,
+                "setup_met": true,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+                  "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+                  "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+                  "power__internal__total": 0.0107847,
+                  "power__switching__total": 0.00171718,
+                  "power__leakage__total": 5.78699e-06,
+                  "power__total": 0.0125077,
+                  "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+                  "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+                  "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.00191225,
+                  "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+                  "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+                  "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+                  "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 20.185,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/noop/nom_typ_1p20V_25C/metrics.json",
+                  "/work/diagnostic/noop/route-corner.tcl"
+                ]
+              },
+              "nom_slow_1p08V_125C": {
+                "setup_worst_slack_ns": -0.375264,
+                "hold_worst_slack_ns": 0.1028,
+                "setup_met": false,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+                  "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+                  "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+                  "power__internal__total": 0.00858206,
+                  "power__switching__total": 0.00133072,
+                  "power__leakage__total": 2.49679e-05,
+                  "power__total": 0.00993775,
+                  "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+                  "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+                  "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.1028,
+                  "timing__setup__ws__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__tns__corner:nom_slow_1p08V_125C": -4.07379,
+                  "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__wns__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+                  "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 20,
+                  "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": -0.375264,
+                  "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 20,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 18.997,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/noop/nom_slow_1p08V_125C/metrics.json",
+                  "/work/diagnostic/noop/route-corner.tcl"
+                ]
+              },
+              "nom_fast_1p32V_m40C": {
+                "setup_worst_slack_ns": 9.0682,
+                "hold_worst_slack_ns": -0.0548931,
+                "setup_met": true,
+                "hold_met": false,
+                "qualification": "conditional_temperature_mismatch",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+                  "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+                  "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+                  "power__internal__total": 0.0132256,
+                  "power__switching__total": 0.00219048,
+                  "power__leakage__total": 1.36565e-05,
+                  "power__total": 0.0154298,
+                  "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+                  "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+                  "timing__hold__ws__corner:nom_fast_1p32V_m40C": -0.0548931,
+                  "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+                  "timing__hold__tns__corner:nom_fast_1p32V_m40C": -0.238891,
+                  "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold__wns__corner:nom_fast_1p32V_m40C": -0.0548931,
+                  "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 8,
+                  "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+                  "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+                  "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28940,
+                    "segment_count": 265886,
+                    "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 18.957,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/noop/nom_fast_1p32V_m40C/metrics.json",
+                  "/work/diagnostic/noop/route-corner.tcl"
+                ]
+              }
+            },
+            "native_script_sha256": {
+              "openroad/sta/corner.tcl": "e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53",
+              "openroad/common/io.tcl": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f",
+              "openroad/common/set_rc.tcl": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece",
+              "openroad/common/set_global_connections.tcl": "80c6f145ee34a241e089c916656d5586da2c330cdcca5ae7004b1786a1e3b599",
+              "openroad/common/set_routing_layers.tcl": "7c242c22370546c1c93c542f93ceed6b898f8fe825dbb28b3822b748d5c7d233",
+              "openroad/common/set_layer_adjustments.tcl": "c6a0080d7b136b5fc9b0698a5dfe9e1b64678b61194a2952b077c90210a5d716"
+            },
+            "route_import": {
+              "nom_typ_1p20V_25C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_slow_1p08V_125C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_fast_1p32V_m40C": {
+                "segment_roundtrip": {
+                  "net_count": 28940,
+                  "segment_count": 265886,
+                  "canonical_sha256": "16c1acce79346b8eeab013f084074762623dca89f5aa005129d09bd3e4b98fc3"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "74d6b3f45d7a051dada9650ac9b395a8d87b0fcbbed29297e47a235ec40170e8",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              }
+            },
+            "route_based_only": true,
+            "parasitic_model": "estimate_parasitics -global_routing",
+            "route_source_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+            "routed_database_sha256": "ce970eab945eaec7af16758fb68c14954bf9882301d1bdf895329248b53746b1",
+            "route_segments_sha256": "1cd575c7daf9cd642f0ce82963cb128c9f001847e0c938a4680203412fd81f05",
+            "nominal_reference": {
+              "same_database": null,
+              "reproduced": null,
+              "reason": "Route-derived5/10 RC; no comparison or reproduction of prior placement estimates."
+            },
+            "all_three_setup_hold_met": false,
+            "scope": "FreshrouteRC nooptimization/placementfallback; matched9libs/SDC, conditionalfast-40logic/-55SRAM. No-op electricalinputidentity plusindependentnumericcorners; notextracted/signoff."
+          }
+        },
+        "arm": "control"
+      }
+    },
+    "candidate": {
+      "execution_status": "passed",
+      "diagnostic_only": false,
+      "all_in_elapsed_seconds": 89.756,
+      "measurement": {
+        "status": "measured",
+        "corners": {
+          "nom_typ_1p20V_25C": {
+            "setup_worst_slack_ns": 5.67447,
+            "hold_worst_slack_ns": 0.107727,
+            "setup_met": true,
+            "hold_met": true,
+            "qualification": "matched_declared_library_corner",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+              "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+              "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+              "power__internal__total": 0.0107847,
+              "power__switching__total": 0.00171718,
+              "power__leakage__total": 5.7905e-06,
+              "power__total": 0.0125077,
+              "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+              "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+              "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.107727,
+              "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+              "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+              "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+              "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28948,
+                "segment_count": 265944,
+                "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 25.066,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/candidate/nom_typ_1p20V_25C/metrics.json",
+              "/work/diagnostic/candidate/route-corner.tcl"
+            ]
+          },
+          "nom_slow_1p08V_125C": {
+            "setup_worst_slack_ns": 0.00895284,
+            "hold_worst_slack_ns": 0.265159,
+            "setup_met": true,
+            "hold_met": true,
+            "qualification": "matched_declared_library_corner",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+              "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+              "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+              "power__internal__total": 0.00858206,
+              "power__switching__total": 0.00133072,
+              "power__leakage__total": 2.49842e-05,
+              "power__total": 0.00993777,
+              "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+              "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+              "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.265159,
+              "timing__setup__ws__corner:nom_slow_1p08V_125C": 0.00895284,
+              "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup__tns__corner:nom_slow_1p08V_125C": 0,
+              "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup__wns__corner:nom_slow_1p08V_125C": 0,
+              "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+              "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": 0.279041,
+              "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28948,
+                "segment_count": 265944,
+                "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 23.869,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/candidate/nom_slow_1p08V_125C/metrics.json",
+              "/work/diagnostic/candidate/route-corner.tcl"
+            ]
+          },
+          "nom_fast_1p32V_m40C": {
+            "setup_worst_slack_ns": 9.0682,
+            "hold_worst_slack_ns": 0.0195748,
+            "setup_met": true,
+            "hold_met": true,
+            "qualification": "conditional_temperature_mismatch",
+            "fresh_metrics": {
+              "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+              "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+              "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+              "power__internal__total": 0.0132256,
+              "power__switching__total": 0.00219048,
+              "power__leakage__total": 1.36646e-05,
+              "power__total": 0.0154298,
+              "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+              "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+              "timing__hold__ws__corner:nom_fast_1p32V_m40C": 0.0195748,
+              "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+              "timing__hold__tns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__hold__wns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+              "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+              "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+              "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+              "flow__warnings__count": 0,
+              "flow__errors__count": 0,
+              "flow__warnings__type_count": 0
+            },
+            "route_import": {
+              "segment_roundtrip": {
+                "net_count": 28948,
+                "segment_count": 265944,
+                "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+              },
+              "exact_routes_retained_after_timing": true,
+              "DBNDR_assignments_preserved": true,
+              "DBNDR_map_matches_producer": true,
+              "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                [
+                  "Metal1",
+                  "CTS_NDR_0",
+                  160,
+                  160
+                ],
+                [
+                  "Metal1",
+                  "CTS_NDR_1",
+                  160,
+                  160
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal2",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal3",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_0",
+                  200,
+                  200
+                ],
+                [
+                  "Metal4",
+                  "CTS_NDR_1",
+                  200,
+                  200
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_0",
+                  1640,
+                  1640
+                ],
+                [
+                  "TopMetal1",
+                  "CTS_NDR_1",
+                  1640,
+                  1640
+                ]
+              ],
+              "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+              "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+              "annotation": {
+                "native_report": "checks.rpt",
+                "unannotated_driver_count": 167,
+                "partially_unannotated_driver_count": 0,
+                "complete_annotation_claim": false
+              },
+              "netlist_unchanged": true
+            },
+            "elapsed_seconds": 23.657,
+            "command": [
+              "openroad",
+              "-exit",
+              "-threads",
+              "3",
+              "-no_splash",
+              "-metrics",
+              "/work/diagnostic/candidate/nom_fast_1p32V_m40C/metrics.json",
+              "/work/diagnostic/candidate/route-corner.tcl"
+            ]
+          }
+        },
+        "native_script_sha256": {
+          "openroad/sta/corner.tcl": "e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53",
+          "openroad/common/io.tcl": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f",
+          "openroad/common/set_rc.tcl": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece",
+          "openroad/common/set_global_connections.tcl": "80c6f145ee34a241e089c916656d5586da2c330cdcca5ae7004b1786a1e3b599",
+          "openroad/common/set_routing_layers.tcl": "7c242c22370546c1c93c542f93ceed6b898f8fe825dbb28b3822b748d5c7d233",
+          "openroad/common/set_layer_adjustments.tcl": "c6a0080d7b136b5fc9b0698a5dfe9e1b64678b61194a2952b077c90210a5d716"
+        },
+        "route_import": {
+          "nom_typ_1p20V_25C": {
+            "segment_roundtrip": {
+              "net_count": 28948,
+              "segment_count": 265944,
+              "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          },
+          "nom_slow_1p08V_125C": {
+            "segment_roundtrip": {
+              "net_count": 28948,
+              "segment_count": 265944,
+              "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          },
+          "nom_fast_1p32V_m40C": {
+            "segment_roundtrip": {
+              "net_count": 28948,
+              "segment_count": 265944,
+              "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+            },
+            "exact_routes_retained_after_timing": true,
+            "DBNDR_assignments_preserved": true,
+            "DBNDR_map_matches_producer": true,
+            "NDR_width_equals_default_on_all_route_and_pin_layers": [
+              [
+                "Metal1",
+                "CTS_NDR_0",
+                160,
+                160
+              ],
+              [
+                "Metal1",
+                "CTS_NDR_1",
+                160,
+                160
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal2",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal3",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_0",
+                200,
+                200
+              ],
+              [
+                "Metal4",
+                "CTS_NDR_1",
+                200,
+                200
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_0",
+                1640,
+                1640
+              ],
+              [
+                "TopMetal1",
+                "CTS_NDR_1",
+                1640,
+                1640
+              ]
+            ],
+            "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+            "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+            "annotation": {
+              "native_report": "checks.rpt",
+              "unannotated_driver_count": 167,
+              "partially_unannotated_driver_count": 0,
+              "complete_annotation_claim": false
+            },
+            "netlist_unchanged": true
+          }
+        },
+        "route_based_only": true,
+        "parasitic_model": "estimate_parasitics -global_routing",
+        "route_source_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+        "routed_database_sha256": "e0a0059bed3869367dccb72cc4e7d9029d81e5d735447668ae0b420b2889d629",
+        "route_segments_sha256": "cb4b38a8be56406ea21040a70c326893345be18bc958bc739959aa11f3c34035",
+        "nominal_reference": {
+          "same_database": null,
+          "reproduced": null,
+          "reason": "Route-derived5/10 RC; no comparison or reproduction of prior placement estimates."
+        },
+        "all_three_setup_hold_met": true,
+        "scope": "FreshrouteRC nooptimization/placementfallback; matched9libs/SDC, conditionalfast-40logic/-55SRAM. No-op electricalinputidentity plusindependentnumericcorners; notextracted/signoff.",
+        "operation": "Freshmatched3cornerrouteRC; six native baseline/noop processes forcontrol or3candidate; no optimizer/reroute",
+        "producer_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+        "baseline_noop_native_input_identity": {
+          "native_inventory_exact": true,
+          "netlist_byte_equal": true,
+          "segment_netset_multiset_equal": true,
+          "native_grid_capacity_usage_and_all_geometry_equal": true,
+          "live_typ_RC_clock_equality": true,
+          "raw_ODB_byte_equal": false,
+          "all_corner_RC_input_identity": true
+        },
+        "all_corner_noop_numeric_equality_proof": {},
+        "stage_measurements": {
+          "candidate": {
+            "status": "measured",
+            "corners": {
+              "nom_typ_1p20V_25C": {
+                "setup_worst_slack_ns": 5.67447,
+                "hold_worst_slack_ns": 0.107727,
+                "setup_met": true,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+                  "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+                  "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+                  "power__internal__total": 0.0107847,
+                  "power__switching__total": 0.00171718,
+                  "power__leakage__total": 5.7905e-06,
+                  "power__total": 0.0125077,
+                  "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+                  "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+                  "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.107727,
+                  "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+                  "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+                  "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+                  "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28948,
+                    "segment_count": 265944,
+                    "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 25.066,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/candidate/nom_typ_1p20V_25C/metrics.json",
+                  "/work/diagnostic/candidate/route-corner.tcl"
+                ]
+              },
+              "nom_slow_1p08V_125C": {
+                "setup_worst_slack_ns": 0.00895284,
+                "hold_worst_slack_ns": 0.265159,
+                "setup_met": true,
+                "hold_met": true,
+                "qualification": "matched_declared_library_corner",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+                  "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+                  "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+                  "power__internal__total": 0.00858206,
+                  "power__switching__total": 0.00133072,
+                  "power__leakage__total": 2.49842e-05,
+                  "power__total": 0.00993777,
+                  "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+                  "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+                  "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.265159,
+                  "timing__setup__ws__corner:nom_slow_1p08V_125C": 0.00895284,
+                  "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__tns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup__wns__corner:nom_slow_1p08V_125C": 0,
+                  "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+                  "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": 0.279041,
+                  "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28948,
+                    "segment_count": 265944,
+                    "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 23.869,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/candidate/nom_slow_1p08V_125C/metrics.json",
+                  "/work/diagnostic/candidate/route-corner.tcl"
+                ]
+              },
+              "nom_fast_1p32V_m40C": {
+                "setup_worst_slack_ns": 9.0682,
+                "hold_worst_slack_ns": 0.0195748,
+                "setup_met": true,
+                "hold_met": true,
+                "qualification": "conditional_temperature_mismatch",
+                "fresh_metrics": {
+                  "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+                  "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+                  "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+                  "power__internal__total": 0.0132256,
+                  "power__switching__total": 0.00219048,
+                  "power__leakage__total": 1.36646e-05,
+                  "power__total": 0.0154298,
+                  "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+                  "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+                  "timing__hold__ws__corner:nom_fast_1p32V_m40C": 0.0195748,
+                  "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+                  "timing__hold__tns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold__wns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+                  "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+                  "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+                  "flow__warnings__count": 0,
+                  "flow__errors__count": 0,
+                  "flow__warnings__type_count": 0
+                },
+                "route_import": {
+                  "segment_roundtrip": {
+                    "net_count": 28948,
+                    "segment_count": 265944,
+                    "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                  },
+                  "exact_routes_retained_after_timing": true,
+                  "DBNDR_assignments_preserved": true,
+                  "DBNDR_map_matches_producer": true,
+                  "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                    [
+                      "Metal1",
+                      "CTS_NDR_0",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal1",
+                      "CTS_NDR_1",
+                      160,
+                      160
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal2",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal3",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_0",
+                      200,
+                      200
+                    ],
+                    [
+                      "Metal4",
+                      "CTS_NDR_1",
+                      200,
+                      200
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_0",
+                      1640,
+                      1640
+                    ],
+                    [
+                      "TopMetal1",
+                      "CTS_NDR_1",
+                      1640,
+                      1640
+                    ]
+                  ],
+                  "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                  "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                  "annotation": {
+                    "native_report": "checks.rpt",
+                    "unannotated_driver_count": 167,
+                    "partially_unannotated_driver_count": 0,
+                    "complete_annotation_claim": false
+                  },
+                  "netlist_unchanged": true
+                },
+                "elapsed_seconds": 23.657,
+                "command": [
+                  "openroad",
+                  "-exit",
+                  "-threads",
+                  "3",
+                  "-no_splash",
+                  "-metrics",
+                  "/work/diagnostic/candidate/nom_fast_1p32V_m40C/metrics.json",
+                  "/work/diagnostic/candidate/route-corner.tcl"
+                ]
+              }
+            },
+            "native_script_sha256": {
+              "openroad/sta/corner.tcl": "e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53",
+              "openroad/common/io.tcl": "c7b28322f0853c7c6ebe6076a454c0baf3d97cc6194c0931eae7bf17a442b80f",
+              "openroad/common/set_rc.tcl": "4d338cf468b644652380158db86b35c1966a0797ed891fb24e4bfc3f9384fece",
+              "openroad/common/set_global_connections.tcl": "80c6f145ee34a241e089c916656d5586da2c330cdcca5ae7004b1786a1e3b599",
+              "openroad/common/set_routing_layers.tcl": "7c242c22370546c1c93c542f93ceed6b898f8fe825dbb28b3822b748d5c7d233",
+              "openroad/common/set_layer_adjustments.tcl": "c6a0080d7b136b5fc9b0698a5dfe9e1b64678b61194a2952b077c90210a5d716"
+            },
+            "route_import": {
+              "nom_typ_1p20V_25C": {
+                "segment_roundtrip": {
+                  "net_count": 28948,
+                  "segment_count": 265944,
+                  "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_slow_1p08V_125C": {
+                "segment_roundtrip": {
+                  "net_count": 28948,
+                  "segment_count": 265944,
+                  "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              },
+              "nom_fast_1p32V_m40C": {
+                "segment_roundtrip": {
+                  "net_count": 28948,
+                  "segment_count": 265944,
+                  "canonical_sha256": "c86d0e49bfa8694a1a2f57645fca800be0a414ad223db46055955c7e61d2cb75"
+                },
+                "exact_routes_retained_after_timing": true,
+                "DBNDR_assignments_preserved": true,
+                "DBNDR_map_matches_producer": true,
+                "NDR_width_equals_default_on_all_route_and_pin_layers": [
+                  [
+                    "Metal1",
+                    "CTS_NDR_0",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal1",
+                    "CTS_NDR_1",
+                    160,
+                    160
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal2",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal3",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_0",
+                    200,
+                    200
+                  ],
+                  [
+                    "Metal4",
+                    "CTS_NDR_1",
+                    200,
+                    200
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_0",
+                    1640,
+                    1640
+                  ],
+                  [
+                    "TopMetal1",
+                    "CTS_NDR_1",
+                    1640,
+                    1640
+                  ]
+                ],
+                "runtime_router_NDR_fallback_serialization": "Internal FastRoute fallback may be unpersisted; estimator uses routed-db assignments, and all route/pin-layer resistance width ratios are exactly one. This estimator uses default-layer capacitance and cut-layer via RC and does not model NDR spacing/coupling or detailed via choices; route geometry remains exact.",
+                "estimated_spef_sha256": "b23d534f65ceeabc9517121871efc12837bcc4579a34003dc6b11bb2e2e1ebcd",
+                "annotation": {
+                  "native_report": "checks.rpt",
+                  "unannotated_driver_count": 167,
+                  "partially_unannotated_driver_count": 0,
+                  "complete_annotation_claim": false
+                },
+                "netlist_unchanged": true
+              }
+            },
+            "route_based_only": true,
+            "parasitic_model": "estimate_parasitics -global_routing",
+            "route_source_report_sha256": "d1a5796f99aa5b6a8f4c4ff1e137de33d989f2f6b38323b10a86c821313c22a1",
+            "routed_database_sha256": "e0a0059bed3869367dccb72cc4e7d9029d81e5d735447668ae0b420b2889d629",
+            "route_segments_sha256": "cb4b38a8be56406ea21040a70c326893345be18bc958bc739959aa11f3c34035",
+            "nominal_reference": {
+              "same_database": null,
+              "reproduced": null,
+              "reason": "Route-derived5/10 RC; no comparison or reproduction of prior placement estimates."
+            },
+            "all_three_setup_hold_met": true,
+            "scope": "FreshrouteRC nooptimization/placementfallback; matched9libs/SDC, conditionalfast-40logic/-55SRAM. No-op electricalinputidentity plusindependentnumericcorners; notextracted/signoff."
+          }
+        },
+        "arm": "candidate"
+      }
+    }
+  },
+  "pending": [],
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-incremental-eco-selection-03.json",
+      "sha256": "aa744ff554b4dd62d8dec2aa6be96292e11b0d7876b2cbb915ed88c9ab53c20e"
+    },
+    "dirty_control_admission": {
+      "path": "build/physical/tt-buffered-incremental-eco-root-03/dirty-control-admission.json",
+      "sha256": "6fe68811c48f3649b8371186e686963302c57d09a737b2750252e21343ae120e"
+    },
+    "dirty_noedit_gate": {
+      "path": "build/physical/tt-buffered-incremental-eco-route-03/noop-gate.json",
+      "sha256": "ad06855ad63dfd4110b21cd799110ebd9f23cdce67487fa210e1d933cba1e48e"
+    },
+    "runtime_restoration": {
+      "path": "build/physical/tt-buffered-incremental-eco-route-03/runtime-credit-restoration.json",
+      "sha256": "4b01f0fb7ebe2c06c134e8159586dc066bd38c88a62ff6254c6ee5bb14bd4b95"
+    },
+    "comparison": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-03/comparison.json",
+      "sha256": "44aea2e38a74bb8faf3797f1feba07a9d937b9bb93695ceddf03925f6ff404e3"
+    },
+    "timing_review": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-03/metrics-review.json",
+      "sha256": "d779a51fef8081623d7bf691d567d059334ae89eb64dcd58c79540d7088f35fd"
+    },
+    "final_custody_review": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-03/final-review.json",
+      "sha256": "f5e31985360ed355d7618f92bad48b0afc8dc39a44e6b61de5400d996655ff0c"
+    },
+    "fresh_owners": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-03/final-owner-audit.json",
+      "sha256": "0013598b14501622e0cf3925fe326acc4ee807cac6f033fc0d4bea5dfdb900a0"
+    },
+    "mapped": {
+      "path": "build/physical/tt-buffered-incremental-eco-functional-preparation-03/mapped-invocation.json",
+      "sha256": "f83f6b3873c1d7346e985614277bf868caf695d57c692a66c3907f8b22e30ee3"
+    },
+    "candidate_export": {
+      "path": "build/physical/tt-buffered-incremental-eco-functional-preparation-03/export-report.json",
+      "sha256": "9a8c0a26039e4377bb1f6fcddc69e575d90e11f52fcfa465f553244f4e27dfc8"
+    },
+    "runtime_smoke": {
+      "path": "build/physical/tt-buffered-incremental-eco-fix-verification-02/report.json",
+      "sha256": "ddd009282b17356a0a1050d4d6de4d0561838fad8e237671e98cb3cdc019b0a4"
+    },
+    "control_timing": {
+      "path": "build/physical/tt-buffered-incremental-eco-control-timing-05/report.json",
+      "sha256": "02cfbe413ff35eefda5f307ebc4fa253df191bada390277f585769f7f7ba28af"
+    },
+    "candidate_timing": {
+      "path": "build/physical/tt-buffered-incremental-eco-candidate-timing-05/report.json",
+      "sha256": "fd32af79114dc9cfdeb8a683e9dcb48b5974cf03ee840ad15c43301d3a637d00"
+    }
+  },
+  "owners_reported_absent": {
+    "control": {
+      "status": "absent",
+      "ownership_label": "5f9ab8b8-0c02-457a-9f88-bd0d1c4406df",
+      "cleanup_subprocess_bound_seconds": 30,
+      "owned_container_ids": []
+    },
+    "candidate": {
+      "status": "absent",
+      "ownership_label": "4008f751-99c5-4639-8b66-6d5affde5214",
+      "cleanup_subprocess_bound_seconds": 30,
+      "owned_container_ids": []
+    },
+    "route": {
+      "status": "absent",
+      "ownership_label": "ef30e4c1-e129-4db3-85fa-cf7a7c2d02af",
+      "owned_container_ids": []
+    }
+  },
+  "notes": [
+    "The unmodified original R0 baseline reproduced native overflow 5226 and byte-identical retained route segments. The dirty control actually rerouted singleton signal _03283_ through native incremental netlist initialization while preserving full inventory, all canonical routes, saved capacity/usage, resident FastRoute capacities, SPEF and nominal timing exactly. Baseline, dirty control and candidate raw capacity files are byte-identical (fec3cd2b1c51527187b47ffc25d1f8bf0cec0a93b6e0bff257f654aeae71b053).",
+    "The same two driver resizes and eight terminal D delays passed exact whole-inventory, legal placement, all-corner cell-function and both power-grid checks. Fourteen actual signal nets were rerouted; all 332 clock routes and every unrelated route stayed exact. Original function bytes and RX page protection were restored after the run. No capacity or saved-grid values were rewritten.",
+    "Fresh six-process baseline/dirty-control timing matched exactly in every corner, including numeric metrics and SPEF. Candidate three-corner estimated route RC has zero setup and hold violations.\n\n| Corner | Baseline setup ns | ECO setup ns | Baseline hold ns | ECO hold ns | ECO setup/hold failures |\n|---|---:|---:|---:|---:|---:|\n| Typical | +5.674470 | +5.674470 | +0.001912 | +0.107727 | 0 / 0 |\n| Slow | -0.375264 | +0.008953 | +0.102800 | +0.265159 | 0 / 0 |\n| Fast, conditional | +9.068200 | +9.068200 | -0.054893 | +0.019575 | 0 / 0 |",
+    "The original 20 slow setup failures and eight fast hold failures are absent. Slow setup headroom is 8.95 ps and fast hold headroom 19.57 ps. The stronger one-nanosecond slow setup and 50-picosecond hold goals remain unmet. Slew violations are still 2/7/2, fanout 254, capacitance zero. The fast condition combines -40 C logic/IO with -55 C SRAM; global-route RC estimates do not establish extracted timing or signoff.",
+    "Fresh native overflow increased 5226 to 5230, entirely Metal3 2281 to 2285; Metal2 1175 and Metal4 1770 are unchanged. Native resources remain 397280. Saved preferred-grid overflow increased 5206 to 5210 and is a separate measure. Zero-capacity native overflow remains 3265; all four additional units occur on positive-capacity resources. The fix eliminated capacity drift, and this ECO did not improve congestion.",
+    "The full unchanged canonical mapped upload-to-pins check passed 21 cases (9 SPI, 3 JTAG, 9 I2C), 400 requests/responses and three parser negative controls. Both owned host process groups stopped. This is finite zero-delay functional validation, not exhaustive sequential equivalence or routed timing.",
+    "Independent final custody checked 3354 current source/artifact bindings and all 507 protected sources. Six exact owned container labels were freshly queried absent. Producer/control/candidate all-in times were 172.088/149.460/89.756 seconds; the host mapped phase took 134.351 seconds. Physical timing containers overlapped at 3 CPUs/3 GiB each, at most 6 CPUs/6 GiB combined, with a separate host functional process; the route itself used 4 CPUs/3 GiB.",
+    "The runtime correction is scoped to the exact pinned binary and frozen macro/pad pin-grid configuration. The first baseline applied the original credits; later calls skipped only the repeated credit function. A validated AArch64 function-entry guard and instruction-cache flush were used, with exact module/prologue checks. This is a reversible per-process workaround, not a rebuilt or upstream OpenROAD fix.",
+    "Remaining submission gates include detailed routing, extraction, DRC/LVS and unresolved provenance from the original failed native flow (exit 2, inherited power count 30396). The successful bounded experiment does not relabel that old failure. No candidate, commit, PR or competition submission was promoted."
+  ],
+  "candidate_promoted": false,
+  "qualification": "GlobalrouteRC is not extractedSTA/signoff. Preserveoriginalfailedproducerpowerprovenance. Onlyexplicit completedgates in sourcereceipts are claimed."
+}

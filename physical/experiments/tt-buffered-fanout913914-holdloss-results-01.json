@@ -1,0 +1,131 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout913914-holdloss-results-v1",
+  "started_utc": "2026-10-13T20:00:16+00:00",
+  "published_utc": "2026-10-13T20:23:58.555782+00:00",
+  "deadline_utc": "2026-10-13T20:25:16+00:00",
+  "status": "inconclusive_model_transfer_failed",
+  "control": {
+    "status": "failed",
+    "required_maximum_error_ns": 0.001,
+    "maximum_observed_error_ns": 0.3196240000000001,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "maximum_reference_error_ns": 0.2658681672815266,
+        "native_path_count": 2056,
+        "native_clock_sample_count": 659
+      },
+      "nom_slow_1p08V_125C": {
+        "maximum_reference_error_ns": 0.3196240000000001,
+        "native_path_count": 2056,
+        "native_clock_sample_count": 659
+      },
+      "nom_fast_1p32V_m40C": {
+        "maximum_reference_error_ns": 0.17364133158377015,
+        "native_path_count": 2056,
+        "native_clock_sample_count": 659
+      }
+    },
+    "fresh_native_control_processes": 3,
+    "virtual_processes": 0,
+    "original_native_RC_STA_remains_authoritative": true,
+    "source_of_failure": "SPEF writer omits real-pin ground wire capacitances while D_NET totals retain them; re-imported RC is incomplete."
+  },
+  "virtual_pair4_assessed": false,
+  "path_specific_hold_assessment": {
+    "retains_at_least50ps": null,
+    "admitted_to_physical_sizing": false,
+    "hold_reserve_ns": null,
+    "arbitrary_one_ns_allowance_replaced": false,
+    "analytical_limits": {
+      "limiting_register914_conditional_zero_tail_margin_ns": 0.087232923,
+      "zero_tail_samples_below50ps": {
+        "typical": 14,
+        "slow": 7,
+        "fast": 31
+      },
+      "zero_tail_not_all_launch_paths_or_all_slew_domains_proof": true,
+      "baseline_FAST_arc_slew_outside_characterized_table_occurrences": 99,
+      "baseline_FAST_endpoint_hold_slew_outside_characterized_table_occurrences": 274
+    },
+    "next_step": "Export actual per-pin wire ground capacitance from the unchanged native RC network with correct SPEF pin naming, retain old SPEF, pass all three no-edit controls <=1ps, then assess virtual buf4 pair with candidate path reselection and >=50ps after1ps reserve."
+  },
+  "timing_comparison": {
+    "candidate_comparison": null,
+    "standalone_control_values_are_unqualified": true,
+    "original_native_baseline_unchanged": true,
+    "wire_CAP_missing_in_serialized_networks_pf": 15.525078891,
+    "affected_SPEF_network_count": 28948
+  },
+  "completed_gates": [
+    "source/RTL/serial ABI intake current",
+    "20 new analytical parser controls including SRAM bus pins and reversed constraint axes",
+    "three native standalone controls completed; all24 context groups \u00d7257 endpoint ledger/report identities verified",
+    "SPEF transfer defect traced to pinned native source and quantified for all28948 nets",
+    "independent4523 binding and507 protected source rehash; frozen ODB full inventory routes netlist and native capacity unchanged",
+    "both owned containers freshly confirmed absent"
+  ],
+  "failed_or_unfinished_gates": [
+    "mandatory <=1ps model-transfer control failed at all three corners",
+    "no virtual pair STA executed;50ps local hold reserve not established",
+    "zero-tail analytical screen insufficient for all affected endpoints",
+    "existing library-table extrapolation prevents a universal characterized-domain bound",
+    "faithful per-pin wire-capacitance derivative/export repair not implemented or rerun",
+    "no physical sizing placement routing or signoff qualification"
+  ],
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-fanout913914-holdloss-selection-01.json",
+      "sha256": "122606ee46354c5f1eac652364f4ca242ec71d198cbcfba35bcc61aca922ba6c"
+    },
+    "capability": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-capability-01/report.json",
+      "sha256": "944cede99c6a15c9c949df1983c10ee2a9f511f7f83927e8a3d3b4839a1de567"
+    },
+    "prepared": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-tools-01/prepared.json",
+      "sha256": "df5e6ce97b7f5d3537abe2f1022a9d963466f5dd90c985dc75915c9242902554"
+    },
+    "native_control_execution": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-01/report.json",
+      "sha256": "0aa8718c3f3f4d9b6ea3cabf1a06597fba17fee93ca4517ab37d3dbb9b7e3057"
+    },
+    "model_transfer_gate": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-01/control-validation.json",
+      "sha256": "a2139b928fd3de62dbec146d1748491369763d354a72d943a09db1ab222a6721"
+    },
+    "source_bound_export_diagnosis": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-export-diagnosis-01/report.json",
+      "sha256": "4267b462978a854cc8160d1120d16649bafd3a885a803134a3f5620873351f64"
+    },
+    "analytical_summary": {
+      "path": "build/physical/tt-buffered-fanout913914-analytical-01/assessment-summary.json",
+      "sha256": "e85a1aef542e9267c127965666226941ce0d49c99b8a0570c4c2224f3f18c12f"
+    },
+    "analytical_domain_audit": {
+      "path": "build/physical/tt-buffered-fanout913914-analytical-01/domain-audit.json",
+      "sha256": "7ffea783eb92ad3a4046aa7367e4ae8a13e071913e4d775ac6ebd82d34f10748"
+    },
+    "analytical_zero_tail": {
+      "path": "build/physical/tt-buffered-fanout913914-analytical-01/zero-tail-assessment.json",
+      "sha256": "42f0762488e907e245a25c90ac9e143c87389fcc4366c96d618cfe433a16aab2"
+    },
+    "analytical_parser_controls": {
+      "path": "build/physical/tt-buffered-fanout913914-analytical-01/parser-controls.json",
+      "sha256": "5a6cc6e37471b00146f7aa2d7baa9607af877ce47edd2d0873b2636fac30a590"
+    },
+    "independent_final_review": {
+      "path": "build/physical/tt-buffered-holdreset-assessment-review-01/final-review.json",
+      "sha256": "c16d2fea153566a1aa3888f6a6f099681bbd6218697ea06cea9cbad49425e2c1"
+    },
+    "prior_native_STA": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/report.json",
+      "sha256": "3c9c11606ecc00b8748427319b3dc23d7802b972d06241a0a6d67e57b3498940"
+    }
+  },
+  "all_actual_owned_processes_absent": true,
+  "physical_baseline_modified": false,
+  "physical_candidate_created": false,
+  "candidate_promoted": false,
+  "no_commit_push_PR_submission": true,
+  "qualification": "Intended virtual two-master timing counterfactual was blocked by failed unchanged-model transfer. No 50ps sizing result is established. Original RTL/ABI/physical placement/clocks/routes remain frozen. No new pin access, footprint legality, routing or extracted signoff qualification. Fast logic/IO -40 C and SRAM -55 C; 167 baseline unannotated drivers remain disclosed."
+}

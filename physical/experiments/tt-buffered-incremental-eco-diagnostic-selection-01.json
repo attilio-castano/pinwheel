@@ -1,0 +1,26 @@
+{
+  "schema": "pinwheel-buffered-tt-incremental-eco-diagnostic-selection-v1",
+  "diagnostic_only": true,
+  "candidate_physical_status": "rejected_due_to_capacity_drift",
+  "native_stop_utc": "2026-10-13T17:42:14Z",
+  "deadline_utc": "2026-10-13T17:44:14Z",
+  "references": {
+    "timing_tools": {
+      "path": "build/physical/tt-buffered-incremental-eco-timing-tools-07/prepared.json",
+      "sha256": "db71f1780fdf20b9d93f9f0142f7165c0218bdd078aeae8e9532b7de46df1a70"
+    },
+    "original_selection": {
+      "path": "physical/experiments/tt-buffered-incremental-eco-selection-02.json",
+      "sha256": "72164d4eeac287a728f7130ea4363384ca4cc98899afe015fc463edc799b16a1"
+    },
+    "producer": {
+      "path": "build/physical/tt-buffered-incremental-eco-route-02/report.json",
+      "sha256": "98fb25a6814372a237b0f914e7dbe7f44285aff9d177a5c70293505031b503b0"
+    },
+    "rejected_audit": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-02/rejected-candidate-audit.json",
+      "sha256": "8b8aea0aa56ff303716327476e172ec04625476e0e0676e8d145183be61285f6"
+    }
+  },
+  "scope": "Freshmatched3cornerRC diagnostics from baseline/noop and capacity-rejectedincremental candidate. No newrouting/optimization/ECO; failedcapacitygate retained. Diagnosticexecutiondoesnotqualifyphysicalcandidate. No PSM/nativeplacement/mappedPASSclaim."
+}

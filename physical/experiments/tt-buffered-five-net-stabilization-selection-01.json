@@ -1,0 +1,42 @@
+{
+  "schema": "pinwheel-five-net-stabilization-selection-v1",
+  "started_utc": "2026-10-14T16:32:36Z",
+  "native_stop_utc": "2026-10-14T16:55:36Z",
+  "deadline_utc": "2026-10-14T16:57:36Z",
+  "full_bound_seconds": 1500,
+  "no_extension": true,
+  "source_database_sha256": "e2f81c80af1f0de802ddfbbe05f880d2f11363549f42586dcf29743b8578b326",
+  "source_segments_sha256": "f66af983f7de67bf266964eb7b67c02a71c6cfc517c64dc8afc0e7cd5f6917a5",
+  "dirty_signal_nets": [
+    "_00006_",
+    "_03109_",
+    "net8042",
+    "net8046",
+    "net9291"
+  ],
+  "passes": 2,
+  "routing_iterations": 10,
+  "prepared_sha256": "e269fab2509892ff04179a7bd5c792ea8a869b77e6107eefbb30f3abe63f94c8",
+  "pair_policy_sha256": "12ff265e207ffc4eb52de1c73b827bb7c7d3f5c1f1f769057cc90f5bad9e441a",
+  "five_net_policy_sha256": "529f2950329ae8dd8b9929ccd373bea23a6519d7893ad38585225289bdf692f0",
+  "one_candidate_only": true,
+  "post_BUF4_added_cells": 0,
+  "post_BUF4_resizes": 0,
+  "post_BUF4_placement_edits": [],
+  "route_native_stop_utc": "2026-10-14T16:55:36Z",
+  "route_phase_deadline_utc": "2026-10-14T16:56:16Z",
+  "execution_caps": {
+    "route_native_seconds": 600,
+    "route_all_in_seconds": 660,
+    "route_cpus": 4,
+    "route_memory": "5g",
+    "network": "none",
+    "sequential_CAD_only": true
+  },
+  "P1_drift_only_five_old_signal_nets": true,
+  "P2_requires_exact_P1_all_native_inventory_routes_RC_grid_rawcapacity_NDR_nominal_timing": true,
+  "RTL_ABI_clocks_unrelated_routes_RC_frozen": true,
+  "no_baseline_promotion": true,
+  "no_auto_repair_or_full_reroute_fallback": true,
+  "root_plan_sha256": "1f4a1b7073386368e2cbf737362ec2ec4f69e797e40ea829a08356031529ebe7"
+}

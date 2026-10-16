@@ -1,0 +1,219 @@
+{
+  "schema": "pinwheel-stabilized-fixed-wire-pair4-result-v1",
+  "status": "passed_electrical_assessment",
+  "physical_candidate": false,
+  "diagnostic_only": true,
+  "started_utc": "2026-10-13T23:57:38Z",
+  "deadline_utc": "2026-10-14T00:22:38Z",
+  "analysis_published_utc": "2026-10-14T00:07:33.951952+00:00",
+  "elapsed_to_analysis_seconds": 595.951952,
+  "nine_setup_failures_resolved": true,
+  "all_three_virtual_global_setup_hold_nonnegative": true,
+  "all_three_affected_hold_after_1ps_reserve_at_least50ps": true,
+  "whole_chip_hold_floor_50ps_met": false,
+  "minimum_affected_hold_after_reserve_ps": 490.26599999999996,
+  "maximum_three_corner_control_error_ps": 0.006436162895084863,
+  "affected_contexts_per_scenario": 6168,
+  "native_STA_processes": 6,
+  "source_producer_failed_OOM_status_preserved": true,
+  "source_database_sha256": "1304b736e051f2143b1449e76ad25bc1b9dfd2996afcc4bcf9294416b1ebe078",
+  "virtual_master_substitutions": {
+    "fanout914": [
+      "sg13cmos5l_buf_1",
+      "sg13cmos5l_buf_4"
+    ],
+    "fanout913": [
+      "sg13cmos5l_buf_1",
+      "sg13cmos5l_buf_4"
+    ]
+  },
+  "physical_edits": false,
+  "RTL_ABI_placement_clocks_routes_unchanged": true,
+  "all_507_protected_sources_current": true,
+  "all_bound_STA_inputs_and_artifacts_current": true,
+  "source_congestion_retained": {
+    "native_total_overflow": 5230,
+    "native_Metal3_overflow": 2285,
+    "saved_preferred_grid_overflow": 5210,
+    "rerouting_performed": false
+  },
+  "corners": {
+    "nom_typ_1p20V_25C": {
+      "control_global_setup_ps": 5674.468167073915,
+      "virtual_global_setup_ps": 5674.468167073915,
+      "virtual_global_hold_ps": 107.72671948293804,
+      "virtual_affected_setup_min_ps": 6266.796,
+      "virtual_affected_hold_min_ps": 844.195,
+      "virtual_affected_hold_after_1ps_reserve_ps": 843.195,
+      "local_hold_floor_50ps_met": true,
+      "whole_chip_hold_floor_50ps_met": true,
+      "affected_min_hold_context": "fanout914/fall/min",
+      "affected_min_hold_endpoint": "_30575_/D",
+      "setup_failures_before": 0,
+      "setup_failures_after": 0,
+      "hold_failures_before": 0,
+      "hold_failures_after": 0,
+      "electrical_violation_counts": {
+        "slew": 2,
+        "fanout": 254,
+        "capacitance": 0
+      },
+      "global_setup_worst_path": {
+        "startpoint": "_34076_ (rising edge-triggered flip-flop clocked by clk)",
+        "endpoint": "uo_out[0]",
+        "slack_ns": 5.674468
+      },
+      "global_hold_worst_path": {
+        "startpoint": "ena (input port clocked by clk)",
+        "endpoint": "_30759_/D",
+        "slack_ns": 0.107727
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "control_global_setup_ps": -105.7376438557647,
+      "virtual_global_setup_ps": 39.07629885827991,
+      "virtual_global_hold_ps": 265.15823620639446,
+      "virtual_affected_setup_min_ps": 675.241,
+      "virtual_affected_hold_min_ps": 1444.848,
+      "virtual_affected_hold_after_1ps_reserve_ps": 1443.848,
+      "local_hold_floor_50ps_met": true,
+      "whole_chip_hold_floor_50ps_met": true,
+      "affected_min_hold_context": "fanout914/fall/min",
+      "affected_min_hold_endpoint": "_30575_/D",
+      "setup_failures_before": 9,
+      "setup_failures_after": 0,
+      "hold_failures_before": 0,
+      "hold_failures_after": 0,
+      "electrical_violation_counts": {
+        "slew": 7,
+        "fanout": 254,
+        "capacitance": 0
+      },
+      "global_setup_worst_path": {
+        "startpoint": "_30953_ (rising edge-triggered flip-flop clocked by clk)",
+        "endpoint": "engine.memory.storage0/A_ADDR[2]",
+        "slack_ns": 0.039076
+      },
+      "global_hold_worst_path": {
+        "startpoint": "ena (input port clocked by clk)",
+        "endpoint": "_30759_/D",
+        "slack_ns": 0.265158
+      }
+    },
+    "nom_fast_1p32V_m40C": {
+      "control_global_setup_ps": 9068.193563837103,
+      "virtual_global_setup_ps": 9068.193563837103,
+      "virtual_global_hold_ps": 19.57289941079352,
+      "virtual_affected_setup_min_ps": 9508.093,
+      "virtual_affected_hold_min_ps": 491.26599999999996,
+      "virtual_affected_hold_after_1ps_reserve_ps": 490.26599999999996,
+      "local_hold_floor_50ps_met": true,
+      "whole_chip_hold_floor_50ps_met": false,
+      "affected_min_hold_context": "fanout914/fall/min",
+      "affected_min_hold_endpoint": "_30575_/D",
+      "setup_failures_before": 0,
+      "setup_failures_after": 0,
+      "hold_failures_before": 0,
+      "hold_failures_after": 0,
+      "electrical_violation_counts": {
+        "slew": 2,
+        "fanout": 254,
+        "capacitance": 0
+      },
+      "global_setup_worst_path": {
+        "startpoint": "_34076_ (rising edge-triggered flip-flop clocked by clk)",
+        "endpoint": "uo_out[0]",
+        "slack_ns": 9.068193
+      },
+      "global_hold_worst_path": {
+        "startpoint": "ena (input port clocked by clk)",
+        "endpoint": "_30759_/D",
+        "slack_ns": 0.019573
+      }
+    }
+  },
+  "nine_setup_endpoint_comparison": {
+    "engine.memory.storage0/A_ADDR[2]": {
+      "control_setup_ns": -0.105738,
+      "virtual_setup_ns": 0.675241,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    },
+    "engine.memory.storage0/A_ADDR[5]": {
+      "control_setup_ns": -0.098259,
+      "virtual_setup_ns": 0.68272,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    },
+    "engine.memory.storage1/A_ADDR[3]": {
+      "control_setup_ns": -0.093054,
+      "virtual_setup_ns": 0.687924,
+      "delta_ns": 0.780978,
+      "virtual_met": true
+    },
+    "engine.memory.storage0/A_ADDR[4]": {
+      "control_setup_ns": -0.078391,
+      "virtual_setup_ns": 0.702588,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    },
+    "engine.memory.storage1/A_ADDR[2]": {
+      "control_setup_ns": -0.074992,
+      "virtual_setup_ns": 0.705986,
+      "delta_ns": 0.780978,
+      "virtual_met": true
+    },
+    "engine.memory.storage0/A_ADDR[0]": {
+      "control_setup_ns": -0.067198,
+      "virtual_setup_ns": 0.713781,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    },
+    "engine.memory.storage1/A_ADDR[0]": {
+      "control_setup_ns": -0.055028,
+      "virtual_setup_ns": 0.725951,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    },
+    "engine.memory.storage0/A_ADDR[3]": {
+      "control_setup_ns": -0.046649,
+      "virtual_setup_ns": 0.73433,
+      "delta_ns": 0.7809790000000001,
+      "virtual_met": true
+    },
+    "engine.memory.storage0/A_ADDR[1]": {
+      "control_setup_ns": -0.036941,
+      "virtual_setup_ns": 0.744038,
+      "delta_ns": 0.780979,
+      "virtual_met": true
+    }
+  },
+  "receipt_sha256": {
+    "build/physical/tt-buffered-stable-pair4-root-01/plan.json": "aaf0b5f13b40aef33e9f740334df90aeee9e156caff8822fb7d23a06eb95786b",
+    "physical/experiments/tt-buffered-stable-pair4-selection-01.json": "aaf0b5f13b40aef33e9f740334df90aeee9e156caff8822fb7d23a06eb95786b",
+    "build/physical/tt-buffered-stable-pair4-fixedrc-01/report.json": "16c0adeb08f51d76ddbc2c5086a3358c04d3be4d3841efd19e1234ddd3637422",
+    "build/physical/tt-buffered-stable-pair4-fixedrc-01/control-validation.json": "a451341e11606e2dcba5e6a8053a5badb11c8667b3a9d45b33e5c7d7cc5131d3",
+    "build/physical/tt-buffered-stable-pair4-root-01/root-control-admission.json": "c5bdff40e4ce57bf5677cec552aabcbcca8065fc27592ebc2621824030c7e413",
+    "build/physical/tt-buffered-stable-pair4-root-01/source-nine-setup-failures.json": "aa040a777afe8e976edb016a04c8071fba969a767c7263e529030144710c3669",
+    "build/physical/tt-buffered-stable-pair4-root-01/virtual-function-proof.json": "7b96dcff3c0989c8e200c7caab8aa98148bdf191f1fea9f55f1fcf6f70cda00a",
+    "build/physical/tt-buffered-stable-pair4-root-01/sandbox-attempt-cleanup.json": "4725be0af1835bec46e514e9438d8d6c0bac5e5f295c1105016788d529c777cb",
+    "build/physical/stable-pair4-pinrc-01/report.json": "1ff0c096a3156758d1deb646f54bced671c4156e6a6fe17406d75cea192441ea",
+    "build/physical/stable-pair4-pinrc-02/report.json": "8c53365e83c5af824168cdf11196774f66ca67a17a0998eaa29ca3a586789bed",
+    "build/physical/stable-pair4-pinrc-02/corrected-export-report.json": "ac8ffc6b05ce0c1ac219754f38093b4de36650753a8727a22f173551077402a8",
+    "build/physical/tt-buffered-stable-pair4-review-01/export-control-review.json": "8b951a11eea3db0edd20499637271771655a97ab8c67eee79ea3c0cec12627fb"
+  },
+  "qualification": [
+    "Frozen estimated global-route RC and virtual Liberty master substitutions only; physical sizing, pin access and routing not validated.",
+    "FAST has logic/IO minus40C versus SRAM minus55C temperature mismatch.",
+    "Same preexisting electrical violation identities remain; capacitance check has no violations.",
+    "Whole-chip FAST hold remains below the stronger50ps target.",
+    "Original route producer failed from OOM; completed artifacts independently admitted for diagnosticSTA."
+  ],
+  "execution": {
+    "STA_native_seconds": 198.994,
+    "STA_all_in_seconds": 206.888,
+    "owned_containers_absent": true,
+    "sandbox_denied_attempt_preserved": true
+  },
+  "no_baseline_promotion": true
+}

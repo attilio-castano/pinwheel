@@ -1,0 +1,98 @@
+{
+  "schema": "pinwheel-buffered-tt-incremental-eco-results-v1",
+  "status": "stopped_before_noedit_control",
+  "completed_utc": "2026-10-13T17:10:19.304845+00:00",
+  "start_utc": "2026-10-13T16:46:55Z",
+  "deadline_utc": "2026-10-13T17:11:55Z",
+  "wall_cap_seconds": 1500,
+  "native_phase_all_in_elapsed_seconds": 122.197,
+  "same_ECO_applied": false,
+  "candidate_created": false,
+  "baseline_reproduction": {
+    "status": "passed_route_only",
+    "native_layers": {
+      "Metal2": {
+        "resources": 118435,
+        "demand": 84973,
+        "overflow": 1175
+      },
+      "Metal3": {
+        "resources": 170237,
+        "demand": 142464,
+        "overflow": 2281
+      },
+      "Metal4": {
+        "resources": 108608,
+        "demand": 27123,
+        "overflow": 1770
+      },
+      "Total": {
+        "resources": 397280,
+        "demand": 254560,
+        "overflow": 5226
+      }
+    },
+    "wirelength_um": 2527207,
+    "routed_nets": 28940,
+    "NDR_fallback_order": [
+      "clk",
+      "clknet_0_clk_regs",
+      "delaynet_5_clk",
+      "delaynet_2_clk",
+      "delaynet_3_clk",
+      "delaynet_1_clk"
+    ],
+    "saved_preferred_grid_overflow": 5206.0,
+    "raw_segments_sha256": "1cd575c7daf9cd642f0ce82963cb128c9f001847e0c938a4680203412fd81f05",
+    "raw_segments_byte_exact_to_retained_R0_10_iteration_route": true,
+    "timing_collection_completed": false
+  },
+  "failure": {
+    "native_exit_code": 2,
+    "wrapper_exit_code": 1,
+    "phase": "baseline timing report capture before noedit control",
+    "message": "invalid command name \"redirect\"",
+    "mechanism": "Tcl redirect is unavailable in the pinned OpenROAD Python interpreter command namespace; strict Tcl catch exited before later phases."
+  },
+  "gates": {
+    "source_inputs_unchanged": true,
+    "noedit_control": "not_run",
+    "same_ECO_exact_edit": "not_run",
+    "incremental_clock_unrelated_route_preservation": "not_run",
+    "fresh_three_corner_timing": "not_run",
+    "mapped_finite_upload_to_pins": "not_run",
+    "owned_container_absent": true
+  },
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-incremental-eco-selection.json",
+      "sha256": "af0064a89db074c74d419f322e0020f29ce9e1e43801fa0d179441afe3c7eb6d"
+    },
+    "route_report": {
+      "path": "build/physical/tt-buffered-incremental-eco-route-01/report.json",
+      "sha256": "a7ebad5dba48180d267c81b2792c83938237756745526df8e0ce90c8ddbf9de8"
+    },
+    "native_log": {
+      "path": "build/physical/tt-buffered-incremental-eco-route-01/native.log",
+      "sha256": "0fe48407b466d98447bd27072fbc10fba4e1fce88464d1060cb412d8cbf80ae5"
+    },
+    "cleanup": {
+      "path": "build/physical/tt-buffered-incremental-eco-root-01/cleanup.json",
+      "sha256": "a2c55293ef8211281ea86ca83d64afee99f39dbf0f2a9bb6d5769ebee4d9413c"
+    },
+    "intake": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-01/intake.json",
+      "sha256": "1cbe243639a9e922c196de65d67bf01df85065484516adf8da3011075724227d"
+    },
+    "tools_review": {
+      "path": "build/physical/tt-buffered-incremental-eco-review-01/tools-review.json",
+      "sha256": "a9af4afb010c8775bd836add7e332355648ca996ba4156b30014bf378571c192"
+    },
+    "previous_full_reroute_results": {
+      "path": "physical/experiments/tt-buffered-timing-eco-results.json",
+      "sha256": "a7c67970e6e4f963f4ba8dd3d0a9c986a77c111abd1106dacf4467e3844027cc"
+    }
+  },
+  "recommendation": "In a new immutable helper version replace redirect -file PATH {report_checks ...} with report_checks ... > PATH, preserving all fields/digits/options. This syntax is already used in scripts/check-targeted-timing.py. Verify the report-command API before CAD, then repeat the same single-live-process noedit gate and identical ECO under a newly authorized bound. Preserve all failed-run bytes; no candidate promotion or full-reroute fallback.",
+  "qualification": "Route-only baseline reproduction. No incremental-ECO comparison or timing closure evidence. Prior full-reroute candidate remains rejected and repaired R0 remains reference. Original flow failure/power provenance and detailed-route/signoff gates remain unresolved."
+}

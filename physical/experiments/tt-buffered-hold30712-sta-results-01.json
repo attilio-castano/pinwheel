@@ -1,0 +1,322 @@
+{
+  "schema": "pinwheel-buffered-tt-hold30712-sta-results-v1",
+  "started_utc": "2026-10-13T19:01:47+00:00",
+  "published_utc": "2026-10-13T19:16:49.999190+00:00",
+  "deadline_utc": "2026-10-13T19:26:47+00:00",
+  "status": "completed; fresh fixed-route three-corner timing comparison qualified",
+  "helper_repairs": [
+    "Immutable typed argument handling verified against historical geometry shadow trigger",
+    "Exact native-five subset of pinned STA-nine libraries",
+    "Explicit deadlines exactly tied to frozen selector; early and post-stage admission",
+    "Deduplicated strict source custody and fresh output folders",
+    "Fresh computational control mandatory; exact three-corner/global/targeted/electrical/annotation/SPEF reproduction"
+  ],
+  "fresh_native_processes": {
+    "control": 3,
+    "candidate": 3
+  },
+  "timing_comparison": {
+    "nom_typ_1p20V_25C": {
+      "global_setup_ns": {
+        "control": 5.67447,
+        "candidate": 5.67447,
+        "delta": 0.0
+      },
+      "global_hold_ns": {
+        "control": 0.107727,
+        "candidate": 0.107727,
+        "delta": 0.0
+      },
+      "target_30712": {
+        "setup_control_ns": 15.065464,
+        "setup_candidate_ns": 15.104321,
+        "setup_delta_ps": 38.857,
+        "hold_control_ns": 0.446389,
+        "hold_candidate_ns": 0.414917,
+        "hold_delta_ps": -31.472,
+        "setup_startpoint": "rst_n (input port clocked by clk)",
+        "hold_startpoint": "ena (input port clocked by clk)"
+      },
+      "gates": {
+        "no_global_setup_regression": true,
+        "no_global_hold_regression": true,
+        "zero_setup_and_hold_failures": true,
+        "no_electrical_count_regression": true,
+        "target_setup_at_least1ns": true,
+        "target_hold_at_least50ps": true
+      },
+      "annotations": {
+        "native_report": "checks.rpt",
+        "unannotated_driver_count": 167,
+        "partially_unannotated_driver_count": 0,
+        "complete_annotation_claim": false
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "global_setup_ns": {
+        "control": 0.00895284,
+        "candidate": 0.00895284,
+        "delta": 0.0
+      },
+      "global_hold_ns": {
+        "control": 0.265159,
+        "candidate": 0.265159,
+        "delta": 0.0
+      },
+      "target_30712": {
+        "setup_control_ns": 14.530169,
+        "setup_candidate_ns": 14.594338,
+        "setup_delta_ps": 64.169,
+        "hold_control_ns": 0.815307,
+        "hold_candidate_ns": 0.762891,
+        "hold_delta_ps": -52.416,
+        "setup_startpoint": "rst_n (input port clocked by clk)",
+        "hold_startpoint": "ena (input port clocked by clk)"
+      },
+      "gates": {
+        "no_global_setup_regression": true,
+        "no_global_hold_regression": true,
+        "zero_setup_and_hold_failures": true,
+        "no_electrical_count_regression": true,
+        "target_setup_at_least1ns": true,
+        "target_hold_at_least50ps": true
+      },
+      "annotations": {
+        "native_report": "checks.rpt",
+        "unannotated_driver_count": 167,
+        "partially_unannotated_driver_count": 0,
+        "complete_annotation_claim": false
+      }
+    },
+    "nom_fast_1p32V_m40C": {
+      "global_setup_ns": {
+        "control": 9.0682,
+        "candidate": 9.0682,
+        "delta": 0.0
+      },
+      "global_hold_ns": {
+        "control": 0.0195748,
+        "candidate": 0.0195748,
+        "delta": 0.0
+      },
+      "target_30712": {
+        "setup_control_ns": 15.356408,
+        "setup_candidate_ns": 15.380548,
+        "setup_delta_ps": 24.14,
+        "hold_control_ns": 0.24558,
+        "hold_candidate_ns": 0.224905,
+        "hold_delta_ps": -20.675,
+        "setup_startpoint": "rst_n (input port clocked by clk)",
+        "hold_startpoint": "ena (input port clocked by clk)"
+      },
+      "gates": {
+        "no_global_setup_regression": true,
+        "no_global_hold_regression": true,
+        "zero_setup_and_hold_failures": true,
+        "no_electrical_count_regression": true,
+        "target_setup_at_least1ns": true,
+        "target_hold_at_least50ps": true
+      },
+      "annotations": {
+        "native_report": "checks.rpt",
+        "unannotated_driver_count": 167,
+        "partially_unannotated_driver_count": 0,
+        "complete_annotation_claim": false
+      }
+    }
+  },
+  "electrical_comparison": {
+    "nom_typ_1p20V_25C": {
+      "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": {
+        "control": 2,
+        "candidate": 2,
+        "delta": 0
+      },
+      "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": {
+        "control": 254,
+        "candidate": 254,
+        "delta": 0
+      },
+      "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_vio__count__corner:nom_typ_1p20V_25C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_vio__count__corner:nom_typ_1p20V_25C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": {
+        "control": 7,
+        "candidate": 7,
+        "delta": 0
+      },
+      "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": {
+        "control": 254,
+        "candidate": 254,
+        "delta": 0
+      },
+      "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_vio__count__corner:nom_slow_1p08V_125C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_vio__count__corner:nom_slow_1p08V_125C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      }
+    },
+    "nom_fast_1p32V_m40C": {
+      "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": {
+        "control": 2,
+        "candidate": 2,
+        "delta": 0
+      },
+      "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": {
+        "control": 254,
+        "candidate": 254,
+        "delta": 0
+      },
+      "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      },
+      "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": {
+        "control": 0,
+        "candidate": 0,
+        "delta": 0
+      }
+    }
+  },
+  "completed_gates": [
+    "18 negative and2 healthy host checks",
+    "Independent helper and frozen physical intake",
+    "Fresh3corner control reproduction",
+    "Fresh3corner candidate comparison with no global timing regression",
+    "Zero setup/hold failures in all six evaluations",
+    "Selected30712 setup>=1ns/hold>=50ps all corners",
+    "Exact electrical violation blocks",
+    "Frozen saved routes/netlists/NDR/placement/clock and protected507 RTL/ABI custody",
+    "Fresh independent owner absence",
+    "Current source-bound independent final review"
+  ],
+  "failed_or_unfinished_gates": [
+    "Stronger1ns global slow setup and50ps global hold goals unmet",
+    "Existing slew/fanout violations unchanged",
+    "167 unannotated drivers; no complete annotation claim",
+    "Detailed routing/extraction/DRC/LVS/signoff and original failed-flow power provenance remain open"
+  ],
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-hold30712-sta-selection-01.json",
+      "sha256": "4df8ffc1a2b3b0850f39cbc55b2dff1ac507f3d14c1e6b83594351e186aa8bbf"
+    },
+    "helper_preparation": {
+      "path": "build/physical/tt-buffered-hold30712-sta-tools-02/prepared.json",
+      "sha256": "b92b6abddcf9bee5ba424d0da765a8aab683032a3f3486a6132159c7a0ad9ab5"
+    },
+    "helper_verification": {
+      "path": "build/physical/tt-buffered-hold30712-sta-helper-verification-02/report.json",
+      "sha256": "87bc92f187967698b4edc1e6dac8b68d806f14a4dfd51cb94e9fa55c3cc4fcb4"
+    },
+    "physical_intake": {
+      "path": "build/physical/tt-buffered-hold30712-sta-physical-review-01/report.json",
+      "sha256": "e2c7b476dbb1845965575e124a12667f596b4389f61f71b0c5ce91b651578968"
+    },
+    "physical_helper_review": {
+      "path": "build/physical/tt-buffered-hold30712-sta-physical-review-01/helper-review.json",
+      "sha256": "c7d497784a5394ee9380b34c37ef0ce5b4b9a240497001aec47bb8f81b508f3a"
+    },
+    "independent_helper_review": {
+      "path": "build/physical/tt-buffered-hold30712-sta-review-01/tools-review.json",
+      "sha256": "2874f042d0cec3bc14183c4b9903ad3ffa944897004ebb20b4e59507895632a2"
+    },
+    "fresh_control": {
+      "path": "build/physical/tt-buffered-hold30712-control-sta-01/report.json",
+      "sha256": "1fe97bd474a1845c9a5b666c46cda74e1e9d8140dc6765183b039996986d62f3"
+    },
+    "candidate_admission": {
+      "path": "build/physical/tt-buffered-hold30712-sta-root-01/candidate-admission.json",
+      "sha256": "829fb837672cf6a95fc9ca76fdc064113364127d279068a5a0c4e104c9f90692"
+    },
+    "fresh_candidate": {
+      "path": "build/physical/tt-buffered-hold30712-candidate-sta-01/report.json",
+      "sha256": "f98fd7831274ecf351d49b0b59af9c6413fd9adf54003df34f032870599fc35c"
+    },
+    "comparison": {
+      "path": "build/physical/tt-buffered-hold30712-sta-comparison-01/report.json",
+      "sha256": "d517544b7b950e94b2d25e78476b50be13389d6ba47ad69b96d03eac5964b5d1"
+    },
+    "independent_control_review": {
+      "path": "build/physical/tt-buffered-hold30712-sta-review-01/control-review.json",
+      "sha256": "ddfaecb55535157e70bb22519b62f63bec22ca2940b2f3b7b0e8358947da6e63"
+    },
+    "independent_final_review": {
+      "path": "build/physical/tt-buffered-hold30712-sta-review-01/final-review.json",
+      "sha256": "dc19290299659a1c29b082c4b44ab1dc001769da28225a23e0bb7080f609556d"
+    },
+    "placement_producer": {
+      "path": "build/physical/tt-buffered-hold30712-route-02/report.json",
+      "sha256": "147cf82e46f295260d128440f30ef73f86986d078d69460d20a4189ae5fc3a8a"
+    },
+    "placement_comparison": {
+      "path": "build/physical/tt-buffered-hold30712-review-01/comparison-02.json",
+      "sha256": "546d11d6542952ef0fe41504f711897631b17dbc14321820ff4ba34afd2ef987"
+    }
+  },
+  "all_owned_processes_absent": true,
+  "placement_clock_routing_RTL_ABI_frozen": true,
+  "candidate_promoted": false,
+  "no_commit_push_PR_submission": true,
+  "qualification": "Fresh STA uses estimated global-route RC from exact saved segments, not extracted signoff. Fast uses -40 C logic/IO and -55 C SRAM. The prior placement trial's failed dirty control and late unpublished publication configuration remain preserved."
+}

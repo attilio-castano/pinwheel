@@ -1,0 +1,128 @@
+{
+  "schema": "pinwheel-buffered-tt-route-effort-selection-v1",
+  "status": "frozen_before_routing",
+  "date": "2026-10-12",
+  "authorization": "One same-repaired-R0 5 versus 10 routing-iteration experiment; freeze all placements/core RTL/serial ABI; route-based timing; 25-minute all-work cap.",
+  "source_checkpoint": {
+    "design": "build/physical/tt-buffered-locality-recovery-02",
+    "state": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json",
+    "state_sha256": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "database": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+    "database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "environment": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/_env.tcl",
+    "environment_sha256": "d8dc217b202d18685d84c37bc6e963663e05e980316711d859484e5f63342e8e",
+    "core_recipe_sha256": "2448e568062399396597654457292410028de19bc2625e9eb4f411f7125676d3",
+    "original_views_count": 10,
+    "reference_native_flow_status": "failed",
+    "reference_native_flow_exit_code": 2,
+    "inherited_power_count": 30396,
+    "nominal_metrics_are_reference_only": true
+  },
+  "routing_effort": {
+    "control_iterations": 5,
+    "probe_iterations": 10
+  },
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-route-effort-intake-01/report.json",
+      "sha256": "dba8714295cf11e2c932fe28a6e31e2e65690b828e82b30463a13f5792d6040c"
+    },
+    "routing_tools": {
+      "path": "build/physical/tt-buffered-route-effort-tools-01/prepared.json",
+      "sha256": "1f6a19fe1465acf4599a9c4a7422f865813335c229515397e1a1bed083fa4468"
+    },
+    "timing_tools": {
+      "path": "build/physical/tt-buffered-route-effort-timing-tools-02/prepared.json",
+      "sha256": "53cfd47dc415a8213d2514f363344fe712cd66f0e43e8557c479f1768464866c"
+    },
+    "execution_plan": {
+      "path": "build/physical/tt-buffered-route-effort-root-01/execution-plan.json",
+      "sha256": "0e93b8ddd5afcdba46a4bdc4872d34e5c846cbd45af520c74d79946c633ba21d"
+    },
+    "capability": {
+      "path": "build/physical/tt-buffered-route-effort-capability-01/report.json",
+      "sha256": "b323621784dcae18a1a96545a7c5e84a0556ce2edb1ce7208ddc79117b54b7b9"
+    },
+    "analysis_code": {
+      "path": "build/physical/tt-buffered-route-effort-analysis-01/analyze.py",
+      "sha256": "dcfab8036654fecced54de7a90e83af2a15068e3f0067b4ebda70634cceb16de"
+    },
+    "map_code": {
+      "path": "build/physical/tt-buffered-route-effort-analysis-01/map_tools.py",
+      "sha256": "874aa1e3cff509482dc825cb0820cf9f387b77c2d1fa2042c3d4c43cf4fa2cb4"
+    },
+    "supervisor": {
+      "path": "build/physical/tt-buffered-route-effort-root-01/launch-02.py",
+      "sha256": "584cda573f3f0c5c06821146d435976f035180f11414165e7417c5945d3fa96f"
+    }
+  },
+  "physical_policy": {
+    "all_instances_frozen": true,
+    "all_placements_orientations_masters_statuses_clocks_topology_PG_pins_rows_groups_regions_blockages_TechLEF_initial_NDR_frozen": true,
+    "movable_instance_allowlist": [],
+    "no_placement_synthesis_CTS_resizing_buffering": true,
+    "Metal2_through_Metal4": true,
+    "native_automatic_clock_NDR_fallback_preserved": true,
+    "record_post_route_CLOCK_NDR_response": true,
+    "native_route_resources": {
+      "cpus": 4,
+      "memory": "3g",
+      "network": "none"
+    }
+  },
+  "timing_policy": {
+    "parasitic_model": "estimate_parasitics -global_routing",
+    "exact_arm_routed_ODB_and_saved_segments": true,
+    "no_placement_fallback": true,
+    "segments_roundtrip_and_runtime_DB_NDR_map_checked": true,
+    "native_NDR_default_width_equivalence_all_route_and_pin_layers_required": true,
+    "same_nine_libraries_three_corners_SDC_RC_models": true,
+    "fast_temperature_mismatch_conditional": true,
+    "no_inherited_SPEF_SDF": true,
+    "placement_timing_not_expected_to_reproduce": true
+  },
+  "acceptance": {
+    "fresh5_native_overflow": 5840,
+    "fresh5_zero_capacity_overflow": 3328,
+    "probe_native_total_below_control": true,
+    "probe_zero_capacity_below_control": true,
+    "probe_Metal3_below_control": true,
+    "full_route_setup_and_hold_margins_no_worse_tolerance_ns": 1e-05,
+    "zero_probe_setup_hold_violations": true,
+    "positive_hold": true,
+    "slew_and_fanout_no_worse_than_route_control": true,
+    "zero_capacitance_violations": true,
+    "slow_route_setup_target_ns": 1.0,
+    "all_native_frozen_inventory_guards_pass": true
+  },
+  "execution": {
+    "schema": "pinwheel-buffered-tt-route-effort-execution-plan-v1",
+    "start_utc": "2026-10-12T20:46:47Z",
+    "deadline_utc": "2026-10-12T21:11:47Z",
+    "wall_cap_seconds": 1500,
+    "caps_seconds": {
+      "capability": 95,
+      "control_route": 230,
+      "probe_route": 230,
+      "control_STA": 170,
+      "probe_STA": 170,
+      "host": 90
+    },
+    "reserved_seconds": 985,
+    "unallocated_reserve_seconds": 515,
+    "same_source_ODB_both_arms": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "only_routing_iterations_differ": true,
+    "all_placements_frozen": true,
+    "no_placement_synthesis_CTS_resizing_buffering": true,
+    "owned_cleanup_included": true,
+    "no_second_iteration_policy_or_full50_fallback": true
+  },
+  "hypothesis": "With placement held constant, test sensitivity of blocked macro traversals and global congestion to5vs10 native negotiation iterations, including the unchanged natural NDR fallback response. No monotonic improvement or fundamental unroutability inference.",
+  "boundary": "A same-checkpoint routing search comparison with estimates from serialized global routes. No accepted routing, detailed wires, extracted signoff or universal fast qualification.",
+  "prelaunch_revision": {
+    "predecessor_selection_path": "physical/experiments/tt-buffered-route-effort-selection.json",
+    "predecessor_selection_sha256": "d1a2561db23cb4c967e67b8e456fbe2988c7e139e77634b13e834756a331a5e2",
+    "reason": "Before any routing, corrected timing admission of producer-bound GlobalRouting baseline environment; preserved rejected timing01 and selection01 bytes.",
+    "routes_previously_launched": 0
+  }
+}
