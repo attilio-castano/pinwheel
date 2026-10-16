@@ -8,17 +8,26 @@ Source dialogs offer the corresponding GitHub revision when its bytes match the
 snapshot and that revision is reachable from a local `origin` tracking ref at
 build time. When opened as a local file, they also link to the full local source.
 
-The architecture view explains both current paired and buffered SRAM designs.
-It groups components by purpose; it is not a physical floorplan. Component
-inspectors link owned state, update/consumer relationships and timing obligations
-to implementation sources and scoped evidence. The decisions and evidence views
-keep the historical routed Design A separate from current-source capabilities.
+The default **Start here** view introduces the project through a recorded demonstration:
+run a four-byte SPI transfer, change its payload while reusing the same program,
+then replace the program to send one byte with a slower clock. The circuit stays
+fixed across those three transfers. This is playback of a buffered digital SRAM
+model, not a browser simulation or a demonstration of physical silicon.
+
+This overview also gives a dated progress summary and entry points into the
+engineering. **Architecture** explains both current paired and buffered SRAM
+designs; its component map is not a physical floorplan. **Program to pins** opens
+the exact session, source and execution-proof links. **Protocol walkthroughs**
+offers UART, SPI and I²C recordings. **Design decisions** and **Evidence & source**
+explain the reasoning and checks. These views keep the historical routed Design A
+separate from current-source capabilities and the opt-in buffered continuation.
 
 ## Use it during design
 
-Treat the explorer as a place to inspect a design question against an exact
-implementation. Start with the component or transition that owns the question,
-follow its source and evidence, and make the unresolved obligation explicit.
+Start with **Start here** for the project story and visible behavior. To inspect a
+design question against an exact implementation, open the component or transition
+that owns the question, follow its source and evidence, and make the unresolved
+obligation explicit.
 For example, changing program storage requires checking both uploaded capacity
 and whether the next instruction is available on its required edge.
 
