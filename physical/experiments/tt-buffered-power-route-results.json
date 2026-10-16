@@ -1,0 +1,217 @@
+{
+  "schema": "pinwheel-tt-buffered-power-route-results-v1",
+  "date": "2026-10-10",
+  "status": "digital_and_power_passed_routing_and_timing_rejected",
+  "submission_ready": false,
+  "decision": "Retain unchanged engine/reset/serial contracts and passed mapped upload/power evidence. Identify spatial congestion and repair the twelve slow setup paths before another qualified physical candidate.",
+  "previous_milestone": {
+    "path": "physical/experiments/tt-buffered-results.json",
+    "sha256": "4b7765cbb0a1a39ea227c2598bfb0282e87b48eee0561e3ee924fc8433a54f5e"
+  },
+  "scope": {
+    "top": "tt_um_pinwheel_buffered",
+    "core_or_serial_abi_changed": false,
+    "new_full_cad_flows": 1,
+    "total_full_cad_flows_across_milestones": 2,
+    "baseline_seconds": 256.173,
+    "baseline_cap_seconds": 1800,
+    "cpus": 4,
+    "memory": "6g",
+    "network": "none",
+    "new_kernel_proof_run": false
+  },
+  "power": {
+    "status": "native_checkpoint_geometry_and_connectivity_passed",
+    "correction": "Use database identity instead of Python proxy equality; remove old columns by geometry; extend replacements to die boundaries.",
+    "supply_terminals": 6,
+    "die_edge_columns": 136,
+    "rail_vias": 29172,
+    "endpoints_um": [
+      0.0,
+      710.64
+    ],
+    "minimum_opposite_metal4_gap_um": 2.695,
+    "replay": {
+      "path": "build/physical/tt-buffered-pdn-replay-03/invocation.json",
+      "sha256": "0018dd842763f3315316f0ed7edb41451624faa758cd7594e85a88978659abb1"
+    },
+    "readback": {
+      "path": "build/physical/tt-buffered-pdn-replay-03/readback.json",
+      "sha256": "f7fbe886dd0c9825ee9ccd961aa2cc19063622638f67235b5ed09cd6d083a1c7"
+    },
+    "geometry": {
+      "path": "build/physical/tt-buffered-pdn-replay-03/buffered-sram-power.json",
+      "sha256": "63711d3edbf707afef58ad7496c7734b052c91e4f1d7f60767db38109a26abdd"
+    },
+    "connectivity": {
+      "path": "build/physical/tt-buffered-pdn-replay-03/power-grid-check.log",
+      "sha256": "d61199b49da854bdf91e4873b547478da4fc6c6949af20b03762569d57fd2f71"
+    },
+    "negatives": {
+      "path": "build/physical/tt-buffered-pdn-replay-03/negative-controls.json",
+      "sha256": "d06f8d3e11d0883b15221cb871b66e485692893e6418f664da618f8ff7fc8209"
+    },
+    "actual_flow_geometry": {
+      "path": "build/physical/tt-buffered-corrected-power-02/buffered-sram-power.json",
+      "sha256": "63711d3edbf707afef58ad7496c7734b052c91e4f1d7f60767db38109a26abdd"
+    },
+    "boundary": "Checkpoint-native geometry/connectivity; no IR-drop/current-capacity or routed geometric signoff."
+  },
+  "physical": {
+    "status": "failed_global_routing",
+    "failed_step": "OpenROAD.GlobalRouting",
+    "last_completed_step": 39,
+    "invocation": {
+      "path": "build/physical/tt-buffered-physical-04-invocation.json",
+      "sha256": "63aca067d027d9d15f4b56d774b3c72df0a58288ee077e1de9c7e4ee105e24a6"
+    },
+    "log": {
+      "path": "build/physical/tt-buffered-physical-04.log",
+      "sha256": "87cbb33b9f8d90404920c225dc9b69fc52b5d3ddcbb35b6bfb6a0c365db281ac"
+    },
+    "inputs": {
+      "path": "build/physical/tt-buffered-corrected-power-02/inputs.json",
+      "sha256": "d30890dccc3f8704fb6895ab2d3efae8dfb4b9b9a53c386b5880068b11168717"
+    },
+    "last_state": {
+      "path": "build/physical/tt-buffered-corrected-power-02/runs/tt-buffered-physical-04/39-openroad-stamidpnr-2/state_out.json",
+      "sha256": "1e07df3fcd4827e7ca5b926c83c44356d88464879c54a207f5de7fa8e0d36964"
+    },
+    "global_route_log": {
+      "path": "build/physical/tt-buffered-corrected-power-02/runs/tt-buffered-physical-04/40-openroad-globalrouting/openroad-globalrouting.log",
+      "sha256": "801f07c5b035047003e62d4bcbcc75cec3663dd34aceb69170d7604a11186e8b"
+    },
+    "instances": 29236,
+    "instance_area_um2": 527974,
+    "standard_cell_area_um2": 426995,
+    "macro_area_um2": 100978,
+    "timing_repair_buffers": 7124,
+    "reported_hold_buffers_added": 3541,
+    "reported_setup_buffers_added": 71,
+    "overflow": {
+      "Metal2": 1108,
+      "Metal3": 581,
+      "Metal4": 566,
+      "total": 2255
+    },
+    "aggregate_route_resource_usage_pct": 57.16,
+    "routed_nets": 29209,
+    "spatial_congestion_map_retained": false,
+    "accepted_global_route": false,
+    "detailed_route": false,
+    "signoff": false
+  },
+  "timing": {
+    "status": "slow_setup_rejected",
+    "parasitics": "placement_estimate",
+    "clock_period_ns": 20,
+    "io_delay_max_ns": 4,
+    "io_delay_min_ns": 0.2,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "setup_worst_slack_ns": 5.4254,
+        "hold_worst_slack_ns": 0.249567,
+        "qualification": "matched_declared_library_corner"
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_worst_slack_ns": -0.734781,
+        "hold_worst_slack_ns": 0.466705,
+        "qualification": "matched_declared_library_corner"
+      },
+      "nom_fast_1p32V_m40C": {
+        "setup_worst_slack_ns": 9.02183,
+        "hold_worst_slack_ns": 0.0923245,
+        "qualification": "conditional_temperature_mismatch"
+      }
+    },
+    "slow_setup_violations": 12,
+    "slow_ena_to_sram_address_paths": 11,
+    "slow_counter_to_miso_paths": 1,
+    "fanout_violations_each_corner": 254,
+    "slew_violations": {
+      "typical": 3,
+      "slow": 10,
+      "fast": 0
+    },
+    "cap_violations_each_corner": 0,
+    "nominal_import_control": "exact_match",
+    "diagnostic": {
+      "path": "build/physical/tt-buffered-postcts-timing-01/report.json",
+      "sha256": "6af8fcb34d8edddd3faebef7717335b38f4da6b81f49b4632beff463a60b5461"
+    },
+    "invocation": {
+      "path": "build/physical/tt-buffered-postcts-timing-01/invocation.json",
+      "sha256": "c78f994d1c0eb8411fa4ae28834194b342de010b6d9d127e7516de66b7643aab"
+    },
+    "control": {
+      "path": "build/physical/tt-buffered-postcts-timing-01/control.json",
+      "sha256": "3f208a7389176e0d705e8c433e460ed0a938d4fe2de87b7f3e824cdf76f750c2"
+    },
+    "boundary": "No extracted routed timing; conditional fast combines -40 C logic/I/O and -55 C SRAM."
+  },
+  "mapped_upload": {
+    "status": "passed",
+    "elapsed_seconds": 104.661,
+    "cases": 21,
+    "protocols": {
+      "spi": 9,
+      "jtag": 3,
+      "i2c": 9
+    },
+    "peer_edges": 283623,
+    "interface_edges": 52803,
+    "total_edges": 336426,
+    "latest_odb_match_established": true,
+    "exact_result_parity_with_rtl_boundary": true,
+    "report": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-postcts-02/report.json",
+      "sha256": "54714d24dc1be84d75070b2a07cf2415453ac4b8b9d2252ac165efa6c18daccb"
+    },
+    "export": {
+      "path": "build/tt-buffered/netlist/postcts-export-01/report.json",
+      "sha256": "79aae82f6c313ee86f6d085fbd451f3a5635596f9605db18cc7be22296107edb"
+    },
+    "initial_admission_failure": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-postcts-01/report.json",
+      "sha256": "69a9ad0300b8d61683f10f9ef44df9a58defcc40f287abad5e15435a1a75bf12"
+    },
+    "boundary": "Finite exact-TT-port zero-delay functional simulation of the explicitly identified mapped NL, using vendor functional SRAM and standard-cell/UDP models. No SDF, routed timing, sequential equivalence, power-connectivity proof, electrical qualification or physical/submission closure claim. A checkpoint may inherit an earlier NL; matching the latest ODB requires a separate verified export."
+  },
+  "focused_controls": {
+    "physical_tests": 13,
+    "mapped_tests": 12,
+    "custody": {
+      "path": "build/tt-buffered/continuation-closeout-01/report.json",
+      "sha256": "37baff4299c9d1784b483bc7d902d891699555a2172c2c8f13f4f3ae8f857bea"
+    }
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "b1f7a51adaf1815f9dc680683cc5b7713fa8d525433e6c59fb61f89204a3040f",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "e6c447af397bd450915197a9ccaa63fdca4e47b157898e17b52aed60a8bd9f4b",
+    "physical/buffered_tt/connect_sram_power.py": "6aa64653a38a1e8922f410f7f98a4689aead18ec4d0592ec1b230e2bb4fa1d6a",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "d82fab9d2c532beef322bea26391a9e296ecb58d998074a795883b7894ca7f67",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36",
+    "scripts/check-tt-buffered-netlist.py": "22683e7a324e2060600b2d145a73c6b2b150f8a02877ccac8dafc03468a91c5c",
+    "test/test_tt_buffered_netlist.py": "70c41afdbd0efc3a2d9fbdb6a9deffaa866f9ab61c3623ad3d6dd8256d4aaa1a"
+  },
+  "remaining": {
+    "competition": [
+      "Retain a spatial congestion map and qualify one physical locality/density repair.",
+      "Clear twelve slow-corner setup paths and remaining slew/fanout checks with unchanged 20 ns and 4/0.2 ns budgets.",
+      "Complete detailed routing, extracted corner timing, IR-drop/current-capacity and DRC/LVS.",
+      "Run the current official Tiny Tapeout precheck and final-layout upload tests; finish submission packaging/demonstrations."
+    ],
+    "research": [
+      "Compose source, upload/serial, initialized execution and wrapper correspondence at the claimed universal scope",
+      "Qualify asynchronous input/pad and macro electrical assumptions",
+      "Extend buffered target capability and measure capacity/performance tradeoffs, including UART"
+    ]
+  }
+}

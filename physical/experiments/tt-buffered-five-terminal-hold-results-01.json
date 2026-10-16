@@ -1,0 +1,90 @@
+{
+  "schema": "pinwheel-five-terminal-hold-results-v1",
+  "status": "stopped_at_dirty_noedit_control",
+  "candidate_created": false,
+  "added_BUF1_cells": 0,
+  "native_candidate_STA_processes": 0,
+  "started_utc": "2026-10-14T15:46:19Z",
+  "closed_utc": "2026-10-14T16:08:13.273691+00:00",
+  "total_elapsed_seconds": 1314.274,
+  "total_cap_seconds": 1500,
+  "within_requested_cap": true,
+  "headroom_native_seconds": 83.695,
+  "routing_native_seconds": 402.772,
+  "protected_source_count": 507,
+  "protected_sources_changed": [],
+  "three_corner_source_headroom_controls_passed": true,
+  "five_terminal_minimum_setup_ns": {
+    "nom_typ_1p20V_25C": 13.804714,
+    "nom_slow_1p08V_125C": 12.524107,
+    "nom_fast_1p32V_m40C": 14.517911
+  },
+  "minimum_conditional_setup_after_cost_and1ps_ns": 10.258513,
+  "headroom_cost_policy_qualification": "Source-Liberty cost bound remains conditional on specified RC, slew and table-domain limits; some inherited old-driver input slews were already outside characterized axes.",
+  "saved_BUF4_source_global_timing_ns": {
+    "nom_typ_1p20V_25C": {
+      "setup": 5.67447,
+      "hold": 0.107727,
+      "hold_after1ps": 0.106727
+    },
+    "nom_slow_1p08V_125C": {
+      "setup": 0.0390763,
+      "hold": 0.265159,
+      "hold_after1ps": 0.264159
+    },
+    "nom_fast_1p32V_m40C": {
+      "setup": 9.0682,
+      "hold": 0.0195748,
+      "hold_after1ps": 0.0185748
+    }
+  },
+  "BUF4_exact_source_reproduction_passed": true,
+  "five_net_dirty_noedit_control_passed": false,
+  "failed_gate": "Whole inventory, routes, grid, native RC/timing must exactly reproduce the saved BUF4 source. The unchanged net8046 chose a different route.",
+  "dirty_noedit_drift": {
+    "changed_routes": [
+      "net8046"
+    ],
+    "changed_native_RC": [
+      "net8046"
+    ],
+    "native_overflow_before": 5230,
+    "native_overflow_after": 5229,
+    "Metal3_overflow_before": 2285,
+    "Metal3_overflow_after": 2284,
+    "net8046_wire_cap_before_fF": 2.05444,
+    "net8046_wire_cap_after_fF": 11.2978,
+    "net8046_wire_cap_delta_fF": 9.24336,
+    "segment_count_before": 6,
+    "segment_count_after": 11,
+    "typical_global_setup_and_hold_unchanged": true
+  },
+  "preservation": {
+    "source_BUF4_native_inventory_exact": true,
+    "CLOCK_net_count": 332,
+    "all_CLOCK_canonical_routes_exact": true,
+    "all_CLOCK_native_RC_networks_exact": true,
+    "all_unrelated_routes_exact": true,
+    "all_unrelated_native_RC_networks_exact": true,
+    "saved_grid_capacity_exact": true,
+    "raw_FastRoute_capacities_exact": true,
+    "full_netlist_bytes_exact": true
+  },
+  "owned_container_absent": true,
+  "runtime_credit_guard_original_prologue_and_RX_restored": true,
+  "reserved_hold_floor_ns": 0.05,
+  "reserved_hold_floor_verified_on_new_candidate": false,
+  "next_bounded_experiment": "A five-old-net two-pass dirty no-edit stabilization test from the saved BUF4 checkpoint, with every placement/master/clock/unrelated route and RC frozen; require consecutive exact routes/native RC/capacities and fresh three-corner controls within1ps before admitting any terminal buffers.",
+  "input_sha256": {
+    "build/physical/tt-five-terminal-root-01/plan.json": "a48fc49de3a638487acd5cb2444094cb85260decf1beb3c59f48ef1b521c980d",
+    "build/physical/tt-five-terminal-headroom-01/report.json": "be23cccdcc579b999524c29be3cb78eb50c2fb8bde1b5949736fdc3a982ccc13",
+    "build/physical/tt-five-terminal-physical-route-02/report.json": "d4c4842b273d61b11d07222bcd3eca2ecbe6980425b6846713744676cfe43f0c",
+    "build/physical/tt-five-terminal-postroute-tools-01/dirty-noedit-RC-audit.json": "c02659d91cc6b5802b4e8d58fe5ba581f51ba51216e80c1847877105150fc1ce",
+    "build/physical/tt-five-terminal-headroom-cost-01.json": "3b2fc54a003c830c36eccd1a266d9a4dc380940a4600639860dcea1c6705fb7f",
+    "build/physical/tt-five-terminal-root-01/admission.json": "a73fa6cc89532186d2d4e58928099c50814eae0f14759e402489cb1968fb6389",
+    "build/physical/tt-five-terminal-physical-route-02/runtime-credit-restoration.json": "ba7ea65d3222b96f7f4b1e60e17c6abc7d5b371eb433859a73c5439b8fbb5d99",
+    "build/physical/tt-five-terminal-physical-tools-02/prepared.json": "5578035c3c026eed49b0f10aaa59a13b2b4e19ef1267099958d83cb79fb3b2dc",
+    "build/physical/tt-five-terminal-review-01/independent-review.json": "3a0cb5dbec1308d97f285daae26e44851fcf898f6809c0636f22231997f63d8a"
+  },
+  "evidence_scope": "Native estimated global-route RC and source-corner STA; no detailed routing or signoff extraction; FAST logic/SRAM temperature-model mismatch remains conditional. No buffer treatment or new hold-gain evidence."
+}

@@ -1,0 +1,102 @@
+{
+  "schema": "pinwheel-no-ECO-P2-pinaccess-detailed-route-probe-results-v1",
+  "status": "bounded_probe_completed_route_incomplete",
+  "recorded_at_utc": "2026-10-14T18:34:28.105585+00:00",
+  "total_wall_elapsed_seconds_at_closeout": 1439.106,
+  "original_wall_cap_seconds": 1500,
+  "within_original_wall_cap": true,
+  "max_actual_detailed_route_passes": 3,
+  "actual_native_option_end_iter": 2,
+  "actual_passes_started": [
+    0
+  ],
+  "actual_passes_completed": 0,
+  "source_checkpoint": "build/physical/tt-five-net-stabilization-route-01/pass2-five/routed.odb",
+  "source_checkpoint_sha256": "0144bcceaef2adb486b85625bc03144bd06341ae8787a4bdc14cb5d5b8d6f39b",
+  "source_guides_sha256": "d8467a442d697fdda570dde649e96b3eadfd97d3b3ae94a5054c9aba2c864270",
+  "producer_status": "timed_out",
+  "producer_exit_code": 124,
+  "actual_native_subprocess_cap_seconds": 602,
+  "native_execution_cleanup_and_recustody_seconds": 605.092,
+  "owned_container_absent": true,
+  "all_507_protected_sources_unchanged": true,
+  "all_557_bound_inputs_unchanged": true,
+  "native_pin_access_completed": true,
+  "stdCellPinNoAp": 0,
+  "macroNoAp": 0,
+  "pre_route_inventory_exact": true,
+  "pre_route_instance_count": 28970,
+  "pre_route_CLOCK_net_count": 332,
+  "power_grid_connectivity_checks_passed_before_route": true,
+  "actual_worker_progress_observations": [
+    {
+      "line": 152,
+      "text": "    Completing 10% with 0 violations.",
+      "completed_percent": 10,
+      "violation_observation": 0,
+      "is_final_total": false,
+      "iteration_index": 0
+    },
+    {
+      "line": 154,
+      "text": "    Completing 20% with 0 violations.",
+      "completed_percent": 20,
+      "violation_observation": 0,
+      "is_final_total": false,
+      "iteration_index": 0
+    },
+    {
+      "line": 156,
+      "text": "    Completing 30% with 5994 violations.",
+      "completed_percent": 30,
+      "violation_observation": 5994,
+      "is_final_total": false,
+      "iteration_index": 0
+    },
+    {
+      "line": 158,
+      "text": "    Completing 40% with 5994 violations.",
+      "completed_percent": 40,
+      "violation_observation": 5994,
+      "is_final_total": false,
+      "iteration_index": 0
+    }
+  ],
+  "latest_partial_violation_observation": 5994,
+  "latest_reported_iteration_percent": 40,
+  "final_DRC_count": null,
+  "final_unrouted_count": null,
+  "final_connectivity_status": null,
+  "DRC_marker_type_layer_net_location_classification": null,
+  "after_checkpoint_and_scope_proof_available": false,
+  "unsupported_LEF58_rule_warning_count": 7,
+  "completed_route_claim": false,
+  "new_design_promoted": false,
+  "extracted_timing_claim": false,
+  "GDS_precheck_pass_claim": false,
+  "first_attempt_load_error_retained": "Missing _PNR_EXCLUDED_CELLS; pin access and routing did not start. Corrected in separately versioned helper04.",
+  "initialization_and_review_used_original_wall_budget": true,
+  "evidence_sha256": {
+    "build/physical/tt-p2-drt-probe-root-01/plan.json": "8eb9609fcf02f35f8f4974572830bbf481e84175ca5401ff199569651313aaed",
+    "build/physical/tt-p2-drt-probe-root-01/capability-gate.json": "0f876fe8e7aecd7f1013c8eb5b1f1577c1ca60ffe68be0cd7a5dcf0b4e9637fb",
+    "build/physical/tt-p2-drt-probe-root-01/launch-amendment-01.json": "68714b95ea58ddc240ce91c851bb3c3ba98fca18ec29f72fc1b35f08baa403c3",
+    "build/physical/tt-p2-drt-probe-02/report.json": "958f49e2bf9bde323e2416edaae0bd37c3fe5d5c4d121bf43f8e7a82517833e5",
+    "build/physical/tt-p2-drt-probe-02/native.log": "e2613312ca9d6bef15bbac4a53cc85f060ee4f4377a8d3b5d13606e9319e6a99",
+    "build/physical/tt-p2-drt-probe-root-01/native-observation-summary-01.json": "2d0b06c0fa377b258c61c0fb6a6bfc8d2c808161e5d99c197075ec0e7242f4cf",
+    "build/physical/tt-p2-drt-probe-root-01/native-diagnostic-01.json": "28af59ef369c0a5cbd7873f9d6b5c6d79087b361c3cfa9eb6bc7e163ee610bd9",
+    "build/physical/tt-p2-drt-probe-root-01/independent-postroute-scope-unavailable.json": "fc3e434f0779e5aee73042af71c54f71ce671bc65b87db4995728655494bcfc6",
+    "build/physical/tt-p2-drt-probe-root-01/deadline-stop-receipt-01.json": "413eed61b6f1c44d605e1763da5907bb3caf76a263a37863759bce0628f2f1e9",
+    "build/physical/tt-p2-drt-probe-01/report.json": "af1bcf6214b9e85b4bc926898c2e9c95e5b923b9d4721c5da222a48469cf5b87"
+  },
+  "interpretation": "Native pin access passed its no-access-point counters. Real provisional detailed-router violations occurred, but initial pass0 did not finish before the original time cap. Final DRC/unroutes and spatial causes remain unmeasured. Original P2 is unchanged; no routed candidate was retained.",
+  "recommended_next_experiment": {
+    "scope": "Same frozen P2, no ECO, one complete initial detailed-route pass with the prepared loader and all existing preservation gates.",
+    "native_option_end_iter": 0,
+    "max_actual_passes": 1,
+    "proposed_native_budget_seconds": 1260,
+    "proposed_total_wall_cap_seconds": 1500,
+    "goal": "Obtain final native DRC markers, connectivity, retained detailed ODB/DEF and after-scope proof before selecting any physical repair.",
+    "authorized_or_executed_this_turn": false,
+    "no_placement_or_RTL_or_ABI_or_cell_or_SRAM_or_power_or_clock_topology_change": true
+  }
+}

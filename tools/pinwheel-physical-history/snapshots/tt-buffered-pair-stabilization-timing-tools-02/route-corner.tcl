@@ -1,0 +1,479 @@
+# Copyright 2026 LibreLane Contributors
+#
+# Adapted from OpenLane 2
+#
+# Copyright 2020-2023 Efabless Corporation
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# This file supports one defined corner per-process.
+# Any more defined corners will be ignored: aggregation is left to the LibreLane
+# step.
+
+
+source $::env(SCRIPTS_DIR)/openroad/common/io.tcl
+
+set_cmd_units\
+    -time ns\
+    -capacitance pF\
+    -current mA\
+    -voltage V\
+    -resistance kOhm\
+    -distance um
+
+set sta_report_default_digits 6
+
+if { ![namespace exists ::ord] } {error "OpenROAD required; no standalone or placement RC fallback"}
+read_current_odb
+source $::env(SCRIPTS_DIR)/openroad/common/set_rc.tcl
+source $::env(SCRIPTS_DIR)/openroad/common/set_routing_layers.tcl
+source $::env(SCRIPTS_DIR)/openroad/common/set_layer_adjustments.tcl
+set_macro_extension $::env(GRT_MACRO_EXTENSION)
+proc pinwheel_ndr_snapshot {filename} {
+    set rows {}
+    foreach net [$::block getNets] {
+        set rule [$net getNonDefaultRule]
+        set rule_name {}
+        if {$rule != "NULL"} {set rule_name [$rule getName]}
+        set net_name [$net getName]
+        if {[regexp {[\t\n]} $net_name] || [regexp {[\t\n]} $rule_name]} {error "Invalid TSV name"}
+        lappend rows "$net_name\t$rule_name"
+    }
+    set output [open $filename w]
+    foreach row [lsort $rows] {puts $output $row}
+    close $output
+}
+pinwheel_ndr_snapshot ndr-before-import.txt
+write_def timing-input.def
+set width_file [open ndr-width-equivalence.txt w]
+foreach layer_name {Metal1 Metal2 Metal3 Metal4 TopMetal1} {
+    set layer [$::tech findLayer $layer_name]
+    set default_width [$layer getWidth]
+    foreach rule [$::block getNonDefaultRules] {
+        set layer_rule [$rule getLayerRule $layer]
+        if {$layer_rule == "NULL"} {error "Missing routed-layer NDR rule"}
+        set width [$layer_rule getWidth]
+        if {$width != $default_width} {error "Runtime NDR fallback RC width ambiguity"}
+        puts $width_file [list $layer_name [$rule getName] $default_width $width]
+    }
+}
+close $width_file
+read_global_route_segments $::env(PINWHEEL_TIMING_ROOT)/after_grt.segments
+if { ![grt::have_routes] } {error "Imported native global routes absent"}
+write_global_route_segments imported.segments
+pinwheel_ndr_snapshot ndr-after-import.txt
+write_verilog timing-before.v
+puts "PINWHEEL_ROUTE_SEGMENTS_IMPORTED_AND_GLOBAL_RC_REQUIRED"
+estimate_parasitics -global_routing -spef_file estimated.spef
+puts "PINWHEEL_GLOBAL_ROUTE_RC_ESTIMATED"
+# Inherited SPEF/SDF are deliberately absent; only the freshly estimated RC is used.
+
+foreach {corner_name corner_object} [lln::get_corner_dict] {
+    # the two variables above are set for the rest of this script's scope
+    lln::set_sta_cmd_corner $corner_name
+    break
+}
+
+set clocks [sta::sort_by_name [sta::all_clocks]]
+
+if {  [info exist ::env(STA_EXTRA_CORNER_TCL_FILE)] } {
+    source $::env(STA_EXTRA_CORNER_TCL_FILE)
+}
+
+puts "%OL_CREATE_REPORT min.rpt"
+puts "\n==========================================================================="
+puts "report_checks -path_delay min (Hold)"
+puts "============================================================================"
+puts "======================= $corner_name Corner ===================================\n"
+report_checks -sort_by_slack -path_delay min -fields {slew cap input net fanout} -format full_clock_expanded -group_path_count 1000 -corner $corner_name
+puts ""
+puts "%OL_END_REPORT"
+
+
+puts "%OL_CREATE_REPORT max.rpt"
+puts "\n==========================================================================="
+puts "report_checks -path_delay max (Setup)"
+puts "============================================================================"
+puts "======================= $corner_name Corner ===================================\n"
+report_checks -sort_by_slack -path_delay max -fields {slew cap input net fanout} -format full_clock_expanded -group_path_count 1000 -corner $corner_name
+puts ""
+puts "%OL_END_REPORT"
+
+
+puts "%OL_CREATE_REPORT checks.rpt"
+puts "\n==========================================================================="
+puts "report_checks -unconstrained"
+puts "==========================================================================="
+puts "======================= $corner_name Corner ===================================\n"
+report_checks -unconstrained -fields {slew cap input net fanout} -format full_clock_expanded -corner $corner_name
+puts ""
+
+
+puts "\n==========================================================================="
+puts "report_checks --slack_max -0.01"
+puts "============================================================================"
+puts "======================= $corner_name Corner ===================================\n"
+report_checks -slack_max -0.01 -fields {slew cap input net fanout} -format full_clock_expanded -corner $corner_name
+puts ""
+
+puts "\n==========================================================================="
+puts " report_check_types -max_slew -max_cap -max_fanout -violators"
+puts "============================================================================"
+puts "======================= $corner_name Corner ===================================\n"
+report_check_types -max_slew -max_capacitance -max_fanout -violators -corner $corner_name
+puts ""
+
+puts "\n==========================================================================="
+puts "report_parasitic_annotation -report_unannotated"
+puts "============================================================================"
+report_parasitic_annotation -report_unannotated
+
+puts "\n==========================================================================="
+puts "max slew violation count [sta::max_slew_violation_count]"
+write_metric_int "design__max_slew_violation__count__corner:$corner_name" [sta::max_slew_violation_count]
+puts "max fanout violation count [sta::max_fanout_violation_count]"
+write_metric_int "design__max_fanout_violation__count__corner:$corner_name" [sta::max_fanout_violation_count]
+puts "max cap violation count [sta::max_capacitance_violation_count]"
+write_metric_int "design__max_cap_violation__count__corner:$corner_name" [sta::max_capacitance_violation_count]
+puts "============================================================================"
+
+puts "\n==========================================================================="
+puts "check_setup -verbose -unconstrained_endpoints -multiple_clock -no_clock -no_input_delay -loops -generated_clocks"
+puts "==========================================================================="
+check_setup -verbose -unconstrained_endpoints -multiple_clock -no_clock -no_input_delay -loops -generated_clocks
+puts "%OL_END_REPORT"
+
+
+
+puts "%OL_CREATE_REPORT power.rpt"
+puts "\n==========================================================================="
+puts " report_power"
+puts "============================================================================"
+puts "======================= $corner_name Corner ===================================\n"
+report_power -corner $corner_name
+
+set power_result [sta::design_power $corner_object]
+set totals       [lrange $power_result  0  3]
+lassign $totals design_internal design_switching design_leakage design_total
+
+write_metric_num "power__internal__total" $design_internal
+write_metric_num "power__switching__total" $design_switching
+write_metric_num "power__leakage__total" $design_leakage
+write_metric_num "power__total" $design_total
+
+puts ""
+puts "%OL_END_REPORT"
+
+
+puts "%OL_CREATE_REPORT skew.min.rpt"
+puts "\n==========================================================================="
+puts "Clock Skew (Hold)"
+puts "============================================================================"
+set skew_corner [worst_clock_skew -hold]
+write_metric_num "clock__skew__worst_hold__corner:$corner_name" $skew_corner
+
+puts "======================= $corner_name Corner ===================================\n"
+report_clock_skew -corner $corner_name -hold
+
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT skew.max.rpt"
+puts "\n==========================================================================="
+puts "Clock Skew (Setup)"
+puts "============================================================================"
+set skew_corner [worst_clock_skew -setup]
+write_metric_num "clock__skew__worst_setup__corner:$corner_name" $skew_corner
+
+puts "======================= $corner_name Corner ===================================\n"
+report_clock_skew -corner $corner_name -setup
+
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT ws.min.rpt"
+puts "\n==========================================================================="
+puts "Worst Slack (Hold)"
+puts "============================================================================"
+set ws [worst_slack -corner $corner_name -min]
+write_metric_num "timing__hold__ws__corner:$corner_name" $ws
+puts "$corner_name: $ws"
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT ws.max.rpt"
+puts "\n==========================================================================="
+puts "Worst Slack (Setup)"
+puts "============================================================================"
+
+set ws [worst_slack -corner $corner_name -max]
+write_metric_num "timing__setup__ws__corner:$corner_name" $ws
+puts "$corner_name: $ws"
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT tns.min.rpt"
+puts "\n==========================================================================="
+puts "Total Negative Slack (Hold)"
+puts "============================================================================"
+
+set tns [total_negative_slack -corner $corner_name -min]
+write_metric_num "timing__hold__tns__corner:$corner_name" $tns
+puts "$corner_name: $tns"
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT tns.max.rpt"
+puts "\n==========================================================================="
+puts "Total Negative Slack (Setup)"
+puts "============================================================================"
+set tns [total_negative_slack -corner $corner_name -max]
+write_metric_num "timing__setup__tns__corner:$corner_name" $tns
+puts "$corner_name: $tns"
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT wns.min.rpt"
+puts "\n==========================================================================="
+puts "Worst Negative Slack (Hold)"
+puts "============================================================================"
+
+set ws [worst_slack -corner $corner_name -min]
+set wns 0
+if { $ws < 0 } {
+    set wns $ws
+}
+write_metric_num "timing__hold__wns__corner:$corner_name" $wns
+puts "$corner_name: $wns"
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT wns.max.rpt"
+puts "\n==========================================================================="
+puts "Worst Negative Slack (Setup)"
+puts "============================================================================"
+
+set ws [worst_slack -corner $corner_name -max]
+set wns 0.0
+if { $ws < 0 } {
+    set wns $ws
+}
+write_metric_num "timing__setup__wns__corner:$corner_name" $wns
+puts "$corner_name: $wns"
+puts "%OL_END_REPORT"
+
+proc check_if_terminal {pin_object} {
+    set net [get_nets -of_object $pin_object]
+    if { "$net" == "NULL" } {
+        return 1
+    }
+    return 0
+}
+
+proc get_path_kind {start_pin end_pin} {
+    set from "reg"
+    set to "reg"
+
+    if { [check_if_terminal $start_pin] } {
+        set from "in"
+    }
+    if { [check_if_terminal $end_pin] } {
+        set to "out"
+    }
+    return "$from-$to"
+}
+
+puts "%OL_CREATE_REPORT violator_list.rpt"
+puts "\n==========================================================================="
+puts "Violator List"
+puts "============================================================================"
+
+set total_hold_vios 0
+set r2r_hold_vios 0
+set total_setup_vios 0
+set r2r_setup_vios 0
+
+set max_violator_count 999999999
+if { [info exists ::env(STA_MAX_VIOLATOR_COUNT)] } {
+    set max_violator_count $::env(STA_MAX_VIOLATOR_COUNT)
+}
+
+set hold_violating_paths [find_timing_paths -unique_paths_to_endpoint -path_delay min -sort_by_slack -group_path_count $max_violator_count -slack_max 0]
+foreach path $hold_violating_paths {
+    set start_pin [get_property $path startpoint]
+    set end_pin [get_property $path endpoint]
+    set kind "[get_path_kind $start_pin $end_pin]"
+    set slack [get_property $path slack]
+
+    if { $slack >= 0 } {
+        continue
+    }
+
+    incr total_hold_vios
+    if { "$kind" == "reg-reg" } {
+        incr r2r_hold_vios
+    }
+    puts "\[hold $kind] [get_property $start_pin full_name] -> [get_property $end_pin full_name] : [get_property $path slack]"
+}
+
+set worst_r2r_hold_slack 1e30
+set hold_paths [find_timing_paths -unique_paths_to_endpoint -path_delay min -sort_by_slack -group_path_count $max_violator_count -slack_max $worst_r2r_hold_slack]
+foreach path $hold_paths {
+    set start_pin [get_property $path startpoint]
+    set end_pin [get_property $path endpoint]
+    set kind "[get_path_kind $start_pin $end_pin]"
+    set slack [get_property $path slack]
+
+    if { "$kind" == "reg-reg" } {
+        set slack [get_property $path slack]
+
+        if { $slack < $worst_r2r_hold_slack } {
+            set worst_r2r_hold_slack $slack
+        }
+    }
+}
+
+set setup_violating_paths [find_timing_paths -unique_paths_to_endpoint -path_delay max -sort_by_slack -group_path_count $max_violator_count -slack_max 0]
+foreach path $setup_violating_paths {
+    set start_pin [get_property $path startpoint]
+    set end_pin [get_property $path endpoint]
+    set kind "[get_path_kind $start_pin $end_pin]"
+    set slack [get_property $path slack]
+
+    if { $slack >= 0 } {
+        continue
+    }
+
+    incr total_setup_vios
+    if { "$kind" == "reg-reg" } {
+        incr r2r_setup_vios
+    }
+    puts "\[setup $kind] [get_property $start_pin full_name] -> [get_property $end_pin full_name] : [get_property $path slack]"
+}
+
+set worst_r2r_setup_slack 1e30
+set setup_paths [find_timing_paths -unique_paths_to_endpoint -path_delay max -sort_by_slack -group_path_count $max_violator_count -slack_max $worst_r2r_setup_slack]
+foreach path $setup_paths {
+    set start_pin [get_property $path startpoint]
+    set end_pin [get_property $path endpoint]
+    set kind "[get_path_kind $start_pin $end_pin]"
+    set slack [get_property $path slack]
+
+    if { "$kind" == "reg-reg" } {
+        set slack [get_property $path slack]
+        if { $slack < $worst_r2r_setup_slack } {
+            set worst_r2r_setup_slack $slack
+        }
+    }
+}
+
+write_metric_int "timing__hold_vio__count__corner:$corner_name" $total_hold_vios
+write_metric_num "timing__hold_r2r__ws__corner:$corner_name" $worst_r2r_hold_slack
+write_metric_int "timing__hold_r2r_vio__count__corner:$corner_name" $r2r_hold_vios
+write_metric_int "timing__setup_vio__count__corner:$corner_name" $total_setup_vios
+write_metric_num "timing__setup_r2r__ws__corner:$corner_name" $worst_r2r_setup_slack
+write_metric_int "timing__setup_r2r_vio__count__corner:$corner_name" $r2r_setup_vios
+puts "%OL_END_REPORT"
+
+puts "%OL_CREATE_REPORT unpropagated.rpt"
+
+foreach clock [all_clocks] {
+    if { ![get_property $clock is_propagated] } {
+        puts "[get_property $clock full_name]"
+    }
+}
+
+puts "%OL_END_REPORT"
+
+
+puts "%OL_CREATE_REPORT clock.rpt"
+
+foreach clock [all_clocks] {
+    set source_names ""
+    set is_generated "no"
+    set is_virtual "no"
+    set is_propagated "no"
+    foreach source [get_property $clock sources] {
+        set source_names "[get_property $source full_name] $source_names"
+    }
+    if { [get_property $clock is_generated] } {
+        set is_generated "yes"
+    }
+    if { [get_property $clock is_virtual] } {
+        set is_virtual "yes"
+    }
+    if { [get_property $clock is_propagated] } {
+        set is_virtual "yes"
+    }
+    puts "Clock: [get_property $clock name]"
+    puts "Sources: $source_names"
+    puts "Generated: $is_generated"
+    puts "Virtual: $is_virtual"
+    puts "Propagated: $is_propagated"
+    puts "Period: [get_property $clock period]"
+    puts "\n==========================================================================="
+    puts "report_clock_properties"
+    puts "============================================================================"
+    report_clock_properties $clock
+    puts "\n==========================================================================="
+    puts "report_clock_latency"
+    puts "============================================================================"
+    report_clock_latency -clock $clock
+    puts "\n==========================================================================="
+    puts "report_clock_min_period"
+    puts "============================================================================"
+    report_clock_min_period -clocks [get_property $clock name]
+}
+
+puts "%OL_END_REPORT"
+
+write_sdfs
+write_libs
+
+foreach endpoint {_30712_/D} {
+    set target [get_pins $endpoint]
+    if {[llength $target] != 1} {error "Target endpoint absent or ambiguous: $endpoint"}
+    foreach kind {max min} {
+        puts "%OL_CREATE_REPORT endpoint-_30712_-$kind.rpt"
+        puts "======================= $corner_name Corner ==================================="
+        report_checks -to $target -path_delay $kind -sort_by_slack -fields {slew cap input net fanout} -format full_clock_expanded -group_path_count 1 -corner $corner_name
+        puts "%OL_END_REPORT"
+    }
+}
+
+set fanout_cmd {}
+if {[llength [info commands get_fanout]]} {set fanout_cmd get_fanout} elseif {[llength [info commands all_fanout]]} {set fanout_cmd all_fanout} else {error "Native endpoint fanout command unavailable"}
+set coverage [open resetpair-coverage.tsv w]
+puts $coverage "API\t$fanout_cmd"
+foreach driver {fanout914 fanout913} {
+    set through [get_pins $driver/X]
+    if {[llength $through] != 1} {error "Reset through pin absent or ambiguous"}
+    foreach trace {all timing} {
+        foreach endpoint [$fanout_cmd -from $through -flat -endpoints_only -trace_arcs $trace] {
+            puts $coverage "REACH\t$driver\t$trace\t[get_property $endpoint full_name]"
+        }
+    }
+    foreach edge {rise fall} {
+        set flag -${edge}_through
+        foreach kind {max min} {
+            set paths [find_timing_paths $flag $through -path_delay $kind -sort_by_slack -unique_paths_to_endpoint -group_path_count 999999999]
+            if {[llength $paths] >= 999999999} {error "Reset through path enumeration truncated"}
+            if {[llength $paths] == 0} {puts $coverage "EMPTY\t$driver\t$edge\t$kind"}
+            foreach path $paths {puts $coverage "PATH\t$driver\t$edge\t$kind\t[get_property [get_property $path endpoint] full_name]\t[get_property [get_property $path startpoint] full_name]\t[get_property $path slack]"}
+            puts "%OL_CREATE_REPORT resetpair-$driver-$edge-$kind.rpt"
+            puts "======================= $corner_name Corner ==================================="
+            report_checks $flag $through -path_delay $kind -sort_by_slack -unique_paths_to_endpoint -fields {slew cap input net fanout} -format full_clock_expanded -group_path_count 999999999 -corner $corner_name
+            puts "%OL_END_REPORT"
+        }
+    }
+}
+close $coverage
+puts "PINWHEEL_ALL_RESET_PAIR_ENDPOINTS_REPORTED_WITHOUT_TRUNCATION"
+
+write_global_route_segments after-timing.segments
+pinwheel_ndr_snapshot ndr-after-timing.txt
+write_verilog timing-after.v
+puts "PINWHEEL_ROUTE_TIMING_FINISHED_WITHOUT_OPTIMIZATION"

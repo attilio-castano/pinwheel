@@ -1,0 +1,244 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout913914-physical-results-v1",
+  "status": "rejected_at_dirty_noedit_control",
+  "started_utc": "2026-10-13T21:06:35+00:00",
+  "deadline_utc": "2026-10-13T21:31:35+00:00",
+  "trial_attempt_count": 1,
+  "saved_source_exactly_reproduced": true,
+  "saved_database_sha256": "8c3079c61f73f0f2819d4e0d21d0af2775d4afb76c620494e2841ace4b1dd063",
+  "dirty_noedit_control_passed": false,
+  "failure": "Three-net no-edit incremental routing changed two permitted signal routes, RC and setup paths. The predeclared exact control gate stopped before resizing.",
+  "physical_buf4_treatment_performed": false,
+  "candidate_created": false,
+  "fresh_three_corner_control_and_candidate_STA_performed": false,
+  "buffers_remain_buf1": true,
+  "congestion_comparison": {
+    "kind": "Original saved control versus failed dirty no-edit control; no sizing result",
+    "before": {
+      "Metal2": {
+        "resource": 118435,
+        "demand": 84983,
+        "usage_percent": 71.75,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1175
+      },
+      "Metal3": {
+        "resource": 170237,
+        "demand": 142469,
+        "usage_percent": 83.69,
+        "max_horizontal_overflow": 5,
+        "max_vertical_overflow": 1,
+        "overflow": 2282
+      },
+      "Metal4": {
+        "resource": 108608,
+        "demand": 27127,
+        "usage_percent": 24.98,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1770
+      },
+      "Total": {
+        "resource": 397280,
+        "demand": 254579,
+        "usage_percent": 64.08,
+        "max_horizontal_overflow": 7,
+        "max_vertical_overflow": 7,
+        "overflow": 5227
+      }
+    },
+    "after_dirty_noedit": {
+      "Metal2": {
+        "resource": 118435,
+        "demand": 85000,
+        "usage_percent": 71.77,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1175
+      },
+      "Metal3": {
+        "resource": 170237,
+        "demand": 142469,
+        "usage_percent": 83.69,
+        "max_horizontal_overflow": 5,
+        "max_vertical_overflow": 1,
+        "overflow": 2285
+      },
+      "Metal4": {
+        "resource": 108608,
+        "demand": 27138,
+        "usage_percent": 24.99,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1770
+      },
+      "Total": {
+        "resource": 397280,
+        "demand": 254607,
+        "usage_percent": 64.09,
+        "max_horizontal_overflow": 7,
+        "max_vertical_overflow": 7,
+        "overflow": 5230
+      }
+    },
+    "native_total_overflow_delta": 3,
+    "Metal3_overflow_delta": 3,
+    "saved_preferred_overflow_before": 5207.0,
+    "saved_preferred_overflow_after": 5210.0
+  },
+  "retained_nominal_timing": {
+    "before": {
+      "hold_worst_slack_ns": 0.10772683050524363,
+      "setup_worst_slack_ns": 5.674468167073915,
+      "SPEF_sha256": "4d8fc8bb02d05652d49ffbe6a329fdcf7a4a1d17d342a041ad4069f1f424721e",
+      "min_report_sha256": "aa4f0c93fd01d1488f33330c387fe585cee5f65d0946f2d01812a43710edb83a",
+      "max_report_sha256": "f3c55cda73664bd6efa55545e6acc6acbf2976d9620929093ad2d55e6c5ef269",
+      "parasitic_model": "nativeglobalrouting",
+      "clock_and_signal_input_identity": "SPEF retains every estimated net, macro/FFpin geometry and load fixed by nativeinventory/Lib/SDC"
+    },
+    "after_dirty_noedit": {
+      "hold_worst_slack_ns": 0.10772683050524363,
+      "setup_worst_slack_ns": 5.674468167073915,
+      "SPEF_sha256": "47baaf15bf8629b655d9d6ee8a5ceb654666c3e137644e4ee0b53f68852e7e61",
+      "min_report_sha256": "aa4f0c93fd01d1488f33330c387fe585cee5f65d0946f2d01812a43710edb83a",
+      "max_report_sha256": "cee1f01ff527ef648d3057ae6a32d0536986708b40c3ed5449540a8621685273",
+      "parasitic_model": "nativeglobalrouting",
+      "clock_and_signal_input_identity": "SPEF retains every estimated net, macro/FFpin geometry and load fixed by nativeinventory/Lib/SDC"
+    }
+  },
+  "noedit_route_and_path_diagnostic": {
+    "scope": "Pre-sizing dirty no-edit signal reroute; no candidate result",
+    "changed_signal_routes": [
+      "net913",
+      "net914"
+    ],
+    "unchanged_incident_route": "_11039_",
+    "segment_counts": {
+      "net913": {
+        "before": 54,
+        "after": 86
+      },
+      "net914": {
+        "before": 64,
+        "after": 87
+      }
+    },
+    "saved_preferred_usage_changed_bins": 96,
+    "saved_preferred_usage_edge_accounting_exact": true,
+    "unexplained_saved_usage_bin_changes": 0,
+    "native_demand_delta": {
+      "Metal2": 17,
+      "Metal3": 0,
+      "Metal4": 11,
+      "Total": 28
+    },
+    "added_wire_um": 201.6,
+    "per_net_wireC_added_fF": {
+      "net913": 14.6456,
+      "net914": 4.0096
+    },
+    "original_PIN_CONN_and_pin_stub_resistance_unchanged": true,
+    "nominal_global_WNS_unchanged": true,
+    "retained_global_MIN_report_byte_identical": true,
+    "retained_MAX_report_changed": true,
+    "largest_observed_same_path_nominal_setup_loss_ps": 71.987,
+    "same_path_example": {
+      "start": "rst_n",
+      "end": "_31078_/D",
+      "cell_delay_added_ps": 57.468,
+      "wire_delay_added_ps": 14.519,
+      "capture_and_required_time_unchanged": true
+    },
+    "interpretation": "Saved-grid usage and native demand deltas exactly track the rerouted signal geometry. This supports legitimate non-idempotent local route optimization, not a demonstrated capacity-credit defect. Full hidden native usage-state bit identity is not claimed."
+  },
+  "passed_protection_checks": [
+    "507 protected RTL/ABI/source hashes remain current",
+    "Six saved-candidate physical fingerprints remain unchanged",
+    "Warm saved-candidate ODB, inventories, segments, nominal RC and timing reproduced exactly",
+    "No master, placement, orientation, topology or power-pin changes in dirty control",
+    "Raw routing capacities unchanged",
+    "All 332 CLOCK and unrelated route segment multisets unchanged",
+    "Only net913 and net914 rerouted; _11039_ unchanged",
+    "NDR fallback order unchanged",
+    "Actual owned container absent"
+  ],
+  "all_actual_owned_processes_absent": true,
+  "physical_source_unchanged": true,
+  "candidate_promoted": false,
+  "no_commit_push_PR_submission": true,
+  "next_bounded_experiment": {
+    "scope": "Routing-only matched no-edit stabilization study; no sizing",
+    "source": "Saved8c candidate reconstructed with exact source/state checks",
+    "allowed_dirty_nets": [
+      "_11039_",
+      "net914",
+      "net913"
+    ],
+    "passes": 2,
+    "freeze": "All cell masters/placements, RTL,ABI,CLOCK and unrelated routes, raw capacities and constraints",
+    "checks": "Record first flow-only route/RC/congestion change, then require second pass to reproduce the first. Measure three-corner timing for both states if within the predeclared cap. Stop if still non-idempotent; do not silently substitute a new baseline.",
+    "candidate_admission": "Retry buf4 only after a stable matched control and an explicitly selected comparison baseline. Keep original8c evidence separate."
+  },
+  "remaining": [
+    "Stable matched incremental-routing control",
+    "Actual physical buf4 sizing",
+    "Actual three-corner candidate setup/hold/electrical comparison",
+    "Detailed-route physical signoff"
+  ],
+  "references": {
+    "root_plan": {
+      "path": "build/physical/tt-buffered-fanout913914-physical-root-01/plan.json",
+      "sha256": "e1a5d6c746cb642d7c838822a56fbd31df1c9fe17cd8721e01d087e8dfc4c48b"
+    },
+    "timing_allocation": {
+      "path": "build/physical/tt-buffered-fanout913914-physical-root-01/timing-allocation.json",
+      "sha256": "1f3f93a61d6678c8352678d169ab879a88b264c8bee390399995d5f3ce6317fb"
+    },
+    "selection": {
+      "path": "physical/experiments/tt-buffered-fanout913914-physical-selection-01.json",
+      "sha256": "3c371c031a6bcb65390ae737e13dc3c464fead1fc1e15684d7ef1c4c5103a95d"
+    },
+    "prepared_route_helper": {
+      "path": "build/physical/tt-buffered-buf4-pair-tools-01/prepared.json",
+      "sha256": "2218f59f22949f84a702c020b1ac6f896b5d8a08922ce173188bc7c9bac1699f"
+    },
+    "failed_producer": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/report.json",
+      "sha256": "bb1ef3ca4e5da7b48a4ff33702b36f137aa6681980138bb435486c0b5a87a489"
+    },
+    "saved_candidate_reproduction": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/qualified-pair-reproduction-gate.json",
+      "sha256": "153d04833d7f5871826b709ca0cdcdf1fe64bd40cf37d63c2a06a1eb55d2214f"
+    },
+    "independent_failed_control_review": {
+      "path": "build/physical/tt-buffered-buf4-pair-review-01/failed-control-review.json",
+      "sha256": "cfa2386c1585708e4ac0004efbb2958672e936acc319fa3641f87694afcb9fa1"
+    },
+    "baseline_route_state": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/baseline/route-state.json",
+      "sha256": "21b3849ff2e043555e44753cf752c3dd35a27347d79cb63000177f8846140307"
+    },
+    "noop_route_state": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/noop/route-state.json",
+      "sha256": "22c13b05901ae36a1b744f1bf93157d64677aed593d8d48e08e1691185e18ea3"
+    },
+    "baseline_nominal_timing": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/baseline/typ-timing.json",
+      "sha256": "feb206d528ba8a417e0b5c3a8df10b0130d3d102fa66de4dc727256a619de1d5"
+    },
+    "noop_nominal_timing": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/noop/typ-timing.json",
+      "sha256": "92c4a769882ec6e3c57444ef6bf4406ac4bfaa037c77e65ac65b2099b9fda488"
+    },
+    "prepared_unused_timing_helper": {
+      "path": "build/physical/tt-buffered-buf4-pair-timing-tools-02/prepared.json",
+      "sha256": "3f3d31b63d9a8c26781b06cfbb1797ba3085585e45f54e45af470084a3d2c46c"
+    },
+    "prior_virtual_assessment": {
+      "path": "physical/experiments/tt-buffered-fanout913914-rc-validation-results-01.json",
+      "sha256": "b55ac785f21bb3e437cccc4c4842837c6cf12b9c1acbd661203127c51ccc8828"
+    }
+  },
+  "qualification": "This is a failed routing control, not a buf4 regression. Existing virtual sizing evidence is preserved but does not qualify physical resizing. Full hidden router usage state is not proven by the saved-grid accounting audit."
+}

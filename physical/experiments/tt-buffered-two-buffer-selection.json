@@ -1,0 +1,168 @@
+{
+  "schema": "pinwheel-buffered-tt-two-buffer-selection-v1",
+  "date": "2026-10-12",
+  "status": "frozen_before_CAD",
+  "authorization": "User authorized one two-buffer placement experiment from repaired R0. Only fanout2803/fanout2903 may move. Core RTL and serial ABI unchanged. Total wall deadline19:54:38UTC,1500seconds.",
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-two-buffer-intake-01/report.json",
+      "sha256": "3a347db471dff787bb03825a3ddafe5c2a7c31891d63c6bc512c5a9855e9e4fc"
+    },
+    "validation_tools": {
+      "path": "build/physical/tt-buffered-two-buffer-validation-tools-01/prepared.json",
+      "sha256": "0a1e66be534c175cc910cff567c3314d9f8091ad85dedccd99757118199479d2"
+    },
+    "policy": {
+      "path": "build/physical/tt-buffered-two-buffer-helper-01/policy.json",
+      "sha256": "111282c4b0f198ea3ff3eb60851c2a921fd42368cf98be441e1198f5920204c8"
+    },
+    "execution_plan": {
+      "path": "build/physical/tt-buffered-two-buffer-root-01/execution-plan.json",
+      "sha256": "6672aeeac21b0a0f3fc25b39d6a42aac8c23a37d215c96f1069c26a34c7fede0"
+    },
+    "cohort_review": {
+      "path": "build/physical/tt-buffered-two-buffer-review-01/cohort-review.json",
+      "sha256": "bee5390159c6b65866ab819ef36edf33043ee0088abdd596d784af187051e4d4"
+    },
+    "analysis_code": {
+      "path": "build/physical/tt-buffered-two-buffer-analysis-01/analyze.py",
+      "sha256": "f404f438054165e23639d81bab3ceeffb6231e8e3580dde284b7ae379b96ab04"
+    },
+    "map_code": {
+      "path": "build/physical/tt-buffered-two-buffer-analysis-01/map_tools.py",
+      "sha256": "10756be76745672c3dee45d5bac263eb8c6281e383e7c361b5f84b4ebd955af5"
+    },
+    "wall_launcher": {
+      "path": "build/physical/tt-buffered-two-buffer-root-01/launch.py",
+      "sha256": "e62ef5ac21820928b912bb854ab548ecbc7dc94fb1f288a940c16be2edb6dcb9"
+    }
+  },
+  "source_checkpoint": {
+    "design": "build/physical/tt-buffered-locality-recovery-02",
+    "state": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json",
+    "state_sha256": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "database": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+    "database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "environment": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/_env.tcl",
+    "environment_sha256": "d8dc217b202d18685d84c37bc6e963663e05e980316711d859484e5f63342e8e",
+    "core_recipe_sha256": "2448e568062399396597654457292410028de19bc2625e9eb4f411f7125676d3",
+    "original_views_count": 10,
+    "reference_native_flow_status": "failed",
+    "reference_native_flow_exit_code": 2,
+    "inherited_power_count": 30396,
+    "nominal_metrics_are_reference_only": true
+  },
+  "physical_policy": {
+    "mode": "two_buffer_same_x_northward_incremental_placement",
+    "allowed_movable_instances": [
+      "fanout2803",
+      "fanout2903"
+    ],
+    "mandatory_destination_neighbors": [],
+    "target_bboxes_dbu": {
+      "fanout2803": [
+        622560,
+        336420,
+        624480,
+        340200
+      ],
+      "fanout2903": [
+        618720,
+        328860,
+        620640,
+        332640
+      ]
+    },
+    "target_orientations": {
+      "fanout2803": "R0",
+      "fanout2903": "R0"
+    },
+    "one_DPL": true,
+    "all_other_instances_frozen": true,
+    "original_statuses_restored": true,
+    "no_GPL_CTS_synthesis_resizing_buffering": true
+  },
+  "hypothesis": "Moving two ordinary fanout branches from the intermacro channel to their northern source band can remove unnecessary blocked input crossings; output trees already span both sides of the macros. Full incident center-HPWL falls419.58um, but neither routed improvement nor preserved hold/setup is inferred.",
+  "host_proxy_tradeoff": {
+    "net_names": [
+      "_05129_",
+      "_09502_",
+      "net2803",
+      "net2903"
+    ],
+    "before_per_net": {
+      "_05129_": 646.44,
+      "_09502_": 597.9,
+      "net2803": 710.88,
+      "net2903": 856.26
+    },
+    "seed_per_net": {
+      "_05129_": 438.54,
+      "_09502_": 386.22,
+      "net2803": 710.88,
+      "net2903": 856.26
+    },
+    "before_total": 2811.48,
+    "seed_total": 2391.9,
+    "improvement": 419.58,
+    "final_must_equal_seed": true,
+    "final_must_improve_total": true,
+    "metric": "unique incident-net sum of instance-center HPWL; placement proxy only"
+  },
+  "comparison": {
+    "control_ODB_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "coarse_native_iterations_per_segment": 5,
+    "native_automatic_NDR_fallback_unchanged": true,
+    "Metal2_through_Metal4": true,
+    "capacity_adjustments_PDN_SDC_libraries_unchanged": true,
+    "no_full50_route": true,
+    "fresh_control_and_candidate_three_corner_STA": true,
+    "canonical_mapped_upload": true
+  },
+  "acceptance": {
+    "native_total_overflow_below_fresh_control": true,
+    "zero_capacity_marker_overflow_below_fresh_control": true,
+    "all_setup_margins_preserved_within_ns": 1e-05,
+    "slow_setup_at_least_ns": 1,
+    "setup_hold_violations": 0,
+    "hold_slacks_positive": true,
+    "slew_counts_no_worse": [
+      0,
+      2,
+      0
+    ],
+    "fanout_count_no_worse": 254,
+    "max_capacitance_violations": 0,
+    "only_exact_two_instances_moved": true,
+    "zero_neighbors": true,
+    "masters_topology_clocks_LEF_NDR_PDN_pins_rows_statuses_unchanged": true,
+    "power_geometry_and_connectivity_pass": true,
+    "mapped_upload_to_pins_pass": true
+  },
+  "execution": {
+    "schema": "pinwheel-buffered-tt-two-buffer-execution-plan-v1",
+    "status": "frozen_before_CAD",
+    "authorization": "User authorized one two-buffer placement experiment from repaired R0. Only fanout2803/fanout2903 may move. Core RTL and serial ABI unchanged. Total wall deadline19:54:38UTC,1500seconds.",
+    "start_utc": "2026-10-12T19:29:38Z",
+    "deadline_utc": "2026-10-12T19:54:38Z",
+    "physical_allocation_seconds": 1500,
+    "caps_seconds": {
+      "candidate": 120,
+      "control_route": 230,
+      "candidate_route": 230,
+      "control_STA": 170,
+      "candidate_STA": 170,
+      "export": 105,
+      "power": 80,
+      "host": 60,
+      "mapped": 300
+    },
+    "reserved_seconds": 1465,
+    "reserve_seconds": 35,
+    "owned_cleanup_included": true,
+    "wall_deadline_applies_to_all_work": true,
+    "one_candidate": true,
+    "no_second_policy": true
+  },
+  "boundary": "One exact two-buffer candidate and matched bounded diagnostics. No accepted routing, extracted timing, SRAM fast-corner qualification, DRC/LVS or official precheck is claimed."
+}

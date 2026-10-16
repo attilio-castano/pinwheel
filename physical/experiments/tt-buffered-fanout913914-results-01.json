@@ -1,0 +1,165 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout913914-results-v1",
+  "started_utc": "2026-10-13T19:29:58+00:00",
+  "published_utc": "2026-10-13T19:52:12.417391+00:00",
+  "deadline_utc": "2026-10-13T19:54:58+00:00",
+  "status": "not_admitted_no_resize",
+  "headroom_admission": {
+    "admitted_to_resize": false,
+    "required_through_hold_ns": 1.05,
+    "engineering_combined_hold_loss_allowance_ns": 1.0,
+    "required_residual_hold_ns": 0.05,
+    "minimum_measured_through_hold_ns": 0.616891,
+    "limiting_corner": "nom_fast_1p32V_m40C",
+    "limiting_driver": "fanout914",
+    "limiting_data_edge": "fall",
+    "limiting_startpoint": "_30889_/Q",
+    "limiting_endpoint": "_30575_/D",
+    "NLDM_loss_bound_assessment": "not_performed_after_mandatory_hold_guard_rejection",
+    "physical_window_also_closed_utc": "2026-10-13T19:44:58Z",
+    "scope": "Conservative admission rejected; this does not prove that the physical resize would fail.",
+    "mandatory_hold_guard_passed": false,
+    "mandatory_setup_guard_passed": true,
+    "minimum_conservative_residual_hold_ns": -0.38310900000000003,
+    "all_corner_coverage_complete": true
+  },
+  "physical_trial_performed": false,
+  "timing_comparison": {
+    "kind": "fresh_frozen_baseline_vs_prior_qualified_baseline",
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "setup_worst_slack_ns": 5.67447,
+        "hold_worst_slack_ns": 0.107727,
+        "setup_failures": 0,
+        "hold_failures": 0,
+        "through_setup_min_ns": 5.9086,
+        "through_hold_min_ns": {
+          "fanout914": 1.046728,
+          "fanout913": 1.252629
+        },
+        "matches_prior_qualified_STA": true,
+        "unannotated_driver_count": 167
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_worst_slack_ns": 0.00895284,
+        "hold_worst_slack_ns": 0.265159,
+        "setup_failures": 0,
+        "hold_failures": 0,
+        "through_setup_min_ns": 0.008953,
+        "through_hold_min_ns": {
+          "fanout914": 1.803394,
+          "fanout913": 2.164565
+        },
+        "matches_prior_qualified_STA": true,
+        "unannotated_driver_count": 167
+      },
+      "nom_fast_1p32V_m40C": {
+        "setup_worst_slack_ns": 9.0682,
+        "hold_worst_slack_ns": 0.0195748,
+        "setup_failures": 0,
+        "hold_failures": 0,
+        "through_setup_min_ns": 9.278463,
+        "through_hold_min_ns": {
+          "fanout914": 0.616891,
+          "fanout913": 0.741636
+        },
+        "matches_prior_qualified_STA": true,
+        "unannotated_driver_count": 167
+      }
+    },
+    "post_resize_comparison": null,
+    "existing_electrical_violation_counts": {
+      "typical": {
+        "slew": 2,
+        "fanout": 254,
+        "capacitance": 0
+      },
+      "slow": {
+        "slew": 7,
+        "fanout": 254,
+        "capacitance": 0
+      },
+      "fast": {
+        "slew": 2,
+        "fanout": 254,
+        "capacitance": 0
+      }
+    }
+  },
+  "congestion_comparison": {
+    "kind": "unchanged_saved_baseline_only",
+    "native_total_overflow": 5227,
+    "native_Metal3_overflow": 2282,
+    "saved_preferred_grid_overflow": 5207.0,
+    "new_global_routing_run": false,
+    "post_resize_comparison": null
+  },
+  "completed_gates": [
+    "three native global-route RC STA corners",
+    "all 257 structural and timing endpoints per driver covered for both data transitions and setup/hold",
+    "prior setup/hold metrics reproduced with zero failures",
+    "exact imported routes NDR assignments netlist and full normalized SPEF preserved",
+    "git diff --check",
+    "host diagnostic verifies every ledger against native reports and all serial913 paths include914",
+    "independent current custody of 4424 bindings and all 507 protected sources",
+    "unchanged full physical inventory baseline ODB route segments netlist and native raw capacity",
+    "fresh owner query confirms collector absent; no physical producer launched"
+  ],
+  "failed_or_unfinished_gates": [
+    "fixed 1.05 ns minimum through-hold admission guard failed in typical and fast corners",
+    "physical producer window closed before safe admission",
+    "NLDM sizing loss/gain assessment skipped after mandatory hold rejection",
+    "matched three-net dirty no-edit routing control not run",
+    "two-buffer resize incremental routing and post-resize three-corner STA not run"
+  ],
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-fanout913914-selection-01.json",
+      "sha256": "d6509b9d5fd852e905ed21152271ab5f3e52a609744a9f8b1f22d034edf039b9"
+    },
+    "preflight_collector_prepared": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-tools-03/prepared.json",
+      "sha256": "a457600c61ec067fd512e229dbf0530742c20a32360c38327ee80d3c88571829"
+    },
+    "preflight_report": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/report.json",
+      "sha256": "3c9c11606ecc00b8748427319b3dc23d7802b972d06241a0a6d67e57b3498940"
+    },
+    "independent_ledger_coverage": {
+      "path": "build/physical/tt-buffered-fanout913914-coverage-review-01/report.json",
+      "sha256": "ba93de3acb1e031eb84da7a98cb27220196add8ebd1263fe6faf848d214e7665"
+    },
+    "intake": {
+      "path": "build/physical/tt-buffered-holdreset-pair-review-01/intake.json",
+      "sha256": "7d8e73ba2ea1355d6bd5e9938e3f81b9a4119dc66926a0ba9c2755b3d5262591"
+    },
+    "qualified_baseline_producer": {
+      "path": "build/physical/tt-buffered-hold30712-route-02/report.json",
+      "sha256": "147cf82e46f295260d128440f30ef73f86986d078d69460d20a4189ae5fc3a8a"
+    },
+    "qualified_baseline_STA": {
+      "path": "build/physical/tt-buffered-hold30712-candidate-sta-01/report.json",
+      "sha256": "f98fd7831274ecf351d49b0b59af9c6413fd9adf54003df34f032870599fc35c"
+    },
+    "source_only_physical_preparation": {
+      "path": "build/physical/tt-buffered-fanout913914-tools-01/source-only-preparation.json",
+      "sha256": "35bce67e718e36bde5c9a8291495a7f0cdbca518b97e9b37bb5bf63b263aa727"
+    },
+    "headroom_gate": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/gate.json",
+      "sha256": "f50ada3e56a1afa4f65615b61491f7f104040b32732f91aa602e64af563e359a"
+    },
+    "host_diagnostic": {
+      "path": "build/physical/tt-buffered-holdreset-pair-diagnostic-01/report.json",
+      "sha256": "d87daebfb609f5693f12bf1b7a5609bd325fd464cd6eb3f2d64f11e2f2b58fb7"
+    },
+    "independent_final_review": {
+      "path": "build/physical/tt-buffered-holdreset-pair-review-01/final-review.json",
+      "sha256": "2afc62c656d42fd7da31aa883a558bbcafbea44e399161b92d9ccbbea39e2653"
+    }
+  },
+  "all_actual_owned_processes_absent": true,
+  "candidate_promoted": false,
+  "no_commit_push_PR_submission": true,
+  "qualification": "Conditional sizing probe with frozen RTL/ABI/clocks/unrelated routes. Estimated global-route RC, not extracted signoff; fast logic/IO -40 C and SRAM -55 C. The hold allowance is an engineering admission guard, not a proved physical delay bound."
+}

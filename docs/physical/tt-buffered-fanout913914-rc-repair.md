@@ -1,0 +1,13 @@
+# Frozen RC export repair for fanout914/913
+
+The per-pin RC export repair passes structural and precision checks. The requested timing validation is incomplete: no fresh standalone STA control or virtual buf_4 run launched before the bounded admission window expired. Preparation and repeated admission checks consumed the available time; this is an execution shortfall, not a measured failure of the corrected RC.
+
+The repaired derivative restores 90,759 real-pin wire-capacitance attachments across28,948 nets, including4,341 clock-pin attachments on all332 clock nets. Each addition comes from the high-precision native pin-stub trace at the existing CONN terminal identity. Original CAP entries, resistances, CONN identities and all non-CAP sections remain unchanged. Net totals close within original serialization and float uncertainty; worst absolute residual is6.742e-7pF. This is precision-qualified reconstruction, not a claim of hidden floating-point bit identity.
+
+The native capture and independent export review passed. All507 protected sources and the frozen routed ODB, netlist and routing segments retain their selected hashes. No placement, clock, RTL, ABI or routing change occurred; physical fanout914 and fanout913 remain buf_1. All actual owned native processes were cleaned up.
+
+The1ps three-corner no-edit control gate is unmeasured. Consequently no conclusion is available about whether buf_4 retains50ps of affected-path hold margin. The prior lossy-SPEF control failure remains preserved and must not be treated as a new result for the corrected export. The prior native timing baseline also remains valid within its original qualifications.
+
+The next bounded run should directly use the repaired export and the prepared STA helper, reserving an explicit execution window before starting. Run all three no-edit corners and require a maximum discrepancy of1ps across global slacks, affected endpoint slacks and clock waveforms. Only if that gate passes, run the virtual two-master buf_4 timing model using the same wire RC, then require the conservative affected-path hold floor to meet50ps at every corner. Report whole-chip margins separately and inspect electrical violations and library characterization domains. Physical legalization and incremental routing remain separate work.
+
+Authoritative machine-readable result: [results](../../physical/experiments/tt-buffered-fanout913914-rc-repair-results-01.json). The preserved capture, derivative contract, independent review and prepared helper are hash-bound in that result. The full study is capped at25minutes from20:26:07UTC on2026-10-13.

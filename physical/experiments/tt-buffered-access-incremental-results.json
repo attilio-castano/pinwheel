@@ -1,0 +1,474 @@
+{
+  "schema": "pinwheel-buffered-tt-access-incremental-results-v1",
+  "date": "2026-10-12",
+  "status": "comparison_complete_candidate_rejected",
+  "submission_ready": false,
+  "decision": "Reject this moderate42-cell local relocation. Congestion rises48units andslowsetup loses17.72ps, missing the1ns target by9.47ps. Retain the repairedR0 timing reference.",
+  "scope": "One local DPL candidate from exact repairedR0postCTS. CoreRTL/serialABI, allcellmasters/netlist/clocktree/macroorientation/canonicalrecipe unchanged. Only42 bankexclusive address-shell placements/orientations change; zero neighbors or unrelatedcells move. NoGPL/CTS/repair/buffering orsecondcandidate.",
+  "selection": {
+    "path": "physical/experiments/tt-buffered-access-incremental-selection.json",
+    "sha256": "94a818ac215c8020f279088fe96b2f8d1a184bd4ff41bf6bd288dfae945238bb"
+  },
+  "source_checkpoint": {
+    "design": "build/physical/tt-buffered-locality-recovery-02",
+    "state": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json",
+    "state_sha256": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "database": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+    "database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "environment": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/_env.tcl",
+    "environment_sha256": "d8dc217b202d18685d84c37bc6e963663e05e980316711d859484e5f63342e8e",
+    "core_recipe_sha256": "2448e568062399396597654457292410028de19bc2625e9eb4f411f7125676d3",
+    "original_views_count": 10,
+    "reference_native_flow_status": "failed",
+    "reference_native_flow_exit_code": 2,
+    "inherited_power_count": 30396,
+    "nominal_metrics_are_reference_only": true
+  },
+  "candidate_checkpoint": {
+    "path": "build/physical/tt-buffered-access-incremental-candidate-01/checkpoint.json",
+    "sha256": "b5dbdda8de3dfd70dadc528b524456b5f3506a7c8a8b4e3a5983493087ed530f"
+  },
+  "candidate_native_producer": {
+    "status": "passed",
+    "exit_code": 0,
+    "report": {
+      "path": "build/physical/tt-buffered-access-incremental-candidate-01/report.json",
+      "sha256": "4cb0caf595319e2e6c86c40163ec25ba268071238fbed3315fec8607f6b17027"
+    }
+  },
+  "original_native_flow": {
+    "status": "failed",
+    "exit_code": 2,
+    "inherited_power_count": 30396,
+    "fresh_native_placement_and_power_checks_do_not_waive_failure": true
+  },
+  "placement": {
+    "allowed_and_actual_moved_instances": 42,
+    "unchanged_instances": 28920,
+    "neighbor_moves": 0,
+    "actual_seed_axis_drift_dbu": [
+      0,
+      0
+    ],
+    "all_full_native_invariants_passed": true,
+    "original_center_L1_movement_um": {
+      "minimum": 8.04,
+      "maximum": 93.12,
+      "total": 1907.46
+    },
+    "address_placement_proxy_um": {
+      "control": 2466.2,
+      "candidate": 2120.74,
+      "delta": -345.46
+    },
+    "all_incident_net_HPWL_proxy_um": {
+      "control": 7796,
+      "candidate": 9065.86,
+      "delta": 1269.86
+    },
+    "report": {
+      "path": "build/physical/tt-buffered-access-incremental-placement-analysis-01/report.json",
+      "sha256": "cba29adf6518b450f76622b550a4ed4a32516cacac684f4214cd8c2bad8f0259"
+    },
+    "boundary": "Source-to-candidate changes. Zero DPL seed drift does not mean zero original movement. Proxies are not routed wirelength or delay."
+  },
+  "routing": {
+    "control": {
+      "status": "measured",
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 84042,
+          "usage_percent": 70.96,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 6,
+          "overflow": 1330
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 143677,
+          "usage_percent": 84.4,
+          "max_horizontal_overflow": 11,
+          "max_vertical_overflow": 1,
+          "overflow": 3108
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 26614,
+          "usage_percent": 24.5,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1402
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254333,
+          "usage_percent": 64.02,
+          "max_horizontal_overflow": 13,
+          "max_vertical_overflow": 10,
+          "overflow": 5840
+        }
+      },
+      "native_overflow": 5840,
+      "saved_preferred_grid_overflow": 5831.0,
+      "spatial_assigned_overflow": 5831.0,
+      "unassigned_edge_overflow": 0,
+      "wirelength_um": 2516270,
+      "routed_nets": 28940,
+      "fresh_native_metrics": {
+        "global_route__vias": 222914,
+        "global_route__wirelength": 2516270,
+        "flow__warnings__count": 9,
+        "flow__errors__count": 0,
+        "flow__warnings__count:GRT-0115": 1,
+        "flow__warnings__count:GRT-0273": 8,
+        "flow__warnings__type_count": 2
+      },
+      "macros": {
+        "engine.memory.storage0": {
+          "bbox_dbu": [
+            252000,
+            30000,
+            1036480,
+            94360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        },
+        "engine.memory.storage1": {
+          "bbox_dbu": [
+            252000,
+            144000,
+            1036480,
+            208360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        }
+      },
+      "inventory_unchanged": true,
+      "exported_netlist_unchanged": true,
+      "native_clock_ndr_fallback_retries": 8,
+      "boundary": "One native5-iteration-per-segment coarse congestion-allowed diagnostic; not equivalent to full50-iteration benchmark. Native automatic clock-NDR fallback retained; no cell mutation, accepted route or signoff claim. Unchanged inventory covers masters/positions/orientations/logical terminals, not routing-rule state. Saved grid and directional native totals are independent representations."
+    },
+    "candidate": {
+      "status": "measured",
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 83918,
+          "usage_percent": 70.86,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 6,
+          "overflow": 1434
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 143807,
+          "usage_percent": 84.47,
+          "max_horizontal_overflow": 9,
+          "max_vertical_overflow": 1,
+          "overflow": 3120
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 26916,
+          "usage_percent": 24.78,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1334
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254641,
+          "usage_percent": 64.1,
+          "max_horizontal_overflow": 11,
+          "max_vertical_overflow": 10,
+          "overflow": 5888
+        }
+      },
+      "native_overflow": 5888,
+      "saved_preferred_grid_overflow": 5868.0,
+      "spatial_assigned_overflow": 5868.0,
+      "unassigned_edge_overflow": 0,
+      "wirelength_um": 2520064,
+      "routed_nets": 28940,
+      "fresh_native_metrics": {
+        "global_route__vias": 223343,
+        "global_route__wirelength": 2520064,
+        "flow__warnings__count": 9,
+        "flow__errors__count": 0,
+        "flow__warnings__count:GRT-0115": 1,
+        "flow__warnings__count:GRT-0273": 8,
+        "flow__warnings__type_count": 2
+      },
+      "macros": {
+        "engine.memory.storage0": {
+          "bbox_dbu": [
+            252000,
+            30000,
+            1036480,
+            94360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        },
+        "engine.memory.storage1": {
+          "bbox_dbu": [
+            252000,
+            144000,
+            1036480,
+            208360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "R0"
+        }
+      },
+      "inventory_unchanged": true,
+      "exported_netlist_unchanged": true,
+      "native_clock_ndr_fallback_retries": 8,
+      "boundary": "One native5-iteration-per-segment coarse congestion-allowed diagnostic; not equivalent to full50-iteration benchmark. Native automatic clock-NDR fallback retained; no cell mutation, accepted route or signoff claim. Unchanged inventory covers masters/positions/orientations/logical terminals, not routing-rule state. Saved grid and directional native totals are independent representations."
+    },
+    "native_overflow_delta": 48,
+    "native_overflow_change_percent": 0.821917808219178,
+    "saved_preferred_grid_delta": 37,
+    "wirelength_delta_um": 3794,
+    "accepted_route": false,
+    "native_congestion_improvement_gate": false,
+    "policy": "Matched coarse5 iterations per native segment, same pinnedTcl/libs/SDC/capacities/resources, nativeauto clockNDR fallback8each. Historical fullcounts are separate; only cellplacement is localized, routing may rerouteallnets."
+  },
+  "timing": {
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "control_setup_ns": 6.36164,
+        "candidate_setup_ns": 6.36164,
+        "setup_delta_ns": 0.0,
+        "control_hold_ns": 0.164109,
+        "candidate_hold_ns": 0.164109,
+        "control_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 0,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "candidate_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 0,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "full_setup_margin_preserved": true
+      },
+      "nom_slow_1p08V_125C": {
+        "control_setup_ns": 1.00825,
+        "candidate_setup_ns": 0.99053,
+        "setup_delta_ns": -0.01772000000000007,
+        "control_hold_ns": 0.278249,
+        "candidate_hold_ns": 0.278249,
+        "control_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 2,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "candidate_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 2,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "full_setup_margin_preserved": false
+      },
+      "nom_fast_1p32V_m40C": {
+        "control_setup_ns": 9.58829,
+        "candidate_setup_ns": 9.58829,
+        "setup_delta_ns": 0.0,
+        "control_hold_ns": 0.0960465,
+        "candidate_hold_ns": 0.0960465,
+        "control_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 0,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "candidate_counts": {
+          "setup": 0,
+          "hold": 0,
+          "slew": 0,
+          "fanout": 254,
+          "capacitance": 0
+        },
+        "full_setup_margin_preserved": true
+      }
+    },
+    "all_setup_hold_counts_zero": true,
+    "electrical_counts_unchanged": true,
+    "full_setup_margin_preserved": false,
+    "slow_one_ns_target_met": false,
+    "slow_setup_loss_ps": 17.72,
+    "slow_one_ns_target_shortfall_ps": 9.47,
+    "slow_worst_endpoint": {
+      "control": "engine.memory.storage0/A_ADDR[2]",
+      "candidate": "engine.memory.storage0/A_ADDR[5]"
+    },
+    "strict_qualification": {
+      "path": "build/physical/tt-buffered-access-incremental-timing-qualification-01/report.json",
+      "sha256": "99c8429f6db5388c9573efbf5ccbbe1ec7f43096c94e8fda050726501e006c0a"
+    },
+    "boundary": "Fresh native estimatedpostCTS STA, no inheritedcandidate metrics. Conditionalfast uses-40C logic/I/O/-55C SRAM. No extractedtiming/signoff."
+  },
+  "power_geometry_and_movement": {
+    "status": "passed",
+    "both_supply_nets_connected": true,
+    "TT_signal_pins_matched": 43,
+    "original_R0_macro_footprints": true,
+    "grid_geometry_sha256": "1598525bac6715417b1c54500a99a5751cdb53f0d83a0348f5f570531ec1ebb7",
+    "complete_tech_LEF_and_block_rules_unchanged": true,
+    "all_member_windows_bounds_and_twelve_proxies_passed": true,
+    "report": {
+      "path": "build/physical/tt-buffered-access-incremental-power-01/report.json",
+      "sha256": "20803d9fd3304c669e454cddabc7aded6096617960af967fb9e7e3206c3043e4"
+    },
+    "boundary": "Connectivity/geometry/localmovement only; no IRdrop/currentcapacity/routedqualification."
+  },
+  "mapped_upload": {
+    "status": "passed",
+    "peers": 21,
+    "request_response_pairs": 400,
+    "zero_delay_edges": 336426,
+    "parser_negatives": 3,
+    "canonical_elapsed_seconds": 112.911,
+    "all_in_elapsed_seconds": 113.005,
+    "separate_host_cap_seconds": 300,
+    "same_exact_candidate_ODB": true,
+    "report": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-access-incremental-01/report.json",
+      "sha256": "590c67b0c4b9c35f0ac355af056ca22c7aaa0ba641e021fd010ba78cb0157176"
+    },
+    "source_closeout": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-access-incremental-01/source-closeout.json",
+      "sha256": "83a3df754e9a96066e4a60e1e17a9b93b58b0b93d644f3cc88e2a980dd40afa3"
+    },
+    "boundary": "Finite zero-delay functional gate, not universal RTL equivalence or physical qualification."
+  },
+  "congestion_map": {
+    "analysis": {
+      "path": "build/physical/tt-buffered-access-incremental-analysis-01/results-01/analysis.json",
+      "sha256": "6e4dbd8f8ea5be112b3c6f5c9bb898bff0e46b0f71e5b59275a852e358b3d143"
+    },
+    "PNG": {
+      "path": "docs/physical/figures/tt-buffered-access-incremental-coarse.png",
+      "sha256": "7937d16762ca95d17235a5c98b5162d7b5a5a8017902c71736206ab5fa3e66d0"
+    },
+    "SVG": {
+      "path": "docs/physical/figures/tt-buffered-access-incremental-coarse.svg",
+      "sha256": "428df5ef5a74b4ea5e1394cafef301fb1cf4dff1c88d797be1bed8d4cbe145f6"
+    },
+    "same_absolute_scale_axes_and_160_power_columns": true,
+    "unassigned_saved_overflow_each": 0,
+    "macro_detail_y_um": [
+      0,
+      235
+    ],
+    "cohort_crosses_visible_in_full_tile": true
+  },
+  "resource_accounting": {
+    "physical_allocation_seconds": 1500,
+    "planned_reserved_seconds": 1165,
+    "stage_all_in_elapsed_seconds": {
+      "control_route": 50.303,
+      "control_timing": 44.769,
+      "candidate_placement": 12.944,
+      "logical_export": 1.772,
+      "candidate_timing": 42.841,
+      "candidate_route": 47.46,
+      "candidate_power": 12.882
+    },
+    "measured_physical_seconds": 212.971,
+    "inclusive_host_allowance_seconds": 60,
+    "conservative_charged_seconds": 272.971,
+    "allowance_scope": "Host controls/readbacks, analysis/render/copy, sourcecloseout, custody androotchecks are coveredinside60s, notaddedagain. Mapped113.005s belongs to separate300s gate.",
+    "one_candidate_and_two_matched_coarse_routes": true
+  },
+  "source_custody": {
+    "final_collector": {
+      "path": "build/physical/tt-buffered-access-incremental-closeout-01/report.json",
+      "sha256": "1009402c74b9be404d6a59e0b8472617817f33bfec34b06179e0cc14bcf4f5a9"
+    },
+    "protected_sources_current": 507,
+    "core_ABI_source_intakes_current": [
+      495,
+      494
+    ],
+    "prior_current_sources": 17,
+    "previous_measured_evidence_counts": [
+      42,
+      43,
+      38
+    ],
+    "original_recipe_files_current": 30,
+    "all_seven_owned_containers_absent": true,
+    "canonical_recipe_RTL_ABI_changed_by_this_experiment": false
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "1898f33d70c3caa6a3b9680b10884224ca2ed410a08bc0a0a615dad26b019606",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "e6c447af397bd450915197a9ccaa63fdca4e47b157898e17b52aed60a8bd9f4b",
+    "physical/buffered_tt/connect_sram_power.py": "6aa64653a38a1e8922f410f7f98a4689aead18ec4d0592ec1b230e2bb4fa1d6a",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "4c18b0a1b060b1a8c3301fc67bca115d4447e49c06674e28587ef275d107378e",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36",
+    "scripts/check-tt-buffered-netlist.py": "7d783cbac937e988ff5159a126473ba4dd8d2b2e9190f7e1060bf843dba5168b",
+    "test/test_tt_buffered_netlist.py": "06d7b1442ac845398fe915bfcf40c9341e6c1cd4d9b91389bc06e5c2e27e183c",
+    "physical/buffered_tt/gpl_capacity.tcl": "7b597beed0b41b9008b6a2dd805d5f29a59bb99d7e590aab05ed997c0ba6b2a6",
+    "scripts/apply-buffered-tt-physical-recipe.py": "386fc9a5d1ed0e73fd1a82f18f0d3e38bd91127b9b5b5f10aace2545b4b258e4",
+    "test/test_buffered_tt_physical_recipe.py": "0b2beda40c84411554cbf4793f4d403ce2f615976ea005e2b8935c73954ece0c"
+  },
+  "evidence_sha256": {
+    "build/physical/tt-buffered-access-incremental-control-route-01/report.json": "2fed38b59e3416ac1dfe1c41ee214dc8579f6dad4da5cd3dafbc4906cbe77802",
+    "build/physical/tt-buffered-access-incremental-control-timing-01/report.json": "88bc4284e1cc256b9f64a5f26735f30591e64113e79185f345306c0c423347c2",
+    "build/physical/tt-buffered-access-incremental-candidate-01/report.json": "4cb0caf595319e2e6c86c40163ec25ba268071238fbed3315fec8607f6b17027",
+    "build/tt-buffered/netlist/access-incremental-export-01/report.json": "688d015fb3a012124868ff4d6ed5a01d5fe87fa58213b579de960963fe8b2d7a",
+    "build/physical/tt-buffered-access-incremental-candidate-timing-01/report.json": "b18f41475ebd5568efbeda686e0af88712607f7d68622a621938dad861caf072",
+    "build/physical/tt-buffered-access-incremental-candidate-route-01/report.json": "f46f0f45b6c3f5d3d61fe713bc51b749e9a6e2dc8af454faee5ebce739c4170e",
+    "build/physical/tt-buffered-access-incremental-power-01/report.json": "20803d9fd3304c669e454cddabc7aded6096617960af967fb9e7e3206c3043e4",
+    "physical/experiments/tt-buffered-access-incremental-selection.json": "94a818ac215c8020f279088fe96b2f8d1a184bd4ff41bf6bd288dfae945238bb",
+    "build/physical/tt-buffered-access-incremental-helper-01/policy.json": "d6bd2fc7da37cd62edcd73ad26849d8035847e9c59fabd76364b765269e636ed",
+    "build/physical/tt-buffered-access-incremental-analysis-01/results-01/analysis.json": "6e4dbd8f8ea5be112b3c6f5c9bb898bff0e46b0f71e5b59275a852e358b3d143",
+    "build/physical/tt-buffered-access-incremental-timing-qualification-01/report.json": "99c8429f6db5388c9573efbf5ccbbe1ec7f43096c94e8fda050726501e006c0a",
+    "build/physical/tt-buffered-access-incremental-intake-01/report.json": "47297d83d1d270ab0be8d725d00adc0383af324cec8142d57dae4b1b6f77cc27",
+    "build/physical/tt-buffered-access-incremental-placement-analysis-01/report.json": "cba29adf6518b450f76622b550a4ed4a32516cacac684f4214cd8c2bad8f0259",
+    "build/tt-buffered/netlist/tt-buffered-netlist-access-incremental-01/report.json": "590c67b0c4b9c35f0ac355af056ca22c7aaa0ba641e021fd010ba78cb0157176",
+    "build/tt-buffered/netlist/access-incremental-mapped-invocation-01/report.json": "7df43a3f844e19a5f0dc8df3294b27927c7f4783bf3943087258bd5bfa9e3e0c",
+    "build/tt-buffered/netlist/tt-buffered-netlist-access-incremental-01/source-closeout.json": "83a3df754e9a96066e4a60e1e17a9b93b58b0b93d644f3cc88e2a980dd40afa3",
+    "build/physical/tt-buffered-access-incremental-closeout-01/report.json": "1009402c74b9be404d6a59e0b8472617817f33bfec34b06179e0cc14bcf4f5a9",
+    "build/physical/tt-buffered-access-incremental-checkpoint-admission-01/admission.json": "b558d3dd893b0631e32102f74ae6c7d81f3cd09c71197900b550c77f4f42af18",
+    "build/physical/tt-buffered-access-incremental-checkpoint-admission-01/creation.json": "ad25cd86375ed1af638324059b1bb0b7d379da1e4aa6ea27ecc155e9c9e0dcde",
+    "build/physical/tt-buffered-access-incremental-candidate-01/prepared.json": "9cabadacb56967c3cbdd8968f90c647ccc03dfb5697e4cd5e34f4c0488e85595",
+    "build/physical/tt-buffered-access-incremental-candidate-01/checkpoint.json": "b5dbdda8de3dfd70dadc528b524456b5f3506a7c8a8b4e3a5983493087ed530f",
+    "build/physical/tt-buffered-access-incremental-validation-tools-01/prepared.json": "5ca594783e38f0a2f15ab215f1dfc79647f014686610dedc7e8a8a7b657c57d1",
+    "build/physical/tt-buffered-access-incremental-power-tools-02/prepared.json": "6db7a316cb866e6d8254631d73768897020c4b6f346d495f16c583fcd49bba9a",
+    "build/physical/tt-buffered-access-incremental-analysis-01/invocation.json": "d8ddd5f33013cbe1e29949a6ce411d729e2e1a430f21d02f7cc30a33d27adf69",
+    "build/physical/tt-buffered-access-incremental-analysis-01/figure-review.json": "e9fd0feb199b5f88309a24f07a8daa85f1ed4a2d8cf4c7670fa33f42a210071c",
+    "docs/physical/figures/tt-buffered-access-incremental-coarse.png": "7937d16762ca95d17235a5c98b5162d7b5a5a8017902c71736206ab5fa3e66d0",
+    "docs/physical/figures/tt-buffered-access-incremental-coarse.svg": "428df5ef5a74b4ea5e1394cafef301fb1cf4dff1c88d797be1bed8d4cbe145f6",
+    "build/physical/tt-buffered-access-incremental-root-01/write_results.py": "5254db67d62b2daf96de76568b2ae88163a5c707b57d6b69e72532095a8a070d"
+  },
+  "remaining": [
+    "accepted routing andelectrical closure",
+    "inherited source-flow power metric bookkeeping",
+    "extracted timing andqualified SRAM corners",
+    "DRC/LVS andofficial TinyTapeout precheck"
+  ],
+  "artifact_custody": "Large rawODB/DEF/logs/inventories/helper sources remain ignored inbuild. Tracked selection/results/figures bind them; all prior measured evidence staysunchanged."
+}

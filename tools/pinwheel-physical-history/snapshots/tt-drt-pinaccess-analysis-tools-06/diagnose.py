@@ -1,0 +1,129 @@
+"""Host parser of actual native pin-access/DRT evidence, including failed runs."""
+import argparse,collections,hashlib,json,re,math
+from pathlib import Path
+N=r'[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?'
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def overlaps(a,b):return a[0]<b[2] and a[2]>b[0] and a[1]<b[3] and a[3]>b[1]
+def native_counts(text):
+ patterns={'violations':r'(?i)(?:number of|#)\s*(?:DRC\s*)?violations\s*[:=]\s*(\d+)', 'unrouted':r'(?i)(?:number of|#|total)\s*unrouted(?:\s+(?:nets|connections))?\s*[:=]\s*(\d+)', 'pin_access_failures':r'(?i)(?:number of|#|total)\s*(?:pins?\s+with\s+no\s+access|pin\s*access\s*failures?)\s*[:=]\s*(\d+)'}
+ out={}
+ for k,p in patterns.items():
+  obs=[{'line':text[:m.start()].count('\n')+1,'value':int(m[1]),'text':text.splitlines()[text[:m.start()].count('\n')]} for m in re.finditer(p,text)]
+  out[k]={'availability':'observed' if obs else 'unavailable','observations':obs,'last_observation':obs[-1]['value'] if obs else None,'last_observation_not_necessarily_final_run_total':True}
+ return out
+
+
+def native_connectivity_observations(text):
+ """Explicit native observations only; wire presence and missing messages are not connectivity."""
+ lines=text.splitlines();current_iteration=None;line_ledger=[];counts=[];completion=[]
+ pat=re.compile(r'(?i)(?:number of|#|total)\s*(unconnected|disconnected|unrouted|unreachable)\s*(nets?|connections?|pins?|terminals?|endpoints?)?\s*[:=]\s*(\d+)')
+ for i,l in enumerate(lines,1):
+  it=re.search(r'Start\s+(\d+)(?:st|nd|rd|th) optimization iteration',l)
+  if it:current_iteration=int(it[1])
+  if re.search(r'(?i)connectivity|unconnected|disconnected|unreachable|unrout(?:ed|able)|failed\s+to\s+route',l):line_ledger.append({'line':i,'text':l,'iteration_index':current_iteration})
+  m=pat.search(l)
+  if m:counts.append({'line':i,'text':l,'category':m[1].lower(),'object_kind':m[2].lower() if m[2] else None,'value':int(m[3]),'iteration_index':current_iteration,'reported_count_not_automatically_final':True})
+  if re.search(r'(?i)(?:connectivity\s+check(?:er)?\s+(?:passed|complete(?:d)?)|no\s+(?:unconnected|disconnected|connectivity\s+(?:errors?|violations?)))',l):completion.append({'line':i,'text':l,'iteration_index':current_iteration,'native_literal_observation_not_foundry_connectivity_signoff':True})
+ return {'native_log_lines':line_ledger,'explicit_count_observations':counts,'native_literal_completion_observations':completion,'actual_connectivity_final_total':None,'missing_counts_do_not_mean_zero':True,'getWire_presence_is_not_used_as_connectivity':True}
+
+def drc_markers(text,scale):
+ out=[]
+ for b in re.split(r'(?im)^\s*violation\s+type\s*:\s*',text)[1:]:
+  typ=b.splitlines()[0].strip();sources=re.search(r'(?im)^\s*srcs\s*:\s*(.+)$',b);srcs=sources[1].split() if sources else []
+  box=re.search(r'bbox\s*=\s*\(\s*('+N+r')\s*[, ]\s*('+N+r')\s*\)\s*-\s*\(\s*('+N+r')\s*[, ]\s*('+N+r')\s*\)\s*on\s+layer\s+(\S+)',b,re.I)
+  coords=[float(box[i]) for i in [1,2,3,4]] if box else None
+  out.append({'type':typ,'source_tokens':srcs,'reported_bbox':coords,'bbox_dbu':[round(x*scale) for x in coords] if coords and scale is not None else None,'layer':box[5] if box else None,'raw_record':b.strip(),'spatial_parse_complete':box is not None and scale is not None})
+ return out
+
+def net_roles(inv,token):
+ # Exact typed sources verified at pinned dbMarker.cpp213-225; no alias guessing.
+ prefix,name=(token.split(':',1) if ':' in token else ('legacy_untyped',token))
+ known={'net','inst','iterm','bterm','obstruction','legacy_untyped'}
+ base={'original_source_token':token,'source_object_type':prefix if prefix in known else 'unknown','source_object_name':name or None,'matched_net':None,'roles':[],'macro_pins':[]}
+ if prefix not in known:base['unmatched_source_token']=token;return base
+ if prefix=='obstruction':base['roles']=['block_obstruction_participant'];base['anonymous_obstruction_identity_not_resolved']=True;return base
+ if prefix=='inst':
+  if name in inv['instances']:
+   base.update({'matched_instance':name,'roles':['SRAM_instance_participant' if name in inv['macros'] else 'standard_cell_instance_participant'],'macro_instance_participant_not_causal_OBS_proof':True});return base
+  base['unmatched_source_token']=token;return base
+ net_name=name
+ if prefix in ('iterm','bterm'):
+  cache=getattr(net_roles,'_cache',None)
+  if cache is None or cache[0] is not inv:
+   its={};bps={}
+   for n,v in inv['nets'].items():
+    for inst,p,d in v['terminals']:its.setdefault(inst+'/'+p,set()).add(n)
+    for p in v['ports']:bps.setdefault(p,set()).add(n)
+   net_roles._cache=(inv,its,bps);cache=net_roles._cache
+  choices=(cache[1] if prefix=='iterm' else cache[2]).get(name,set())
+  if len(choices)!=1:base.update({'unmatched_source_token':token,'exact_terminal_lookup_net_candidates':sorted(choices)});return base
+  net_name=next(iter(choices));base['matched_'+prefix]=name
+ if net_name not in inv['nets']:base['unmatched_source_token']=token;return base
+ n=inv['nets'][net_name];roles={n['sig_type']};pins=[]
+ for inst,p,d in n['terminals']:
+  if inst in inv['macros']:
+   pins.append(inst+'/'+p)
+   if p.startswith('A_DIN['):roles.add('SRAM_write_data')
+   elif p.startswith('A_DOUT['):roles.add('SRAM_read_data')
+   elif p.startswith('A_ADDR['):roles.add('SRAM_address')
+   elif p in ['A_WEN','A_REN','A_MEN']:roles.add('SRAM_control')
+   elif p=='A_CLK':roles.add('SRAM_clock')
+ base.update({'matched_net':net_name,'roles':sorted(roles),'macro_pins':pins});return base
+
+def box_index(records,step):
+ buckets={};large={}
+ for i,x in enumerate(records):
+  if not isinstance(x,dict) or not x.get('bbox_dbu') or not x.get('layer'):continue
+  a=x['bbox_dbu'];xs=range(math.floor(a[0]/step),math.floor(a[2]/step)+1);ys=range(math.floor(a[1]/step),math.floor(a[3]/step)+1)
+  if len(xs)*len(ys)>4096:large.setdefault(x['layer'],[]).append(i);continue
+  for xx in xs:
+   for yy in ys:buckets.setdefault((x['layer'],xx,yy),[]).append(i)
+ return buckets,large
+def query_boxes(box,layer,records,index,step):
+ buckets,large=index;ids=set(large.get(layer,[]))
+ for xx in range(math.floor(box[0]/step),math.floor(box[2]/step)+1):
+  for yy in range(math.floor(box[1]/step),math.floor(box[3]/step)+1):ids.update(buckets.get((layer,xx,yy),[]))
+ return [records[i] for i in sorted(ids) if overlaps(box,records[i]['bbox_dbu'])]
+
+def main():
+ p=argparse.ArgumentParser();p.add_argument('--native-log',type=Path,required=True);p.add_argument('--drc-report',type=Path,action='append',default=[]);p.add_argument('--inventory',type=Path,required=True);p.add_argument('--geometry',type=Path,required=True);p.add_argument('--drc-units',choices=['um','dbu','unknown'],default='unknown');p.add_argument('--producer-report',type=Path);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
+ inv=json.loads(a.inventory.read_text());geo=json.loads(a.geometry.read_text());assert geo['dbu_per_micron']==inv['dbu_per_micron'];scale={'um':inv['dbu_per_micron'],'dbu':1,'unknown':None}[a.drc_units];text=a.native_log.read_text();inputs={str(a.native_log.resolve()):sha(a.native_log),str(a.inventory.resolve()):sha(a.inventory),str(a.geometry.resolve()):sha(a.geometry)}
+ reports=[];roles=collections.Counter();layers=collections.Counter();kinds=collections.Counter();all_markers=[]
+ obs=geo.get('macro_obstructions',[]);pbs=geo.get('power_boxes',[]);assert isinstance(obs,list) and isinstance(pbs,list);step=24000;oi=box_index(obs,step);pi=box_index(pbs,step)
+ for file in a.drc_report:
+  if not file.exists():reports.append({'path':str(file),'availability':'missing','marker_count':None});continue
+  inputs[str(file.resolve())]=sha(file);raw=file.read_text();ms=drc_markers(raw,scale)
+  for m in ms:
+   m['report_path']=str(file);m['source_net_roles']=[net_roles(inv,n) for n in m['source_tokens']];m['macro_footprint_overlaps']=[];m['macro_obstruction_overlaps']=[];m['power_box_overlap_count']=None
+   if m['bbox_dbu']:
+    m['macro_footprint_overlaps']=[n for n,v in geo['macros'].items() if overlaps(m['bbox_dbu'],v['bbox_dbu'])]
+    m['macro_obstruction_overlaps']=query_boxes(m['bbox_dbu'],m['layer'],obs,oi,step)
+    m['power_box_overlap_count']=len(query_boxes(m['bbox_dbu'],m['layer'],pbs,pi,step))
+   kinds[m['type']]+=1;layers[m['layer'] or 'unparsed']+=1
+   for r in m['source_net_roles']:
+    for role in r['roles']:roles[role]+=1
+  per_roles=collections.Counter();per_nets=collections.Counter()
+  for m in ms:
+   for r in m['source_net_roles']:
+    for role in r['roles']:per_roles[role]+=1
+    if r['matched_net'] is not None:per_nets[r['matched_net']]+=1
+  reports.append({'path':str(file),'availability':'present','bytes':file.stat().st_size,'marker_count':len(ms),'parser_recognized_native_violation_records':bool(ms),'empty_report_not_a_complete_route_or_zero_DRC_claim':not bool(ms), 'type_counts':dict(collections.Counter(m['type'] for m in ms)), 'layer_counts':dict(collections.Counter(m['layer'] or 'unparsed' for m in ms)), 'source_role_marker_incidences':dict(per_roles), 'source_net_marker_incidences':dict(per_nets), 'same_layer_macro_OBS_overlap_marker_count':sum(bool(m['macro_obstruction_overlaps']) for m in ms), 'same_layer_PG_overlap_marker_count':sum(bool(m['power_box_overlap_count']) for m in ms), 'macro_footprint_overlap_marker_count':sum(bool(m['macro_footprint_overlaps']) for m in ms), 'per_report_observations_do_not_assert_this_is_final_report':True });all_markers.extend(ms)
+ lines=text.splitlines();pin_lines=[{'line':i+1,'text':l} for i,l in enumerate(lines) if re.search(r'(?i)(?:no|missing|failed|cannot|unable).*(?:access point|pin access)|(?:pin|terminal).*(?:no access|unreachable)',l)];error_lines=[{'line':i+1,'text':l} for i,l in enumerate(lines) if re.search(r'\[(?:ERROR|WARNING) DRT-\d+\]',l)]
+ producer=None
+ if a.producer_report:
+  inputs[str(a.producer_report.resolve())]=sha(a.producer_report);r=json.loads(a.producer_report.read_text());producer={k:r.get(k) for k in ['schema','status','exit_code','inputs_unchanged','container_termination']}
+ pa_counts={}
+ for i,l in enumerate(lines,1):
+  m=re.match(r'#(scanned instances|unique  instances|stdCellGenAp|stdCellValidPlanarAp|stdCellValidViaAp|stdCellPinNoAp|stdCellPinCnt|instTermValidViaApCnt|macroGenAp|macroValidPlanarAp|macroValidViaAp|macroNoAp)\s*=\s*(\d+)\s*$',l)
+  if m:pa_counts[m[1]]={'value':int(m[2]),'line':i,'text':l}
+ pa_complete=[{'line':i,'text':l} for i,l in enumerate(lines,1) if 'Complete pin access.' in l]
+ rule_warnings=[{'line':i,'text':l} for i,l in enumerate(lines,1) if re.search(r'(?i)not supported|Skipping.*(?:rule|layer)|unsupported',l)]
+ iteration_starts=[{'line':i,'text':l} for i,l in enumerate(lines,1) if re.search(r'Start \d+(?:st|nd|rd|th) optimization iteration',l)]
+ progress=[]
+ for i,l in enumerate(lines,1):
+  m=re.search(r'Completing\s+(\d+)%\s+with\s+(\d+)\s+violations',l)
+  if m:progress.append({'line':i,'text':l,'completed_percent':int(m[1]),'violation_observation':int(m[2]),'is_final_total':False})
+ counts=native_counts(text);unroute_lines=[{'line':i+1,'text':l} for i,l in enumerate(lines) if re.search(r'(?i)unrout(?:ed|able)|failed\s+to\s+route',l)]
+ result={'schema':'pinwheel-native-drt-pinaccess-diagnostic-v5','status':'diagnosed','input_sha256':inputs,'producer_state_observed':producer,'native_pin_access_counters':pa_counts,'pin_access_complete_observations':pa_complete,'unsupported_rule_warning_observations':rule_warnings,'detail_routing_iteration_start_observations':iteration_starts,'native_worker_progress_violation_observations':progress,'native_connectivity_observations':native_connectivity_observations(text),'native_connectivity_marker_observations':[{'report_path':m['report_path'],'type':m['type'],'source_tokens':m['source_tokens'],'layer':m['layer'],'bbox_dbu':m['bbox_dbu']} for m in all_markers if re.search(r'(?i)connect|unrout|open',m['type'])],'actual_native_DRC_violation_observed':bool(all_markers) or any(x['violation_observation']>0 for x in progress) or any(v['last_observation'] is not None and v['last_observation']>0 for k,v in counts.items() if k=='violations'),'parser_source_sha256':sha(Path(__file__)),'native_writer_source_evidence':{'url':'https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD/dcf36133a369abc8f3c5e5738cd4d82e4903c0e0/src/odb/src/db/dbMarker.cpp','typed_source_lines':[213,225],'micron_bbox_division_lines':[238,241]},'reported_coordinate_units':a.drc_units,'observed_native_count_ledger':counts,'pin_access_failure_lines':pin_lines,'unrouted_failure_lines':unroute_lines,'native_DRT_error_warning_lines':error_lines,'drc_reports':reports,'native_DRC_markers':all_markers,'aggregate_marker_observation_count_across_requested_reports':len(all_markers),'aggregate_counts_are_not_a_final_unique_DRC_count':True,'spatial_index_cell_dbu':step,'DRC_type_counts':dict(kinds),'DRC_layer_counts':dict(layers),'source_role_marker_incidences':dict(roles),'actual_native_DRC_failure_observed':bool(all_markers) or any(x['violation_observation']>0 for x in progress) or any(v['last_observation'] is not None and v['last_observation']>0 for k,v in counts.items() if k=='violations'),'official_precheck_pass_claim':False,'full_foundry_DRC_pass_claim':False,'extracted_timing_claim':False,'completed_legal_route_claim':False,'boundary':'Onlyactualnative DRT/pin-access reports and raw log observations. Missingcounts remainnull; global-routeoverflow never becomesDRC. Marker overlap/incidencesdo notallocatecausalresponsibility. Failed/partialnativeoutputs retained; no GDS/precheck/signoff inference.'}
+ assert not a.output.exists();a.output.parent.mkdir(parents=True,exist_ok=True);a.output.write_text(json.dumps(result,indent=2)+'\n');print(a.output,len(all_markers))
+if __name__=='__main__':main()

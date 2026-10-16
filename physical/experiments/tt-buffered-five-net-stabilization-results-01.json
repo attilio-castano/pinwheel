@@ -1,0 +1,250 @@
+{
+  "schema": "pinwheel-five-net-stabilization-results-v1",
+  "status": "stable_and_three_corner_controls_passed",
+  "started_utc": "2026-10-14T16:32:36Z",
+  "closed_utc": "2026-10-14T16:54:58.094139+00:00",
+  "total_elapsed_seconds": 1342.094,
+  "cap_seconds": 1500,
+  "within_requested_cap": true,
+  "route_native_and_cleanup_seconds": 261.462,
+  "route_all_in_seconds": 264.442,
+  "STA_native_and_cleanup_seconds": 163.133,
+  "STA_all_in_seconds": 173.137,
+  "new_cells": 0,
+  "resized_cells": 0,
+  "placement_edits": 0,
+  "protected_source_count": 507,
+  "protected_sources_changed": [],
+  "dirty_signal_nets": [
+    "_00006_",
+    "_03109_",
+    "net8042",
+    "net8046",
+    "net9291"
+  ],
+  "source_BUF4_reproduction_passed": true,
+  "P1_route_and_RC_drift_from_original_source": [
+    "net8046"
+  ],
+  "P2_route_and_RC_drift_from_P1": [],
+  "exact_stability_comparisons": {
+    "full_native_inventory": true,
+    "canonical_all_route_multisets": true,
+    "logical_netlist_bytes": true,
+    "raw_FastRoute_capacities": true,
+    "full_saved_geometry_capacity_usage": true,
+    "native_route_counts_NDR_state": true,
+    "nominal_full_native_SPEF": true,
+    "nominal_all_report_bodies_and_worst_timing": true
+  },
+  "CLOCK_net_count": 332,
+  "all_CLOCK_and_unrelated_routes_and_native_RC_exact_source": true,
+  "all_instances_netlist_PG_macros_rows_NDR_capacities_preserved": true,
+  "six_fresh_STA_processes": true,
+  "P1_P2_three_corner_controls_within1ps": true,
+  "all_global_and_terminal_context_deltas_ns": 0.0,
+  "pair_affected_contexts": 6168,
+  "numeric_timing_clock_metrics_checked": 30,
+  "original_global_margins_unchanged": true,
+  "native_overflow_original": 5230,
+  "native_overflow_P1": 5229,
+  "native_overflow_P2": 5229,
+  "Metal3_overflow_original": 2285,
+  "Metal3_overflow_P1": 2284,
+  "Metal3_overflow_P2": 2284,
+  "saved_preferred_grid_overflow_P1_P2": 5209,
+  "net8046_source_drift": {
+    "routed_planar_length_um_original": 14.4,
+    "routed_planar_length_um_stable": 115.2,
+    "wire_capacitance_fF_original": 2.05444,
+    "wire_capacitance_fF_stable": 11.2978,
+    "segment_count_original": 6,
+    "segment_count_stable": 11
+  },
+  "three_corner_timing": {
+    "nom_typ_1p20V_25C": {
+      "setup_worst_slack_ns": 5.67447,
+      "hold_worst_slack_ns": 0.107727,
+      "hold_after1ps_ns": 0.106727,
+      "global_failure_counts": {
+        "max": 0,
+        "min": 0
+      },
+      "selected_terminal_headroom": {
+        "_30759_/D": {
+          "setup_ns": 15.538698,
+          "hold_ns": 0.107727,
+          "hold_after1ps_ns": 0.106727,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30606_/D": {
+          "setup_ns": 15.487136,
+          "hold_ns": 0.156629,
+          "hold_after1ps_ns": 0.155629,
+          "setup_delta_from_original_BUF4_ns": -0.04390800000000006,
+          "hold_delta_from_original_BUF4_ns": 0.041860999999999995
+        },
+        "_30747_/D": {
+          "setup_ns": 15.011724,
+          "hold_ns": 0.118107,
+          "hold_after1ps_ns": 0.117107,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30602_/D": {
+          "setup_ns": 13.804714,
+          "hold_ns": 0.14141,
+          "hold_after1ps_ns": 0.14041,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_34083_/D": {
+          "setup_ns": 14.064677,
+          "hold_ns": 0.134006,
+          "hold_after1ps_ns": 0.13300599999999999,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        }
+      },
+      "slew_violation_count": 2,
+      "fanout_violation_count": 254,
+      "capacitance_violation_count": 0
+    },
+    "nom_slow_1p08V_125C": {
+      "setup_worst_slack_ns": 0.0390763,
+      "hold_worst_slack_ns": 0.265159,
+      "hold_after1ps_ns": 0.264159,
+      "global_failure_counts": {
+        "max": 0,
+        "min": 0
+      },
+      "selected_terminal_headroom": {
+        "_30759_/D": {
+          "setup_ns": 15.279139,
+          "hold_ns": 0.265159,
+          "hold_after1ps_ns": 0.264159,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30606_/D": {
+          "setup_ns": 15.192603,
+          "hold_ns": 0.347427,
+          "hold_after1ps_ns": 0.346427,
+          "setup_delta_from_original_BUF4_ns": -0.07395700000000005,
+          "hold_delta_from_original_BUF4_ns": 0.07067000000000001
+        },
+        "_30747_/D": {
+          "setup_ns": 14.44359,
+          "hold_ns": 0.283433,
+          "hold_after1ps_ns": 0.282433,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30602_/D": {
+          "setup_ns": 12.524107,
+          "hold_ns": 0.322958,
+          "hold_after1ps_ns": 0.321958,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_34083_/D": {
+          "setup_ns": 12.936962,
+          "hold_ns": 0.307038,
+          "hold_after1ps_ns": 0.306038,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        }
+      },
+      "slew_violation_count": 7,
+      "fanout_violation_count": 254,
+      "capacitance_violation_count": 0
+    },
+    "nom_fast_1p32V_m40C": {
+      "setup_worst_slack_ns": 9.0682,
+      "hold_worst_slack_ns": 0.0195748,
+      "hold_after1ps_ns": 0.0185748,
+      "global_failure_counts": {
+        "max": 0,
+        "min": 0
+      },
+      "selected_terminal_headroom": {
+        "_30759_/D": {
+          "setup_ns": 15.664677,
+          "hold_ns": 0.019575,
+          "hold_after1ps_ns": 0.018574999999999998,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30606_/D": {
+          "setup_ns": 15.63306,
+          "hold_ns": 0.051555,
+          "hold_after1ps_ns": 0.050554999999999996,
+          "setup_delta_from_original_BUF4_ns": -0.026788999999999064,
+          "hold_delta_from_original_BUF4_ns": 0.027254999999999998
+        },
+        "_30747_/D": {
+          "setup_ns": 15.311371,
+          "hold_ns": 0.02719,
+          "hold_after1ps_ns": 0.026189999999999998,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_30602_/D": {
+          "setup_ns": 14.517911,
+          "hold_ns": 0.032395,
+          "hold_after1ps_ns": 0.031395,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        },
+        "_34083_/D": {
+          "setup_ns": 14.695299,
+          "hold_ns": 0.039394,
+          "hold_after1ps_ns": 0.038394,
+          "setup_delta_from_original_BUF4_ns": 0.0,
+          "hold_delta_from_original_BUF4_ns": 0.0
+        }
+      },
+      "slew_violation_count": 2,
+      "fanout_violation_count": 254,
+      "capacitance_violation_count": 0
+    }
+  },
+  "remaining_selected_terminals_below_reserved50ps": [
+    "_30759_/D",
+    "_30747_/D",
+    "_30602_/D",
+    "_34083_/D"
+  ],
+  "30606_FAST_hold_after1ps_ns": 0.050555,
+  "30606_reserved_surplus_above50ps_ns": 0.000555,
+  "all_global_setup_hold_failure_counts_zero": true,
+  "global_reserved50ps_hold_target_met": false,
+  "owned_containers_absent": true,
+  "runtime_original_prologue_and_RX_restored": true,
+  "stable_checkpoint": {
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/routed.odb": "0144bcceaef2adb486b85625bc03144bd06341ae8787a4bdc14cb5d5b8d6f39b",
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/after_grt.segments": "83f515dc265a5b4a15e8e756ee943ea9c9abf9aec0cef7c2f56d180ab5f485cc",
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/estimated.spef": "2daf84281bebe4394f26158cf787128db71f9342eee9a1edd1cfcba4f919aa32",
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/native-inventory.json": "26c14e8e9ad1473df08a1351e481e6f5e3f62aa6fac2bacae4787b39b86d1881",
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/native-raw-capacity.json": "fec3cd2b1c51527187b47ffc25d1f8bf0cec0a93b6e0bff257f654aeae71b053",
+    "build/physical/tt-five-net-stabilization-route-01/pass2-five/after.v": "8b996e3a01dd97b9cead3bc852b9be25ac5b68f7eb122619a30351b22e8929df"
+  },
+  "model_qualification": "Estimated native global-route RC; no detailed/signoff extraction. FAST logic -40C versus SRAM -55C remains conditional. Nine selected inherited input/FF-constraint slew-axis excursions were verified unchanged from the original BUF4 source. Controls demonstrate reproducibility, not complete model qualification.",
+  "next_bounded_experiment": "Reassess the four remaining hold branches on this saved P2 checkpoint with fresh setup/hold and Liberty-domain gates; keep _30606_/D and net8046 frozen given only0.555ps reserved surplus. Do not repeat the stale five-buffer treatment.",
+  "input_sha256": {
+    "build/physical/tt-five-net-stabilization-root-01/plan.json": "1f4a1b7073386368e2cbf737362ec2ec4f69e797e40ea829a08356031529ebe7",
+    "build/physical/tt-five-net-stabilization-route-01/report.json": "64fe49fa6f22a632e113488cb9ea0f35f14335b3c1526485f0ab5dd18da03c91",
+    "build/physical/tt-five-net-stabilization-timing-01/report.json": "cff025c409c0505053d4d270063c4f041f57e29c777f4f25d4d17bfd1d933531",
+    "build/physical/tt-five-net-stabilization-tools-03/selection.json": "0f255b7e3bb1556775cbcdb17fd234ea231ea0e5a7b89046c4d60848fff3b6a1",
+    "build/physical/tt-five-net-stabilization-tools-03/prepared.json": "e269fab2509892ff04179a7bd5c792ea8a869b77e6107eefbb30f3abe63f94c8",
+    "build/physical/tt-five-net-stabilization-timing-tools-01/prepared.json": "7f3c7a0b9fca10c52eb890f40afa79341458e0a18ea2e19fb770866a5d997adc",
+    "build/physical/tt-five-net-stabilization-root-01/cleanup-verification.json": "bce5e063ae27ec763039c51ca024ad555cf2f12946d99703802369bb13ce8159",
+    "build/physical/tt-five-net-stabilization-root-01/electrical-independent-audit.json": "7c22a2cd272049ef80e4e7e60837569be6f02af3160c0dd2d4fef6ca919087ad",
+    "build/physical/tt-five-net-stabilization-root-01/timing-audit.json": "fa3ea553bc65b3bec2d120fe4c42ae4c76079aab1c3b08ba324590523f0d2307",
+    "build/physical/tt-five-net-stabilization-root-01/source-model-inheritance.json": "e30589698c8d99f99e9b99d8622a42f58dcc7a2762bcdce25ba878ca0a095dba",
+    "build/physical/tt-five-net-stabilization-review-01/preparation-review.json": "3ae46e02893614f2db6b5e9fbf84c43a0f86b006fd0de1bd0d73a6f2180286f0",
+    "build/physical/tt-five-net-stabilization-review-01/final-review.json": "01599021768966851e4a1c1eb0b5ebd95d3cfb3d999d595a4091f9e166559ef6"
+  },
+  "no_promotion_commit_push_or_submission": true
+}

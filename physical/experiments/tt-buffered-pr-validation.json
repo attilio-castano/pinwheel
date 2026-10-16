@@ -1,0 +1,74 @@
+{
+  "schema": "pinwheel-buffered-tt-pr-validation-v1",
+  "status": "passed",
+  "source_commit": "17457ab7428968dfc57d97781a72f3e7d63179a2",
+  "date": "2026-10-16",
+  "foundation": {
+    "status": "passed",
+    "lean": "4.33.1",
+    "modules": 299,
+    "executable_suites": 60,
+    "kernel_suites": 1,
+    "commands": 67,
+    "audited_declarations": 26569,
+    "audited_theorems": 14357,
+    "untrusted_axiom_rejected": true,
+    "elapsed_seconds": 2296.098,
+    "source_inputs_rechecked": 423,
+    "source_inputs_match_working_branch": true,
+    "snapshot_tracked_files_unchanged": true,
+    "report_relative_to_archive": "build/snapshot/build/validation/pr-foundation-20261016-01/report.json",
+    "report_sha256": "0d5fabaeca283f628f19e859da2ca796d7189e4730f39c156c5b70523532987d",
+    "boundary": "Fresh-source-capable Lean/model gate, initialized finite UART package/lifecycle and owned receipts, compiled UART link/stream timing, independent PWL lookup and UART RX/E64 oracle, retained-result ownership and stream-control circuitry; parametric finite-transfer ownership and shared reactive/counted buffered execution models, local buffered circuit equations and directed typed circuit tests. Does not run RTL simulation, technology mapping, physical tools, or prove emitter/CIRCT equivalence."
+  },
+  "isolated_snapshot": {
+    "source_root": "build/validation/tt-pr-isolated-20261016-01/snapshot",
+    "tracked_files": 2398,
+    "all_tracked_source_bytes_matched_at_creation": true,
+    "no_prior_build_fixtures_copied": true,
+    "cache_reuse": "Independent APFS clone of .lake; current-source build, imports and audit rerun."
+  },
+  "explorer": {
+    "tests": 9,
+    "status": "passed",
+    "build_explorer_check": "passed",
+    "receipt_sha256": "a60f0fa7445460bc4b060ec140d999efdf1c9f5107fa9e2bdbdc3faf0fa93285"
+  },
+  "previous_host_checks": {
+    "python_tests": 1151,
+    "skipped": 6,
+    "tool_host_tests": 255,
+    "status": "passed",
+    "source_commit": "af64522134f000abb89ceead5a46d69f7cdab671",
+    "receipt": "physical/experiments/tt-buffered-worktree-retention.json",
+    "note": "Earlier host checks and their failed concurrent run remain preserved. Executable sources did not change between af64522 and 17457ab."
+  },
+  "evidence_retention": {
+    "status": "fully_verified_local_archive",
+    "archive_root": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-pr-validation-01",
+    "source_to_archive_mapping": {
+      "source_root": "/Users/attiliocastano/.codex/worktrees/8259/pinwheel/build/validation/tt-pr-isolated-20261016-01",
+      "retained_root": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-pr-validation-01/build",
+      "historical_paths_rewritten": false
+    },
+    "regular_files": 6734,
+    "regular_file_bytes": 387438587,
+    "directories": 529,
+    "symlinks": 0,
+    "manifest_sha256": "e9552730a5cb322f206d131cead14537f7ce8753a940fba06421447068bdaeac",
+    "retention_report_sha256": "999d9e034385215f78537d961819edc59dde285ad1f8c3ba2a792f3e29c4e7ac",
+    "source_before_sha256": "ce553e36b7a55074c9075a3b321d53a7b493207e4c20438db502f38016da8e01",
+    "closeout_sha256": "374c6dc7a3786f7d711283ad6f805c5c997125eef371667964a7c31362921c5f",
+    "all_content_sizes_modes_match": true,
+    "source_unchanged": true,
+    "independent_file_inodes": true,
+    "verified_UTC": "2026-10-16T13:27:14.822649+00:00",
+    "old_62GB_archive_modified": false,
+    "same_physical_disk": true,
+    "runtime_exported": false
+  },
+  "no_CAD_run": true,
+  "physical_acceptance_claim": false,
+  "publication_scope": "Push feature branch and open PR to main; no merge or worktree removal.",
+  "historical_partial_gate": "The earlier interrupted in-worktree attempt is retained unchanged; the complete isolated result supersedes its pending pre-push obligation."
+}

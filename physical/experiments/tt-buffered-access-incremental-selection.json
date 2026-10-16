@@ -1,0 +1,236 @@
+{
+  "schema": "pinwheel-buffered-tt-access-incremental-selection-v1",
+  "date": "2026-10-12",
+  "status": "frozen_before_CAD",
+  "authorization": "One bounded incremental placement from repairedR0postCTS, SRAMaccesslogic and only necessaryneighbors; unchanged coreRTL andserialABI.",
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-access-incremental-intake-01/report.json",
+      "sha256": "47297d83d1d270ab0be8d725d00adc0383af324cec8142d57dae4b1b6f77cc27"
+    },
+    "validation_tools": {
+      "path": "build/physical/tt-buffered-access-incremental-validation-tools-01/prepared.json",
+      "sha256": "5ca594783e38f0a2f15ab215f1dfc79647f014686610dedc7e8a8a7b657c57d1"
+    },
+    "policy": {
+      "path": "build/physical/tt-buffered-access-incremental-helper-01/policy.json",
+      "sha256": "d6bd2fc7da37cd62edcd73ad26849d8035847e9c59fabd76364b765269e636ed"
+    },
+    "execution_plan": {
+      "path": "build/physical/tt-buffered-access-incremental-root-01/execution-plan.json",
+      "sha256": "ec2ad996c2a7183a6c0997514cd8e095336e556f730c1b709d1c3ba4c4992d2d"
+    },
+    "root_policy_review": {
+      "path": "build/physical/tt-buffered-access-incremental-root-01/policy-review.json",
+      "sha256": "f30d5e246b77fa1a1b9096d02b563f997555e12bc794955381abc5329c81959b"
+    },
+    "analysis_code": {
+      "path": "build/physical/tt-buffered-access-incremental-analysis-01/analyze.py",
+      "sha256": "14c9b7f6e840062b3b4197234d1fb05ba3451a567bd8e3fecffb8ef869ba73d4"
+    },
+    "map_code": {
+      "path": "build/physical/tt-buffered-access-incremental-analysis-01/map_tools.py",
+      "sha256": "10756be76745672c3dee45d5bac263eb8c6281e383e7c361b5f84b4ebd955af5"
+    },
+    "analysis_host_controls": {
+      "path": "build/physical/tt-buffered-access-incremental-analysis-01/host-controls.json",
+      "sha256": "13630c3dbdaddc23dd0ebc32f3af6289dd4ac258fd512c859b2d01a5cc54dabb"
+    }
+  },
+  "source_checkpoint": {
+    "design": "build/physical/tt-buffered-locality-recovery-02",
+    "state": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/state_out.json",
+    "state_sha256": "1262c3ca58fc640be2679aadeb2010c2d91c935ce3b69e3c080ffa6ea0507458",
+    "database": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/10-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.odb",
+    "database_sha256": "95f0fdb260de137d5b4f77669c9aaa5eb3bf56e7dc55f4c9b7d51b2b8a16556e",
+    "environment": "build/physical/tt-buffered-locality-recovery-02/runs/tt-buffered-physical-05-recovery-01/11-openroad-stamidpnr-2/_env.tcl",
+    "environment_sha256": "d8dc217b202d18685d84c37bc6e963663e05e980316711d859484e5f63342e8e",
+    "core_recipe_sha256": "2448e568062399396597654457292410028de19bc2625e9eb4f411f7125676d3",
+    "original_views_count": 10,
+    "reference_native_flow_status": "failed",
+    "reference_native_flow_exit_code": 2,
+    "inherited_power_count": 30396,
+    "nominal_metrics_are_reference_only": true
+  },
+  "physical_policy": {
+    "mode": "moderate_incremental_exclusive_address_shell",
+    "allowed_movable_instances": [
+      "_21847_",
+      "_21848_",
+      "_21849_",
+      "_21850_",
+      "_21854_",
+      "_21861_",
+      "_21862_",
+      "_21863_",
+      "_21864_",
+      "_21865_",
+      "_21876_",
+      "_21877_",
+      "_21878_",
+      "_21889_",
+      "_21890_",
+      "_21891_",
+      "_21898_",
+      "_21899_",
+      "_21900_",
+      "_21901_",
+      "_21907_",
+      "_21908_",
+      "_21909_",
+      "_21910_",
+      "_21912_",
+      "_21913_",
+      "_21914_",
+      "_21915_",
+      "_21916_",
+      "_21917_",
+      "_21918_",
+      "_21919_",
+      "_21920_",
+      "_21921_",
+      "_21922_",
+      "_21923_",
+      "_21924_",
+      "_21925_",
+      "_21926_",
+      "_21927_",
+      "_21928_",
+      "_21929_"
+    ],
+    "targeted_address_drivers": [
+      "_21850_",
+      "_21865_",
+      "_21878_",
+      "_21891_",
+      "_21901_",
+      "_21910_",
+      "_21914_",
+      "_21917_",
+      "_21920_",
+      "_21923_",
+      "_21926_",
+      "_21929_"
+    ],
+    "bank_shell_member_counts": [
+      23,
+      19
+    ],
+    "mandatory_destination_neighbors": [],
+    "native_legalization": {
+      "temporary_unselected_status": "FIRM",
+      "selected_status": "PLACED",
+      "original_statuses_restored": true,
+      "detailed_placement_calls": 1,
+      "max_displacement_um": [
+        2,
+        4
+      ],
+      "effective_max_seed_axis_drift_dbu": [
+        1920,
+        3780
+      ],
+      "check_placement_after_restoring_statuses": true,
+      "fences_groups_added": false,
+      "GPL_CTS_resizing_buffering_routing_calls": 0
+    },
+    "exact_per_instance_targets_and_original_windows_in_policy": true,
+    "native_full_inventory_hard_gate": true,
+    "no_GPL_CTS_resizing_buffering_synthesis_or_netlist_change": true,
+    "original_R0_SRAM_footprints": true,
+    "unselected_cells_fixed_then_original_statuses_restored": true,
+    "all12_driver_endpoint_placement_proxy_improvements_required": true
+  },
+  "hypothesis": "Moderately shorter SRAM address access with bankexclusive predecessor chains moved asunits and everyunrelatedinstance frozen may reducecoarsecongestion without losing repairedtiming margins. Incoming fixedfanin nets may lengthen, so no improvement is assumed.",
+  "host_proxy_tradeoff": {
+    "all_incident_nets": {
+      "count": 89,
+      "before": 7796.0,
+      "after": 9065.86,
+      "delta": 1269.8600000000006
+    },
+    "boundary_inputs": {
+      "count": 47,
+      "before": 4930.56,
+      "after": 6433.26,
+      "delta": 1502.7
+    },
+    "internal": {
+      "count": 30,
+      "before": 399.24,
+      "after": 511.86,
+      "delta": 112.62
+    },
+    "address_outputs": {
+      "count": 12,
+      "before": 2466.2,
+      "after": 2120.74,
+      "delta": -345.46
+    }
+  },
+  "host_unexecuted_alternatives": {
+    "path": "build/physical/tt-buffered-access-incremental-design-02/exploration.json",
+    "sha256": "8922f264187cce2464a0ae240cc007afc3470d47c4334570e2d40a1c6eb47650",
+    "first_version_path": "build/physical/tt-buffered-access-incremental-design-01/exploration.json",
+    "first_version_sha256": "cd254b049eb2194c6a588350b5741f9e012ede8b63571f4b73021699613c104b"
+  },
+  "comparison": {
+    "fresh_control_and_candidate_route": true,
+    "iterations_per_native_segment": 5,
+    "same_native_routing_Tcl_LIB_SDC_capacities_resources": true,
+    "native_auto_clock_NDR_fallback_retained": true,
+    "retained_control_coarse_overflow_reference": 5840,
+    "fresh_control_and_candidate_three_corner_STA": true,
+    "no_candidate_inherited_metrics": true,
+    "same_candidate_ODB_for_export_mapped_STA_power_route": true,
+    "historical_full_counts_are_separate": true
+  },
+  "acceptance": {
+    "placement_legal": true,
+    "unexpected_cell_master_netlist_clocktree_row_blockage_NDR_macro_pin_power_change_is_rejection": true,
+    "outside_allowlist_movement_forbidden": true,
+    "all_original_statuses_restored": true,
+    "coarse_native_overflow_strictly_lower_than_matched_fresh_control": true,
+    "every_setup_margin_preserved_tolerance_ns": 1e-05,
+    "retained_setup_targets_ns": {
+      "nom_typ_1p20V_25C": 6.36164,
+      "nom_slow_1p08V_125C": 1.00825,
+      "nom_fast_1p32V_m40C": 9.58829
+    },
+    "slow_setup_target_ns": 1,
+    "setup_hold_violation_counts": 0,
+    "hold_slack_positive": true,
+    "slew_counts_at_most": {
+      "nom_typ_1p20V_25C": 0,
+      "nom_slow_1p08V_125C": 2,
+      "nom_fast_1p32V_m40C": 0
+    },
+    "fanout_violations_at_most_per_corner": 254,
+    "capacitance_violations": 0,
+    "native_connectivity_geometry_and_mapped_finite_replay_pass": true,
+    "fast_corner_conditional_temperature_mismatch": true
+  },
+  "protected": {
+    "core_RTL_and_serial_ABI": "unchanged;495/494acceptedsourceintakes and507protectedfiles rehashed",
+    "canonical_physical_recipe": "unchanged;30recipefiles and17currentsources boundbyintake",
+    "original_native_flow_failure": "Referencefailed exit2/inherited30396 staysfailed; scratchproducerstatus isindependent",
+    "earlier_physical_evidence": "All42latest/43locality/38mirror measuredrefs preserved"
+  },
+  "execution": {
+    "physical_allocation_seconds": 1500,
+    "reserved_all_in_caps_seconds": {
+      "one_incremental_candidate": 120,
+      "matched_coarse_control": 230,
+      "matched_coarse_candidate": 230,
+      "fresh_control_STA": 170,
+      "fresh_candidate_STA": 170,
+      "logical_export": 105,
+      "fresh_power_geometry": 80,
+      "host_preparation_custody_analysis_closeout": 60
+    },
+    "reserved_total_seconds": 1165,
+    "unallocated_seconds": 335,
+    "mapped_host_cap_seconds": 300
+  },
+  "boundary": "One frozenplacementcohort andone nativeDPLcandidate only; no posthoc cohort growth, secondcandidate/full50route, counter waiver, acceptedroute orsignoff."
+}

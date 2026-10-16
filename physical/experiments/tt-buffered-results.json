@@ -1,0 +1,189 @@
+{
+  "schema": "pinwheel-tt-buffered-results-v1",
+  "date": "2026-10-10",
+  "status": "digital_passed_physical_incomplete",
+  "submission_ready": false,
+  "decision": "Retain the TT buffered wrapper and passed upload-to-pins gates. Continue physical qualification of the corrected supply-binding profile; routing and signoff remain incomplete.",
+  "scope": {
+    "top": "tt_um_pinwheel_buffered",
+    "core_or_serial_abi_changed": false,
+    "physical_cad_baselines": 1,
+    "pre_cad_launch_failures": 2,
+    "baseline_wall_time_cap_seconds": 1798,
+    "baseline_elapsed_seconds": 59.223,
+    "cpus": 4,
+    "memory": "6g",
+    "network": "none",
+    "post_baseline_diagnostic": "Supply net assignment on a cloned saved ODB only; one successful diagnostic after one invocation setup failure."
+  },
+  "digital": {
+    "status": "passed",
+    "wire_cases": 21,
+    "protocols": {
+      "spi": 9,
+      "jtag": 3,
+      "i2c": 9
+    },
+    "oracle_edges": 545763,
+    "interface_edges": 52803,
+    "total_edges": 598566,
+    "independent_complete_receipts": 765,
+    "retained_implementation_files_rechecked": 488,
+    "elapsed_seconds": 1084.962,
+    "gate_reports": {
+      "boundary": {
+        "path": "build/tt-buffered/tt-buffered-boundary-01/report.json",
+        "sha256": "cb8458d4978f097656fb65438d263f1c9f680147cd20955e270649fcc1935afc"
+      },
+      "full": {
+        "path": "build/tt-buffered/tt-buffered-digital-04/report.json",
+        "sha256": "514fb59782bc5cee2d96fea35e405be7aa0653541c20e0ae98e23d3aabac8a88"
+      }
+    },
+    "new_kernel_proof_run": false,
+    "reset_contract": "Immediate output mask; initialization requires at least one rising clock with reset low, then fresh upload."
+  },
+  "python": {
+    "full_suite_tests": 1111,
+    "full_suite_skips": 7,
+    "full_suite_seconds": 48.307,
+    "full_suite_report": {
+      "path": "build/tt-buffered/python-regression-01/report.json",
+      "sha256": "740ebfaf867272cffb0ae487f6aa4b0ef6210e8d80044f63fac6baaf1f27a2e1"
+    },
+    "full_suite_log": {
+      "path": "build/tt-buffered/python-regression-01/unittest.log",
+      "sha256": "7b6d541678faaf11ca3bf59aadcaef540ac21368ad8c6ac3fb5d059d3b703206"
+    },
+    "final_focused_tests": 10,
+    "final_focused_report": {
+      "path": "build/tt-buffered/runner-regression-03/report.json",
+      "sha256": "d1c1dbc4d45d8b487efc7c69f72de896e8e4321333bfb002bb1ffb5bd40a8b53"
+    }
+  },
+  "physical": {
+    "status": "failed_at_sram_power_binding",
+    "failed_step": "Project.BufferedSramPower",
+    "completed": "Lint error checks, synthesis, synthesis/netlist checks, SDC and macro checks, floorplan, manual macro placement and base standard-cell PDN.",
+    "invocation": {
+      "path": "build/physical/tt-buffered-physical-03-invocation.json",
+      "sha256": "5969266ee0e0d51eff2784b8dba5a844e2a79fff7529d7802202e119a6175a54"
+    },
+    "log": {
+      "path": "build/physical/tt-buffered-physical-03.log",
+      "sha256": "126f5945f83832ce1aa5b8fb859dfbadca24443476a4ad8f08e21131ea34f5f5"
+    },
+    "inputs": {
+      "path": "build/physical/tt-buffered-baseline-04/inputs.json",
+      "sha256": "bbd3ae23eb8efe1fac34fec75de12bd09bd8be41b13a82a50684c0d59e978d46"
+    },
+    "historical_sources": {
+      "path": "build/physical/baseline03-source-snapshot/manifest.json",
+      "sha256": "a3a098a9445ddb772e21e76426a5f0441f683082045050b3199534089471ae71"
+    },
+    "metrics_state": {
+      "path": "build/physical/tt-buffered-baseline-04/runs/tt-buffered-physical-03/21-openroad-generatepdn/state_out.json",
+      "sha256": "52bae19eb3f09dd1729e31ea983f13b772f586a44208d726716fd626b0dc6182"
+    },
+    "preplacement_sta_state": {
+      "path": "build/physical/tt-buffered-baseline-04/runs/tt-buffered-physical-03/12-openroad-staprepnr/state_out.json",
+      "sha256": "a00e7ded567d4b78dc3e91b6c19b8e738b0d4b2f9a598b0af11f83b15c70b49e"
+    },
+    "footprint_um2": 432086,
+    "standard_cell_area_um2": 331108,
+    "macro_area_um2": 100978,
+    "standard_cells": 21618,
+    "macros": 2,
+    "sequential_cells": 3520,
+    "tile_area_um2": 916214,
+    "footprint_fraction_of_tile": 0.4715994298275294,
+    "preplacement_setup_worst_slack_ns": {
+      "nom_fast_1p32V_m40C": -3.637975357267004,
+      "nom_slow_1p08V_125C": -28.523353375450014,
+      "nom_typ_1p20V_25C": -12.846650329364323
+    },
+    "preplacement_hold_worst_slack_ns": -0.7723839564330709,
+    "worst_setup_startpoint": "ena",
+    "clock_period_ns": 20,
+    "lint_warnings": 107,
+    "lint_errors": 0,
+    "unmapped_cells": 0,
+    "disabled_checks": [
+      "RUN_KLAYOUT_XOR"
+    ],
+    "routing_ran": false,
+    "signoff_ran": false,
+    "boundary": "Unplaced ideal-clock screening with explicit 4/0.2 ns I/O constraints; footprint excludes a completed clock tree and routing. Fast screening mixes -40 C logic with -55 C SRAM.",
+    "cli_flow_preflight": {
+      "path": "build/physical/tt-buffered-cli-flow-preflight-01.log",
+      "sha256": "ae0eae13dc8618fe424421a6e7b8645beda784ca1c97e7581374ca65849fec54"
+    }
+  },
+  "correction": {
+    "cause": "PDN_CONNECT_MACROS_TO_GRID=false suppressed explicit macro supply connections.",
+    "change": "Set the flag true; custom PDN still omits the empty automatic macro grid and uses Metal4.",
+    "connected_supply_terminals_before": 0,
+    "connected_supply_terminals_after": 6,
+    "total_supply_terminals": 6,
+    "diagnostic_report": {
+      "path": "build/physical/tt-buffered-supply-diagnostic-02/report.json",
+      "sha256": "c59079a2a0a0583d32c9e87051497be23b0f11a60fc1e7b23219270295d920ca"
+    },
+    "diagnostic_invocation": {
+      "path": "build/physical/tt-buffered-supply-diagnostic-02/invocation.json",
+      "sha256": "893db84839a1eb92e01bc29063ee8818c9278faea866b0c95219393f53f4ce45"
+    },
+    "corrected_unrouted_inputs": {
+      "path": "build/physical/tt-buffered-corrected-power-01/inputs.json",
+      "sha256": "a5a6a18dbf7cb8116b87675afafae3781c04b822b8dca19af412b2e7bea0b269"
+    },
+    "boundary": "Supply assignment alone; column stripe generation, power continuity, IR drop, DRC, LVS and TT precheck remain unvalidated."
+  },
+  "setup_failures": [
+    {
+      "reason": "CLI requires an existing force-run directory; zero CAD steps.",
+      "receipt": {
+        "path": "build/physical/tt-buffered-physical-01-invocation.json",
+        "sha256": "ecfe4ca85c04c3cd4b6f61b6f8d106917504143441ba14c01e68e6953904c1cb"
+      }
+    },
+    {
+      "reason": "Substituting steps requires explicit flow metadata; zero CAD steps.",
+      "receipt": {
+        "path": "build/physical/tt-buffered-physical-02-invocation.json",
+        "sha256": "1b0e125bb48ae96f7047d88bcc86f3fbe9e5e694feed0bc9464d2b4f23e42a37"
+      }
+    }
+  ],
+  "closeout": {
+    "path": "build/tt-buffered/closeout-01/report.json",
+    "sha256": "279533d2683c98d2a212c1a3cf7d7b0eebc6cdb1384c4a3259092798236b8ea2"
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "b1f7a51adaf1815f9dc680683cc5b7713fa8d525433e6c59fb61f89204a3040f",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "9ee7ddf46facef207844d99bbeebae1d8ba1a243b84963ea79eb974ca098bd74",
+    "physical/buffered_tt/connect_sram_power.py": "39d0daee30b119ed6eb46c0073967bb90902795c9f826d93aa99dca1b3e36153",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "d82fab9d2c532beef322bea26391a9e296ecb58d998074a795883b7894ca7f67",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36"
+  },
+  "remaining": {
+    "competition": [
+      "Validate corrected macro power grid and tile-edge power access",
+      "Complete placement, clock tree, routing and extracted timing/electrical checks",
+      "Complete DRC/LVS, official TT precheck and gate-level upload tests",
+      "Finalize submission packaging and demonstration instructions"
+    ],
+    "research": [
+      "Compose source, upload/serial, initialized execution and wrapper correspondence at the claimed universal scope",
+      "Qualify asynchronous input/pad and macro electrical assumptions",
+      "Extend buffered target capability and measure capacity/performance tradeoffs, including UART"
+    ]
+  }
+}

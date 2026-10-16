@@ -1,0 +1,163 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout913914-rc-validation-results-v1",
+  "status": "hold_margin_passed_fixed_wire_model",
+  "started_utc": "2026-10-13T20:53:30+00:00",
+  "deadline_utc": "2026-10-13T21:18:30+00:00",
+  "control_transfer_within_1ps": true,
+  "maximum_control_error_ps": 0.006436162895084863,
+  "all_three_virtual_corners_measured": true,
+  "affected_hold_floor_with_1ps_reserve_meets_50ps": true,
+  "corners": {
+    "nom_typ_1p20V_25C": {
+      "maximum_reference_error_ps": 0.0039999999996709334,
+      "control_global_setup_ps": 5674.468167073915,
+      "control_global_hold_ps": 107.72671948293804,
+      "affected_context_count": 8,
+      "endpoint_count_per_context": [
+        257
+      ],
+      "control_minimum_affected_hold_ps": 1046.729,
+      "virtual_global_setup_ps": 5674.468167073915,
+      "virtual_global_hold_ps": 107.72671948293804,
+      "virtual_minimum_affected_hold_ps": 835.9830000000001,
+      "conservative_affected_hold_ps": 834.9830000000001,
+      "limiting_context": "fanout914/fall/min",
+      "limiting_endpoint": "_30575_/D",
+      "limiting_endpoint_control_hold_ps": 1046.729,
+      "worst_same_endpoint_hold_loss_ps": 442.88399999999984,
+      "worst_loss_context": "fanout914/rise/min",
+      "worst_loss_endpoint": "_30572_/D",
+      "maximum_shared_clock_error_ps": 0.0,
+      "native_new_inputcap_load_update_confirmed": true,
+      "electrical_violator_counts": {
+        "slew": 2,
+        "fanout": 254
+      }
+    },
+    "nom_slow_1p08V_125C": {
+      "maximum_reference_error_ps": 0.006000000000172534,
+      "control_global_setup_ps": 8.952838723780832,
+      "control_global_hold_ps": 265.15823620639446,
+      "affected_context_count": 8,
+      "endpoint_count_per_context": [
+        257
+      ],
+      "control_minimum_affected_hold_ps": 1803.391,
+      "virtual_global_setup_ps": 39.07629885827991,
+      "virtual_global_hold_ps": 265.15823620639446,
+      "virtual_minimum_affected_hold_ps": 1435.789,
+      "conservative_affected_hold_ps": 1434.789,
+      "limiting_context": "fanout914/fall/min",
+      "limiting_endpoint": "_30575_/D",
+      "limiting_endpoint_control_hold_ps": 1803.391,
+      "worst_same_endpoint_hold_loss_ps": 711.627,
+      "worst_loss_context": "fanout914/rise/min",
+      "worst_loss_endpoint": "_30572_/D",
+      "maximum_shared_clock_error_ps": 0.0,
+      "native_new_inputcap_load_update_confirmed": true,
+      "electrical_violator_counts": {
+        "slew": 7,
+        "fanout": 254
+      }
+    },
+    "nom_fast_1p32V_m40C": {
+      "maximum_reference_error_ps": 0.006436162895084863,
+      "control_global_setup_ps": 9068.193563837103,
+      "control_global_hold_ps": 19.57289941079352,
+      "affected_context_count": 8,
+      "endpoint_count_per_context": [
+        257
+      ],
+      "control_minimum_affected_hold_ps": 616.8900000000001,
+      "virtual_global_setup_ps": 9068.193563837103,
+      "virtual_global_hold_ps": 19.57289941079352,
+      "virtual_minimum_affected_hold_ps": 482.105,
+      "conservative_affected_hold_ps": 481.105,
+      "limiting_context": "fanout914/fall/min",
+      "limiting_endpoint": "_30575_/D",
+      "limiting_endpoint_control_hold_ps": 616.8900000000001,
+      "worst_same_endpoint_hold_loss_ps": 272.46700000000004,
+      "worst_loss_context": "fanout914/rise/min",
+      "worst_loss_endpoint": "engine.memory.storage1/A_ADDR[0]",
+      "maximum_shared_clock_error_ps": 0.0,
+      "native_new_inputcap_load_update_confirmed": true,
+      "electrical_violator_counts": {
+        "slew": 2,
+        "fanout": 254
+      }
+    }
+  },
+  "protected_source_count": 507,
+  "protected_sources_unchanged": true,
+  "physical_design_unchanged": true,
+  "physical_pair_remains_buf_1": true,
+  "no_physical_candidate_or_promotion": true,
+  "all_actual_owned_processes_absent": true,
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-fanout913914-rc-repair-selection-03.json",
+      "sha256": "96b212c3917762b8afb63caed073ecbf02a2845ad581fb874c122666fa4147cc"
+    },
+    "prepared_helper": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-tools-06/prepared.json",
+      "sha256": "44dc0434adf8f1008e646a386bb1f60762491372feb1af203138ebd5800d4c64"
+    },
+    "corrected_export": {
+      "path": "build/physical/tt-buffered-pinrc-export-01/corrected-export-report.json",
+      "sha256": "f9ab02d97a9eaeb2abaf2fd65e5eea8fadb37f3332e8b062bb2e16bf8fc6f84c"
+    },
+    "export_review": {
+      "path": "build/physical/tt-buffered-holdreset-export-review-01/export-review.json",
+      "sha256": "77bdeeddbbdccb1a3802f14c83f85c522b82c883e6fbb89bea94dd9bbfbb2782"
+    },
+    "native_reference": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/report.json",
+      "sha256": "3c9c11606ecc00b8748427319b3dc23d7802b972d06241a0a6d67e57b3498940"
+    },
+    "physical_baseline": {
+      "path": "build/physical/tt-buffered-hold30712-route-02/report.json",
+      "sha256": "147cf82e46f295260d128440f30ef73f86986d078d69460d20a4189ae5fc3a8a"
+    },
+    "root_plan": {
+      "path": "build/physical/tt-buffered-fanout913914-rc-validation-root-01/plan.json",
+      "sha256": "fe5d515ac7bea7b1962a79f7fe9c4e59c7910dfb710c211ac211039a77d8af20"
+    },
+    "independent_STA_review": {
+      "path": "build/physical/tt-buffered-fixedrc-run-review-01/independent-final-review.json",
+      "sha256": "6894a710067c59e5035fd6e1a66ac24003e09446fa2e39e4f58cef3ed9da52b3"
+    },
+    "focused_library_domain_review": {
+      "path": "build/physical/tt-buffered-fixedrc-domain-review-01/report.json",
+      "sha256": "4952ad721535c37548da9ae3e5f50db626eb4f8fb8eaafc522a3622892a0bfd1"
+    },
+    "actual_native_run": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-06/report.json",
+      "sha256": "8c88023bbe45e57ecbd4f4e2782d4ce282ad74c8e0b5f4308a6e914182ff6df8"
+    },
+    "controls": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-06/control-validation.json",
+      "sha256": "0e139780501ebd115cfb7109c228cfd6ac07458e629e92ed8e8ebc1f48402ed7"
+    },
+    "virtual_assessment": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-06/measurement.json",
+      "sha256": "4ebbc6682551e46f5d8f9ce5ba70804f3f076789de81b51839268dd77c89554b"
+    }
+  },
+  "independent_review": {
+    "control_gate_ps": 1,
+    "all_three_controls_passed": true,
+    "virtual_affected_hold_with_full_1ps_reserve_ps": 481.105,
+    "clock_waveform_drift_ps": 0,
+    "electrical_violators_unchanged": true,
+    "scope": "Current controls, candidate timing, native endpoint ledgers, selected tool/RC inputs and frozen physical/source hashes. No repeated historical custody-chain audit claimed."
+  },
+  "remaining_gates": [
+    "Physical buf_4 footprint legality and pin access have not been tried",
+    "Actual routed and extracted timing qualification remains",
+    "Whole-chip fast hold remains 19.573ps, below50ps",
+    "Global slow setup headroom remains only39.076ps",
+    "Slew violations2/7/2 and254clock fanout violations remain",
+    "Fast library temperature mismatch qualification remains; focused two-chain library-domain audit is not a whole-path-domain proof"
+  ],
+  "qualification": "Electrical fixed-wire model only. Positive three-corner global setup/hold and affected-pair50ps hold after1ps reserve are measured. No physical placement, clock, route, RTL or ABI changes. Estimated global-route RC and conditional fast library temperature remain distinct from extracted silicon signoff."
+}

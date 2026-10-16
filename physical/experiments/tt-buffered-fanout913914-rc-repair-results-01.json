@@ -1,0 +1,96 @@
+{
+  "schema": "pinwheel-buffered-tt-fanout913914-rc-repair-results-v1",
+  "started_utc": "2026-10-13T20:26:07+00:00",
+  "published_utc": "2026-10-13T20:50:05.481662+00:00",
+  "deadline_utc": "2026-10-13T20:51:07+00:00",
+  "status": "incomplete_timing_validation",
+  "RC_export_repair": {
+    "status": "passed_structural_precision_checks",
+    "net_count": 28948,
+    "restored_pin_node_wire_capacitance_count": 90759,
+    "clock_pin_attachment_count": 4341,
+    "clock_net_count": 332,
+    "original_CAP_R_CONN_and_other_sections_unchanged": true,
+    "maximum_DNET_closure_abs_pf": 6.74152907e-07,
+    "qualification": "Matches captured native per-pin RC to documented serialization and float uncertainty. Hidden float bit identity is not claimed. Numerical STA reproduction remains unverified."
+  },
+  "control": {
+    "status": "not_run",
+    "required_maximum_error_ps": 1,
+    "corners_required": 3,
+    "corners_completed_this_turn": 0,
+    "affected_path_contexts_required": 6168,
+    "measured_maximum_error_ps": null,
+    "reason": "Native timing admission window exhausted before any fresh control STA launch."
+  },
+  "virtual_pair4_assessed": false,
+  "path_specific_hold_assessment": {
+    "status": "not_run",
+    "required_affected_hold_floor_ps": 50,
+    "measured_candidate_minimum_ps": null,
+    "physical_pair_remains_buf_1": true,
+    "buf_4_safety_established": false
+  },
+  "timing_comparison": {
+    "status": "unmeasured",
+    "new_setup_results": null,
+    "new_hold_results": null,
+    "prior_native_baseline_not_invalidated": true,
+    "prior_lossy_import_failure_is_not_a_corrected_export_result": true
+  },
+  "completed_gates": [
+    "Native same-route pin RC recapture",
+    "28948 net and90759 pin attachment repair checks",
+    "Original wire resistance and all original CAP/CONN/non-CAP preservation",
+    "All332 clock nets included in corrected export",
+    "Independent structural and precision review",
+    "507 protected source hashes unchanged",
+    "Frozen routed ODB, netlist and route segments unchanged"
+  ],
+  "failed_or_unfinished_gates": [
+    "Three-corner no-edit STA within1ps not run",
+    "Virtual fanout914/913 buf_4 reassessment not run",
+    "50ps affected hold margin not established",
+    "Fresh electrical and characterization-domain checks not measured"
+  ],
+  "references": {
+    "selection": {
+      "path": "physical/experiments/tt-buffered-fanout913914-rc-repair-selection-02.json",
+      "sha256": "80082a9467b7befb290951eca8718fea4adb70fbdaf0c09a59ff3df1c200e133"
+    },
+    "native_pinRC_capture": {
+      "path": "build/physical/tt-buffered-pinrc-export-01/report.json",
+      "sha256": "e056043e6e5cbcd302b180be03a4b4785f6996d8f4ec5f5ba4cbfda5f30f8752"
+    },
+    "corrected_export": {
+      "path": "build/physical/tt-buffered-pinrc-export-01/corrected-export-report.json",
+      "sha256": "f9ab02d97a9eaeb2abaf2fd65e5eea8fadb37f3332e8b062bb2e16bf8fc6f84c"
+    },
+    "independent_export_review": {
+      "path": "build/physical/tt-buffered-holdreset-export-review-01/export-review.json",
+      "sha256": "77bdeeddbbdccb1a3802f14c83f85c522b82c883e6fbb89bea94dd9bbfbb2782"
+    },
+    "custody": {
+      "path": "build/physical/tt-buffered-fanout913914-rc-repair-root-01/final-custody.json",
+      "sha256": "301f9749c810530e2c5a560dc09771272282ee74be85d214c3ebe5caf962abe6"
+    },
+    "prepared_STA06": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-tools-06/prepared.json",
+      "sha256": "44dc0434adf8f1008e646a386bb1f60762491372feb1af203138ebd5800d4c64"
+    },
+    "prior_lossy_RC_control_failure": {
+      "path": "build/physical/tt-buffered-holdreset-pair-fixedrc-01/report.json",
+      "sha256": "0aa8718c3f3f4d9b6ea3cabf1a06597fba17fee93ca4517ab37d3dbb9b7e3057"
+    },
+    "native_reference": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/report.json",
+      "sha256": "3c9c11606ecc00b8748427319b3dc23d7802b972d06241a0a6d67e57b3498940"
+    }
+  },
+  "all_actual_owned_processes_absent": true,
+  "physical_baseline_modified": false,
+  "physical_candidate_created": false,
+  "candidate_promoted": false,
+  "no_commit_push_PR_submission": true,
+  "qualification": "Estimated global-route RC remains a timing model, not extracted signoff. Corrected export structural checks are complete, but timing transfer and pair sizing are unvalidated. RTL, ABI, placement, clocks and routes remain frozen. No resize, route, candidate promotion, commit or submission occurred."
+}

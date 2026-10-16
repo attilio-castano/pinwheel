@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import posixpath
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -53,7 +54,7 @@ def main():
         else:
             data = b""
         if blob_hash(data) != entry["sha"]:
-            url = f"https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/{revision}/{path}"
+            url = f"https://raw.githubusercontent.com/IHP-GmbH/IHP-Open-PDK/{revision}/{urllib.parse.quote(path, safe='/')}"
             try:
                 with urllib.request.urlopen(url, timeout=120) as response:
                     data = response.read()

@@ -1,3 +1,10 @@
 .lake/
 build/
 __pycache__/
+
+# Raw ELF diagnostics are retained in the physical evidence archive/CAS.
+# Keep the probes, compact measurements and source provenance in Git.
+tools/pinwheel-drt-logger-observer*/source-evidence/native-ELF-probe-01/execution.log
+tools/pinwheel-drt-logger-observer*/source-evidence/native-ELF-probe-01/native-dynamic-section.txt
+tools/pinwheel-drt-logger-observer*/source-evidence/native-ELF-probe-01/native-dynamic-symbols.txt
+tools/pinwheel-drt-logger-observer*/source-evidence/native-ELF-probe-01/processWorkersBatch.asm

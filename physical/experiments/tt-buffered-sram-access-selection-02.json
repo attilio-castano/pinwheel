@@ -1,0 +1,144 @@
+{
+  "schema": "pinwheel-buffered-tt-sram-access-selection-v1",
+  "date": "2026-10-12",
+  "decision": "Test one vertical-mirror macro access policy with fixed footprints and fresh placement/repair. Compare against both the older exact2255 route diagnostic and a matched single-pass diagnostic of the retained timing-repaired checkpoint.",
+  "references": {
+    "intake": {
+      "path": "build/physical/tt-buffered-sram-access-intake-01/report.json",
+      "sha256": "ec887da0b808c5d3662da0e073f0913289abcedaa9b65fbb5f0ee842783babc0"
+    },
+    "older_baseline": {
+      "path": "physical/experiments/tt-buffered-power-route-results.json",
+      "sha256": "2beedd6dbe0b4ab5e93745fee5d476599238379a3b554d94e932238fd3fbd421"
+    },
+    "timing_reference": {
+      "path": "physical/experiments/tt-buffered-locality-results.json",
+      "sha256": "b5691e63523a0d0a2574d02397e843b975d2a293dee5db23f94fdf579c0edc77"
+    },
+    "candidate_preparation": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/preparation.json",
+      "sha256": "496d4cbd1caef52b649fbe6fe3db9f542046717394dd04b3cca1264f43341134"
+    },
+    "candidate_driver": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/driver.py",
+      "sha256": "a37a64b019e70e5ed713f5ed505b768064515be3eb69f80dfc4cc843a72f3545"
+    },
+    "candidate_preflight": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/preflight.py",
+      "sha256": "63f578d477a8dfb412061c5fab29d858645aeb0c9f9848eb19c1b29a271bf8a9"
+    },
+    "power_derivation": {
+      "path": "build/physical/tt-buffered-sram-access-inputs-01/report.json",
+      "sha256": "2cea4dc8a48894174ad3a7c07fee63325e69b1d1ce23c94847510537da02ce48"
+    },
+    "route_tools": {
+      "path": "build/physical/tt-buffered-sram-access-route-tools-01/prepared.json",
+      "sha256": "ff88197f71d20880490c979d27ac620f372165995691b34a3debd341cfd5e09d"
+    },
+    "validation_tools": {
+      "path": "build/tt-buffered/access-checkpoint-tools-01/prepared.json",
+      "sha256": "f0f828917710e22b61f1c8da7dc365f3278937b11bb00113401bb53008069587"
+    },
+    "accepted_no_cad_preflight": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/preflight-invocation.json",
+      "sha256": "296c7d2e4ee54fb7d47bc113ad80912a948a54f46a848dd0cf863defa464de7d"
+    },
+    "unexecuted_first_selection": {
+      "path": "physical/experiments/tt-buffered-sram-access-selection.json",
+      "sha256": "46d981c872cfc7ac9b9f9b305426cba04c30cc698467b2d113fca0b95ed31613"
+    },
+    "failed_no_cad_preflight": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-01/preflight-invocation.json",
+      "sha256": "e9c65f4b5665e6cb1037b9444bc729949a5eef90eb013db7c5074f5ac97ff53b"
+    }
+  },
+  "physical_delta": {
+    "both_macro_orientations": [
+      "N",
+      "FS"
+    ],
+    "odb_orientations": [
+      "R0",
+      "MX"
+    ],
+    "macro_bboxes_um": {
+      "engine.memory.storage0": [
+        252,
+        30,
+        1036.48,
+        94.36
+      ],
+      "engine.memory.storage1": [
+        252,
+        144,
+        1036.48,
+        208.36
+      ]
+    },
+    "stage_power_helper": "Actual supply rectangles reflected for MX; stripe x coordinates, widths, die-edge endpoints and grid recipe unchanged. Canonical helper unchanged."
+  },
+  "protected": {
+    "core_rtl_serial_abi_unchanged": true,
+    "synthesis_mapping": "DELAY 1 retained; no new synthesis",
+    "placement_repair_config": "Exact prior timing-recovery configuration except both macro orientations",
+    "clock_period_ns": 20,
+    "io_delay_max_min_ns": [
+      4,
+      0.2
+    ],
+    "clock_uncertainty_ns": 0.2,
+    "output_load_ff": 10,
+    "all_nine_libraries_unchanged": true,
+    "setup_then_hold_repair": true,
+    "power_grid_plan_and_template_pins_unchanged": true,
+    "canonical_sources_unchanged": true
+  },
+  "execution": {
+    "resume_from": "Odb.ManualMacroPlacement",
+    "stop_after": "OpenROAD.STAMidPNR-2",
+    "new_candidate_continuations": 1,
+    "fresh_route_diagnostic_arms": [
+      "retained timing-repaired control",
+      "mirrored candidate"
+    ],
+    "route_tcl": "Byte-identical to old exact2255 diagnostic;50 iterations with congestion allowed for retained map; no native NDR fallback retries.",
+    "physical_allocation_seconds": 1800,
+    "per_stage_all_in_allocations_seconds": {
+      "native_preflight": 60,
+      "candidate_macro_to_postcts": 650,
+      "matched_control_route": 230,
+      "candidate_route": 230,
+      "three_corner_sta": 170,
+      "logical_export": 105,
+      "both_net_power": 60
+    },
+    "allocated_stage_sum_seconds": 1505,
+    "reserved_host_validation_seconds": 292.565,
+    "cad_cpus_at_most": 4,
+    "candidate_memory": "6g",
+    "network": "none",
+    "mapped_functional_gate_host_cap_seconds": 900,
+    "mapped_gate_boundary": "Separate host simulation after physical diagnostics, charged and reported separately; no further physical optimization.",
+    "failed_preflight_seconds_charged": 2.435
+  },
+  "acceptance": {
+    "native_total_overflow_less_than_older_reference": 2255,
+    "native_total_overflow_less_than_matched_control": true,
+    "setup_and_hold_failures_each_corner": 0,
+    "hold_slack_each_corner_strictly_positive": true,
+    "full_setup_gains_preserved_if_each_corner_slack_at_least_ns": {
+      "nom_typ_1p20V_25C": 6.36164,
+      "nom_slow_1p08V_125C": 1.00825,
+      "nom_fast_1p32V_m40C": 9.58829
+    },
+    "setup_comparison_tolerance_ns": 1e-05,
+    "slow_native_target_ns": 1,
+    "slow_slew_violations_at_most": 2,
+    "fanout_violations_each_corner_at_most": 254,
+    "cap_violations_each_corner": 0,
+    "power_connectivity_both_nets": true,
+    "fresh_export_and_mapped_upload_required": true
+  },
+  "boundary": "One candidate policy, one native placement/repair continuation, matched routing control and candidate diagnostics. Macro-only causal comparison uses the matched control;2255 older mapping is an external target. Congestion-allowed route is never accepted routing or signoff. Pre-route timing and conditional fast temperatures remain qualified. No second candidate or automatic baseline rerun.",
+  "preflight_correction": "First no-CAD script-filename inspection assumed a macro-named file; freshstage02 usesnativeclassget_script_path. First2.435s retained, noCADstarted. Newpreflight passes0.913s; allconfig/stop-point assertions and ownedcleanup/inputcustody pass."
+}

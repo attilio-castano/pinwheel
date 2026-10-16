@@ -1,0 +1,654 @@
+{
+  "schema": "pinwheel-buffered-tt-sram-access-results-v1",
+  "date": "2026-10-12",
+  "status": "comparison_complete_candidate_rejected",
+  "submission_ready": false,
+  "decision": "Reject the north-facing mirror policy. Coarse congestion worsens and the full prior setup margins and slow slew bound are not preserved. Retain the older routing and repaired timing references.",
+  "scope": "One macro-orientation policy, one native placement/repair continuation, exact core RTL and serial ABI preserved. Full50 diagnostics timed out; matched coarse5 diagnostics and saved-database readback are explicitly separate. No accepted route or signoff.",
+  "physical_delta": {
+    "both_macro_orientations": [
+      "N",
+      "FS"
+    ],
+    "odb_orientations": [
+      "R0",
+      "MX"
+    ],
+    "macro_bboxes_um": {
+      "engine.memory.storage0": [
+        252,
+        30,
+        1036.48,
+        94.36
+      ],
+      "engine.memory.storage1": [
+        252,
+        144,
+        1036.48,
+        208.36
+      ]
+    },
+    "stage_power_helper": "Actual supply rectangles reflected for MX; stripe x coordinates, widths, die-edge endpoints and grid recipe unchanged. Canonical helper unchanged."
+  },
+  "protected": {
+    "core_rtl_serial_abi_unchanged": true,
+    "synthesis_mapping": "DELAY 1 retained; no new synthesis",
+    "placement_repair_config": "Exact prior timing-recovery configuration except both macro orientations",
+    "clock_period_ns": 20,
+    "io_delay_max_min_ns": [
+      4,
+      0.2
+    ],
+    "clock_uncertainty_ns": 0.2,
+    "output_load_ff": 10,
+    "all_nine_libraries_unchanged": true,
+    "setup_then_hold_repair": true,
+    "power_grid_plan_and_template_pins_unchanged": true,
+    "canonical_sources_unchanged": true
+  },
+  "native_flow": {
+    "status": "failed",
+    "exit_code": 2,
+    "completed_checkpoint": "OpenROAD.STAMidPNR-2",
+    "deferred_inherited_power_count": 30396,
+    "fresh_connectivity_pass_does_not_waive_producer_failure": true
+  },
+  "routing": {
+    "retained_full_native_references": {
+      "older": 2255,
+      "repaired": 6724
+    },
+    "fresh_full50_repaired_control": {
+      "status": "timed_out",
+      "complete_metric": null
+    },
+    "fresh_full50_candidate": {
+      "status": "timed_out",
+      "complete_metric": null
+    },
+    "matched_coarse": {
+      "iterations_per_native_segment": 5,
+      "automatic_clock_NDR_retries_retained": true,
+      "arms": {
+        "older": {
+          "wrapper_status": "passed",
+          "wrapper_exit_code": 0,
+          "native_route_completed": true,
+          "native_layers": {
+            "Metal2": {
+              "resource": 118435,
+              "demand": 73034,
+              "usage_percent": 61.67,
+              "max_horizontal_overflow": 1,
+              "max_vertical_overflow": 3,
+              "overflow": 775
+            },
+            "Metal3": {
+              "resource": 170237,
+              "demand": 123152,
+              "usage_percent": 72.34,
+              "max_horizontal_overflow": 4,
+              "max_vertical_overflow": 1,
+              "overflow": 517
+            },
+            "Metal4": {
+              "resource": 108608,
+              "demand": 17910,
+              "usage_percent": 16.49,
+              "max_horizontal_overflow": 1,
+              "max_vertical_overflow": 4,
+              "overflow": 907
+            },
+            "Total": {
+              "resource": 397280,
+              "demand": 214096,
+              "usage_percent": 53.89,
+              "max_horizontal_overflow": 6,
+              "max_vertical_overflow": 8,
+              "overflow": 2199
+            }
+          },
+          "native_overflow": 2199,
+          "independently_matching_marker_overflow": 2199,
+          "before_after_logical_netlist_sha256": "2266c5508887ba6bd641498dcdbe0229663718e9646aa2aa9cb27832283d7b05",
+          "exported_netlist_unchanged": true,
+          "native_clock_ndr_fallback_retries": 3,
+          "wirelength_um": 2101248,
+          "routed_nets": 29209,
+          "all_in_elapsed_seconds": 17.094
+        },
+        "candidate": {
+          "wrapper_status": "failed",
+          "wrapper_exit_code": 1,
+          "native_route_completed": true,
+          "native_layers": {
+            "Metal2": {
+              "resource": 118704,
+              "demand": 85793,
+              "usage_percent": 72.27,
+              "max_horizontal_overflow": 1,
+              "max_vertical_overflow": 8,
+              "overflow": 2210
+            },
+            "Metal3": {
+              "resource": 170236,
+              "demand": 147418,
+              "usage_percent": 86.6,
+              "max_horizontal_overflow": 7,
+              "max_vertical_overflow": 1,
+              "overflow": 6065
+            },
+            "Metal4": {
+              "resource": 108608,
+              "demand": 27536,
+              "usage_percent": 25.35,
+              "max_horizontal_overflow": 2,
+              "max_vertical_overflow": 3,
+              "overflow": 317
+            },
+            "Total": {
+              "resource": 397548,
+              "demand": 260747,
+              "usage_percent": 65.59,
+              "max_horizontal_overflow": 10,
+              "max_vertical_overflow": 12,
+              "overflow": 8592
+            }
+          },
+          "native_overflow": 8592,
+          "independently_matching_marker_overflow": 8592,
+          "before_after_logical_netlist_sha256": "21f63e3dabe9769fbdcc41b1e3622a732205205a976f8a75ae39b6845aa09a04",
+          "exported_netlist_unchanged": true,
+          "native_clock_ndr_fallback_retries": 8,
+          "wirelength_um": 2594268,
+          "routed_nets": 28966,
+          "all_in_elapsed_seconds": 51.192
+        }
+      },
+      "native_delta": 6393,
+      "native_change_percent": 290.7230559345157,
+      "less_than_older_coarse": false,
+      "equivalent_to_retained_full_results": false
+    },
+    "candidate_original_exporter": {
+      "status": "failed",
+      "exit_code": 1,
+      "native_routing_completed": true,
+      "original_receipt_preserved": true
+    },
+    "fresh_saved_database_readback": {
+      "status": "measured",
+      "original_route_receipt_status": "failed",
+      "original_native_routing_completed": true,
+      "original_geometry_export_failed": true,
+      "readback_only": true,
+      "native_overflow": 8592,
+      "native_layers": {
+        "Metal2": {
+          "resource": 118704,
+          "demand": 85793,
+          "usage_percent": 72.27,
+          "overflow": 2210
+        },
+        "Metal3": {
+          "resource": 170236,
+          "demand": 147418,
+          "usage_percent": 86.6,
+          "overflow": 6065
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27536,
+          "usage_percent": 25.35,
+          "overflow": 317
+        },
+        "Total": {
+          "resource": 397548,
+          "demand": 260747,
+          "usage_percent": 65.59,
+          "overflow": 8592
+        }
+      },
+      "native_clock_ndr_fallback_retries": 8,
+      "saved_preferred_grid_overflow": 8539.0,
+      "spatial_assigned_overflow": 8539.0,
+      "unassigned_edge_overflow": 0,
+      "inventory_unchanged": true,
+      "exported_netlist_unchanged": true,
+      "grid_edge_policy": {
+        "terminal_upper_bound": "Actualdie max is used only when clipping yields positiveextent; otherwise overflow remains spatiallyunassigned, neverdropped.",
+        "actual_grid_terminal_coordinates_dbu": [
+          1281600,
+          698400
+        ],
+        "actual_die_max_dbu": [
+          1289280,
+          710640
+        ],
+        "all_saved_units_preserved": true
+      },
+      "source_sha256": {
+        "postcts.odb": "9f20f43edaf84da5c9fcad7cf01fa3e2be2ff94337103a1da6a354e727de594c",
+        "routed.odb": "2c8c2bfefed783a1f9cf6134e41e10b192520ee18fe08e5cd0fcc0bf78e09900",
+        "before.v": "21f63e3dabe9769fbdcc41b1e3622a732205205a976f8a75ae39b6845aa09a04",
+        "after.v": "21f63e3dabe9769fbdcc41b1e3622a732205205a976f8a75ae39b6845aa09a04",
+        "native-route.log": "804a9f37899123dd9275b4f01e372dc00af749c510ce84dbc327f0cdcc04bb95",
+        "native-markers.json": "0a9337d7055a4e246a8eb3551e5e1e4049bf5d01af63ccc55dc1348ed9768fcb",
+        "source-report.json": "30a4958f3fe2870e5819b6965934116f937116643c7925c55c7323776d383fd9",
+        "export_geometry.py": "ed79bf62bb376287f6b2ed151223bab8c345ceabe229b6b9430e60a2c9187219"
+      },
+      "boundary": "Native OpenDB readback of existingcoarse5route. No routing, placement, netlist, physicalgrid or routingrule mutation; original failed export receipt remains failed. Locatedbins clip to actualdie; unlocatedoverflow is conserved explicitly. Native directional8592 andsavedgrid are separate representations."
+    },
+    "accepted_route": false,
+    "comparison_limit": "Older layout differs in mapping/placement/repair from the timing-repaired recipe. Coarse arms share routing inputs/resources but do not isolate orientation causality. No completed repaired-control map is available."
+  },
+  "timing": {
+    "status": "setup_hold_pass_full_gains_and_slew_gate_fail",
+    "parasitics": "pre_route_placement_estimates",
+    "clock_period_ns": 20,
+    "io_max_min_ns": [
+      4,
+      0.2
+    ],
+    "nominal_exact_ODB_reproduced": true,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "setup_worst_slack_ns": 6.05373,
+        "hold_worst_slack_ns": 0.22038,
+        "qualification": "matched_declared_library_corner",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 6,
+        "fanout_violations": 249,
+        "cap_violations": 0,
+        "prior_repaired": {
+          "setup_worst_slack_ns": 6.36164,
+          "hold_worst_slack_ns": 0.164109,
+          "qualification": "matched_declared_library_corner",
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "fanout_violations": 254,
+          "cap_violations": 0
+        },
+        "setup_slack_delta_ns": -0.30791,
+        "full_setup_gain_preserved": false
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_worst_slack_ns": 0.509791,
+        "hold_worst_slack_ns": 0.378489,
+        "qualification": "matched_declared_library_corner",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 11,
+        "fanout_violations": 249,
+        "cap_violations": 0,
+        "prior_repaired": {
+          "setup_worst_slack_ns": 1.00825,
+          "hold_worst_slack_ns": 0.278249,
+          "qualification": "matched_declared_library_corner",
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 2,
+          "fanout_violations": 254,
+          "cap_violations": 0
+        },
+        "setup_slack_delta_ns": -0.498459,
+        "full_setup_gain_preserved": false
+      },
+      "nom_fast_1p32V_m40C": {
+        "setup_worst_slack_ns": 9.41687,
+        "hold_worst_slack_ns": 0.0916526,
+        "qualification": "conditional_temperature_mismatch",
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "slew_violations": 0,
+        "fanout_violations": 249,
+        "cap_violations": 0,
+        "prior_repaired": {
+          "setup_worst_slack_ns": 9.58829,
+          "hold_worst_slack_ns": 0.0960465,
+          "qualification": "conditional_temperature_mismatch",
+          "setup_violations": 0,
+          "hold_violations": 0,
+          "slew_violations": 0,
+          "fanout_violations": 254,
+          "cap_violations": 0
+        },
+        "setup_slack_delta_ns": -0.17142,
+        "full_setup_gain_preserved": false
+      }
+    },
+    "slow_setup_gain_over_older_ns": 1.244572,
+    "slow_target_ns": 1,
+    "slow_target_met": false,
+    "slow_slew_limit": 2,
+    "slow_slew_limit_met": false,
+    "full_setup_gains_preserved": false,
+    "extracted_signoff": false
+  },
+  "power": {
+    "status": "fresh_connectivity_passed_native_producer_failed",
+    "net_results": {
+      "VPWR": {
+        "all_shapes_connected": true
+      },
+      "VGND": {
+        "all_shapes_connected": true
+      }
+    },
+    "native_metadata": {
+      "status": "measured",
+      "macros": {
+        "engine.memory.storage0": {
+          "bbox_dbu": [
+            252000,
+            30000,
+            1036480,
+            94360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "MX",
+          "signal_rectangles": 342,
+          "all_signal_rectangles_touch_north_edge": true,
+          "supply_contacts": {
+            "VDD!": {
+              "net": "VPWR",
+              "Metal4_rectangles": 68,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 68,
+              "geometry_sha256": "fda74b06e3e401985d5616766c56a591d136ad89b7c3e66f0aa60da7a074fee3",
+              "native_y_spans_dbu": [
+                [
+                  30000,
+                  94360
+                ],
+                [
+                  55535,
+                  94360
+                ]
+              ]
+            },
+            "VDDARRAY!": {
+              "net": "VPWR",
+              "Metal4_rectangles": 64,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 64,
+              "geometry_sha256": "59d3f27b94d59352722fcaee9de020f63427382f1b4e2876d7eced03dac14e10",
+              "native_y_spans_dbu": [
+                [
+                  30000,
+                  48895
+                ]
+              ]
+            },
+            "VSS!": {
+              "net": "VGND",
+              "Metal4_rectangles": 68,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 68,
+              "geometry_sha256": "62e9d74b93359050371270e80decf524717cc41a740370447ed6d056918e326d",
+              "native_y_spans_dbu": [
+                [
+                  30000,
+                  94360
+                ]
+              ]
+            }
+          }
+        },
+        "engine.memory.storage1": {
+          "bbox_dbu": [
+            252000,
+            144000,
+            1036480,
+            208360
+          ],
+          "master": "RM_IHPSG13_1P_64x64_c2_bm_bist",
+          "orientation": "MX",
+          "signal_rectangles": 342,
+          "all_signal_rectangles_touch_north_edge": true,
+          "supply_contacts": {
+            "VDD!": {
+              "net": "VPWR",
+              "Metal4_rectangles": 68,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 68,
+              "geometry_sha256": "9fe9635e4c1a2eaaebb2d52a547da2f2b66eecc4309131c247d8c64a2b29d80c",
+              "native_y_spans_dbu": [
+                [
+                  144000,
+                  208360
+                ],
+                [
+                  169535,
+                  208360
+                ]
+              ]
+            },
+            "VDDARRAY!": {
+              "net": "VPWR",
+              "Metal4_rectangles": 64,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 64,
+              "geometry_sha256": "065c7bd3729377e42e2a1b238570a4c2202c1dcadd5ffc6b1d2affd442f1c998",
+              "native_y_spans_dbu": [
+                [
+                  144000,
+                  162895
+                ]
+              ]
+            },
+            "VSS!": {
+              "net": "VGND",
+              "Metal4_rectangles": 68,
+              "native_transform_matches_expected": true,
+              "direct_column_contacts": 68,
+              "geometry_sha256": "935d2cb33932d5352653f35eb88d49421b7605f8b2a404c7e21babbe603a7846",
+              "native_y_spans_dbu": [
+                [
+                  144000,
+                  208360
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "unchanged_special_wire_via_boundary_geometry": true,
+      "grid_geometry_sha256": "1598525bac6715417b1c54500a99a5751cdb53f0d83a0348f5f570531ec1ebb7",
+      "grid_counts": {
+        "VPWR": {
+          "metal_shapes": 195,
+          "vias": 17766,
+          "boundary_shapes": 104
+        },
+        "VGND": {
+          "metal_shapes": 196,
+          "vias": 18072,
+          "boundary_shapes": 104
+        }
+      },
+      "reference_grid_counts": {
+        "VPWR": {
+          "metal_shapes": 195,
+          "vias": 17766,
+          "boundary_shapes": 104
+        },
+        "VGND": {
+          "metal_shapes": 196,
+          "vias": 18072,
+          "boundary_shapes": 104
+        }
+      },
+      "boundary": "Native OpenDB macro orientation, exact footprint, transformed loaded Metal4 supply contacts and unchanged complete supply wire/via/boundary geometry. No DRC, IR drop or current capacity claim."
+    },
+    "boundary": "Fresh native whole-grid both-net connectivity and exact candidate MX geometry/contact readback. No cell/netlist/grid mutation, DRC, IR drop or routed signoff."
+  },
+  "template_pins": {
+    "schema": "pinwheel-buffered-tt-sram-access-template-pin-readback-v1",
+    "status": "passed",
+    "expected_signal_ports": 43,
+    "all_actual_shapes_match_template": true,
+    "state_sha256": "1b5bc2e93866fd49941aab8f7cefe14479e408022acc35abd4a0b80e30dcbf98",
+    "template": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/tt_block_6x4_pgvdd.def",
+      "sha256": "b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4"
+    },
+    "actual_def": {
+      "path": "build/physical/tt-buffered-sram-access-candidate-02/runs/tt-buffered-sram-access-02/22-openroad-resizertimingpostcts/tt_um_pinwheel_buffered.def",
+      "sha256": "31f5523a0876a472103060099d77ed4576467e5ff0ddebf6cdb72c60771c6e97"
+    },
+    "signal_port_shapes_sha256": "4e130716e6aad8438efd856e4805c10124fc1b841b4ae6644cb88839e9d15cdc",
+    "boundary": "Host-only normalized DEF Metal4 signal-pin shape/placement readback; no routing or electrical qualification."
+  },
+  "mapped_upload": {
+    "status": "passed",
+    "same_source_ODB_as_timing_power": true,
+    "peers": 21,
+    "request_response_pairs": 400,
+    "zero_delay_edges": 336426,
+    "parser_negatives": 3,
+    "host_elapsed_seconds": 124.874,
+    "host_gate_cap_seconds": 900,
+    "report": {
+      "path": "build/tt-buffered/netlist/tt-buffered-netlist-sram-access-postcts-01/report.json",
+      "sha256": "6132063be56239cb75cacc19d6b176585c6186b35d7f16d8a0a33c894eee9f1b"
+    }
+  },
+  "congestion_map": {
+    "status": "matched_coarse_maps_complete",
+    "analysis": {
+      "path": "build/physical/tt-buffered-sram-access-analysis-04/results-01/analysis.json",
+      "sha256": "6bc4c1256a9f7fbe1d907dfb1978bed35a12bb288bd6b87014fb69722cf2067a"
+    },
+    "native_old_new": [
+      2199,
+      8592
+    ],
+    "saved_preferred_old_new": [
+      2193,
+      8539
+    ],
+    "unassigned_edge_old_new": [
+      0,
+      0
+    ],
+    "same_absolute_scale_and_axes": true,
+    "figure_png": {
+      "path": "docs/physical/figures/tt-buffered-sram-access-coarse.png",
+      "sha256": "91e351634baaee71f96d0b3173f1fb0073e1f509692988411f16b73acc65a06e"
+    },
+    "figure_svg": {
+      "path": "docs/physical/figures/tt-buffered-sram-access-coarse.svg",
+      "sha256": "6707fb1c6537e4ece4945281738719859d5bb0274655e15628bab157b8208f5b"
+    }
+  },
+  "resource_accounting": {
+    "physical_allocation_seconds": 1800,
+    "metered_diagnostics_seconds": {
+      "failed_preflight": 2.435,
+      "accepted_preflight": 0.913,
+      "native_inspection": 0.603,
+      "candidate_native_flow": 206.72,
+      "full_repaired_control_route": 190.335,
+      "full_candidate_route": 910.376,
+      "timing": 41.486,
+      "logical_export": 0.694,
+      "power": 8.86,
+      "coarse_older_route": 17.094,
+      "coarse_candidate_route": 51.192,
+      "candidate_saved_grid_readback": 4.286
+    },
+    "metered_diagnostics_total_seconds": 1434.994,
+    "collector02_seconds": 1.843,
+    "collector03_seconds": 1.724,
+    "host_native_table_seconds": 0.17,
+    "accounted_total_seconds": 1438.731,
+    "additional_conservative_host_allowance_seconds": 30,
+    "charged_total_seconds": 1468.731,
+    "within_physical_allocation": true,
+    "allowance_scope": "Host analysis/render, failed collector01 without a measured timer, and small host preparation/closeout checks. The allowance is not a measured elapsed-time claim. Mapped host simulation is separately reported, with no physical optimization."
+  },
+  "source_custody": {
+    "final_collector": {
+      "path": "build/physical/tt-buffered-sram-access-closeout-03/report.json",
+      "sha256": "19743a742e07ad1cdc78efe9d707654a80e2a8567e40e3bd55750fa551ccd12e"
+    },
+    "prior_evidence_entries": 43,
+    "prior_source_entries": 17,
+    "protected_sources": 507,
+    "boundary_intake_entries": 495,
+    "digital_intake_entries": 494,
+    "all_current": true,
+    "all_experimental_owned_containers_absent": true,
+    "canonical_sources_changed_by_this_comparison": false
+  },
+  "current_source_sha256": {
+    "physical/tt_um_pinwheel_buffered.sv": "ffa3523cb65ee84326bbab42b4059e8020b76eec70695dabfc9924042e9d5ff0",
+    "physical/tt_buffered_sram_serial_host_bridge.sv": "8fd17469b2cb02c8935c983be8cc9292447b3fc6c05e95284b9359a516debdba",
+    "scripts/check-tt-buffered.py": "7a2819dbaa80604c98ee8aeef8a4975645589178b02bf1946929ef063b4d2a61",
+    "scripts/check-tt-buffered-boundary.py": "5e1a3187cd09c7db6fdc5a924da902bd3c5f6f828aef9dc20785f41208699852",
+    "scripts/buffered_tt_physical.py": "1898f33d70c3caa6a3b9680b10884224ca2ed410a08bc0a0a615dad26b019606",
+    "scripts/prepare-buffered-tt-physical.py": "49500cc71ac1d70bf31fd72cb16ea9af1fc6b335a64d1193e99cd6cb3b0a730e",
+    "scripts/run-buffered-tt-physical.py": "2ee029b60c89ef466cc22e49253fded9c77bcfefc972da3e33ba1b1e0c53d80a",
+    "scripts/install-physical-pdk.py": "467dcd10e2d5d5f2125f766764b1a34f16ad9c3a02e1cc18f6e2c3eeeacb4cf3",
+    "test/test_buffered_tt_physical.py": "e6c447af397bd450915197a9ccaa63fdca4e47b157898e17b52aed60a8bd9f4b",
+    "physical/buffered_tt/connect_sram_power.py": "6aa64653a38a1e8922f410f7f98a4689aead18ec4d0592ec1b230e2bb4fa1d6a",
+    "physical/buffered_tt/librelane_plugin_buffered_tt.py": "4c18b0a1b060b1a8c3301fc67bca115d4447e49c06674e28587ef275d107378e",
+    "physical/buffered_tt/pdn.tcl": "9dc72b60fba62c5ae37cf3721e4990d372066724b7a5a64ec0b7c23d6b0f6b36",
+    "scripts/check-tt-buffered-netlist.py": "7d783cbac937e988ff5159a126473ba4dd8d2b2e9190f7e1060bf843dba5168b",
+    "test/test_tt_buffered_netlist.py": "06d7b1442ac845398fe915bfcf40c9341e6c1cd4d9b91389bc06e5c2e27e183c",
+    "physical/buffered_tt/gpl_capacity.tcl": "7b597beed0b41b9008b6a2dd805d5f29a59bb99d7e590aab05ed997c0ba6b2a6",
+    "scripts/apply-buffered-tt-physical-recipe.py": "386fc9a5d1ed0e73fd1a82f18f0d3e38bd91127b9b5b5f10aace2545b4b258e4",
+    "test/test_buffered_tt_physical_recipe.py": "0b2beda40c84411554cbf4793f4d403ce2f615976ea005e2b8935c73954ece0c"
+  },
+  "evidence_sha256": {
+    "build/physical/tt-buffered-sram-access-candidate-01/preflight-invocation.json": "e9c65f4b5665e6cb1037b9444bc729949a5eef90eb013db7c5074f5ac97ff53b",
+    "build/physical/tt-buffered-sram-access-candidate-02/preflight-invocation.json": "296c7d2e4ee54fb7d47bc113ad80912a948a54f46a848dd0cf863defa464de7d",
+    "build/physical/tt-buffered-sram-access-native-inspect-01/report.json": "ef71fa7d40aa761cdd27fc4da10ae9808603bf6fff02863c27fb0e7cbf1c4c82",
+    "build/physical/tt-buffered-sram-access-candidate-02/candidate-invocation.json": "0eeac4f63e92d506282a229706145e013da5c73847569528f06871bb5534423f",
+    "build/physical/tt-buffered-sram-access-control-route-01/report.json": "b8e2490aefc99e9292a44e33c7ec17bd050d92f630dbd3b5d571ccae0fdb28c1",
+    "build/physical/tt-buffered-sram-access-candidate-route-01/report.json": "673dee952bab2500738fd6260193eb03eb40d5eb6f08c8810f3919b8ba55ff01",
+    "build/physical/tt-buffered-sram-access-postcts-timing-01/report.json": "40c3df3af87b08bebcc0c9a8249b962240f7860507fcfcf59ae97e91c946edb1",
+    "build/tt-buffered/netlist/sram-access-postcts-export-01/report.json": "3ac10675281751b322cd7dd0b7279eab03386358b717337763feba2a33077bcd",
+    "build/physical/tt-buffered-sram-access-power-01/report.json": "e1b71a33be5f4027c6f870203be19e3ad90a79bb9394f128d702ebcdf9837976",
+    "build/physical/tt-buffered-sram-access-coarse-older-01/report.json": "4cb8f59911b7de10d7b69dd0c92c714541646f06e80e42fe4da3ef641238c121",
+    "build/physical/tt-buffered-sram-access-coarse-candidate-01/report.json": "30a4958f3fe2870e5819b6965934116f937116643c7925c55c7323776d383fd9",
+    "build/physical/tt-buffered-sram-access-coarse-candidate-readback-01/report.json": "fbd8cd33e251b9b30e036c0f358098b8ae4c8f76a99d7985fe233b924e868846",
+    "build/physical/tt-buffered-sram-access-closeout-03/report.json": "19743a742e07ad1cdc78efe9d707654a80e2a8567e40e3bd55750fa551ccd12e",
+    "build/physical/tt-buffered-sram-access-intake-01/report.json": "ec887da0b808c5d3662da0e073f0913289abcedaa9b65fbb5f0ee842783babc0",
+    "build/physical/tt-buffered-sram-access-candidate-02/preparation.json": "496d4cbd1caef52b649fbe6fe3db9f542046717394dd04b3cca1264f43341134",
+    "build/physical/tt-buffered-sram-access-closeout-02/report.json": "3b385700e93040eb4d15665335a60cbf8b188b3989141bddfa4f2364e569b90f",
+    "build/physical/tt-buffered-sram-access-coarse-host-measurement-01/report.json": "9386b0bec09360fbf55b36daeef8cf3017c21f66a92c17e198fff24868013a50",
+    "build/physical/tt-buffered-sram-access-execution-01/template-pin-readback.json": "68e1797f46dd98610222f0102b825a3f7301f793e15eb3d2bf1c9fd7a15cf0b2",
+    "build/tt-buffered/netlist/tt-buffered-netlist-sram-access-postcts-01/report.json": "6132063be56239cb75cacc19d6b176585c6186b35d7f16d8a0a33c894eee9f1b",
+    "build/tt-buffered/netlist/tt-buffered-netlist-sram-access-postcts-01/source-closeout.json": "109a56d640573cd5941d2bc1617fe78d134d7b9dc8a5ee5b6b7b0664ff2688dd",
+    "physical/experiments/tt-buffered-results.json": "4b7765cbb0a1a39ea227c2598bfb0282e87b48eee0561e3ee924fc8433a54f5e",
+    "physical/experiments/tt-buffered-power-route-results.json": "2beedd6dbe0b4ab5e93745fee5d476599238379a3b554d94e932238fd3fbd421",
+    "physical/experiments/tt-buffered-locality-results.json": "b5691e63523a0d0a2574d02397e843b975d2a293dee5db23f94fdf579c0edc77",
+    "physical/experiments/tt-buffered-sram-access-selection.json": "46d981c872cfc7ac9b9f9b305426cba04c30cc698467b2d113fca0b95ed31613",
+    "physical/experiments/tt-buffered-sram-access-selection-02.json": "2f8f369f847ff89adfd016a6a16782e8915dbe198c47561c16937fbae4f91d99",
+    "physical/experiments/tt-buffered-sram-access-selection-03.json": "ca7041f5832eb77cf93c71d881039a4b1d355f8f68f0d36e827250e3574dff7d",
+    "physical/experiments/tt-buffered-sram-access-coarse-selection.json": "abbf9c18f6bc810d781c1c7e00881a5ab3cb7533c9264da7e7ad9f626b8ca21a",
+    "build/physical/tt-buffered-sram-access-inputs-01/report.json": "2cea4dc8a48894174ad3a7c07fee63325e69b1d1ce23c94847510537da02ce48",
+    "build/physical/tt-buffered-sram-access-power-tools-02/prepared.json": "973d2767d8a5a78d76b4a60dee7416fe972c9716202072ab71de1a8202b02920",
+    "build/physical/tt-buffered-sram-access-route-tools-03/prepared.json": "52bae7f13936ffd596dac87703302ac7bdfb1f3ff0b29eab699bdb77e1989519",
+    "build/physical/tt-buffered-sram-access-readback-tools-01/prepared.json": "46d5a8ac1c68a1a3164a13b00a160e8351cdb3a7dc5f4263a22569f327c04205",
+    "build/physical/tt-buffered-sram-access-analysis-04/results-01/analysis.json": "6bc4c1256a9f7fbe1d907dfb1978bed35a12bb288bd6b87014fb69722cf2067a",
+    "build/physical/tt-buffered-sram-access-analysis-04/results-01/visualization.json": "f8aa2d7e374af9768f370a3502fad78b643834a152af3f6c9f3161088682728a",
+    "build/physical/tt-buffered-sram-access-analysis-04/invocation.json": "8fbb53ae571f01c6fac079dedbfc86d07a2a6ae1bc1b3f9a4f93ad0db086abd8",
+    "build/physical/tt-buffered-sram-access-analysis-04/figure-review.json": "58670f16377ae9d713ef55bf0e5b0b3c748f1a685babf277396fc01dbae12207",
+    "docs/physical/figures/tt-buffered-sram-access-coarse.png": "91e351634baaee71f96d0b3173f1fb0073e1f509692988411f16b73acc65a06e",
+    "docs/physical/figures/tt-buffered-sram-access-coarse.svg": "6707fb1c6537e4ece4945281738719859d5bb0274655e15628bab157b8208f5b",
+    "build/physical/tt-buffered-sram-access-root-closeout-01/write_results.py": "f05fc792ed246d8e60c2a6c17f5c608bae0f2f7a603fc7a8cc44d0b7dba0899b"
+  },
+  "remaining": [
+    "accepted global and detailed routing",
+    "slew and fanout repair",
+    "refresh inherited power metrics inside the native flow",
+    "extracted timing with qualified SRAM corners",
+    "DRC/LVS and official Tiny Tapeout precheck"
+  ],
+  "artifact_custody": "Raw CAD logs/databases and helper sources remain under ignored build paths; tracked receipts and figures bind their bytes. Historical failed receipts are retained unchanged."
+}

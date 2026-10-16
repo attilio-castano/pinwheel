@@ -1,0 +1,21 @@
+{
+  "schema": "pinwheel-observer-host-test-fixture-provenance-v1",
+  "native_revision": "dcf36133a369abc8f3c5e5738cd4d82e4903c0e0",
+  "scope": "Host command/generation tests only; no compiler, native observer loading or CAD execution. Historical receipts remain unchanged.",
+  "build_reference": {
+    "fixture": "native-build-05.json",
+    "original_repository_path": "build/physical/tt-overnight-taper-tools-01/jobs/build-05/native-05/build.json",
+    "sha256": "698d986cb0a438d285529c6792b7c5127ca69607fbc934b1dc58f83fa9567f56",
+    "size_bytes": 6715,
+    "selection": "Exact complete native build-05 JSON; only recorded compiler arguments are consumed by native_build.command."
+  },
+  "native_bootstrap": {
+    "tracked_repository_path": "tools/pinwheel-physical-history/snapshots/tt-p2-drt-onepass-route-01/native.py",
+    "original_repository_path": "build/physical/tt-p2-drt-onepass-route-01/native.py",
+    "sha256": "a1f6cce78d7249c8111f748ea0543fdbf512183e983efe700f88716d813884ee",
+    "size_bytes": 9073,
+    "selection": "Existing byte-identical physical-history mirror. Copy to a temporary ORIGINAL root and exercise real stage.native_program and observer_native generation; never execute generated native code."
+  },
+  "capture_original_native_build_receipt_pass_is_reexecuted": false,
+  "requires_historical_checkout_or_build_tree": false
+}

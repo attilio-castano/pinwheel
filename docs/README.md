@@ -23,7 +23,8 @@ the [physical inputs](../physical/README.md) and
 | Run programs on the chip | [Host workflow](host-workflow.md) | [Whole-chip interface](engine/whole-chip.md) and [external timing](engine/external-interface.md) |
 | Change a protocol or pin timing | [Protocol models](#protocols-and-pin-timing) | The shared [engine contract](engine/engine-model.md) and [input latency](input-latency.md) |
 | Compare storage, fetch, or paired execution | [Storage primitives](storage-primitives.md) | [Fetch deadlines](fetch-contract-study.md) and [paired execution](storage/compact-execution-study.md) |
-| Explain a timing or routing result | [Physical targets](physical-targets.md) | [Organization study](physical/physical-organization-study.md) and [routing diagnostics](routing-diagnostics.md) |
+| Explain the latest buffered TT result | [Overnight routing and qualification](physical/tt-buffered-overnight-campaign.md) | [Next experiments](research/tt-buffered-next-experiments.md) and the [tracked result manifest](../physical/experiments/tt-buffered-overnight-campaign-results.json) |
+| Explain earlier timing or routing results | [Physical targets](physical-targets.md) | [Organization study](physical/physical-organization-study.md) and [routing diagnostics](routing-diagnostics.md) |
 | Reproduce or extend an experiment | [Development setup](development.md) | [Validation](validation.md) and the [research workflow](research/README.md) |
 
 **Read the evidence boundary before reusing a result.** A *reference* model or
@@ -74,6 +75,7 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | [First buffered hardware slice](protocols/buffered-hardware.md) | Reloadable linear circuit, dedicated 32-bit TX/RX, retained indexed result reads and release; emitted/gate SPI traces and measured register-store cost. |
 | [Compact counted buffered hardware](protocols/buffered-counted-hardware.md) | Nested timed loops, same-edge rollover and shared SPI/JTAG circuitry; source-bound images, retained results and measured saved-gate cost. |
 | [Versioned buffered serial interface](protocols/buffered-sram-serial.md) | Atomic image loading, one owned transfer and frozen retained-result responses over sampled serial pins, sharing the SRAM execution engine. |
+| [Tiny Tapeout buffered SRAM boundary](protocols/tt-buffered-sram.md) | Exact TT pin map, reset/selection contract, RTL/mapped upload-to-pins validation, native power integration and bounded physical qualification. |
 | [Initialized buffered SRAM loading](protocols/buffered-sram-loading.md) | Accepted-upload coverage derives the resident image and candidate responses from arbitrary startup; universal binary execution and public-output correspondence. |
 | [Buffered SPI source-to-resident bridge](protocols/buffered-spi-source.md) | Bounded typed SPI source, accepted-image/kernel correspondence and a design explorer session checking payload reuse, result ownership and program replacement. |
 | [Buffered source and decoded-image execution](protocols/buffered-source-execution.md) | Parametric SPI and fixed reactive I²C source/interpreter correspondence for arbitrary input histories and execution prefixes; packed circuit state remains a separate relation. |
@@ -150,6 +152,14 @@ remain separate gates; a useful diagnosis is not whole-chip closure.
 
 | Record | Use it for |
 | --- | --- |
+| [Buffered TT overnight routing and qualification](physical/tt-buffered-overnight-campaign.md) | Current routing reference C14: 22,115→1,732 native DRC records; longer C17 rejected at 2,511. Actual GDS DRC/LVS, antenna and conditional extracted timing still fail. [Next bounded experiments](research/tt-buffered-next-experiments.md) separate repairs, qualification and stronger research. |
+| [Physical source history](../tools/pinwheel-physical-history/README.md) | Preserved producer/diagnostic source snapshots and origin manifest; [build retention receipt](../physical/experiments/tt-buffered-worktree-retention.json) owns off-worktree evidence custody. Source and retained measurements do not establish physical acceptance. |
+| [Buffered TT fanout2803-only placement](physical/tt-buffered-fanout2803.md) | Historical one-buffer comparison: candidate rejected; native coarse overflow 5,840 → 5,955. Timing gate True; power and finite mapped checks pass. Submission remains open. |
+| [Buffered TT two-buffer placement](physical/tt-buffered-two-buffer.md) | Preceding experiment moves exactly two control buffers. Three-corner setup/hold and finite mapped/power checks pass unchanged; coarse overflow grows 5,840 → 5,944. Candidate rejected; retain repaired R0. |
+| [Buffered TT incremental access placement](physical/tt-buffered-access-incremental.md) | Prior original-orientation experiment moves only 42 address-shell cells: congestion rises 0.822% and slow setup loses 17.72 ps, while all unrelated placement, RTL/ABI, mapped behavior and power geometry remain unchanged. The candidate is rejected. |
+| [Buffered TT address-access placement](physical/tt-buffered-access-placement.md) | Earlier original-orientation experiment rejects twelve address-driver fences: matched coarse congestion and setup/slew worsen despite correct placement, unchanged RTL/ABI, and passing mapped/power checks. |
+| [Buffered TT SRAM access comparison](physical/tt-buffered-sram-access.md) | Earlier bounded comparison rejects north-facing mirroring: matched coarse congestion worsens and full timing margins decline; maps and remaining gates are retained. |
+| [Buffered TT congestion and timing repair](physical/tt-buffered-locality.md) | Earlier spatial macro/access bottlenecks, endpoint-measured synthesis selection, preserved RTL/ABI and one bounded physical allocation with a retained tool-failure recovery. |
 | [Chip architecture study](physical/chip-architecture-study.md) | State ownership, per-edge resources, and communication costs before another physical run. |
 | [Index-map slice study](physical/map-slice-study.md) | Why an exact bit-plane boundary still imported expensive shared controls. |
 | [Local map-tile study](physical/map-tile-study.md) | Area/fanout gains from local decoding and the address-distribution cost they did not remove. |

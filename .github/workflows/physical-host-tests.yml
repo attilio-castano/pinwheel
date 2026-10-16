@@ -1,0 +1,39 @@
+name: Portable physical-tool host tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-tests:
+    name: Host regressions (${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        suite:
+          - campaign
+          - drt-logger-observer
+          - drt-logger-observer-02
+          - drt-logger-observer-03
+    steps:
+      - name: Check out source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Check host-test guards
+        run: python3 -B scripts/check-physical-host-tests.py --self-test-guards
+      - name: Run one isolated suite without build fixtures or CAD
+        run: >-
+          python3 -B scripts/check-physical-host-tests.py
+          --suite ${{ matrix.suite }} --require-fresh-checkout

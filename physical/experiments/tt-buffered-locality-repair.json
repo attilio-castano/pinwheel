@@ -1,0 +1,50 @@
+{
+  "schema": "pinwheel-buffered-tt-physical-recipe-v1",
+  "source_inputs_sha256": "3dcda62136ed00af4b9103af84c12bc4b67bc696c228fc4286f681d90978bbbe",
+  "source_config_sha256": "a9b9fa0902334e44e6372a1d0fea43a67ed15d18f26004645f0fb6a56dc36551",
+  "physical_knobs": {
+    "SYNTH_STRATEGY": "DELAY 1",
+    "PL_TIMING_DRIVEN": true,
+    "PL_KEEP_RESIZE_BELOW_OVERFLOW": 0,
+    "PL_TARGET_DENSITY_PCT": 55,
+    "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": true,
+    "PL_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+    "GRT_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+    "PL_RESIZER_SETUP_REPAIR_TNS_PCT": 100,
+    "GRT_RESIZER_SETUP_REPAIR_TNS_PCT": 100,
+    "meta": {
+      "flow": "Classic",
+      "substituting_steps": {
+        "+OpenROAD.GeneratePDN": "Project.BufferedSramPower",
+        "OpenROAD.GlobalPlacement": "Project.BufferedCapacityPlacement"
+      }
+    }
+  },
+  "evidence": [
+    {
+      "path": "build/physical/tt-buffered-congestion-map-01/analysis.json",
+      "sha256": "36a2948f9bcf05cf06def3662903523e267e3f791c142baf2b6478d7e83c5578"
+    },
+    {
+      "path": "build/physical/tt-buffered-congestion-map-01/invocation.json",
+      "sha256": "1f2d883ed0d6ff132ca2ef2f0b62773498e7223ba3129c748eab5fc802149706"
+    },
+    {
+      "path": "build/physical/tt-buffered-local-repair-01/report.json",
+      "sha256": "6dee38ba02ea640abaf4bca9707b4dd10f212f0676be66538fa5edee9ae025ec"
+    },
+    {
+      "path": "build/physical/tt-buffered-delay1-synthesis-01/report.json",
+      "sha256": "3c3827560cdac629d74863cad3a1aba02f13254da121d2e72c0a3202ad9c7176"
+    },
+    {
+      "path": "build/physical/tt-buffered-delay1-slowsta-03/report.json",
+      "sha256": "0f72ccca9754666dd6be10c9e8e4569bb2aacb6d0a560ae0b4965fc28b8c95a7"
+    },
+    {
+      "path": "build/physical/tt-buffered-delay1-slowsta-03/sta/nom_slow_1p08V_125C/endpoints.rpt",
+      "sha256": "deaa40e0649e311886a45f7c5d49f1e50963c056023b2d6c710819d45babd505"
+    }
+  ],
+  "rationale": "Native2255-overflow replay localizes Metal2/Metal4 bottlenecks at the SRAM obstructions/access corridors, supporting actualGRT routing-capacity feedback rather than power-grid changes. Candidate55percent provides inflation headroom above prior feasible density; GPL must check its actual floor. DELAY1 has4.07percent larger standard-cell area and a deeperMISO cone, but matched native cell-only slowSTA improves MISO slack by0.510328ns (+2.896969 to+3.407297). UnbufferedENA worsens and requires physical repair; no transfer of cell-only estimates to placed closure is asserted. Native outputbuffer/margin1 setup-then-hold probe improved old slow slack by0.209660ns but remained negative. Combine capacity/timing placement, measured endpoint mapping and1ns setup headroom, preserving all3corners,20nsclock,4/0.2nsIObudgets,0.1/0.05nshold margins, bufferlimits, actualsupplies, metal limits and foundry checks. TNS100percent makes existing repair coverage explicit; no falsepaths, clock restructuring, coreRTL or ABI change."
+}

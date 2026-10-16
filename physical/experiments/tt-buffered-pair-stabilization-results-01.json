@@ -1,0 +1,784 @@
+{
+  "schema": "pinwheel-buffered-tt-pair-stabilization-results-v1",
+  "status": "stable_artifacts_with_timing_failures",
+  "started_utc": "2026-10-13T23:38:11+00:00",
+  "deadline_utc": "2026-10-14T00:03:11+00:00",
+  "passes": 2,
+  "stable": true,
+  "routing_process_status": "failed",
+  "routing_coordinator_exit_code": 1,
+  "routing_native_exit_code": -9,
+  "routing_container_OOM_observed": true,
+  "routing_failure_preserved": true,
+  "headroom_scope": "Read-only diagnostic STA on verified completed stable snapshots; original routing process is not relabelled passed.",
+  "stability_comparisons": {
+    "full_native_inventory": true,
+    "canonical_all_route_multisets": true,
+    "logical_netlist_bytes": true,
+    "raw_FastRoute_capacities": true,
+    "full_saved_geometry_capacity_usage": true,
+    "native_route_counts_NDR_state": true,
+    "nominal_full_SPEF": true,
+    "nominal_timing_and_report_bodies": true
+  },
+  "baseline": {
+    "native_layers": {
+      "Metal2": {
+        "resource": 118435,
+        "demand": 84983,
+        "usage_percent": 71.75,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1175
+      },
+      "Metal3": {
+        "resource": 170237,
+        "demand": 142469,
+        "usage_percent": 83.69,
+        "max_horizontal_overflow": 5,
+        "max_vertical_overflow": 1,
+        "overflow": 2282
+      },
+      "Metal4": {
+        "resource": 108608,
+        "demand": 27127,
+        "usage_percent": 24.98,
+        "max_horizontal_overflow": 1,
+        "max_vertical_overflow": 3,
+        "overflow": 1770
+      },
+      "Total": {
+        "resource": 397280,
+        "demand": 254579,
+        "usage_percent": 64.08,
+        "max_horizontal_overflow": 7,
+        "max_vertical_overflow": 7,
+        "overflow": 5227
+      }
+    },
+    "native_overflow": 5227,
+    "native_clock_ndr_fallback_retries": 6,
+    "native_clock_ndr_fallback_net_order": [
+      "clk",
+      "clknet_0_clk_regs",
+      "delaynet_5_clk",
+      "delaynet_2_clk",
+      "delaynet_3_clk",
+      "delaynet_1_clk"
+    ],
+    "saved_preferred_grid_overflow": 5207.0,
+    "native_grid_capacity_usage_sha256": "79f8a92b0eb807afd6c25c9769c88dcb34328a961937693ec3011f087d435e5d",
+    "live_router_pointer": "187651626871904",
+    "live_process_pid": 7,
+    "CLOCK_net_count": 332
+  },
+  "pass1": {
+    "phase": "pass1",
+    "scope_preservation_passed": true,
+    "actual_dirty_signal_nets": [
+      "_11039_",
+      "net913",
+      "net914"
+    ],
+    "actual_changed_routes_from_baseline": [
+      "net913",
+      "net914"
+    ],
+    "actual_changed_RC_nets_from_baseline": [
+      "net913",
+      "net914"
+    ],
+    "native_cache_invalidation": [
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "_11039_",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      },
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "net913",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      },
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "net914",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      }
+    ],
+    "native": {
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 85000,
+          "usage_percent": 71.77,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1175
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 142469,
+          "usage_percent": 83.69,
+          "max_horizontal_overflow": 5,
+          "max_vertical_overflow": 1,
+          "overflow": 2285
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27138,
+          "usage_percent": 24.99,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1770
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254607,
+          "usage_percent": 64.09,
+          "max_horizontal_overflow": 7,
+          "max_vertical_overflow": 7,
+          "overflow": 5230
+        }
+      },
+      "native_overflow": 5230,
+      "native_clock_ndr_fallback_retries": 6,
+      "native_clock_ndr_fallback_net_order": [
+        "clk",
+        "clknet_0_clk_regs",
+        "delaynet_5_clk",
+        "delaynet_2_clk",
+        "delaynet_3_clk",
+        "delaynet_1_clk"
+      ],
+      "saved_preferred_grid_overflow": 5210.0,
+      "native_grid_capacity_usage_sha256": "7bfeea3257a92725e922d30aceab5271ef63cbcfc573899cc7c55571f464e8b0",
+      "live_router_pointer": "187651626871904",
+      "live_process_pid": 7,
+      "CLOCK_net_count": 332
+    },
+    "typical_timing": {
+      "hold_worst_slack_ns": 0.10772683050524363,
+      "setup_worst_slack_ns": 5.674468167073915,
+      "SPEF_sha256": "47baaf15bf8629b655d9d6ee8a5ceb654666c3e137644e4ee0b53f68852e7e61",
+      "min_report_sha256": "aa4f0c93fd01d1488f33330c387fe585cee5f65d0946f2d01812a43710edb83a",
+      "max_report_sha256": "cee1f01ff527ef648d3057ae6a32d0536986708b40c3ed5449540a8621685273",
+      "parasitic_model": "nativeglobalrouting",
+      "clock_and_signal_input_identity": "SPEF retains every estimated net, macro/FFpin geometry and load fixed by nativeinventory/Lib/SDC"
+    },
+    "no_cell_changes_after_baseline": true,
+    "CLOCK_routes_exact": true,
+    "all_unrelated_routes_exact": true,
+    "raw_capacities_exact": true,
+    "netlist_bytes_exact": true
+  },
+  "pass2": {
+    "phase": "pass2",
+    "scope_preservation_passed": true,
+    "actual_dirty_signal_nets": [
+      "_11039_",
+      "net913",
+      "net914"
+    ],
+    "actual_changed_routes_from_baseline": [
+      "net913",
+      "net914"
+    ],
+    "actual_changed_RC_nets_from_baseline": [
+      "net913",
+      "net914"
+    ],
+    "native_cache_invalidation": [
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "_11039_",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      },
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "net913",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      },
+      {
+        "method": "native public Net::destroyPins then GlobalRouter::addDirtyNet",
+        "net": "net914",
+        "symbol": "_ZN3grt3Net11destroyPinsEv",
+        "DB_mutation": false
+      }
+    ],
+    "native": {
+      "native_layers": {
+        "Metal2": {
+          "resource": 118435,
+          "demand": 85000,
+          "usage_percent": 71.77,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1175
+        },
+        "Metal3": {
+          "resource": 170237,
+          "demand": 142469,
+          "usage_percent": 83.69,
+          "max_horizontal_overflow": 5,
+          "max_vertical_overflow": 1,
+          "overflow": 2285
+        },
+        "Metal4": {
+          "resource": 108608,
+          "demand": 27138,
+          "usage_percent": 24.99,
+          "max_horizontal_overflow": 1,
+          "max_vertical_overflow": 3,
+          "overflow": 1770
+        },
+        "Total": {
+          "resource": 397280,
+          "demand": 254607,
+          "usage_percent": 64.09,
+          "max_horizontal_overflow": 7,
+          "max_vertical_overflow": 7,
+          "overflow": 5230
+        }
+      },
+      "native_overflow": 5230,
+      "native_clock_ndr_fallback_retries": 6,
+      "native_clock_ndr_fallback_net_order": [
+        "clk",
+        "clknet_0_clk_regs",
+        "delaynet_5_clk",
+        "delaynet_2_clk",
+        "delaynet_3_clk",
+        "delaynet_1_clk"
+      ],
+      "saved_preferred_grid_overflow": 5210.0,
+      "native_grid_capacity_usage_sha256": "7bfeea3257a92725e922d30aceab5271ef63cbcfc573899cc7c55571f464e8b0",
+      "live_router_pointer": "187651626871904",
+      "live_process_pid": 7,
+      "CLOCK_net_count": 332
+    },
+    "typical_timing": {
+      "hold_worst_slack_ns": 0.10772683050524363,
+      "setup_worst_slack_ns": 5.674468167073915,
+      "SPEF_sha256": "47baaf15bf8629b655d9d6ee8a5ceb654666c3e137644e4ee0b53f68852e7e61",
+      "min_report_sha256": "aa4f0c93fd01d1488f33330c387fe585cee5f65d0946f2d01812a43710edb83a",
+      "max_report_sha256": "cee1f01ff527ef648d3057ae6a32d0536986708b40c3ed5449540a8621685273",
+      "parasitic_model": "nativeglobalrouting",
+      "clock_and_signal_input_identity": "SPEF retains every estimated net, macro/FFpin geometry and load fixed by nativeinventory/Lib/SDC"
+    },
+    "no_cell_changes_after_baseline": true,
+    "CLOCK_routes_exact": true,
+    "all_unrelated_routes_exact": true,
+    "raw_capacities_exact": true,
+    "netlist_bytes_exact": true,
+    "pass1_to_pass2_exact_comparisons": {
+      "full_native_inventory": true,
+      "canonical_all_route_multisets": true,
+      "logical_netlist_bytes": true,
+      "raw_FastRoute_capacities": true,
+      "full_saved_geometry_capacity_usage": true,
+      "native_route_counts_NDR_state": true,
+      "nominal_full_SPEF": true,
+      "nominal_timing_and_report_bodies": true
+    },
+    "stable": true,
+    "actual_route_changes_from_pass1": []
+  },
+  "headroom": {
+    "fresh_native_three_corners_measured": true,
+    "all_global_setup_hold_nonnegative": false,
+    "all_affected_hold_after_1ps_reserve_at_least50ps": true,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "global_setup_ps": 5674.47,
+        "global_hold_ps": 107.727,
+        "affected_setup_ps": 5849.3550000000005,
+        "affected_hold_ps": 1060.5469999999998,
+        "affected_hold_after_1ps_reserve_ps": 1059.5469999999998,
+        "qualification": "matched_declared_library_corner",
+        "fresh_metrics": {
+          "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": 2,
+          "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": 254,
+          "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": 0,
+          "power__internal__total": 0.0107847,
+          "power__switching__total": 0.00171718,
+          "power__leakage__total": 5.7905e-06,
+          "power__total": 0.0125077,
+          "clock__skew__worst_hold__corner:nom_typ_1p20V_25C": -0.463902,
+          "clock__skew__worst_setup__corner:nom_typ_1p20V_25C": 0.469496,
+          "timing__hold__ws__corner:nom_typ_1p20V_25C": 0.107727,
+          "timing__setup__ws__corner:nom_typ_1p20V_25C": 5.67447,
+          "timing__hold__tns__corner:nom_typ_1p20V_25C": 0,
+          "timing__setup__tns__corner:nom_typ_1p20V_25C": 0,
+          "timing__hold__wns__corner:nom_typ_1p20V_25C": 0,
+          "timing__setup__wns__corner:nom_typ_1p20V_25C": 0,
+          "timing__hold_vio__count__corner:nom_typ_1p20V_25C": 0,
+          "timing__hold_r2r__ws__corner:nom_typ_1p20V_25C": 0.250058,
+          "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+          "timing__setup_vio__count__corner:nom_typ_1p20V_25C": 0,
+          "timing__setup_r2r__ws__corner:nom_typ_1p20V_25C": 18.155,
+          "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": 0,
+          "flow__warnings__count": 0,
+          "flow__errors__count": 0,
+          "flow__warnings__type_count": 0
+        },
+        "source8c_comparison": {
+          "reference_only": true,
+          "prior_original_reproduction_required": false,
+          "reference_setup_worst_slack_ns": 5.67447,
+          "reference_hold_worst_slack_ns": 0.107727,
+          "setup_delta_ns": 0.0,
+          "hold_delta_ns": 0.0,
+          "affected_contexts": {
+            "fanout914/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 5.849355,
+              "reference_worst_slack_ns": 5.921342,
+              "minimum_endpoint_delta_ns": -0.07235299999999967,
+              "maximum_endpoint_delta_ns": -0.06231099999999934
+            },
+            "fanout914/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 1.245381,
+              "reference_worst_slack_ns": 1.229203,
+              "minimum_endpoint_delta_ns": 0.0058509999999998286,
+              "maximum_endpoint_delta_ns": 0.06413000000000002
+            },
+            "fanout914/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 5.853569,
+              "reference_worst_slack_ns": 5.9086,
+              "minimum_endpoint_delta_ns": -0.05539499999999986,
+              "maximum_endpoint_delta_ns": -0.05503099999999961
+            },
+            "fanout914/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 1.060547,
+              "reference_worst_slack_ns": 1.046728,
+              "minimum_endpoint_delta_ns": 0.0022529999999996164,
+              "maximum_endpoint_delta_ns": 0.047940000000000094
+            },
+            "fanout913/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 5.849355,
+              "reference_worst_slack_ns": 5.921342,
+              "minimum_endpoint_delta_ns": -0.07235299999999967,
+              "maximum_endpoint_delta_ns": -0.06231099999999934
+            },
+            "fanout913/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 1.50888,
+              "reference_worst_slack_ns": 1.449816,
+              "minimum_endpoint_delta_ns": 0.054704000000000086,
+              "maximum_endpoint_delta_ns": 0.065801
+            },
+            "fanout913/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 5.853569,
+              "reference_worst_slack_ns": 5.9086,
+              "minimum_endpoint_delta_ns": -0.05539499999999986,
+              "maximum_endpoint_delta_ns": -0.05503099999999961
+            },
+            "fanout913/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 1.299287,
+              "reference_worst_slack_ns": 1.252629,
+              "minimum_endpoint_delta_ns": 0.04140599999999983,
+              "maximum_endpoint_delta_ns": 0.06039299999999992
+            }
+          },
+          "electrical_violation_counts": {
+            "design__max_slew_violation__count__corner:nom_typ_1p20V_25C": {
+              "actual": 2,
+              "reference": 2,
+              "delta": 0
+            },
+            "design__max_fanout_violation__count__corner:nom_typ_1p20V_25C": {
+              "actual": 254,
+              "reference": 254,
+              "delta": 0
+            },
+            "design__max_cap_violation__count__corner:nom_typ_1p20V_25C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_vio__count__corner:nom_typ_1p20V_25C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_r2r_vio__count__corner:nom_typ_1p20V_25C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__setup_vio__count__corner:nom_typ_1p20V_25C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__setup_r2r_vio__count__corner:nom_typ_1p20V_25C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            }
+          }
+        }
+      },
+      "nom_slow_1p08V_125C": {
+        "global_setup_ps": -105.738,
+        "global_hold_ps": 265.159,
+        "affected_setup_ps": -105.738,
+        "affected_hold_ps": 1828.086,
+        "affected_hold_after_1ps_reserve_ps": 1827.086,
+        "qualification": "matched_declared_library_corner",
+        "fresh_metrics": {
+          "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": 7,
+          "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": 254,
+          "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": 0,
+          "power__internal__total": 0.00858206,
+          "power__switching__total": 0.00133072,
+          "power__leakage__total": 2.49842e-05,
+          "power__total": 0.00993777,
+          "clock__skew__worst_hold__corner:nom_slow_1p08V_125C": -0.506624,
+          "clock__skew__worst_setup__corner:nom_slow_1p08V_125C": 0.526283,
+          "timing__hold__ws__corner:nom_slow_1p08V_125C": 0.265159,
+          "timing__setup__ws__corner:nom_slow_1p08V_125C": -0.105738,
+          "timing__hold__tns__corner:nom_slow_1p08V_125C": 0,
+          "timing__setup__tns__corner:nom_slow_1p08V_125C": -0.65625,
+          "timing__hold__wns__corner:nom_slow_1p08V_125C": 0,
+          "timing__setup__wns__corner:nom_slow_1p08V_125C": -0.105738,
+          "timing__hold_vio__count__corner:nom_slow_1p08V_125C": 0,
+          "timing__hold_r2r__ws__corner:nom_slow_1p08V_125C": 0.537854,
+          "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+          "timing__setup_vio__count__corner:nom_slow_1p08V_125C": 9,
+          "timing__setup_r2r__ws__corner:nom_slow_1p08V_125C": 0.279041,
+          "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": 0,
+          "flow__warnings__count": 0,
+          "flow__errors__count": 0,
+          "flow__warnings__type_count": 0
+        },
+        "source8c_comparison": {
+          "reference_only": true,
+          "prior_original_reproduction_required": false,
+          "reference_setup_worst_slack_ns": 0.00895284,
+          "reference_hold_worst_slack_ns": 0.265159,
+          "setup_delta_ns": -0.11469084,
+          "hold_delta_ns": 0.0,
+          "affected_contexts": {
+            "fanout914/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": -0.105738,
+              "reference_worst_slack_ns": 0.008953,
+              "minimum_endpoint_delta_ns": -0.11545899999999998,
+              "maximum_endpoint_delta_ns": -0.10723099999999985
+            },
+            "fanout914/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 2.121354,
+              "reference_worst_slack_ns": 2.094076,
+              "minimum_endpoint_delta_ns": 0.014929999999999666,
+              "maximum_endpoint_delta_ns": 0.10995400000000011
+            },
+            "fanout914/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.021751,
+              "reference_worst_slack_ns": 0.116323,
+              "minimum_endpoint_delta_ns": -0.09525600000000001,
+              "maximum_endpoint_delta_ns": -0.09457099999999974
+            },
+            "fanout914/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 1.828086,
+              "reference_worst_slack_ns": 1.803394,
+              "minimum_endpoint_delta_ns": 0.010838999999999821,
+              "maximum_endpoint_delta_ns": 0.08901799999999982
+            },
+            "fanout913/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": -0.105738,
+              "reference_worst_slack_ns": 0.008953,
+              "minimum_endpoint_delta_ns": -0.11545899999999998,
+              "maximum_endpoint_delta_ns": -0.10723099999999985
+            },
+            "fanout913/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 2.56282,
+              "reference_worst_slack_ns": 2.467061,
+              "minimum_endpoint_delta_ns": 0.09575800000000001,
+              "maximum_endpoint_delta_ns": 0.10995400000000011
+            },
+            "fanout913/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.021751,
+              "reference_worst_slack_ns": 0.116323,
+              "minimum_endpoint_delta_ns": -0.09525600000000001,
+              "maximum_endpoint_delta_ns": -0.09457099999999974
+            },
+            "fanout913/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 2.251893,
+              "reference_worst_slack_ns": 2.164565,
+              "minimum_endpoint_delta_ns": 0.08103299999999969,
+              "maximum_endpoint_delta_ns": 0.10218499999999997
+            }
+          },
+          "electrical_violation_counts": {
+            "design__max_slew_violation__count__corner:nom_slow_1p08V_125C": {
+              "actual": 7,
+              "reference": 7,
+              "delta": 0
+            },
+            "design__max_fanout_violation__count__corner:nom_slow_1p08V_125C": {
+              "actual": 254,
+              "reference": 254,
+              "delta": 0
+            },
+            "design__max_cap_violation__count__corner:nom_slow_1p08V_125C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_vio__count__corner:nom_slow_1p08V_125C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_r2r_vio__count__corner:nom_slow_1p08V_125C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__setup_vio__count__corner:nom_slow_1p08V_125C": {
+              "actual": 9,
+              "reference": 0,
+              "delta": 9
+            },
+            "timing__setup_r2r_vio__count__corner:nom_slow_1p08V_125C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            }
+          }
+        }
+      },
+      "nom_fast_1p32V_m40C": {
+        "global_setup_ps": 9068.199999999999,
+        "global_hold_ps": 19.5748,
+        "affected_setup_ps": 9235.168,
+        "affected_hold_ps": 625.3330000000001,
+        "affected_hold_after_1ps_reserve_ps": 624.3330000000001,
+        "qualification": "conditional_temperature_mismatch",
+        "fresh_metrics": {
+          "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": 2,
+          "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": 254,
+          "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": 0,
+          "power__internal__total": 0.0132256,
+          "power__switching__total": 0.00219048,
+          "power__leakage__total": 1.36646e-05,
+          "power__total": 0.0154298,
+          "clock__skew__worst_hold__corner:nom_fast_1p32V_m40C": -0.427049,
+          "clock__skew__worst_setup__corner:nom_fast_1p32V_m40C": 0.4284,
+          "timing__hold__ws__corner:nom_fast_1p32V_m40C": 0.0195748,
+          "timing__setup__ws__corner:nom_fast_1p32V_m40C": 9.0682,
+          "timing__hold__tns__corner:nom_fast_1p32V_m40C": 0,
+          "timing__setup__tns__corner:nom_fast_1p32V_m40C": 0,
+          "timing__hold__wns__corner:nom_fast_1p32V_m40C": 0,
+          "timing__setup__wns__corner:nom_fast_1p32V_m40C": 0,
+          "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": 0,
+          "timing__hold_r2r__ws__corner:nom_fast_1p32V_m40C": 0.071865,
+          "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+          "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": 0,
+          "timing__setup_r2r__ws__corner:nom_fast_1p32V_m40C": 18.6191,
+          "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": 0,
+          "flow__warnings__count": 0,
+          "flow__errors__count": 0,
+          "flow__warnings__type_count": 0
+        },
+        "source8c_comparison": {
+          "reference_only": true,
+          "prior_original_reproduction_required": false,
+          "reference_setup_worst_slack_ns": 9.0682,
+          "reference_hold_worst_slack_ns": 0.0195748,
+          "setup_delta_ns": 0.0,
+          "hold_delta_ns": 0.0,
+          "affected_contexts": {
+            "fanout914/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 9.235168,
+              "reference_worst_slack_ns": 9.281534,
+              "minimum_endpoint_delta_ns": -0.046546000000001087,
+              "maximum_endpoint_delta_ns": -0.03416899999999856
+            },
+            "fanout914/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.738059,
+              "reference_worst_slack_ns": 0.727867,
+              "minimum_endpoint_delta_ns": 0.00047599999999992093,
+              "maximum_endpoint_delta_ns": 0.0382760000000002
+            },
+            "fanout914/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 9.24282,
+              "reference_worst_slack_ns": 9.278463,
+              "minimum_endpoint_delta_ns": -0.035816999999999766,
+              "maximum_endpoint_delta_ns": -0.035641999999999285
+            },
+            "fanout914/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.625333,
+              "reference_worst_slack_ns": 0.616891,
+              "minimum_endpoint_delta_ns": -0.0017339999999999023,
+              "maximum_endpoint_delta_ns": 0.026694999999999913
+            },
+            "fanout913/rise/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 9.235168,
+              "reference_worst_slack_ns": 9.281534,
+              "minimum_endpoint_delta_ns": -0.046546000000001087,
+              "maximum_endpoint_delta_ns": -0.03416899999999856
+            },
+            "fanout913/rise/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.877041,
+              "reference_worst_slack_ns": 0.84439,
+              "minimum_endpoint_delta_ns": 0.030230999999999897,
+              "maximum_endpoint_delta_ns": 0.04266499999999995
+            },
+            "fanout913/fall/max": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 9.24282,
+              "reference_worst_slack_ns": 9.278463,
+              "minimum_endpoint_delta_ns": -0.035816999999999766,
+              "maximum_endpoint_delta_ns": -0.035641999999999285
+            },
+            "fanout913/fall/min": {
+              "endpoint_count": 257,
+              "worst_slack_ns": 0.766332,
+              "reference_worst_slack_ns": 0.741636,
+              "minimum_endpoint_delta_ns": 0.020734999999999948,
+              "maximum_endpoint_delta_ns": 0.03834599999999999
+            }
+          },
+          "electrical_violation_counts": {
+            "design__max_slew_violation__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 2,
+              "reference": 2,
+              "delta": 0
+            },
+            "design__max_fanout_violation__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 254,
+              "reference": 254,
+              "delta": 0
+            },
+            "design__max_cap_violation__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_vio__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__hold_r2r_vio__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__setup_vio__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            },
+            "timing__setup_r2r_vio__count__corner:nom_fast_1p32V_m40C": {
+              "actual": 0,
+              "reference": 0,
+              "delta": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "three_corner_STA_skipped_when_unstable": false,
+  "protected_source_count": 507,
+  "RTL_ABI_all_cells_CLOCK_and_unrelated_routes_preserved": true,
+  "saved_candidate_files_unchanged": true,
+  "no_sizing_or_third_pass": true,
+  "new_baseline_promoted": false,
+  "all_actual_owned_processes_absent": true,
+  "no_commit_push_submission": true,
+  "independent_review": {
+    "captured_two_pass_stability_independently_verified": true,
+    "original_failed_native_exit_and_OOM_preserved": true,
+    "fresh_diagnostic_three_corner_STA_completed": true,
+    "affected_path_contexts_verified": 6168,
+    "no_sizing_or_third_pass": true,
+    "final_review_sha256": "e9605ab1a137a9db2ae42322a3f02e22dce4c9422796b9c3e751423e4407834c"
+  },
+  "qualification": "Captured P2=P1 repeatability and diagnostic three-corner headroom only. Source native routing failed/OOM after completed captures; artifacts were independently verified rather than its exit status relabelled. Estimated global-route RC, conditional mixed-temperature FAST corner, and unexposed optimizer history remain distinct from signoff.",
+  "remaining": [
+    "Nine slow-corner reset-to-SRAM-address setup failures",
+    "Routing process out-of-memory failure",
+    "Whole-chip fast hold below50ps",
+    "Existing slew2/7/2 and254clock fanout violations",
+    "Fresh buf4 assessment on updatedstableRC beforephysicaltrial",
+    "Detailed routing and physical signoff"
+  ],
+  "references": {
+    "protocol": {
+      "path": "build/physical/tt-buffered-pair-stabilization-root-01/plan.json",
+      "sha256": "e668d9a780c216352697b8d5da6dd96be9a60f2a448ce6335e3635289941b136"
+    },
+    "selector": {
+      "path": "physical/experiments/tt-buffered-pair-stabilization-selection-01.json",
+      "sha256": "1a97752b37e821be4cdf482198e1457b0fc7d427a570d48dc5b3daed689f4acd"
+    },
+    "route_tools": {
+      "path": "build/physical/tt-buffered-pair-stabilization-tools-01/prepared.json",
+      "sha256": "df43bc93766f2ab93fb96d71bcf619302718d7978b39f86cd2c49d2b55eea847"
+    },
+    "failed_route_producer": {
+      "path": "build/physical/tt-buffered-pair-stabilization-route-01/report.json",
+      "sha256": "2c2e5e86726fedde0b03f2eefca7afd36473849febb783b7b8879ab71e712691"
+    },
+    "completed_two_pass_measurement": {
+      "path": "build/physical/tt-buffered-pair-stabilization-route-01/measurement.json",
+      "sha256": "e32f4cad5f3e61ab8b337bdd4bf7f282e48ec7f7205beac63c673e7bdcc4601f"
+    },
+    "completed_artifact_admission": {
+      "path": "build/physical/tt-buffered-pair-stabilization-root-01/completed-artifact-admission.json",
+      "sha256": "9d10f0b5b718882dea86eb4c6d09dcbcd60a1215cc22a2ffa6d69e2c573e5dfc"
+    },
+    "independent_completed_artifact_review": {
+      "path": "build/physical/tt-buffered-pair-stabilization-review-01/completed-artifact-review.json",
+      "sha256": "90bfbce81be200368b7c55e4e68756eb7b15d8c8b94ddc0dc209b0d6c3adf278"
+    },
+    "independent_final_review": {
+      "path": "build/physical/tt-buffered-pair-stabilization-review-01/final-review.json",
+      "sha256": "e9605ab1a137a9db2ae42322a3f02e22dce4c9422796b9c3e751423e4407834c"
+    },
+    "diagnostic_STA_tools": {
+      "path": "build/physical/tt-buffered-pair-stabilization-timing-tools-02/prepared.json",
+      "sha256": "bc27ecc0e59fb802a09a34692890bdebf14a586882eea007223d47a9c2b28129"
+    },
+    "diagnostic_headroom": {
+      "path": "build/physical/tt-buffered-pair-stabilization-headroom-01/report.json",
+      "sha256": "ae112c332b1a10acca7292cbe700769069768a36aa08658a0fb33817727787bd"
+    },
+    "source8c_reference": {
+      "path": "build/physical/tt-buffered-holdreset-pair-preflight-01/report.json",
+      "sha256": "3c9c11606ecc00b8748427319b3dc23d7802b972d06241a0a6d67e57b3498940"
+    },
+    "prior_failed_exact_noedit": {
+      "path": "build/physical/tt-buffered-buf4-pair-route-01/report.json",
+      "sha256": "bb1ef3ca4e5da7b48a4ff33702b36f137aa6681980138bb435486c0b5a87a489"
+    }
+  }
+}

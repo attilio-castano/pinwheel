@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-10-09 after SPI and reactive I²C decoded-image execution proofs,
-following the bounded SPI resident bridge and source-pinned explorer session.
+Updated 2026-10-16 after the closed buffered-SRAM overnight routing campaign,
+same-source extracted timing, GDS checks and observed SRAM restart diagnosis.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -15,6 +15,55 @@ implementation to formal meaning and physical feasibility. Use UART, SPI and
 I²C as the main contracts and bounded new waveforms to challenge their shared
 abstractions; the larger iteration also retains its declared
 capacity-change gate. Competition admission remains separate.
+
+**Current physical decision: retain C14 as a routing reference; physical acceptance fails.**
+The [overnight study](../physical/tt-buffered-overnight-campaign.md) and
+[result manifest](../../physical/experiments/tt-buffered-overnight-campaign-results.json)
+retain the matched original-P2 control and completed C3/C9/C14/C17 layouts.
+Native routing violations fall **22,115 → 1,732 (92.17%)** on C14. The longer
+C17 schedule regresses to 2,511 and is rejected. Cells, placement, SRAM/PG
+geometry, RTL, serial ABI, clock topology and rules stay fixed; signal and clock
+wires could change. This replaces repaired R0 as the current routing reference,
+without rewriting earlier timing-estimate comparisons.
+
+C14 fails the independent public GDS deck with **4,053 records**, boundary LVS
+with actual supply bridges, antenna with **124 nets / 135 INPUT contacts**, and
+conditional extracted timing with **−7.353613 ns slow setup / −23.768 ps fast
+hold**. Three Liberty corners share one nominal RC model; CMOS5L stack
+calibration, fast logic/SRAM compatibility and electrical limits remain open.
+Official Tiny Tapeout precheck was not run. Source/geometry controls and evidence
+retention passed; they do not establish a legal layout. No new core theorem or
+new protocol-regression result was produced overnight.
+
+**Next discriminator:** the [bounded backlog](tt-buffered-next-experiments.md)
+records a proposed net7845 conductor-union-preserving restart test, a one-filler
+NWell test requiring separate approval, timing-model/cycle-contract assessment and
+remaining physical/competition versus stronger research gates. The restart
+failure's empty local access set is observed; the internal split's causal role
+is not. A new positive acceptance wrapper must precede a repair trial; the old
+expected-failure diagnostic launcher cannot accept success. No next CAD run is
+launched or authorized by these records.
+
+The [branch closeout](../history/tt-buffered-branch-closeout.md) records the
+progressive commits, artifact custody and passing final host checks. The full
+foundation gate now passes in an isolated source snapshot: 60 executable suites,
+one kernel suite, current-source build/import coverage and standard-axiom audit.
+The [PR validation receipt](../../physical/experiments/tt-buffered-pr-validation.json)
+owns this later result; it changes no physical acceptance verdict.
+
+**Retained earlier buffered studies:** the [TT wrapper](../protocols/tt-buffered-sram.md)
+owns finite upload-to-pins and mapped evidence; the [locality repair](../physical/tt-buffered-locality.md)
+owns its earlier positive timing estimates. The [SRAM orientation](../physical/tt-buffered-sram-access.md),
+[address-driver fences](../physical/tt-buffered-access-placement.md),
+[incremental access placement](../physical/tt-buffered-access-incremental.md),
+[two-buffer](../physical/tt-buffered-two-buffer.md) and
+[fanout2803-only](../physical/tt-buffered-fanout2803.md) candidates remain
+rejected under their original matched congestion/timing gates. Those coarse
+measurements and the [older continuation](../../physical/experiments/tt-buffered-power-route-results.json)
+are historical comparisons, not extracted signoff on C14. General initialized
+source-to-serial-to-wrapper refinement remains a stronger research obligation.
+
+## Retained digital and architecture history
 
 **Delivered local capability: [four SPI modes and bounded transactions](../protocols/spi-transactions.md).**
 One- and two-byte transfers keep chip select continuous. Universal Lean
@@ -559,43 +608,42 @@ separate from exploratory progress.
 
 ## Next discriminators
 
-1. **Qualify the supplied SRAM.** Resolve the exact-version width
-   interpretation or obtain applicable component evidence. Independent internal
-   verification still needs the remaining contexts and a complete macro positive
-   control before cross-block fault claims. The prepared maintainer report remains
-   unsent; the interpreted session theorem retains the explicit memory law.
-2. **Qualify fast conditions and package power.** Obtain compatible logic/SRAM
-   characterization or a justified conservative timing bound, then connect the
-   power analysis to qualified package sources and an activity envelope. The
-   [completed sensitivity study](../physical/power-boundary-results.md) supplies
-   the saved-layout evaluator; the checked
-   [package-power request](../physical/package-power-contract.md) assigns the
-   eight absent input classes, typed values and stop criteria. The
-   [updated intake](implementation-acceptance.md) keeps these separate from the
-   now-passing formal interpretation row. Preserve the candidate while collecting
-   qualification evidence.
-3. **Establish physically feasible A and its correspondence.** Apply the
-   [bounded plan](complete-design-iteration.md) to the retained filled candidate
-   and close its physical acceptance obligations. Its interpreted emitted RTL
-   already composes certified upload and E64 package execution; scoped mapping,
-   cell-function and connectivity checks retain their separate boundaries.
-   All three allocated A routes are used. Historical results from other backends
-   do not transfer. Record exploratory size overages separately.
-4. **Repeat for a meaningful capacity change.** Increase distinct record capacity
-   from 32 to 64 while retaining 256 positions, atomic replacement and execution
-   timing. Require the same behavioral and physical gates; record image-format,
-   area and implementation consequences explicitly.
-5. **Demonstrate a reproducible design iteration.** The current-A assessment
-   now replays from a movable, hash-checked source/evidence bundle. This retains
-   physical observations rather than rebuilding them. Recover both accepted A/B
-   reports through the same documented workflow, with declared inputs and no
-   unrecorded manual netlist edits. Required missing checks remain incomplete;
-   experimental layout success is separate from the [submission package](../submission-plan.md).
+1. **Test a specific C14 restart mechanism.** Follow the proposed 25-minute
+   net7845 experiment in the [buffered backlog](tt-buffered-next-experiments.md).
+   Prove unchanged physical conductor union and rules, qualify a new positive
+   wrapper, then require a fresh no-edit control and actual completed end4.
+   A cleared exception alone cannot promote a physical candidate.
+2. **Separate finishing from timing repair.** The proposed 15-minute one-filler
+   test changes the frozen cell inventory and needs its own scope. Calibrate
+   RC/Liberty conditions and assess the 20 ns cycle contract before a same-RTL
+   mapping study. Preserve cycle equivalence, hold reserve and electrical limits.
+3. **Close the exact chip's qualification.** Repair signal-to-PG shorts, qualify
+   the supplied SRAM and extraction model, and measure final GDS DRC/LVS,
+   antenna, density, timing and official TT precheck. Connect power analysis to
+   actual package sources and an activity envelope. The historical
+   [power sensitivity](../physical/power-boundary-results.md),
+   [package-power request](../physical/package-power-contract.md) and
+   [acceptance intake](implementation-acceptance.md) retain their narrower
+   results; they do not transfer automatically to this buffered layout.
+4. **Compose source interpretation with the circuit.** Establish the
+   interpreter-to-packed-circuit relation and initialized I²C source history,
+   then general source/compiler/serial composition. Maintain explicit SRAM,
+   sampling and timing assumptions. These are research goals beyond competition
+   admission; the formal gate above owns the existing proof boundary.
+5. **Demonstrate repeatable capacity-changing iteration.** The historical
+   [complete-design-iteration plan](complete-design-iteration.md) retains its
+   named paired A/B comparison and original route allocations. A buffered TT
+   routing improvement does not complete that comparison or replenish its
+   budgets. Reopen with declared capacity, initialized semantics, comparable
+   physical gates, actual evidence retention and explicit exploratory overages.
+   [Submission packaging](../submission-plan.md) remains a separate terminal
+   action.
 
 ## Evidence boundaries and where to go deeper
 
 | Question | Evidence owner and current limit |
 | --- | --- |
+| What did the latest buffered TT campaign establish? | [Overnight routing and qualification](../physical/tt-buffered-overnight-campaign.md) retains C14's 92.17% native-DRC reduction, rejected C17, negative extracted timing, actual DRC/LVS/antenna failures and observed restart mechanism. [Next experiments](tt-buffered-next-experiments.md) separates proposed fixes from acceptance. |
 | What exactly did the paired physical attempts establish? | [Physical targets](../physical-targets.md) traces local repairs, reroutes, admission and diagnosis. Its [September 23 route manifest](../../physical/experiments/paired-locality-route-results.json) records the baseline's failed qualification; the [regional experiment](../../physical/experiments/regional-decoding-results.json) records the later measured alternatives. A local gain does not imply whole-chip or detailed routing closure. |
 | Can saved routes be reopened for a local edit? | [Import repair and one signal buffer](../physical/route-import-fix-experiment.md) passes exact no-edit and actual edit/revert accounting. The first local edit removes one reserve shortfall with unchanged global timing and clock routes. The adapter remains pinned and restricted; four shortfalls and 25 overflow units remain. |
 | What did routing-policy changes establish? | [Routing policy and reserve](../physical/routing-policy-experiment.md) records an ineffective grid option, matched reroute drift and a timing-priority candidate with worse congestion. No cells or area changed; all three saved congestion views reconcile. |

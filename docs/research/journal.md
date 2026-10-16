@@ -14,6 +14,7 @@ or interrupted work.
 
 | Topic | Entry points |
 | --- | --- |
+| Buffered TT routing and qualification | [Overnight campaign and observed restart failure](#2026-10-16--buffered-tt-overnight-routing-and-observed-restart-failure) |
 | Local iteration and retained replay | [Portable A, fresh-source interpretation and power request](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request) |
 | Protocols and pin timing | [Bounded I²C writes and bus clear](#2026-09-29--bounded-i2c-writes-and-bus-clear), [Four-mode SPI and resolved package wires](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [continuous UART with unequal clocks](#2026-09-15--continuous-uart-reception-with-unequal-clocks), [input-latency contract](#2026-09-17-input-latency-as-a-contract-parameter) |
 | Artifact proof and composition | [Paired RTL interpretation](#2026-09-28--retained-paired-rtl-interpretation-and-refreshed-acceptance), [Hardware correspondence](#2026-09-15--hardware-correspondence-batch), [whole chip in Lean](#2026-09-18-the-whole-chip-in-lean--feeders-serial-loader-upload-theorem) |
@@ -35,6 +36,7 @@ or interrupted work.
 | 2026-09-23 | [Paired local repair](#2026-09-23--paired-local-repair-with-fresh-coarse-wire-estimates) | Full-route requalification, organization and timing diagnosis |
 | 2026-09-26 | [SRAM distribution and write timing](#2026-09-26--sram-distribution-and-write-timing), [competing read paths](#2026-09-26--control-distribution-and-competing-read-paths), [coordinated placement](#2026-09-26--coordinated-status-and-decode-placement) | Complete watchlist, matched coarse routes, rejected regional placement and clock/hold diagnosis |
 | 2026-09-29 | [Portable continuation](#2026-09-29--portable-a-fresh-source-interpretation-and-power-request), [four-mode SPI](#2026-09-29--four-mode-spi-and-a-resolved-package-interface), [bounded I²C](#2026-09-29--bounded-i2c-writes-and-bus-clear) | Replay portability, power-request boundary and established-protocol capabilities |
+| 2026-10-16 | [Buffered TT overnight campaign](#2026-10-16--buffered-tt-overnight-routing-and-observed-restart-failure) | Matched routing gains, failed physical qualification, live access-point diagnosis and sealed evidence |
 
 ## Future receipt shape
 
@@ -6622,3 +6624,39 @@ dialogs, all 691 session frames, existing architecture/protocol walkthroughs,
 and five widths from 320 to 1,440 pixels without page errors, network requests
 or horizontal overflow. Source/presentation checks do not rerun Lean proofs;
 the linked gate does. No execution circuit, image ABI or physical result changes.
+
+## 2026-10-16 — Buffered TT overnight routing and observed restart failure
+
+Closed the approved local multi-hour physical campaign in about 6 hours
+21 minutes. The [study](../physical/tt-buffered-overnight-campaign.md) and
+[tracked manifest](../../physical/experiments/tt-buffered-overnight-campaign-results.json)
+retain source identities, measurements and evidence custody. Matched original
+P2 control has 22,115 native DRC records; completed C3/C9/C14/C17 have
+7,973/1,889/1,732/2,511. Retain C14 as routing reference, reject C17's regression.
+No cell, placement, SRAM/PG, RTL or serial-ABI change was performed; clock wires
+could change while topology stayed fixed.
+
+Source/rule/whole-route controls and consumed-SPEF checks pass. Physical
+acceptance fails: C14 has 4,053 public-deck DRC records, boundary LVS rail
+collapse, 124 antenna nets / 135 INPUT contacts, slow setup −7.353613 ns and
+fast hold −23.768 ps. RC-stack and fast logic/SRAM compatibility remain
+conditional; official TT precheck was not run. No new formal theorem or fresh
+upload-to-pins regression is claimed. Historical positive estimated timing and
+the older 512×64 chip retain their distinct candidates and methods.
+
+After earlier failed observation gates, observer03 measures the actual Python
+Design's one-thread context and captures the original DRT-1231 callback.
+Net7845's two fresh access points lie 130 nm beyond the failing worker box,
+leaving zero eligible points. A separate host-only recovery verifies the
+unchanged failed producer and its two-error ledger; it accepts the observation,
+not a repaired layout. Internal split normalization and one local filler remain
+proposals. The [backlog](tt-buffered-next-experiments.md) records their caps,
+new positive-wrapper prerequisite, scope and remaining research questions.
+
+Verified closeout covers 55 unique nonoverlapping native jobs, all 507 protected
+sources and seven references exact, no owned native jobs/host processes and a
+sealed copied evidence pack with offline and origin verification. The tracked
+manifest points to retention records; ignored local bytes are not a remote
+backup, and the external runtime image was not packed. Final verified closeout
+supersedes the untouched first watchdog-absence check, which allowed too little
+time. No external submission or publication occurred.
