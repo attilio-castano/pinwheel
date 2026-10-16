@@ -19,7 +19,7 @@ the [physical inputs](../physical/README.md) and
 | --- | --- | --- |
 | Recover the present question and avoid repeating work | [Research status](research/status.md) | The relevant [result](research/results.md), then its owning study and manifest |
 | Understand the design and what is proved | [Architecture and ownership](architecture.md) | [Verification obligations](engine/processor-verification.md), then the relevant contract below |
-| Explore components and execution visually | [Local design explorer](explorer/index.html) | [Source and refresh scope](explorer/README.md); open the HTML in a browser |
+| Explore components and execution visually | [Interactive design explorer](https://attilio-castano.github.io/pinwheel/) | [Source and refresh scope](explorer/README.md); the cloned HTML also works offline |
 | Run programs on the chip | [Host workflow](host-workflow.md) | [Whole-chip interface](engine/whole-chip.md) and [external timing](engine/external-interface.md) |
 | Change a protocol or pin timing | [Protocol models](#protocols-and-pin-timing) | The shared [engine contract](engine/engine-model.md) and [input latency](input-latency.md) |
 | Compare storage, fetch, or paired execution | [Storage primitives](storage-primitives.md) | [Fetch deadlines](fetch-contract-study.md) and [paired execution](storage/compact-execution-study.md) |

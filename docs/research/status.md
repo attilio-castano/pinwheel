@@ -678,6 +678,7 @@ resident-payload workload now exposes existing SHIFT/KEEP with source
 certification and package tests; universal initialized resident protocol
 composition and physical promotion remain open. Preserve the tested digital sampling conditions: SPI requires
 `d + tco ≤ halfCycles`; I²C requires `d ≤ phaseCycles` and `d < waitCycles`.
-These digital bounds do not establish analog sampling behavior. Root licensing,
-publication and submission remain separate decisions under the
+These digital bounds do not establish analog sampling behavior. Original project
+material is licensed under [Apache-2.0](../../LICENSE), with retained third-party
+notices. Publication and submission remain separate decisions under the
 [submission plan](../submission-plan.md).
