@@ -1,0 +1,309 @@
+{
+  "schema": "pinwheel-buffered-TT-overnight-campaign-results-v1",
+  "recorded_date": "2026-10-16",
+  "study": "docs/physical/tt-buffered-overnight-campaign.md",
+  "proposed_next_experiments": "docs/research/tt-buffered-next-experiments.md",
+  "decision": {
+    "retained_checkpoint": "C14",
+    "selection": "lowest completed frozen-scope-verified native routing DRC",
+    "physical_acceptance": false,
+    "submission_ready": false,
+    "tapeout_ready": false,
+    "C17_rejected": true,
+    "C17_native_DRC_delta_vs_C14": 779
+  },
+  "campaign": {
+    "started_UTC": "2026-10-16T00:07:17+00:00",
+    "verified_terminal_closeout_UTC": "2026-10-16T06:28:53.118463+00:00",
+    "elapsed_seconds": 22896.118634939194,
+    "hard_stop_UTC": "2026-10-16T08:07:17+00:00",
+    "finished_within_hard_deadline": true,
+    "unique_owned_native_jobs": 55,
+    "native_job_overlaps": 0,
+    "all_owned_containers_and_host_helpers_absent_at_closeout": true,
+    "protected_sources_exact_at_closeout": 507,
+    "reference_files_exact_at_closeout": 7
+  },
+  "frozen_scope": [
+    "RTL",
+    "serial ABI",
+    "28970 instance identities and masters",
+    "placement",
+    "SRAM pins and obstructions",
+    "power geometry",
+    "clock topology",
+    "SDC",
+    "original technology and NDR rules"
+  ],
+  "allowed_routing_scope": "Signal and clock route geometry could change; clock topology could not. No cells, finishing, resizing or placement ECO.",
+  "routing": [
+    {
+      "checkpoint": "P2 control",
+      "native_DRC_records": 22115,
+      "native_type_counts": {
+        "Cut Spacing": 5,
+        "Metal Spacing": 6497,
+        "Short": 15494,
+        "Cut Short": 119
+      },
+      "stage_execution_and_frozen_scope_passed": true,
+      "run": "build/physical/tt-overnight-campaign-20261015/runs/p2-control-02"
+    },
+    {
+      "checkpoint": "C3",
+      "native_DRC_records": 7973,
+      "native_type_counts": {
+        "Cut Spacing": 7,
+        "Metal Spacing": 2821,
+        "Short": 5137,
+        "Cut Short": 8
+      },
+      "stage_execution_and_frozen_scope_passed": true,
+      "run": "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter3-01",
+      "ODB_sha256": "cb216bbc4272e2056e0f8038f4a5b1deb05d80f5c9f22155cd9b9d657893e279",
+      "DEF_sha256": "0dadff1e29929fd679d4193f8966c347bc65c0c24bfac86b624468dd4db6182e"
+    },
+    {
+      "checkpoint": "C9",
+      "native_DRC_records": 1889,
+      "native_type_counts": {
+        "Cut Spacing": 1,
+        "Metal Spacing": 886,
+        "Short": 1002,
+        "Cut Short": 0
+      },
+      "stage_execution_and_frozen_scope_passed": true,
+      "run": "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter9-01",
+      "ODB_sha256": "210ff5e053255cfdd994d1fd37f2e19914571c7ebe9f0347aec0bff19f66fffc",
+      "DEF_sha256": "d09e0e3abb0975949fc6eafd6d008b89f42b2dd32bd539f29d08e80124f24317"
+    },
+    {
+      "checkpoint": "C14",
+      "native_DRC_records": 1732,
+      "native_type_counts": {
+        "Metal Spacing": 843,
+        "Short": 889,
+        "Cut Short": 0
+      },
+      "stage_execution_and_frozen_scope_passed": true,
+      "run": "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter14-01",
+      "ODB_sha256": "b9d28b7f3903d569ea3c5aee1ea4c70fa3e8aed14e4fef6a60ac9aae1ce08df2",
+      "DEF_sha256": "120151bfdbdfc3983be488e87bd6e50dc1d6146eb146aab82575e9459e4208a9"
+    },
+    {
+      "checkpoint": "C17",
+      "native_DRC_records": 2511,
+      "native_type_counts": {
+        "Cut Spacing": 1,
+        "Metal Spacing": 1043,
+        "Short": 1465,
+        "Cut Short": 2
+      },
+      "stage_execution_and_frozen_scope_passed": true,
+      "run": "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter17-01",
+      "ODB_sha256": "eb3a5aee3727b1fa13d7bc7e9d94171272a5c84e9a98c4eae2dde0d717580628",
+      "DEF_sha256": "5293580c99717f38fc79f4fc4f5ca89d42677ed8350685228d47dc7d8fe8b9e1"
+    }
+  ],
+  "C14_reduction_percent_against_matched_control": 92.16821162107168,
+  "C14_fresh_exact_geometry_control": {
+    "regenerated_native_DRC_records": 1731,
+    "saved_source_native_DRC_records": 1732,
+    "physical_gain_credited": false
+  },
+  "C14_three_corner_STA": {
+    "time_unit": "ns",
+    "clock_period_ns": 20,
+    "corners": {
+      "nom_typ_1p20V_25C": {
+        "setup_slack_ns": 2.1829330072534203,
+        "hold_slack_ns": 0.055906392209165136,
+        "setup_failures": 0,
+        "hold_failures": 0,
+        "slew_violations": 52,
+        "capacitance_violations": 20,
+        "fanout_violations": 254
+      },
+      "nom_slow_1p08V_125C": {
+        "setup_slack_ns": -7.353613037749027,
+        "hold_slack_ns": 0.19197843858007357,
+        "setup_failures": 372,
+        "hold_failures": 0,
+        "slew_violations": 262,
+        "capacitance_violations": 19,
+        "fanout_violations": 254
+      },
+      "nom_fast_1p32V_m40C": {
+        "setup_slack_ns": 6.9401588662579785,
+        "hold_slack_ns": -0.02376821029489856,
+        "setup_failures": 0,
+        "hold_failures": 3,
+        "slew_violations": 8,
+        "capacitance_violations": 20,
+        "fanout_violations": 254
+      }
+    },
+    "consumed_SPEF_networks": 28948,
+    "consumed_contacts": 90759,
+    "physical_acceptance": false
+  },
+  "timing_model_limits": [
+    "Three Liberty corners share one nominal SG13G2-derived RC model; CMOS5L stack calibration and min/max RC are unqualified.",
+    "FAST combines -40 C logic with -55 C SRAM.",
+    "Electrical limits and Liberty table domains remain open.",
+    "STA assumes intended named-net connectivity while actual layout contains shorts.",
+    "Earlier positive estimated margins used different checkpoints/methods; no seven-nanosecond identical-wire regression is established."
+  ],
+  "C14_GDS_DRC": {
+    "verdict": "FAIL",
+    "reported_records": 4053,
+    "rule_counts": {
+      "NW.b": 2053,
+      "M2.b": 2,
+      "M3.b": 2,
+      "M4.b": 1916,
+      "M4.e": 80
+    },
+    "counts_comparable_to_router_native_DRC": false,
+    "representative_fixed_NWell_clearance_um": 0.48,
+    "required_NWell_clearance_um": 0.62,
+    "all_reported_failures_explained_by_that_witness": false
+  },
+  "C14_boundary_GDS_LVS": {
+    "verdict": "Top level cell failed pin matching.",
+    "unique_match": false,
+    "devices_per_side": [
+      28970,
+      28970
+    ],
+    "nets_per_side": [
+      28862,
+      29106
+    ],
+    "both_SRAMs_VSS_VDD_VDDARRAY_extracted_onto_VPWR": true,
+    "net_difference_is_an_open_count": false,
+    "SRAM_internal_LVS_qualified": false,
+    "extraction_warnings_unresolved": true
+  },
+  "C14_antenna": {
+    "verdict": "FAIL",
+    "violating_nets": 124,
+    "violating_INPUT_contacts": 135,
+    "layer": "Metal3",
+    "native_optional_metric_telemetry": "absent; not interpreted as zero",
+    "physical_connectivity_or_diode_prescription_proven": false
+  },
+  "C17_comparator": {
+    "public_GDS_DRC_records": 4192,
+    "boundary_GDS_LVS": "FAIL",
+    "antenna_violating_nets": 123,
+    "antenna_violating_INPUT_contacts": 133,
+    "slow_setup_slack_ns": -7.331920167412755,
+    "fast_hold_slack_ns": -0.023537505943856687,
+    "physical_acceptance": false
+  },
+  "official_Tiny_Tapeout_precheck": {
+    "status": "NOT RUN",
+    "local_C9_geometry_screen_is_official_precheck": false,
+    "pinned_versus_captured_current_macro_layer_whitelists_distinguished": true
+  },
+  "restart_diagnosis": {
+    "target": "engine.memory.storage1/A_BM[31] / net7845",
+    "native_error": "DRT-1231",
+    "worker_top_y_um": 144.0,
+    "both_fresh_AP_y_um": 144.13,
+    "eligible_AP_count": 0,
+    "internal_wire_split_causal_role": "proposed; requires counterfactual",
+    "actual_measured_Design_router_threads": 1,
+    "frontend_CLI_threads_is_observed_router_concurrency": false,
+    "original_failed_producer_and_host_gate_preserved": true,
+    "new_positive_acceptance_wrapper_required_before_repair_trial": true
+  },
+  "research_boundaries": {
+    "new_core_formal_theorem": false,
+    "finite_protocol_regressions_rerun_overnight": false,
+    "C14_is_overall_better_than_older_512x64_chip": false,
+    "older_chip_is_matched_capacity_architecture_comparator": false
+  },
+  "proposed_not_run": [
+    {
+      "experiment": "net7845 conductor-union-preserving normalization",
+      "all_in_seconds": 1500,
+      "status": "requires new scope, positive wrapper and fresh window"
+    },
+    {
+      "experiment": "single fill_1 NWell mechanism test",
+      "all_in_seconds": 900,
+      "status": "requires separate cell/PG-change authorization"
+    }
+  ],
+  "evidence_retention": {
+    "original_local_campaign_root": "build/physical/tt-overnight-campaign-20261015",
+    "sealed_CAS_pack": "build/physical/tt-overnight-campaign-20261015/evidence-pack-01",
+    "seal_sha256": "3a7c60d14c91db628260a7b55449a46034d5994903baf645577f866537d62716",
+    "selection_sha256": "014f3f83e831581123896195116dfdee22675f98b272d5398e9d0a3e9f2919dc",
+    "index_sha256": "53d4ef00f9c1caf018c8b937fa0542b32cd0d28500e943c4aa2342b0bddb6e97",
+    "unique_content_bytes": 2516495663,
+    "unique_objects": 18530,
+    "source_paths_verified": 23076,
+    "offline_and_original_origins_verification_passed_at_closeout": true,
+    "native_runtime_image_packed": false,
+    "remote_runtime_availability_tested": false,
+    "off_worktree_relocation_receipt": "physical/experiments/tt-buffered-worktree-retention.json",
+    "relocation_verdict_authority": "Read the separate relocation receipt; no prospective relocation success is asserted here.",
+    "source_history": "tools/pinwheel-physical-history/SOURCE-MANIFEST.json",
+    "warning": "Git tracks compact records and source, not build/ evidence. Hashes identify but cannot recover missing bytes. Same-host archive copying is not an independent remote backup."
+  },
+  "terminal_closeout": {
+    "authoritative_receipt": "build/physical/tt-overnight-campaign-20261015/FINAL_CLOSEOUT_VERIFIED.json",
+    "status": "complete",
+    "superseded_receipt": "build/physical/tt-overnight-campaign-20261015/FINAL_CLOSEOUT.json",
+    "superseded_status": "failed",
+    "reason": "First watchdog-absence check allowed 2 seconds; verified retry observed both helpers absent. Original failed receipt is unchanged."
+  },
+  "recording_validation": {
+    "all_listed_evidence_files_rehashed": true,
+    "prior_expected_receipt_hashes_rechecked": 77,
+    "55_native_job_report_hashes_rechecked": true,
+    "C14_ODB_DEF_hashes_match_final_retention": true,
+    "CAS_seal_file_and_index_hashes_match_external_seal": true,
+    "full_CAS_payloads_reverified_during_documentation_step": false,
+    "note": "Full payload verification is the historical evidence-pack result; this step rechecked seal/index and selected receipt bindings."
+  },
+  "evidence_sha256": {
+    "build/physical/tt-overnight-campaign-20261015/manifest.json": "e9537d6f4c39421820921c5468f42a4e1a208a4d99b12dd3288ae24f55e86b65",
+    "build/physical/tt-overnight-campaign-20261015/MORNING_REPORT.md": "772789d445efb728f301f2f2c75c9562130c475cc1be1b84ffe227622808545e",
+    "build/physical/tt-overnight-campaign-20261015/FINAL_CANDIDATE.json": "dee377d83509280f973707c319c8f03eb3afa61743aaac521626a2639e455d9c",
+    "build/physical/tt-overnight-campaign-20261015/FINAL_NATIVE_CLOSEOUT.json": "02f20f3a0889ac4fd0bd2ae48a4e12c63cdb870ec3e187918fc24907059b2dc3",
+    "build/physical/tt-overnight-campaign-20261015/FINAL_CLOSEOUT.json": "80c1a3ca5e413799e535a58d5dcc8205fc2def8a762111c7a7d0754c8f937631",
+    "build/physical/tt-overnight-campaign-20261015/FINAL_CLOSEOUT_VERIFIED.json": "6bda68b6fbf2124acd497af839678191263fb0613dbb9bf38ea8bc61a6270ceb",
+    "build/physical/tt-overnight-campaign-20261015/EVIDENCE_PACK_STATUS.json": "ceddbd647347a3728f42fab2c3bc601e3fd1b859fd0fc9ff4770094b9b9e01e4",
+    "build/physical/tt-overnight-campaign-20261015/EVIDENCE_PACK_SEAL.json": "8a4fb8341f685b59ed32abc1dce5b2b63601dd17e2ac691018fe6d8cb71aa606",
+    "build/physical/tt-overnight-campaign-20261015/REPRODUCE.md": "f4dd434fc72b3fc148747aaf068a52b8ff26c5943cbd457d8823c6195f42b4df",
+    "build/physical/tt-overnight-campaign-20261015/image-inspect-verified-01.json": "2565f68920ee3051b2a21f3dd1a4351880fdfef092a2fa9dc4c9f98feb30a47a",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/review.json": "57ae5e263345abf56327d06fc345c083690a881917cdd6cbcd4bae4e6f324328",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/fresh-control-review-01.json": "15097045867d96a13cf16ba474911e473fbf28e486b2d849072b44812ccab64b",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/public-DRC-review-01/review.json": "79ca6a3fa7435ac60b253e4ee7859d0fcb6591b47aa88c6c4c0113c4adcd1cc2",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/antenna-review-02/review.json": "c22d6fb8b0b815203953e181fe346a8a873cd3c4e23d9fb8c07f5b160a6ba4ea",
+    "build/physical/tt-overnight-campaign-20261015/analysis/true-RCX-four-checkpoints-01/comparison.json": "95e2e32a102f35f41ab418f1700fac8eb2952c583f0427228e641d001c655067",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C17/review.json": "f7cedc6832470c39bc61990913a24d1edaed10862e8cd86f0be40fa622ab9d44",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C17/qualification-peer-review-01/review.json": "1d17ad223827050e8bab2af1fb2a802a5f8c6a5eaca5bb3cb379c7b69266037b",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C17/rcx-sta-review-01/review.json": "7f2ff5d69de91bd3fcc5c96ef2e19993220694a9e692f48dafafbacb7b5a0f76",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C17/antenna-review-01/review.json": "65edf4aba6bc243d6b376aae26295eda8cd770a44fb2d389e93a5fc1f32d69d4",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/restart-pin-access-observed-03/diagnostic.json": "89dc38a302c003a81b512201b10da696e69471cf2a504657610fea58ee462a72",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/restart-pin-access-observed-03/future-positive-acceptance-card.json": "deeabedd278d67d74ee5f767f0bb4c90b6b730e69fa4e95a9e538a3a2b7b27a9",
+    "build/physical/tt-overnight-campaign-20261015/analysis/C14/one-filler-proposal-01/proposal.json": "565b9e0040fee0d932f524baa544c567dca7043509dc0e8e4c6188592e4c9e2e",
+    "build/physical/tt-overnight-qualification-plan-01/p2-C14-v5-rcx-sta-01/measurement.json": "eb850cd4eaae66ee31ab8c5bb5857626d7e2fdcbc557a14b271cd2615f26b0dc",
+    "build/physical/tt-overnight-qualification-plan-01/C14-v7-independent-review-01/review.json": "652a2e9b82f571af8bf253daed835bedc6544fd54f15a57e81b532258e20b2fb",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-control-02/report.json": "63ba049ab5457e984306cfc30dfa66909ea19a7823a6b53cdaf1af1c0034ccd3",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-control-02/adjudication.json": "13baa116b4e7aa9d7c2092929530780e0c8b8f6987bab8940ee5b9d83596618c",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter3-01/report.json": "7678e5753a074e25696b78b6ff769926f80a660e68aa64718a4f889e508e179c",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter3-01/adjudication.json": "731ad39f9721c6e221f3569c260a70da2b3a396eb88e29fd000e433380c2acfd",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter9-01/report.json": "1c877c0aff7b71283f3e1458447f3d9896a14561592466483598b91c0393e745",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter9-01/adjudication.json": "b03b9aa71c0da76598d0558c7a3b3dd9ee9c07d4d2d97e672e918bb8901ceda7",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter14-01/report.json": "a5c0d9607484ee1ed28138b381ceee6e04dbe4bf089027187936e3ed055031a4",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter14-01/adjudication.json": "0693bc630c56c00de1276deddd9a90f690ebb674fa37f227c27af0b9a839d174",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter17-01/report.json": "77677c06571ebca284dc2cfc7e4d6ae85a96a052462990fab2eb6562d54ba8b7",
+    "build/physical/tt-overnight-campaign-20261015/runs/p2-route-iter17-01/adjudication.json": "30be5b1466d11bc986ea4026d1f33f696d9be5368e9ce50dd76a4645ddfbddf7"
+  }
+}

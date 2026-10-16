@@ -1,6 +1,6 @@
 # Research results
 
-This index records conclusions through 2026-10-07 and what could justify
+This index records conclusions through 2026-10-16 and what could justify
 reopening them. Start with [status](status.md) for the active decision, then
 choose a topic below. Each linked study owns measurements, assumptions,
 commands, and proof boundaries; the [journal](journal.md) keeps dated receipts.
@@ -8,7 +8,7 @@ These results do not themselves promote a candidate or establish silicon fit.
 
 | Research question | What the evidence currently says |
 | --- | --- |
-| [Can physical organization close the chip?](#physical-organization-repairs-and-qualification) | The repaired chip passes a 351-pin GDS boundary comparison with wiring-fault rejection. Conditional digital refinement reaches retained RTL; SRAM, fast timing conditions and package power remain unqualified. |
+| [Can physical organization close the chip?](#physical-organization-repairs-and-qualification) | The buffered TT campaign reduces native DRC 22,115→1,732, but GDS DRC/LVS, antenna and conditional extracted timing fail. Earlier 351-pin boundary qualification belongs to the older chip. Neither result establishes tapeout readiness. |
 | [Which chip architecture and map should be pursued?](#chip-architecture-mapping-and-locality) | Hybrid SRAM is the area control. Tiled and paired alternatives have correctness and cost evidence, with timing and physical qualifications still specific to each candidate. |
 | [What does placement and coarse routing change?](#sram-chip-placement-and-coarse-routing) | Mapping savings and local repairs survive selected physical gates, while congestion and SRAM pin escape remain open. |
 | [What can the programmable engine express?](#protocols-execution-and-storage-foundations) | Four-mode SPI and bounded I²C writes/recovery pass on shared circuitry. The opt-in UART supervisor adds rearm and explicit one-entry ownership, with proofs, resolved wires and fresh circuit meaning; physical timing requires separate evidence. |
@@ -16,6 +16,16 @@ These results do not themselves promote a candidate or establish silicon fit.
 | [Does SRAM execution compose through the chip?](#composition-sram-correctness-and-host-behavior) | Array, controller, execution and host results compose in stated models; emitted macro binding and physical qualification remain separate. |
 
 ## Physical organization, repairs, and qualification
+
+The [buffered TT overnight campaign](../physical/tt-buffered-overnight-campaign.md)
+retains C14 as a routing-only reference: 1,732 native violations versus 22,115;
+C17 regresses to 2,511. C14 still has 4,053 public GDS DRC records, failing
+boundary LVS, 124 antenna nets and conditional −7.353613 ns setup / −23.768 ps
+hold. The observed local SRAM access failure motivates a proposed single-net
+representation test; it does not establish a repair. The
+[backlog](tt-buffered-next-experiments.md) owns next discriminators and gates.
+The older chip/SRAM studies below keep their original candidate and comparator
+boundaries, including their different 351-terminal interface.
 
 The [SRAM continuation](../physical/sram-extraction-results.md) qualifies the
 351-pin spelling adapter and chip boundary comparison, including native signal
@@ -35,6 +45,7 @@ diagnostic passes; the supplied tile remains unqualified.
 
 | Study / evidence owner | Conclusion and disposition | Reopening condition or remaining obligation |
 | --- | --- | --- |
+| [Buffered TT overnight routing — October 16](../physical/tt-buffered-overnight-campaign.md) | Frozen RTL/ABI, cells, placement, SRAM/PG geometry and rules; C14 lowers matched native DRC **92.17%**, while C17 regresses. Full no-edit/source controls and evidence closeout pass; independent physical acceptance fails. | Test the source-bound net7845 representation hypothesis using a new positive wrapper; separately scope finishing and timing/model work. Public GDS DRC/LVS, antenna, electrical/RC conditions and official TT precheck remain failed or open. No new formal theorem. |
 | [Package-power request — September 29](../physical/package-power-contract.md) | A typed, checked request binds the unchanged chip, eight candidate artifacts, 20 ns clock, both rails and three finite activity observations. All 14 saved references verify after local recovery. Eight missing input classes have named owners and stop criteria; voltage-budget checks reject unsupported conditions. | Obtain and review parent contacts, source range, impedance, operating/activity envelopes, component supply support, transient allowance and analysis conditions. Structural request readiness does not qualify contacts, provider claims or package power. No CAD added. |
 | [Power boundary sensitivity — September 29](../physical/power-boundary-results.md) | Same chip, explicit sources: default combined rail loss rises from 0.542 to 8.636 mV with four contacts per rail; illustrative 10 Ω feeds give 47.225 mV. Three checked workloads annotate all 38,497 signal pins and draw 6.817–7.029 mW; replacement with 10 Ω gives 36.620 mV. Zero-annotation runs are rejected. | Obtain actual parent source geometry, supply tolerance/impedance and an applicable activity/voltage envelope. Static nominal sensitivities do not qualify package power. All three blockers remain; 430.957 CAD seconds and no routing attempt added. |
 | [Physical qualification assessment — September 28](../physical/physical-qualification-assessment.md) | Nine pinned libraries match the captured development-tree blobs; no compatible fast replacement is delivered there. The unmerged SRAM proposal retains the widths and introduces a layer-interpretation question. Power uses automatic block-pin sources and modeled activity. | Obtain authoritative SRAM/fast evidence; the subsequent power study above measures the declared diagnostic source/activity sensitivities. All three blockers remain; this assessment added zero CAD. |
