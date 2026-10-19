@@ -1,0 +1,1 @@
+/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/composition/StreamingReadyFinalRejectAxiom.lean:32:0: error: Unapproved axioms in _private.StreamingReadyFinalPrivateAxiom.0.untrustedStreamingReadyContinuation: [_private.StreamingReadyFinalPrivateAxiom.0.untrustedStreamingReadyContinuation]

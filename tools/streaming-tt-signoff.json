@@ -1,0 +1,118 @@
+{
+  "pdk_completion_revision": "2bbec755dc67ca3db0261c3d6163e15735d66710",
+  "pdk_extra_files": {
+    "ihp-sg13cmos5l/libs.tech/klayout/python/sg13cmos5l_pycell_lib/sg13cmos5l_tech_mod.json": {
+      "git_blob": "dd3a7233fbc76db916c8ed5e12aa3d62a746b2c1",
+      "sha256": "bee6f9eabe3c5dc0c6b221bb214896b95d1c2d9be4b8424f80ca3f3f27b7db86"
+    },
+    "ihp-sg13g2/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json": {
+      "git_blob": "ddd7070b7bfaf204b1577cefe7069ea390ab0954",
+      "sha256": "07930b016cdffe14c2cb82b47fbec193643347607db6d44aa1abfdece056cd2f"
+    }
+  },
+  "physical_toolchain": "tools/physical-toolchain.json",
+  "precheck_python_packages": {
+    "gdstk": "0.9.52",
+    "iniconfig": "2.0.0",
+    "klayout": "0.28.17.post1",
+    "numpy": "1.26.4",
+    "packaging": "24.1",
+    "pluggy": "1.5.0",
+    "pytest": "8.2.2",
+    "pyyaml": "6.0.1"
+  },
+  "python_version_prefix": "3.12.",
+  "schema": "pinwheel.streaming-tt-signoff-tools.v1",
+  "scope": "Exact current official precheck source captured at campaign intake; inherited historical support pin retained separately. Native KLayout/PDK identities use the pinned physical image, with exact official Python requirement versions in an isolated host environment. This does not claim provider acceptance or analog/board/silicon signoff.",
+  "support_commit": "d66cf179e7bc4d296362ab7e2e3b344dc3c4f665",
+  "support_files": {
+    "precheck/.gitignore": {
+      "git_blob": "375de9191aea16a867b93ceb15b3a826b7411954",
+      "sha256": "2bdd74bd42f5a859ac4b73f0adbabc6a5d244c585d2112f5ca1d9b5f1cd08e50"
+    },
+    "precheck/README.md": {
+      "git_blob": "600d4cf125a7d382900366276cf52570c40757b2",
+      "sha256": "19773787a1d431478ddb1bff218368129f3d50a00a9c00ea2c942e6a3d71396c"
+    },
+    "precheck/default.nix": {
+      "git_blob": "2606bf3aa161a81e089227cb5a27e5e9156ae656",
+      "sha256": "8532c21350ac68b939badb459f8fbbd2e5eff6891e1db171d0ea064d820af106"
+    },
+    "precheck/klayout_tools.py": {
+      "git_blob": "9430d4dfbecf7b843d343829be1e8e30107d2634",
+      "sha256": "ea1da288ea388ed29a13fe7a3f48836958cd223865f31fdd124468b1f91bd8ed"
+    },
+    "precheck/magic_drc.tcl": {
+      "git_blob": "49edb70c34db513ed6b2150665c995421f49015a",
+      "sha256": "00a24f87644296c58afbb9866be0fbd509c5ed90a0c1c93f02358203179a45a0"
+    },
+    "precheck/pin_check.py": {
+      "git_blob": "7691ad14c9faaf66a4a7119c402684a78b6de821",
+      "sha256": "276bfb85dae4078039b15fc13fe4ae0647e10eb34d5cdb2d6edb7bc176e27d39"
+    },
+    "precheck/precheck.py": {
+      "git_blob": "f400608a1ab88bf3066dae5b47baf94b0079313e",
+      "sha256": "7630402982b7a58e39e66d6d16b9ab38415d8f69d37314c517e55a10403ea22e"
+    },
+    "precheck/precheck_failure.py": {
+      "git_blob": "ed13ca8abf9dadda02b7b96fce0298845a8ae64e",
+      "sha256": "da88e75a22052948f4d8bd3abba4f6f2a608acd232ccea94df1a1b6728c45990"
+    },
+    "precheck/pyproject.toml": {
+      "git_blob": "9b68a34b31b762fdcd40110e023dae2cb153adc2",
+      "sha256": "40524f07abafa8a25ceac5c174af37f2740fedee7d8bbb20a0b6441ec9d85a4e"
+    },
+    "precheck/reports/.gitignore": {
+      "git_blob": "2b7d558d4ec8b3630ab8cebcd353ea8c8b009f4b",
+      "sha256": "dea39c51267ce011979c62faa31488b8f8d2debec9827cd9a39235162093387e"
+    },
+    "precheck/requirements.txt": {
+      "git_blob": "83c6340c4a5a6e638d8b802b7ede90d206744958",
+      "sha256": "8c0a37f7da2ee3f2dd847551953f8eaf47b39edff8f2e80c80b199e10ac5b344"
+    },
+    "precheck/tech-files/README.txt": {
+      "git_blob": "318710962780e63fb88cd9bcf16e7abda0132c5a",
+      "sha256": "efa1cd60f505926ae18eab9bad22699e3e6de9c3538348d584ec0b34eab4ab05"
+    },
+    "precheck/tech-files/nwell_urpm.drc": {
+      "git_blob": "a6e97c0b3e86878b1c23f19c98b12db946e588e6",
+      "sha256": "96ff4a69b3f6a31d8286327c7766caa14c2ecfbae2053196d173d1f956467338"
+    },
+    "precheck/tech-files/pin_label_purposes_overlapping_drawing.rb.drc": {
+      "git_blob": "7368b586d7c06d341d7ebf61f1c64b1b2a21d661",
+      "sha256": "b11c7ef94bb7b6e064b92d6b650e5695c880cbce2429eb58b5014fc6c85580dc"
+    },
+    "precheck/tech-files/sky130A_mr.drc": {
+      "git_blob": "248a02427dafd115fe92a2cb507a12ddc76bb7b2",
+      "sha256": "c2f9ce9dda000b82c9df2a91e2f9740ea810b79d912881eea6d2ae21ee5cb9ee"
+    },
+    "precheck/tech-files/update.sh": {
+      "git_blob": "9afe924fb3d16233b1d88356a7cc177bf78e4da2",
+      "sha256": "8adf20a3643e15b1d4a0420073440a01ae6f9dd32defc1d8dade48b1dc22195d"
+    },
+    "precheck/tech-files/zeroarea.rb.drc": {
+      "git_blob": "81ece510fdd651dd973007531fad62c17744ebbd",
+      "sha256": "d36b0ac0d2c85901453d8308a0e04650ccaaeec0aac069b85430249742302b10"
+    },
+    "precheck/tech_data.py": {
+      "git_blob": "f42a2d3270b12ecc455ca0fab31189fd05d3239d",
+      "sha256": "01c72c24c0f62f0a94818b0bcd044efae43f2cc4b1b6d9e8dadcf75bffb10e6d"
+    },
+    "precheck/test_precheck.py": {
+      "git_blob": "b2c687140bef2653130cfe57b044b6fab578c94a",
+      "sha256": "8897a7346dfa6b3948b71f44c1cfe112b83973a6e14342389e1e5a4f278a155d"
+    },
+    "precheck/tool-versions.json": {
+      "git_blob": "ce119f82e9f7ffdd4595c1ecb72da94a1698e029",
+      "sha256": "b188eb2ab6342c132ee86ce03ab558898c322a12458b54cfa734fcae1e575127"
+    },
+    "tech/ihp-sg13cmos5l/def/tt_block_6x4_pgvdd.def": {
+      "git_blob": "26dde1eecd375e5e859f871578153bbb2a0828cb",
+      "sha256": "b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4"
+    }
+  },
+  "support_repository": "https://github.com/TinyTapeout/tt-support-tools",
+  "support_tree": "e3187c8618b4a1d70a34a6bf058512e94661fc03",
+  "tech": "ihp-sg13cmos5l",
+  "tiles": "6x4"
+}

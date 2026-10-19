@@ -1,0 +1,1 @@
+/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-uart-full-0425b03-20261017-01/worker/composition/StreamingUARTFinalRejectAxiom.lean:32:0: error: Unapproved axioms in _private.StreamingUARTFinalPrivateAxiom.0.untrustedStreamingUARTContinuation: [_private.StreamingUARTFinalPrivateAxiom.0.untrustedStreamingUARTContinuation]

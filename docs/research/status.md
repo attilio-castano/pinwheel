@@ -1,7 +1,8 @@
 # Research status
 
-Updated 2026-10-16 after the closed buffered-SRAM overnight routing campaign,
-same-source extracted timing, GDS checks and observed SRAM restart diagnosis.
+Updated 2026-10-16 after the closed buffered-SRAM overnight routing campaign
+and the bounded initialized SPI source/circuit refinement. The physical record
+retains its same-source extracted timing, GDS checks and SRAM restart diagnosis.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -229,14 +230,27 @@ the decoded bytes from actual initialized accepted loading. I²C certifies all
 1,024 virtual fetch positions, compact-loop parsing and its NACK fault target;
 its initialized source-history composition remains open.
 
-**Next formal gate: interpreter-to-packed-circuit state relation.**
-Establish source/circuit agreement at admitted START, preserve it for one edge,
-then compose all prefixes with the initialized binary SRAM theorem. Relate
-virtual PC to physical row/loop counters, list prefixes to packed TX/RX and
-sampler timing at START/after stopping. Reactive I²C additionally needs wait,
-qualification and terminal-capture/branch preservation. The new interpreter
-proof does not close that circuit relation. General Python compiler correctness
-and serial packet-to-core composition retain separate gates.
+**Implemented initialized SPI source/circuit refinement.**
+The [bounded refinement](../protocols/buffered-spi-refinement.md) now establishes
+the source/packed-state relation at an actual admitted START, preserves every
+edge, and composes all raw-input prefixes with initialized digital SRAM
+execution. It covers mode 0, one through four bytes, half-periods of three
+through 256 edges and admitted TX/RX lengths from zero through 32 bits, including
+TX-underflow and RX-full faults. Image and geometry come from accepted loading;
+samplers are aligned at START and abstracted after stopping. The result covers
+one transfer and its command-zero suffix. The source-frozen focused gate passes:
+**10 cases / 17,845 prefixes**, three rejected state
+mutations and a **27,366-declaration / 14,992-theorem** standard-axiom audit.
+The [study](../protocols/buffered-spi-refinement.md#validation-record) retains
+that receipt, the passing full Python suite, and the full foundation pass
+(61 executable suites, one kernel suite; 1,982.932 seconds).
+
+**Next formal gate: extend the bounded relation beyond SPI.**
+Reactive I²C still needs initialized source history, wait readiness,
+qualification and terminal-capture/branch preservation. Multi-transfer,
+reset/release lifecycle composition, general Python compiler correctness and
+serial packet-to-core composition retain separate gates. The explorer remains
+a recorded snapshot of the earlier proof boundary.
 Actual SRAM return/address timing, physical sampling, SRAM qualification and
 package power retain their distinct evidence gates. First-stage prediction is
 a separate alternative and still requires synchronizer qualification.
@@ -625,11 +639,12 @@ separate from exploratory progress.
    [package-power request](../physical/package-power-contract.md) and
    [acceptance intake](implementation-acceptance.md) retain their narrower
    results; they do not transfer automatically to this buffered layout.
-4. **Compose source interpretation with the circuit.** Establish the
-   interpreter-to-packed-circuit relation and initialized I²C source history,
-   then general source/compiler/serial composition. Maintain explicit SRAM,
-   sampling and timing assumptions. These are research goals beyond competition
-   admission; the formal gate above owns the existing proof boundary.
+4. **Extend the proved SPI relation.** The one-transfer initialized SPI bridge
+   is now checked. Establish initialized I²C source history and preserve its
+   waits, qualification and branch captures; then address multiple-transfer
+   reset/release and general source/compiler/serial composition. Maintain
+   explicit SRAM, sampling and timing assumptions. These are research goals
+   beyond competition admission; the formal gate above owns the proof boundary.
 5. **Demonstrate repeatable capacity-changing iteration.** The historical
    [complete-design-iteration plan](complete-design-iteration.md) retains its
    named paired A/B comparison and original route allocations. A buffered TT
@@ -644,6 +659,7 @@ separate from exploratory progress.
 | Question | Evidence owner and current limit |
 | --- | --- |
 | What did the latest buffered TT campaign establish? | [Overnight routing and qualification](../physical/tt-buffered-overnight-campaign.md) retains C14's 92.17% native-DRC reduction, rejected C17, negative extracted timing, actual DRC/LVS/antenna failures and observed restart mechanism. [Next experiments](tt-buffered-next-experiments.md) separates proposed fixes from acceptance. |
+| Does SPI source execution match the actual digital circuit? | [Initialized SPI refinement](../protocols/buffered-spi-refinement.md) proves one admitted mode-0 transfer and every command-zero raw-input prefix through initialized digital SRAM, including buffer faults. Reactive I²C, repeated lifecycle/serial/RTL composition and physical qualification remain separate. |
 | What exactly did the paired physical attempts establish? | [Physical targets](../physical-targets.md) traces local repairs, reroutes, admission and diagnosis. Its [September 23 route manifest](../../physical/experiments/paired-locality-route-results.json) records the baseline's failed qualification; the [regional experiment](../../physical/experiments/regional-decoding-results.json) records the later measured alternatives. A local gain does not imply whole-chip or detailed routing closure. |
 | Can saved routes be reopened for a local edit? | [Import repair and one signal buffer](../physical/route-import-fix-experiment.md) passes exact no-edit and actual edit/revert accounting. The first local edit removes one reserve shortfall with unchanged global timing and clock routes. The adapter remains pinned and restricted; four shortfalls and 25 overflow units remain. |
 | What did routing-policy changes establish? | [Routing policy and reserve](../physical/routing-policy-experiment.md) records an ineffective grid option, matched reroute drift and a timing-priority candidate with worse congestion. No cells or area changed; all three saved congestion views reconcile. |

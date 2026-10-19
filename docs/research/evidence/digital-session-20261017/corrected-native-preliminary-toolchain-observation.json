@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "source_commit": "e4fa5233c3aae4606c7775806d1fb40609b9516b",
+  "suite_sha256": "ab13c4717a17f852e87c02a97fba7335575696f7eee4d4bb65f68fd646328c64",
+  "command": [
+    "/Users/attiliocastano/.elan/bin/lake",
+    "env",
+    "lean",
+    "--version"
+  ],
+  "expected": "4.33.1",
+  "actual": "Lean (version 4.33.1, arm64-apple-darwin24.6.0, commit 819816b2e0a3bf405af45ae5c7af2491d8f5bee6, Release)",
+  "stderr": "",
+  "observed_at_utc": "2026-10-17 10:59:00 UTC",
+  "boundary": "Version observed inside the same fresh native execution workspace while its gate was running."
+}

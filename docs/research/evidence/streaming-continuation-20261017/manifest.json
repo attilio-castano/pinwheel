@@ -1,0 +1,521 @@
+{
+  "bootstrap_commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "export-head",
+      "seconds": 0.005
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "dcce3312b8634d97536e997e672e06f094ba567a:scripts/export-streaming-evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-0",
+      "seconds": 0.005
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "dcce3312b8634d97536e997e672e06f094ba567a:scripts/export-rtl-session-evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-1",
+      "seconds": 0.005
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "dcce3312b8634d97536e997e672e06f094ba567a:scripts/process_group.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-2",
+      "seconds": 0.005
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "dcce3312b8634d97536e997e672e06f094ba567a:scripts/validation_run.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-3",
+      "seconds": 0.005
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "dcce3312b8634d97536e997e672e06f094ba567a:test/test_streaming_evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-4",
+      "seconds": 0.005
+    }
+  ],
+  "boundary": "Immutable receipt/source verification only; gates are not rerun. Raw RTL/wrapper equations and finite public-pin peers are distinct from synthesis cost/ABC combinational Liberty estimates. No mapped equivalence, guaranteed Fmax, electrical or physical signoff. Large generated artifacts and tool payloads stay at their recorded retained paths; this is a compact evidence export.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-object-format"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "object-format",
+      "seconds": 0.004
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "31816bb86aa5154c2671a8d479650c7b063d93aa^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-0",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-export-dcce331-20261017-01/archive-0.tar",
+        "31816bb86aa5154c2671a8d479650c7b063d93aa"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-0",
+      "seconds": 0.121
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "dcce3312b8634d97536e997e672e06f094ba567a^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-1",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-export-dcce331-20261017-01/archive-1.tar",
+        "dcce3312b8634d97536e997e672e06f094ba567a"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-1",
+      "seconds": 0.098
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--",
+        "docs/protocols/buffered-spi-refinement.md",
+        "docs/research/status.md"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "intake-patch",
+      "seconds": 0.01
+    },
+    {
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "dcce3312b8634d97536e997e672e06f094ba567a"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "objects-dcce3312b8634d97536e997e672e06f094ba567a",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "dcce3312b8634d97536e997e672e06f094ba567a^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-2",
+      "seconds": 0.008
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-export-dcce331-20261017-01/archive-2.tar",
+        "dcce3312b8634d97536e997e672e06f094ba567a",
+        "--",
+        "scripts/check-buffered-rtl-sim.py",
+        "scripts/check-streaming-continuation.py",
+        "scripts/process_group.py",
+        "scripts/validation_run.py",
+        "test/test_streaming_continuation.py"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-2",
+      "seconds": 0.01
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "closeout-head",
+      "seconds": 0.008
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--",
+        "docs/protocols/buffered-spi-refinement.md",
+        "docs/research/status.md"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "closeout-intake-patch",
+      "seconds": 0.009
+    }
+  ],
+  "compact_files": [
+    {
+      "bytes": 21312,
+      "file": "StreamingSessionD2.lean",
+      "sha256": "e15f4159fa027b32a51bd82cf753d291f36dc11f6d8351eb5e13a0b1596fcd5a"
+    },
+    {
+      "bytes": 21312,
+      "file": "StreamingSessionD4.lean",
+      "sha256": "41d22a9c897564be11ee7b87c71de0f641edb6e201237dafafde38387c7ce0aa"
+    },
+    {
+      "bytes": 2512,
+      "file": "StreamingRequiredTargets.lean",
+      "sha256": "ea6252a02a8b3ab19bdd3edead588cae37b36dfe760a5680c19fab23b6c00f2d"
+    },
+    {
+      "bytes": 2038,
+      "file": "StreamingFinalAudit.lean",
+      "sha256": "c6cb03849ac2fd4887c26713ef0df72594691b6fd3c68c3dcd1d6361d4d9541a"
+    },
+    {
+      "bytes": 30000,
+      "file": "checked-target-types.txt",
+      "sha256": "22ee164ea7c1447b72ba4b7694b8f39bf47c20601a86575ac6addd9f8df6d230"
+    },
+    {
+      "bytes": 74,
+      "file": "final-private-audit.log",
+      "sha256": "8bdc96b6bc68122712355a3ea9327bb416f7cc992e8517f8d2df040b1c4272d2"
+    },
+    {
+      "bytes": 330,
+      "file": "final-private-axiom-rejection.log",
+      "sha256": "75de467614142f0b55cfac8c0a9f27c2425f93371bc60050dcca133e9ee535c5"
+    },
+    {
+      "bytes": 74,
+      "file": "foundation-private-audit.log",
+      "sha256": "cdb26975194395f5020f5e03ff32c35757bd2848d3c6faecebdd5629c77cddcc"
+    },
+    {
+      "bytes": 8468,
+      "file": "proof-control-summary.json",
+      "sha256": "de4582e890bca6484c8ac8d79a0b471cf8332ae239834678d14c1c8ac480758d"
+    }
+  ],
+  "export_files_sha256": {
+    "StreamingFinalAudit.lean": "c6cb03849ac2fd4887c26713ef0df72594691b6fd3c68c3dcd1d6361d4d9541a",
+    "StreamingRequiredTargets.lean": "ea6252a02a8b3ab19bdd3edead588cae37b36dfe760a5680c19fab23b6c00f2d",
+    "StreamingSessionD2.lean": "e15f4159fa027b32a51bd82cf753d291f36dc11f6d8351eb5e13a0b1596fcd5a",
+    "StreamingSessionD4.lean": "41d22a9c897564be11ee7b87c71de0f641edb6e201237dafafde38387c7ce0aa",
+    "checked-target-types.txt": "22ee164ea7c1447b72ba4b7694b8f39bf47c20601a86575ac6addd9f8df6d230",
+    "final-private-audit.log": "8bdc96b6bc68122712355a3ea9327bb416f7cc992e8517f8d2df040b1c4272d2",
+    "final-private-axiom-rejection.log": "75de467614142f0b55cfac8c0a9f27c2425f93371bc60050dcca133e9ee535c5",
+    "foundation-private-audit.log": "cdb26975194395f5020f5e03ff32c35757bd2848d3c6faecebdd5629c77cddcc",
+    "intake-documents.patch": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108",
+    "proof-control-summary.json": "de4582e890bca6484c8ac8d79a0b471cf8332ae239834678d14c1c8ac480758d",
+    "streaming-foundation-dcce331-20261017-01.json.gz": "66c7788e30d00e57b7487c12b1078e85688cb9c63a2f08eab169ee8b6e879ea1",
+    "streaming-full-dcce331-20261017-01.json.gz": "de3b72a315c0a3bf85b6d9572235c4bd709ae5cad3122d66f7a407ac21024930",
+    "streaming-python-dcce331-20261017-01.json.gz": "b2e54d4a506dba7b74d7eb7fe86ecfd199bb2df6100e4e6d799bdb5dfc91201f"
+  },
+  "exported_utc": "2026-10-17T18:21:30.263977+00:00",
+  "exporter_commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+  "exporter_sha256": {
+    "scripts/export-rtl-session-evidence.py": "9b5f5b4756037d3fc88b5107c0651e3428eef19ff9bc4596c04ad8777ee129f4",
+    "scripts/export-streaming-evidence.py": "0accf74200b9aa187dc046b450b4a8fd5e49f6033038e57bd7d44cfb4f1da8bb",
+    "scripts/process_group.py": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175",
+    "scripts/validation_run.py": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013",
+    "test/test_streaming_evidence.py": "bbae82f89b6291e5e275adec1ad1b78a8ea5c4bce3086ce0be2ec1ff56093a5b"
+  },
+  "frozen_baseline": {
+    "added_imports": [
+      "import Pinwheel.Hardware.Streaming.FrontendEmit",
+      "import Pinwheel.Hardware.Streaming.Readback",
+      "import Pinwheel.Hardware.Streaming.InitializedSession",
+      "import Pinwheel.Hardware.Streaming.WarmReset",
+      "import Pinwheel.Program.StreamingTiming",
+      "import Pinwheel.Program.StreamingCustodySession",
+      "import Pinwheel.Program.StreamingBootControl",
+      "import Pinwheel.Program.StreamingBootPins",
+      "import Pinwheel.Program.StreamingOwnerCut",
+      "import Pinwheel.Hardware.Streaming.BootCorrespondence",
+      "import Pinwheel.Hardware.Streaming.BootUpload",
+      "import Pinwheel.Hardware.Streaming.PublicPins",
+      "import Pinwheel.Hardware.Streaming.InitializedCustody",
+      "import Pinwheel.Program.StreamingEventualService",
+      "import Pinwheel.Program.StreamingSessionProgress",
+      "import Pinwheel.Program.StreamingLowTiming"
+    ],
+    "base": "31816bb86aa5154c2671a8d479650c7b063d93aa",
+    "baseline_files": 2690,
+    "foundation": {
+      "added_kernel_suites": [
+        "StreamingCompile"
+      ],
+      "added_suites": [
+        [
+          "StreamingParity",
+          []
+        ]
+      ],
+      "boundary_preserved": true
+    }
+  },
+  "intake_documents_sha256": {
+    "docs/protocols/buffered-spi-refinement.md": "805eba24279d4dd798c49f92aaaa146005475f9496cafdf393d9f5140aa66d59",
+    "docs/research/status.md": "c669c35bf690df6c370da43dc6d2cfa6fa96fb3e56be0e9bd2d741a39fb198fe"
+  },
+  "intake_patch_sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108",
+  "receipts": [
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e"
+      },
+      "compressed_bytes": 2032803,
+      "compressed_sha256": "de3b72a315c0a3bf85b6d9572235c4bd709ae5cad3122d66f7a407ac21024930",
+      "file": "streaming-full-dcce331-20261017-01.json.gz",
+      "kind": "full",
+      "producer_archive_verification": {
+        "paths": [
+          "scripts/check-buffered-rtl-sim.py",
+          "scripts/check-streaming-continuation.py",
+          "scripts/process_group.py",
+          "scripts/validation_run.py",
+          "test/test_streaming_continuation.py"
+        ],
+        "reproduced": true,
+        "scope": "selected SHA256-map paths",
+        "sha256": "3184b4c1fe3dc174e26f545666a17bd5d143d71af04d854bd0b543ed606a68e6"
+      },
+      "producer_verification": {
+        "commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+        "files": 5,
+        "full_tree_archive_sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "raw_bytes": 16620930,
+      "raw_sha256": "0fbda87baf9d9676b84fd92b2338f8f77211d18e966711376ad137bef3620785",
+      "retained": {
+        "bindings": {
+          "independently_verified": true,
+          "raw_cost_equalities": 12,
+          "two_depth_wire_inputs": 10
+        },
+        "frozen_inputs": 4810,
+        "mandatory_theorems": [
+          "components_correct",
+          "physical_step_correct",
+          "physical_observe_correct",
+          "physical_run_correct",
+          "source_runtime_step_correct",
+          "source_runtime_run_correct",
+          "source_runtime_observe_correct",
+          "initialized_upload_correct",
+          "initialized_runtime_correct",
+          "physical_warm_reset_correct",
+          "concrete_spi_initialized",
+          "concrete_jtag_initialized",
+          "concrete_spi_runtime",
+          "concrete_jtag_runtime",
+          "concrete_spi_custody",
+          "concrete_jtag_custody",
+          "concrete_spi_progress",
+          "concrete_jtag_progress"
+        ],
+        "proof_closures": {
+          "final_modules": 94,
+          "isolated_negative_closures_verified": true,
+          "raw_positive_modules": {
+            "core-d2": 31,
+            "core-d4": 31,
+            "frontend": 31
+          }
+        },
+        "retained_artifacts": 9325,
+        "simulator_operations": 20,
+        "target_types": "Pinwheel.Artifact.StreamingSessionD2.components_correct :\n  Pinwheel.Hardware.Streaming.Package.Correct Pinwheel.Artifact.StreamingSessionD2.components\nPinwheel.Artifact.StreamingSessionD2.physical_step_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalStep s i =\n    s.step (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n      ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins i)\nPinwheel.Artifact.StreamingSessionD2.physical_observe_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalObserve s i port =\n    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).pads i\n      (fun {w} =>\n        s.observe (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n          ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins i))\n      port\nPinwheel.Artifact.StreamingSessionD2.physical_run_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)\n  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalRun s inputs =\n    s.run (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n      (List.map (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins inputs)\nPinwheel.Artifact.StreamingSessionD2.source_runtime_step_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeInput s\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalStep (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)\n      i =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image\n      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\nPinwheel.Artifact.StreamingSessionD2.source_runtime_run_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)\n  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeTrace p (image.pending.getLsbD 0) s\n      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalRun (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)\n      inputs =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image\n      (s.run p (image.pending.getLsbD 0)\n        (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD2.source_runtime_observe_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeInput s\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalObserve\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s) i port =\n    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).pads i\n      (fun {w} =>\n        Pinwheel.Hardware.Streaming.SessionCorrespondence.outputs s (image.pending.getLsbD 0)\n          (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n      port\nPinwheel.Artifact.StreamingSessionD2.initialized_upload_correct {source : List Pinwheel.Program.Streaming.Instruction}\n  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)\n  (startup : Pinwheel.Hardware.Streaming.Package.State 1) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory\n        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 1\n          (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 1\n                (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)).run\n            (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin)) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)\n      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))\nPinwheel.Artifact.StreamingSessionD2.initialized_runtime_correct {source : List Pinwheel.Program.Streaming.Instruction}\n  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)\n  (startup : Pinwheel.Hardware.Streaming.Package.State 1) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory\n        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 1\n          (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 1\n                (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)).run\n            (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.Streaming.Package.Components.typed 1)\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))\n  (runtimePins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (runtime :\n    Pinwheel.Program.Streaming.Session.RuntimeTrace image.program false\n      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))\n      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins)) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)\n      ((Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n            (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)\n            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)\n            (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin)).run\n        image.program false (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins))\nPinwheel.Artifact.StreamingSessionD2.physical_warm_reset_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins i).initialize = 0)\n  (command :\n    s.coreInputs Pinwheel.Artifact.StreamingSessionD2.components (Pinwheel.Artifact.StreamingSessionD2.enginePins i)\n        Pinwheel.Hardware.Streaming.Core.Input.command =\n      15) :\n  Pinwheel.Artifact.StreamingSessionD2.physicalStep s i =\n    {\n      frontend := fun {w} =>\n        Pinwheel.Hardware.Streaming.HostCorrespondence.values\n          (Pinwheel.Program.Streaming.Host.step\n            (Pinwheel.Hardware.Streaming.WarmReset.frontendInput s (Pinwheel.Artifact.StreamingSessionD2.enginePins i))\n            (Pinwheel.Hardware.Streaming.WarmReset.frontendState s)),\n      core := fun {w} =>\n        Pinwheel.Hardware.Streaming.Initialization.values\n          (Pinwheel.Hardware.Streaming.WarmReset.metadata fun {w} => s.core)\n          (Pinwheel.Hardware.Streaming.WarmReset.runtime fun {w} => s.core) }\nPinwheel.Artifact.StreamingSessionD2.concrete_spi_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n      (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) final\nPinwheel.Artifact.StreamingSessionD2.concrete_jtag_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n      (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins) final\nPinwheel.Artifact.StreamingSessionD2.concrete_spi_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),\n        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.spiImage 3).program false final\n            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingSessionD2.physicalRun startup\n              (Pinwheel.Artifact.StreamingSessionD2.spiBootPins ++ inputs) =\n            Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.spiImage 3))\n              (final.run (Pinwheel.Program.Streaming.spiImage 3).program false\n                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD2.concrete_jtag_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),\n        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.jtagImage 3).program false final\n            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingSessionD2.physicalRun startup\n              (Pinwheel.Artifact.StreamingSessionD2.jtagBootPins ++ inputs) =\n            Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.jtagImage 3))\n              (final.run (Pinwheel.Program.Streaming.jtagImage 3).program false\n                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD2.concrete_spi_custody (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD2.PhysicalCustody (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) boot\nPinwheel.Artifact.StreamingSessionD2.concrete_jtag_custody (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD2.PhysicalCustody (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)\n        boot\nPinwheel.Artifact.StreamingSessionD2.concrete_spi_progress (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD2.PhysicalProgress (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) boot\nPinwheel.Artifact.StreamingSessionD2.concrete_jtag_progress (startup : Pinwheel.Hardware.Streaming.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD2.PhysicalProgress (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)\n        boot\nPinwheel.Artifact.StreamingSessionD4.components_correct :\n  Pinwheel.Hardware.Streaming.Package.Correct Pinwheel.Artifact.StreamingSessionD4.components\nPinwheel.Artifact.StreamingSessionD4.physical_step_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalStep s i =\n    s.step (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n      ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins i)\nPinwheel.Artifact.StreamingSessionD4.physical_observe_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalObserve s i port =\n    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).pads i\n      (fun {w} =>\n        s.observe (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n          ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins i))\n      port\nPinwheel.Artifact.StreamingSessionD4.physical_run_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)\n  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalRun s inputs =\n    s.run (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n      (List.map (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins inputs)\nPinwheel.Artifact.StreamingSessionD4.source_runtime_step_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeInput s\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalStep (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)\n      i =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image\n      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\nPinwheel.Artifact.StreamingSessionD4.source_runtime_run_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)\n  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeTrace p (image.pending.getLsbD 0) s\n      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalRun (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)\n      inputs =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image\n      (s.run p (image.pending.getLsbD 0)\n        (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD4.source_runtime_observe_correct {p : Pinwheel.Program.Streaming.Program}\n  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad)\n  (hi :\n    Pinwheel.Program.Streaming.Session.RuntimeInput s\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalObserve\n      (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s) i port =\n    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).pads i\n      (fun {w} =>\n        Pinwheel.Hardware.Streaming.SessionCorrespondence.outputs s (image.pending.getLsbD 0)\n          (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))\n      port\nPinwheel.Artifact.StreamingSessionD4.initialized_upload_correct {source : List Pinwheel.Program.Streaming.Instruction}\n  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)\n  (startup : Pinwheel.Hardware.Streaming.Package.State 2) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory\n        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 2\n          (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 2\n                (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)).run\n            (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin)) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)\n      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))\nPinwheel.Artifact.StreamingSessionD4.initialized_runtime_correct {source : List Pinwheel.Program.Streaming.Instruction}\n  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)\n  (startup : Pinwheel.Hardware.Streaming.Package.State 2) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory\n        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 2\n          (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 2\n                (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)).run\n            (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.Streaming.Package.Components.typed 2)\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))\n  (runtimePins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (runtime :\n    Pinwheel.Program.Streaming.Session.RuntimeTrace image.program false\n      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))\n      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins)) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =\n    Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)\n      ((Pinwheel.Hardware.Streaming.InitializedSession.sourceState image\n            (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)\n            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)\n            (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin)).run\n        image.program false (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins))\nPinwheel.Artifact.StreamingSessionD4.physical_warm_reset_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)\n  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins i).initialize = 0)\n  (command :\n    s.coreInputs Pinwheel.Artifact.StreamingSessionD4.components (Pinwheel.Artifact.StreamingSessionD4.enginePins i)\n        Pinwheel.Hardware.Streaming.Core.Input.command =\n      15) :\n  Pinwheel.Artifact.StreamingSessionD4.physicalStep s i =\n    {\n      frontend := fun {w} =>\n        Pinwheel.Hardware.Streaming.HostCorrespondence.values\n          (Pinwheel.Program.Streaming.Host.step\n            (Pinwheel.Hardware.Streaming.WarmReset.frontendInput s (Pinwheel.Artifact.StreamingSessionD4.enginePins i))\n            (Pinwheel.Hardware.Streaming.WarmReset.frontendState s)),\n      core := fun {w} =>\n        Pinwheel.Hardware.Streaming.Initialization.values\n          (Pinwheel.Hardware.Streaming.WarmReset.metadata fun {w} => s.core)\n          (Pinwheel.Hardware.Streaming.WarmReset.runtime fun {w} => s.core) }\nPinwheel.Artifact.StreamingSessionD4.concrete_spi_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n      (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) final\nPinwheel.Artifact.StreamingSessionD4.concrete_jtag_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n      (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins) final\nPinwheel.Artifact.StreamingSessionD4.concrete_spi_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),\n        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.spiImage 3).program false final\n            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingSessionD4.physicalRun startup\n              (Pinwheel.Artifact.StreamingSessionD4.spiBootPins ++ inputs) =\n            Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.spiImage 3))\n              (final.run (Pinwheel.Program.Streaming.spiImage 3).program false\n                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD4.concrete_jtag_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),\n        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.jtagImage 3).program false final\n            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingSessionD4.physicalRun startup\n              (Pinwheel.Artifact.StreamingSessionD4.jtagBootPins ++ inputs) =\n            Pinwheel.Hardware.Streaming.SessionCorrespondence.values\n              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.jtagImage 3))\n              (final.run (Pinwheel.Program.Streaming.jtagImage 3).program false\n                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingSessionD4.concrete_spi_custody (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD4.PhysicalCustody (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) boot\nPinwheel.Artifact.StreamingSessionD4.concrete_jtag_custody (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD4.PhysicalCustody (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)\n        boot\nPinwheel.Artifact.StreamingSessionD4.concrete_spi_progress (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD4.PhysicalProgress (Pinwheel.Program.Streaming.spiImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) boot\nPinwheel.Artifact.StreamingSessionD4.concrete_jtag_progress (startup : Pinwheel.Hardware.Streaming.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingSessionD4.PhysicalProgress (Pinwheel.Program.Streaming.jtagImage 3)\n        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)\n        boot\n"
+      },
+      "source_verification": {
+        "commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+        "files": 2772,
+        "full_tree_archive_sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-full-dcce331-20261017-01"
+    },
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e"
+      },
+      "compressed_bytes": 34912,
+      "compressed_sha256": "66c7788e30d00e57b7487c12b1078e85688cb9c63a2f08eab169ee8b6e879ea1",
+      "contract": {
+        "accepted": true,
+        "audited_declarations": 39595,
+        "audited_theorems": 22232,
+        "executable_suites": 65,
+        "kernel_suites": 2,
+        "legacy_contract": true,
+        "modules": 564,
+        "schema": null
+      },
+      "file": "streaming-foundation-dcce331-20261017-01.json.gz",
+      "kind": "foundation",
+      "raw_bytes": 101322,
+      "raw_sha256": "f5a9d2d58d1daf0ca3fafb785ffe1c1b50998faa04a4344e97775845849b312c",
+      "retained": {
+        "commands_verified": 73,
+        "native_audit_verified": true,
+        "source_files": 699
+      },
+      "source_verification": {
+        "commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+        "files": 699,
+        "full_tree_archive_sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-foundation-dcce331-20261017-01"
+    },
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e"
+      },
+      "compressed_bytes": 284105,
+      "compressed_sha256": "b2e54d4a506dba7b74d7eb7fe86ecfd199bb2df6100e4e6d799bdb5dfc91201f",
+      "contract": {
+        "accepted": true,
+        "schema": "pinwheel.python-snapshot.v1",
+        "unittest": {
+          "skipped": 8,
+          "skips": [
+            {
+              "reason": "'local pinned Icarus installation unavailable'",
+              "test": "test_write_priority_preedge_read_mask_and_held_q (test_buffered_rtl_sim.DigitalMemoryLaw.test_write_priority_preedge_read_mask_and_held_q)"
+            },
+            {
+              "reason": "'Pinned Icarus and SRAM functional models are required'",
+              "test": "setUpClass (test_buffered_sram_memory.BufferedSramMemoryChecks)"
+            },
+            {
+              "reason": "'Pinned Yosys and SRAM Liberty required'",
+              "test": "setUpClass (test_buffered_sram_serial_binding.SavedYosysSerialBindingTests)"
+            },
+            {
+              "reason": "'Pinned Icarus is required for serial bridge timing'",
+              "test": "setUpClass (test_buffered_sram_serial_rtl.SerialBridgeRTLTests)"
+            },
+            {
+              "reason": "'Linux /proc zombie observation'",
+              "test": "test_zombie_group_remains_addressable_but_has_no_live_members (test_process_group.ProcessGroupTests.test_zombie_group_remains_addressable_but_has_no_live_members)"
+            },
+            {
+              "reason": "'Linux thread-group leader state'",
+              "test": "test_exited_leader_does_not_hide_a_live_worker_thread (test_process_group.ThreadLivenessTests.test_exited_leader_does_not_hide_a_live_worker_thread)"
+            },
+            {
+              "reason": "'Build Pinwheel.Program.Requests before running Lean export integration'",
+              "test": "setUpClass (test_program_export.ExportTests)"
+            },
+            {
+              "reason": "'Pinned Icarus tools unavailable'",
+              "test": "setUpClass (test_resolved_pads.ActualResolvedBridge)"
+            }
+          ],
+          "summary": "Ran 1344 tests in 74.023s\n\nOK (skipped=8)",
+          "tests_run": 1344
+        }
+      },
+      "file": "streaming-python-dcce331-20261017-01.json.gz",
+      "kind": "python",
+      "producer_verification": {
+        "commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+        "files": 4,
+        "full_tree_archive_sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "raw_bytes": 1089924,
+      "raw_sha256": "283cd554fad5d213ce23f5cb485fd6d57f0e9b4806465bdf5dc154356df9c291",
+      "retained": {
+        "native_summary_verified": true,
+        "retained_artifacts": 2795
+      },
+      "source_verification": {
+        "commit": "dcce3312b8634d97536e997e672e06f094ba567a",
+        "files": 2772,
+        "full_tree_archive_sha256": "136ed3b25f633265ba66f29068cec3c4e9e0e757ee34eb78c00dad9ceb50c60e",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-python-dcce331-20261017-01"
+    }
+  ],
+  "schema": "pinwheel.streaming-evidence.v1",
+  "source_commit": "dcce3312b8634d97536e997e672e06f094ba567a"
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "pinwheel.streaming-mapped-native-intent.v1",
+  "depth": 2,
+  "executable_sha256": {
+    "complete": "62407b76c86ca876e995657311c37c5fc5e82be2fb64974f0c05521e74af01bd",
+    "sampler-ff-pin": "4a4560f721f19ca380b3828aab9b7775a109182b8c3cf5b96e16f90697626640"
+  },
+  "model_sha256": "4c6fbfd345139808cb0aa970dbecc8ab139f583e023e83b54fb9bde68aa5b617",
+  "source_sha256": {
+    "complete": "3e1fdd4ad23ed866a0e184e25cfec2adf49eb476be5922f77417865b1f07bb59",
+    "sampler-ff-pin": "6db10367d423e31067f7c8f9bfbc701abb616603dd621a1cd91cbb643d30817f"
+  },
+  "vvp": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/tools/oss-cad-suite/bin/vvp",
+  "scopes": [
+    "UART24",
+    "I2C10",
+    "SPI32768",
+    "JTAG4097"
+  ]
+}

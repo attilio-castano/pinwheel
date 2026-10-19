@@ -4,8 +4,10 @@ This continuation proves that independently interpreting the resident image
 preserves the buffered source program's execution. It starts with parametric
 mode-0 SPI, then uses a reactive four-byte I²C read to exercise waits, checked
 phases, scratch decisions and terminal outcomes. The
-[design explorer](../explorer/index.html#session) shows this proof link alongside
-the remaining connection to packed circuit state.
+[design explorer](../explorer/index.html#session) records that earlier proof
+boundary. The later [initialized SPI refinement](buffered-spi-refinement.md)
+now connects the supported SPI source to actual packed-circuit and digital SRAM
+execution. The reactive I²C circuit relation remains open.
 
 ## What is proved
 
@@ -46,34 +48,46 @@ histories, capacities and complete interpreter states, with successful,
 timeout, fault and partial-result paths. It does not assume a successful peer
 trace or matching post-edge observations.
 
-These are execution theorems through the existing `Buffered` operational
+These decoder theorems use the existing `Buffered` operational
 semantics. They preserve countdown, two-stage sampling, pin commands, TX
 consumption, RX prefix, scratch capture, branching and retained outcomes as
 parts of the interpreter state. They are stronger than a finite replay, but
-do not yet equate that state with the circuit's register representation.
+alone do not equate that state with the circuit's register representation.
+The SPI continuation below supplies that separate relation for one admitted
+mode-0 transfer.
 
-## The remaining state relation
+## Circuit correspondence and remaining work
 
 The existing initialized SRAM theorem compares the digital SRAM controller to
-the independent packed-register Reactive circuit. The new theorem compares
-the source to an independently decoded-image interpreter. The state relation
-between those two execution representations remains the next formal gate.
+the independent packed-register Reactive circuit. The decoder results above
+compare the source to an independently decoded-image interpreter.
 
-For SPI, connect source virtual PC and duration to physical row, loop counters
-and remaining duration; immutable source TX plus consumed index to shifted
-packed TX; and the received prefix to packed RX. Establish the relation at an
-admitted START, preserve it for one edge, then induct over incoming samples.
-The source's START leaves its sampler unchanged while the circuit advances it;
-the source freezes after stopping while circuit sampling continues. The
-relation must align START and abstract stopped sampler values explicitly.
+For SPI, `SpiRefinement.initialized_run` in
+[SpiSimulation.lean](../../Pinwheel/Hardware/Buffered/SpiSimulation.lean) now
+derives the connection after cold initialization, actual source-constrained
+accepted loading and an actually admitted START. It covers mode 0, one through
+four bytes, half-periods of three through 256 edges, arbitrary 32-bit payloads,
+admitted TX/RX lengths from zero through 32 bits, and every subsequent
+command-zero raw-input prefix. TX underflow and RX-full faults preserve their
+diagnostic prefixes; successful peer behavior is not assumed.
 
-For reactive I²C, extend that relation through wait readiness at the last
+The relation maps virtual PC and duration to physical row, loop counters and
+remaining duration; retains the original full TX word alongside its consumed
+index; and packs the RX list in arrival order. The source seed aligns samplers
+with the actual START edge. Stopped sampler registers are abstracted because
+the source freezes after stopping while the circuit continues sampling. The
+[SPI refinement study](buffered-spi-refinement.md) owns the assumptions,
+admission argument, proof chain and focused gate. The explorer snapshot was
+not regenerated for this continuation.
+
+For reactive I²C, the next relation must cover wait readiness at the last
 budgeted observation, qualification resets, terminal capture before branch
 selection and virtual-to-physical branch coordinates. Its accepted-loading
 composition is another required link. Exact typed/Python byte comparisons are
 finite evidence about the compiler rather than a universal Python theorem.
-Serial delivery, native evaluation, emitted RTL and physical timing keep their
-separate proof and qualification boundaries.
+Multiple-transfer/reset/release composition, serial delivery, native
+evaluation, emitted RTL and physical timing keep their separate proof and
+qualification boundaries.
 
 ## Reproduce
 
@@ -91,7 +105,9 @@ It compares sixteen SPI configurations (one through four bytes, half-periods
 3, 4, 6 and 256) and the fixed four-byte I²C constructor, including every word,
 control, dictionary index and descriptor plus geometry and buffer demands.
 Logs and a hash-bound receipt remain under `build/validation/<fresh-tag>/`.
-This gate does not run CAD or claim the packed-state relation is closed.
+This decoder gate does not run CAD or check the later packed-state relation;
+use the [separate SPI refinement gate](buffered-spi-refinement.md#reproduce)
+for that continuation.
 
 ## Recorded validation
 

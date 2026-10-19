@@ -1,0 +1,16 @@
+{
+  "boundary": "Independent exact membership, compressed byte roundtrips and intended-source archive checks. Does not execute or upgrade any proof or physical gate.",
+  "bundled_files": 6061,
+  "mandatory_goal_complete": false,
+  "manifest_sha256": "69452bcac1f2430386e2e1bba9122e65294be0c5f1849f3ee74d02f8749118bf",
+  "original_inputs_unchanged": true,
+  "packet": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/docs/research/evidence/streaming-tt-20261018",
+  "passed": true,
+  "physical_acceptance_claim": false,
+  "positive_intended_sources": 4308,
+  "producer_sha256": "0e1458b9ca2c2e4b5dc8fc4e4b934e8050ede33a93ea75dfde525033a776f331",
+  "qualified": false,
+  "schema": "pinwheel.streaming-tt-evidence-packet-postcheck.v1",
+  "source_artifacts": 6058,
+  "source_commit": "efccdb3f76ae745ad733b4af6106142516546961"
+}

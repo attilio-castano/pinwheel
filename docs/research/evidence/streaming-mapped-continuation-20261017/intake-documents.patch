@@ -1,0 +1,26 @@
+diff --git a/docs/protocols/buffered-spi-refinement.md b/docs/protocols/buffered-spi-refinement.md
+index 17155b4..ab4cab9 100644
+--- a/docs/protocols/buffered-spi-refinement.md
++++ b/docs/protocols/buffered-spi-refinement.md
+@@ -170,5 +170,6 @@ modules; its 447 frozen source hashes still match at closeout. The
+ [local foundation receipt](../../build/validation/spi-source-circuit-foundation-20261016-01/report.json)
+ has SHA-256
+ `d13e3118165d4e7800186793ebeed78513a35477a94ceac7029f21838d01f4df`.
++
+ These ignored local receipts preserve the checked source identities; they are
+ not durable external artifact custody or physical qualification.
+diff --git a/docs/research/status.md b/docs/research/status.md
+index a207915..396cd03 100644
+--- a/docs/research/status.md
++++ b/docs/research/status.md
+@@ -46,8 +46,8 @@ expected-failure diagnostic launcher cannot accept success. No next CAD run is
+ launched or authorized by these records.
+ 
+ The [branch closeout](../history/tt-buffered-branch-closeout.md) records the
+-progressive commits, artifact custody and passing final host checks. The full
+-foundation gate now passes in an isolated source snapshot: 60 executable suites,
++progressive commits, artifact custody and passing final host checks. At that
++closeout, the foundation gate passed in an isolated source snapshot: 60 executable suites,
+ one kernel suite, current-source build/import coverage and standard-axiom audit.
+ The [PR validation receipt](../../physical/experiments/tt-buffered-pr-validation.json)
+ owns this later result; it changes no physical acceptance verdict.
