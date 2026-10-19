@@ -113,5 +113,45 @@ class PythonSnapshotTests(unittest.TestCase):
             self.assertFalse((root / 'build').exists())
 
 
+    def test_git_context_and_object_overrides_are_refused_before_bootstrap(self):
+        for name in ('GIT_DIR', 'GIT_COMMON_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE',
+                     'GIT_OBJECT_DIRECTORY', 'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+                     'GIT_EXEC_PATH', 'GIT_CONFIG_PARAMETERS', 'GIT_CONFIG_COUNT',
+                     'GIT_REPLACE_REF_BASE', 'GIT_SHALLOW_FILE'):
+            with self.subTest(name=name), self.assertRaisesRegex(RuntimeError, 'Git context'):
+                gate.check_environment({name: 'untrusted'})
+        gate.check_environment({'GIT_OPTIONAL_LOCKS': '0'})
+
+    def test_nested_archive_cannot_discover_parent_git_but_local_fixture_can(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            subprocess.run(['git', 'init', '-q', str(root)], check=True)
+            snapshot = root / 'build' / 'run' / 'snapshot'
+            snapshot.mkdir(parents=True)
+            found = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
+                                            cwd=snapshot, text=True).strip()
+            self.assertEqual(Path(found), root)
+            with gate.isolated_git_discovery(snapshot):
+                probe = gate.check_git_discovery(snapshot)
+                self.assertEqual(probe.returncode, 128)
+                fixture = snapshot / 'fixture'
+                subprocess.run(['git', 'init', '-q', str(fixture)], check=True)
+                own = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'],
+                                              cwd=fixture, text=True).strip()
+                self.assertEqual(Path(own), fixture)
+                gate.check_git_discovery(snapshot)
+
+    def test_discovery_environment_is_scoped_even_when_checks_fail(self):
+        with patch.dict(os.environ, {'GIT_CEILING_DIRECTORIES': '/unrelated',
+                                    'GIT_DISCOVERY_ACROSS_FILESYSTEM': '1'}):
+            with self.assertRaisesRegex(ValueError, 'controlled'):
+                with gate.isolated_git_discovery(Path('/private/tmp/archive')):
+                    self.assertEqual(os.environ['GIT_CEILING_DIRECTORIES'], '/private/tmp')
+                    self.assertEqual(os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'], '0')
+                    raise ValueError('controlled')
+            self.assertEqual(os.environ['GIT_CEILING_DIRECTORIES'], '/unrelated')
+            self.assertEqual(os.environ['GIT_DISCOVERY_ACROSS_FILESYSTEM'], '1')
+
+
 if __name__ == '__main__':
     unittest.main()

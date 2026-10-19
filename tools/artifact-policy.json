@@ -1,0 +1,644 @@
+{
+  "baseline_commit": "31a8f62a7e42a0dd91787ec947d2fb8e8ee4c25b",
+  "bounded_index": {
+    "max_bytes": 4194304,
+    "max_rows": 16000,
+    "path": "docs/research/local-evidence/payload-index.jsonl"
+  },
+  "exceptions": {
+    "docs/explorer/index.html": {
+      "bytes": 1629942,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ffd9656989e1e0476132efc52a17f7062b8f581a0e31163176e428c36cca9c93"
+    },
+    "docs/physical/figures/tt-buffered-access-incremental-coarse.svg": {
+      "bytes": 1984052,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "428df5ef5a74b4ea5e1394cafef301fb1cf4dff1c88d797be1bed8d4cbe145f6"
+    },
+    "docs/physical/figures/tt-buffered-access-placement-coarse.svg": {
+      "bytes": 2717920,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "27a14d4275f9f81f3cb3fb1beafd7a4019d8baedea2290ede1b984dfde1415c7"
+    },
+    "docs/physical/figures/tt-buffered-fanout2803-coarse.svg": {
+      "bytes": 1929811,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "6c50cb4311cd5245a74ccb32b94e13d49dddf443658fda465b0a0f5356247f9b"
+    },
+    "docs/physical/figures/tt-buffered-route-effort.svg": {
+      "bytes": 1869306,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9f5e72955ca773b255f6aae4997bc09fb116640337559a3aea18b78e428f22c9"
+    },
+    "docs/physical/figures/tt-buffered-sram-access-coarse.svg": {
+      "bytes": 1662553,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "6707fb1c6537e4ece4945281738719859d5bb0274655e15628bab157b8208f5b"
+    },
+    "docs/physical/figures/tt-buffered-two-buffer-coarse.svg": {
+      "bytes": 1937628,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "5946ba39a7596400ce8e8dca279ddb215d59809dc177890f3044f6bf1bb801e1"
+    },
+    "docs/research/evidence/digital-session-20261017/corrected-native-preliminary-toolchain-observation.json": {
+      "bytes": 593,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "396ddfd64a21d0217912d32b57f2c11437dd7f243f9b9c9ce9616676f83966e9"
+    },
+    "docs/research/evidence/digital-session-20261017/corrected-native-preliminary.json": {
+      "bytes": 18701,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "340f199155985eadd73c56859d0fd53ee029baaa607b354ff671f748158b2a1b"
+    },
+    "docs/research/evidence/digital-session-20261017/foundation.json": {
+      "bytes": 88115,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "b09696ee9de6f7e74a0cb10773344dc508f9b2cf2c23943853cdd305314c074e"
+    },
+    "docs/research/evidence/digital-session-20261017/initialized-native.json": {
+      "bytes": 19044,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ebd3b72856d3216ceafdc444b929e8fa7f5050677e9a9a8a0881a9521bdaab59"
+    },
+    "docs/research/evidence/digital-session-20261017/manifest.json": {
+      "bytes": 4050,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "10fa8a8c3657931800b4db39e4d2350f9a24c200fdfa87b84a2e3aeb15e2c749"
+    },
+    "docs/research/evidence/digital-session-20261017/obsolete-native-stopped-stop-reason.json": {
+      "bytes": 398,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "e30426582fbe95413d3099c088563dfe08dfa2bddccd96100d7ba921f7df44d7"
+    },
+    "docs/research/evidence/digital-session-20261017/obsolete-native-stopped-toolchain-observation.json": {
+      "bytes": 593,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "5a1b671655f2d449757f3a87ed8bed190c13df42285601b955a0bb8445b18b95"
+    },
+    "docs/research/evidence/digital-session-20261017/obsolete-native-stopped.json": {
+      "bytes": 18653,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "aa9be0983a8f239ae35c577f9065dd5f105346e084ad644d377abcf929882a64"
+    },
+    "docs/research/evidence/digital-session-20261017/python.json": {
+      "bytes": 36038,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "f87c2d9080a860f66eb731457e9a904a4aab26833a8515b45e98cf8095d195ed"
+    },
+    "docs/research/evidence/digital-session-20261017/timing-conformance.json": {
+      "bytes": 23496,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c310bd5dc70a7417bc9d4aadb73e70c8f85af089a684b7600909a63d4c667222"
+    },
+    "docs/research/evidence/digital-session-20261017/wrong-toolchain-rejected-expected-rejection.json": {
+      "bytes": 460,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "f592f86c229c018352496b02611ff91cc442ec7ff753dea0761a9cf3945ff75a"
+    },
+    "docs/research/evidence/digital-session-20261017/wrong-toolchain-rejected.json": {
+      "bytes": 18324,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c5ffc0f54d5122103cf965812d13788eba897866aa720b2f2315aa1f6e9df6ae"
+    },
+    "docs/research/evidence/rtl-session-20261017/buffered-rtl-frontend-20261017-01.json.gz": {
+      "bytes": 278759,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c889ad50b882d77417f59c03f996858bb69684a5372a1a4913125c64862b896f"
+    },
+    "docs/research/evidence/rtl-session-20261017/buffered-rtl-frontend-20261017-02.json.gz": {
+      "bytes": 429380,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "15d7d92e206d6c43b77d6d43a568e2e1b17e67153cbf9f2836313d8ced682eb8"
+    },
+    "docs/research/evidence/rtl-session-20261017/buffered-rtl-session-full-20261017-01.json.gz": {
+      "bytes": 569205,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "96cbb32d66946c21c9bda28b40e810282d05313ead13b2d97257adbc72cb6ce6"
+    },
+    "docs/research/evidence/rtl-session-20261017/buffered-rtl-session-full-20261017-02.json.gz": {
+      "bytes": 1795983,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "4bae48babb04408b30876dbd4a1be3880e43ad87fd72b38bcba0557a335ed4e3"
+    },
+    "docs/research/evidence/rtl-session-20261017/buffered-rtl-sim-20261017-01.json.gz": {
+      "bytes": 267340,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3f780af52bb413f6a2f644189dedb9af146ab555662b09d0ea09bb8763446445"
+    },
+    "docs/research/evidence/rtl-session-20261017/manifest.json": {
+      "bytes": 366141,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d296e5fea5b489f5431662710611b69390ad770f7dd6682610a5a109eab63601"
+    },
+    "docs/research/evidence/rtl-session-20261017/rtl-session-foundation-20261017-01.json.gz": {
+      "bytes": 32411,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "7ded47daaefca1ae05a8c0b279a6d2882d3e2ad1aed1eec8096f988e094c8049"
+    },
+    "docs/research/evidence/rtl-session-20261017/rtl-session-python-dc53ceb.json.gz": {
+      "bytes": 272479,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "48f0754ce8973333b3f6b2006401cc3f39afb6ec4a3f6e4623142c6a0a5b25ff"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/StreamingFinalAudit.lean": {
+      "bytes": 2038,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c6cb03849ac2fd4887c26713ef0df72594691b6fd3c68c3dcd1d6361d4d9541a"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/StreamingRequiredTargets.lean": {
+      "bytes": 2512,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ea6252a02a8b3ab19bdd3edead588cae37b36dfe760a5680c19fab23b6c00f2d"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/StreamingSessionD2.lean": {
+      "bytes": 21312,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "e15f4159fa027b32a51bd82cf753d291f36dc11f6d8351eb5e13a0b1596fcd5a"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/StreamingSessionD4.lean": {
+      "bytes": 21312,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "41d22a9c897564be11ee7b87c71de0f641edb6e201237dafafde38387c7ce0aa"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/checked-target-types.txt": {
+      "bytes": 30000,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "22ee164ea7c1447b72ba4b7694b8f39bf47c20601a86575ac6addd9f8df6d230"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/final-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "8bdc96b6bc68122712355a3ea9327bb416f7cc992e8517f8d2df040b1c4272d2"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/final-private-axiom-rejection.log": {
+      "bytes": 330,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "75de467614142f0b55cfac8c0a9f27c2425f93371bc60050dcca133e9ee535c5"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/foundation-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "cdb26975194395f5020f5e03ff32c35757bd2848d3c6faecebdd5629c77cddcc"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/intake-documents.patch": {
+      "bytes": 1588,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/manifest.json": {
+      "bytes": 48765,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "90f0351fa97ab287e048bff4fa751868d8f411ca4dc5533ed7b3cb4b9542f961"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/proof-control-summary.json": {
+      "bytes": 8468,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "de4582e890bca6484c8ac8d79a0b471cf8332ae239834678d14c1c8ac480758d"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/streaming-foundation-dcce331-20261017-01.json.gz": {
+      "bytes": 34912,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "66c7788e30d00e57b7487c12b1078e85688cb9c63a2f08eab169ee8b6e879ea1"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/streaming-full-dcce331-20261017-01.json.gz": {
+      "bytes": 2032803,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "de3b72a315c0a3bf85b6d9572235c4bd709ae5cad3122d66f7a407ac21024930"
+    },
+    "docs/research/evidence/streaming-continuation-20261017/streaming-python-dcce331-20261017-01.json.gz": {
+      "bytes": 284105,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "b2e54d4a506dba7b74d7eb7fe86ecfd199bb2df6100e4e6d799bdb5dfc91201f"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/MappedWrapperAudit.lean": {
+      "bytes": 12057,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3f18489f713572d09973c1017b88e06b1e8eefd58b09bb3260a532be9fea7d1c"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedPackageD2.lean": {
+      "bytes": 3580,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ee7d80ab87f6b4974ccd4ac10d7e5821670eff04be2904b22051f98d72cf9df1"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedPackageD4.lean": {
+      "bytes": 3580,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "17ccd79cc3ae11aeb66cb716630ed1a99b399a83f8ee29b7638dd9948fd333f1"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedRequiredTargets.lean": {
+      "bytes": 3894,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ab218c31dabab4684315f8f80110e04af090fe33c156cef387db74affdc31252"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedSessionD2.lean": {
+      "bytes": 29862,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "8bbb4681a7b21cc644cbe03d61c70c3a42c102a997373be15116057b72bc25ec"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedSessionD4.lean": {
+      "bytes": 29862,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c114383fc9728ccfb2958b37c3ac8a73a10e00841432d780b2f8eb65466e59c0"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedTinyD2.lean": {
+      "bytes": 31492,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "749e8fd4b99248e8ef8b5b505b93b340425d76fc48151ac2799408bee6475468"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedTinyD4.lean": {
+      "bytes": 31492,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "f817446ccf24e52b2aed5f4e2346fc506383d2744126918596f06974f987d9a4"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedUARTTimingD2.lean": {
+      "bytes": 4482,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "bfdd1ca02f410b45f8454cca97d4e9bffc67368a10170b785ba80ec3adbcbd83"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/StreamingMappedUARTTimingD4.lean": {
+      "bytes": 4482,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9398d276aa36f4e9ee7edf14a984d8eba405f8caa3f54f2c994006244e84b28a"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/checked-target-types.txt": {
+      "bytes": 49962,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "0bcdb2fd307beefc1e079b81106a55760ee344e13283f62de8e1d34c3b32f47c"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d2-cost.json": {
+      "bytes": 2912,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d2f3a21747287c52d54bc7a51c0cb2392a5a980ce90b767771a21faf91365101"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d2-native-intent.json": {
+      "bytes": 739,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d6ff46a683087ea161feb2746d99e9007dfd57a76b44140b118ce90e4dd6202b"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d2-native.jsonl": {
+      "bytes": 17204,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "56c3dbc6ad4095a1fcb9cc8b28bf3f361843c538056fcacf6f652e7196414650"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d4-cost.json": {
+      "bytes": 2912,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "33b4d9b24043e24d3e6d83c3f03d833592f7e23772688320cbb442ff07227474"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d4-native-intent.json": {
+      "bytes": 739,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "b0fcc0e7aac844e5187103bbac3a9530e419ce1222e4e70a77abd1d8504a3083"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/d4-native.jsonl": {
+      "bytes": 17204,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "34966446072020e77fc4b97ae781d2acc215fad92b39c13e87d3dab68d619a52"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/final-private-audit.log": {
+      "bytes": 72,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "c1ffd429b08f1228c12b7d8bf59e36016af167def90c15556736c80d64c913b1"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/final-private-axiom-rejection.log": {
+      "bytes": 366,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "367b2360ec9666d0be9c9b3e6147751846b813459df2bb9ab28006764fdb5a67"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/foundation-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "a9f09d9f8a6b95abeed66f8409c82a6ac9da4f8ec0481e09758ae6f2f801a803"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/intake-documents.patch": {
+      "bytes": 1588,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/manifest.json": {
+      "bytes": 506221,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d50a079ef12df6ab4882266aeab676c2962c62bbed736e428f2612cfc286b6f4"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/proof-and-control-summary.json": {
+      "bytes": 426072,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "8a5092954872acaebf822f2330334668733b0a7809c6764c1f3180774a07e4b4"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/streaming-mapped-foundation-7715ba6-20261017-01.json.gz": {
+      "bytes": 38995,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9ab7195800ede17738321590ce47d467902f015d1828d23d591c79be04710bfa"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/streaming-mapped-full-7715ba6-20261017-01.json.gz": {
+      "bytes": 3366496,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d58715389418f7d18f77798169effb3d73d280ad8c5dda7a47b0710e63fcdf44"
+    },
+    "docs/research/evidence/streaming-mapped-continuation-20261017/streaming-mapped-python-7715ba6-20261017-01.json.gz": {
+      "bytes": 309147,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9d2ec1a7baf790fd71df6c072c169734e2dab5828d399ea2f37bf5eef4b435a6"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/StreamingReadyFinalAudit.lean": {
+      "bytes": 2233,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3c34fffdb7be68a0fed64a7209e64f67f686e359622560778b8eeb588c34085a"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/StreamingReadyRequiredTargets.lean": {
+      "bytes": 2124,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "294d0bc54c9f01e615da1ec5e9727362109e6eab22ccccf2ef4957a6b6d4334d"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/StreamingReadySessionD2.lean": {
+      "bytes": 19871,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "306e3038c17fd7e1a831d84fc208a38a8555c568222f29985eb382283a7576d8"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/StreamingReadySessionD4.lean": {
+      "bytes": 19871,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "5bf7a79b340d92f01d142add36207bfee7751ab5cbfe2220d8a74c030cfd3ba5"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/checked-target-types.txt": {
+      "bytes": 26498,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "1fa483db6aa85a71fe5379b8f45b330e369b3bb0e62fe5eff17989b81164bbab"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/final-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "51a10660bf8bf7185857b95f29d6f3eed97d5bc19d0c7b9e5c19f03d3eed140e"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/final-private-axiom-rejection.log": {
+      "bytes": 361,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "fbfafec19efeb8fe23cc618ac486a97f8e869789037a50f147cdee1390d0358e"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/foundation-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3c15f70286ab9a0569cf44982e082e1301e8895294eb421cb987017109282074"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/intake-documents.patch": {
+      "bytes": 1588,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/manifest.json": {
+      "bytes": 44322,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "082de8f4e099747525bc6ee20398e994d1dbf9911076b270bbed67ddfdcc9020"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/proof-control-summary.json": {
+      "bytes": 10688,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "2a0cb42b1e2a8fba0ecbac0391651579fb26ce72ac5b3f82b8b55d37cbfaa327"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/streaming-ready-foundation-063d538-20261017-01.json.gz": {
+      "bytes": 37089,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3e50441c0df4f672efce71f274ccd784522b3e90c02bc9d20d975406ce7f0d4a"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/streaming-ready-full-063d538-20261017-01.json.gz": {
+      "bytes": 2048761,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "328c27caa9e2e16a1cf7b899268b290e316af45276d046f04a4319df71f3e2ce"
+    },
+    "docs/research/evidence/streaming-ready-continuation-20261017/streaming-ready-python-063d538-20261017-01.json.gz": {
+      "bytes": 294756,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "549f7502ac5ae5d3a25ed0f0641be4c8bddfcc936b6e9b04f3bf025121d9e59b"
+    },
+    "docs/research/evidence/streaming-tt-20261018-postcheck.json": {
+      "bytes": 830,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "29de98b823fff66adf22c72167c10ff21397fb5fd1e5bcf3d3cb5b6bd2814b34"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingReadySessionD2.lean": {
+      "bytes": 19871,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "306e3038c17fd7e1a831d84fc208a38a8555c568222f29985eb382283a7576d8"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingReadySessionD4.lean": {
+      "bytes": 19871,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "5bf7a79b340d92f01d142add36207bfee7751ab5cbfe2220d8a74c030cfd3ba5"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingUARTFinalAudit.lean": {
+      "bytes": 2283,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "93261ce30c88abbf441fb248c78f9ba9c345f8ce3c4e83fc10524705aa06d5de"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingUARTRequiredTargets.lean": {
+      "bytes": 3222,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3735d5c99801ccf420a6a86c7a3f0944fe3aecee44e98a1011eb4c7169f1b005"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingUARTSessionD2.lean": {
+      "bytes": 29837,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "5d6d3010d7ad1557001360b347e9a4d181e68f1b84f684461758b4d41059bca3"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/StreamingUARTSessionD4.lean": {
+      "bytes": 29837,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "685149d5cf59f39d3a22767770899c60787d75d6716354d1c6484e9412181b82"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/checked-target-types.txt": {
+      "bytes": 44218,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9e9742833d183edfe3c1b496548480e4c1ff9322aaa74bd968bddf4546502c1e"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/final-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "f2380661dc6a3b7d2fe6dc4046a8f29776d3a211f4e7843171b6d24a43f33629"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/final-private-axiom-rejection.log": {
+      "bytes": 355,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "ecad422032625dcf603f1722200aa7add1b1b329e5acf86d67e5731f47493fd3"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/foundation-private-audit.log": {
+      "bytes": 74,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d82e8784d3b5c70e542ef7e2265bc55605d4b0470c4aee251bec37115aa99fdc"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/intake-documents.patch": {
+      "bytes": 1588,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/manifest.json": {
+      "bytes": 63373,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "05fa1723258debeb1aad53e135d4a8774bfc1d62fad7c002b5a910d193d617c9"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/proof-control-summary.json": {
+      "bytes": 10919,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "7f3ce25e5b51a825c601dcfbdba60e81f12450d1c3f1a8dc2161ebb8f2677e57"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/streaming-uart-foundation-0425b03-20261017-01.json.gz": {
+      "bytes": 38216,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "df05c8cebc3eeb09347700b17711d4120e6423de8575e0c720ee5c30da5fe090"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/streaming-uart-full-0425b03-20261017-01.json.gz": {
+      "bytes": 2318634,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "dba01fca3a312030acbab546cf4a84cd8ecfec3f6c2844275b694ded015ef1db"
+    },
+    "docs/research/evidence/streaming-uart-continuation-20261017/streaming-uart-python-0425b03-20261017-01.json.gz": {
+      "bytes": 301070,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "675f7711a2c388168cfec6639c98671615ade74fcc42cac6a07ad10669782448"
+    },
+    "physical/experiments/tt-buffered-route-effort-results.json": {
+      "bytes": 1348438,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "9f66843c08c4540d55f6a8ad1b1b76de182e52994545daa0f8d93160a51a743e"
+    },
+    "physical/fixtures/sram-context/RM_IHPSG13_1P_DLY_2.gds": {
+      "bytes": 8708,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "a63d2cad89003c2930e66bc60b9564e37562b3422725349243cde3b5a3121ee8"
+    },
+    "physical/fixtures/sram-context/RM_IHPSG13_1P_WLDRV16X8.gds": {
+      "bytes": 23550,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "01adac9a48379dddb4968761209fe44b1b556429222de5754742043d5c3f952e"
+    },
+    "physical/fixtures/sram-context/RSC_IHPSG13_CDLYX1_DUMMY.gds": {
+      "bytes": 4170,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "0fea90b58366e131dc291d62bb12764689a4ee55d344cb265e2431ab40df9ca0"
+    },
+    "physical/fixtures/sram-context/RSC_IHPSG13_WLDRVX8.gds": {
+      "bytes": 4806,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "2b3d6aeac70421c7395b6114fe0a22d97af911a3f92ec5f43cfab5ef7e807cdd"
+    },
+    "physical/fixtures/sram-tile/RM_IHPSG13_1P_BITKIT_16x2_SRAM.gds": {
+      "bytes": 15440,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be"
+    },
+    "tools/pinwheel-physical-campaign/tests/fixtures/p2-onepass-violations.rpt.gz": {
+      "bytes": 302642,
+      "git_mode": "100644",
+      "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
+      "sha256": "d1d427d67600cb8974b6a8fe63453c647712e3c0477288fb321fe40862765bba"
+    }
+  },
+  "max_blob_bytes": 1048576,
+  "max_changed_bytes": 26214400,
+  "max_changed_files": 1000,
+  "schema": 1
+}

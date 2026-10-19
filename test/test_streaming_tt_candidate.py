@@ -58,7 +58,7 @@ class CandidateTests(unittest.TestCase):
 
     def test_controlled_recipe_changes_only_native_clustering_and_repair_settings(self):
         value=json.loads((ROOT/'physical/streaming-tt-candidate.json').read_text())
-        result=C.recipe_experiment(value)
+        result=C.recipe_experiment(value, source_mode='clean-v1')
         self.assertEqual(set(result['changes']),set(C.RECIPE_CHANGES))
         self.assertEqual(result['changes']['CTS_SINK_CLUSTERING_SIZE']['after'],8)
         self.assertEqual(result['cts_trial']['changes'],{'CTS_SINK_CLUSTERING_SIZE':{'before':None,'after':8}})
@@ -78,7 +78,7 @@ class CandidateTests(unittest.TestCase):
                 ('CTS_SINK_CLUSTERING_ENABLE',False),('CTS_APPLY_NDR','half')]:
             altered=deepcopy(value);altered[key]=changed
             with self.subTest(key=key),self.assertRaisesRegex(ValueError,'five settings'):
-                C.recipe_experiment(altered)
+                C.recipe_experiment(altered, source_mode='clean-v1')
 
     def test_resolved_size_and_actual_command_both_required_not_search_summary(self):
         resolved=dict(CTS_SINK_CLUSTERING_ENABLE=True,CTS_SINK_CLUSTERING_SIZE=8)

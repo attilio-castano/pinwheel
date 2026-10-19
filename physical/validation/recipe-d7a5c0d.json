@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "flow": "StreamingTTCertified"
+  },
+  "DESIGN_NAME": "tt_um_pinwheel_streaming_ready_d2",
+  "VERILOG_FILES": [
+    "dir::design.v"
+  ],
+  "CLOCK_PORT": "clk",
+  "CLOCK_PERIOD": 20,
+  "PNR_SDC_FILE": "dir::core.sdc",
+  "SIGNOFF_SDC_FILE": "dir::core.sdc",
+  "FALLBACK_SDC": "dir::core.sdc",
+  "FP_DEF_TEMPLATE": "dir::tt_block_6x4_pgvdd.def",
+  "FP_SIZING": "absolute",
+  "DIE_AREA": [
+    0,
+    0,
+    1289.28,
+    710.64
+  ],
+  "PL_TARGET_DENSITY_PCT": 85,
+  "TOP_MARGIN_MULT": 1,
+  "BOTTOM_MARGIN_MULT": 1,
+  "LEFT_MARGIN_MULT": 6,
+  "RIGHT_MARGIN_MULT": 6,
+  "VDD_PIN": "VPWR",
+  "GND_PIN": "VGND",
+  "RT_MAX_LAYER": "Metal4",
+  "PDN_CFG": "dir::pdn.tcl",
+  "PDN_MULTILAYER": true,
+  "PDN_RAIL_LAYER": "Metal1",
+  "PDN_HORIZONTAL_LAYER": "Metal3",
+  "PDN_VERTICAL_LAYER": "Metal4",
+  "PDN_VWIDTH": 2.1,
+  "PDN_HWIDTH": 2.1,
+  "PDN_VPITCH": 50,
+  "PDN_HPITCH": 50,
+  "PDN_VSPACING": 3.52,
+  "PDN_HSPACING": 3.52,
+  "PDN_VOFFSET": 10,
+  "PDN_HOFFSET": 10,
+  "RUN_CTS": true,
+  "RUN_EQY": false,
+  "RUN_LINTER": false,
+  "RUN_KLAYOUT_DRC": true,
+  "RUN_KLAYOUT_XOR": false,
+  "KLAYOUT_DRC_OPTIONS": {
+    "no_recommended": false,
+    "run_mode": "deep"
+  },
+  "TIMING_VIOLATION_CORNERS": [
+    "*"
+  ],
+  "DESIGN_REPAIR_BUFFER_OUTPUT_PORTS": false,
+  "PL_RESIZER_HOLD_SLACK_MARGIN": 0.02,
+  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+  "MAX_FANOUT_CONSTRAINT": 10,
+  "CLOCK_UNCERTAINTY_CONSTRAINT": 0.2,
+  "SYNTH_DRIVING_CELL": "sg13cmos5l_buf_2/X",
+  "OUTPUT_CAP_LOAD": 10,
+  "OPENROAD_THREADS": 4,
+  "LAYERS_RC": {
+    "nom_*": {
+      "Metal1": {
+        "res": 0.00084375,
+        "cap": 6.8784e-05
+      },
+      "Metal2": {
+        "res": 0.000515,
+        "cap": 9.302e-05
+      },
+      "Metal3": {
+        "res": 0.000515,
+        "cap": 9.2e-05
+      },
+      "Metal4": {
+        "res": 0.000515,
+        "cap": 9.1788e-05
+      },
+      "TopMetal1": {
+        "res": 1.2804878048780488e-05,
+        "cap": 0.0001108496
+      }
+    }
+  }
+}

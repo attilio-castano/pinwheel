@@ -6,6 +6,7 @@ source commit may be tested by this committed producer without changing or
 cleaning the caller's working tree. No shared build/tools or cache is copied.
 """
 import argparse
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -91,10 +92,39 @@ def python_identity(executable):
 
 def check_environment(environment=None):
     environment = os.environ if environment is None else environment
-    bad = sorted(name for name in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONPYCACHEPREFIX')
+    bad = sorted(name for name in ('PYTHONPATH', 'PYTHONHOME', 'PYTHONSTARTUP', 'PYTHONPYCACHEPREFIX',
+                 'GIT_DIR', 'GIT_COMMON_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE',
+                 'GIT_OBJECT_DIRECTORY', 'GIT_ALTERNATE_OBJECT_DIRECTORIES', 'GIT_EXEC_PATH',
+                 'GIT_CONFIG_PARAMETERS', 'GIT_CONFIG_COUNT', 'GIT_REPLACE_REF_BASE', 'GIT_SHALLOW_FILE')
                  if environment.get(name))
     if bad:
-        raise RuntimeError('Refuse Python import/cache overrides: ' + ', '.join(bad))
+        raise RuntimeError('Refuse Python import/cache overrides or Git context/object overrides: ' + ', '.join(bad))
+
+
+
+@contextmanager
+def isolated_git_discovery(snapshot):
+    """Stop upward discovery at the archive parent; fixture-owned repos still work."""
+    updates = {'GIT_CEILING_DIRECTORIES': str(Path(snapshot).resolve().parent),
+               'GIT_DISCOVERY_ACROSS_FILESYSTEM': '0'}
+    previous = {name: os.environ.get(name) for name in updates}
+    os.environ.update(updates)
+    try:
+        yield updates
+    finally:
+        for name, value in previous.items():
+            if value is None:
+                os.environ.pop(name, None)
+            else:
+                os.environ[name] = value
+
+
+def check_git_discovery(snapshot):
+    result = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=snapshot,
+                            capture_output=True, text=True, timeout=30, env=dict(os.environ, LC_ALL='C'))
+    if result.returncode != 128 or 'not a git repository' not in result.stderr.lower():
+        raise RuntimeError('Fresh archive must not discover a Git repository or inherit parent objects')
+    return result
 
 
 def test_summary(output):
@@ -185,7 +215,12 @@ def main():
             raise RuntimeError('Python subprocess does not use the fingerprinted executable')
         command = [executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', 'test', '-p', 'test_*.py']
         tests = helper.Commands(snapshot, logs, records=run.records, default_timeout=args.timeout_seconds)
-        output = tests(command, 'python-unittest-discover', timeout=args.timeout_seconds)
+        with isolated_git_discovery(snapshot) as isolation:
+            probe = check_git_discovery(snapshot)
+            (logs / 'snapshot-git-isolation.log').write_text(probe.stdout + probe.stderr)
+            report['git_discovery_isolation'] = dict(isolation, ancestor_repository_unavailable=True,
+                                                    probe_exit_code=probe.returncode)
+            output = tests(command, 'python-unittest-discover', timeout=args.timeout_seconds)
         report['unittest'] = test_summary(output)
         report['passed'] = True
     except BaseException as error:

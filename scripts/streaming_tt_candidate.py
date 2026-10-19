@@ -12,6 +12,8 @@ import shutil
 import shlex
 import subprocess
 
+import streaming_clean_source as clean_source
+
 from streaming_mapped_cost import measure
 from streaming_mapped_flow import state_inventory
 from streaming_mapped_liberty import LIBRARY_SHA256, load_library
@@ -88,6 +90,11 @@ def optimized_candidate(admission_path, admission_sha256):
     worker_path = bound(admission['worker_report']); raw_path = bound(admission['raw_gate_report'])
     config_path = bound(admission['worker_config']); worker_config = read(config_path)
     worker, raw = read(worker_path), read(raw_path)
+    source_identity = admission.get('source_admission')
+    if source_identity is not None:
+        require(source_identity.get('mode') == 'clean-v1', 'Unknown parent source admission mode')
+        require(clean_source.admit(ROOT, admission['source_commit'], raw['source_sha256']) == source_identity,
+            'Clean parent source admission does not rederive')
     require(worker.get('schema') == 'pinwheel.streaming-tt-optimized-device.v1' and worker.get('passed') is True and
         worker.get('qualified') is False and worker.get('stage') == 'complete' and
         worker.get('all_state_device_kernel_join') is True and worker.get('physical_ff_bits') == 6039 and
@@ -147,7 +154,11 @@ def optimized_candidate(admission_path, admission_sha256):
     yosys = regular(worker_config['tools']['yosys'])
     require(consumed.get(str(yosys)) == sha(yosys), 'Pinned reimport tool is not a closed worker input')
     consumed[str(config_path)] = sha(config_path)
-    return dict(kind='optimized_whole_device',admission=str(admission_path),admission_sha256=admission_sha256,
+    if source_identity is not None:
+        for name, expected in source_identity['input_sha256'].items():
+            require(name not in consumed or consumed[name] == expected, 'Conflicting clean source input')
+            consumed[name] = expected
+    result = dict(kind='optimized_whole_device',admission=str(admission_path),admission_sha256=admission_sha256,
         source_commit=admission['source_commit'],worker_report=str(worker_path),worker_report_sha256=sha(worker_path),
         raw_gate_report=str(raw_path),raw_gate_report_sha256=sha(raw_path),consumed_sha256=consumed,
         replay_status=replay['status'],replay=str(replay_path) if replay_path else None,
@@ -159,6 +170,9 @@ def optimized_candidate(admission_path, admission_sha256):
         yosys=str(yosys),component_sources=component_sources,component_tops=dict(
             frontend='pinwheel_streaming_quad_frontend',**{'core-d2':'pinwheel_streaming_ready_core_d2'}),
         parent_admitted_scope='through_global_route_only',post_pnr_equivalence_proved=False)
+    if source_identity is not None:
+        result.update(source_mode='clean-v1', source_admission=source_identity)
+    return result
 
 
 def validate_config(config, tech_lef):
@@ -170,22 +184,26 @@ def validate_config(config, tech_lef):
     return validate_nominal_rc(config,tech_lef)
 
 
-def recipe_experiment(config):
+def recipe_experiment(config, *, source_mode='historical', producer_sha256=None):
     """Retain the coarse03 ledger and isolate the fresh CTS8 trial delta."""
-    baseline = subprocess.check_output(['git','show',RECIPE_BASELINE+':physical/streaming-tt-candidate.json'],cwd=ROOT,timeout=30)
+    require(source_mode in ('historical','clean-v1'), 'Unknown recipe source mode')
+    baseline = (clean_source.recipe_bytes('recipe', ROOT, producer_sha256) if source_mode == 'clean-v1' else
+        subprocess.check_output(['git','show',RECIPE_BASELINE+':physical/streaming-tt-candidate.json'],cwd=ROOT,timeout=30))
     require(hashlib.sha256(baseline).hexdigest() == '2fc0a01dc1f6c0eed4fb4353be8955c7730305f4d2d8c6731538ea2f71af994f',
         'Controlled recipe baseline differs')
     before = json.loads(baseline); expected = dict(before,**RECIPE_CHANGES)
     require(type(config.get('CTS_SINK_CLUSTERING_SIZE')) is int and config == expected,
         'Controlled recipe changes more than the admitted five settings')
-    trial_baseline = subprocess.check_output(['git','show',CTS_TRIAL_BASELINE+':physical/streaming-tt-candidate.json'],cwd=ROOT,timeout=30)
+    trial_baseline = (clean_source.recipe_bytes('cts_trial', ROOT, producer_sha256) if source_mode == 'clean-v1' else
+        subprocess.check_output(['git','show',CTS_TRIAL_BASELINE+':physical/streaming-tt-candidate.json'],cwd=ROOT,timeout=30))
     require(hashlib.sha256(trial_baseline).hexdigest() == CTS_TRIAL_BASELINE_SHA256,
         'Controlled CTS trial baseline differs')
     trial_before = json.loads(trial_baseline)
     require(trial_before.get('CTS_SINK_CLUSTERING_SIZE') is None and
         config == dict(trial_before,CTS_SINK_CLUSTERING_SIZE=8),
         'CTS8 trial changes more than sink clustering size')
-    sdc = subprocess.check_output(['git','show',RECIPE_BASELINE+':physical/streaming-tt.sdc'],cwd=ROOT,timeout=30)
+    sdc = (regular(ROOT/'physical/streaming-tt.sdc').read_bytes() if source_mode == 'clean-v1' else
+        subprocess.check_output(['git','show',RECIPE_BASELINE+':physical/streaming-tt.sdc'],cwd=ROOT,timeout=30))
     require(hashlib.sha256(sdc).hexdigest() == sha(ROOT/'physical/streaming-tt.sdc') ==
         'bcfd5a3ee86ccf13d6a8851e4b8d05b02584926862b922efa00204b3f628d0e5', 'Physical timing contract changed')
     defaults = dict(CTS_SINK_CLUSTERING_SIZE=None,CTS_APPLY_NDR='half',RUN_POST_GRT_DESIGN_REPAIR=False,
@@ -226,6 +244,10 @@ def prepare_optimized(design, *, admission, admission_sha256, pdk):
     from streaming_tt_pdn_geometry import admit
     safe_name(design)
     sources = producer_hashes(optimized=True)
+    validation_data = clean_source.data_inputs(ROOT)
+    for name, expected in validation_data.items():
+        require(hashlib.sha256(committed(ROOT/name)).hexdigest() == expected, 'Commit exact validation data first')
+    sources.update(validation_data)
     source_commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,timeout=30).decode().strip()
     candidate = optimized_candidate(admission,admission_sha256)
     lock, completion = read(ROOT/'tools/physical-toolchain.json'), read(ROOT/'tools/streaming-tt-signoff.json')
@@ -248,7 +270,8 @@ def prepare_optimized(design, *, admission, admission_sha256, pdk):
         load_library(candidate['library']),actual_semantic_q_map)
     shutil.copyfile(physical_verilog,inputs/'design.v')
     config = read(ROOT/'physical/streaming-tt-candidate.json')
-    experiment = recipe_experiment(config)
+    source_mode = candidate.get('source_mode', 'historical')
+    experiment = recipe_experiment(config, source_mode=source_mode, producer_sha256=sources)
     rc = validate_config(config,out/'pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_tech.lef')
     require(admit(inputs/'tt_block_6x4_pgvdd.def',inputs/'pdn.tcl') == geometry, 'Staged PDN geometry changed')
     write(inputs/'pdn-geometry-admission.json',geometry)
@@ -267,7 +290,7 @@ def prepare_optimized(design, *, admission, admission_sha256, pdk):
         design=design,depth=2,candidate=candidate,pdk=staged_pdk,pdk_source=pdk_before,
         input_sha256=files,template_sha256=sha(template),nominal_wire_rc=rc,synthesis_bypassed=True,
         physical_verilog_derivation=derivation,
-        physical_recipe_experiment=experiment,
+        physical_recipe_experiment=experiment,validation_source_mode=source_mode,
         pdn_geometry_admission=geometry,
         placement_hold_repair_target_ns=config['PL_RESIZER_HOLD_SLACK_MARGIN'],
         repair_target_boundary='Placement and global-route hold repair cushions are 0.02 ns; the SDC and final nonnegative setup/hold requirements are unchanged.',
@@ -305,7 +328,10 @@ def verify_optimized(design):
         'Physical Verilog derivation receipt changed')
     verify_complete_pdk(design/'pdk',read(ROOT/'tools/physical-toolchain.json'),read(ROOT/'tools/streaming-tt-signoff.json'))
     validate_config(read(design/'inputs/core.json'),design/'pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lef/sg13cmos5l_tech.lef')
-    require(recipe_experiment(read(design/'inputs/core.json')) == receipt['physical_recipe_experiment'],
+    source_mode = receipt.get('validation_source_mode', 'historical')
+    require(source_mode == receipt['candidate'].get('source_mode', 'historical'), 'Prepared source mode changed')
+    require(recipe_experiment(read(design/'inputs/core.json'), source_mode=source_mode,
+        producer_sha256=receipt['producer_sha256']) == receipt['physical_recipe_experiment'],
         'Controlled physical recipe record changed')
     for name, expected in receipt['candidate']['consumed_sha256'].items():
         require(sha(regular(name)) == expected, 'Admitted optimized proof input/artifact changed: ' + name)

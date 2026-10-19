@@ -19,6 +19,7 @@ import time
 
 from streaming_tt_signoff import read, regular, require, sha, unchanged, write
 from validation_run import fresh_directory
+import streaming_clean_source as clean_source
 
 ROOT=Path(__file__).resolve().parents[1]
 BASELINE='787260b07c7dffc06799feeee6fd604e0b290fe7'
@@ -127,14 +128,18 @@ def restore_port_order(candidate,outer,top):
     return ordered
 
 
-def validate_raw(raw_path,source_commit):
+def validate_raw(raw_path,source_commit, *, source_mode='historical'):
     raw_path=regular(raw_path);directory=raw_path.parent
     report=read(raw_path);config=read(directory/'worker-config.json')
     require(report.get('passed') is True and report.get('stage')=='components' and
         report.get('source_commit')==report.get('producer_commit')==source_commit,
         'Raw source gate has not closed at the selected commit')
-    require(subprocess.run(['git','merge-base','--is-ancestor',BASELINE,source_commit],cwd=ROOT).returncode==0,
-        'Raw source is outside the approved campaign lineage')
+    require(source_mode in ('historical','clean-v1'), 'Unknown raw source admission mode')
+    if source_mode == 'historical':
+        require(subprocess.run(['git','merge-base','--is-ancestor',BASELINE,source_commit],cwd=ROOT).returncode==0,
+            'Raw source is outside the approved campaign lineage')
+    else:
+        clean_source.admit(ROOT, source_commit)
     h=load('_streaming_tt_intake_archive',ROOT/'scripts/check-buffered-rtl-sim.py')
     gate=load('_streaming_tt_intake_raw_gate',ROOT/'scripts/check-streaming-uart.py')
     algorithm=subprocess.check_output(['git','rev-parse','--show-object-format'],cwd=ROOT,text=True).strip()
@@ -164,6 +169,8 @@ def validate_raw(raw_path,source_commit):
     if any('fresh_foundation' in value for value in (report, config, child)):
         from streaming_tt_fresh_foundation import validate_raw_binding
         validate_raw_binding(report, config, child, ROOT)
+    if source_mode == 'clean-v1':
+        clean_source.admit(ROOT, source_commit, actual)
     return report,config,child,snapshot,actual
 
 
@@ -205,14 +212,15 @@ def regenerated_sources(config,worker,out):
     return modules,identities
 
 
-def issue(raw_path,worker_config_path,worker_path,tag):
+def issue(raw_path,worker_config_path,worker_path,tag, *, source_mode='historical'):
     raw_path=regular(raw_path)
     worker_config_path=regular(worker_config_path);worker_path=regular(worker_path)
     config=read(worker_config_path);worker=read(worker_path);out=worker_path.parent
     commit=config['source_commit']
     require(re.fullmatch('[0-9a-f]{40}',commit) and config['producer_commit']==commit,
         'Exact identical selected source/producer commits required')
-    raw,raw_config,raw_child,snapshot,source_hashes=validate_raw(raw_path,commit)
+    raw,raw_config,raw_child,snapshot,source_hashes=validate_raw(raw_path,commit,source_mode=source_mode)
+    source_identity = (clean_source.admit(ROOT, commit, source_hashes) if source_mode == 'clean-v1' else None)
     require(Path(config['root']).resolve()==snapshot and Path(config['worker_out']).resolve()==out and
         {'yosys','abc','lean','lake'}<=set(config['tools']) and
         all(raw['tool_paths'].get(name)==path for name,path in config['tools'].items()),
@@ -276,6 +284,8 @@ def issue(raw_path,worker_config_path,worker_path,tag):
         raw_gate_report=dict(path=str(Path(raw_path).resolve()),sha256=sha(raw_path)),
         frozen_lean_replay=dict(status='pending',path=None,sha256=None),generated_module_count=len(modules),
         generated_sources_sha256=generated,checked={},artifacts={})
+    if source_identity is not None:
+        report['source_admission'] = source_identity
     write(parent/'report.json',report)
     # Reimport the exact physical SV. The writer may rename $auto cells/wires.
     # Reconstruct actual register-index Q bindings and compare all cell/pin
@@ -310,6 +320,8 @@ def issue(raw_path,worker_config_path,worker_path,tag):
     for key,name in [('candidate_json','candidate.json'),('candidate_sv','candidate.sv'),
             ('semantic_q_map','semantic-q-map.json'),('cost','cost.json')]:
         report['artifacts'][key]=dict(path=str(out/name),sha256=sha(out/name))
+    if source_identity is not None:
+        require(clean_source.admit(ROOT, commit, source_hashes) == source_identity, 'Clean source changed during intake')
     report.update(passed=True,checked={name:True for name in ('fresh_raw_source_gate','archive_membership',
         'worker_kernel_join','private_axiom_audit','tool_identity','input_closeout','semantic_ff_bijection',
         'independent_proof_source_regeneration','physical_sv_reimport')},cost=cost,
@@ -322,10 +334,11 @@ def issue(raw_path,worker_config_path,worker_path,tag):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('raw-gate','worker-config','worker-report','tag'):parser.add_argument('--'+name,required=True)
+    parser.add_argument('--source-mode', choices=('historical','clean-v1'), default='historical')
     args=parser.parse_args()
     require(regular(__file__).read_bytes()==subprocess.check_output(['git','show','HEAD:scripts/streaming_tt_opt_intake.py'],cwd=ROOT),
         'Commit the parent intake producer before use')
-    issue(args.raw_gate,args.worker_config,args.worker_report,args.tag)
+    issue(args.raw_gate,args.worker_config,args.worker_report,args.tag,source_mode=args.source_mode)
 
 
 if __name__=='__main__':main()
