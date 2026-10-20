@@ -132,8 +132,13 @@ separate compiler, serial composition and physical qualification gates.
 The [source-execution continuation](docs/protocols/buffered-source-execution.md)
 now proves source and independently decoded-image interpreter agreement for
 parametric SPI and a fixed reactive four-byte I²C read, across arbitrary input
-histories and execution prefixes. Connecting interpreter state to the circuit's
-packed registers remains the next formal gate; the explorer displays that link.
+histories and execution prefixes. The later
+[initialized SPI refinement](docs/protocols/buffered-spi-refinement.md) connects
+mode-0 SPI to actual packed-circuit and digital SRAM execution: one accepted
+START followed by every command-zero raw-input prefix, including short-TX and
+RX-full faults. It covers one through four bytes and half-periods of three
+through 256 edges. Reactive I²C state refinement, general compiler/serial
+composition, RTL and physical qualification remain separate work.
 
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the

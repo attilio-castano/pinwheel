@@ -171,6 +171,24 @@ counterexamples. Canonical source-image admission has separate tamper controls;
 these finite source witnesses do not prove universal source lowering. The
 portable foundation includes `BufferedSramLoading` and all new proof modules.
 
+The [initialized SPI refinement gate](protocols/buffered-spi-refinement.md),
+`python3 -B scripts/check-buffered-spi-refinement.py --tag <fresh-tag>`, checks
+the pinned toolchain, full library build and axiom audit, injected-axiom
+rejection, and independent source/actual-circuit execution controls. Its kernel
+theorem derives source/packed-state agreement from initialized accepted loading
+and one actual START, then preserves every command-zero raw-input prefix.
+Mode-0 configurations span one through four bytes and half-periods three
+through 256; admitted TX/RX lengths include zero and short transfers with
+retained faults. Finite checks distinguish START/stopped sampler treatment,
+unused high TX bits, RX append indexing and byte rollover. The gate freezes
+and rechecks Lean/test/checker source hashes under a fresh
+`build/validation/<fresh-tag>/` directory. It requires no CAD tools and does
+not establish reactive I²C, serial, native/emitter/RTL or physical equivalence.
+The [recorded focused run](protocols/buffered-spi-refinement.md#validation-record)
+passes with 10 cases / 17,845 compared prefixes, three rejected state mutations
+and a 27,366-declaration / 14,992-theorem standard-axiom audit. The study owns its
+source-frozen receipt and the passing full Python/foundation validation results.
+
 The first command checks physical input/checkpoint provenance, backend import
 boundaries, receipt binding, bank-selection helpers, DEF route parsing and
 process-group timeout cleanup, host input/readback/timeout boundaries, shared command logging and reasoned negative

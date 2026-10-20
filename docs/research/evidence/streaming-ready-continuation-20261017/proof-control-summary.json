@@ -1,0 +1,274 @@
+{
+  "final": {
+    "audited_declarations": 40709,
+    "audited_theorems": 26895,
+    "mandatory_theorems": [
+      "components_correct",
+      "physical_step_correct",
+      "physical_observe_correct",
+      "physical_run_correct",
+      "source_runtime_step_correct",
+      "source_runtime_run_correct",
+      "source_runtime_observe_correct",
+      "initialized_upload_correct",
+      "initialized_runtime_correct",
+      "physical_warm_reset_correct",
+      "concrete_i2c_initialized",
+      "concrete_i2c_runtime",
+      "concrete_i2c_custody",
+      "concrete_i2c_progress"
+    ],
+    "private_axiom_rejected": true
+  },
+  "raw": {
+    "core-d2": {
+      "axiom_audit": "Pinwheel audit: 12669 declarations, 7660 theorems; standard axioms only.",
+      "mutations": [
+        {
+          "all_state_reimport": true,
+          "expected_rejection": false,
+          "modules": [
+            "ReadyCoreD2MutantGraphs",
+            "ReadyCoreD2MutantModel",
+            "ReadyCoreD2Reject"
+          ],
+          "name": "unchanged",
+          "operation": "both",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d2/controls/unchanged"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD2MutantGraphs",
+            "ReadyCoreD2MutantModel",
+            "ReadyCoreD2Reject"
+          ],
+          "name": "program-bank",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d2/controls/program-bank"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD2MutantGraphs",
+            "ReadyCoreD2MutantModel",
+            "ReadyCoreD2Reject"
+          ],
+          "name": "owner-output",
+          "operation": "output",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d2/controls/owner-output"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD2MutantGraphs",
+            "ReadyCoreD2MutantModel",
+            "ReadyCoreD2Reject"
+          ],
+          "name": "sampler-stage",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d2/controls/sampler-stage"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD2MutantGraphs",
+            "ReadyCoreD2MutantModel",
+            "ReadyCoreD2Reject"
+          ],
+          "name": "guard-bypass",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d2/controls/guard-bypass"
+        }
+      ],
+      "private_axiom_rejected": true
+    },
+    "core-d4": {
+      "axiom_audit": "Pinwheel audit: 12951 declarations, 7870 theorems; standard axioms only.",
+      "mutations": [
+        {
+          "all_state_reimport": true,
+          "expected_rejection": false,
+          "modules": [
+            "ReadyCoreD4MutantGraphs",
+            "ReadyCoreD4MutantModel",
+            "ReadyCoreD4Reject"
+          ],
+          "name": "unchanged",
+          "operation": "both",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d4/controls/unchanged"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD4MutantGraphs",
+            "ReadyCoreD4MutantModel",
+            "ReadyCoreD4Reject"
+          ],
+          "name": "program-bank",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d4/controls/program-bank"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD4MutantGraphs",
+            "ReadyCoreD4MutantModel",
+            "ReadyCoreD4Reject"
+          ],
+          "name": "owner-output",
+          "operation": "output",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d4/controls/owner-output"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD4MutantGraphs",
+            "ReadyCoreD4MutantModel",
+            "ReadyCoreD4Reject"
+          ],
+          "name": "sampler-stage",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d4/controls/sampler-stage"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyCoreD4MutantGraphs",
+            "ReadyCoreD4MutantModel",
+            "ReadyCoreD4Reject"
+          ],
+          "name": "guard-bypass",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/core-d4/controls/guard-bypass"
+        }
+      ],
+      "private_axiom_rejected": true
+    },
+    "frontend": {
+      "axiom_audit": "Pinwheel audit: 11907 declarations, 7987 theorems; standard axioms only.",
+      "mutations": [
+        {
+          "all_state_reimport": true,
+          "expected_rejection": false,
+          "modules": [
+            "ReadyQuadFrontendMutantGraphs",
+            "ReadyQuadFrontendMutantModel",
+            "ReadyQuadFrontendReject"
+          ],
+          "name": "unchanged",
+          "operation": "both",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/frontend/controls/unchanged"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyQuadFrontendMutantGraphs",
+            "ReadyQuadFrontendMutantModel",
+            "ReadyQuadFrontendReject"
+          ],
+          "name": "retained-export",
+          "operation": "next",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/frontend/controls/retained-export"
+        },
+        {
+          "all_state_reimport": false,
+          "expected_rejection": true,
+          "modules": [
+            "ReadyQuadFrontendMutantGraphs",
+            "ReadyQuadFrontendMutantModel",
+            "ReadyQuadFrontendReject"
+          ],
+          "name": "ready-output",
+          "operation": "output",
+          "passed": true,
+          "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/raw/frontend/controls/ready-output"
+        }
+      ],
+      "private_axiom_rejected": true
+    }
+  },
+  "wrappers": {
+    "2": [
+      {
+        "expected_rejection": false,
+        "module": "StreamingReadyWrappersD2",
+        "name": "unchanged",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d2/unchanged"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD2",
+        "name": "package-wire",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d2/package-wire"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD2",
+        "name": "package-clock",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d2/package-clock"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD2",
+        "name": "tiny-output",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d2/tiny-output"
+      }
+    ],
+    "4": [
+      {
+        "expected_rejection": false,
+        "module": "StreamingReadyWrappersD4",
+        "name": "unchanged",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d4/unchanged"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD4",
+        "name": "package-wire",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d4/package-wire"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD4",
+        "name": "package-clock",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d4/package-clock"
+      },
+      {
+        "expected_rejection": true,
+        "module": "StreamingReadyWrappersD4",
+        "name": "tiny-output",
+        "passed": true,
+        "proof_directory": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-ready-full-063d538-20261017-01/worker/wrapper-proofs/d4/tiny-output"
+      }
+    ]
+  }
+}

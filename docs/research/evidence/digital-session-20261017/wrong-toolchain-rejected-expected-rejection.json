@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "source_commit": "1658c56b166641a0370eaa016754f813fe46d769",
+  "expected": "Wrong Lean version rejected before build or execution",
+  "command": [
+    "/opt/homebrew/opt/python@3.13/bin/python3.13",
+    "-B",
+    "scripts/check-serial-initialized.py",
+    "--tag",
+    "digital-session-initialized-wrong-version-20261017"
+  ],
+  "exit_code": 1,
+  "gate_report_sha256": "c5ffc0f54d5122103cf965812d13788eba897866aa720b2f2315aa1f6e9df6ae"
+}

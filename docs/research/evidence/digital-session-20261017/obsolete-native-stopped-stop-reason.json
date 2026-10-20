@@ -1,0 +1,7 @@
+{
+  "status": "intentionally_stopped_obsolete_attempt",
+  "stopped_utc": "2026-10-17 11:05:36 UTC",
+  "signal": "SIGINT",
+  "owned_lean_pid": 9673,
+  "reason": "Read-only review found a synthetic repeated-START stimulus bug in this fixture. Corrected source was committed as e4fa523 and is running under fresh tag digital-session-initialized-20261017-02. No circuit or source semantics changed."
+}

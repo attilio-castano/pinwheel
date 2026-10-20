@@ -134,6 +134,44 @@ Ignored local artifacts are not a durable backup; a digest identifies evidence
 but cannot recover a missing file. Report missing evidence rather than recreate
 it under the old run identity.
 
+Separate retention from publication. New generators keep raw outputs under
+`build/<owner>/<attempt>/`; publishing a conclusion or compact catalog is a
+separate, bounded step. Do not recursively copy a run into a documentation tree
+or force-add ignored output. Preserve original source, receipts and failed runs
+in their evidence owner or an authenticated bundle. Historical exporters keep
+their exact baseline contracts and run on their preserved source branch; do not
+edit old certificates merely to fit a new storage layout.
+
+Before a commit, stage the intended source/documentation and check the actual
+Git index. Before a PR, also check all introduced commit versions:
+
+```sh
+python3 -B scripts/check-artifacts.py
+python3 -B scripts/check-artifacts.py --base origin/main --head HEAD
+```
+
+The guard is read-only: it installs no hooks and changes no Git configuration.
+It reads selected Git blobs, so forced additions and working-tree/index
+differences cannot hide a payload. The PR workflow supplies exact base/head SHAs
+with full checkout history; missing local comparison objects refuse without a
+network fallback. Commit-range mode checks intermediate versions too, including
+a payload added and then deleted before the final commit.
+
+The reviewed policy in `tools/artifact-policy.json` caps ordinary changed blobs
+at 1 MiB, aggregate non-exempt changed bytes at 25 MiB and unique changed paths
+at 1,000. Build/cache/compiled paths and raw execution/archive payloads refuse.
+Exact path/mode/SHA/size exceptions preserve existing fixtures, historical
+compact evidence and illustrations; they do not permit changed or new payloads.
+Their provenance commit is descriptive, so squash merges need no old local
+commit object. The one local-evidence index is bounded to 4 MiB/16,000 strict
+five-field rows and cannot embed reports. The selected index/commit policy blob
+is authoritative; an unstaged policy edit cannot alter the check. A first-policy
+source review may explicitly supply `--bootstrap-policy` plus its exact
+`--bootstrap-policy-sha256` before that policy exists in the selected tree.
+Policy/checker changes and new fixture exceptions require ordinary source review;
+this cooperative publication gate is not a sandbox against rewriting itself.
+Passing it establishes publication bounds, not proof or physical qualification.
+
 Use fresh run tags where runners support them. Some older runners overwrite their
 success receipt; inspect that behavior before rerunning and preserve any evidence
 needed for an existing comparison in an approved separate location first. Keep

@@ -1,0 +1,395 @@
+{
+  "passed": true,
+  "source_commit": "6225b43cfd51ab77ce0672cd33675df1c4e8cc7e",
+  "source_sha256": {
+    "Pinwheel/Engine/Counted.lean": "3ef891ee6606cb6b9c4ef592f074e29e24f04136f21629b410d22d20663e175c",
+    "Pinwheel/Engine/Fetch.lean": "abea7dc2fcecb588740dd6ccd7547177a2fda502d0f44646ee38358fcfbd3559",
+    "Pinwheel/Engine/ISA.lean": "8c8249fbfbfb13b97e4e5f0d6da86cab00a0cc4ce0d69deaf38c96101e390e0b",
+    "Pinwheel/Engine/Proofs.lean": "1833ab1d3d192135965f27e63ec8e15878f1aeb8cfce5b4813088cebff917070",
+    "Pinwheel/Engine/Reactive.lean": "5b5162e359dbeb96b8df2e57455eb064e7bfdb9a944df1b5e416fc04c43d715b",
+    "Pinwheel/Engine/Step.lean": "b06d0f22061d28b2b86689350964914092198d981717e38196012a8bf6992d74",
+    "Pinwheel/Hardware/Buffered/DecodedExecution.lean": "7dcfdec6355b277b4b9a68801a0757c317d0d389f5bbf5c03a0b40269196a533",
+    "Pinwheel/Hardware/Buffered/GenericCertificate.lean": "4b6e42d4618361ab036387513fa21e6d7a4b8fd166c2ad08a3875661e3db1913",
+    "Pinwheel/Hardware/Buffered/GenericControl.lean": "2a2bf7d7de775053ae1f60177520e7d0a98805a827d53902f5958c64a126c8a2",
+    "Pinwheel/Hardware/Buffered/GenericDatapath.lean": "9ba32ab610784627e68b9b2afe0f358b264043c748e7069a170c6c8b0ecd6dc1",
+    "Pinwheel/Hardware/Buffered/GenericEffectFacts.lean": "997b2499251e06d0adb66c5fded9f1c78afbaad153a993b6b3831ad3c807277a",
+    "Pinwheel/Hardware/Buffered/GenericEffects.lean": "522720ff036defe11660bed91383d55fb384459b9a5539ddfed1e4b7848c3e74",
+    "Pinwheel/Hardware/Buffered/GenericEncoding.lean": "d05790eea1a55792933fdc1b79677fb816b250f51b582401446b2b81b1f61a22",
+    "Pinwheel/Hardware/Buffered/GenericEncodingCanonical.lean": "1e240c660e8a6924ebc19b523f193bbf5a191205eddc17ec534d7b67fc0d6530",
+    "Pinwheel/Hardware/Buffered/GenericEntryAt.lean": "679cef93629acc0894aef9833daeb17ec695f250f96077d5674f953317da2327",
+    "Pinwheel/Hardware/Buffered/GenericEntryCore.lean": "802de403476f2c0ffb2e79ad3f7cbceb683b4831f45fb12739c265a5cf017c4f",
+    "Pinwheel/Hardware/Buffered/GenericEntryFacts.lean": "661b45babfd0fd045ebef00ab974394f2edc9ab368fa3d8fc72c53db7637b511",
+    "Pinwheel/Hardware/Buffered/GenericEntryFlags.lean": "c38306337866c100004b9cb32aa164a6e42adf6777f56c70a1795c3398162e25",
+    "Pinwheel/Hardware/Buffered/GenericEntryImage.lean": "a6f4d7da182795794cc61b103ce62e5fb44b8b90ad925709ebf31f858283ef41",
+    "Pinwheel/Hardware/Buffered/GenericEntryTransfer.lean": "d1d642e772dd4f03c2ccb93c9cfde0787a1990abedd1c5314ed84bbbb6833048",
+    "Pinwheel/Hardware/Buffered/GenericInstalledSram.lean": "ececdc79ed0abaf25c233d16fe8a59a9d44618b41e303fb38d2bc48a81ea44a2",
+    "Pinwheel/Hardware/Buffered/GenericLayout.lean": "d00a8ab90f6a598d5f41462c6b13f20522b162180fcf5b32e597f2cdcda17b41",
+    "Pinwheel/Hardware/Buffered/GenericLayoutCircuit.lean": "2ba0c83b5b766e93da5403aef29018d4a64c876ef1c41984e3c4778f5338d4c8",
+    "Pinwheel/Hardware/Buffered/GenericNormalize.lean": "83ce5c4f0c10f30a93691a5db805470c6618a5d40b1fee99f7ad8cbfb6f710d7",
+    "Pinwheel/Hardware/Buffered/GenericPhaseEntry.lean": "b2f260a93a08baa3e4d4e6eaf34101e2dc20e7b0d1dbcfd56ec47c0234a86034",
+    "Pinwheel/Hardware/Buffered/GenericPhaseEntryStop.lean": "22d69f631f431d18811bcb2a974282976d021ea25a7df1f081940bba1b5efd08",
+    "Pinwheel/Hardware/Buffered/GenericPhaseScratch.lean": "510d4e9845410f97d8ab725057ac15778deed8ef90a2a94961fbf5735dd8ab21",
+    "Pinwheel/Hardware/Buffered/GenericPins.lean": "712e85445adac8d5dca284b3552d9b61315185acb20ef0fa957623c6a7084d7f",
+    "Pinwheel/Hardware/Buffered/GenericRelation.lean": "38301866b70d51566231162377f8c78d371ba411e57b96bc6cdc150c59f845a1",
+    "Pinwheel/Hardware/Buffered/GenericResetLoading.lean": "914d1fc009ce8588240ab7b9165c77f7dadbf0ca71f20a7d1e30878e202577cd",
+    "Pinwheel/Hardware/Buffered/GenericSample.lean": "3a95abd6a99db3b284b2def99fb9d4d93be2e51ed9d1811939722b266e64f2a7",
+    "Pinwheel/Hardware/Buffered/GenericSramRelation.lean": "6ba44818ae543ccff5855c329319aec816a38a467037256af0829f6316ed6c85",
+    "Pinwheel/Hardware/Buffered/GenericStart.lean": "761ff43801cb5111de3153200b7a8658b4c18844bccbabfb91627dc07a117b47",
+    "Pinwheel/Hardware/Buffered/GenericStartCommon.lean": "b366e03ad94a89fb0ddd00eb9e6fb75053bbab6f33a1b24b300e5597503c5d46",
+    "Pinwheel/Hardware/Buffered/GenericStartData.lean": "daec919092261d3cdcf0db5da6ece6ad873139c4898ce3a3e179d2ebe8dc910d",
+    "Pinwheel/Hardware/Buffered/GenericStartFlags.lean": "8a1da55a063f53f35876a80012a6b059577961562a324cc0d3f1585d371c26e7",
+    "Pinwheel/Hardware/Buffered/GenericStartFrame.lean": "7b07a6583f89fdabe9e376d70915b1af48833c87277ff52c1e5bc5e89f98232d",
+    "Pinwheel/Hardware/Buffered/GenericStartImage.lean": "384d428a1707dc8d8b65059079c6cf58421075fd06ec98ee7e4539cb964f2dfe",
+    "Pinwheel/Hardware/Buffered/GenericStartRelation.lean": "cae10d4b799f7ec9425e0a70c2ce2c29f15500097dadb2dce73228878928ab2e",
+    "Pinwheel/Hardware/Buffered/GenericStartSeed.lean": "6036d668d28606c13c04243ec0f5acdebabedd099b20f77e406153d4fc2a7905",
+    "Pinwheel/Hardware/Buffered/GenericWord.lean": "ccd3edfdd9292c2e27fc09d5b3c65f8a5d0c07ab97ed726a20b2a8c6d418af5c",
+    "Pinwheel/Hardware/Buffered/I2cCanonicalUpload.lean": "5456cb86ba5a89e1b99096078c3a869284b8f68bcaa76ea0b3d7870483c0954e",
+    "Pinwheel/Hardware/Buffered/I2cCertificate.lean": "79c5e68c8a64e15b83124ae864d980fe216cf537d3fc51d0ccbc66ebe6f3aaa4",
+    "Pinwheel/Hardware/Buffered/I2cGeometry.lean": "45f2b24c521d3a7cdf86fc254289f39d8cd0b953039ffdb8f242ad19422824c3",
+    "Pinwheel/Hardware/Buffered/I2cLayout.lean": "897b860e92a77987a85ed351c1a7e43316e947c81e03e1c1c626e13e22704eb3",
+    "Pinwheel/Hardware/Buffered/I2cLoading.lean": "d12291ff5d052ca7a60c4cf8a0646416285d2b65ae0a2019078181c5a20f5d94",
+    "Pinwheel/Hardware/Buffered/I2cReload.lean": "534e020c8c130dbb5948e1f6356eae9bd64bc3f3edaa72882c681416ed4f8fff",
+    "Pinwheel/Hardware/Buffered/I2cReloadSession.lean": "cfdebc7e35d3f5db54d3fb6816449f8c31e065fe6cf09254278a91d8469ea15b",
+    "Pinwheel/Hardware/Buffered/I2cResident.lean": "fcb52d377d7294df7b0666ed83c33d850b3b48ca1c5be6767ade98876088f107",
+    "Pinwheel/Hardware/Buffered/I2cRuntime.lean": "5140aafb8abdce2bd7962afe556ff935b8af2f02ad6703a847a6ae925800ee8d",
+    "Pinwheel/Hardware/Buffered/I2cSource.lean": "c4cd126baa7b890e5ab2a8e29a00316ace15219b66227fcba306e8f38228f07a",
+    "Pinwheel/Hardware/Buffered/I2cStart.lean": "46a700b22d7407960e446d3579346ddcf2a6a4718e979bebd3e85ccdcf152049",
+    "Pinwheel/Hardware/Buffered/I2cTimingCertificate.lean": "fec3bed460d8015341211061dc4ec287f88f424e720ff7e4c833993b2f787f54",
+    "Pinwheel/Hardware/Buffered/I2cTimingLoading.lean": "c4523a0f73aa690f8f7240021f2dfd68a7ad19f1ad30275d70a94e5a0530eb94",
+    "Pinwheel/Hardware/Buffered/I2cTimingSource.lean": "8ac0fa912aab5ec7fd0d99cdbcfc7a81d056e4c3a77a6d5045456fd4d2966a28",
+    "Pinwheel/Hardware/Buffered/I2cTimingUpload.lean": "e05dd1bb15aad03643f6469308aadb8cb2d7d554205a258b003a2bfc24145756",
+    "Pinwheel/Hardware/Buffered/I2cTimingWord.lean": "f429750576398ba8f7be9347452ebb3bbfeec0494ea654af0b69590a93543bd2",
+    "Pinwheel/Hardware/Buffered/I2cUploadAdequacy.lean": "e50ed04d2dc6b8212a5ff6558dc2fcd955aa912b486403dc6134373f4cc014af",
+    "Pinwheel/Hardware/Buffered/I2cUploadCommit.lean": "fe968cfb7c2f5a5b877dcfe435e973f506d61f119e73e20bf96ae5a4cdc73b00",
+    "Pinwheel/Hardware/Buffered/I2cUploadControl.lean": "62797e8adfb6e6ff02f40913659e2e6d85b41418a33cb28b32eef9c7a445503d",
+    "Pinwheel/Hardware/Buffered/I2cUploadMasks.lean": "1e241df412fcf85353c978f72aa9936ad968a3a0198490fd47d960b9394bb30b",
+    "Pinwheel/Hardware/Buffered/I2cUploadPrefix.lean": "12f56bf95d10629d3fc7dc121956d0e71a2911c777b7431a1c7633997724aba6",
+    "Pinwheel/Hardware/Buffered/LifecycleAdmission.lean": "933d879a7492bc5be3ed09dc319ee0d35daded4d72a460ea7b997d2aeebdac15",
+    "Pinwheel/Hardware/Buffered/LifecycleCircuit.lean": "16adabdd79707d33d555d2628be032d15752da47fc080c5608f34975e2749891",
+    "Pinwheel/Hardware/Buffered/LifecycleCounters.lean": "3bb4a2838b4712c5aa02664aa36d86b291f2363773ee5ab42b05016ba73934e6",
+    "Pinwheel/Hardware/Buffered/LifecycleUpload.lean": "116770db49dd57d32d5bd3ea882d0d0d60d6577156dcc12dd808d176074b1a9c",
+    "Pinwheel/Hardware/Buffered/MemoBind.lean": "b3294d650ac909293c466639e04d705ee85e008bf11b12d6e067393faab763e3",
+    "Pinwheel/Hardware/Buffered/Reactive.lean": "1a6e1bc6b4468ddb0766386bdf24dec911a65ebd48c0cd3ace7fac1e661854f9",
+    "Pinwheel/Hardware/Buffered/ReactiveEmit.lean": "707e65a5c7db6686495afd4aee0f7f4cfa47bb2add05a440aa361e6dc282553e",
+    "Pinwheel/Hardware/Buffered/ReactiveProofs.lean": "80fc849565298bcb65464d708174a37f04411b825d058f1c48eeae14445dafa3",
+    "Pinwheel/Hardware/Buffered/SharedBranchProofs.lean": "1472cc5bcc986699f2b3639e5c3bea997a7bee851d232346542f259d36c1d43e",
+    "Pinwheel/Hardware/Buffered/SharedBranches.lean": "f7da6bbe8e4865a859c9d8eb490d3df0c276038d4c34ab3f31159a195baa0efb",
+    "Pinwheel/Hardware/Buffered/SpiAdmission.lean": "3db754c7ead05db010d06538a28a868e7251c8e20672116afc4c1d770ec1ed87",
+    "Pinwheel/Hardware/Buffered/SpiCircuit.lean": "a39a3bff55acc579179a8f984b07ba5c6cae177e586681cbe7c51a64d5e0607c",
+    "Pinwheel/Hardware/Buffered/SpiCoordinates.lean": "cc1874acf08c7ab7a5fe0f3f45327da3a43c25b42e199b99ae09a8e9b35e16b6",
+    "Pinwheel/Hardware/Buffered/SpiDatapath.lean": "751d0e30eb4b841d6dcda81ef5b2459c4d28d282284d9fd7cb74b88cea50fe49",
+    "Pinwheel/Hardware/Buffered/SpiEntryControls.lean": "fb7002f0db9ae2985c934f5360908af69564fe19b66e895e24aa403ba195c08c",
+    "Pinwheel/Hardware/Buffered/SpiExecution.lean": "53cfba9d2ec779f3bea0735bdebd4719d71a0f66800e97799109a9fecffb87bc",
+    "Pinwheel/Hardware/Buffered/SpiGeometry.lean": "b146f61593cc75180433eb6fade9c95a29bfcf244f0edbc5168a1581dc5cc603",
+    "Pinwheel/Hardware/Buffered/SpiInterpreter.lean": "1c78159e7a66c4c405f9985bde8b6c9b7c0bf03cb5ad35963377e47faa5eb19f",
+    "Pinwheel/Hardware/Buffered/SpiPacking.lean": "da27a3fc7545458ef5c1f9f8d83101c0f9e1f36151d9c1a0188b17bc64ab838d",
+    "Pinwheel/Hardware/Buffered/SpiRelation.lean": "7168936988639a8d9846e4abce8c42ae18cf600b8b81592b4e771aec7e0a1a7e",
+    "Pinwheel/Hardware/Buffered/SpiSource.lean": "ef0ecfb0447a49c5ae47fc344f6d5d7f17f05bf7cdec518895f6df40dd1ff1be",
+    "Pinwheel/Hardware/Buffered/SpiSramRelation.lean": "cea3d6a2d7dc8104f26f5185eaef5ff014a7f843bb82449898c335cf6116daa8",
+    "Pinwheel/Hardware/Buffered/SpiStart.lean": "68cc807d4dfda8956464a824fe511d91475f18ee30bbd4ffcfe317e34c89fae3",
+    "Pinwheel/Hardware/Buffered/Sram.lean": "1830f49d99618be0db695e5f823e63a1a24fc6932252e6935bbe543611dc8d7c",
+    "Pinwheel/Hardware/Buffered/SramCandidates.lean": "eda38f603334b5bea90535f8ec355f69aa1ecb85900f95d76d5b7321e97d522a",
+    "Pinwheel/Hardware/Buffered/SramCorrespondence.lean": "3f8381a807b02099d09aa65f92b1b60c2c34f9f01613fe8b9ac9bd3367764a38",
+    "Pinwheel/Hardware/Buffered/SramCoverage.lean": "6f5c9a8db8566831db8dbf67b463c9aa77cf13bdad3a2cff6e1980ca2d39d680",
+    "Pinwheel/Hardware/Buffered/SramExecution.lean": "5f0d3f3be1ce7248efb480d5f2f439219ad1b8fe15bfcf71b1762e77a93bd64f",
+    "Pinwheel/Hardware/Buffered/SramExecutionSupport.lean": "5c04f6b0515fcbfc3ded9e4f5b74c7e2a94661f36582521518a63a8b86fff996",
+    "Pinwheel/Hardware/Buffered/SramLoading.lean": "273f0158d80036337184e0ecb8eeed098154625ebdd6107b5403b41ee0553fac",
+    "Pinwheel/Hardware/Buffered/SramProofs.lean": "01eb57f737cfe8be2e9877fe9a3a5156dd9c15c34ff5726924498854de82f580",
+    "Pinwheel/Hardware/Buffered/SramState.lean": "7144975b182207c84f7bdaec1529d93a9d7333fc3586cc2bfb77709cceb10497",
+    "Pinwheel/Hardware/Circuit.lean": "3e9d5dc81fd81e0e9f98ec23b58270dba08264b05da04e1651dc4d81aa2b4a2a",
+    "Pinwheel/Hardware/Core.lean": "6864cbfbee71b8f595bd4c1df15b57d4989bf00741d4589f11d62cb2e8895099",
+    "Pinwheel/Hardware/CoreState.lean": "e1e55950572801cbcf610a6b3cb7f4821bcfb42fc54fda8aec793bb286104205",
+    "Pinwheel/Hardware/Countdown.lean": "f30c68c2a892c7b1bcd1fb22bff89cc1682422129aa18d2baf3f62abe571e6d6",
+    "Pinwheel/Hardware/Decode.lean": "619a333980ff162f21c215b06082f5db99eed0ff577830b4295ecb5837ad7fdd",
+    "Pinwheel/Hardware/Emit.lean": "012f9501d34323a4569851d4e0eafa723abde5afafe98ea3bdc3d23c4c96e0e9",
+    "Pinwheel/Hardware/Encoding.lean": "1c884def2d571b43472eec80c0949479609cb2f60dd894bb76185a5304ffd248",
+    "Pinwheel/Hardware/Execution/Memory.lean": "5a8160687b65cf3dcf1f1e9a30e2942586019ab496be47c01e9b7c0cce3b1451",
+    "Pinwheel/Hardware/Memory/Sram.lean": "e48e3bd69fdc057a2d6d007ec9e04089e941831a14232aea1a9bfd7b474753d3",
+    "Pinwheel/Hardware/Memory.lean": "5c49886f572dcbe16ef45dbc39efaed1a073b448519687983c472f572fac9fd9",
+    "Pinwheel/Hardware/RawProgram.lean": "3266943bddcb81951c5238e2dc0b6c580fabf71bf42882e88281caf063c728ae",
+    "Pinwheel/Hardware/Store.lean": "85435f27bcab282140202d526c085c64128f2fab3bace3d7f296c3da4be7d940",
+    "Pinwheel/Hardware/Timed.lean": "690256827cd3798d9c51fd619d053ad5bd79107ab7e6393080e973f9a70380e2",
+    "Pinwheel/Program/Buffered.lean": "69dd455948dee5883299bb6ed9dd1adda9ece5e0fcc0fff4d5e1687000b9f6aa",
+    "Pinwheel/Program/BufferedI2C.lean": "1764f8c3da4bf4c5adae8a92afc688617afdcef31114183aa6d8cc4a7455eb32",
+    "Pinwheel/Program/BufferedProofs.lean": "a7d7c6751b1809cbc3ba974c942ea8e116ed96b4e7d35845e8475a0d3b24f0e4",
+    "Pinwheel/Program/BufferedSPI.lean": "36dc6ea2cc979be9f80271807bfd1103e3fd671f5ad7a8d118f4c876b37a1fe2",
+    "Pinwheel/Program/Transfer.lean": "391adfeaf3351b85869cc72d8702ef52814471b155d7267f1527d829499846e3",
+    "Pinwheel/Program/TransferProofs.lean": "7b626356350d3a3084a047a170edcfd7ec5e390a3391d2710d5251c969cdfe17",
+    "lake-manifest.json": "7b47d2076da3d9996d7d0536ae7e17f7aaa9cdbaff5ae01ff000f6bfa61c2371",
+    "lakefile.toml": "e920399e1b4f770a57c1357b47cd5dcecfb6acbe71db27b75c0d72b8a6d4850d",
+    "lean-toolchain": "3aac669c7a910ec2389f4e4f921b605adf6ebf2d1e0c9b9cd0be4d33f3f5db71",
+    "scripts/buffered_counted_hardware.py": "02afc2202ab5da886a361749fb5dcb096a7d82266a2eb897237625e0e2dfaf28",
+    "scripts/buffered_counted_hardware_rtl.py": "4e5799657e47a6bd92260ca935ea86e722c00590c6ccacc3ff04290bd5a63cd5",
+    "scripts/buffered_engine.py": "43fe60f54b9e865bbeb1c31c239971c3ea93d5767b7aa484c4a78dfa22de3f81",
+    "scripts/buffered_hardware.py": "59e6f9691e80042334e29549c5ed4cac69655b664a95d1f5de5c4d1000ee0267",
+    "scripts/buffered_hardware_rtl.py": "0a26afad71d69f6d903101df15c7a62b85ea532308ab05972a0254810b4caa59",
+    "scripts/buffered_hardware_synthesis.py": "dc4fcc9b411619ddbbac69ea3112580f589ae3c9d16eb6773a75dff14c32c20e",
+    "scripts/buffered_i2c.py": "60bbbc19f1fa45bc01a99b3528f06cdd5d3e5c4c13a0adba99b4336fb1a4a710",
+    "scripts/buffered_i2c_peer.py": "a0c2bc1bf3ee9025f9dca10ded4529cf2483aeb0c67dcf7dc995ba76c3be7ae1",
+    "scripts/buffered_peers.py": "ce5623d5165ca62c48f04831f6f8622908a43a9c344051f27603053d28102c63",
+    "scripts/buffered_reactive_hardware.py": "03750990c18e7df6cc602b9076c561461890858ced226a7277750fa47a3584e2",
+    "scripts/buffered_reactive_hardware_rtl.py": "c623a4009fcad34ba3e36cc08bb39e0e9ef621ea05dda828e96064517c2f93c3",
+    "scripts/buffered_shared_branches.py": "18391713dfc819eaa50afede59690381ee906e2947c32698e18f1d9c1f152e8d",
+    "scripts/buffered_shared_branches_export.py": "3d8fcd5158f39ca26015e04d97bc5fd49e4adf39819150b60e6e63b6b9c10eb0",
+    "scripts/buffered_sram_hardware.py": "e4cf2d472a2176ca62f779c42b98a6f094f60fbe805a246eb960748b33cb6fac",
+    "scripts/buffered_sram_serial.py": "ab7ded77084f9401a52184cd44470890b901e620c2412b4f6aa655b3c3d29cdd",
+    "scripts/buffered_sram_serial_binding.py": "4c0263311ebdbc797be717d34160c1ecf223c7e3b4a027ec2bbed8bcd7a57421",
+    "scripts/buffered_sram_serial_mapping.py": "fc0a6d7949ded48defe3be40fbc51a4cfb08816d96916b45606244e68b740058",
+    "scripts/buffered_sram_serial_reference.py": "9d3a113e5adeda588949f86570f2cbc7371cf8a1738d07a89f71005d27cf6eaa",
+    "scripts/buffered_sram_serial_rtl.py": "49d0b40715a15adf1883d77c494e4b5220d9928d5b353185ab9b575e5359254b",
+    "scripts/buffered_tt_physical.py": "1898f33d70c3caa6a3b9680b10884224ca2ed410a08bc0a0a615dad26b019606",
+    "scripts/check-buffered-i2c-timing.py": "2b1625ac0aecde0d4e88d50e90f9ab7596ff3d072e52b053cc7517a3a14952b6",
+    "scripts/jtag_peers.py": "2c9f055c1a218803312729d1d1caee39534595d03b4ced9b30147f6b685e03fa",
+    "scripts/pad_io.py": "8b114fe0fb3ed229cd2f0a1fba7e2ba0915a1691e52e12b407a210f2a58f2bf0",
+    "scripts/pad_peers.py": "a92803e293258519eb7426b4465753ad8465ff142b7885b7145ab021370a155c",
+    "scripts/paired_execution.py": "000b722f89de9c51b179a1a31f9e1597e16021748db67952b404a3674774a75c",
+    "scripts/pinwheel_buffers.py": "1629df379b184cfc094d6f1bb013bd798f9422c8a62c26ea17ebf767f2d42585",
+    "scripts/pinwheel_host.py": "dd6fa6edf816a7cb8554c7758df6263322f2709e507e877f577754f71d84e0c6",
+    "scripts/process_group.py": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175",
+    "scripts/tiled_chip.py": "45142a028afa1bc04364435873074514a35aab6fc8a75f7c50c89918d3fd83a7",
+    "scripts/validation_run.py": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013",
+    "test/BufferedI2cTimingSource.lean": "190ef311b699b1c34aa091778513b515491fa3cc03fa6bdb2630b98c8c61b281"
+  },
+  "python": "3.13.5 (main, Jun 11 2025, 15:36:57) [Clang 17.0.0 (clang-1700.0.13.3)]",
+  "producer_workspace": "Fresh temporary git archive of the committed dependency closure",
+  "commands": [
+    {
+      "command": [
+        "/Users/attiliocastano/.elan/bin/lake",
+        "build",
+        "Pinwheel.Hardware.Buffered.I2cTimingUpload"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "/Users/attiliocastano/.elan/bin/lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--run",
+        "test/BufferedI2cTimingSource.lean"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "constructor_cases": [
+    {
+      "phase_cycles": 3,
+      "wait_cycles": 4,
+      "image_key": "ec2a419e851bdc92bed08771a74785104dee3b6d66423a7dacc362cada0e0838",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 3,
+      "wait_cycles": 5,
+      "image_key": "171c448949bfc55af410d7d721452232b6ca6054ceff75ac067e6c0d7917163c",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 3,
+      "wait_cycles": 32,
+      "image_key": "da8945839985e440d987424d0be5ab02b6bbea2e02b51432f05f30e45b46ccb2",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 3,
+      "wait_cycles": 128,
+      "image_key": "80c3bd86e08c5b70c32e72ebe57d4974df6415121d26bbb6b6f68457c9a8c72c",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 3,
+      "wait_cycles": 256,
+      "image_key": "2081c65b0be3414c17c842e9f485650ea9e39d4f12867306d49d228dd44d076f",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 4,
+      "image_key": "5027d4d5bfe1b29106fd9fd89879a585dfce70594a66591baa9204276349e93a",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 5,
+      "image_key": "e360f3c96acce9e57cae55b2cc1a831ea73ecd405fd04674359f19c988221a37",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 32,
+      "image_key": "d08c6cb5316932ca5008525159d8f0de87be060fa00ff5418d94188cb0867d90",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 128,
+      "image_key": "0784b4ff80c9074a703c6ff7a2317fc29be52dacd5aced0454ab866cf1a0aaba",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 256,
+      "image_key": "82fe42093ccf7068596cf6c6ec39bd5fb8b13761ca19cac0508f87f94e6a9488",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 5,
+      "wait_cycles": 4,
+      "image_key": "88217bbec280c8ef289a342c6109c09a70479a24fe47c38e721b4dbccedafc14",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 5,
+      "wait_cycles": 5,
+      "image_key": "8c4a4995746e4b51916543ffebf2747e94ee53263a14a814df9546aa2560ff65",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 5,
+      "wait_cycles": 32,
+      "image_key": "1f50c24a646601a9e22fe14ef2827779b15ce483e02ca1938523c81b2b6631f6",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 5,
+      "wait_cycles": 128,
+      "image_key": "bbee2917d268e43d838934b2de2bd6a72f3030e762e82a08ac5ec71d17dd2c7e",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 5,
+      "wait_cycles": 256,
+      "image_key": "0616cd63870bfde171348565813f9dddfec14cb319164d9c81aea3cde46d33ce",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 128,
+      "wait_cycles": 4,
+      "image_key": "dc951eb6fc91b965ac0f8d1bbb9eabf49030a7b20c19257437fdb04a39414d3f",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 128,
+      "wait_cycles": 5,
+      "image_key": "491e0cf4168c0e2ff8f0d1aff6f6ec1f108546f3e3562974d2f9f5b3b0e71283",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 128,
+      "wait_cycles": 32,
+      "image_key": "4d9d4c8e36ec661c30002d1e1c01eba6652211a53af402893c08b7f113e23bbd",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 128,
+      "wait_cycles": 128,
+      "image_key": "b94cdeba81d30f4ad4631e12c4964924cea17662851305836205175905badfe3",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 128,
+      "wait_cycles": 256,
+      "image_key": "179c987b779af311ee53ce07f0bb29ee74f3d76f6d8f5723368bcba923dac3d6",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 256,
+      "wait_cycles": 4,
+      "image_key": "5264d29f0d87a094f63f193989a2beb81c157bcbac27e4ef6b3355fe5987bbd7",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 256,
+      "wait_cycles": 5,
+      "image_key": "98b636543afa416dc6da46c693451cba8e1c037f95ababe77189adc83f82f21e",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 256,
+      "wait_cycles": 32,
+      "image_key": "6c62ec29d4ad1bba470820de3c3bee528eae39c0b9e7d089425c4ac6009ce2c5",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 256,
+      "wait_cycles": 128,
+      "image_key": "84c9054b2a89a8fc6ace7f1d1a3708249b009e1553db057db2cb977dd187ee12",
+      "fields": 9,
+      "passed": true
+    },
+    {
+      "phase_cycles": 256,
+      "wait_cycles": 256,
+      "image_key": "a3d5744f6ca14e73473f8f97ccba6f344d8a2f5922ebbc609895c9eda739068f",
+      "fields": 9,
+      "passed": true
+    }
+  ],
+  "image_mutations": [
+    {
+      "field": "words",
+      "rejected": true
+    },
+    {
+      "field": "controls",
+      "rejected": true
+    },
+    {
+      "field": "branch_indices",
+      "rejected": true
+    },
+    {
+      "field": "branch_table",
+      "rejected": true
+    }
+  ],
+  "rejected_python_timings": [
+    {
+      "phase_cycles": 1,
+      "wait_cycles": 32,
+      "rejected": true
+    },
+    {
+      "phase_cycles": 2,
+      "wait_cycles": 32,
+      "rejected": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 1,
+      "rejected": true
+    },
+    {
+      "phase_cycles": 4,
+      "wait_cycles": 3,
+      "rejected": true
+    }
+  ],
+  "elapsed_seconds": 138.979,
+  "boundary": "Finite typed/Python byte conformance for 25 supported public timing pairs. The Lean digital field theorem also includes values below Python public timing bounds; no Python API extension, universal compiler theorem or electrical qualification is claimed."
+}

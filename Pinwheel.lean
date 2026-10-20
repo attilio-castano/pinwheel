@@ -1,4 +1,5 @@
 import Pinwheel.Compile.Readiness
+import Pinwheel.Hardware.Buffered.DigitalSession
 import Pinwheel.Hardware.Storage.SramSchedule
 import Pinwheel.Hardware.Storage.UploadPipeline
 import Pinwheel.Hardware.NetlistInputs
@@ -134,7 +135,45 @@ import Pinwheel.Hardware.Buffered.SerialProofs
 import Pinwheel.Hardware.Buffered.SramCorrespondence
 import Pinwheel.Hardware.Buffered.SpiSource
 import Pinwheel.Hardware.Buffered.SpiExecution
+import Pinwheel.Hardware.Buffered.SpiPacking
+import Pinwheel.Hardware.Buffered.SpiGeometry
+import Pinwheel.Hardware.Buffered.SpiInterpreter
+import Pinwheel.Hardware.Buffered.SpiStart
+import Pinwheel.Hardware.Buffered.SpiRefinement
+import Pinwheel.Hardware.Buffered.SpiTerminal
+import Pinwheel.Hardware.Buffered.SpiShift
+import Pinwheel.Hardware.Buffered.SpiSramRelation
+import Pinwheel.Hardware.Buffered.SpiSimulation
 import Pinwheel.Hardware.Buffered.I2cSource
+import Pinwheel.Hardware.Buffered.ArtifactSelection
+import Pinwheel.Hardware.Buffered.SramArtifactReference
+import Pinwheel.Hardware.Buffered.ArtifactI2cTimingSession
+import Pinwheel.Hardware.Buffered.ArtifactTinyTapeoutI2cTimingSession
+import Pinwheel.Hardware.Buffered.ArtifactMixedSession
+import Pinwheel.Hardware.Streaming.FrontendEmit
+import Pinwheel.Hardware.Streaming.Readback
+import Pinwheel.Hardware.Streaming.InitializedSession
+import Pinwheel.Hardware.Streaming.WarmReset
+import Pinwheel.Program.StreamingTiming
+import Pinwheel.Program.StreamingCustodySession
+import Pinwheel.Program.StreamingBootControl
+import Pinwheel.Program.StreamingBootPins
+import Pinwheel.Program.StreamingOwnerCut
+import Pinwheel.Hardware.Streaming.BootCorrespondence
+import Pinwheel.Hardware.Streaming.BootUpload
+import Pinwheel.Hardware.Streaming.PublicPins
+import Pinwheel.Hardware.Streaming.InitializedCustody
+import Pinwheel.Program.StreamingEventualService
+import Pinwheel.Program.StreamingSessionProgress
+import Pinwheel.Program.StreamingLowTiming
+import Pinwheel.Hardware.StreamingReady.All
+import Pinwheel.Hardware.StreamingUART.All
+import Pinwheel.Hardware.StreamingMapped.All
+import Pinwheel.Hardware.StreamingPhysical.Clock
+import Pinwheel.Hardware.StreamingPhysical.Cover
+import Pinwheel.Hardware.StreamingPhysical.Device
+import Pinwheel.Hardware.StreamingPhysical.Input
+import Pinwheel.Hardware.StreamingPhysical.State
 
 /-!
 Pinwheel library entry point: protocol models, shared engine, compilers, and proofs.

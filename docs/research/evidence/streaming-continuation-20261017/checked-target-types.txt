@@ -1,0 +1,408 @@
+Pinwheel.Artifact.StreamingSessionD2.components_correct :
+  Pinwheel.Hardware.Streaming.Package.Correct Pinwheel.Artifact.StreamingSessionD2.components
+Pinwheel.Artifact.StreamingSessionD2.physical_step_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalStep s i =
+    s.step (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+      ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins i)
+Pinwheel.Artifact.StreamingSessionD2.physical_observe_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalObserve s i port =
+    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).pads i
+      (fun {w} =>
+        s.observe (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+          ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins i))
+      port
+Pinwheel.Artifact.StreamingSessionD2.physical_run_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)
+  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalRun s inputs =
+    s.run (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+      (List.map (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).enginePins inputs)
+Pinwheel.Artifact.StreamingSessionD2.source_runtime_step_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeInput s
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalStep (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)
+      i =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image
+      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+Pinwheel.Artifact.StreamingSessionD2.source_runtime_run_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)
+  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeTrace p (image.pending.getLsbD 0) s
+      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalRun (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)
+      inputs =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image
+      (s.run p (image.pending.getLsbD 0)
+        (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD2.source_runtime_observe_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 1)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeInput s
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalObserve
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s) i port =
+    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 1).pads i
+      (fun {w} =>
+        Pinwheel.Hardware.Streaming.SessionCorrespondence.outputs s (image.pending.getLsbD 0)
+          (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+      port
+Pinwheel.Artifact.StreamingSessionD2.initialized_upload_correct {source : List Pinwheel.Program.Streaming.Instruction}
+  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)
+  (startup : Pinwheel.Hardware.Streaming.Package.State 1) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin).initialize = 1)
+  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (upload :
+    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length
+      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory
+        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 1
+          (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin))
+        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)))
+  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (commit :
+    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>
+      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 1
+                (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)).run
+            (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)).coreInputs
+        (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin)) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)
+      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)
+        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))
+Pinwheel.Artifact.StreamingSessionD2.initialized_runtime_correct {source : List Pinwheel.Program.Streaming.Instruction}
+  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)
+  (startup : Pinwheel.Hardware.Streaming.Package.State 1) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin).initialize = 1)
+  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (upload :
+    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length
+      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory
+        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 1
+          (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin))
+        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)))
+  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (commit :
+    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>
+      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 1
+                (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)).run
+            (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)).coreInputs
+        (Pinwheel.Hardware.Streaming.Package.Components.typed 1)
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))
+  (runtimePins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (runtime :
+    Pinwheel.Program.Streaming.Session.RuntimeTrace image.program false
+      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)
+        (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)
+        (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin))
+      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins)) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)
+      ((Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+            (Pinwheel.Artifact.StreamingSessionD2.enginePins coldPin)
+            (List.map Pinwheel.Artifact.StreamingSessionD2.enginePins uploadPins)
+            (Pinwheel.Artifact.StreamingSessionD2.enginePins commitPin)).run
+        image.program false (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins))
+Pinwheel.Artifact.StreamingSessionD2.physical_warm_reset_correct (s : Pinwheel.Hardware.Streaming.Package.State 1)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD2.enginePins i).initialize = 0)
+  (command :
+    s.coreInputs Pinwheel.Artifact.StreamingSessionD2.components (Pinwheel.Artifact.StreamingSessionD2.enginePins i)
+        Pinwheel.Hardware.Streaming.Core.Input.command =
+      15) :
+  Pinwheel.Artifact.StreamingSessionD2.physicalStep s i =
+    {
+      frontend := fun {w} =>
+        Pinwheel.Hardware.Streaming.HostCorrespondence.values
+          (Pinwheel.Program.Streaming.Host.step
+            (Pinwheel.Hardware.Streaming.WarmReset.frontendInput s (Pinwheel.Artifact.StreamingSessionD2.enginePins i))
+            (Pinwheel.Hardware.Streaming.WarmReset.frontendState s)),
+      core := fun {w} =>
+        Pinwheel.Hardware.Streaming.Initialization.values
+          (Pinwheel.Hardware.Streaming.WarmReset.metadata fun {w} => s.core)
+          (Pinwheel.Hardware.Streaming.WarmReset.runtime fun {w} => s.core) }
+Pinwheel.Artifact.StreamingSessionD2.concrete_spi_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+      (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) final
+Pinwheel.Artifact.StreamingSessionD2.concrete_jtag_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+      (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins) final
+Pinwheel.Artifact.StreamingSessionD2.concrete_spi_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)
+        final ∧
+      ∀ (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),
+        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.spiImage 3).program false final
+            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) →
+          Pinwheel.Artifact.StreamingSessionD2.physicalRun startup
+              (Pinwheel.Artifact.StreamingSessionD2.spiBootPins ++ inputs) =
+            Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.spiImage 3))
+              (final.run (Pinwheel.Program.Streaming.spiImage 3).program false
+                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD2.concrete_jtag_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)
+        final ∧
+      ∀ (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),
+        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.jtagImage 3).program false final
+            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) →
+          Pinwheel.Artifact.StreamingSessionD2.physicalRun startup
+              (Pinwheel.Artifact.StreamingSessionD2.jtagBootPins ++ inputs) =
+            Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.jtagImage 3))
+              (final.run (Pinwheel.Program.Streaming.jtagImage 3).program false
+                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD2.concrete_spi_custody (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD2.PhysicalCustody (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) boot
+Pinwheel.Artifact.StreamingSessionD2.concrete_jtag_custody (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD2.PhysicalCustody (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)
+        boot
+Pinwheel.Artifact.StreamingSessionD2.concrete_spi_progress (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD2.PhysicalProgress (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.spiBootPins) boot
+Pinwheel.Artifact.StreamingSessionD2.concrete_jtag_progress (startup : Pinwheel.Hardware.Streaming.Package.State 1) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD2.PhysicalProgress (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD2.physicalRun startup Pinwheel.Artifact.StreamingSessionD2.jtagBootPins)
+        boot
+Pinwheel.Artifact.StreamingSessionD4.components_correct :
+  Pinwheel.Hardware.Streaming.Package.Correct Pinwheel.Artifact.StreamingSessionD4.components
+Pinwheel.Artifact.StreamingSessionD4.physical_step_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalStep s i =
+    s.step (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+      ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins i)
+Pinwheel.Artifact.StreamingSessionD4.physical_observe_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalObserve s i port =
+    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).pads i
+      (fun {w} =>
+        s.observe (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+          ((Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins i))
+      port
+Pinwheel.Artifact.StreamingSessionD4.physical_run_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)
+  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalRun s inputs =
+    s.run (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+      (List.map (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).enginePins inputs)
+Pinwheel.Artifact.StreamingSessionD4.source_runtime_step_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeInput s
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalStep (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)
+      i =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image
+      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+Pinwheel.Artifact.StreamingSessionD4.source_runtime_run_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)
+  (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeTrace p (image.pending.getLsbD 0) s
+      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalRun (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s)
+      inputs =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values image
+      (s.run p (image.pending.getLsbD 0)
+        (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD4.source_runtime_observe_correct {p : Pinwheel.Program.Streaming.Program}
+  (image : Pinwheel.Hardware.Streaming.SourceRefinement.Image p) (s : Pinwheel.Program.Streaming.Session.State 2)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins) (port : Pinwheel.Hardware.Streaming.TinyWiring.Pad)
+  (hi :
+    Pinwheel.Program.Streaming.Session.RuntimeInput s
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+  (hs : s.core.Structural) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalObserve
+      (Pinwheel.Hardware.Streaming.SessionCorrespondence.values image s) i port =
+    (Pinwheel.Hardware.Streaming.TinyWiring.canonical 2).pads i
+      (fun {w} =>
+        Pinwheel.Hardware.Streaming.SessionCorrespondence.outputs s (image.pending.getLsbD 0)
+          (Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins i))
+      port
+Pinwheel.Artifact.StreamingSessionD4.initialized_upload_correct {source : List Pinwheel.Program.Streaming.Instruction}
+  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)
+  (startup : Pinwheel.Hardware.Streaming.Package.State 2) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin).initialize = 1)
+  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (upload :
+    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length
+      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory
+        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 2
+          (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin))
+        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)))
+  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (commit :
+    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>
+      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 2
+                (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)).run
+            (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)).coreInputs
+        (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin)) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)
+      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)
+        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))
+Pinwheel.Artifact.StreamingSessionD4.initialized_runtime_correct {source : List Pinwheel.Program.Streaming.Instruction}
+  {idle : Pinwheel.Engine.Reactive.Pins} (image : Pinwheel.Program.Streaming.Compiled source idle)
+  (startup : Pinwheel.Hardware.Streaming.Package.State 2) (coldPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin).initialize = 1)
+  (uploadPins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (upload :
+    Pinwheel.Hardware.Streaming.Initialization.Upload image.program image.program.length
+      (Pinwheel.Hardware.Streaming.InitializedSession.coreHistory
+        (Pinwheel.Hardware.Streaming.InitializedSession.coldState 2
+          (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin))
+        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)))
+  (commitPin : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (commit :
+    Pinwheel.Hardware.Streaming.Initialization.Commit image.program fun {w} =>
+      ((Pinwheel.Hardware.Streaming.InitializedSession.coldState 2
+                (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)).run
+            (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)).coreInputs
+        (Pinwheel.Hardware.Streaming.Package.Components.typed 2)
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))
+  (runtimePins : List Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (runtime :
+    Pinwheel.Program.Streaming.Session.RuntimeTrace image.program false
+      (Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)
+        (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)
+        (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin))
+      (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins)) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =
+    Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+      (Pinwheel.Hardware.Streaming.Initialization.compiledImage image)
+      ((Pinwheel.Hardware.Streaming.InitializedSession.sourceState image
+            (Pinwheel.Artifact.StreamingSessionD4.enginePins coldPin)
+            (List.map Pinwheel.Artifact.StreamingSessionD4.enginePins uploadPins)
+            (Pinwheel.Artifact.StreamingSessionD4.enginePins commitPin)).run
+        image.program false (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins runtimePins))
+Pinwheel.Artifact.StreamingSessionD4.physical_warm_reset_correct (s : Pinwheel.Hardware.Streaming.Package.State 2)
+  (i : Pinwheel.Hardware.Streaming.TinyWiring.Pins)
+  (cold : (Pinwheel.Artifact.StreamingSessionD4.enginePins i).initialize = 0)
+  (command :
+    s.coreInputs Pinwheel.Artifact.StreamingSessionD4.components (Pinwheel.Artifact.StreamingSessionD4.enginePins i)
+        Pinwheel.Hardware.Streaming.Core.Input.command =
+      15) :
+  Pinwheel.Artifact.StreamingSessionD4.physicalStep s i =
+    {
+      frontend := fun {w} =>
+        Pinwheel.Hardware.Streaming.HostCorrespondence.values
+          (Pinwheel.Program.Streaming.Host.step
+            (Pinwheel.Hardware.Streaming.WarmReset.frontendInput s (Pinwheel.Artifact.StreamingSessionD4.enginePins i))
+            (Pinwheel.Hardware.Streaming.WarmReset.frontendState s)),
+      core := fun {w} =>
+        Pinwheel.Hardware.Streaming.Initialization.values
+          (Pinwheel.Hardware.Streaming.WarmReset.metadata fun {w} => s.core)
+          (Pinwheel.Hardware.Streaming.WarmReset.runtime fun {w} => s.core) }
+Pinwheel.Artifact.StreamingSessionD4.concrete_spi_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+      (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) final
+Pinwheel.Artifact.StreamingSessionD4.concrete_jtag_initialized (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+      (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins) final
+Pinwheel.Artifact.StreamingSessionD4.concrete_spi_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)
+        final ∧
+      ∀ (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),
+        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.spiImage 3).program false final
+            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) →
+          Pinwheel.Artifact.StreamingSessionD4.physicalRun startup
+              (Pinwheel.Artifact.StreamingSessionD4.spiBootPins ++ inputs) =
+            Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.spiImage 3))
+              (final.run (Pinwheel.Program.Streaming.spiImage 3).program false
+                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD4.concrete_jtag_runtime (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ final,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)
+        final ∧
+      ∀ (inputs : List Pinwheel.Hardware.Streaming.TinyWiring.Pins),
+        Pinwheel.Program.Streaming.Session.RuntimeTrace (Pinwheel.Program.Streaming.jtagImage 3).program false final
+            (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs) →
+          Pinwheel.Artifact.StreamingSessionD4.physicalRun startup
+              (Pinwheel.Artifact.StreamingSessionD4.jtagBootPins ++ inputs) =
+            Pinwheel.Hardware.Streaming.SessionCorrespondence.values
+              (Pinwheel.Hardware.Streaming.Initialization.compiledImage (Pinwheel.Program.Streaming.jtagImage 3))
+              (final.run (Pinwheel.Program.Streaming.jtagImage 3).program false
+                (List.map Pinwheel.Hardware.Streaming.SessionCorrespondence.physicalPins inputs))
+Pinwheel.Artifact.StreamingSessionD4.concrete_spi_custody (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD4.PhysicalCustody (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) boot
+Pinwheel.Artifact.StreamingSessionD4.concrete_jtag_custody (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD4.PhysicalCustody (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)
+        boot
+Pinwheel.Artifact.StreamingSessionD4.concrete_spi_progress (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD4.PhysicalProgress (Pinwheel.Program.Streaming.spiImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.spiBootPins) boot
+Pinwheel.Artifact.StreamingSessionD4.concrete_jtag_progress (startup : Pinwheel.Hardware.Streaming.Package.State 2) :
+  ∃ boot,
+    Pinwheel.Hardware.Streaming.BootCorrespondence.Initialized (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)
+        boot ∧
+      Pinwheel.Artifact.StreamingSessionD4.PhysicalProgress (Pinwheel.Program.Streaming.jtagImage 3)
+        (Pinwheel.Artifact.StreamingSessionD4.physicalRun startup Pinwheel.Artifact.StreamingSessionD4.jtagBootPins)
+        boot

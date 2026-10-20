@@ -1,0 +1,22 @@
+{
+  "bundle": {
+    "bytes": 148580352,
+    "path_hint": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/local-cleanup/streaming-tt-clean-20261019-01/streaming-tt-original-99f75b65.bundle",
+    "ref": "refs/heads/codex/streaming-tt-evidence-20261019",
+    "sha256": "05a2be07f33ec5a401f87876336b2e7fb31c62ad7e6cb1a6e73822ca4fa7bf8a"
+  },
+  "excluded_roots": [
+    "docs/research/streaming-tt-routing-rc-tooling-20261019",
+    "docs/research/streaming-tt-renewal-tooling-20261018",
+    "docs/research/evidence/streaming-tt-20261018"
+  ],
+  "index": {
+    "bytes": 2891649,
+    "files": 8610,
+    "path": "docs/research/local-evidence/payload-index.jsonl",
+    "sha256": "2d4207e8627d06941e3747ddfaa599b06a9af64885685aa9fa52ce5b1ff30f25"
+  },
+  "schema": 1,
+  "source_commit": "99f75b65fe524f266aa21654dc3d7f7054dd1aa8",
+  "source_tree": "b291858eb0924b2675e52baaf229c3d2296a5fa0"
+}

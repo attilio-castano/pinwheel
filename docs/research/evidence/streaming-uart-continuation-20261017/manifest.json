@@ -1,0 +1,519 @@
+{
+  "bootstrap_commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "label": "export-head",
+      "seconds": 0.006
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f:scripts/export-streaming-uart-evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-0",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f:scripts/export-rtl-session-evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-1",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f:scripts/process_group.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-2",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f:scripts/validation_run.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-3",
+      "seconds": 0.007
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f:test/test_streaming_uart_evidence.py"
+      ],
+      "exit_code": 0,
+      "label": "export-producer-4",
+      "seconds": 0.007
+    }
+  ],
+  "boundary": "Immutable receipt/source verification only; gates are not rerun. Raw RTL/wrapper equations and finite public-pin peers are distinct from synthesis cost/ABC combinational Liberty estimates. No mapped equivalence, guaranteed Fmax, electrical or physical signoff. Large generated artifacts and tool payloads stay at their recorded retained paths; this is a compact evidence export.",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--show-object-format"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "object-format",
+      "seconds": 0.006
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "96c6245e0e93ea22ae8967d396b8d83220efbffc^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-0",
+      "seconds": 0.008
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-uart-export-0425b03-20261017-01/archive-0.tar",
+        "96c6245e0e93ea22ae8967d396b8d83220efbffc"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-0",
+      "seconds": 0.177
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-1",
+      "seconds": 0.009
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-uart-export-0425b03-20261017-01/archive-1.tar",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-1",
+      "seconds": 0.13
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--",
+        "docs/protocols/buffered-spi-refinement.md",
+        "docs/research/status.md"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "intake-patch",
+      "seconds": 0.014
+    },
+    {
+      "argv": [
+        "git",
+        "ls-tree",
+        "-r",
+        "-z",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "objects-0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+      "seconds": 0.011
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "--verify",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f^{commit}"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "commit-2",
+      "seconds": 0.009
+    },
+    {
+      "argv": [
+        "git",
+        "archive",
+        "--format=tar",
+        "--output",
+        "/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/validation/streaming-uart-export-0425b03-20261017-01/archive-2.tar",
+        "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "--",
+        "scripts/check-buffered-rtl-sim.py",
+        "scripts/check-streaming-uart.py",
+        "scripts/process_group.py",
+        "scripts/validation_run.py",
+        "test/test_streaming_uart_gate.py"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "archive-2",
+      "seconds": 0.015
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "closeout-head",
+      "seconds": 0.012
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--",
+        "docs/protocols/buffered-spi-refinement.md",
+        "docs/research/status.md"
+      ],
+      "exit_code": 0,
+      "expected_failure": false,
+      "label": "closeout-intake-patch",
+      "seconds": 0.011
+    }
+  ],
+  "compact_files": [
+    {
+      "bytes": 19871,
+      "file": "StreamingReadySessionD2.lean",
+      "sha256": "306e3038c17fd7e1a831d84fc208a38a8555c568222f29985eb382283a7576d8"
+    },
+    {
+      "bytes": 19871,
+      "file": "StreamingReadySessionD4.lean",
+      "sha256": "5bf7a79b340d92f01d142add36207bfee7751ab5cbfe2220d8a74c030cfd3ba5"
+    },
+    {
+      "bytes": 29837,
+      "file": "StreamingUARTSessionD2.lean",
+      "sha256": "5d6d3010d7ad1557001360b347e9a4d181e68f1b84f684461758b4d41059bca3"
+    },
+    {
+      "bytes": 29837,
+      "file": "StreamingUARTSessionD4.lean",
+      "sha256": "685149d5cf59f39d3a22767770899c60787d75d6716354d1c6484e9412181b82"
+    },
+    {
+      "bytes": 3222,
+      "file": "StreamingUARTRequiredTargets.lean",
+      "sha256": "3735d5c99801ccf420a6a86c7a3f0944fe3aecee44e98a1011eb4c7169f1b005"
+    },
+    {
+      "bytes": 2283,
+      "file": "StreamingUARTFinalAudit.lean",
+      "sha256": "93261ce30c88abbf441fb248c78f9ba9c345f8ce3c4e83fc10524705aa06d5de"
+    },
+    {
+      "bytes": 44218,
+      "file": "checked-target-types.txt",
+      "sha256": "9e9742833d183edfe3c1b496548480e4c1ff9322aaa74bd968bddf4546502c1e"
+    },
+    {
+      "bytes": 74,
+      "file": "final-private-audit.log",
+      "sha256": "f2380661dc6a3b7d2fe6dc4046a8f29776d3a211f4e7843171b6d24a43f33629"
+    },
+    {
+      "bytes": 355,
+      "file": "final-private-axiom-rejection.log",
+      "sha256": "ecad422032625dcf603f1722200aa7add1b1b329e5acf86d67e5731f47493fd3"
+    },
+    {
+      "bytes": 74,
+      "file": "foundation-private-audit.log",
+      "sha256": "d82e8784d3b5c70e542ef7e2265bc55605d4b0470c4aee251bec37115aa99fdc"
+    },
+    {
+      "bytes": 10919,
+      "file": "proof-control-summary.json",
+      "sha256": "7f3ce25e5b51a825c601dcfbdba60e81f12450d1c3f1a8dc2161ebb8f2677e57"
+    }
+  ],
+  "export_files_sha256": {
+    "StreamingReadySessionD2.lean": "306e3038c17fd7e1a831d84fc208a38a8555c568222f29985eb382283a7576d8",
+    "StreamingReadySessionD4.lean": "5bf7a79b340d92f01d142add36207bfee7751ab5cbfe2220d8a74c030cfd3ba5",
+    "StreamingUARTFinalAudit.lean": "93261ce30c88abbf441fb248c78f9ba9c345f8ce3c4e83fc10524705aa06d5de",
+    "StreamingUARTRequiredTargets.lean": "3735d5c99801ccf420a6a86c7a3f0944fe3aecee44e98a1011eb4c7169f1b005",
+    "StreamingUARTSessionD2.lean": "5d6d3010d7ad1557001360b347e9a4d181e68f1b84f684461758b4d41059bca3",
+    "StreamingUARTSessionD4.lean": "685149d5cf59f39d3a22767770899c60787d75d6716354d1c6484e9412181b82",
+    "checked-target-types.txt": "9e9742833d183edfe3c1b496548480e4c1ff9322aaa74bd968bddf4546502c1e",
+    "final-private-audit.log": "f2380661dc6a3b7d2fe6dc4046a8f29776d3a211f4e7843171b6d24a43f33629",
+    "final-private-axiom-rejection.log": "ecad422032625dcf603f1722200aa7add1b1b329e5acf86d67e5731f47493fd3",
+    "foundation-private-audit.log": "d82e8784d3b5c70e542ef7e2265bc55605d4b0470c4aee251bec37115aa99fdc",
+    "intake-documents.patch": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108",
+    "proof-control-summary.json": "7f3ce25e5b51a825c601dcfbdba60e81f12450d1c3f1a8dc2161ebb8f2677e57",
+    "streaming-uart-foundation-0425b03-20261017-01.json.gz": "df05c8cebc3eeb09347700b17711d4120e6423de8575e0c720ee5c30da5fe090",
+    "streaming-uart-full-0425b03-20261017-01.json.gz": "dba01fca3a312030acbab546cf4a84cd8ecfec3f6c2844275b694ded015ef1db",
+    "streaming-uart-python-0425b03-20261017-01.json.gz": "675f7711a2c388168cfec6639c98671615ade74fcc42cac6a07ad10669782448"
+  },
+  "exported_utc": "2026-10-17T20:55:19.598863+00:00",
+  "exporter_commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+  "exporter_sha256": {
+    "scripts/export-rtl-session-evidence.py": "9b5f5b4756037d3fc88b5107c0651e3428eef19ff9bc4596c04ad8777ee129f4",
+    "scripts/export-streaming-uart-evidence.py": "6c526cdc0e79d6b7f8583018f5641307a7f6bd073f8a0e7863f1e573e936f5b7",
+    "scripts/process_group.py": "b48bb443f6aa78ef1cd7b5d7d19c6f330f00fc94f87f517456e3dad2cde40175",
+    "scripts/validation_run.py": "3fc7e7dabde80e4e461a94a9995852f69fc37c97da5f33832c380c0f8a694013",
+    "test/test_streaming_uart_evidence.py": "c8d43de5191a60f1717d96e4bcacb7557e9f31cdcd3bd69d0da34d65e82ae8d4"
+  },
+  "frozen_baseline": {
+    "added_imports": [
+      "import Pinwheel.Hardware.StreamingUART.All"
+    ],
+    "base": "96c6245e0e93ea22ae8967d396b8d83220efbffc",
+    "baseline_files": 2870,
+    "foundation": {
+      "added_kernel_suites": [
+        "StreamingUARTSource",
+        "StreamingUARTCompile",
+        "StreamingUARTBoot"
+      ],
+      "added_suites": [],
+      "boundary_preserved": true
+    }
+  },
+  "intake_documents_sha256": {
+    "docs/protocols/buffered-spi-refinement.md": "805eba24279d4dd798c49f92aaaa146005475f9496cafdf393d9f5140aa66d59",
+    "docs/research/status.md": "c669c35bf690df6c370da43dc6d2cfa6fa96fb3e56be0e9bd2d741a39fb198fe"
+  },
+  "intake_patch_sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108",
+  "receipts": [
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b"
+      },
+      "compressed_bytes": 2318634,
+      "compressed_sha256": "dba01fca3a312030acbab546cf4a84cd8ecfec3f6c2844275b694ded015ef1db",
+      "file": "streaming-uart-full-0425b03-20261017-01.json.gz",
+      "kind": "full",
+      "producer_archive_verification": {
+        "paths": [
+          "scripts/check-buffered-rtl-sim.py",
+          "scripts/check-streaming-uart.py",
+          "scripts/process_group.py",
+          "scripts/validation_run.py",
+          "test/test_streaming_uart_gate.py"
+        ],
+        "reproduced": true,
+        "scope": "selected SHA256-map paths",
+        "sha256": "89d7019c14c2fe02ee70017aeafc5faf430310f881dc7687f5bacad11f54d572"
+      },
+      "producer_verification": {
+        "commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "files": 5,
+        "full_tree_archive_sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "raw_bytes": 24425045,
+      "raw_sha256": "b997b95cc01a38198c05918fe47c93c6d820c58aa6e6ed7fd722dc7fa94a708c",
+      "retained": {
+        "bindings": {
+          "independently_verified": true,
+          "raw_cost_equalities": 12,
+          "two_depth_wire_inputs": 10
+        },
+        "frozen_inputs": 5180,
+        "mandatory_theorems": [
+          "components_correct",
+          "physical_step_correct",
+          "physical_observe_correct",
+          "physical_run_correct",
+          "source_runtime_step_correct",
+          "source_runtime_run_correct",
+          "source_runtime_observe_correct",
+          "initialized_upload_correct",
+          "initialized_runtime_correct",
+          "physical_warm_reset_correct",
+          "concrete_i2c_initialized",
+          "concrete_i2c_runtime",
+          "concrete_i2c_custody",
+          "concrete_i2c_progress",
+          "concrete_uart_initialized",
+          "concrete_uart_runtime",
+          "concrete_uart_custody",
+          "uart_frame_correct",
+          "uart_false_start_correct",
+          "uart_bad_stop_correct",
+          "uart_host_quiet_correct",
+          "uart_arming_correct"
+        ],
+        "proof_closures": {
+          "final_modules": 145,
+          "isolated_negative_closures_verified": true,
+          "raw_positive_modules": {
+            "core-d2": 34,
+            "core-d4": 34,
+            "frontend": 34
+          }
+        },
+        "retained_artifacts": 9957,
+        "simulator_operations": 8,
+        "target_types": "Pinwheel.Artifact.StreamingUARTSessionD2.components_correct :\n  Pinwheel.Hardware.StreamingReady.Package.Correct Pinwheel.Artifact.StreamingUARTSessionD2.components\nPinwheel.Artifact.StreamingUARTSessionD2.physical_step_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 1)\n  (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalStep s i =\n    s.step (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n      ((Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 1).enginePins i)\nPinwheel.Artifact.StreamingUARTSessionD2.physical_observe_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 1)\n  (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) (port : Pinwheel.Hardware.StreamingReady.TinyWiring.Pad) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalObserve s i port =\n    (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 1).pads i\n      (fun {w} =>\n        s.observe (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n          ((Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 1).enginePins i))\n      port\nPinwheel.Artifact.StreamingUARTSessionD2.physical_run_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 1)\n  (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun s inputs =\n    s.run (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n      (List.map (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 1).enginePins inputs)\nPinwheel.Artifact.StreamingUARTSessionD2.source_runtime_step_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 1) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeInput s\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalStep\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) i =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image\n      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\nPinwheel.Artifact.StreamingUARTSessionD2.source_runtime_run_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 1) (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeTrace p (image.pending.getLsbD 0) s\n      (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) inputs =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image\n      (s.run p (image.pending.getLsbD 0)\n        (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD2.source_runtime_observe_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 1) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (port : Pinwheel.Hardware.StreamingReady.TinyWiring.Pad)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeInput s\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalObserve\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) i port =\n    (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 1).pads i\n      (fun {w} =>\n        Pinwheel.Hardware.StreamingReady.SessionCorrespondence.outputs s (image.pending.getLsbD 0)\n          (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n      port\nPinwheel.Artifact.StreamingUARTSessionD2.initialized_upload_correct\n  {source : List Pinwheel.Program.StreamingReady.Instruction} {idle : Pinwheel.Engine.Reactive.Pins}\n  (image : Pinwheel.Program.StreamingReady.Compiled source idle)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1)\n  (coldPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.StreamingReady.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.coreHistory\n        (Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 1\n          (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.StreamingReady.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 1\n                (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin)).run\n            (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins commitPin)) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n      (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage image)\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins commitPin))\nPinwheel.Artifact.StreamingUARTSessionD2.initialized_runtime_correct\n  {source : List Pinwheel.Program.StreamingReady.Instruction} {idle : Pinwheel.Engine.Reactive.Pins}\n  (image : Pinwheel.Program.StreamingReady.Compiled source idle)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1)\n  (coldPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.StreamingReady.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.coreHistory\n        (Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 1\n          (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.StreamingReady.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 1\n                (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin)).run\n            (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.StreamingReady.Package.Components.typed 1)\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins commitPin))\n  (runtimePins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (runtime :\n    Pinwheel.Program.StreamingReady.Session.RuntimeTrace image.program false\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins commitPin))\n      (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins runtimePins)) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n      (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage image)\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n            (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins coldPin)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD2.enginePins uploadPins)\n            (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins commitPin)).run\n        image.program false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins runtimePins))\nPinwheel.Artifact.StreamingUARTSessionD2.physical_warm_reset_correct\n  (s : Pinwheel.Hardware.StreamingReady.Package.State 1) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins i).initialize = 0)\n  (command :\n    s.coreInputs Pinwheel.Artifact.StreamingUARTSessionD2.components\n        (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins i) Pinwheel.Hardware.Streaming.Core.Input.command =\n      15) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalStep s i =\n    {\n      frontend := fun {w} =>\n        Pinwheel.Hardware.Streaming.HostCorrespondence.values\n          (Pinwheel.Program.Streaming.Host.step\n            (Pinwheel.Hardware.StreamingReady.WarmReset.frontendInput s\n              (Pinwheel.Artifact.StreamingUARTSessionD2.enginePins i))\n            (Pinwheel.Hardware.StreamingReady.WarmReset.frontendState s)),\n      core := fun {w} =>\n        Pinwheel.Hardware.StreamingReady.Initialization.values\n          (Pinwheel.Hardware.StreamingReady.WarmReset.metadata fun {w} => s.core)\n          (Pinwheel.Hardware.StreamingReady.WarmReset.runtime fun {w} => s.core) }\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_i2c_initialized\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n      (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n        Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n      final\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_i2c_runtime\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n        Pinwheel.Program.StreamingReady.Session.RuntimeTrace Pinwheel.Program.StreamingReady.i2cImage.program false\n            final (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n              (Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins ++ inputs) =\n            Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n              (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage Pinwheel.Program.StreamingReady.i2cImage)\n              (final.run Pinwheel.Program.StreamingReady.i2cImage.program false\n                (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_i2c_custody\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingUARTSessionD2.PhysicalCustody Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n        boot\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_i2c_progress\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 boot,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingUARTSessionD2.PhysicalProgress Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD2.i2cBootPins)\n        boot\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_uart_initialized (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized\n      (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate))\n      (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n        (Pinwheel.Artifact.StreamingUARTSessionD2.uartBootPins rate))\n      source\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_uart_runtime (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate))\n        source \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n        (\u2200 (pin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n            pin \u2208 inputs \u2192\n              Pinwheel.Program.StreamingUART.HostQuiet.Pins\n                (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin)) \u2192\n          Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n              (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate ++ inputs) =\n            Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n              (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage\n                (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)))\n              (source.run\n                (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program false\n                (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD2.concrete_uart_custody (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate))\n        source \u2227\n      \u2203 trace, source.Custody trace \u2227 source.FreeExport\nPinwheel.Artifact.StreamingUARTSessionD2.uart_frame_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) (raw : Nat \u2192 BitVec 2) (payload : BitVec 8)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startLow :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false)\n  (samples :\n    Pinwheel.Program.StreamingUART.Frame.DataSamples (Pinwheel.Hardware.StreamingUART.Boot.profile rate)\n      (Pinwheel.Hardware.StreamingUART.Frame.incoming raw) payload)\n  (stopHigh :\n    (raw\n          (38 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      true) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (38 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 4))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.completed \u2227\n        Pinwheel.Program.StreamingUART.Frame.Received 1 1 payload final.core\nPinwheel.Artifact.StreamingUARTSessionD2.uart_false_start_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) (raw : Nat \u2192 BitVec 2)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startHigh :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      true) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (2 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 3))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.fault \u2227\n        final.core.rxProduced = 0 \u2227 \u2191final.core.rx.count = 0\nPinwheel.Artifact.StreamingUARTSessionD2.uart_bad_stop_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) (raw : Nat \u2192 BitVec 2) (payload : BitVec 8)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startLow :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false)\n  (samples :\n    Pinwheel.Program.StreamingUART.Frame.DataSamples (Pinwheel.Hardware.StreamingUART.Boot.profile rate)\n      (Pinwheel.Hardware.StreamingUART.Frame.incoming raw) payload)\n  (stopLow :\n    (raw\n          (38 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (38 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 3))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.fault \u2227\n        Pinwheel.Program.StreamingUART.Frame.Received 1 1 payload final.core\nPinwheel.Artifact.StreamingUARTSessionD2.uart_host_quiet_correct (rate : Fin 3)\n  (actual : Pinwheel.Hardware.StreamingReady.Package.State 1) (source : Pinwheel.Program.StreamingReady.Session.State 1)\n  (armed : Pinwheel.Hardware.StreamingUART.Session.Armed rate actual source)\n  (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (pins :\n    \u2200 (pin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n      pin \u2208 inputs \u2192\n        Pinwheel.Program.StreamingUART.HostQuiet.Pins\n          (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin)) :\n  Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun actual inputs =\n      Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n        (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage\n          (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)))\n        (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n          false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)) \u2227\n    (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program false\n            (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).core =\n        Pinwheel.Program.StreamingReady.run\n          (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n          (Pinwheel.Program.StreamingUART.Arm.armed (Pinwheel.Hardware.StreamingUART.Boot.profile rate) 1 1)\n          (List.map\n            (fun pin =>\n              { rawInputs := (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin).rawInputs })\n            inputs) \u2227\n      \u2203 trace,\n        (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n                false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).Custody\n            trace \u2227\n          (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n              false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).FreeExport\nPinwheel.Artifact.StreamingUARTSessionD2.uart_arming_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 1) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n      (Pinwheel.Artifact.StreamingUARTSessionD2.physicalRun startup\n        (Pinwheel.Artifact.StreamingUARTSessionD2.uartArmPins rate))\n      source\nPinwheel.Artifact.StreamingUARTSessionD4.components_correct :\n  Pinwheel.Hardware.StreamingReady.Package.Correct Pinwheel.Artifact.StreamingUARTSessionD4.components\nPinwheel.Artifact.StreamingUARTSessionD4.physical_step_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 2)\n  (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalStep s i =\n    s.step (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n      ((Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 2).enginePins i)\nPinwheel.Artifact.StreamingUARTSessionD4.physical_observe_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 2)\n  (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) (port : Pinwheel.Hardware.StreamingReady.TinyWiring.Pad) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalObserve s i port =\n    (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 2).pads i\n      (fun {w} =>\n        s.observe (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n          ((Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 2).enginePins i))\n      port\nPinwheel.Artifact.StreamingUARTSessionD4.physical_run_correct (s : Pinwheel.Hardware.StreamingReady.Package.State 2)\n  (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun s inputs =\n    s.run (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n      (List.map (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 2).enginePins inputs)\nPinwheel.Artifact.StreamingUARTSessionD4.source_runtime_step_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 2) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeInput s\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalStep\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) i =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image\n      (s.step p (image.pending.getLsbD 0) (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\nPinwheel.Artifact.StreamingUARTSessionD4.source_runtime_run_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 2) (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeTrace p (image.pending.getLsbD 0) s\n      (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) inputs =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image\n      (s.run p (image.pending.getLsbD 0)\n        (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD4.source_runtime_observe_correct {p : Pinwheel.Program.StreamingReady.Program}\n  (image : Pinwheel.Hardware.StreamingReady.SourceRefinement.Image p)\n  (s : Pinwheel.Program.StreamingReady.Session.State 2) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (port : Pinwheel.Hardware.StreamingReady.TinyWiring.Pad)\n  (hi :\n    Pinwheel.Program.StreamingReady.Session.RuntimeInput s\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n  (hs : s.core.Structural) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalObserve\n      (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values image s) i port =\n    (Pinwheel.Hardware.StreamingReady.TinyWiring.canonical 2).pads i\n      (fun {w} =>\n        Pinwheel.Hardware.StreamingReady.SessionCorrespondence.outputs s (image.pending.getLsbD 0)\n          (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins i))\n      port\nPinwheel.Artifact.StreamingUARTSessionD4.initialized_upload_correct\n  {source : List Pinwheel.Program.StreamingReady.Instruction} {idle : Pinwheel.Engine.Reactive.Pins}\n  (image : Pinwheel.Program.StreamingReady.Compiled source idle)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2)\n  (coldPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.StreamingReady.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.coreHistory\n        (Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 2\n          (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.StreamingReady.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 2\n                (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin)).run\n            (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins commitPin)) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin])) =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n      (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage image)\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins commitPin))\nPinwheel.Artifact.StreamingUARTSessionD4.initialized_runtime_correct\n  {source : List Pinwheel.Program.StreamingReady.Instruction} {idle : Pinwheel.Engine.Reactive.Pins}\n  (image : Pinwheel.Program.StreamingReady.Compiled source idle)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2)\n  (coldPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin).initialize = 1)\n  (uploadPins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (upload :\n    Pinwheel.Hardware.StreamingReady.Initialization.Upload image.program image.program.length\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.coreHistory\n        (Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 2\n          (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin))\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)))\n  (commitPin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (commit :\n    Pinwheel.Hardware.StreamingReady.Initialization.Commit image.program fun {w} =>\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.coldState 2\n                (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin)).run\n            (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)).coreInputs\n        (Pinwheel.Hardware.StreamingReady.Package.Components.typed 2)\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins commitPin))\n  (runtimePins : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (runtime :\n    Pinwheel.Program.StreamingReady.Session.RuntimeTrace image.program false\n      (Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin)\n        (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins commitPin))\n      (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins runtimePins)) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup (coldPin :: (uploadPins ++ [commitPin]) ++ runtimePins) =\n    Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n      (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage image)\n      ((Pinwheel.Hardware.StreamingReady.InitializedSession.sourceState image\n            (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins coldPin)\n            (List.map Pinwheel.Artifact.StreamingUARTSessionD4.enginePins uploadPins)\n            (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins commitPin)).run\n        image.program false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins runtimePins))\nPinwheel.Artifact.StreamingUARTSessionD4.physical_warm_reset_correct\n  (s : Pinwheel.Hardware.StreamingReady.Package.State 2) (i : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (cold : (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins i).initialize = 0)\n  (command :\n    s.coreInputs Pinwheel.Artifact.StreamingUARTSessionD4.components\n        (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins i) Pinwheel.Hardware.Streaming.Core.Input.command =\n      15) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalStep s i =\n    {\n      frontend := fun {w} =>\n        Pinwheel.Hardware.Streaming.HostCorrespondence.values\n          (Pinwheel.Program.Streaming.Host.step\n            (Pinwheel.Hardware.StreamingReady.WarmReset.frontendInput s\n              (Pinwheel.Artifact.StreamingUARTSessionD4.enginePins i))\n            (Pinwheel.Hardware.StreamingReady.WarmReset.frontendState s)),\n      core := fun {w} =>\n        Pinwheel.Hardware.StreamingReady.Initialization.values\n          (Pinwheel.Hardware.StreamingReady.WarmReset.metadata fun {w} => s.core)\n          (Pinwheel.Hardware.StreamingReady.WarmReset.runtime fun {w} => s.core) }\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_i2c_initialized\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n      (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n        Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n      final\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_i2c_runtime\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n        final \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n        Pinwheel.Program.StreamingReady.Session.RuntimeTrace Pinwheel.Program.StreamingReady.i2cImage.program false\n            final (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs) \u2192\n          Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n              (Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins ++ inputs) =\n            Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n              (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage Pinwheel.Program.StreamingReady.i2cImage)\n              (final.run Pinwheel.Program.StreamingReady.i2cImage.program false\n                (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_i2c_custody\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingUARTSessionD4.PhysicalCustody Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n        boot\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_i2c_progress\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 boot,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n        boot \u2227\n      Pinwheel.Artifact.StreamingUARTSessionD4.PhysicalProgress Pinwheel.Program.StreamingReady.i2cImage\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          Pinwheel.Artifact.StreamingUARTSessionD4.i2cBootPins)\n        boot\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_uart_initialized (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingReady.BootCorrespondence.Initialized\n      (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate))\n      (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n        (Pinwheel.Artifact.StreamingUARTSessionD4.uartBootPins rate))\n      source\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_uart_runtime (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate))\n        source \u2227\n      \u2200 (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n        (\u2200 (pin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n            pin \u2208 inputs \u2192\n              Pinwheel.Program.StreamingUART.HostQuiet.Pins\n                (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin)) \u2192\n          Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n              (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate ++ inputs) =\n            Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n              (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage\n                (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)))\n              (source.run\n                (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program false\n                (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs))\nPinwheel.Artifact.StreamingUARTSessionD4.concrete_uart_custody (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate))\n        source \u2227\n      \u2203 trace, source.Custody trace \u2227 source.FreeExport\nPinwheel.Artifact.StreamingUARTSessionD4.uart_frame_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) (raw : Nat \u2192 BitVec 2) (payload : BitVec 8)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startLow :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false)\n  (samples :\n    Pinwheel.Program.StreamingUART.Frame.DataSamples (Pinwheel.Hardware.StreamingUART.Boot.profile rate)\n      (Pinwheel.Hardware.StreamingUART.Frame.incoming raw) payload)\n  (stopHigh :\n    (raw\n          (38 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      true) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (38 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 4))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.completed \u2227\n        Pinwheel.Program.StreamingUART.Frame.Received 1 1 payload final.core\nPinwheel.Artifact.StreamingUARTSessionD4.uart_false_start_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) (raw : Nat \u2192 BitVec 2)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startHigh :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      true) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (2 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 3))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.fault \u2227\n        final.core.rxProduced = 0 \u2227 \u2191final.core.rx.count = 0\nPinwheel.Artifact.StreamingUARTSessionD4.uart_bad_stop_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) (raw : Nat \u2192 BitVec 2) (payload : BitVec 8)\n  (falling : (raw 0)[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] = false)\n  (startLow :\n    (raw\n          (2 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false)\n  (samples :\n    Pinwheel.Program.StreamingUART.Frame.DataSamples (Pinwheel.Hardware.StreamingUART.Boot.profile rate)\n      (Pinwheel.Hardware.StreamingUART.Frame.incoming raw) payload)\n  (stopLow :\n    (raw\n          (38 *\n            (Pinwheel.Hardware.StreamingUART.Boot.profile\n                rate).Q))[\u2191(Pinwheel.Hardware.StreamingUART.Boot.profile rate).rxInput] =\n      false) :\n  \u2203 final,\n    Pinwheel.Hardware.StreamingUART.Frame.Reached rate\n        (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n          (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate ++\n            List.map Pinwheel.Hardware.StreamingReady.PublicPins.embed\n              (Pinwheel.Hardware.StreamingUART.Frame.pins raw\n                (38 * (Pinwheel.Hardware.StreamingUART.Boot.profile rate).Q + 3))))\n        final \u2227\n      final.core.phase = Pinwheel.Program.StreamingReady.Phase.fault \u2227\n        Pinwheel.Program.StreamingUART.Frame.Received 1 1 payload final.core\nPinwheel.Artifact.StreamingUARTSessionD4.uart_host_quiet_correct (rate : Fin 3)\n  (actual : Pinwheel.Hardware.StreamingReady.Package.State 2) (source : Pinwheel.Program.StreamingReady.Session.State 2)\n  (armed : Pinwheel.Hardware.StreamingUART.Session.Armed rate actual source)\n  (inputs : List Pinwheel.Hardware.StreamingReady.TinyWiring.Pins)\n  (pins :\n    \u2200 (pin : Pinwheel.Hardware.StreamingReady.TinyWiring.Pins),\n      pin \u2208 inputs \u2192\n        Pinwheel.Program.StreamingUART.HostQuiet.Pins\n          (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin)) :\n  Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun actual inputs =\n      Pinwheel.Hardware.StreamingReady.SessionCorrespondence.values\n        (Pinwheel.Hardware.StreamingReady.Initialization.compiledImage\n          (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)))\n        (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n          false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)) \u2227\n    (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program false\n            (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).core =\n        Pinwheel.Program.StreamingReady.run\n          (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n          (Pinwheel.Program.StreamingUART.Arm.armed (Pinwheel.Hardware.StreamingUART.Boot.profile rate) 1 1)\n          (List.map\n            (fun pin =>\n              { rawInputs := (Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins pin).rawInputs })\n            inputs) \u2227\n      \u2203 trace,\n        (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n                false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).Custody\n            trace \u2227\n          (source.run (Pinwheel.Program.StreamingUART.image (Pinwheel.Hardware.StreamingUART.Boot.profile rate)).program\n              false (List.map Pinwheel.Hardware.StreamingReady.SessionCorrespondence.physicalPins inputs)).FreeExport\nPinwheel.Artifact.StreamingUARTSessionD4.uart_arming_correct (rate : Fin 3)\n  (startup : Pinwheel.Hardware.StreamingReady.Package.State 2) :\n  \u2203 source,\n    Pinwheel.Hardware.StreamingUART.Session.Armed rate\n      (Pinwheel.Artifact.StreamingUARTSessionD4.physicalRun startup\n        (Pinwheel.Artifact.StreamingUARTSessionD4.uartArmPins rate))\n      source\n"
+      },
+      "source_verification": {
+        "commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "files": 2906,
+        "full_tree_archive_sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-uart-full-0425b03-20261017-01"
+    },
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b"
+      },
+      "compressed_bytes": 38216,
+      "compressed_sha256": "df05c8cebc3eeb09347700b17711d4120e6423de8575e0c720ee5c30da5fe090",
+      "contract": {
+        "accepted": true,
+        "audited_declarations": 43410,
+        "audited_theorems": 24809,
+        "executable_suites": 65,
+        "kernel_suites": 8,
+        "legacy_contract": true,
+        "modules": 625,
+        "schema": null
+      },
+      "file": "streaming-uart-foundation-0425b03-20261017-01.json.gz",
+      "kind": "foundation",
+      "raw_bytes": 111379,
+      "raw_sha256": "552e29718342642a19ca1ddd01065d38e9a628fa5122f191b315af3c6d4db1fd",
+      "retained": {
+        "commands_verified": 79,
+        "native_audit_verified": true,
+        "source_files": 767
+      },
+      "source_verification": {
+        "commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "files": 767,
+        "full_tree_archive_sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-uart-foundation-0425b03-20261017-01"
+    },
+    {
+      "archive_verification": {
+        "reproduced": true,
+        "scope": "full Git tree",
+        "sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b"
+      },
+      "compressed_bytes": 301070,
+      "compressed_sha256": "675f7711a2c388168cfec6639c98671615ade74fcc42cac6a07ad10669782448",
+      "contract": {
+        "accepted": true,
+        "schema": "pinwheel.python-snapshot.v1",
+        "unittest": {
+          "skipped": 8,
+          "skips": [
+            {
+              "reason": "'local pinned Icarus installation unavailable'",
+              "test": "test_write_priority_preedge_read_mask_and_held_q (test_buffered_rtl_sim.DigitalMemoryLaw.test_write_priority_preedge_read_mask_and_held_q)"
+            },
+            {
+              "reason": "'Pinned Icarus and SRAM functional models are required'",
+              "test": "setUpClass (test_buffered_sram_memory.BufferedSramMemoryChecks)"
+            },
+            {
+              "reason": "'Pinned Yosys and SRAM Liberty required'",
+              "test": "setUpClass (test_buffered_sram_serial_binding.SavedYosysSerialBindingTests)"
+            },
+            {
+              "reason": "'Pinned Icarus is required for serial bridge timing'",
+              "test": "setUpClass (test_buffered_sram_serial_rtl.SerialBridgeRTLTests)"
+            },
+            {
+              "reason": "'Linux /proc zombie observation'",
+              "test": "test_zombie_group_remains_addressable_but_has_no_live_members (test_process_group.ProcessGroupTests.test_zombie_group_remains_addressable_but_has_no_live_members)"
+            },
+            {
+              "reason": "'Linux thread-group leader state'",
+              "test": "test_exited_leader_does_not_hide_a_live_worker_thread (test_process_group.ThreadLivenessTests.test_exited_leader_does_not_hide_a_live_worker_thread)"
+            },
+            {
+              "reason": "'Build Pinwheel.Program.Requests before running Lean export integration'",
+              "test": "setUpClass (test_program_export.ExportTests)"
+            },
+            {
+              "reason": "'Pinned Icarus tools unavailable'",
+              "test": "setUpClass (test_resolved_pads.ActualResolvedBridge)"
+            }
+          ],
+          "summary": "Ran 1535 tests in 92.324s\n\nOK (skipped=8)",
+          "tests_run": 1535
+        }
+      },
+      "file": "streaming-uart-python-0425b03-20261017-01.json.gz",
+      "kind": "python",
+      "producer_verification": {
+        "commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "files": 4,
+        "full_tree_archive_sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "raw_bytes": 1139069,
+      "raw_sha256": "e79ec91bd12088c6aee2a474ac364ffb3c3208a9bb7f09f666c134d3fc167ed7",
+      "retained": {
+        "native_summary_verified": true,
+        "retained_artifacts": 2929
+      },
+      "source_verification": {
+        "commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f",
+        "files": 2906,
+        "full_tree_archive_sha256": "66de9aeadc21c574c262a1b6db77986f1d9936ca3e604370bd29f6c5361e808b",
+        "git_blob_ids_verified": true,
+        "independently_verified": true
+      },
+      "tag": "streaming-uart-python-0425b03-20261017-01"
+    }
+  ],
+  "schema": "pinwheel.streaming-uart-evidence.v1",
+  "source_commit": "0425b03a8c997b0a3c89f3f950a1511d91f6610f"
+}

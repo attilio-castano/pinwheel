@@ -1,0 +1,92 @@
+{
+  "schema": "pinwheel-digital-session-evidence-v1",
+  "verified_at_head": "1658c56b166641a0370eaa016754f813fe46d769",
+  "exported_at_utc": "2026-10-17 12:02:24 UTC",
+  "listed_source_inputs_match_current_head": true,
+  "listed_source_input_count": 915,
+  "receipts": {
+    "foundation": {
+      "file": "foundation.json",
+      "sha256": "b09696ee9de6f7e74a0cb10773344dc508f9b2cf2c23943853cdd305314c074e",
+      "accepted": true,
+      "source_commit": "6926de39b9b4aedfce9400f70e5e9abd5e399ef2",
+      "log_directory": "build/validation/digital-session-foundation-20261017"
+    },
+    "initialized-native": {
+      "file": "initialized-native.json",
+      "sha256": "ebd3b72856d3216ceafdc444b929e8fa7f5050677e9a9a8a0881a9521bdaab59",
+      "accepted": true,
+      "source_commit": "1658c56b166641a0370eaa016754f813fe46d769",
+      "log_directory": "build/validation/digital-session-initialized-20261017-03"
+    },
+    "timing-conformance": {
+      "file": "timing-conformance.json",
+      "sha256": "c310bd5dc70a7417bc9d4aadb73e70c8f85af089a684b7600909a63d4c667222",
+      "accepted": true,
+      "source_commit": "6225b43cfd51ab77ce0672cd33675df1c4e8cc7e",
+      "log_directory": "build/validation/digital-session-timing-20261017"
+    },
+    "python": {
+      "file": "python.json",
+      "sha256": "f87c2d9080a860f66eb731457e9a904a4aab26833a8515b45e98cf8095d195ed",
+      "accepted": true,
+      "source_commit": "1658c56b166641a0370eaa016754f813fe46d769",
+      "log_directory": "build/validation/digital-session-python-20261017-03"
+    },
+    "obsolete-native-stopped": {
+      "file": "obsolete-native-stopped.json",
+      "sha256": "aa9be0983a8f239ae35c577f9065dd5f105346e084ad644d377abcf929882a64",
+      "accepted": false,
+      "source_commit": "c46d9cd1220f132492e5ccff8fa57db9f19ad8b8",
+      "log_directory": "build/validation/digital-session-initialized-20261017",
+      "supplements": [
+        {
+          "file": "obsolete-native-stopped-stop-reason.json",
+          "sha256": "e30426582fbe95413d3099c088563dfe08dfa2bddccd96100d7ba921f7df44d7"
+        },
+        {
+          "file": "obsolete-native-stopped-toolchain-observation.json",
+          "sha256": "5a1b671655f2d449757f3a87ed8bed190c13df42285601b955a0bb8445b18b95"
+        }
+      ]
+    },
+    "corrected-native-preliminary": {
+      "file": "corrected-native-preliminary.json",
+      "sha256": "340f199155985eadd73c56859d0fd53ee029baaa607b354ff671f748158b2a1b",
+      "accepted": false,
+      "source_commit": "e4fa5233c3aae4606c7775806d1fb40609b9516b",
+      "log_directory": "build/validation/digital-session-initialized-20261017-02",
+      "supplements": [
+        {
+          "file": "corrected-native-preliminary-toolchain-observation.json",
+          "sha256": "396ddfd64a21d0217912d32b57f2c11437dd7f243f9b9c9ce9616676f83966e9"
+        }
+      ]
+    },
+    "wrong-toolchain-rejected": {
+      "file": "wrong-toolchain-rejected.json",
+      "sha256": "c5ffc0f54d5122103cf965812d13788eba897866aa720b2f2315aa1f6e9df6ae",
+      "accepted": false,
+      "source_commit": "1658c56b166641a0370eaa016754f813fe46d769",
+      "log_directory": "build/validation/digital-session-initialized-wrong-version-20261017",
+      "supplements": [
+        {
+          "file": "wrong-toolchain-rejected-expected-rejection.json",
+          "sha256": "f592f86c229c018352496b02611ff91cc442ec7ff753dea0761a9cf3945ff75a"
+        }
+      ]
+    }
+  },
+  "historical_receipt_input_membership_verified": true,
+  "foundation_archive_reproduced": true,
+  "preserved_dirty_sha256": {
+    "docs/protocols/buffered-spi-refinement.md": "805eba24279d4dd798c49f92aaaa146005475f9496cafdf393d9f5140aa66d59",
+    "docs/research/status.md": "c669c35bf690df6c370da43dc6d2cfa6fa96fb3e56be0e9bd2d741a39fb198fe"
+  },
+  "preserved_dirty_patch_sha256": "efb3443f8103705eaeb222847c21750cdeeee5b0bde2ec0c3dea6d6eddef1108",
+  "changed_preexisting_committed_files": [
+    "Pinwheel.lean",
+    "scripts/check-foundation.py"
+  ],
+  "exporter_sha256": "a57f5ec616921c3634a85fbb032060534531c4fee554a03001270addf857752f"
+}
