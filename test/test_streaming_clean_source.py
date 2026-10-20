@@ -56,6 +56,9 @@ class CleanSourceTests(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory(); self.addCleanup(self.tmp.cleanup)
         self.repo = Path(self.tmp.name).resolve()/'checkout'
         git(self.base, '-c', 'protocol.file.allow=always', 'clone', '-q', '--no-local', str(self.original), str(self.repo))
+        # Clone does not copy the template repository's local identity.
+        git(self.repo, 'config', 'user.name', 'Source fixture')
+        git(self.repo, 'config', 'user.email', 'fixture@example.invalid')
         self.S = checker(self.repo)
 
     def commit(self):
@@ -72,6 +75,14 @@ class CleanSourceTests(unittest.TestCase):
                              cwd=self.repo, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(run.returncode == 0, ok, run.stdout.decode() + run.stderr.decode())
         return run
+
+    def test_cloned_fixture_commits_without_identity_autodetection(self):
+        git(self.repo, 'config', 'user.useConfigOnly', 'true')
+        (self.repo/'identity-fixture.txt').write_text('fixture mutation\n')
+        self.commit()
+        identity = git(self.repo, 'log', '-1', '--format=%an <%ae>%n%cn <%ce>').decode().strip()
+        expected = 'Source fixture <fixture@example.invalid>'
+        self.assertEqual(identity, expected + '\n' + expected)
 
     def test_rewritten_history_without_original_objects_admits_identity_only(self):
         for old in (self.S.ORIGIN, self.S.CLEAN_BASE, '787260b07c7dffc06799feeee6fd604e0b290fe7',
