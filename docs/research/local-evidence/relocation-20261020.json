@@ -1,0 +1,32 @@
+{
+  "archive": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/evidence.sqlite3",
+  "archive_directory": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20",
+  "archive_sha256": "abb8f71c230c2ba3f8a031bdeaf71dd37930600d6e4e6bf5aef99942719c3448",
+  "cleanup_receipt": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/cleanup.json",
+  "date": "2026-10-20",
+  "manifest_sha256": "ee2190af81927382c625612f65c3eb19866da4270509f8cea173409b3e1a8f56",
+  "note": "Historical receipts and content hashes are unchanged. This ledger supplies current storage locations. Shared Git metadata is additionally archived as git_common; the primary repository and all branches remain in place.",
+  "offline_recovery_receipt": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/offline-recovery.json",
+  "recovery_tool": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/restore.py",
+  "roots": [
+    {
+      "archive_root_id": "wt1373",
+      "historical_path": "/Users/attiliocastano/.codex/worktrees/1373/pinwheel"
+    },
+    {
+      "archive_root_id": "wt8259",
+      "historical_path": "/Users/attiliocastano/.codex/worktrees/8259/pinwheel"
+    },
+    {
+      "archive_root_id": "archive8259",
+      "historical_path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-8259"
+    },
+    {
+      "archive_root_id": "archive_pr",
+      "historical_path": "/Users/attiliocastano/Developer/pinwheel/build/research-archives/2026-10-16-tt-buffered-pr-validation-01"
+    }
+  ],
+  "schema": 1,
+  "unchanged_legacy_bundle": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/history/streaming-tt-original-99f75b65.bundle",
+  "verification_receipt": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/verification.json"
+}

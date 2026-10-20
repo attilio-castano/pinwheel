@@ -1,15 +1,15 @@
 # Local evidence archive
 
-The clean source branch keeps source, tests, conclusions and compact evidence indexes. The excluded generated evidence remains in the preserved original branch and its Git bundle. Original ignored `build/` owners remain undeleted.
+The clean source branch keeps source, tests, conclusions and compact evidence indexes. The excluded generated evidence remains in the preserved original branch and its Git bundle. The original ignored `build/` evidence and inherited dirty documents are preserved in the compressed, deduplicated archive described by the [October 20 relocation ledger](relocation-20261020.json). That ledger points to the authoritative cleanup receipt, which records removal status after full content recovery and source-continuity verification.
 
-Preserved source commit: `99f75b65fe524f266aa21654dc3d7f7054dd1aa8` (`99f75b65`). Local bundle: `/Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/local-cleanup/streaming-tt-clean-20261019-01/streaming-tt-original-99f75b65.bundle`, **148,580,352 bytes**, SHA-256 `05a2be07f33ec5a401f87876336b2e7fb31c62ad7e6cb1a6e73822ca4fa7bf8a`. The [archive catalog](archive.json) and [payload index](payload-index.jsonl) bind the bundle, source identity and original relative paths.
+Preserved source commit: `99f75b65fe524f266aa21654dc3d7f7054dd1aa8` (`99f75b65`). Local bundle: `/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/history/streaming-tt-original-99f75b65.bundle`, **148,580,352 bytes**, SHA-256 `05a2be07f33ec5a401f87876336b2e7fb31c62ad7e6cb1a6e73822ca4fa7bf8a`. The [archive catalog](archive.json) and [payload index](payload-index.jsonl) bind the bundle, source identity and original relative paths.
 
-The bundle covers **committed Git history only**. Inherited dirty-document patch/copies and the original ignored `build/` evidence are separate preserved local material. Design, proof, generator and existing test sources retain the preserved commit's bytes. Cleanup adds the retrieval tool/tests, catalog and ignore/attribute rules, and changes report link targets. Existing report claims are unchanged. The clean branch is not retroactively qualified, and the archive is not a standalone CAD reproduction bundle: original tools, runtime, PDK and ignored build dependencies remain separately required.
+The bundle covers **committed Git history only**. Inherited dirty-document patch/copies and the original ignored `build/` evidence are preserved as separate roots in that compressed archive. Historical receipt paths retain their original identities; use the relocation ledger for current retrieval. Design, proof, generator and existing test sources retain the preserved commit's bytes. Cleanup adds the retrieval tool/tests, catalog and ignore/attribute rules, and changes report link targets. Existing report claims are unchanged. The clean branch is not retroactively qualified, and the archive is not a standalone CAD reproduction bundle: original tools, runtime, PDK and ignored build dependencies remain separately required.
 
 Use the local helper to verify the bundle into a fresh repository path, then recover selected payload into a separate destination. These commands do not run archived code:
 
 ```sh
-python3 -B scripts/local-evidence.py verify --bundle /Users/attiliocastano/.codex/worktrees/1373/pinwheel/build/local-cleanup/streaming-tt-clean-20261019-01/streaming-tt-original-99f75b65.bundle --repository /absolute/existing-parent/verified-evidence.git
+python3 -B scripts/local-evidence.py verify --bundle /Users/attiliocastano/Developer/pinwheel-archives/pinwheel-evidence-2026-10-20/history/streaming-tt-original-99f75b65.bundle --repository /absolute/existing-parent/verified-evidence.git
 python3 -B scripts/local-evidence.py restore --repository /absolute/existing-parent/verified-evidence.git --destination /absolute/separate/restored-evidence --path ORIGINAL_RELATIVE_PATH
 ```
 
