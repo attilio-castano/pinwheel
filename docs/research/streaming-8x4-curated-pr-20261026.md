@@ -39,13 +39,14 @@ The seven source files are the reference job's complete post-baseline source
 dependency set. The three tests cover those retained sources; retaining them
 does not qualify the rest of the campaign.
 
-The full research diff contains 69,099 added lines. The earlier completed tree
-accounts for 51,054; these seven sources, three tests and three reference
-documents add 2,046. That gives an estimated **53,100 added lines before the new
-recovery tool, catalog and integration documentation**. Final review statistics
-must be measured on the completed curated branch. This boundary removes about
-16,000 lines of unfinished campaign machinery from active review while retaining
-its recovery path.
+The full committed research diff contains 69,099 added lines across 457 files.
+The earlier completed tree accounts for 51,054 lines; the selected seven sources,
+three tests and three reference documents add 2,046. The curated integration,
+including its recovery tooling and documentation, is about **54,000 added lines
+across 380 files**. The 85 deferred campaign files remain recoverable. The
+original checkout also retains 5,367 untracked draft lines, outside either
+committed diff. The curated branch is `codex/streaming-8x4-curated` in
+`/Users/attiliocastano/.codex/worktrees/pinwheel-curated-8x4/pinwheel`.
 
 ## What the evidence establishes
 
@@ -124,14 +125,36 @@ bytes: 27148780
 sha256: 198dcf8a21c8184aec6472dda856eabb9b0692b7d2f4b7a00257ce2f63fa1caf
 ```
 
-The 20 untracked drafts have a separate 90,608-byte archive; untracked files are
-outside the Git bundle and tracked-source catalog. The
+The 20 untracked drafts have a separate 90,608-byte archive in the same archive
+directory, `untracked-drafts-2f0524c.tar.gz`, SHA-256
+`1e34352f6ae34b3cc73d8d17fb34c1458613750181b36f228275f257831fcedc`.
+Untracked files are outside the Git bundle and tracked-source catalog. The
 [source catalog](local-evidence/streaming-8x4-curation-20261026/source-catalog.json)
 records the tracked source sets, bundle identity and recovery boundary. The
 [source recovery CLI](../../scripts/streaming_8x4_source_recovery.py) provides
 the corresponding verification/recovery entry point. Deferred files remain
 research sources recoverable from that history, rather than active curated
 drivers.
+
+For source recovery, first create a new ignored parent directory. Both outputs
+below must be fresh paths; existing repositories or directories are refused:
+
+```sh
+mkdir -p build/streaming-8x4-source-recovery/manual
+python3 -B scripts/streaming_8x4_source_recovery.py verify \
+  --bundle /Users/attiliocastano/Developer/pinwheel-archives/pinwheel-research-2026-10-26/pinwheel-research-2f0524c.bundle \
+  --repository "$PWD/build/streaming-8x4-source-recovery/manual/source.git"
+python3 -B scripts/streaming_8x4_source_recovery.py restore \
+  --repository "$PWD/build/streaming-8x4-source-recovery/manual/source.git" \
+  --destination "$PWD/build/streaming-8x4-source-recovery/manual/source"
+```
+
+The helper authenticates the bundle and complete tracked tree, then restores
+raw blob bytes and executable modes without checking out or executing archived
+source. The compact index separately pins all 85 deferred files. Its success
+output keeps physical acceptance, model qualification and timing acceptance
+false; the recovered directory has no `.git` or runnable evidence context.
+Failures may leave partial owned output; preserve it and retry at new paths.
 
 Recovery of source history is distinct from relocation of physical evidence.
 The bundle does not contain ignored build outputs, raw PDK files, container
@@ -149,8 +172,50 @@ proof, physical rerun or portable hardware-evidence package.
 
 ## Validation of this integration
 
-Validation is pending on the completed curated branch. The integration owner
-will record the measured final diff, recovery/catalog checks and focused test
-results here before the branch is presented for review. Historical execution
-receipts above remain historical evidence; this guide does not claim they were
+The code candidate is local commit
+`28fd1efde94c2428fb2a3ea992a53e44f42935a7`; subsequent changes complete this
+report and its status/index links. No push or PR creation occurred.
+
+| Curation check | Result |
+| --- | --- |
+| Exact retained bytes | All 359 baseline paths and the 13 selected later paths match their original Git blobs. |
+| Original research preservation | Original HEAD and tracked tree unchanged; all 20 draft paths, hashes and modes unchanged; bundle and draft-archive digests verified. |
+| Reference/probe/resource controls | 36 tests pass. |
+| Source-recovery controls | 19 tests pass normally and with Python optimization enabled. |
+| Actual source recovery | A fresh bare repository verifies the complete bundle; all 3,628 files / 75,784,978 bytes restore. An independent comparison against the original Git tree matches every SHA-256, mode and path. |
+| Portable physical-host workflow | Guard self-tests and all four suites pass: 52 + 16 + 21 + 26 = 115 tests, zero skips; repository build tree absent during these checks. |
+| Artifact publication | All 25 policy tests pass. Staged and committed-range checks pass with the retained baseline policy; no new exceptions or enlarged budgets. |
+| Explorer | `python3 -B scripts/build-explorer.py --check` passes. |
+| Independent source review | Retained import closure and frozen source hashes match; no missing local imports in retained 8×4 test modules. |
+| Complete fresh-source Python discovery | **FAILED**: 2,852 tests in 112.975 seconds; 2 failures, 46 errors, 15 skips. |
+| Whitespace | One preserved baseline fixture has a blank final line at `test/fixtures/streaming_8x4_pg_diode_profile.lef:113`; its bytes were retained. Curation-owned files pass the whitespace check. |
+
+The broad discovery result is deliberately retained as failed. Its 46 errors
+comprise 40 missing ignored campaign-fixture dependencies, four tests requiring
+`git rev-parse HEAD` inside the intentionally Git-free archive, and two legacy
+clean-source fixture errors. That clean-source fixture also causes the two
+failures: its frozen authority rejects the retained baseline
+`tools/artifact-policy.json` bytes. Both files remain unchanged from their
+respective source versions; the old authority has not been resealed to accept
+new bytes. These fixture/isolation seams must be resolved before claiming a
+portable green repository suite. The earlier working-checkout 8×4 discovery
+likewise failed: 675 tests, 40 errors and one skip.
+
+The full discovery ran from the exact committed-source archive with no copied
+build fixtures or parent Git discovery. Membership was verified before and
+after, and the Python executable identity was unchanged. Local receipts remain
+ignored under:
+
+```text
+build/validation/curated-8x4-20261026-01/report.json
+build/validation/curated-8x4-20261026-01/logs/python-unittest-discover.log
+build/validation/curation-audit-20261026.json
+build/streaming-8x4-source-recovery/curation-20261026-01/verify.json
+build/streaming-8x4-source-recovery/curation-20261026-01/restore.json
+build/streaming-8x4-source-recovery/curation-20261026-01/independent-comparison.json
+```
+
+The integration is prepared for source review, with the broad validation gate
+open. No CAD, Lean proof, extraction solve or signoff campaign was launched.
+Historical execution receipts above remain historical evidence and were not
 rerun during curation.

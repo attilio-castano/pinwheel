@@ -37,8 +37,9 @@ independent physical reference authority.
 
 The [curated integration guide](streaming-8x4-curated-pr-20261026.md) records
 what enters active review and how the deferred campaign sources, complete Git
-history and untracked drafts are preserved. Its pending integration checks are
-separate from the retained historical hardware results. The studies below keep
+history and untracked drafts are preserved. Focused integration checks pass;
+full fresh-source Python discovery fails on fixture/isolation and frozen-source
+authority seams. These checks are separate from historical hardware results. The studies below keep
 their earlier candidate identities and acceptance scopes.
 
 ## Physical organization, repairs, and qualification

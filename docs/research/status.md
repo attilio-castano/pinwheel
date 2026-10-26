@@ -12,8 +12,8 @@ linked studies for measurements and reproduction.
 
 Prepare the completed 8×4 baseline and nominal extraction-reference component
 for review. The [curated integration guide](streaming-8x4-curated-pr-20261026.md)
-owns the exact source boundary, preserved history, acceptance table and pending
-integration validation. Curation does not launch another autonomous campaign.
+owns the exact source boundary, preserved history, acceptance table and recorded
+integration validation. The focused checks pass; full Python discovery remains failed. Curation does not launch another autonomous campaign.
 
 Ordinary detailed routing completed from a preserved seed with zero route DRC.
 G4 correspondence and G5 physical/official checks pass on the exact f516 target;
