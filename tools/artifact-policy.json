@@ -168,6 +168,36 @@
       "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
       "sha256": "48f0754ce8973333b3f6b2006401cc3f39afb6ec4a3f6e4623142c6a0a5b25ff"
     },
+    "docs/research/evidence/streaming-8x4-20261022/diode-strap-conflict.json": {
+      "bytes": 2556,
+      "git_mode": "100644",
+      "reason": "Exact 2556-byte scene for one measured diode and two Short markers, introduced at af697eb; historical bytes preserved while current scene moves to hash-bound campaign storage. No general raw-geometry allowance.",
+      "sha256": "a62ecfcec614cb19b135ea89c39826728d837b323a72144ae5aa285f2e35ef6b"
+    },
+    "docs/research/evidence/streaming-8x4-20261022/diode-strap-conflict.png": {
+      "bytes": 87983,
+      "git_mode": "100644",
+      "reason": "Exact 87983-byte 1160x820 rendered companion to the measured SVG, introduced at af697eb; historical bytes only, with current figure relocated to docs/physical/figures. No raw CAD allowance.",
+      "sha256": "580fa49d30bcc5a0cd60fa8c768486702f9ff0330e47dc1030b078f2e57d69b5"
+    },
+    "docs/research/evidence/streaming-8x4-20261022/diode-strap-conflict.svg": {
+      "bytes": 3806,
+      "git_mode": "100644",
+      "reason": "Exact 3806-byte static measured illustration introduced at af697eb in the reserved evidence tree; historical bytes only, with current figure relocated to docs/physical/figures. No raw CAD allowance.",
+      "sha256": "3978476fbdc03be18d6a90aaa939c6fe9247ca50e84c09602266535e24510749"
+    },
+    "docs/research/evidence/streaming-8x4-20261022/foundation-reuse.json": {
+      "bytes": 1161,
+      "git_mode": "100644",
+      "reason": "Reviewed compact 1161-byte source-controlled claim summary with external immutable evidence hashes; no compiled proof or raw runtime payload.",
+      "sha256": "6ee42461c05d560cc55e0e109374b650ae4f0f48b127fb62c7dc8ef1210a8aa2"
+    },
+    "docs/research/evidence/streaming-8x4-20261022/integration.json": {
+      "bytes": 2865,
+      "git_mode": "100644",
+      "reason": "Reviewed compact 2865-byte integration claim summary with external native evidence hashes; no raw CAD output.",
+      "sha256": "378ca55b5d31049408a870fa85389feffa163ab57a4e0724ef3307f5427511d1"
+    },
     "docs/research/evidence/streaming-continuation-20261017/StreamingFinalAudit.lean": {
       "bytes": 2038,
       "git_mode": "100644",
@@ -629,6 +659,48 @@
       "git_mode": "100644",
       "reason": "Preserved compact historical evidence/fixture or illustration at reviewed clean baseline; exact bytes only.",
       "sha256": "3feddb9cefa39c24c5380bd8073d998c5a5fce9ff73d8ca7cdd05f0a9e4485be"
+    },
+    "test/fixtures/streaming-8x4-rc-layered-coarse-physics-failure-20261022.log": {
+      "bytes": 1858,
+      "git_mode": "100644",
+      "reason": "Reviewed exact 1858-byte captured layered M1 warning/negative-Maxwell-row-sum parser fixture; fatal-physics regression only, no binary or bulk execution archive.",
+      "sha256": "309029efcab2f40f78b35ca2b81ebba7a423b9efdf37ba062ac99e76b895765b"
+    },
+    "test/fixtures/streaming-8x4-rc-manual-U-20261022.log": {
+      "bytes": 1580,
+      "git_mode": "100644",
+      "reason": "Reviewed 1580-byte parser regression fixture containing the exact warning-free solver matrix/footer grammar; no binary or bulk execution archive.",
+      "sha256": "421cf2188f14265f768ab37629817336c7f55e150a4f78ae4197fbb3448a5f92"
+    },
+    "test/fixtures/streaming-8x4-rc-ndr-after-20261023.def": {
+      "bytes": 8592,
+      "git_mode": "100644",
+      "reason": "Exact compact captured17-net Native NDR DEF serialization regression fixture; only these reviewed bytes are allowed, with no blanket CAD exception.",
+      "sha256": "64bb1f1731e79adbf840d3e861aa7cd6389a6ce5dde4b61356500f5b6a41e608"
+    },
+    "test/fixtures/streaming-8x4-rc-ndr-before-20261023.def": {
+      "bytes": 8765,
+      "git_mode": "100644",
+      "reason": "Exact compact captured17-net Native NDR DEF serialization regression fixture; only these reviewed bytes are allowed, with no blanket CAD exception.",
+      "sha256": "9d50fc55eff69c38f634f78b7b8b2ce692f068f9592c594a6d670a91c768245b"
+    },
+    "test/fixtures/streaming-8x4-rc-wire-coarse-20261022.log": {
+      "bytes": 1574,
+      "git_mode": "100644",
+      "reason": "Reviewed exact 1574-byte captured coarse-wire parser fixture; grammar control only, no new numerical diagnostic execution claim or bulk archive.",
+      "sha256": "9ebc5e41bca832638da0daf9fd658d927203c69ef3cf2cd46bd94fc1a5fefae5"
+    },
+    "test/fixtures/streaming-8x4-rc-wire-nonconvergence-20261022.log": {
+      "bytes": 7234,
+      "git_mode": "100644",
+      "reason": "Reviewed exact 7234-byte captured nonconverged wire log for fatal-error despite exit-zero regression; no binary or bulk execution archive.",
+      "sha256": "6a99b6a39c19596147c014237c198414ee124148195be0aadc4a9e364cc87e52"
+    },
+    "test/fixtures/streaming_8x4_pg_diode_geometry.def": {
+      "bytes": 11826,
+      "git_mode": "100644",
+      "reason": "Exact compact row/track-only DEF parser regression fixture for official8x4 diode placement; portable HOST controls only, no instances, routed state or raw CAD archive allowance.",
+      "sha256": "2498eb81b408abe0d6d7e20c2eb006c97ca51582e5ea73b182a40729b95e3a67"
     },
     "tools/pinwheel-physical-campaign/tests/fixtures/p2-onepass-violations.rpt.gz": {
       "bytes": 302642,

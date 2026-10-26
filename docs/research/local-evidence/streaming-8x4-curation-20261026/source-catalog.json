@@ -1,0 +1,20 @@
+{
+  "bundle": {
+    "bytes": 27148780,
+    "path_hint": "/Users/attiliocastano/Developer/pinwheel-archives/pinwheel-research-2026-10-26/pinwheel-research-2f0524c.bundle",
+    "ref": "refs/heads/codex/streaming-8x4-extraction-48h-20261025",
+    "sha256": "198dcf8a21c8184aec6472dda856eabb9b0692b7d2f4b7a00257ce2f63fa1caf"
+  },
+  "index": {
+    "bytes": 20558,
+    "files": 85,
+    "path": "sources-index.json",
+    "sha256": "42df610e37ad26c9c81053d05229230903ed2c083d152393f76c86a754b2bcca"
+  },
+  "schema": "pinwheel.streaming-8x4-source-catalog.v1",
+  "scope": "Tracked source custody only. Untracked drafts, raw machine-specific build/PDK/runtime evidence, and historical absolute-path relocation are excluded. Source recovery does not establish physical acceptance, extraction-model qualification, or qualified timing.",
+  "source_bytes": 75784978,
+  "source_commit": "2f0524c30c50c647a987154b583554a68a72e194",
+  "source_files": 3628,
+  "source_tree": "bcefbc35b8c0a0cd6849b1a80c033322a1956032"
+}

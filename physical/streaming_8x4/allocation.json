@@ -1,0 +1,24 @@
+{
+  "schema": "pinwheel.streaming-8x4-allocation.v1",
+  "tiles": "8x4",
+  "support_commit": "d66cf179e7bc4d296362ab7e2e3b344dc3c4f665",
+  "template_path": "tech/ihp-sg13cmos5l/def/tt_block_8x4_pgvdd.def",
+  "template_sha256": "64b52f2150f699edc7fb500c2f486a51eca66fd91d3efb7347200bd2cf83a2ee",
+  "template_git_blob": "a49318399fbe9981b66b09320c61a75a27a8fc4a",
+  "source_url": "https://raw.githubusercontent.com/TinyTapeout/tt-support-tools/d66cf179e7bc4d296362ab7e2e3b344dc3c4f665/tech/ihp-sg13cmos5l/def/tt_block_8x4_pgvdd.def",
+  "die_dbu": [0, 0, 1724160, 710640],
+  "core_dbu": [2880, 3780, 1721280, 706860],
+  "dbu_per_micron": 1000,
+  "public_pin_count": 43,
+  "m4_grid_adaptation": {
+    "old_pitch_dbu": 50000,
+    "new_pitch_dbu": 49880,
+    "old_first_center_dbu": 16160,
+    "new_first_center_dbu": 16400,
+    "width_dbu": 2100,
+    "pair_delta_dbu": 7680,
+    "expected_complete_stripes": 70,
+    "reason": "The 8x4 boundary would intersect a final 50um-pitch power/ground pair. The scoped grid change fits 70 complete stripes inside the actual official core in X, preserves width and separation, and yields minimum official-public-pin clearance of 680 DBU. Native readback and official Pincheck remain mandatory."
+  },
+  "historical_6x4_allocation_unchanged": true
+}

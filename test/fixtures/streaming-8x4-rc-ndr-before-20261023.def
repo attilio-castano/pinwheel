@@ -1,0 +1,204 @@
+VERSION 5.8 ;
+DIVIDERCHAR "/" ;
+BUSBITCHARS "[]" ;
+DESIGN rc_consumer ;
+UNITS DISTANCE MICRONS 1000 ;
+DIEAREA ( 0 0 ) ( 150000 400000 ) ;
+NONDEFAULTRULES 2 ;
+    - WIDE_Metal1
+      + LAYER Metal1 WIDTH 320 SPACING 210
+      + LAYER Metal2 WIDTH 200
+      + LAYER Metal3 WIDTH 200
+      + LAYER Metal4 WIDTH 200
+      + LAYER TopMetal1 WIDTH 1640
+    ;
+    - WIDE_Metal2
+      + LAYER Metal1 WIDTH 160
+      + LAYER Metal2 WIDTH 400 SPACING 210
+      + LAYER Metal3 WIDTH 200
+      + LAYER Metal4 WIDTH 200
+      + LAYER TopMetal1 WIDTH 1640
+    ;
+END NONDEFAULTRULES
+COMPONENTS 0 ;
+END COMPONENTS
+PINS 34 ;
+    - Metal1_L100_A + NET Metal1_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 40000 ) N ;
+    - Metal1_L100_B + NET Metal1_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 40000 ) N ;
+    - Metal1_L50_A + NET Metal1_L50 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 20000 ) N ;
+    - Metal1_L50_B + NET Metal1_L50 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 60000 20000 ) N ;
+    - Metal1_wide_L100_A + NET Metal1_wide_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 220000 ) N ;
+    - Metal1_wide_L100_B + NET Metal1_wide_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 220000 ) N ;
+    - Metal2_L100_A + NET Metal2_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 80000 ) N ;
+    - Metal2_L100_B + NET Metal2_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 80000 ) N ;
+    - Metal2_L50_A + NET Metal2_L50 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 60000 ) N ;
+    - Metal2_L50_B + NET Metal2_L50 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 60000 60000 ) N ;
+    - Metal2_wide_L100_A + NET Metal2_wide_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 240000 ) N ;
+    - Metal2_wide_L100_B + NET Metal2_wide_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 240000 ) N ;
+    - Metal3_L100_A + NET Metal3_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 120000 ) N ;
+    - Metal3_L100_B + NET Metal3_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 120000 ) N ;
+    - Metal3_L50_A + NET Metal3_L50 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 100000 ) N ;
+    - Metal3_L50_B + NET Metal3_L50 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 60000 100000 ) N ;
+    - Metal4_L100_A + NET Metal4_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 160000 ) N ;
+    - Metal4_L100_B + NET Metal4_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 160000 ) N ;
+    - Metal4_L50_A + NET Metal4_L50 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 140000 ) N ;
+    - Metal4_L50_B + NET Metal4_L50 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 60000 140000 ) N ;
+    - TopMetal1_L100_A + NET TopMetal1_L100 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER TopMetal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 200000 ) N ;
+    - TopMetal1_L100_B + NET TopMetal1_L100 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER TopMetal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 200000 ) N ;
+    - TopMetal1_L50_A + NET TopMetal1_L50 + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER TopMetal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 180000 ) N ;
+    - TopMetal1_L50_B + NET TopMetal1_L50 + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER TopMetal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 60000 180000 ) N ;
+    - TopVia1EWNS_A + NET TopVia1EWNS + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 340000 ) N ;
+    - TopVia1EWNS_B + NET TopVia1EWNS + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER TopMetal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 340000 ) N ;
+    - Via1_DC1B_A + NET Via1_DC1B + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 280000 ) N ;
+    - Via1_DC1B_B + NET Via1_DC1B + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 280000 ) N ;
+    - Via1_XX_A + NET Via1_XX + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal1 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 260000 ) N ;
+    - Via1_XX_B + NET Via1_XX + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 260000 ) N ;
+    - Via2_XX_A + NET Via2_XX + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal2 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 300000 ) N ;
+    - Via2_XX_B + NET Via2_XX + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 300000 ) N ;
+    - Via3_XX_A + NET Via3_XX + DIRECTION INPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal3 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 10000 320000 ) N ;
+    - Via3_XX_B + NET Via3_XX + DIRECTION OUTPUT + USE SIGNAL
+      + PORT
+        + LAYER Metal4 ( -50 -50 ) ( 50 50 )
+        + FIXED ( 110000 320000 ) N ;
+END PINS
+NETS 17 ;
+    - Metal1_L100 ( PIN Metal1_L100_B ) ( PIN Metal1_L100_A ) + USE SIGNAL
+      + ROUTED Metal1 ( 10000 40000 ) ( 110000 * ) ;
+    - Metal1_L50 ( PIN Metal1_L50_B ) ( PIN Metal1_L50_A ) + USE SIGNAL
+      + ROUTED Metal1 ( 10000 20000 ) ( 60000 * ) ;
+    - Metal1_wide_L100 ( PIN Metal1_wide_L100_B ) ( PIN Metal1_wide_L100_A ) + USE SIGNAL + NONDEFAULTRULE WIDE_Metal1
+      + ROUTED Metal1 ( 10000 220000 ) ( 110000 * ) ;
+    - Metal2_L100 ( PIN Metal2_L100_B ) ( PIN Metal2_L100_A ) + USE SIGNAL
+      + ROUTED Metal2 ( 10000 80000 ) ( 110000 * ) ;
+    - Metal2_L50 ( PIN Metal2_L50_B ) ( PIN Metal2_L50_A ) + USE SIGNAL
+      + ROUTED Metal2 ( 10000 60000 ) ( 60000 * ) ;
+    - Metal2_wide_L100 ( PIN Metal2_wide_L100_B ) ( PIN Metal2_wide_L100_A ) + USE SIGNAL + NONDEFAULTRULE WIDE_Metal2
+      + ROUTED Metal2 ( 10000 240000 ) ( 110000 * ) ;
+    - Metal3_L100 ( PIN Metal3_L100_B ) ( PIN Metal3_L100_A ) + USE SIGNAL
+      + ROUTED Metal3 ( 10000 120000 ) ( 110000 * ) ;
+    - Metal3_L50 ( PIN Metal3_L50_B ) ( PIN Metal3_L50_A ) + USE SIGNAL
+      + ROUTED Metal3 ( 10000 100000 ) ( 60000 * ) ;
+    - Metal4_L100 ( PIN Metal4_L100_B ) ( PIN Metal4_L100_A ) + USE SIGNAL
+      + ROUTED Metal4 ( 10000 160000 ) ( 110000 * ) ;
+    - Metal4_L50 ( PIN Metal4_L50_B ) ( PIN Metal4_L50_A ) + USE SIGNAL
+      + ROUTED Metal4 ( 10000 140000 ) ( 60000 * ) ;
+    - TopMetal1_L100 ( PIN TopMetal1_L100_B ) ( PIN TopMetal1_L100_A ) + USE SIGNAL
+      + ROUTED TopMetal1 ( 10000 200000 ) ( 110000 * ) ;
+    - TopMetal1_L50 ( PIN TopMetal1_L50_B ) ( PIN TopMetal1_L50_A ) + USE SIGNAL
+      + ROUTED TopMetal1 ( 10000 180000 ) ( 60000 * ) ;
+    - TopVia1EWNS ( PIN TopVia1EWNS_B ) ( PIN TopVia1EWNS_A ) + USE SIGNAL
+      + ROUTED Metal4 ( 10000 340000 ) ( 60000 * ) TopVia1EWNS
+      NEW TopMetal1 ( 60000 340000 ) ( 110000 * ) ;
+    - Via1_DC1B ( PIN Via1_DC1B_B ) ( PIN Via1_DC1B_A ) + USE SIGNAL
+      + ROUTED Metal1 ( 10000 280000 ) ( 60000 * ) Via1_DC1B
+      NEW Metal2 ( 60000 280000 ) ( 110000 * ) ;
+    - Via1_XX ( PIN Via1_XX_B ) ( PIN Via1_XX_A ) + USE SIGNAL
+      + ROUTED Metal1 ( 10000 260000 ) ( 60000 * ) Via1_XX
+      NEW Metal2 ( 60000 260000 ) ( 110000 * ) ;
+    - Via2_XX ( PIN Via2_XX_B ) ( PIN Via2_XX_A ) + USE SIGNAL
+      + ROUTED Metal2 ( 10000 300000 ) ( 60000 * ) Via2_XX
+      NEW Metal3 ( 60000 300000 ) ( 110000 * ) ;
+    - Via3_XX ( PIN Via3_XX_B ) ( PIN Via3_XX_A ) + USE SIGNAL
+      + ROUTED Metal3 ( 10000 320000 ) ( 60000 * ) Via3_XX
+      NEW Metal4 ( 60000 320000 ) ( 110000 * ) ;
+END NETS
+END DESIGN

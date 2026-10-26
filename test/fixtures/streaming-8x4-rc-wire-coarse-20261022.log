@@ -1,0 +1,44 @@
+Running FasterCap version 6.0.7
+Copyright 2019 FastFieldSolvers S.R.L. http://www.fastfieldsolvers.com, All Rights reserved
+Starting capacitance extraction with the following parameters:
+Input file: geometry.lst
+
+3D Solver Engine invoked
+Solution scheme (-g): Galerkin, GMRES tolerance (-t): 0.0005
+Out-of-core free memory to link memory condition (-f): 5
+Potential interaction coefficient to mesh refinement ratio (-d): 1
+Mesh curvature (-mc): 3
+Mesh refinement (-m): 0.000383703
+Precond Type(s) (-p): Jacobi 
+Number of input panels to solver engine: 3692
+
+***************************************
+Refining the geometry.. 
+Refinement completed
+***************************************
+Computing the links.. 
+Number of panels after refinement: 6892
+Number of links to be computed: 155024
+Done computing links
+***************************************
+GMRES Iteration: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 
+GMRES Iteration: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 
+Capacitance matrix is:
+Dimension 2 x 2
+g1_GND_SUB  8.73825e-09 -1.08062e-09 
+g2_SIGNAL  -1.08079e-09 1.11894e-09 
+
+
+Solve statistics:
+Number of input panels: 1846 of which 1846 conductors and 0 dielectric
+Number of input panels to solver engine: 3692
+Number of panels after refinement: 6892
+Number of potential estimates: 155024
+Number of links: 161916 (uncompressed 47499664, compression ratio is 99.7%)
+Max recursion level: 25
+Max Mesh relative refinement value: 0.000368424
+
+Total allocated memory: 21295 kilobytes
+Total time: 0.227992s (0 days, 0 hours, 0 mins, 0 s)
+
+

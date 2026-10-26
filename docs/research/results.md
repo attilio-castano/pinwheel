@@ -1,6 +1,6 @@
 # Research results
 
-This index records conclusions through 2026-10-16 and what could justify
+This index records conclusions through 2026-10-26 and what could justify
 reopening them. Start with [status](status.md) for the active decision, then
 choose a topic below. Each linked study owns measurements, assumptions,
 commands, and proof boundaries; the [journal](journal.md) keeps dated receipts.
@@ -8,12 +8,38 @@ These results do not themselves promote a candidate or establish silicon fit.
 
 | Research question | What the evidence currently says |
 | --- | --- |
-| [Can physical organization close the chip?](#physical-organization-repairs-and-qualification) | The buffered TT campaign reduces native DRC 22,115→1,732, but GDS DRC/LVS, antenna and conditional extracted timing fail. Earlier 351-pin boundary qualification belongs to the older chip. Neither result establishes tapeout readiness. |
+| [What has the 8×4 campaign closed?](streaming-8x4-curated-pr-20261026.md) | Seeded detailed routing reaches zero route DRC; G4 and G5 pass on the same f516 target. OpenROAD antenna, fresh clean-start reproducibility, all eight extraction-model rows and qualified timing remain open. The new 32-grid nominal reference component passes its unchanged convergence gates. |
+| [What did the earlier buffered-SRAM campaign establish?](#physical-organization-repairs-and-qualification) | The earlier buffered TT campaign reduces native DRC 22,115→1,732, but GDS DRC/LVS, antenna and conditional extracted timing fail on that candidate. Earlier 351-pin boundary qualification belongs to the older chip. |
 | [Which chip architecture and map should be pursued?](#chip-architecture-mapping-and-locality) | Hybrid SRAM is the area control. Tiled and paired alternatives have correctness and cost evidence, with timing and physical qualifications still specific to each candidate. |
 | [What does placement and coarse routing change?](#sram-chip-placement-and-coarse-routing) | Mapping savings and local repairs survive selected physical gates, while congestion and SRAM pin escape remain open. |
 | [What can the programmable engine express?](#protocols-execution-and-storage-foundations) | Four-mode SPI and bounded I²C writes/recovery pass on shared circuitry. The opt-in UART supervisor adds rearm and explicit one-entry ownership, with proofs, resolved wires and fresh circuit meaning; physical timing requires separate evidence. |
 | [Which earlier timing and proof screens transferred?](#earlier-timing-control-and-proof-experiments) | Structural and RTL evidence guides candidate selection; routed timing and electrical results decide physical admission. |
 | [Does SRAM execution compose through the chip?](#composition-sram-correctness-and-host-behavior) | Array, controller, execution and host results compose in stated models; emitted macro binding and physical qualification remain separate. |
+
+## 8×4 routing and nominal extraction reference
+
+The [completed 8×4 report](streaming-8x4-closure24-morning-report-20261025.md)
+retains ordinary detailed routing with zero route DRC from a preserved seed and
+passing G4 correspondence/G5 physical and official checks on the exact f516
+target. The separate OpenROAD antenna check still fails, and fresh clean-start
+reproducibility is open. A later applied repair has no accepted new target:
+its Tcl checker failed before accepted DRC/antenna results.
+
+The [nominal reference checkpoint](streaming-8x4-reference-checkpoint-20261026.md)
+adds five fresh grids to 27 independently reopened historical successes: 32/32
+across eight nominal TYP finite-2D cases. Maximum mesh change is 0.983710% and
+maximum domain change is 0.853374%, below the unchanged 2% gates. The original
+timed-out grid and incomplete packet remain failed. This completes a numerical
+reference component; it does not qualify finite-wire physics, physical corners
+or the full extraction model. All eight original model rows and qualified
+extracted timing remain open, and full model regeneration remains NO-GO pending
+independent physical reference authority.
+
+The [curated integration guide](streaming-8x4-curated-pr-20261026.md) records
+what enters active review and how the deferred campaign sources, complete Git
+history and untracked drafts are preserved. Its pending integration checks are
+separate from the retained historical hardware results. The studies below keep
+their earlier candidate identities and acceptance scopes.
 
 ## Physical organization, repairs, and qualification
 

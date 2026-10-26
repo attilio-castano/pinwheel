@@ -1,0 +1,65 @@
+{
+  "schema": "pinwheel.streaming-8x4-integration-result.v1",
+  "updated_utc": "2026-10-22T21:28:43.543352+00:00",
+  "integration_gate": "pass",
+  "tiles": "8x4",
+  "die_um": [
+    1724.16,
+    710.64
+  ],
+  "clock_period_ns": 20,
+  "semantic_state_bits": 6039,
+  "logical_design_sha256": "b8b0a29851369f2b181b67db77778979703a30adc92051e2992a2e8fb98dc971",
+  "source_commit": "cc22985b6986b4af37ffc19fa2026fef70b5c75b",
+  "candidate_source_commit": "e2e8e38aa0698a50eadc03ee2d8b58d2096a633a",
+  "native_probe_seconds": 22.272,
+  "native_export_seconds": 3.6528632499976084,
+  "actual_public_pin_count": 43,
+  "actual_full_height_power_stripes": 70,
+  "minimum_actual_public_clearance_dbu": 680,
+  "official_pincheck_passed": true,
+  "artifact_refs": {
+    "preparation": {
+      "path": "build/campaigns/8x4-20261022-01/prepared-8x4-02/preparation.json",
+      "sha256": "959056e4b5b9c421325ab4df1a110b5dc55bbddb371b942ec68adc8df2310ccf"
+    },
+    "native_probe": {
+      "path": "build/campaigns/8x4-20261022-01/native-probe-02/report.json",
+      "sha256": "66f5ab698e7b7c3b8980a7379b8372865a98008f183a47e2671733ae6004c98e"
+    },
+    "probe_resource": {
+      "path": "build/streaming-tt-resources/8x4-pdn-probe-02/report.json",
+      "sha256": "f1ba6cc3a6c7170440d1994b2d5f34c329069ccb5e7ebd2c0c1c1dfc2453825f"
+    },
+    "fixed_export": {
+      "path": "build/campaigns/8x4-20261022-01/probe-export-01/report.json",
+      "sha256": "d399c91ddccbb09338f6a76f573075234e3f4e170624e869e101badd97d8414c"
+    },
+    "export_resource": {
+      "path": "build/streaming-tt-resources/8x4-probe-export-01/report.json",
+      "sha256": "607f9dde532c34d5a6ece02dcc642edaff5b0fdf5690d4112fb849b77cbe06a8"
+    },
+    "native_geometry": {
+      "path": "build/campaigns/8x4-20261022-01/probe-export-01/native-geometry.json",
+      "sha256": "88a6b6f762ff611843d6fccdc82898c208cfe8ebdd98a2c4062f50f96d7f4c21"
+    },
+    "gds_geometry": {
+      "path": "build/campaigns/8x4-20261022-01/probe-export-01/gds-geometry.json",
+      "sha256": "47561d3494cf24b8ef277a9fb7cc9eeff566a3bc6e9165286790a6c55e5ae9c9"
+    },
+    "official_pincheck": {
+      "path": "build/campaigns/8x4-20261022-01/probe-export-01/official-pincheck.json",
+      "sha256": "afcb987aac1af648c8932547009940eedfbb0bcbfbd888d0ff3cd64d9db71cb0"
+    },
+    "runtime": {
+      "path": "build/campaigns/8x4-20261022-01/intake/runtime.json",
+      "sha256": "e6d7c7887fcd55f8a01285a6398f319ae7b300049caeb2d5f83223d0990b426c"
+    }
+  },
+  "historical_failed_probe_and_rc_control_preserved": true,
+  "routing_gate": "not_run",
+  "extraction_model_qualified": false,
+  "post_pnr_equivalence_proved": false,
+  "tapeout_ready": false,
+  "boundary": "Actual8x4 floorplan/PDN/pin integration only. Public-pin geometry is separate from routed connectivity, timing, DRC, LVS, antenna, full power and final-netlist proof."
+}

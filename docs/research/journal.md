@@ -6660,3 +6660,35 @@ manifest points to retention records; ignored local bytes are not a remote
 backup, and the external runtime image was not packed. Final verified closeout
 supersedes the untouched first watchdog-absence check, which allowed too little
 time. No external submission or publication occurred.
+
+## 2026-10-23 — Official 8×4 campaign and extraction qualification gaps
+
+The approved bounded campaign passes fresh official 8×4 geometry/PDN and
+unchanged Pincheck, preserving the streaming chip and 20 ns contract. Neither
+the original route nor the sole repaired candidate completes DetailedRouting.
+Repair02 reaches an internal zero-violation route, then inserts 39 antenna
+diodes and stops near its memory guard during the next reroute. No eligible
+final target exists. A separate diagnostic reconstruction preserves its failed
+HOST adapter while fixed-data geometry analysis matches all 36 Short markers
+to actual Metal2 signal/PG intersections near new diode access. A separate
+readback matches all six spacing boxes to 0.08/0.20 µm gaps, below the retained
+Metal2 table minimum of 0.21 µm. This explains the reconstruction's 42 markers
+without identifying the historical 40 or establishing physical acceptance.
+
+Extraction work establishes limited independent M1 reference evidence and
+specific resistance/capacitance consumer mechanisms. Complete finite-wire
+pilots, broader reference convergence, untuned capacitance prediction and
+model/corner coverage remain open. No model-qualified extracted timing, fresh
+final-netlist proof/public-wire regression or final physical/official signoff
+is claimed. The [morning report](streaming-8x4-morning-report-20261023.md) records
+all separate gates, failures, unexecuted packets, source/runtime/receipt hashes
+and the remaining critical path.
+
+All 37 resource owners are terminal. Fresh exact-PID/container observations and
+source/lease rechecks close compute custody at 06:40 UTC; the exact owned
+keep-awake is stopped. Four early manual-U source-seal entries retain explicit
+current-path drift and authenticated historical Git/archive witnesses. The
+final 8×4 HOST suite passes 354 tests; 25 artifact-policy controls also pass.
+The figure is stored as documentation with exact historical-byte exceptions;
+global artifact limits and raw-evidence classification remain unchanged.
+All changes are incremental local commits; no external publication occurs.

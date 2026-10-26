@@ -1,0 +1,24 @@
+{
+  "schema": "pinwheel.streaming-8x4-foundation-reuse-milestone.v1",
+  "updated_utc": "2026-10-22T21:49:16.770124+00:00",
+  "status": "pass",
+  "scope": "explicit_same_source_historical_foundation_reuse",
+  "audit_report": {
+    "path": "build/campaigns/8x4-20261022-01/relocated-foundation-audit-01/report.json",
+    "sha256": "35840904303eea293e9c784d3d95b7133c088f6a67fc8b9184381d86fb1ec58d"
+  },
+  "producer_commit": "77966efa6c56d8b69ed49894f3b244113be807ed",
+  "historical_foundation_commit": "0644f9dc75fe5763dc8525435a1b5a0788febe39",
+  "module_count": 649,
+  "consumed_source_files": 793,
+  "runtime_producer_projection_files": 822,
+  "original_native_logs": 729,
+  "positive_library_files": 1298,
+  "excluded_negative_control_files": 1,
+  "complete_runtime_files_observed_before_and_after": 14923,
+  "native_executed_in_this_audit": false,
+  "final_correspondence_proved": false,
+  "final_wire_passed": false,
+  "tapeout_ready": false,
+  "boundary": "Original reports and receipts keep exact original paths and bytes. This scoped relocation record authenticates reuse; actual final-target proof, controls, whole audit and public-wire remain open."
+}

@@ -1,13 +1,36 @@
 # Research status
 
-Updated 2026-10-16 after the closed buffered-SRAM overnight routing campaign
-and the bounded initialized SPI source/circuit refinement. The physical record
-retains its same-source extracted timing, GDS checks and SRAM restart diagnosis.
+Updated 2026-10-26 for the curated 8×4 integration. The completed routing and
+target-specific checks are retained; extraction qualification and timing remain
+open. The earlier buffered-SRAM and digital studies below keep their original
+candidate boundaries.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
 
-## Objective and current decision
+## Current 8×4 decision
+
+Prepare the completed 8×4 baseline and nominal extraction-reference component
+for review. The [curated integration guide](streaming-8x4-curated-pr-20261026.md)
+owns the exact source boundary, preserved history, acceptance table and pending
+integration validation. Curation does not launch another autonomous campaign.
+
+Ordinary detailed routing completed from a preserved seed with zero route DRC.
+G4 correspondence and G5 physical/official checks pass on the exact f516 target;
+they do not transfer to a changed layout. The separate OpenROAD antenna check
+remains open at one net/two failing pins, and full fresh clean-start
+reproducibility remains open. The latest repair produced a new database, but
+its Tcl checker failed before accepted DRC/antenna results; no new target passed.
+
+Extraction progressed to 32/32 nominal finite-2D grids across eight cases, with
+mesh/domain changes below the unchanged 2% gates. All eight model-qualification
+rows and G3 qualified extracted timing remain open. The
+[reference checkpoint](streaming-8x4-reference-checkpoint-20261026.md) owns the
+missing physical references, stack/context/range and corner authority. Full
+model regeneration remains NO-GO. The next qualification step requires that
+independent reference package; nominal convergence alone cannot supply it.
+
+## Earlier buffered-SRAM context — 16 October 2026
 
 Make a complete chip-design iteration possible for someone without hardware
 expertise. Pinwheel's reloadable protocol engine is the test case: preserve pin
@@ -17,7 +40,7 @@ I²C as the main contracts and bounded new waveforms to challenge their shared
 abstractions; the larger iteration also retains its declared
 capacity-change gate. Competition admission remains separate.
 
-**Current physical decision: retain C14 as a routing reference; physical acceptance fails.**
+**Historical buffered-SRAM decision: retain C14 as a routing reference; physical acceptance fails.**
 The [overnight study](../physical/tt-buffered-overnight-campaign.md) and
 [result manifest](../../physical/experiments/tt-buffered-overnight-campaign-results.json)
 retain the matched original-P2 control and completed C3/C9/C14/C17 layouts.

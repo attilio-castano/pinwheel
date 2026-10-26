@@ -1,0 +1,10 @@
+{
+  "fixtures": {
+    "streaming_8x4_pg_diode_geometry.def": "2498eb81b408abe0d6d7e20c2eb006c97ca51582e5ea73b182a40729b95e3a67",
+    "streaming_8x4_pg_diode_profile.lef": "6520fcbcb1abe44f11b835339cf79413e0d3c947807b502a46e72dbc64d9a131"
+  },
+  "scope": "Exact selected geometry excerpts only; neither a full official DEF nor a complete LEF/native input.",
+  "source_cell_sha256": "c47c436758ae87288324aa1f5a84fcc8faf813bf19df1a400b32258fff4e1219",
+  "source_def_sha256": "1070e2f32d004dc379fc0306337ed6a7d6b2a4eb18d4bbd51e76212cae520cb9",
+  "source_tech_sha256": "3edd5a1ad31e8307be537d0d1b85c3258fefeb21aac04aaa476e4f72de4cffd5"
+}
