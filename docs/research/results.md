@@ -1,6 +1,6 @@
 # Research results
 
-This index records conclusions through 2026-10-26 and what could justify
+This index records conclusions through 2026-10-27 and what could justify
 reopening them. Start with [status](status.md) for the active decision, then
 choose a topic below. Each linked study owns measurements, assumptions,
 commands, and proof boundaries; the [journal](journal.md) keeps dated receipts.
@@ -37,10 +37,12 @@ independent physical reference authority.
 
 The [curated integration guide](streaming-8x4-curated-pr-20261026.md) records
 what enters active review and how the deferred campaign sources, complete Git
-history and untracked drafts are preserved. Focused integration checks pass;
-full fresh-source Python discovery fails on fixture/isolation and frozen-source
-authority seams. These checks are separate from historical hardware results. The studies below keep
-their earlier candidate identities and acceptance scopes.
+history and untracked drafts are preserved. The 27 October fixture/isolation
+repair makes complete committed-source Python discovery pass: 2,896 tests,
+35 reported skips, including 20 opt-in historical replay checks. The previous
+failed receipt remains preserved. These source checks are separate from
+historical hardware results; the studies below retain their earlier candidate
+identities and acceptance scopes.
 
 ## Physical organization, repairs, and qualification
 

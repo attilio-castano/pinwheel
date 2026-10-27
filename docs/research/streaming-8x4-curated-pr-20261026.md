@@ -41,9 +41,10 @@ does not qualify the rest of the campaign.
 
 The full committed research diff contains 69,099 added lines across 457 files.
 The earlier completed tree accounts for 51,054 lines; the selected seven sources,
-three tests and three reference documents add 2,046. The curated integration,
-including its recovery tooling and documentation, is about **54,000 added lines
-across 380 files**. The 85 deferred campaign files remain recoverable. The
+three tests and three reference documents add 2,046. The initial curated
+integration at `7352330`, including recovery tooling and documentation, had
+**54,079 added lines across 380 files**. Later review repairs add self-contained
+test inputs; they are recorded separately below. The 85 deferred campaign files remain recoverable. The
 original checkout also retains 5,367 untracked draft lines, outside either
 committed diff. The curated branch is `codex/streaming-8x4-curated` in
 `/Users/attiliocastano/.codex/worktrees/pinwheel-curated-8x4/pinwheel`.
@@ -170,11 +171,12 @@ source bytes, rewrite receipt metadata or transfer target-specific acceptance
 to make a historical reader pass. Restoring source does not constitute a fresh
 proof, physical rerun or portable hardware-evidence package.
 
-## Validation of this integration
+## Initial curation validation — 26 October 2026
 
-The code candidate is local commit
+The code candidate was local commit
 `28fd1efde94c2428fb2a3ea992a53e44f42935a7`; subsequent changes complete this
-report and its status/index links. No push or PR creation occurred.
+report and its status/index links. Those checks preceded publication of PR #17.
+This dated section retains the original failed result; current validation is below.
 
 | Curation check | Result |
 | --- | --- |
@@ -219,3 +221,88 @@ The integration is prepared for source review, with the broad validation gate
 open. No CAD, Lean proof, extraction solve or signoff campaign was launched.
 Historical execution receipts above remain historical evidence and were not
 rerun during curation.
+
+
+## Review repairs — 27 October 2026
+
+Commit `9271ffc14df36bcc5dae2ed8ec7f1cbf15951d60` repairs the two review findings.
+Portable controls now use compact committed geometry, parser and arithmetic
+inputs. Reference suites share a fixture helper rather than importing another
+discoverable test module. Exact historical plans, source captures, leases and
+execution receipts remain explicit replay checks. The new inputs include
+87,682 bytes of authenticated policy/LEF/rule/JSON fixtures, rather than the
+ignored campaign directories. Synthetic matrices and counters establish
+software behavior only; they are not physical observations.
+
+The clean-source fixture uses the original 38,068-byte publication policy,
+authenticated against the unchanged historical authority, instead of today's
+42,744-byte policy. The current policy and production admission checker remain
+unchanged. Four source-body controls now supply an explicit synthetic commit
+identity to their existing non-admitting mode, so they do not discover a parent
+Git repository. Real committed-source admission still requires its original
+Git object and byte checks.
+
+Before repair, the focused clean-source suite had two failures and two errors;
+8×4 discovery had 40 errors. After repair, the clean-source suite passes all
+19 tests in normal and optimized Python. The 8×4 suite passes 750 tests with
+22 reported skips. Historical replay requested against missing evidence fails
+with zero skips; the replay-switch controls also verify rejection of changed
+inputs. Independent review found no production-script, physical-authority,
+current-policy or numerical-threshold changes.
+
+Complete committed-source Python discovery **passes**: 2,896 tests in
+120.273 seconds, zero failures/errors and 35 explicit skips. Twenty skips are
+the opt-in historical checks; the other fifteen retain unavailable tool or
+integration prerequisites. Selected archive membership was verified before and
+after, with unchanged Python executable identity. The receipt SHA-256 is
+`4502414a93277ec9f7f11b00cfd9333784a5587072d30397f7615887c77a6ffc`.
+This closes the portable Python regression gate for this source commit; it does
+not claim historical replay, native Lean/CAD validation or physical acceptance.
+
+Focused logs are under `build/validation/review-fixes-20261027-01/`; the new
+committed-source receipt belongs to
+`build/validation/review-fixes-8x4-20261027-01/report.json`.
+
+Portable discovery uses the standard command, with no campaign build outputs:
+
+```sh
+python3 -B -m unittest discover -s test -p 'test_*.py'
+```
+
+Historical replay is a separate explicit request:
+
+```sh
+PINWHEEL_RUN_HISTORICAL_TESTS=1 python3 -B -m unittest discover -s test -p 'test_streaming_8x4*.py'
+```
+
+The explicit replay runs the original checks and fails if their authenticated
+inputs are absent or changed. It does not relocate machine-specific paths or
+launch a new CAD, proof or numerical campaign. Default historical skips must
+remain visible in reports; portable success supplies no replay or physical
+acceptance claim.
+
+## Next workflow-debt cleanup boundary
+
+The causal problem is shared context: current software controls, immutable
+historical replay and expensive physical acceptance have depended on the same
+checkout and campaign directories. The repair separates the first two at the
+test boundary. Further cleanup should keep that separation explicit:
+
+1. Maintain one documented portable discovery command and one explicit replay
+   mode. Require the committed-source archive check in the PR validation path;
+   keep its skip inventory. Stop at a reproducible source regression gate.
+2. Resolve historical inputs through their existing immutable source/evidence
+   owners, while current code evolves normally. Never reseal an old receipt to
+   accept today's bytes. Stop after demonstrating recovery and rejection on one
+   representative old workflow, not after building a new archive framework.
+3. For one future active preparation/readback operation, replace source-string
+   rewriting and patched shared globals with explicit input/context arguments.
+   Require equivalent ordering, units, error handling and admission decisions on
+   positive and negative controls. Stop after that one operation; preserve old
+   adapters for historical replay rather than refactoring the entire archive.
+
+The retained tree has 192 `streaming_8x4` script modules, including 19 combining
+runtime compilation and source-text transformation. Those counts identify where
+to inspect, not a deletion target or proof of incorrectness. The objective is a
+shorter reliable iteration loop. It does not supply missing CMOS5L references,
+corner authority or qualified extracted timing.

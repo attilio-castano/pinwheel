@@ -1,6 +1,6 @@
 # Research status
 
-Updated 2026-10-26 for the curated 8×4 integration. The completed routing and
+Updated 2026-10-27 after the curated 8×4 test-portability repairs. The completed routing and
 target-specific checks are retained; extraction qualification and timing remain
 open. The earlier buffered-SRAM and digital studies below keep their original
 candidate boundaries.
@@ -13,7 +13,10 @@ linked studies for measurements and reproduction.
 Prepare the completed 8×4 baseline and nominal extraction-reference component
 for review. The [curated integration guide](streaming-8x4-curated-pr-20261026.md)
 owns the exact source boundary, preserved history, acceptance table and recorded
-integration validation. The focused checks pass; full Python discovery remains failed. Curation does not launch another autonomous campaign.
+integration validation. Full committed-source Python discovery now passes
+2,896 tests with 35 reported skips, including 20 explicit historical replay
+checks. Those replay, native-tool and physical gates remain separate. No new
+autonomous campaign was launched.
 
 Ordinary detailed routing completed from a preserved seed with zero route DRC.
 G4 correspondence and G5 physical/official checks pass on the exact f516 target;
