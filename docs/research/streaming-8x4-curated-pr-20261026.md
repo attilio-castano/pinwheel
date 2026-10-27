@@ -234,6 +234,11 @@ execution receipts remain explicit replay checks. The new inputs include
 ignored campaign directories. Synthetic matrices and counters establish
 software behavior only; they are not physical observations.
 
+The authenticated `retained-rules.txt` fixture preserves 17 trailing-space
+lines from its original parameter bytes. Whole-diff whitespace checks report
+those lines and the earlier LEF fixture's blank final line; neither input was
+reformatted to silence the check.
+
 The clean-source fixture uses the original 38,068-byte publication policy,
 authenticated against the unchanged historical authority, instead of today's
 42,744-byte policy. The current policy and production admission checker remain
