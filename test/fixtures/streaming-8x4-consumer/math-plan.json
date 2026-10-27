@@ -1,0 +1,322 @@
+{
+  "LEF_inventory": {
+    "explicit_vias": {
+      "TopVia1EWNS": {
+        "cut_bbox_um": [
+          "-0.21",
+          "-0.21",
+          "0.21",
+          "0.21"
+        ],
+        "cut_count": 1,
+        "cut_layer": "TopVia1",
+        "resistance_ohm": "4.0"
+      },
+      "Via1_DC1B": {
+        "cut_bbox_um": [
+          "-0.095",
+          "-0.095",
+          "0.095",
+          "0.505"
+        ],
+        "cut_count": 2,
+        "cut_layer": "Via1",
+        "resistance_ohm": "20.0"
+      },
+      "Via1_XX": {
+        "cut_bbox_um": [
+          "-0.095",
+          "-0.095",
+          "0.095",
+          "0.095"
+        ],
+        "cut_count": 1,
+        "cut_layer": "Via1",
+        "resistance_ohm": "20.00"
+      },
+      "Via2_XX": {
+        "cut_bbox_um": [
+          "-0.095",
+          "-0.095",
+          "0.095",
+          "0.095"
+        ],
+        "cut_count": 1,
+        "cut_layer": "Via2",
+        "resistance_ohm": "20.00"
+      },
+      "Via3_XX": {
+        "cut_bbox_um": [
+          "-0.095",
+          "-0.095",
+          "0.095",
+          "0.095"
+        ],
+        "cut_count": 1,
+        "cut_layer": "Via3",
+        "resistance_ohm": "20.00"
+      }
+    }
+  },
+  "corners": {
+    "MAX": {
+      "via_per_cut_R": {
+        "TopVia1": "4",
+        "Via1": "20",
+        "Via2": "20",
+        "Via3": "20"
+      },
+      "wire_sheet_R": {
+        "Metal1": "0.135",
+        "Metal2": "0.103",
+        "Metal3": "0.103",
+        "Metal4": "0.103",
+        "TopMetal1": "0.021"
+      }
+    },
+    "MIN": {
+      "via_per_cut_R": {
+        "TopVia1": "1",
+        "Via1": "5",
+        "Via2": "5",
+        "Via3": "5"
+      },
+      "wire_sheet_R": {
+        "Metal1": "0.085",
+        "Metal2": "0.073",
+        "Metal3": "0.073",
+        "Metal4": "0.073",
+        "TopMetal1": "0.015"
+      }
+    },
+    "TYP": {
+      "via_per_cut_R": {
+        "TopVia1": "2.2",
+        "Via1": "9",
+        "Via2": "9",
+        "Via3": "9"
+      },
+      "wire_sheet_R": {
+        "Metal1": "0.110",
+        "Metal2": "0.088",
+        "Metal3": "0.088",
+        "Metal4": "0.088",
+        "TopMetal1": "0.018"
+      }
+    }
+  },
+  "fixture_rows": [
+    {
+      "name": "Metal1_L50",
+      "segments": [
+        [
+          "Metal1",
+          "50",
+          "0.16"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal1_L100",
+      "segments": [
+        [
+          "Metal1",
+          "100",
+          "0.16"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal2_L50",
+      "segments": [
+        [
+          "Metal2",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal2_L100",
+      "segments": [
+        [
+          "Metal2",
+          "100",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal3_L50",
+      "segments": [
+        [
+          "Metal3",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal3_L100",
+      "segments": [
+        [
+          "Metal3",
+          "100",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal4_L50",
+      "segments": [
+        [
+          "Metal4",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal4_L100",
+      "segments": [
+        [
+          "Metal4",
+          "100",
+          "0.20"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "TopMetal1_L50",
+      "segments": [
+        [
+          "TopMetal1",
+          "50",
+          "1.64"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "TopMetal1_L100",
+      "segments": [
+        [
+          "TopMetal1",
+          "100",
+          "1.64"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal1_wide_L100",
+      "segments": [
+        [
+          "Metal1",
+          "100",
+          "0.32"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Metal2_wide_L100",
+      "segments": [
+        [
+          "Metal2",
+          "100",
+          "0.40"
+        ]
+      ],
+      "via": null
+    },
+    {
+      "name": "Via1_XX",
+      "segments": [
+        [
+          "Metal1",
+          "50",
+          "0.16"
+        ],
+        [
+          "Metal2",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": "Via1_XX"
+    },
+    {
+      "name": "Via1_DC1B",
+      "segments": [
+        [
+          "Metal1",
+          "50",
+          "0.16"
+        ],
+        [
+          "Metal2",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": "Via1_DC1B"
+    },
+    {
+      "name": "Via2_XX",
+      "segments": [
+        [
+          "Metal2",
+          "50",
+          "0.20"
+        ],
+        [
+          "Metal3",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": "Via2_XX"
+    },
+    {
+      "name": "Via3_XX",
+      "segments": [
+        [
+          "Metal3",
+          "50",
+          "0.20"
+        ],
+        [
+          "Metal4",
+          "50",
+          "0.20"
+        ]
+      ],
+      "via": "Via3_XX"
+    },
+    {
+      "name": "TopVia1EWNS",
+      "segments": [
+        [
+          "Metal4",
+          "50",
+          "0.20"
+        ],
+        [
+          "TopMetal1",
+          "50",
+          "1.64"
+        ]
+      ],
+      "via": "TopVia1EWNS"
+    }
+  ]
+}

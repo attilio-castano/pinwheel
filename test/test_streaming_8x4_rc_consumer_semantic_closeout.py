@@ -1,5 +1,7 @@
 """HOST exact command adaptation and separate failed-resource custody controls."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 import json
 from pathlib import Path
 import sys
@@ -16,6 +18,7 @@ class SemanticCloseoutControls(unittest.TestCase):
         return X.proposal(X.BASE / 'rc-consumer-ndr-command-proposal-01.json',
             X.BASE / 'rc-consumer-semantic-preparation-01', require_fresh=False)
 
+    @historical_evidence
     def test_only_five_command_identity_tokens_change_and_all_resources_stay(self):
         old = X.OLD.checked_proposal(X.BASE / 'rc-consumer-ndr-command-proposal-01.json'); new = self.record()
         self.assertEqual(len(new['argv']), len(old['argv']))
@@ -38,7 +41,7 @@ class SemanticCloseoutControls(unittest.TestCase):
                 inherited_supervisor_sha256=supervisor))
 
     def test_failed_numeric_worker_can_close_custody_without_numeric_promotion(self):
-        record = self.record(); worker = dict(schema='pinwheel.streaming-8x4-rc-consumer-route-execution.v1',
+        record = F.resource_record(ROOT); worker = dict(schema='pinwheel.streaming-8x4-rc-consumer-route-execution.v1',
             plan_sha256=X.PLAN_SHA, passed=False, qualified=False, model_qualified=False)
         with tempfile.TemporaryDirectory() as temporary:
             p = Path(temporary) / 'proposal.json'; p.write_text(json.dumps(record))
@@ -51,7 +54,7 @@ class SemanticCloseoutControls(unittest.TestCase):
                 with self.assertRaises(ValueError): X.resource_facts(resource, record, p, worker)
 
     def test_launch_reopen_binds_exact_root_lease_and_separate_raw_outputs(self):
-        record = self.record()
+        record = F.resource_record(ROOT)
         with tempfile.TemporaryDirectory() as temporary:
             p = Path(temporary) / 'proposal.json'; p.write_text(json.dumps(record))
             packet = X.launch_reopen(p, record); argv = packet['resource_supervisor_argv']

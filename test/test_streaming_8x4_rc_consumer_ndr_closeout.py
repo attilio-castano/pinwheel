@@ -1,5 +1,7 @@
 """HOST proposal/resource/error-preservation controls; no Native command runs."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 import json
 from pathlib import Path
 import sys
@@ -26,6 +28,7 @@ class NDRCloseout(unittest.TestCase):
                 wrapper_sha256=W.N.C.P.sha(W.ROOT/'scripts/streaming_8x4_acceptance_resources.py'),
                 inherited_supervisor_sha256=supervisor))
 
+    @historical_evidence
     def test_real_frozen_proposal_changes_exactly_five_identity_tokens(self):
         result=self.proposal();old=json.loads((W.BASE/'rc-consumer-units-command-proposal-01.json').read_text())
         self.assertEqual(sum(a!=b for a,b in zip(result['argv'],old['argv'])),5)
@@ -37,7 +40,7 @@ class NDRCloseout(unittest.TestCase):
         self.assertFalse(result['admitted']);self.assertFalse(result['native_executed'])
 
     def test_numeric_failure_still_has_separate_exact_resource_custody(self):
-        record=self.proposal()
+        record=F.resource_record(W.ROOT)
         worker=dict(schema='pinwheel.streaming-8x4-rc-consumer-DEF-NDR-execution.v1',plan_sha256=W.PLAN_SHA,
             passed=False,qualified=False,model_qualified=False)
         with tempfile.TemporaryDirectory() as temporary:

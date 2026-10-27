@@ -1,5 +1,7 @@
 """HOST controls for real unit-correct fixture and separate DEF-local NDRs."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 from pathlib import Path
 import shutil
 import sys
@@ -17,11 +19,24 @@ BASE=ROOT/'build/campaigns/8x4-20261022-01/rc-consumer-units-preparation-01/cons
 
 class NDRControls(unittest.TestCase):
     def setUp(self):
-        self.original=(BASE/'fixture.def').read_text();self.tech=(BASE/'tech.lef').read_text()
-        self.widths=(BASE/'widths.lef').read_text()
+        self.original=F.original_def();self.tech=F.tech()
+        self.widths=F.widths()
         self.rows=N.C.fixtures({'explicit_vias':{name:{'cut_layer':layer} for name,layer in
             zip(N.C.VIA_FIXTURES,('Via1','Via1','Via2','Via3','TopVia1'))}})
 
+    def test_compact_math_fixture_authentication_rejects_changed_bytes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            source = F.FIXTURES / 'math-plan.json'
+            target = directory / source.name
+            target.write_bytes(source.read_bytes())
+            with patch.object(F, 'FIXTURES', directory):
+                self.assertEqual(len(F.consumer_plan()['fixture_rows']), 17)
+                target.write_bytes(target.read_bytes() + b'\n')
+                with self.assertRaisesRegex(ValueError, 'fixture bytes changed'):
+                    F.consumer_plan()
+
+    @historical_evidence
     def test_actual_source_confirms_library_default_and_complete_block_rules(self):
         evidence=ROOT/'build/campaigns/8x4-20261022-01/rc-ndr-source-intake-01'
         self.assertEqual(len(N.source_evidence(evidence)),6)

@@ -87,11 +87,12 @@ class IsolationControls(unittest.TestCase):
         self.assertEqual(I.REDERIVE_SECONDS,600)
 
     def test_new_body_globals_and_sources_are_separate_without_loading_generator(self):
+        # This hash/body control supplies an identity; committed admission is separate.
         self.assertIs(X.M,I.M);self.assertIsNot(X.positive,I.PRIOR.positive)
         self.assertIs(X.positive.__globals__['ISOLATION'],I)
         self.assertNotIn('ISOLATION',I.PRIOR.positive.__globals__)
         self.assertEqual(Path(X.source_seal.__globals__['__file__']).resolve(),Path(X.__file__).resolve())
-        seal=I.sources();self.assertEqual(len(seal['sha256']),len(set(seal['sha256'])))
+        seal=I.sources(commit='a'*40);self.assertEqual(len(seal['sha256']),len(set(seal['sha256'])))
         for name in (I.OWN,I.ENTRY,I.OBSERVER,I.DIAGNOSTIC):self.assertIn(name,seal['sha256'])
         self.assertNotIn('_streaming8_actual_M_generator',sys.modules)
         with self.assertRaises(ValueError):I.sources(commit='not-an-immutable-commit')

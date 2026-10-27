@@ -7,33 +7,18 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from historical_evidence import historical_evidence
+from streaming_8x4_reference_fixtures import reference_plan, reference_rows, cgroup_snapshot as cg
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'scripts'))
 import streaming_8x4_rc_reference_expanded as W
 import streaming_8x4_rc_reference_expanded_readback as R
 B=ROOT/'build/campaigns/8x4-20261022-01'
-OLD=json.loads((B/'rc-reference-only-preparation-02/plan.json').read_text())
-PLAN=dict(OLD,grid_inventory=W.grid_inventory(OLD['cases']),protocol=W.protocol(OLD))
+OLD=reference_plan()
+PLAN=reference_plan(expanded=True)
 
 
 def fake_rows():
-    rows=[]
-    for index,job in enumerate(W.jobs(PLAN)):
-        case=next(c for c in PLAN['cases'] if c['name']==job['case']);n=len(case['rectangles'])
-        matrix=[[1e-10]] if n==1 else [[2e-10,-1e-10],[-1e-10,2e-10]]
-        grid=next(g for g in PLAN['grid_inventory'] if (g['case'],g['step_um'],g['extent_um'])==(job['case'],job['step'],job['extent']))
-        row=dict(schema='pinwheel.streaming-8x4-rc-layered-reference.v1',qualified=False,continuum_error_enclosure=False,
-            names=[r['name'] for r in case['rectangles']],rectangles=[dict(name=r['name'],bounds_um=list(map(float,r['bounds_um']))) for r in case['rectangles']],
-            epsilon_layers=[list(map(float,r)) for r in case['epsilon_layers']],mesh_step_um=float(job['step']),extent_um=float(job['extent']),
-            matrix_F_per_m=matrix,ground_C_F_per_m=[sum(r) for r in matrix],coupling_C_F_per_m=None if n==1 else 1e-10,
-            excitations=[dict(name=r['name'],true_residual_relative=1e-10,cg_iterations=40,energy_flux_relative_error=1e-9) for r in case['rectangles']],
-            nodes=grid['nodes'],unknown_nodes=grid['nodes']-100,reciprocity_relative_error=0.,wall_seconds=1.)
-        rows.append(dict(index=index,job=job,resource_feasible=True,numeric_passed=True,kernel_row=row))
-    return rows
-
-
-def cg():
-    return dict(memory_current=1000,memory_peak=2000,memory_max=2147483648,memory_swap_max=0,pids_max=128,cpu_max='100000 100000',
-        memory_events=dict(max=0,oom=0,oom_kill=0),memory_events_local=dict(max=0,oom=0,oom_kill=0))
+    return reference_rows(PLAN)
 
 
 class ExpandedControls(unittest.TestCase):
@@ -57,19 +42,23 @@ class ExpandedControls(unittest.TestCase):
     def test_exact32_new_grids_and_reviewed_storage_under_same_guard(self):
         grids=W.grid_inventory(OLD['cases']);self.assertEqual(len(grids),32)
         self.assertEqual({r['extent_um'] for r in grids},{'32','64'})
+        keys=('case','step_um','extent_um','nodes','nx','ny')
+        self.assertEqual([{k:g[k] for k in keys} for g in grids],PLAN['grid_inventory'])
         self.assertEqual(max(r['nodes'] for r in grids),68817);self.assertEqual(sum(r['nodes'] for r in grids),1045176)
         budget=W.storage_admission(OLD);self.assertEqual(budget['conservative_total_bytes'],1549533184)
         self.assertEqual(budget['headroom_bytes'],597950464);self.assertFalse(budget['measured_RSS'])
         self.assertGreater(budget['headroom_below95percent_guard_bytes'],0)
         self.assertEqual(W.policy()['maximum_nodes'],70000)
 
+    @historical_evidence
     def test_old_kernel_parent_case_and_tolerances_stay_frozen(self):
-        W.O.verify(B/'rc-reference-only-preparation-02',W.BASELINE)
+        parent=W.O.verify(B/'rc-reference-only-preparation-02',W.BASELINE)
         approved=json.loads((B/'rc-reference-expanded-proposal-02.json').read_text())
-        self.assertEqual(approved['cases'],OLD['cases']);self.assertEqual(approved['grid_inventory'],PLAN['grid_inventory'])
+        self.assertEqual(parent['cases'],OLD['cases']);self.assertEqual(approved['cases'],OLD['cases'])
+        self.assertEqual(approved['grid_inventory'],W.grid_inventory(parent['cases']))
         self.assertEqual(approved['superseded_proposal01_sha256'],'49b93e1a0d5225dbcb11a469d72ce2966600c418d55c4d74e40438c06c63b9a6')
         for key in ('true_residual_relative_tolerance','energy_flux_relative_tolerance','maximum_reference_mesh_change','maximum_reference_domain_change'):
-            self.assertEqual(PLAN['protocol'][key],OLD['protocol'][key])
+            self.assertEqual(PLAN['protocol'][key],parent['protocol'][key])
 
     def test_full_actual_geometry_nodes_excitation_and_residual_gates(self):
         for leaf in fake_rows():W.validate_row(PLAN,leaf['job'],leaf['kernel_row'])

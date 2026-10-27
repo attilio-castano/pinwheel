@@ -1,0 +1,59 @@
+{
+  "schema": "pinwheel.streaming-8x4-rc-consumer-DEF-NDR-witness.v1",
+  "DBU_per_um": 1000,
+  "block_declarations": 2,
+  "rules": {
+    "WIDE_Metal1": {
+      "Metal1": {
+        "width_dbu": 320,
+        "spacing_dbu": 210
+      },
+      "Metal2": {
+        "width_dbu": 200,
+        "spacing_dbu": 0
+      },
+      "Metal3": {
+        "width_dbu": 200,
+        "spacing_dbu": 0
+      },
+      "Metal4": {
+        "width_dbu": 200,
+        "spacing_dbu": 0
+      },
+      "TopMetal1": {
+        "width_dbu": 1640,
+        "spacing_dbu": 0
+      }
+    },
+    "WIDE_Metal2": {
+      "Metal1": {
+        "width_dbu": 160,
+        "spacing_dbu": 0
+      },
+      "Metal2": {
+        "width_dbu": 400,
+        "spacing_dbu": 210
+      },
+      "Metal3": {
+        "width_dbu": 200,
+        "spacing_dbu": 0
+      },
+      "Metal4": {
+        "width_dbu": 200,
+        "spacing_dbu": 0
+      },
+      "TopMetal1": {
+        "width_dbu": 1640,
+        "spacing_dbu": 0
+      }
+    }
+  },
+  "coordinate_pairs_unchanged": 148,
+  "all_non_declaration_bytes_unchanged": true,
+  "all17_net_and_route_bytes_unchanged": true,
+  "selected_widths_and_spacings_equal_original_LEF_intent": true,
+  "unused_layer_widths_from_actual_technology": true,
+  "unused_layer_spacing_overrides": false,
+  "complete_native_DEF_NDR_readback_required": true,
+  "qualified": false
+}

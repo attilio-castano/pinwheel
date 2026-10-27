@@ -138,13 +138,14 @@ class ProcessStateControls(unittest.TestCase):
             with self.assertRaises(ValueError):P.verify_startup(path,changed,label='driver-startup')
 
     def test_all_operational_helpers_use_new_state_globals_without_old_mutation(self):
+        # This hash/body control supplies an identity; committed admission is separate.
         for name in ('rederive','run_rederive','verify_rederive','verify_memory'):
             self.assertIs(getattr(S,name).__globals__['PROCESS'],P,name)
             self.assertIs(getattr(S.PREVIOUS,name).__globals__['PROCESS'],OLD,name)
         self.assertIs(X.ISOLATION,S);self.assertIs(X.compile_one.__globals__['PROCESS'],P)
         self.assertIsNot(X.positive,S.PREVIOUS.PRIOR.positive)
         self.assertEqual(X.budget_policy(),S.PREVIOUS.PRIOR.budget_policy())
-        files=S.sources()['sha256']
+        files=S.sources(commit='a'*40)['sha256']
         for name in (*S.FROZEN_PROCESS_SOURCES,S.OWN,S.ENTRY,S.OBSERVER):self.assertIn(name,files)
         with patch.dict(S.FROZEN_PROCESS_SOURCES,{S.PREVIOUS.OBSERVER:'0'*64}):
             with self.assertRaises(ValueError):S.body_source()

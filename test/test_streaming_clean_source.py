@@ -18,6 +18,20 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = Path(os.environ.get('PINWHEEL_CLEAN_TEST_ROOT', ROOT)).resolve()
+HISTORICAL_POLICY = ROOT/'test/fixtures/clean-source-v1/artifact-policy.json'
+
+
+def historical_policy_bytes(authority, fixture=HISTORICAL_POLICY):
+    """Keep the old checkout independent of the current publication policy."""
+    fixture = Path(fixture)
+    if not fixture.is_file() or fixture.is_symlink():
+        raise ValueError('Missing or aliased historical clean-source policy fixture')
+    raw = fixture.read_bytes(); row = authority['admitted_additions']['tools/artifact-policy.json']
+    blob = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+    if (len(raw) != row['bytes'] or hashlib.sha256(raw).hexdigest() != row['sha256'] or
+            blob != row['git_blob'] or row['git_mode'] != '100644'):
+        raise ValueError('Historical clean-source policy fixture differs from authority')
+    return raw
 
 
 def git(root, *args):
@@ -44,7 +58,8 @@ class CleanSourceTests(unittest.TestCase):
         for name in names:
             source = ROOT/name if (ROOT/name).exists() else SOURCE/name
             target = cls.original/name; target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(source.read_bytes())
+            raw = historical_policy_bytes(authority) if name == 'tools/artifact-policy.json' else source.read_bytes()
+            target.write_bytes(raw)
             target.chmod(0o755 if rows.get(name, {}).get('git_mode') == '100755' else 0o644)
         git(cls.original, 'init', '-q', '-b', 'source')
         git(cls.original, 'config', 'user.name', 'Source fixture')
@@ -105,6 +120,14 @@ class CleanSourceTests(unittest.TestCase):
     def test_policy_mutation_is_not_admitted(self):
         p = self.repo/'tools/artifact-policy.json'; p.write_bytes(p.read_bytes() + b'\n')
         with self.assertRaisesRegex(ValueError, 'Unreviewed selected source'): self.S.admit(self.repo, self.commit())
+
+    def test_historical_policy_fixture_is_selected_and_corruption_is_refused(self):
+        authority = json.loads((ROOT/'physical/validation/clean-source-v1.json').read_bytes())
+        raw = historical_policy_bytes(authority)
+        self.assertEqual((self.repo/'tools/artifact-policy.json').read_bytes(), raw)
+        fixture = self.repo/'corrupted-policy.json'; fixture.write_bytes(raw + b'\n')
+        with self.assertRaisesRegex(ValueError, 'fixture differs from authority'):
+            historical_policy_bytes(authority, fixture)
 
     def test_extra_generator_or_test_lean_is_not_admitted(self):
         for name in ('scripts/unreviewed.py', 'scripts/unreviewed.template', 'test/Unreviewed.lean'):

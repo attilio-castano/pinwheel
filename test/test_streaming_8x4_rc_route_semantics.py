@@ -1,5 +1,7 @@
 """HOST controls using exact captured Native before/after serialization bytes."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 import hashlib
 import json
 from pathlib import Path
@@ -18,10 +20,9 @@ class RouteSemanticsControls(unittest.TestCase):
     def setUpClass(cls):
         cls.before = (ROOT / 'test/fixtures/streaming-8x4-rc-ndr-before-20261023.def').read_text()
         cls.after = (ROOT / 'test/fixtures/streaming-8x4-rc-ndr-after-20261023.def').read_text()
-        inputs = B / 'rc-consumer-ndr-preparation-01/consumer-inputs'
-        cls.tech = (inputs / 'tech.lef').read_text()
-        cls.rows = json.loads((inputs / 'plan.json').read_text())['fixture_rows']
-        cls.witness = json.loads((inputs.parent / 'NDR-witness.json').read_text())
+        cls.tech = F.tech()
+        cls.rows = F.consumer_plan()['fixture_rows']
+        cls.witness = F.ndr_witness()
 
     def compare(self, before=None, after=None):
         return S.compare(self.before if before is None else before, self.after if after is None else after,
@@ -45,6 +46,7 @@ class RouteSemanticsControls(unittest.TestCase):
             self.assertEqual(row['bytes'], len(data)); self.assertEqual(row['sha256'], hashlib.sha256(data).hexdigest())
             self.assertEqual(row['git_mode'], '100644')
 
+    @historical_evidence
     def test_pinned_reader_writer_sources_and_via_exit_semantics(self):
         row = S.source_evidence(B / 'rc-route-source-intake-01', B / 'rc-ndr-source-intake-01')
         self.assertEqual(row['openroad_commit'], S.N.COMMIT)

@@ -1,5 +1,7 @@
 """Focused HOST marker controls; no Native or field solve."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 from decimal import Decimal as D
 import hashlib
 import inspect
@@ -38,7 +40,7 @@ def values(k='.001'):
 
 class MarkerControls(unittest.TestCase):
     def test_one_exact_token_only_and_actual_hash(self):
-        original=(B/'rc-cap-all-layers-preparation-01/rules.txt').read_bytes();changed=W.marker(original)
+        original=F.rules();changed=W.marker(original)
         anchor=b'Metal 1 DIAGUNDER 2\nDIST count 10 width 0.16\n0 0 0.000001 0\n'
         self.assertEqual(changed.replace(anchor,anchor.replace(b'0.000001',b'0')),original)
         self.assertEqual(hashlib.sha256(changed).hexdigest(),W.MARKER_HASH)
@@ -105,6 +107,7 @@ class MarkerControls(unittest.TestCase):
         self.assertIn('-version 1.0 -coupling_threshold 0',W.A.tcl());self.assertNotIn('-lef_res',W.A.tcl())
         self.assertEqual(W.protocol()['command_version'],'1.0')
 
+    @historical_evidence
     def test_exact_source_intakes_and_physical_stack(self):
         for name,source in [('marker-source','rc-cap-marker-source-intake-01'),('model-source','rc-cap-causal-source-intake-01'),('dispatch-source','rc-consumer-source-intake-01')]:
             with tempfile.TemporaryDirectory() as temp:

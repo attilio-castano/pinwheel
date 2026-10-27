@@ -6,47 +6,32 @@ from pathlib import Path
 import tempfile
 import unittest
 from unittest.mock import patch
+from historical_evidence import historical_evidence
+from streaming_8x4_reference_fixtures import reference_plan, reference_rows as fake_rows, cgroup_snapshot as cg
 ROOT = Path(__file__).resolve().parents[1]
 def module(name):
     spec=importlib.util.spec_from_file_location(name,ROOT/'scripts'/(name+'.py'))
     value=importlib.util.module_from_spec(spec);spec.loader.exec_module(value);return value
 W=module('streaming_8x4_rc_reference_only');R=module('streaming_8x4_rc_reference_only_readback')
-OLD=json.loads((ROOT/'build/campaigns/8x4-20261022-01/rc-all-layers-preparation-02/plan.json').read_text())
-
-
-def fake_rows(plan):
-    rows=[]
-    for index,job in enumerate(W.jobs(plan)):
-        case=next(c for c in plan['cases'] if c['name']==job['case']);n=len(case['rectangles'])
-        matrix=[[1e-10]] if n==1 else [[2e-10,-1e-10],[-1e-10,2e-10]]
-        grid=next(g for g in plan['grid_inventory'] if (g['case'],g['step_um'],g['extent_um'])==(job['case'],job['step'],job['extent']))
-        row={'schema':'pinwheel.streaming-8x4-rc-layered-reference.v1','qualified':False,'continuum_error_enclosure':False,
-            'names':[r['name'] for r in case['rectangles']],
-            'rectangles':[{'name':r['name'],'bounds_um':list(map(float,r['bounds_um']))} for r in case['rectangles']],
-            'epsilon_layers':[list(map(float,r)) for r in case['epsilon_layers']],
-            'mesh_step_um':float(job['step']),'extent_um':float(job['extent']),
-            'matrix_F_per_m':matrix,'ground_C_F_per_m':[sum(r) for r in matrix],
-            'coupling_C_F_per_m':None if n==1 else 1e-10,
-            'excitations':[{'name':r['name'],'true_residual_relative':1e-10,'cg_iterations':40,'energy_flux_relative_error':1e-9} for r in case['rectangles']],
-            'nodes':grid['nodes'],'unknown_nodes':grid['nodes']-100,'reciprocity_relative_error':0.,'wall_seconds':1.}
-        rows.append({'index':index,'job':job,'resource_feasible':True,'numeric_passed':True,'kernel_row':row})
-    return rows
-
-
-def cg():
-    return {'memory_current':1000,'memory_peak':2000,'memory_max':2147483648,'memory_swap_max':0,
-        'pids_max':128,'cpu_max':'100000 100000','memory_events':{'max':0,'oom':0,'oom_kill':0},
-        'memory_events_local':{'max':0,'oom':0,'oom_kill':0}}
-
+OLD=reference_plan()
 
 class ReferenceOnlyControls(unittest.TestCase):
     def test_exact_eight_cases_32_grids_and_unchanged_operator(self):
-        self.assertEqual(W.E.sha(ROOT/'build/campaigns/8x4-20261022-01/rc-all-layers-preparation-02/plan.json'),W.BASELINE)
         self.assertEqual(len(W.jobs(OLD)),32);self.assertEqual(len({tuple(r.values()) for r in W.jobs(OLD)}),32)
-        self.assertEqual(W.A.grid_inventory(OLD['cases']),OLD['grid_inventory'])
+        keys=('case','step_um','extent_um','nodes','nx','ny')
+        actual=W.A.grid_inventory(OLD['cases'])
+        self.assertEqual([{k:g[k] for k in keys} for g in actual],OLD['grid_inventory'])
+        self.assertTrue(all(g['exact_material_and_conductor_anchors_present'] and g['minimum_dx_um']>0 and g['minimum_dy_um']>0 for g in actual))
+        self.assertEqual(sum(g['nodes'] for g in actual),893444)
         self.assertEqual(W.A.operator_derivation(),OLD['FVM_derivation'])
         self.assertLess(max(g['nodes'] for g in OLD['grid_inventory']),65000)
         self.assertFalse(W.policy()['BEM_prerequisite_required']);self.assertFalse(W.policy()['finite_BEM_passed'])
+
+    @historical_evidence
+    def test_exact_historical_plan_identity(self):
+        path=ROOT/'build/campaigns/8x4-20261022-01/rc-all-layers-preparation-02/plan.json'
+        self.assertEqual(W.E.sha(path),W.BASELINE)
+        self.assertEqual(json.loads(path.read_text())['cases'],OLD['cases'])
 
     def test_transitive_sources_cover_reference_and_resource_consumers(self):
         sources=W.sources()
@@ -149,6 +134,7 @@ class ReferenceOnlyControls(unittest.TestCase):
                         row['numeric_passed']=True;(owner/'dispatch.json').write_text(json.dumps(row))
                         with self.assertRaises(ValueError):R.dispatch(OLD,'pin',0,owner)
 
+    @historical_evidence
     def test_actual_current_guard_lease_receipt_and_foreign_supervisor_rejection(self):
         b=ROOT/'build/campaigns/8x4-20261022-01'
         resource=ROOT/'build/streaming-tt-resources/8x4-rc-incore-two-leaf-01/report.json'

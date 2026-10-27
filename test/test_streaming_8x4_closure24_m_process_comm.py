@@ -140,11 +140,12 @@ class CommControls(unittest.TestCase):
             self.assertEqual(records[1]['stdout'],capture['stdout']);self.assertEqual(records[2]['event'],'observer-error')
 
     def test_operational_globals_and_sources_are_fresh_without_old_mutation(self):
+        # This hash/body control supplies an identity; committed admission is separate.
         for name in ('rederive','run_rederive','verify_rederive','verify_memory'):
             self.assertIs(getattr(I,name).__globals__['PROCESS'],P)
             self.assertIs(getattr(OLDI,name).__globals__['PROCESS'],OLD)
         self.assertIs(X.compile_one.__globals__['PROCESS'],P);self.assertIs(X.ISOLATION,I)
-        for name in (*I.FROZEN_PROCESS_SOURCES,I.OWN,I.ENTRY,I.OBSERVER):self.assertIn(name,I.sources()['sha256'])
+        for name in (*I.FROZEN_PROCESS_SOURCES,I.OWN,I.ENTRY,I.OBSERVER):self.assertIn(name,I.sources(commit='a'*40)['sha256'])
         with patch.dict(I.FROZEN_PROCESS_SOURCES,{OLDI.OBSERVER:'0'*64}):
             with self.assertRaises(ValueError):I.body_source()
 

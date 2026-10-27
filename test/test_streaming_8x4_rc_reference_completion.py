@@ -7,16 +7,18 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from historical_evidence import historical_evidence
+from streaming_8x4_reference_fixtures import reference_plan, reference_rows, cgroup_snapshot as cg
 ROOT=Path(__file__).resolve().parents[1];sys.path[:0]=[str(ROOT/'scripts'),str(ROOT/'test')]
 import streaming_8x4_rc_reference_completion as W
 import streaming_8x4_rc_reference_completion_readback as R
-import test_streaming_8x4_rc_reference_expanded as T
+PLAN=reference_plan(expanded=True)
 B=ROOT/'build/campaigns/8x4-20261022-01'
 
 
 class CompletionControls(unittest.TestCase):
     def test_exact_global_suffix_is_every_unfinished_original_case(self):
-        parent=W.X.verify(B/'rc-reference-expanded-preparation-02',W.PARENT)
+        parent=PLAN
         self.assertEqual(W.INDICES,[27,28,29,30,31])
         calls=[W.jobs(parent)[i] for i in W.INDICES]
         self.assertEqual(calls[0],dict(case='TYP-Metal3-Metal4-centered',step='.02',extent='64'))
@@ -25,6 +27,13 @@ class CompletionControls(unittest.TestCase):
             self.assertEqual(W.policy()[key],W.X.policy()[key])
         self.assertEqual((W.policy()['seconds_per_leaf'],W.policy()['work_seconds'],W.policy()['outer_seconds']),(180,1050,1110))
 
+    @historical_evidence
+    def test_actual_historical_parent_plan_matches_portable_cases(self):
+        parent=W.X.verify(B/'rc-reference-expanded-preparation-02',W.PARENT)
+        self.assertEqual(parent['cases'],PLAN['cases'])
+        self.assertEqual([W.jobs(parent)[i] for i in W.INDICES],[W.jobs(PLAN)[i] for i in W.INDICES])
+
+    @historical_evidence
     def test_actual_original27_and_failed027_reopen_without_promotion(self):
         got=W.reopen_parent(B/'rc-reference-expanded-independent-readback-01.json')
         self.assertFalse(got['expanded_reference_complete_passed']);self.assertEqual(len(got['leaves']),28)
@@ -45,23 +54,23 @@ class CompletionControls(unittest.TestCase):
         self.assertEqual(inspect.getsource(R.analysis),inspect.getsource(W.R.analysis))
 
     def test_exact32_comparison_still_rejects_omission_reorder_and_gate_fail(self):
-        rows=T.fake_rows();self.assertTrue(R.analysis(T.PLAN,rows)['passed'])
+        rows=reference_rows(PLAN);self.assertTrue(R.analysis(PLAN,rows)['passed'])
         self.assertEqual([r['index'] for r in rows[:27]+rows[27:]],[*range(32)])
         for bad in (rows[:27]+rows[28:],rows[:27]+list(reversed(rows[27:])),rows[:27]+rows[27:]+rows[27:28]):
-            with self.assertRaises(ValueError):R.analysis(T.PLAN,bad)
+            with self.assertRaises(ValueError):R.analysis(PLAN,bad)
         bad=copy.deepcopy(rows);bad[-1]['kernel_row']['ground_C_F_per_m'][0]*=1.03
-        self.assertFalse(R.analysis(T.PLAN,bad)['passed'])
+        self.assertFalse(R.analysis(PLAN,bad)['passed'])
         bad=copy.deepcopy(rows);bad[27]['numeric_passed']=False
-        with self.assertRaises(ValueError):R.analysis(T.PLAN,bad)
+        with self.assertRaises(ValueError):R.analysis(PLAN,bad)
 
     def test_all_same_actual_residual_energy_units_and_excitation_gates(self):
-        for r in T.fake_rows()[27:]:W.validate_row(T.PLAN,r['job'],r['kernel_row'])
-        r=T.fake_rows()[27]
+        for r in reference_rows(PLAN)[27:]:W.validate_row(PLAN,r['job'],r['kernel_row'])
+        r=reference_rows(PLAN)[27]
         for key,value in [('mesh_step_um',.04),('extent_um',32.),('nodes',70000),('epsilon_layers',[]),('excitations',[])]:
             bad=copy.deepcopy(r['kernel_row']);bad[key]=value
-            with self.assertRaises((ValueError,KeyError,IndexError)):W.validate_row(T.PLAN,r['job'],bad)
+            with self.assertRaises((ValueError,KeyError,IndexError)):W.validate_row(PLAN,r['job'],bad)
         bad=copy.deepcopy(r['kernel_row']);bad['excitations'][0]['true_residual_relative']=1.001e-9
-        with self.assertRaises(ValueError):W.validate_row(T.PLAN,r['job'],bad)
+        with self.assertRaises(ValueError):W.validate_row(PLAN,r['job'],bad)
 
     def test_five_job_run_has_no_cached_leaf_and_actual_work_guard(self):
         for elapsed in (1049.,1050.001):
@@ -70,7 +79,7 @@ class CompletionControls(unittest.TestCase):
                 def dispatch(inputs,digest,index,owner):
                     called.append(index);owner.mkdir();(owner/'dispatch.json').write_text('{}')
                     return dict(numeric_passed=True,resource_feasible=True)
-                with patch.object(W,'verify',return_value=T.PLAN),patch.object(W,'snapshot',return_value=T.cg()),patch.object(W,'dispatch',side_effect=dispatch),patch.object(W.time,'monotonic',side_effect=[0.]+[1.]*5+[elapsed]):
+                with patch.object(W,'verify',return_value=PLAN),patch.object(W,'snapshot',return_value=cg()),patch.object(W,'dispatch',side_effect=dispatch),patch.object(W.time,'monotonic',side_effect=[0.]+[1.]*5+[elapsed]):
                     report=W.run(base,'pin',base/'out')
                 self.assertEqual(called,W.INDICES);self.assertTrue(report['measurement_packet_completed'])
                 self.assertTrue(report['all_numeric_leaves_passed']);self.assertIs(report['passed'],elapsed<=1050)
@@ -84,7 +93,7 @@ class CompletionControls(unittest.TestCase):
             def dispatch(inputs,digest,index,owner):
                 called.append(index);owner.mkdir();(owner/'dispatch.json').write_text('{}')
                 return dict(numeric_passed=False,resource_feasible=False)
-            with patch.object(W,'verify',return_value=T.PLAN),patch.object(W,'snapshot',return_value=T.cg()),patch.object(W,'dispatch',side_effect=dispatch),patch.object(W.time,'monotonic',side_effect=[0.,1.,2.]):
+            with patch.object(W,'verify',return_value=PLAN),patch.object(W,'snapshot',return_value=cg()),patch.object(W,'dispatch',side_effect=dispatch),patch.object(W.time,'monotonic',side_effect=[0.,1.,2.]):
                 report=W.run(base,'pin',base/'out')
             self.assertEqual(called,[27]);self.assertFalse(report['measurement_packet_completed']);self.assertFalse(report['passed'])
 
@@ -95,7 +104,7 @@ class CompletionControls(unittest.TestCase):
                 row=W.proposal(base,'pin',base);self.assertEqual(row['timeout_seconds'],1110)
                 self.assertEqual(row['argv'].count('--mount'),3);self.assertIn('2g',row['argv'])
                 self.assertIn('/tmp:rw,nosuid,noexec,size=134217728',row['argv'])
-            with patch.object(W,'verify',return_value=T.PLAN),patch.object(W,'snapshot',return_value=T.cg()):
+            with patch.object(W,'verify',return_value=PLAN),patch.object(W,'snapshot',return_value=cg()):
                 for index in (-1,0,26,32):
                     with self.assertRaises(ValueError):W.one(base,'pin',index,base/'leaf')
         self.assertIn("cleanup_sentinel",inspect.getsource(R.resource_join))

@@ -1,5 +1,7 @@
 """HOST controls for the fixed R26 geometry/policies/raw rounding and failures."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 from decimal import Decimal as D
 import json
 from pathlib import Path
@@ -18,7 +20,7 @@ BASE = B / 'rc-consumer-semantic-preparation-01/consumer-inputs'
 
 
 def synthetic():
-    old = json.loads((BASE / 'plan.json').read_text()); plan = W.math_plan(dict(old, fixture_rows=G.rows()))
+    old = F.consumer_plan(); plan = W.math_plan(dict(old, fixture_rows=G.rows()))
     jobs = []
     for corner, policy in M.JOBS:
         values = {}; intervals = {}
@@ -41,7 +43,7 @@ def synthetic():
 
 class RLengthControls(unittest.TestCase):
     def setUp(self):
-        self.tech = (BASE / 'tech.lef').read_text(); self.widths = (BASE / 'widths.lef').read_text()
+        self.tech = F.tech(); self.widths = F.widths()
         self.fixture, self.ndr = G.fixture(self.tech, self.widths)
 
     def test_exact26_geometry_and_via_exit_normalization(self):
@@ -62,7 +64,7 @@ class RLengthControls(unittest.TestCase):
             with self.assertRaises(ValueError): G.compare(text, text, self.tech, self.ndr, G.rows())
 
     def test_local_corner_lef_changes_only_five_selected_routing_R_values(self):
-        plan = json.loads((BASE / 'plan.json').read_text())
+        plan = F.consumer_plan()
         for corner in ('MIN', 'TYP', 'MAX'):
             sheets = plan['corners'][corner]['wire_sheet_R']; local, witness = G.local_lef(self.tech, sheets)
             self.assertEqual(G.restore_original(local), self.tech)
@@ -71,6 +73,7 @@ class RLengthControls(unittest.TestCase):
             for bad in (local.replace('RESISTANCE 4.0', 'RESISTANCE 4.1'), local.replace('WIDTH\t\t0.20', 'WIDTH\t\t0.21', 1)):
                 with self.assertRaises(ValueError): G.restore_original(bad)
 
+    @historical_evidence
     def test_raw_percent_g_intervals_reopen_actual_frozen_seventeen_net_SPEF(self):
         path = B / 'rc-native-outputs/rc-consumer-semantic-01/native/MIN-retained_rules/result.spef'
         text = path.read_text(); names = {r['name'] for r in C.fixtures({'explicit_vias':{n: {'cut_layer':l} for n,l in zip(C.VIA_FIXTURES,('Via1','Via1','Via2','Via3','TopVia1'))}})}
@@ -79,6 +82,17 @@ class RLengthControls(unittest.TestCase):
         self.assertFalse(result['Metal1_L100']['physical_error_enclosure'])
         bad = copy.deepcopy(values); bad['Metal1_L100']['R_ohm'] = '1'
         with self.assertRaises(ValueError): M.intervals(text, bad)
+
+    def test_explicit_six_digit_resistor_rounding_intervals(self):
+        raw = '*D_NET wire 0\n*RES\n1 a b 100.25\n2 b c 50\n*END\n'
+        values = dict(wire=dict(R_ohm='150.25', R_unit_ohm='1', edges=2))
+        row = M.intervals(raw, values)['wire']
+        self.assertEqual(D(row['center_ohm']), D('150.25'))
+        self.assertEqual(D(row['half_width_ohm']), D('.00055'))
+        self.assertTrue(row['serialization_rounding_only'])
+        self.assertFalse(row['physical_error_enclosure'])
+        with self.assertRaises(ValueError):
+            M.intervals(raw, dict(wire=dict(R_ohm='1', R_unit_ohm='1', edges=2)))
 
     def test_six_call_diagnostic_can_pass_while_original_absolute_audits_fail(self):
         plan, jobs = synthetic(); result = M.measurements(plan, jobs)
@@ -124,6 +138,7 @@ class RLengthControls(unittest.TestCase):
             self.assertFalse(result['length_width_diagnostic_controls_passed']); self.assertFalse(result['original_17net_experiment_passed'])
             self.assertIn('incomplete', result['raw_readback']['error'])
 
+    @historical_evidence
     def test_actual_preparation_reopens_and_generated_LEF_tamper_rejects(self):
         original = B / 'rc-r-length-width-preparation-01'; digest = W.P.sha(original / 'plan.json')
         self.assertEqual(len(W.verify(original, digest)['fixture_rows']), 26)
@@ -134,10 +149,16 @@ class RLengthControls(unittest.TestCase):
             with self.assertRaises(ValueError): W.verify(copied, digest)
 
     def test_exact_resource_failure_contract_and_input_seals(self):
-        prep = B / 'rc-r-length-width-preparation-01'; digest = W.P.sha(prep / 'plan.json'); plan = W.verify(prep, digest)
-        proposal = json.loads((B / 'rc-r-length-width-command-proposal-01.json').read_text())
         with tempfile.TemporaryDirectory() as temporary:
-            path = Path(temporary) / 'proposal.json'; path.write_text(json.dumps(proposal)); resource_path = Path(temporary) / 'resource.json'
+            root = Path(temporary)
+            prep = root / 'plan.json'; prep.write_text('{"fixture": "R-resource-input"}')
+            parent = root / 'parent.json'; parent.write_text('{"fixture": "parent-input"}')
+            digest = W.P.sha(prep)
+            producer = 'streaming_8x4_rc_r_length.py'
+            plan = dict(producer_sha256={producer: W.P.sha(ROOT / 'scripts' / producer)})
+            proposal = dict(argv=['fixture-worker', '--fixed-six-calls'], plan_path=str(prep), plan_sha256=digest,
+                parent_semantic_proposal=dict(path=str(parent), sha256=W.P.sha(parent)))
+            path = root / 'proposal.json'; path.write_text(json.dumps(proposal)); resource_path = root / 'resource.json'
             seals = {str(path.resolve()): W.P.sha(path), proposal['plan_path']: digest,
                 proposal['parent_semantic_proposal']['path']: proposal['parent_semantic_proposal']['sha256']}
             seals.update({str(ROOT / 'scripts' / n): h for n,h in plan['producer_sha256'].items()})

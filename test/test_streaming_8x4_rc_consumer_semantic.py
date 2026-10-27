@@ -1,5 +1,7 @@
 """HOST-only new-intake and unchanged six-call body/strict numeric controls."""
 import inspect
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 import json
 from pathlib import Path
 import shutil
@@ -39,6 +41,7 @@ class SemanticConsumerControls(unittest.TestCase):
         self.assertIs(R.component_summary, R.OLD.component_summary)
         self.assertIs(W.parse_spef, W.C.parse_spef); self.assertIs(W.analyze_values, W.C.analyze_values)
 
+    @historical_evidence
     def test_actual_first_SPEF_remains_original_strict_numeric_failure(self):
         plan = json.loads((INPUTS / 'plan.json').read_text())
         values = W.parse_spef((ACTUAL / 'result.spef').read_text(), {r['name'] for r in plan['fixture_rows']})
@@ -48,13 +51,14 @@ class SemanticConsumerControls(unittest.TestCase):
         self.assertEqual(len(result['wires']), 12); self.assertEqual(len(result['vias']), 5)
 
     def test_initial_native_import_is_exact_even_when_pair_headers_match(self):
-        plan = json.loads((INPUTS / 'plan.json').read_text())
+        plan = F.consumer_plan()
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); base = root / 'consumer-inputs'; base.mkdir(); owner = root / 'native'; owner.mkdir()
-            for name in ('tech.lef', 'plan.json'): shutil.copyfile(INPUTS / name, base / name)
+            (base / 'tech.lef').write_text(F.tech())
+            (base / 'plan.json').write_text(json.dumps(plan))
             baseline = root / 'baseline-ndr-preparation'; baseline.mkdir()
-            shutil.copyfile(INPUTS.parent / 'NDR-witness.json', baseline / 'NDR-witness.json')
-            for name in ('before.def', 'after.def'): shutil.copyfile(ACTUAL / name, owner / name)
+            (baseline / 'NDR-witness.json').write_text(json.dumps(F.ndr_witness()))
+            for name in ('before', 'after'): (owner / (name + '.def')).write_text(F.capture(name))
             with patch.object(W, 'verify_consumer', return_value=plan):
                 self.assertTrue(W.geometry_gate(base, owner)['passed'])
                 for name in ('before.def', 'after.def'):

@@ -6,6 +6,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from historical_evidence import historical_evidence
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import streaming_8x4_route_replay as X
@@ -23,6 +24,23 @@ def fixture(diodes=0):
 
 
 class Replay(unittest.TestCase):
+    def test_fixed_route_config_rejects_policy_drift_without_historical_inputs(self):
+        config = dict(OPENROAD_THREADS=4, RT_MIN_LAYER='Metal2', RT_MAX_LAYER='Metal4',
+            CLOCK_PERIOD=20, DRT_OPT_ITERS=64, GRT_ANTENNA_REPAIR_MARGIN=10,
+            DRT_ANTENNA_REPAIR_MARGIN=10, GRT_ALLOW_CONGESTION=False,
+            DRT_ANTENNA_REPAIR_JUMPER_ONLY=False, DRT_ANTENNA_REPAIR_DIODE_ONLY=False,
+            DRT_SAVE_SNAPSHOTS=False, DRT_SAVE_DRC_REPORT_ITERS=None,
+            NON_DEFAULT_RULES=None, DRT_ASSIGN_NDR=None, DRT_DISABLE_AUTO_TAPER=None,
+            DIODE_CELL='sg13cmos5l_antennanp', PNR_SDC_FILE='/work/inputs/core.sdc',
+            DESIGN_NAME='tt_um_pinwheel_streaming_ready_d2')
+        self.assertEqual(X.validate_config(config), config)
+        for key, value in [('OPENROAD_THREADS', 2), ('RT_MIN_LAYER', 'Metal1'),
+            ('DRT_OPT_ITERS', 6), ('DRT_ANTENNA_REPAIR_DIODE_ONLY', True),
+            ('GRT_ANTENNA_REPAIR_MARGIN', 11)]:
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                X.validate_config(dict(config, **{key: value}))
+
+    @historical_evidence
     def test_actual_parent_config_and_source_reopen(self):
         b = X.P.ROOT / 'build/campaigns/8x4-20261022-01'
         config = X.P.read(b / 'native-repair-02/flow/03-openroad-detailedrouting/config.json')
@@ -75,6 +93,7 @@ class Replay(unittest.TestCase):
             ('container_termination', dict(status='remaining'))]:
             self.assertFalse(X.diagnostic_completed(observed, dict(closed, **{key: value})))
 
+    @historical_evidence
     def test_pinned_source_extra_member_rejects(self):
         source = X.P.ROOT / 'build/campaigns/8x4-20261022-01/intake/routing-replay-source-02'
         with tempfile.TemporaryDirectory() as temporary:

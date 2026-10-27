@@ -1,5 +1,6 @@
 """Focused HOST tests for two fixed five-layer C calls; no Native/field solve."""
 import copy
+from historical_evidence import historical_evidence
 from decimal import Decimal as D
 import inspect
 import json
@@ -73,6 +74,7 @@ class AllLayerCControls(unittest.TestCase):
             text.replace('DIRECTION INPUT','DIRECTION OUTPUT',1),text+'VIAS 0 ;\nEND VIAS\n'):
             with self.assertRaises(ValueError):G.validate(bad,job)
 
+    @historical_evidence
     def test_exact_original_physical_cases_full_stack_and_reference32_pin(self):
         prep=B/'rc-reference-only-preparation-02';upper=W.F.verify(prep,W.REFERENCE32_HASH)
         lower=json.loads((prep/'reference/plan.json').read_text());cases=G.physical_cases(upper,lower)

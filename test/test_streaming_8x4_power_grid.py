@@ -8,6 +8,7 @@ import tempfile
 from types import SimpleNamespace as Obj
 import unittest
 from unittest.mock import patch
+from historical_evidence import historical_evidence
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import streaming_8x4_power_grid as G
@@ -144,6 +145,7 @@ class PowerGrid(unittest.TestCase):
             self.assertTrue(value['process_group_stopped']);self.assertEqual(value['timeout_seconds'],180)
             self.assertEqual(value['log_sha256'],G.sha(root/'openroad.log'))
 
+    @historical_evidence
     def test_real_pinned_source_intake_reopens_and_rejects_mutation(self):
         source=G.P.ROOT/'build/campaigns/8x4-20261022-01/intake/psm-source-01'
         expected=G.source_evidence(source)

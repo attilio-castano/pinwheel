@@ -1,5 +1,7 @@
 """Focused HOST count/projection/ownership/failure controls; no Native."""
 import copy
+from historical_evidence import historical_evidence
+import streaming_8x4_consumer_fixtures as F
 import importlib.util
 import json
 import math
@@ -15,9 +17,7 @@ B=ROOT/'build/campaigns/8x4-20261022-01'
 
 
 def raw_count():
-    raw=(B/'rc-native-outputs/rc-full-layered-m1-jacobi-d025-01/job-003/native.log').read_text()
-    raw=raw[:raw.index('Error: free space')].replace('(-f): 5','(-f): 1e+12').replace('(-m): 8.6349e-05','(-m): 4.31745e-05').replace("folder: '/tmp'","folder: '/ooc-scratch/count97'")
-    return raw+'Error: available free memory is not enough to allocate any chunk\n       Cannot go out-of-core, terminating process\nDone computing links\nTotal time: 1.000000s (0 days, 0 hours, 0 mins, 1 s)\nError: Cannot go Out-of-Core (possibly disk full)!\n'
+    return F.count97_log()
 
 
 def snap():return dict(memory_current=1000,memory_peak=2000,memory_max=6442450944,memory_swap_max=0,
@@ -37,6 +37,9 @@ class OOCControls(unittest.TestCase):
         self.assertEqual(X.I.FIXED[0]['case'],X.CASE);self.assertEqual(X.MESH,'0.0000431745')
         self.assertEqual(X.policy()['maximum_calls'],2);self.assertFalse(X.policy()['count_probe_expected97_is_numerical_success'])
         self.assertFalse(X.policy()['scratch_threshold_is_hard_quota'])
+
+    @historical_evidence
+    def test_historical_source_zero_chunk_boundary(self):
         source=(B/'rc-fastercap-scale-source-intake-03/Autorefine.cpp').read_text()
         self.assertLess(source.index('if(m_ulLinkChunkNum[m_ucInteractionLevel] == 0)'),source.index('// allocate temporary file names'))
         self.assertIn('return FC_CANNOT_GO_OOC',source)
@@ -119,6 +122,7 @@ class OOCControls(unittest.TestCase):
                 self.assertIs(row['work_budget_satisfied'],seconds<=270);self.assertIs(row['passed'],seconds<=270)
                 self.assertIs(row['resource_feasible'],seconds<=270);self.assertEqual(row['work_wall_seconds'],seconds)
 
+    @historical_evidence
     def test_source_intake_actual_git_blobs_and_nonflushing_log_policy(self):
         with tempfile.TemporaryDirectory() as temporary:
             owner=Path(temporary);X.shutil.copytree(B/'rc-ooc-source-intake-01',owner/'ooc-source')
@@ -128,6 +132,7 @@ class OOCControls(unittest.TestCase):
             (owner/'ooc-source/wx-filename.cpp').write_text('changed')
             with self.assertRaises(ValueError):X.evidence(owner)
 
+    @historical_evidence
     def test_original_closed_incore_authority_reparses_both_exact_leaves(self):
         with tempfile.TemporaryDirectory() as temporary:
             owner=Path(temporary);prior=owner/'prior';prior.mkdir()
