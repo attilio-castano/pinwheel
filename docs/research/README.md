@@ -6,6 +6,9 @@ conversation. This workflow applies to interpretation, literature review, Lean
 proofs, RTL experiments, and physical validation; it does not launch work or grant
 authority beyond the user's approved scope.
 
+For the current 8×4 source boundary, acceptance gates and historical-source
+recovery, read the [curated integration guide](streaming-8x4-curated-pr-20261026.md).
+
 ## Record ownership
 
 | Record | Owns | Update when |

@@ -6,6 +6,10 @@ docs/explorer/spi-traces.json linguist-generated=true
 # Preserve captured host-fixture bytes and the native logs' original whitespace.
 tools/pinwheel-physical-campaign/tests/fixtures/*.log.txt -text -whitespace
 tools/pinwheel-drt-logger-observer-03/tests/fixtures/native-build-05.json -text
+test/fixtures/streaming-8x4-rc-layered-coarse-physics-failure-20261022.log -text -whitespace
+test/fixtures/streaming-8x4-rc-manual-U-20261022.log -text -whitespace
+test/fixtures/streaming-8x4-rc-wire-coarse-20261022.log -text -whitespace
+test/fixtures/streaming-8x4-rc-wire-nonconvergence-20261022.log -text -whitespace
 
 # Generated inventory of locally preserved execution evidence.
 docs/research/local-evidence/payload-index.jsonl linguist-generated=true

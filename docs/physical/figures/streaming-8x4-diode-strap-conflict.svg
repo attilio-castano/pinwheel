@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="820" viewBox="0 0 1160 820">
+<rect width="1160" height="820" fill="#fbfcfe"/>
+<style>text{font-family:Arial,sans-serif;fill:#15243a} .small{font-size:15px} .tick{font-size:13px;fill:#526174}</style>
+<defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse"><path d="M0 7 L7 0" stroke="#bf173b" stroke-width="2"/></pattern></defs>
+<text x="40" y="42" font-size="28" font-weight="700">Measured antenna-diode access conflict</text>
+<text x="40" y="74" font-size="17" >Reconstructed 8×4 route • net343 / ANTENNA_115 • actual DEF, LEF and DRC coordinates</text>
+<text x="65" y="120" font-size="21" font-weight="700">Metal1 A-pin projection</text>
+<rect x="65" y="150" width="442.00000000000006" height="459.00000000000006" fill="white" stroke="#9aabc0"/>
+<rect x="146.600" y="150.000" width="170.000" height="459.000" fill="#f8d887" stroke="#b67d12" fill-opacity="0.45" stroke-width="2" />
+<rect x="178.050" y="189.100" width="109.650" height="100.300" fill="#9f79db" stroke="#624193" fill-opacity="0.7" stroke-width="2" />
+<rect x="173.800" y="445.800" width="102.000" height="102.000" fill="#9f79db" stroke="#624193" fill-opacity="0.7" stroke-width="2" />
+<rect x="173.800" y="284.300" width="42.500" height="263.500" fill="#9f79db" stroke="#624193" fill-opacity="0.7" stroke-width="2" />
+<text x="170" y="182" font-size="14" >VPWR strap, width 1.000 µm</text>
+<text x="54.0" y="633.0" font-size="13" >1112</text>
+<text x="224.0" y="633.0" font-size="13" >1113</text>
+<text x="394.0" y="633.0" font-size="13" >1114</text>
+<text x="215" y="657.0" font-size="14" >x position (µm)</text>
+<text x="22" y="596.0" font-size="13" >462</text>
+<text x="22" y="426.0" font-size="13" >463</text>
+<text x="22" y="256.0" font-size="13" >464</text>
+<text x="65" y="688" font-size="16" >All three A-pin rectangles lie beneath the strap.</text>
+<text x="65" y="713" font-size="16" >Cross-layer projection alone is not a short.</text>
+<text x="640" y="120" font-size="21" font-weight="700">Metal2 routed signal access</text>
+<rect x="640" y="150" width="442.00000000000006" height="459.00000000000006" fill="white" stroke="#9aabc0"/>
+<rect x="721.600" y="150.000" width="170.000" height="459.000" fill="#f8d887" stroke="#b67d12" fill-opacity="0.45" stroke-width="2" />
+<rect x="830.400" y="495.950" width="34.000" height="49.300" fill="#3d9cc1" stroke="#086484" fill-opacity="0.65" stroke-width="2" />
+<rect x="830.400" y="503.600" width="197.200" height="34.000" fill="#3d9cc1" stroke="#086484" fill-opacity="0.65" stroke-width="2" />
+<rect x="830.400" y="495.950" width="34.000" height="49.300" fill="url(#hatch)" stroke="#bf173b" fill-opacity="1" stroke-width="2" />
+<rect x="830.400" y="503.600" width="61.200" height="34.000" fill="url(#hatch)" stroke="#bf173b" fill-opacity="1" stroke-width="2" />
+<text x="745" y="182" font-size="14" >VPWR strap, width 1.000 µm</text>
+<text x="629.0" y="633.0" font-size="13" >1112</text>
+<text x="799.0" y="633.0" font-size="13" >1113</text>
+<text x="969.0" y="633.0" font-size="13" >1114</text>
+<text x="790" y="657.0" font-size="14" >x position (µm)</text>
+<text x="597" y="596.0" font-size="13" >462</text>
+<text x="597" y="426.0" font-size="13" >463</text>
+<text x="597" y="256.0" font-size="13" >464</text>
+<text x="640" y="688" font-size="16" >Red hatching: two exact same-layer Short markers.</text>
+<text x="640" y="713" font-size="16" >Via1 enclosure and default-width wire overlap VPWR.</text>
+<text x="40" y="767" font-size="15" >Diagnostic reconstruction: fresh readDesign differs from the historical in-memory reroute.</text>
+<text x="40" y="793" font-size="15" >Source: independently reviewed analysis03 a73fb5ae… • Not a final routed or signoff-accepted layout.</text>
+</svg>

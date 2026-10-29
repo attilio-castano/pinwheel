@@ -1,0 +1,420 @@
+"""Fixed actual-export proof generation. No compiler/tool execution occurs here.
+
+Source generation may precede the independent source replay. An executable
+import plan must wait for its closed same-foundation positive manifest.
+"""
+from pathlib import Path
+import ast
+import hashlib
+import inspect
+import json
+import re
+import subprocess
+import sys
+import types
+
+ROOT=Path(__file__).resolve().parents[3]
+sys.path.insert(0,str(ROOT/'scripts'))
+import streaming_tt_fresh_foundation as F
+import streaming_tt_replay_inventory as V
+import streaming_tt_fresh_replay as R
+import streaming_ready_readback as RB
+import streaming_mapped_component as MC
+import streaming_tt_word_bridge as WB
+import streaming_tt_component as CP
+import streaming_tt_aggregate as AG
+import streaming_tt_certificate as C
+import streaming_tt_graph as G
+import streaming_tt_clock as CL
+import streaming_tt_embedding as EM
+import streaming_tt_hierarchy as HI
+import streaming_tt_state as ST
+import streaming_tt_join as J
+import streaming_tt_composition as CO
+import streaming_tt_public
+import streaming_tt_finite
+from streaming_mapped_liberty import load_library
+from streaming_mapped_campaign import audit_source
+
+PROFILE='pinwheel.streaming-tt-actual-target-M.v1'
+SCHEMA='pinwheel.streaming-tt-actual-M-generation.v1'
+TOP='tt_um_pinwheel_streaming_ready_d2'
+RECEIPTS={'source_dependency_prepared','export_report','export_receipt','export_inventory',
+    'export_connectivity','semantic_state_map','physical_report','physical_state'}
+
+
+def bound_path(value):return F.verify_bound(value)
+def digest(text):return hashlib.sha256(text.encode()).hexdigest()
+def module_name(name):F.require(re.fullmatch('[A-Za-z_][A-Za-z0-9_]*',name),'Invalid generated module owner')
+
+
+def helper_closure(backends):
+    """Follow actual imported project modules/functions, with explicit dynamic roots."""
+    pending=[F,V,R,RB,MC,WB,CP,AG,C,G,CL,EM,HI,ST,J,CO,streaming_tt_public,streaming_tt_finite,*backends,
+        sys.modules[audit_source.__module__]]
+    seen=set();paths={}
+    while pending:
+        module=pending.pop();path=getattr(module,'__file__',None)
+        if not path:continue
+        path=Path(path).resolve()
+        if path in seen:continue
+        F.require(path.is_relative_to(ROOT/'scripts'),'Formal generator imported foreign project interpreter')
+        seen.add(path);paths[str(F.regular(path))]=F.sha(path)
+        for value in vars(module).values():
+            owner=value if isinstance(value,types.ModuleType) else inspect.getmodule(value) if inspect.isfunction(value) or inspect.isclass(value) else None
+            target=getattr(owner,'__file__',None)
+            if target and Path(target).resolve().is_relative_to(ROOT/'scripts'):pending.append(owner)
+    paths[str(Path(__file__).resolve())]=F.sha(__file__)
+    # Imports inside a function do not appear in a module's globals before its
+    # first use. Seal their complete recursive local source closure as well.
+    # Dynamic selected-archive regeneration and replay checkers have their own
+    # exact input manifests; the actual backend modules are explicit roots above.
+    pending_paths=[Path(name) for name in paths if Path(name).is_relative_to(ROOT/'scripts')]
+    while pending_paths:
+        path=pending_paths.pop()
+        for node in ast.walk(ast.parse(path.read_bytes())):
+            names=[]
+            if isinstance(node,ast.Import):names=[item.name for item in node.names]
+            elif isinstance(node,ast.ImportFrom):
+                F.require(node.level==0,'Unresolved relative project interpreter import')
+                if node.module:names=[node.module]
+            elif isinstance(node,ast.Call) and node.args and isinstance(node.args[0],ast.Constant) and type(node.args[0].value) is str:
+                function=node.func.id if isinstance(node.func,ast.Name) else node.func.attr if isinstance(node.func,ast.Attribute) else ''
+                if function in ('__import__','import_module'):names=[node.args[0].value]
+            for name in names:
+                target=ROOT/'scripts'/(name.replace('.','/')+'.py')
+                if not target.exists():continue
+                target=F.regular(target)
+                F.require(target.resolve().is_relative_to(ROOT/'scripts'),'Escaping local interpreter import')
+                if str(target) not in paths:paths[str(target)]=F.sha(target);pending_paths.append(target)
+    return paths
+
+
+def physical_target(config, source_commit):
+    records={name:bound_path(config[name]) for name in RECEIPTS if name!='source_dependency_prepared'}
+    export=F.read(records['export_report']);receipt=F.read(records['export_receipt'])
+    physical=F.read(records['physical_report']);state=F.read(records['physical_state'])
+    F.require(config['target_scope'] in ('grt-diagnostic','final-routed-digital'),'Unknown actual target scope')
+    F.require(export.get('schema')=='pinwheel.streaming-tt-odb-export-run.v1' and export.get('passed') is True and
+        export.get('status')=='exported' and type(export.get('exit_code')) is int and export['exit_code']==0 and
+        all(export.get(name) is True for name in ('inputs_unchanged','staged_inputs_unchanged','runtime_unchanged','native_export_binding')) and
+        export.get('source_commit')==source_commit and export.get('container_termination',{}).get('status')=='absent',
+        'Actual exporter did not close successfully')
+    for name in ('export_receipt','export_inventory','export_connectivity'):
+        path=records[name];root=records['export_report'].parent
+        F.require(path.is_relative_to(root) and export.get('artifact_sha256',{}).get(str(path.relative_to(root)))==F.sha(path),
+            'Actual export artifact is outside its closed native report')
+    consumed=export.get('input_sha256');staged=export.get('staged_input_sha256')
+    F.require(type(consumed) is dict and consumed and type(staged) is dict and staged,
+        'Actual export lacks complete consumed/staged input maps')
+    for index,(name,value) in enumerate(consumed.items()):
+        path=F.regular(name)
+        F.require(F.sha(path)==value,'Actual exporter consumed input changed')
+        records['export_consumed_'+str(index)]=path
+    staged_root=records['export_report'].parent/'inputs'
+    F.require(staged_root.is_dir() and not staged_root.is_symlink() and
+        not any(path.is_symlink() for path in staged_root.rglob('*')) and
+        {str(path.relative_to(staged_root)) for path in staged_root.rglob('*') if path.is_file()}==set(staged),
+        'Actual exporter staged input membership changed')
+    for index,(name,value) in enumerate(staged.items()):
+        path=F.regular(staged_root/F.relative(name))
+        F.require(F.sha(path)==value,'Actual exporter staged input changed')
+        records['export_staged_'+str(index)]=path
+    F.require(receipt.get('schema')=='pinwheel.streaming-tt-odb-export.v1' and
+        receipt.get('read_only_database') is True and receipt.get('top')==TOP and
+        receipt['database_sha256']==export['actual_odb_sha256'] and
+        receipt['artifacts_sha256']=={records[name].name:F.sha(records[name]) for name in ('export_inventory','export_connectivity')},
+        'Actual export receipt/artifact/ODB identities differ')
+    F.require(Path(export['physical_report']).resolve()==records['physical_report'] and
+        export['input_sha256'].get(str(records['physical_report']))==F.sha(records['physical_report']) and
+        export['input_sha256'].get(str(records['physical_state']))==F.sha(records['physical_state']),
+        'Export is not bound to the selected closed physical state')
+    F.require(physical.get('schema') in ('pinwheel.streaming-tt-physical-run.v2','pinwheel.streaming-tt-final-run.v1') and
+        type(physical.get('exit_code')) is int and
+        ((physical.get('status')=='flow_completed' and physical['exit_code']==0) or
+         (physical.get('status') in ('failed','timed_out') and physical['exit_code']!=0)) and
+        physical.get('candidate_source_commit',physical.get('source_commit'))==source_commit and
+        physical.get('inputs_unchanged_after_run') is True and physical.get('container_termination',{}).get('status')=='absent',
+        'Physical target producer is not closed')
+    F.require(type(physical.get('states')) is list and physical['states'] and
+        len({str(Path(row['state']).resolve()) for row in physical['states']})==len(physical['states']),
+        'Closed physical state membership is missing or duplicated')
+    matches=[(index,row) for index,row in enumerate(physical['states']) if Path(row['state']).resolve()==records['physical_state'] and
+        row['state_sha256']==F.sha(records['physical_state'])]
+    F.require(len(matches)==1,'Physical state is missing or duplicated')
+    index,row=matches[0];odb=row['views']['odb'];database=F.regular(odb['path'])
+    F.require(str(database)==export['actual_odb'] and F.sha(database)==odb['sha256']==receipt['database_sha256'] and
+        state.get('odb')==odb['container'],'Actual export does not select this authoritative ODB')
+    root=records['physical_report'].parent
+    for path in (records['physical_state'],database):
+        F.require(path.is_relative_to(root) and physical['artifact_sha256'].get(str(path.relative_to(root)))==F.sha(path),
+            'State/ODB is outside the closed physical artifact inventory')
+    if config['target_scope']=='final-routed-digital':
+        ordered=[]
+        for item in physical['states']:
+            path=F.regular(Path(item['state']).resolve())
+            F.require(path.is_relative_to(root) and F.sha(path)==item['state_sha256'] and
+                physical['artifact_sha256'].get(str(path.relative_to(root)))==F.sha(path) and
+                item['step_directory']==path.parent.name,
+                'Final state membership differs from closed native artifacts')
+            key=tuple(int(match[1]) for part in path.relative_to(root).parts[:-1]
+                if (match:=re.fullmatch(r'(\d+)-.+',part)))
+            F.require(key,'Final state lacks its native step ordinal')
+            ordered.append((key,path,item))
+        F.require(len({key for key,_,_ in ordered})==len(ordered),'Duplicate final native ordinal')
+        selected_key=next(key for key,path,_ in ordered if path==records['physical_state'])
+        latest=max(key for key,_,item in ordered if isinstance(item.get('views',{}).get('odb'),dict))
+        routed=any(key<=selected_key and 'detailedrouting' in re.sub('[^a-z]','',path.parent.name.lower())
+            for key,path,_ in ordered)
+        F.require(selected_key==latest and routed,'Final digital proof cannot select an earlier/GRT-only ODB')
+    records['actual_odb']=database
+    return records,receipt
+
+
+def codec_from_backends(backends):
+    components={};offset=0
+    for label in ('frontend','core-d2'):
+        rb=backends[label];fields=[]
+        # The codec's family constructors use contiguous address-major ranges.
+        # The backend declaration happens to interleave tx/rx families, so its
+        # insertion order is not a valid codec layout. Every named field is
+        # retained exactly once and the same layout drives both netlist models.
+        names=[f'r_{family}{index}' for family,_,count,_ in rb.FAMILIES for index in range(count)]
+        F.require(len(names)==len(set(names)) and set(names)<=set(rb.REGISTERS),'Changed register family declaration')
+        names.extend(name for name in rb.REGISTERS if name not in set(names))
+        F.require(set(names)==set(rb.REGISTERS),'Incomplete full register layout')
+        for name in names:
+            width,ctor=rb.REGISTERS[name]
+            fields.append(dict(register=name,width=width,ctor=ctor,first_bit=offset,last_bit_exclusive=offset+width));offset+=width
+        components[label]=dict(fields=fields,families=rb.FAMILIES)
+    F.require(offset==6039,'Changed full arbitrary-state register basis')
+    return dict(total_bits=offset,queue_address_bits=1,components=components)
+
+
+def source_trace(rb,raw,mapped,proof):
+    graph=MC.read_source_trace(rb,raw);baseline=rb.read_rtl(raw)
+    F.require(graph.nodes==baseline.nodes and graph.next==baseline.next and graph.outputs==baseline.outputs,
+        'Independent component trace differs from strict raw reader')
+    body=F.read(mapped)['modules'][rb.TOP];specs=proof['word_modules']
+    cells=[]
+    for ordinal,(name,trace) in enumerate(graph.cell_trace.items()):
+        cell=body['cells'][name]
+        F.require(cell['type'] in specs,'Actual source instance has no closed word certificate')
+        cells.append(dict(ordinal=ordinal,source_cell=name,mapped_module=cell['type'],connections=cell['connections']))
+    F.require({row['source_cell'] for row in cells}=={name for name,cell in body['cells'].items() if cell['type'] in specs},
+        'Incomplete actual component instance trace')
+    return dict(cells=cells,namespace=proof['namespace'],proof_module=proof['component_metadata']['modules'][-1])
+
+
+LAYOUT_PROFILE='pinwheel.streaming-tt-actual-M-single-stage.v1'
+
+
+def source_layout(groups,sources,out_root):
+    """Move module files only; preserve every source byte and dependency order.
+
+    The former families remain an exact ordered partition for diagnostics.
+    One Native group retains individual compiler processes/intents/limits and
+    all pre/post authority checks without rebuilding the authority per family.
+    """
+    F.require(groups and len({family for family,_ in groups})==len(groups),
+        'Missing or duplicate actual-M diagnostic family')
+    names=[name for _,members in groups for name in members]
+    F.require(names==list(sources) and len(names)==len(set(names)),
+        'Single-stage layout omitted, duplicated, or reordered a generated module')
+    directory=Path(out_root)/'all';rows=[];families=[];index=0
+    for family,members in groups:
+        F.require(members,'Empty actual-M diagnostic family')
+        families.append(dict(family=family,modules=list(members),first_index=index,count=len(members)))
+        index+=len(members)
+        for name in members:
+            module_name(name)
+            rows.append(dict(module=name,source=str(directory/(name+'.lean')),
+                source_sha256=digest(sources[name]),target_olean=str(directory/(name+'.olean'))))
+    schedule_text=json.dumps(names,indent=2)+'\n'
+    stages=[dict(phase='actual-all',out=str(directory),modules=names,
+        schedule=dict(path=str(directory/'modules.json'),sha256=digest(schedule_text)))]
+    return rows,stages,families
+
+
+def _generate(config_path,out_root):
+    F.check_native_environment()
+    config_path=F.regular(Path(config_path).resolve());config=F.read(config_path);out_root=Path(out_root).resolve()
+    F.require(set(config)==RECEIPTS|{'target_scope','formal_producer_commit'},'Changed actual generation config membership')
+    F.require(re.fullmatch('[0-9a-f]{40}',config['formal_producer_commit']),'Exact formal producer commit required')
+    prepared_path=bound_path(config['source_dependency_prepared']);prepared=F.read(prepared_path)
+    parent_path=bound_path(prepared['parent_intake']);exact=V.derive(parent_path,validator_workspace=ROOT)
+    F.require(prepared.get('replay_inventory_profile')==V.PROFILE and prepared.get('exact_parent_inventory')==exact,
+        'Source dependency is not the complete independently regenerated new parent')
+    source_plan_path=bound_path(prepared['plan']);source_plan=F.read(source_plan_path)
+    marker=prepared['fresh_foundation'];binding=F.read(bound_path(marker));F.verify_binding(binding);F.verify_staged(binding)
+    F.require(source_plan['foundation_binding']==marker and source_plan['exact_parent_inventory']==exact and
+        out_root.parent==prepared_path.parent.parent and out_root!=prepared_path.parent,
+        'Actual M/source N roots or foundation selection differ')
+    cfg=F.read(bound_path(prepared['worker_config']));worker_path=bound_path(prepared['worker_report']);worker=F.read(worker_path)
+    positive_path=F.regular(prepared_path.parent/'positive-manifest.json');positive=F.read(positive_path)
+    regeneration_path=bound_path(prepared['regeneration_manifest']);regeneration=F.read(regeneration_path)
+    F.require(prepared.get('source_only_staging') is True and prepared.get('native_lean_invoked') is False and
+        positive.get('schema')=='pinwheel.streaming-tt-fresh-replay-positive.v1' and positive.get('passed') is True and
+        positive.get('qualified') is False and positive.get('fresh_foundation')==marker,
+        'Actual M generation requires closed complete same-foundation source N replay')
+    checked_binding,_=R.validate_positive_stages(positive,cfg,regeneration['modules'],positive_path,parent_path=parent_path)
+    F.require(checked_binding==binding and source_plan['required_count']==len(source_plan['rows'])==exact['module_count'] and
+        positive['positive_native_checks']==positive['module_count']==positive['regenerated_modules']==exact['module_count'],
+        'Actual M source dependency membership is incomplete')
+    worker_root=worker_path.parent
+    paths,receipt=physical_target(config,cfg['source_commit'])
+    source=F.read(worker_root/'candidate.json');actual=F.read(paths['export_connectivity']);mapping=F.read(paths['semantic_state_map'])
+    F.require(mapping['schema']=='pinwheel.streaming-tt-semantic-state-map.v1' and
+        mapping['database_sha256']==receipt['database_sha256'] and mapping['connectivity_sha256']==F.sha(paths['export_connectivity']) and
+        mapping['source_candidate_sha256']==F.sha(worker_root/'candidate.json'),'Actual state map has another source/ODB identity')
+    backends={'frontend':RB.backend('frontend',1),'core-d2':RB.backend('core',1)}
+    producer=helper_closure(list(backends.values()))
+    for name,value in producer.items():
+        path=Path(name)
+        if path.is_relative_to(ROOT/'scripts'):
+            committed=subprocess.check_output(['git','show',config['formal_producer_commit']+':'+str(path.relative_to(ROOT))],cwd=ROOT)
+            F.require(hashlib.sha256(committed).hexdigest()==value,'Actual formal interpreter differs from selected committed producer')
+    inputs=dict(exact['input_sha256']);inputs.update({str(path):F.sha(path) for path in
+        (config_path,prepared_path,source_plan_path,bound_path(prepared['worker_config']),worker_path,F.regular(cfg['library']),*paths.values())})
+    inputs.update({str(path):F.sha(path) for path in (positive_path,regeneration_path)})
+    for stage in positive['positive_native_stages']:
+        for record in stage.values():
+            if type(record) is dict and set(record)=={'path','sha256'}:
+                path=bound_path(record);inputs[str(path)]=F.sha(path)
+    for row in positive['commands']:
+        for key in ('source','log'):
+            path=F.regular(row[key]);inputs[str(path)]=F.sha(path)
+        path=F.regular(Path(row['source']).with_suffix('.olean'));inputs[str(path)]=F.sha(path)
+    inputs.update(producer)
+    library=load_library(cfg['library']);used={cell['type'] for doc in (source,actual) for mod in doc['modules'].values()
+        for cell in mod.get('cells',{}).values() if cell['type'].startswith('sg13cmos5l_')}
+    interpreted=C.read_library(cfg['library'],used);sg=C.parse_graph(source,TOP,interpreted);ag=C.parse_graph(actual,TOP,interpreted)
+    codec=codec_from_backends(backends);order=tuple(label+':'+field['register']+':'+str(bit) for label in ('frontend','core-d2')
+        for field in codec['components'][label]['fields'] for bit in range(field['width']))
+    rows=mapping['rows'];actual_rows={row['actual_ff']:row for row in rows}
+    F.require(len(actual_rows)==len(rows)==len(ag.flipflops)==6039 and len(set(order))==6039,'Incomplete actual FF inventory/bijection')
+    al={}
+    for ff in ag.flipflops:
+        row=actual_rows[ff.name]
+        F.require(all(row['actual_'+name]==getattr(ff,name) for name in ('q','d','clock','reset_b','cell')),'Actual FF pin/master changed')
+        al[ff.name]=row['semantic']
+    source_rows={C.instance_label(row['candidate_ff']):row for row in F.read(worker_root/'semantic-q-map.json')['rows']};sl={}
+    for ff in sg.flipflops:
+        row=source_rows[C.instance_label(ff.name)]
+        F.require(all(row['candidate_'+name]==getattr(ff,name) for name in ('q','d','clock','cell')),'Source FF pins changed')
+        sl[ff.name]=row['component']+':'+row['register']+':'+str(row['index'])
+    F.require(set(al.values())==set(sl.values())==set(order) and len(sl)==6039,'Source/actual semantic state bases differ')
+    models={'Original':C.data_model(sg,state_labels=sl,state_order=order),'Actual':C.data_model(ag,state_labels=al,state_order=order)}
+    models['Canonical']=C.canonical_model(models['Original']);contract=C.contract_model(models['Actual'],models['Canonical'])
+    F.require(all(set(model['outputs'])=={'uo_out','uio_out','uio_oe'} and sum(map(len,model['outputs'].values()))==24 and
+        len(model['next'])==6039 for model in models.values()),'Incomplete all6039D/all24public endpoint domains')
+    groups=[];sources={}
+    def add(label,modules):
+        F.require(modules and not sources.keys()&modules.keys(),'Omitted or duplicate generated module ownership')
+        for name in modules:module_name(name)
+        sources.update(modules);groups.append((label,list(modules)))
+    leaves={};word_modules={}
+    for label,prefix in [('frontend','Frontend'),('core-d2','Core')]:
+        report=F.read(worker_root/(label+'-proof')/'report.json');mapped=worker_root/label/'mapped.json';meta={}
+        for index,(actual_type,spec) in enumerate(report['word_modules'].items()):
+            body=(worker_root/(label+'-proof')/(spec['module']+'.lean')).read_text()
+            line=next(line for line in body.splitlines() if line.startswith('def actual '))
+            previous=dict(spec,style='bit' if 'BitVec.ofBool' in line else 'word')
+            new,value=WB.generate(WB.read_leaf(mapped,actual_type,library),previous,module='Physical'+prefix+'Word'+str(index)+'Values',
+                namespace='Pinwheel.Artifact.StreamingPhysical'+prefix+'.Word'+str(index))
+            F.require(not word_modules.keys()&new.keys(),'Duplicate actual leaf bridge');word_modules.update(new);meta[actual_type]=value
+        leaves[label]=meta
+    add('leaf-values',word_modules);components={};documents={}
+    for label,prefix in [('frontend','Frontend'),('core-d2','Core')]:
+        rb=backends[label];mapped=worker_root/label/'mapped.json';documents[label]=F.read(mapped)
+        proof=F.read(worker_root/(label+'-proof')/'report.json');trace=source_trace(rb,Path(cfg['components'][label]['raw_json']),mapped,proof)
+        modules,meta=CP.generate(rb,documents[label],library,trace,leaves[label],prefix='Physical'+prefix,
+            namespace='Pinwheel.Artifact.StreamingPhysical'+prefix+'.Component',chunk=1)
+        cells=[name for name in modules if re.fullmatch('Physical'+prefix+'Cells[0-9]+',name)]
+        F.require(cells,'Missing bounded component cell proof family');modules.pop(meta['realizes_module'])
+        modules.update(AG.generate(rb,dict(meta,nodes=len(meta['model']['nodes'])),prefix='Physical'+prefix,last_cell_module=cells[-1]))
+        modules.update(CP.endpoint_sources(rb,documents[label],library,meta,prefix='Physical'+prefix));components[label]=meta
+        add(label+'-component',modules)
+    networks={};devices={};modules={}
+    for key in ('Canonical','Original','Actual'):
+        new,networks[key]=G.network_sources(models[key],prefix='PhysicalGRT'+key,namespace='Pinwheel.Artifact.StreamingPhysicalGRT.'+key);modules.update(new)
+    for key in ('Canonical','Original','Actual'):
+        new,devices[key]=G.device_sources(models[key],networks[key],prefix='PhysicalGRT'+key,namespace='Pinwheel.Artifact.StreamingPhysicalGRT.'+key+'State');modules.update(new)
+    add('device-networks',modules);add('state-codec',ST.generate(codec))
+    hierarchy=HI.trace_hierarchy(source,TOP,library);state_wires={sl[ff.name]:ff.q for ff in sg.flipflops}
+    wires=EM.wire_indices(sg,models['Original'],state_wires);embeddings={}
+    for label,prefix,path in [('frontend','Frontend',('engine','frontend')),('core-d2','Core',('engine','core'))]:
+        rb=backends[label];child=components[label]
+        plan=EM.component_plan(models['Original'],child['model'],wires,hierarchy,documents[label]['modules'][rb.TOP],path)
+        modules,embedding=EM.generate(child['model'],plan,networks['Original'],child,prefix='PhysicalGRT'+prefix+'Embedding',
+            namespace='Pinwheel.Artifact.StreamingPhysicalGRT.'+prefix+'Embedding')
+        embedding['parent_namespace']=networks['Original']['namespace']
+        new,views=EM.input_sources(rb,child['model'],plan,embedding,child,prefix='PhysicalGRT'+prefix);modules.update(new)
+        embeddings[label]=dict(embedding=embedding,views=views,plan=plan);add(label+'-embedding',modules)
+    f,c=components['frontend'],components['core-d2'];fe,ce=embeddings['frontend'],embeddings['core-d2'];fr,cr=backends['frontend'],backends['core-d2']
+    modules={};modules.update(J.state_sources(fr,fe['views'],component='frontend',prefix='PhysicalFrontend'))
+    modules.update(J.state_sources(cr,ce['views'],component='core',prefix='PhysicalCore'))
+    modules.update(J.physical_sources(fe['views'],models['Original']));modules.update(J.wire_sources(fr,cr,f,c,fe['views'],ce['views']))
+    modules.update(J.next_sources(fr,fe['views'],f,component='frontend',prefix='PhysicalFrontend'))
+    modules.update(J.next_sources(cr,ce['views'],c,component='core',prefix='PhysicalCore'))
+    modules.update(J.output_sources(models['Original'],f,c,fe,ce));add('joins',modules)
+    ff_by_label={label:name for name,label in al.items()};ff_order=tuple(ff_by_label[label] for label in order)
+    text,clock_certificate=C.clock_source(ag,namespace='Pinwheel.Artifact.StreamingPhysicalGRT.Clock',
+        netlist_sha256=F.sha(paths['export_connectivity']),state_order=ff_order)
+    clock_modules,clock=CL.generate(ag,state_order=ff_order,prefix='ActualGRTClockDAG',namespace='Pinwheel.Artifact.StreamingPhysicalGRT.ActualClockDAG',
+        clock_certificate=dict(module='ActualGRTClock',namespace='Pinwheel.Artifact.StreamingPhysicalGRT.Clock'))
+    add('clock',{'ActualGRTClock':text,**clock_modules});clock_model,_=CL.model(ag,state_order=ff_order)
+    add('clock-inventory',CO.generate_clock_inventory(clock,clock_model));cts_count=len(clock['actual_clock_cells'])
+    modules={}
+    for key,plan in [('Original',models['Canonical']),('Actual',contract)]:
+        new,transport=G.contraction_sources(models[key],plan,networks['Canonical'],networks[key],prefix='PhysicalGRT'+key+'Transport',
+            namespace='Pinwheel.Artifact.StreamingPhysicalGRT.'+key+'Transport');modules.update(new)
+        modules.update(G.correspondence_sources(devices['Canonical'],devices[key],transport,module='PhysicalGRT'+key+'Proof',
+            namespace='Pinwheel.Artifact.StreamingPhysicalGRT.'+key+'Proof'))
+    add('transports',modules);add('typed-original',CO.generate());add('typed-actual',CO.generate_actual())
+    add('required',CO.generate_required(cts_count=cts_count))
+    owners=[row['module'] for row in source_plan['rows']]+list(sources)
+    add('final-audit',{'PhysicalGRTFinalAudit':audit_source(owners)})
+    available={row['module'] for row in source_plan['rows']}|set(binding['modules'])
+    for name,text in sources.items():
+        for line in text.splitlines():
+            if line.startswith('import '):
+                for dependency in line[7:].split():
+                    F.require(dependency in available or dependency in ('Lean','Std','Init'),
+                        'Generated proof has missing/later import '+name+': '+dependency)
+        available.add(name)
+    rows,stages,families=source_layout(groups,sources,out_root)
+    F.require(len(rows)==len(sources)==len({row['module'] for row in rows}) and not set(sources)&{row['module'] for row in source_plan['rows']},
+        'Actual/source module ownership aliases')
+    F.require(helper_closure(list(backends.values()))==producer and all(F.sha(F.regular(path))==value for path,value in inputs.items()),
+        'Actual generation inputs or interpreter closure changed')
+    F.require(R.validate_positive_stages(positive,cfg,regeneration['modules'],positive_path,parent_path=parent_path)[0]==binding,
+        'Source N closure changed during actual M derivation')
+    repeated_paths,repeated_receipt=physical_target(config,cfg['source_commit'])
+    F.require(repeated_paths==paths and repeated_receipt==receipt,
+        'Actual target selection or complete native readback inputs changed during generation')
+    manifest=dict(schema=SCHEMA,qualified=False,native_invoked=False,scope_profile=PROFILE,target_scope=config['target_scope'],out_root=str(out_root),
+        config=F.bound(config_path),producer=F.bound(__file__),producer_commit=config['formal_producer_commit'],foundation_binding=marker,
+        source_dependency=dict(prepared=F.bound(prepared_path),plan=F.bound(source_plan_path),positive_manifest=F.bound(positive_path)),
+        actual_export={name:config[name] for name in RECEIPTS if name!='source_dependency_prepared'},actual_database_sha256=receipt['database_sha256'],
+        all6039_state_bijection=True,all24_public_endpoints=True,cts_count=cts_count,m_rows=rows,stages=stages,
+        layout_profile=LAYOUT_PROFILE,diagnostic_families=families,input_sha256=inputs,producer_sha256=producer)
+    return manifest,sources
+
+
+def derive(config_path,out_root):
+    return _generate(config_path,out_root)[0]
+
+
+def validate_generation(config_path,manifest_path,repository):
+    F.require(Path(repository).resolve()==ROOT,'Wrong canonical formal workspace')
+    manifest=F.read(F.regular(manifest_path));expected=derive(config_path,manifest['out_root'])
+    F.require(manifest==expected,'Actual generation manifest differs from complete independent derivation')
+    for stage in manifest['stages']:
+        root=Path(stage['out']);expected_sources={root/(name+'.lean') for name in stage['modules']}
+        F.require(root.is_dir() and not root.is_symlink() and not any(path.is_symlink() for path in root.rglob('*')) and
+            set(root.rglob('*.lean'))==expected_sources,'Actual M stage source membership changed or aliases another root')
+        F.require(F.sha(F.regular(stage['schedule']['path']))==stage['schedule']['sha256'],'Actual M stage schedule changed')
+    F.require(all(F.sha(F.regular(row['source']))==row['source_sha256'] for row in manifest['m_rows']),
+        'Actual M source bytes differ from fresh fixed generation')
+    return expected
