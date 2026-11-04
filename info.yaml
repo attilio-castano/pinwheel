@@ -1,0 +1,44 @@
+# Tiny Tapeout metadata for the CMOS5L 8x4 rehearsal.
+project:
+  title: "Pinwheel Streaming"
+  author: "Attilio Castano"
+  description: "A programmable pin engine for streaming serial protocols"
+  language: "SystemVerilog"
+  # The physical design targets a 20 ns clock. A release clock rate awaits qualified timing.
+  clock_hz: 0
+  tiles: "8x4"
+  top_module: "tt_um_pinwheel_streaming_ready_d2"
+  # The release checkout stages these generated depth-two sources under src/.
+  source_files:
+    - "core.sv"
+    - "frontend.sv"
+    - "package.sv"
+    - "tt.sv"
+
+pinout:
+  ui[0]: "Host CSn"
+  ui[1]: "Host SCK"
+  ui[2]: "Host MOSI 0"
+  ui[3]: "Protocol input 0"
+  ui[4]: "Protocol input 1"
+  ui[5]: "Host MOSI 1"
+  ui[6]: "Host MOSI 2"
+  ui[7]: "Host MOSI 3"
+  uo[0]: "Host MISO 0"
+  uo[1]: "Host MISO 1"
+  uo[2]: "Host MISO 2"
+  uo[3]: "Host MISO 3"
+  uo[4]: "Host READY"
+  uo[5]: "Engine BUSY"
+  uo[6]: ""
+  uo[7]: ""
+  uio[0]: "Protocol output 0"
+  uio[1]: "Protocol output 1"
+  uio[2]: "Protocol output 2"
+  uio[3]: ""
+  uio[4]: ""
+  uio[5]: ""
+  uio[6]: ""
+  uio[7]: ""
+
+yaml_version: 6

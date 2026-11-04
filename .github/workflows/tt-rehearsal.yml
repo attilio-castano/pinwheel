@@ -1,0 +1,80 @@
+name: Tiny Tapeout portable rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorize_portable_checks:
+        description: Run the CMOS5L metadata and host checks on this revision
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  portable-rehearsal:
+    if: inputs.authorize_portable_checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out Pinwheel
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Check out the pinned Tiny Tapeout metadata checker
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          repository: TinyTapeout/tt-support-tools
+          ref: 37f5534aa57beaa6f079847b2c7fcbd9a75b2392
+          path: .tt-rehearsal-support
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+
+      - name: Validate the project metadata and datasheet draft
+        env:
+          PYTHONPATH: .tt-rehearsal-support:scripts
+        run: |
+          python3 -m pip install --disable-pip-version-check PyYAML==6.0.2
+          python3 -B - <<'PY'
+          import json
+          from pathlib import Path
+
+          import yaml
+          from project_checks import check_project_docs
+          from streaming_ready_wrapper import tt_source
+          from streaming_transport import Opcode, command
+
+          check_project_docs(".", "ihp-sg13cmos5l")
+          project = yaml.safe_load(Path("info.yaml").read_text())["project"]
+          allocation = json.loads(Path("physical/streaming_8x4/allocation.json").read_text())
+          top = tt_source(2).split("\nmodule ", 1)[1].split("(", 1)[0]
+          if (project["tiles"], project["top_module"], project["clock_hz"]) != (allocation["tiles"], top, 0):
+              raise SystemExit("Rehearsal tiles, top module, or unqualified clock field differs")
+
+          draft = Path("docs/info.md").read_text()
+          frame = draft.split("```text\n", 1)[1].split("\n```", 1)[0]
+          if bytes.fromhex(frame) != command(0, Opcode.WARM_RESET).bytes:
+              raise SystemExit("Datasheet warm-reset frame differs from the transport encoder")
+          PY
+
+      - name: Exercise the sampled-ready host and receipt controls
+        run: |
+          python3 -B -m unittest discover -s test -p 'test_streaming_ready_transport.py' -v
+          python3 -B -m unittest discover -s test -p 'test_streaming_ready_wire_cases.py' -v
+
+# The separate local release rehearsal binds the exact GDS, LEF, and logical
+# Verilog to the reviewed manifest and precheck receipt. Reopen it locally:
+# python3 -B scripts/streaming_8x4_tt_rehearsal.py verify <bundle> \
+#   --manifest-sha256 <reviewed-digest>
+# The prospective shuttle interface is TinyTapeout/tt-gds-action/custom_gds at the `ttihp27a`
+# revision e7a50f8f46f9f8df4b2c9935bfeb1cbc6b6ae4f6, with pdk, top_module,
+# gds_path, lef_path, and verilog_path inputs. It uploads tt_submission, so any
+# future use belongs in the authorized release checkout. Its pdk.json omits
+# PDK_VERSION, which the stock gate-level test action requires. Gate-level
+# simulation needs an explicitly pinned PDK and the project test harness.
