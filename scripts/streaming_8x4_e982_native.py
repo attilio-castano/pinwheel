@@ -362,6 +362,8 @@ def official(context, deadline):
     import streaming_tt_signoff as signoff
     import streaming_8x4_closure24_official_budget as resource
 
+    check_active_layout(context)
+    target = active_layout(context)
     views_root, checked = checked_views(context)
     out = context["work"] / "official"
     package = out / "design"
@@ -377,18 +379,20 @@ def official(context, deadline):
         dest.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(historical / name, dest)
     frozen = signoff.verify_support(support, lock)
+    frozen[str(target["odb"])] = target["odb_sha256"]
     official_template = support / template["template_path"]
     require(sha(official_template) == template["template_sha256"], "Official 8x4 template changed")
     frozen[str(official_template)] = sha(official_template)
     gds = package / f"{TOP}.gds"
     lef = package / f"{TOP}.lef"
     info = ROOT / "info.yaml"
-    for source, dest in ((context["gds"], gds), (views_root / "official-format.lef", lef),
+    for source, dest in ((target["gds"], gds), (views_root / "official-format.lef", lef),
                          (views_root / "signoff-views/implemented.power.v", package / f"{TOP}.v"),
                          (info, package / "info.yaml")):
         shutil.copyfile(source, dest)
         frozen[str(source)] = frozen[str(dest)] = sha(source)
-    require(sha(gds) == GDS and sha(lef) == checked["view_sha256"]["lef"],
+    require(sha(gds) == target["gds_sha256"] and sha(lef) == checked["view_sha256"]["lef"]
+            and sha(package / f"{TOP}.v") == checked["view_sha256"]["powered_verilog"],
             "Precheck staged a different final view")
     python = precheck_python(context)
     frozen[str(python.resolve())] = sha(python.resolve())
@@ -424,7 +428,7 @@ def official(context, deadline):
     argv = ["/usr/bin/env", *[item for key in removed for item in ("-u", key)],
             *[f"{name}={value}" for name, value in overrides.items()],
             str(python), "-B", "precheck.py", "--gds", str(gds), "--tech", overrides["PDK"]]
-    result = dict(status="fail", target_odb_sha256=ODB, gds_sha256=GDS,
+    result = dict(status="fail", target_odb_sha256=target["odb_sha256"], gds_sha256=target["gds_sha256"],
                   lef_sha256=sha(lef), info_yaml_sha256=sha(info),
                   support_revision=lock["support_commit"], action_revision=None,
                   argv=argv, expected_checks=expected, python_version=version, packages=packages,
@@ -464,6 +468,7 @@ def official(context, deadline):
                 result["status"] = "pass"
             write(out / "rehearsal-tt-precheck-readback.json", result)
     require(result["status"] == "pass", "Official precheck custody failed")
+    check_active_layout(context)
 
 
 def aggregate(context, _deadline):

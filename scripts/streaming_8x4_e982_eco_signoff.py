@@ -7,7 +7,7 @@ import re
 
 from streaming_8x4_e982_native import (
     IMAGE, ROOT, TOP, bind, check_active_layout, checked_views, layout, local_inputs,
-    pg, read, require, run_native, sha, views, write,
+    official, pg, read, require, run_native, sha, views, write,
 )
 from streaming_8x4_enclosure_admission import MAIN_DECK, MAIN_GENERATOR, def_components, drc_report
 
@@ -181,7 +181,7 @@ def decision(context, drc_out):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("drc", "views", "pg", "lvs", "decision"))
+    parser.add_argument("phase", choices=("drc", "views", "pg", "lvs", "official", "decision"))
     parser.add_argument("--history", type=Path, required=True)
     parser.add_argument("--work", type=Path, required=True)
     parser.add_argument("--deadline", type=int, required=True)
@@ -196,7 +196,7 @@ def main():
     elif args.phase == "decision":
         decision(context, drc_out)
     else:
-        {"views": views, "pg": pg, "lvs": layout}[args.phase](context, args.deadline)
+        {"views": views, "pg": pg, "lvs": layout, "official": official}[args.phase](context, args.deadline)
 
 
 if __name__ == "__main__":
