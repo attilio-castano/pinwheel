@@ -40,14 +40,11 @@ and on each affected net. Independent KLayout checks on the streamed
 scratch GDS had zero markers across 23 foundry antenna categories and
 all 11 supplemental enclosure rules.
 
-The 19 collateral wire records retained exact terminal sets. No
-collateral clock or FIXED wire record changed. The experiment establishes
-fanout and antenna feasibility for the routed derivative. Main-deck
-DRC, transistor LVS, updated power and timing signoff, digital
-correspondence and Tiny Tapeout precheck remain for any candidate
-adoption. Power review needs to account for the five decap replacements.
-Hold closure still requires admitted CMOS5L parasitics and the shuttle
-I/O contract. [Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+The 19 collateral wire records retained exact terminal sets, and all
+collateral changes were on ordinary signal wires. The initial experiment
+established fanout and antenna feasibility for the routed derivative.
+The full main-deck, transistor LVS and geometric power checks are recorded
+below.
 
 ## Retained trial evidence
 
@@ -65,3 +62,43 @@ as `reopen-odb.py` and `screen.py`.
 | `review.json` | `34fe0a51cec73d9476887aefbdcfb8b118ff817fe848c09dfb063d9dd060c213` |
 | `reopen/result.json` | `dd753e2ebaa0d0973977c6bb0aa8f45398512715fdbe9c64f67b737e7edb5625` |
 | `screen.json` | `86eff28a562f4d51f3719f146e8529cb10db89c703bb8b87d8b992ab64e94170` |
+
+## Physical qualification follow-up
+
+**Carry the ECO forward for qualification.** The main-deck DRC,
+strict-port transistor LVS, and geometric power-grid checks passed on
+the exact ODB and GDS listed above. The frozen rehearsal remains the
+reference for before-and-after review. Fabrication remains NO-GO.
+
+| Gate | Exact ECO result |
+| --- | --- |
+| Main IHP SG13CMOS5L DRC | 332 categories, zero markers, including `NW.b`. The full native invocation took 1,977 seconds and the container exited. |
+| Same-target views | The fresh DEF matched the trial bytes. The independently streamed GDS matched after timestamp normalization. The complete CDL was independently recomposed from the pinned master library and the new ODB inventory, covering 98,900 instances and 321,974 positional terminal bindings. |
+| Transistor LVS | All 37 circuit pairs matched in strict port mode with `NET_ONLY=false`. The LVS reference was the exact ECO CDL. The fresh foundry antenna replay also had zero markers. |
+| Power connectivity | VPWR and VGND each reached all 98,900 instance terminals and one top-level terminal, with empty error reports. The exact special-net DEF geometry and every retained instance’s rail assignments matched the baseline. |
+
+The five substitutions reduced the `decap_4` inventory from 5,678 to 5,673
+and kept 31,183 `decap_8` cells. The nearest remaining decap origin to
+`eco_net840_buf` is 10.56 µm away by maximum axis distance. The
+illustrative ±10 µm square around that buffer contains zero decap
+origins. This placement observation gives a location for power review.
+Quantitative supply droop and electromigration remain open. The checked
+power result is geometric rail connectivity.
+
+Release adoption requires review of the 19 collateral routes and the
+decap change, fresh digital correspondence and Tiny Tapeout precheck on
+this derivative, qualified CMOS5L extraction and timing with the
+shuttle I/O constraints, and shuttle admission. [Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+
+The [exact-target runner](../../scripts/streaming_8x4_e982_eco_signoff.py)
+supports `drc`, `views`, `pg`, `lvs`, and `decision` phases. The main
+deck's raw files live in `five-01/drc/`. The remaining readbacks below
+are in `build/e982-fanout-20261104/signoff-01/`.
+
+| Readback | SHA-256 |
+| --- | --- |
+| `decision.json` | `451f51bd3ca820d6d76ce4deb7bdfeae2a9d9e97ce4ad845c031e1320a3c317b` |
+| `cdl-independent-readback.json` | `fcb297e6fa830a49d2790ae9efd825cff7836929033dea864211276fbc913316` |
+| `views/rehearsal-view-readback.json` | `f3e019f5d4abf85e7d6f123c9d2f9d8282cca69e29b0e81e1db9ec34f048b045` |
+| `pg/rehearsal-pg-readback.json` | `869a4052c8ddd40d7bcf2a037f84856d1d4a00215ee4ae00cd2f0ea3de6ac81e` |
+| `layout/rehearsal-lvs-readback.json` | `2518207acf1c17b1dfeece9533d155dc736d1abd6bbb6085aed8e3b7cf2a1428` |
