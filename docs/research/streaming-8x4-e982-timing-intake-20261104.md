@@ -67,9 +67,11 @@ Model admission and a qualified timing pass require separate receipts.
   and terminal membership. Reopen the raw annotation reports per scenario.
   Require annotation of all relevant data, clock and control paths, and
   account individually for unannotated or unconstrained objects. Retain the
-  coverage and exclusion lists with the receipt. Stop on missing
-  scenarios, unexpected tool errors, unresolved warnings, annotation
-  gaps, input drift or fallback to estimated parasitics.
+  coverage and exclusion lists with the receipt. If clock summary flags
+  disagree with endpoint clock paths, query and record the effective clock
+  state in the analysis engine. Stop on missing scenarios, unexpected tool
+  errors, unresolved warnings, annotation gaps, input drift or fallback to
+  estimated parasitics.
 - [ ] For every applicable scenario, require nonnegative setup and hold
   slack, zero TNS and zero violating endpoints, and passing slew,
   capacitance, fanout, recovery/removal and pulse-width checks. Any
@@ -87,7 +89,8 @@ and prepare a reader for the two intake paths. The legacy nominal
 diagnostic reports `ui_in[5]` to `engine.frontend._0230_/D` at −24.696 ps
 fast and −7.519 ps typical. Reopen that min path with the admitted model
 before sizing a hold ECO. Reducing frequency does not remove a same-edge
-hold violation. [Legacy model scope](streaming-tt-extraction-scope.md)
+hold violation. [Frozen endpoint and load audit](streaming-8x4-e982-timing-audit-20261104.md) ·
+[Legacy model scope](streaming-tt-extraction-scope.md)
 
 The sealed DEF and pinned standard-cell Liberty independently explain five
 fanout violations. The route configuration targets ten, while Liberty
