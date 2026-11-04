@@ -1,4 +1,4 @@
-"""Check sealed b7e60 SPEF and OpenSTA annotation evidence without running CAD."""
+"""Check sealed SPEF and OpenSTA annotation evidence without running CAD."""
 
 import argparse
 from collections import defaultdict
@@ -24,6 +24,12 @@ TARGET = {
     "gds": TARGET_GDS,
     "netlist": "6d3994230c8b56f99db0fce61ca1ebfddbd13de96d792b03605ee8107a05593c",
     "inventory": "00d4790acec3550a6a176566fae6abaa6f150903aeb2a6d4b640cf75dc1afd10",
+}
+ECO_TARGET = {
+    "odb": "e40e40804ddf5c4093f83710ec27b0a5b975f3a047e5c95810e175fbe6aa78f9",
+    "gds": "dcc496d71202677f6d2fe3785dca6ff9bb225ef954953bf7925171174d4b7e82",
+    "netlist": "3167eaaed4365ffc373f9a8609172eeebca48f792134d84a19f259e5f16951ec",
+    "inventory": "af31d89940af5af559d2a8fceb5c0767887faa952298a0e7b684b8ee91658ee8",
 }
 UNITS = {"*T_UNIT": {"PS", "NS"}, "*C_UNIT": {"FF", "PF"}, "*R_UNIT": {"OHM", "KOHM"}}
 META = {"*DATE", "*VENDOR", "*PROGRAM", "*VERSION", "*DESIGN_FLOW"}
@@ -230,12 +236,14 @@ def annotation_evidence(text, corner, context, disconnected):
     return annotation
 
 
-def preflight(workspace, request):
+def preflight(workspace, request, *, target_name="baseline"):
+    require(target_name in ("baseline", "eco"), "Unsupported preflight target")
+    pins = TARGET if target_name == "baseline" else ECO_TARGET
     fields(request, ("schema", "target", "scenarios"), "request")
     require(request["schema"] == REQUEST, "Unsupported preflight request")
-    fields(request["target"], TARGET, "target")
+    fields(request["target"], pins, "target")
     target = {role: file_spec(workspace, binding) for role, binding in request["target"].items()}
-    require({role: row["sha256"] for role, row in target.items()} == TARGET, "Request is for another frozen target")
+    require({role: row["sha256"] for role, row in target.items()} == pins, "Request is for another frozen target")
     inventory = decode(local_path(workspace, target["inventory"]["path"]).read_bytes())
     require(inventory["top"] == TOP, "Frozen inventory top differs")
     context, disconnected = inventory_context(inventory)
@@ -256,7 +264,7 @@ def preflight(workspace, request):
                      "runtime_sha256", "annotation_mode", "exit_code"), "analysis run")
         require(run["schema"] == ANALYSIS and run["top"] == TOP and run["scenario"] == name
                 and all(run[key] == row[key] for key in ("rc_corner", "sta_corner", "mode"))
-                and all(run[role + "_sha256"] == TARGET[role] for role in ("odb", "gds", "netlist"))
+                and all(run[role + "_sha256"] == pins[role] for role in ("odb", "gds", "netlist"))
                 and all(run[role + "_sha256"] == files[role]["sha256"] for role in ("sdc", "spef", "annotation"))
                 and run["liberty_sha256"] == [item["sha256"] for item in liberties]
                 and type(run["runtime_sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", run["runtime_sha256"])
@@ -284,12 +292,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("request", type=Path)
     parser.add_argument("--request-sha256", required=True)
+    parser.add_argument("--target", choices=("baseline", "eco"), default="baseline",
+                        help="Require the pinned baseline or five-net ECO target")
     parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args(argv)
     try:
         raw = args.request.read_bytes()
         require(hashlib.sha256(raw).hexdigest() == args.request_sha256, "Preflight request SHA-256 differs")
-        result = preflight(args.workspace.resolve(strict=True), decode(raw))
+        result = preflight(args.workspace.resolve(strict=True), decode(raw), target_name=args.target)
     except (OSError, ValueError, KeyError, TypeError, DecimalException) as error:
         print(f"Parasitics preflight rejected: {error}", file=sys.stderr)
         return 2

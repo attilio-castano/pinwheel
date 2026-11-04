@@ -1,10 +1,56 @@
 # Pinwheel 8×4 qualified timing intake
 
-**Open.** Apply this checklist to the frozen SG13CMOS5L candidate
-`tt_um_pinwheel_streaming_ready_d2` from the [November 4 rehearsal](streaming-8x4-tt-rehearsal-20261104.md).
-Its post-fill ODB is `b7e60eded5198fc53df7e5dd1e3ab0f5162720516ab0c1692a1cf7c7bb62602b`
-and its GDS is `041ff30708e46be33db330e2f1dcafab889824b689499e931ec9d180a11c1689`.
-Model admission and a qualified timing pass require separate receipts.
+**Open.** Qualify the exact five-net SG13CMOS5L ECO of
+`tt_um_pinwheel_streaming_ready_d2`. The 8×4 outline is
+1,724.16 × 710.64 µm. The router reported zero DRC markers. The ECO
+passed main DRC, supplemental enclosure, foundry antenna, transistor
+LVS, geometric rail connectivity, digital correspondence and the
+nine pinned Tiny Tapeout checks. The Tiny Tapeout rehearsal used support revision
+`d66cf179e7bc4d296362ab7e2e3b344dc3c4f665`. Model admission, qualified
+timing and shuttle acceptance each require their own receipt.
+[Exact ECO evidence](streaming-8x4-e982-fanout-trial-20261104.md)
+
+| Exact ECO input | SHA-256 |
+| --- | --- |
+| Routed ODB | `e40e40804ddf5c4093f83710ec27b0a5b975f3a047e5c95810e175fbe6aa78f9` |
+| Streamed GDS | `dcc496d71202677f6d2fe3785dca6ff9bb225ef954953bf7925171174d4b7e82` |
+| DEF | `fbccaa1f145b74050eb5ff257db80cbdd9a3a1b56a530ab27a2d6ba9ad6d23ff` |
+| Logical Verilog | `3167eaaed4365ffc373f9a8609172eeebca48f792134d84a19f259e5f16951ec` |
+| Powered Verilog | `d3780db1d817252cefe22a401e7712a7939236879ed47a0e2c3653c7a0f97401` |
+| Canonical LEF | `d4764da20d86bcd919b03e6926f06fa13246491800eae2fda1ea5a44b53bdc20` |
+| Exported ODB inventory | `af31d89940af5af559d2a8fceb5c0767887faa952298a0e7b684b8ee91658ee8` |
+| Local precheck readback | `dd3507c40f5e72f643c8f26a866f57e8d05fc83acb9f4bd5d911ff436bbce1ed` |
+
+## Provider inputs
+
+TTIHP27a is the proposed shuttle. Allocation, run-specific
+custom-GDS acceptance and extraction authority remain open.
+[Prospective custom-GDS interface](../../.github/workflows/tt-rehearsal.yml)
+
+| Owner | Requested deliverable |
+| --- | --- |
+| Tiny Tapeout allocation | Written confirmation that an independent project can reserve a contiguous 8×4 allocation on TTIHP27a, with availability, reservation procedure and the reservation and artifact deadlines. |
+| Tiny Tapeout integration | The accepted custom-GDS upload path, mandatory artifact set, exact PDK, support, workflow and checker revisions, required check or waiver evidence, and the run-specific receipt that would confirm acceptance of the selected GDS. The local workflow's custom-GDS reference is a proposed interface. |
+| Tiny Tapeout timing | A mux and board I/O contract or versioned SDC covering supported modes and clock period, duty cycle, edge, latency and uncertainty. Supply min/max input and output timing, drive or slew, and load per relevant port, with reset, enable, bidirectional direction changes and exception scope. Include the host path through `ui_in[5]`. |
+| Tiny Tapeout power | Parent VPWR/VGND contact geometry and reference plane, voltage and temperature limits, allowed current and the applicable package or board impedance model. Identify any required local voltage, current-density or activity limits. |
+| IHP or an accepted extraction provider | An approved SG13CMOS5L deck and extractor release with exact options, coverage and RC-to-Liberty pairing authority, or an exact-ECO extraction service returning the required corner SPEFs, naming map, commands, raw logs, source-layout identity and applicability statement. |
+
+The minimum timing response is an applicable corner matrix and its
+authority. Ask for each row's mode, SDC, RC corner and exact deck or SPEF,
+Liberty releases and operating conditions, check purposes, and the
+source justifying the pairing. The matrix must cover setup, hold and
+the applicable electrical checks including slew, capacitance, fanout,
+recovery/removal and pulse width. The provider can use multiple rows
+for any check or cover multiple checks with one row.
+
+If a supported deck or service is unavailable, request an independent
+reference packet with stack geometry and physical tolerances, calibrated
+wire and via resistance, ground and coupling capacitance, applicable
+width, spacing and layer context, and consumer units and conventions.
+Include raw calibration patterns, extracted results and reproducible
+commands. The in-house admission route also needs untouched validation
+cases and an authority that accepts its use for this candidate.
+[Reference request](streaming-8x4-golden-reference-request-20261026.md)
 
 ## 1. Admit the parasitics source
 
@@ -41,7 +87,7 @@ Model admission and a qualified timing pass require separate receipts.
   ground and coupling capacitance, vias, dielectrics, layers, width and
   spacing range, and actual consumer units and semantics. The earlier
   f516 study specifies the [oracle contract and empirical criteria](streaming-8x4-golden-reference-request-20261026.md).
-  Establish the criteria's applicability on b7e60 and retain the
+  Establish the criteria's applicability on the exact ECO and retain the
   historical measurements under their original target.
 - [ ] Seal the required scenario matrix before launching STA. Each row
   identifies the RC corner and ruleset or SPEF, Liberty files and operating
@@ -82,19 +128,29 @@ Model admission and a qualified timing pass require separate receipts.
   endpoint and currently blocks qualified timing and ECO through its
   [policy](../../scripts/streaming_8x4_closure48_policy.py#L40).
 
-## Local work before model admission
+## Frozen baseline and local work before model admission
+
+The November 4 baseline rehearsal remains bound to post-fill ODB
+`b7e60eded5198fc53df7e5dd1e3ab0f5162720516ab0c1692a1cf7c7bb62602b`
+and GDS `041ff30708e46be33db330e2f1dcafab889824b689499e931ec9d180a11c1689`.
+[Baseline rehearsal](streaming-8x4-tt-rehearsal-20261104.md)
 
 Audit the constraints, build the exact annotation/exception inventory,
-and prepare a reader for the two intake paths. The legacy nominal
-diagnostic reports `ui_in[5]` to `engine.frontend._0230_/D` at −24.696 ps
-fast and −7.519 ps typical. Reopen that min path with the admitted model
-before sizing a hold ECO. Reducing frequency does not remove a same-edge
-hold violation. [Frozen endpoint and load audit](streaming-8x4-e982-timing-audit-20261104.md) ·
+and prepare the ECO binding for the software reader. The baseline
+diagnostic used one inherited seven-layer nominal SPEF at three
+Liberty corners. Its `ui_in[5]` to `engine.frontend._0230_/D` path
+had hold slack of −24.696 ps fast and −7.519 ps typical. Reopen the
+path and the full min-path census on the ECO under the admitted model
+and integration constraints before sizing a hold repair. Evaluate
+same-edge hold from the launch and capture relationship at that edge,
+independently of the cycle-period target.
+[Frozen endpoint and load audit](streaming-8x4-e982-timing-audit-20261104.md) ·
 [Legacy model scope](streaming-tt-extraction-scope.md)
 
-The sealed DEF and pinned standard-cell Liberty independently explain five
-fanout violations. The route configuration targets ten, while Liberty
-sets a maximum of eight and counts each antenna input as one load.
+The baseline's sealed DEF and pinned standard-cell Liberty explain
+five fanout violations. The route configuration targets ten, while
+Liberty sets a maximum of eight and counts each antenna input as one
+load.
 
 | Net | Functional sinks | Antenna inputs | Total |
 | --- | ---: | ---: | ---: |
@@ -104,19 +160,25 @@ sets a maximum of eight and counts each antenna input as one load.
 | `net2333` | 8 | 1 | 9 |
 | `net840` | 6 | 3 | 9 |
 
-Plan the smallest correction that respects the eight-load rule and
-preserves antenna protection, including the fixed geometry on `net840`.
-Any adopted physical change creates a new candidate. Rebind model
-applicability, rerun extraction and STA, and refresh the affected route,
-DRC, antenna, LVS, digital correspondence and precheck evidence before
-assembling a new package. Shuttle admission remains a separate decision.
+The ECO removed all five observed fanout violations while retaining
+the two `net840` antenna bridges. Its 19 collateral signal-route
+changes and five decap replacements remain part of the release review.
+The geometric rail check and local decap inventory leave electrical
+power qualification open. Any later physical change requires new
+target identities, applicable extraction and STA, and refreshed
+affected checks before a package is assembled.
+[ECO scope and power evidence](streaming-8x4-e982-fanout-trial-20261104.md)
 
 ## Software preflight
 
-The [local reader](../../scripts/streaming_8x4_e982_parasitics_preflight.py)
-reopens a reviewed request against the exact rehearsal ODB, GDS, logical
-netlist and exported inventory. Use workspace-relative regular-file
-bindings with `path` and `sha256` keys. The request has schema
+Use `--target eco` to select the exact ECO ODB, GDS, logical Verilog
+and exported inventory listed above. The default `--target baseline`
+keeps the original rehearsal bindings. Each target requires matching
+hashes in the request and the corresponding native analysis receipts.
+[Local reader](../../scripts/streaming_8x4_e982_parasitics_preflight.py)
+
+Use workspace-relative regular-file bindings with `path` and `sha256`
+keys. The request has schema
 `pinwheel.e982-parasitics-preflight-request.v1`, a `target` object keyed
 by `odb`, `gds`, `netlist` and `inventory`, and a `scenarios` object
 keyed by the reviewed scenario labels. Each scenario provides
@@ -133,7 +195,7 @@ native report with its OpenSTA corner markers and raw
 
 ```sh
 python3 -B scripts/streaming_8x4_e982_parasitics_preflight.py request.json \
-  --request-sha256 "$reviewed_request_sha256"
+  --target eco --request-sha256 "$reviewed_request_sha256"
 ```
 
 The reader supports scalar detailed-net SPEF with explicit `PIN_CAP NONE`,
