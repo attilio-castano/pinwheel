@@ -40,5 +40,35 @@ A7 27 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 98 59
 See the [quad host wire format](https://github.com/attilio-castano/pinwheel/blob/main/docs/protocols/streaming-continuation.md#quad-host-wire-format)
 and the [sampled-ready I²C profile](https://github.com/attilio-castano/pinwheel/blob/main/docs/protocols/streaming-ready.md).
 
+The bring-up tool prints the upload words and expected bytes for UART receive,
+SPI mode 0 duplex, and I²C reads and writes on the depth-two device:
+
+```sh
+python3 -B scripts/streaming_8x4_bringup.py fixture
+```
+
+For a board run, a `QuadTransport` backend must drive CSn, SCK, and the four
+MOSI lanes, step the project clock, and return MISO before that edge and READY
+after it. It also needs `cold_reset()` using the sequence above. Use `ReadyHost`
+at depth two to upload, commit, start, drain, and release each program. For the
+UART fixture, drive one 8N1 `0x96` frame into raw input 0 after START, with 16
+project clocks per UART bit. SPI uses protocol outputs 0, 1, and 2 for MOSI,
+SCLK, and CSn, with MISO on raw input 0. I²C uses the two loopback connections
+above and a target at `0x52` that supplies the fixture bytes or captures writes.
+
+The same host code can exercise all four cases locally with an Icarus
+public-pin model and independent simulated peers. Use the executable hash
+from its reviewed build evidence:
+
+```sh
+python3 -B scripts/streaming_8x4_bringup.py simulate \
+  --vvp /path/to/vvp --executable /path/to/unchanged.vvp \
+  --executable-sha256 MODEL_SHA256
+```
+
+This dry run checks digital behavior and matching release. Board testing
+needs a compatible physical adapter and peers for the selected clock and I/O
+levels.
+
 This is the CMOS5L 8×4 rehearsal candidate. The implementation targets a
 20 ns clock period. The release clock rate and shuttle allocation remain open.
