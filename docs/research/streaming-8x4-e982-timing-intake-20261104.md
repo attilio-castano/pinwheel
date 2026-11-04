@@ -110,3 +110,37 @@ Any adopted physical change creates a new candidate. Rebind model
 applicability, rerun extraction and STA, and refresh the affected route,
 DRC, antenna, LVS, digital correspondence and precheck evidence before
 assembling a new package. Shuttle admission remains a separate decision.
+
+## Software preflight
+
+The [local reader](../../scripts/streaming_8x4_e982_parasitics_preflight.py)
+reopens a reviewed request against the exact rehearsal ODB, GDS, logical
+netlist and exported inventory. Use workspace-relative regular-file
+bindings with `path` and `sha256` keys. The request has schema
+`pinwheel.e982-parasitics-preflight-request.v1`, a `target` object keyed
+by `odb`, `gds`, `netlist` and `inventory`, and a `scenarios` object
+keyed by the reviewed scenario labels. Each scenario provides
+`rc_corner`, `sta_corner`, `mode`, bindings for `sdc`, `spef`,
+`annotation` and `run`, and an ordered `liberties` list of bindings.
+
+The `run` receipt uses schema `pinwheel.e982-spef-annotation-run.v1`.
+It records `top`, `scenario`, both corner names, `mode`, digests for
+the target ODB/GDS/netlist and the SDC, SPEF, annotation report and runtime
+as `<role>_sha256`, plus the ordered `liberty_sha256` list. It records
+`annotation_mode` as `read_spef` and the observed `exit_code`. Supply the
+native report with its OpenSTA corner markers and raw
+`report_parasitic_annotation -report_unannotated` section.
+
+```sh
+python3 -B scripts/streaming_8x4_e982_parasitics_preflight.py request.json \
+  --request-sha256 "$reviewed_request_sha256"
+```
+
+The reader supports scalar detailed-net SPEF with explicit `PIN_CAP NONE`,
+resolves name maps and OpenRCX escaped hierarchy, checks consumed-net and
+terminal coverage, validates resistance connectivity and capacitor
+references, and reconciles reported annotation gaps with the ODB inventory.
+It rejects identical extracted graph digests presented as different RC
+corners. A software pass applies to the supplied scenario matrix.
+Physical model authority, completeness of the signoff scenario matrix,
+and qualified timing remain separate decisions.
