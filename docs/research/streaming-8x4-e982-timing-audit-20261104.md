@@ -34,11 +34,10 @@ hold term is the Liberty-derived path contribution printed by STA.
 Clock reconvergence pessimism is zero on this path. The SDC declares a
 20 ns clock, 0.200 ns uncertainty, 0.150 ns clock transition, 0.200/4.000
 ns input and output min/max delays, an `sg13cmos5l_buf_2/X` nonclock
-input driver, and 0.010 pF (10 fF) output load. The written SDC calls
-`set_propagated_clock`. The `clock.rpt` header says `Virtual: yes`
-and `Propagated: no`, while the actual minimum path includes all four
-nonzero CTS buffer delays and the `unpropagated.rpt` files are empty.
-The capture arrivals above come from the endpoint path.
+input driver, and 0.010 pF (10 fF) output load. The standalone STA
+logs read the source `core.sdc` with `OPENLANE_SDC_IDEAL_CLOCKS=0`,
+which selects `set_propagated_clock`. The written SDC agrees. The
+capture arrivals above come from the expanded endpoint path.
 
 For this edge and fixed data/clock delays, slew and library lookup,
 `new slack = old slack + change in minimum input delay − change in hold uncertainty`.
@@ -61,6 +60,41 @@ seven-layer deck for this five-routing-layer design. Each scenario
 reports 282 unannotated drivers and zero after the LibreLane filter.
 The filter count and PVT sweep leave RC qualification open.
 [Qualified timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+
+## Clock propagation readback
+
+The `clock.rpt` header's `Virtual: yes` and `Propagated: no` come
+from a LibreLane formatting defect. In the runtime's
+`scripts/openroad/sta/corner.tcl`, lines 364–386 initialize both
+labels to `no`, then set the variable for `Virtual:` when either
+`is_virtual` or `is_propagated` is true. The variable printed as
+`Propagated:` stays `no`. Lines 351–359 independently enumerate the
+same clocks and print a name if its actual OpenSTA
+`get_property $clock is_propagated` is false. Each original `sta.log`
+contains a single empty, delimited `unpropagated.rpt` section
+immediately followed by the `clock.rpt` section with one clock,
+`clk`, sourced at the public `clk` input. Those retained same-process
+queries establish `is_propagated = 1` at all three corners.
+
+The frozen DEF, ODB terminal inventory and nominal SPEF `*CONN`
+sets agree on all terminals of the five clock-path nets. The standalone
+STA netlist has the same four buffer arcs and pin connections from the
+public `clk` to `engine.frontend._0230_/CLK`. Resolving the SPEF
+`*NAME_MAP` and traversing each `*RES` graph connects the driver to the
+selected sink on each segment. All three raw `min.rpt` files show
+nonzero delay through that same chain.
+
+| Clock-path net | SPEF ID | Terminals including driver | Resistor records |
+| --- | --- | ---: | ---: |
+| `clk` | `*3` | 2 | 6 |
+| `clknet_0_clk` | `*46` | 5 | 19 |
+| `clknet_2_0_0_clk` | `*47` | 9 | 31 |
+| `clknet_5_3_0_clk` | `*76` | 5 | 10 |
+| `clknet_7_12__leaf_clk` | `*114` | 8 | 18 |
+
+This readback required no additional native run. It establishes clock
+propagation and connection on the original nominal-RC diagnostic.
+Qualified STA still needs the admitted RC model and I/O contract.
 
 ## Fanout and antenna loads
 
@@ -106,6 +140,7 @@ Paths below are relative to the repository unless prefixed by
 | `$R/flow/09-openroad-fillinsertion/tt_um_pinwheel_streaming_ready_d2.odb` | `b7e60eded5198fc53df7e5dd1e3ab0f5162720516ab0c1692a1cf7c7bb62602b` |
 | `$R/design.gds` | `041ff30708e46be33db330e2f1dcafab889824b689499e931ec9d180a11c1689` |
 | `$R/design.def` | `8802555ed7800ac6bcf92680793380d4a0a4deee0f7e6cd584044c084fe86350` |
+| `$R/flow/09-openroad-fillinsertion/tt_um_pinwheel_streaming_ready_d2.nl.v` | `6d3994230c8b56f99db0fce61ca1ebfddbd13de96d792b03605ee8107a05593c` |
 | `$V/receipt.json` | `cafc5f3862c53daff61e71ac0586b502fa6b047092e0c8821dc2c444fa04f42b` |
 | `$V/inventory.json` | `00d4790acec3550a6a176566fae6abaa6f150903aeb2a6d4b640cf75dc1afd10` |
 | `build/e982-g4-20261104/semantic-state-map.json` | `22e31c36a0c485c0abcc16c95158211aa44e0896dd5a31ab9ff0860b28505c2a` |
@@ -122,6 +157,22 @@ PDK revision `2bbec755dc67ca3db0261c3d6163e15735d66710`.
 The Liberty files are under `$P/libs.ref/sg13cmos5l_stdcell/lib`.
 `$T/execution.json` records the exact native invocation and runtime
 image digest `sha256:5825633bea1f9cbc705ece2de2bc31de6e4ec83d233739205a0f265ef9d92f92`.
+
+For the clock readback, `$L` is
+`$H/8x4-20261022-01/intake/librelane-native-source`.
+The `$L/manifest.json` source-copy receipt binds the source file
+below to the same image digest and installed script path recorded in
+the retained STA `COMMANDS`. The three raw logs retain the property
+query's delimiters, so an empty extracted report alone is insufficient.
+
+| Clock evidence path | SHA-256 |
+| --- | --- |
+| `$L/manifest.json` | `b623539e6046f1c06766c860a6f959e558fc9586b2d15e7bffa4ee177bcab8f9` |
+| `$L/librelane/scripts/openroad/sta/corner.tcl` | `e0096884c1929ed80506366ecc3e809c78c8493180e366fc095e2b09f5c36f53` |
+| `$T/flow/02-openroad-stapostpnr/COMMANDS` | `489b026de87a4a48fd4b303bc1cd296e0d4bc2e00adefafe3f2753f595c20055` |
+| `$T/flow/02-openroad-stapostpnr/nom_fast_1p32V_m40C/sta.log` | `59c8c38fb45e5a62eb23e8dc7ea78eaec319c4a79f80d3bd1b9f16798c4855c8` |
+| `$T/flow/02-openroad-stapostpnr/nom_typ_1p20V_25C/sta.log` | `96d2677eb62d81efff5d275824e43abe835c69bbed6745ffdf6055a256cd3091` |
+| `$T/flow/02-openroad-stapostpnr/nom_slow_1p08V_125C/sta.log` | `4007524b5c6902f981dddf25587adcc9e51a070212c20c9fd2a62b5ed8895879` |
 
 | Liberty file | SHA-256 |
 | --- | --- |
