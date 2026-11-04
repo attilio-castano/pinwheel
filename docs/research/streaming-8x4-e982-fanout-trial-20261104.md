@@ -178,3 +178,63 @@ The local report `signoff-01/eco-power-observation.json` has SHA-256
 It binds the exact candidate ODB, DEF and GDS, the placement partition,
 and the Liberty and SPICE inputs. Normal and optimized Python
 produced byte-identical reports.
+
+## Five-layer extraction and timing
+
+The local diagnostic extracted a separate SPEF for each of the pinned
+five-layer MIN, TYP and MAX draft models from the exact same-ODB DEF.
+It ran each SPEF against the fast, typical and slow Liberty scenarios
+with the 20 ns rehearsal SDC and a propagated `clk`. The same matrix
+was run on the frozen candidate to isolate the ECO from the model
+change. [Local timing runner](../../scripts/streaming_8x4_e982_eco_timing.py)
+
+The draft copies vary capacitance and named via resistance. The
+canonical extractor uses `-lef_res`, so ordinary wire resistance
+and generated via resistance stay fixed by the original technology
+LEF in every pass. The nine combinations are a sensitivity sweep.
+The model still requires physical qualification, and the actual
+shuttle clock and I/O constraints remain open.
+[Draft model scope](streaming-8x4-draft-rc-timing-diagnostic-20261022.md) ·
+[Shuttle timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+
+| Draft model | ECO worst hold, fast / typical / slow (ps) | ECO worst setup across PVT (ns) | Max-cap violations, baseline → ECO (fast / typical / slow) |
+| --- | ---: | ---: | --- |
+| MIN | −54.402 / −61.132 / −42.660 | +3.187 | 0 / 0 / 0 → 0 / 0 / 0 |
+| TYP | −69.867 / −79.850 / −64.114 | +2.180 | 1 / 1 / 1 → 1 / 1 / 1 |
+| MAX | −84.668 / −95.618 / −81.645 | +1.559 | 5 / 5 / 4 → 5 / 5 / 5 |
+
+Every scenario had one hold violation on the falling `ui_in[5]` to
+`engine.frontend._0230_/D` path on both layouts. ECO hold slack
+changed by at most 0.226 ps in the paired runs. Worst setup stayed
+positive, with a largest paired change of 3.917 ps. Fanout violations
+fell from five to zero in every pair. Both layouts had zero slew
+violations. With the other diagnostic quantities fixed and hold
+uncertainty at 200 ps, the worst ECO hold path would reach zero slack
+at a minimum input delay of about 296 ps. The shuttle I/O contract
+determines the actual earliest arrival.
+
+The ECO added one max-capacitance violation, at `fanout2425/X` in
+MAX with slow cells. Its collateral reroute `net2425` reached
+0.300726 pF against the 0.300000 pF limit. The other capacitance
+violator pins were shared with the baseline in their respective
+scenarios. These are local findings to reopen with the admitted RC
+model and shuttle constraints.
+
+The independent readback reconciled 41,786 consumed ECO nets in
+each SPEF, with zero missing or partially annotated consumed nets.
+The 282 raw unannotated drivers were individually accounted for as
+unused. OpenSTA's setup diagnostics for clock and constraint
+coverage printed no findings under the rehearsal SDC.
+
+A supplemental replay loaded the same ECO netlist, SPEFs, Liberty
+and SDC in the same OpenSTA binary and reproduced setup and hold
+worst slack in every case. The worst minimum pulse-width margin
+was +9.714 ns. The loaded constraints and libraries yielded no
+applicable recovery, removal or minimum-period checks in this replay.
+[Supplemental replay runner](../../scripts/streaming_8x4_e982_eco_electrical.py)
+
+| Local readback under `build/e982-fanout-20261104/` | SHA-256 |
+| --- | --- |
+| `timing-eco-02/timing-readback.json` | `a42c09b64dc2721cbdf7e224b8b228caaa3cbcb82497ccba52972a78471a48ae` |
+| `timing-baseline-01/timing-readback.json` | `ee429d766cefcc23683aa0497f620484fad627bf4f933db6ede49a65b781ef78` |
+| `electrical-01/readback.json` | `cc452dd0c004af4b125cf47839e097893ca91d66245b5ed2cf57b57afefc4baf` |
