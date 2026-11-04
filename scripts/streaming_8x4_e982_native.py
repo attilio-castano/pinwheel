@@ -97,9 +97,20 @@ def bind(path):
     return {"path": str(path.relative_to(ROOT)), "sha256": sha(path)}
 
 
+def active_layout(context):
+    return context.get("target", dict(odb=context["odb"], gds=context["gds"], odb_sha256=ODB, gds_sha256=GDS))
+
+
+def check_active_layout(context):
+    target = active_layout(context)
+    require(all(sha(target[role]) == target[role + "_sha256"] for role in ("odb", "gds")),
+            "Selected ODB or GDS changed")
+
+
 def run_native(context, out, entrypoint, argv, mounts, timeout, deadline, *, memory="6g", environment=()):
     from streaming_8x4_signoff_execute import owned_native
 
+    check_active_layout(context)
     remaining = int(deadline - time.time()) - 90
     require(remaining >= 30, "Too close to campaign deadline for another native job")
     owner = str(uuid.uuid4())
@@ -127,6 +138,8 @@ def run_native(context, out, entrypoint, argv, mounts, timeout, deadline, *, mem
             f"{out.name} native execution failed: {receipt.get('status')}/{receipt.get('exit_code')}")
     require(sha(context["odb"]) == ODB and sha(context["gds"]) == GDS,
             "Frozen ODB or GDS changed during native work")
+    if "target" in context:
+        check_active_layout(context)
     require(pdk_snapshot(context["pdk"], context["prep"]) == context["prep"]["pdk_identity"],
             "Prepared PDK changed during native work")
     return receipt
@@ -141,8 +154,19 @@ def views(context, deadline, output=None):
     inputs.mkdir(parents=True, exist_ok=False)
     shutil.copyfile(context["reference"], inputs / "reference.json")
     source = context["source"] / "flow"
+    target = active_layout(context)
+    mounts = [(inputs, "/work/export/inputs", False),
+              (ROOT / "scripts", "/work/scripts", False),
+              (ROOT / "physical", "/work/physical", False),
+              (context["prepared"] / "inputs", "/work/inputs", False),
+              (source, "/work/source", False)]
+    if "target" in context:
+        source_odb = "/work/target.odb"
+        mounts.append((target["odb"], source_odb, False))
+    else:
+        source_odb = "/work/source/" + str(target["odb"].relative_to(source))
     request = dict(schema="pinwheel.streaming-8x4-final-views-native-request.v1",
-                   source_odb="/work/source/" + str(context["odb"].relative_to(source)), source_odb_sha256=ODB,
+                   source_odb=source_odb, source_odb_sha256=target["odb_sha256"],
                    resolved_config="/work/source/resolved.json", resolved_config_sha256=sha(source / "resolved.json"),
                    input_sha256=context["prep"]["input_sha256"], reference_sha256=REF, top=TOP,
                    qualified=False, physical_acceptance=False)
@@ -151,15 +175,11 @@ def views(context, deadline, output=None):
     report = run_native(context, out, "python3",
                         ["-B", "/work/export/inputs/native-signoff.py", "native-views",
                          "--request", "/work/export/inputs/request.json"],
-                        [(inputs, "/work/export/inputs", False),
-                         (ROOT / "scripts", "/work/scripts", False),
-                         (ROOT / "physical", "/work/physical", False),
-                         (context["prepared"] / "inputs", "/work/inputs", False),
-                         (source, "/work/source", False)],
+                        mounts,
                         900, deadline, memory="3g",
                         environment=("PYTHONPATH=/work/scripts:/work/inputs",))
     result = read(out / "final-views-native.json")
-    require(result["completed"] is True and result["source_odb_sha256"] == ODB and
+    require(result["completed"] is True and result["source_odb_sha256"] == target["odb_sha256"] and
             result["source_odb_unchanged"] is True and
             result["resolved_config_sha256"] == request["resolved_config_sha256"], "Wrong native views identity")
     links = {"canonical_signoff_report_sha256": "signoff-views/report.json",
@@ -172,26 +192,27 @@ def views(context, deadline, output=None):
     connectivity = read(out / "actual-signal/receipt.json")
     stream = read(out / "native-report.json")
     require(signoff["completed"] is True and signoff["exit_code"] == 0 and
-            signoff["actual_database_sha256"] == ODB and signoff["inputs_unchanged"] is True,
+            signoff["actual_database_sha256"] == target["odb_sha256"] and signoff["inputs_unchanged"] is True,
             "Canonical signoff views failed")
-    require(connectivity["database_sha256"] == ODB and connectivity["reference_sha256"] == REF and
+    require(connectivity["database_sha256"] == target["odb_sha256"] and connectivity["reference_sha256"] == REF and
             connectivity["read_only_database"] is True and connectivity["top"] == TOP,
             "Canonical connectivity did not bind this ODB")
-    require(stream["source_odb_sha256"] == ODB and stream["source_odb_unchanged"] is True,
+    require(stream["source_odb_sha256"] == target["odb_sha256"] and stream["source_odb_unchanged"] is True,
             "Canonical streamout did not bind this ODB")
     for record, key, folder in ((signoff, "artifacts_sha256", "signoff-views"),
                                 (connectivity, "artifacts_sha256", "actual-signal"),
                                 (stream, "generated_files_sha256", ".")):
         for name, pin in record[key].items():
             require(sha(out / folder / name) == pin, f"Changed native view {folder}/{name}")
-    require(normalized_gds(out / "design.gds") == normalized_gds(context["gds"]),
-            "Independent streamout differs from frozen GDS beyond timestamps")
+    normalized = normalized_gds(target["gds"])
+    require(normalized_gds(out / "design.gds") == normalized,
+            "Independent streamout differs from selected GDS beyond timestamps")
     original = (out / "signoff-views/implemented.lef").read_text()
     derived, _ = canonicalize(original)
     require(validate_equivalence(original, derived), "Official LEF canonicalization differs")
     (out / "official-format.lef").write_text(derived)
-    write(out / "rehearsal-view-readback.json", dict(status="pass", target_odb_sha256=ODB,
-          gds_sha256=GDS, normalized_gds_sha256=normalized_gds(context["gds"]),
+    write(out / "rehearsal-view-readback.json", dict(status="pass", target_odb_sha256=target["odb_sha256"],
+          gds_sha256=target["gds_sha256"], normalized_gds_sha256=normalized,
           view_sha256={name: sha(out / path) for name, path in {
               "lef": "official-format.lef", "verilog": "signoff-views/implemented.v",
               "powered_verilog": "signoff-views/implemented.power.v", "cdl": "complete-reference.cdl",
@@ -207,8 +228,9 @@ def views(context, deadline, output=None):
 def checked_views(context):
     root = context["work"] / "views"
     result = read(root / "rehearsal-view-readback.json")
-    require(result["status"] == "pass" and result["target_odb_sha256"] == ODB and
-            result["gds_sha256"] == GDS, "Views receipt refers to another target")
+    target = active_layout(context)
+    require(result["status"] == "pass" and result["target_odb_sha256"] == target["odb_sha256"] and
+            result["gds_sha256"] == target["gds_sha256"], "Views receipt refers to another target")
     for row in result["artifacts"]:
         require(sha(ROOT / row["path"]) == row["sha256"], f"Changed views input {row['path']}")
     return root, result
@@ -218,6 +240,7 @@ def pg(context, deadline):
     from streaming_8x4_closure24_pg_lifetime_context import native_module
 
     native = native_module()
+    target = active_layout(context)
     views_root, _ = checked_views(context)
     out = context["work"] / "pg"
     inputs = out / "inputs"
@@ -228,7 +251,7 @@ def pg(context, deadline):
     rails = native.expected_rails(read(inventory))
     require(set(rails) == {"VGND", "VPWR"}, "Unexpected rails")
     request = dict(schema="pinwheel.streaming-8x4-power-grid-request.v1", source_odb="/work/target.odb",
-                   source_odb_sha256=ODB, inventory_sha256=sha(inventory), reference_sha256=REF, top=TOP,
+                   source_odb_sha256=target["odb_sha256"], inventory_sha256=sha(inventory), reference_sha256=REF, top=TOP,
                    rails=rails, openroad_source_commit=native.COMMIT,
                    leaf_timeout_seconds=native.LEAF_SECONDS, outer_timeout_seconds=native.OUTER_SECONDS,
                    floorplanning=False, dont_require_terminals=False, qualified=False, physical_acceptance=False)
@@ -239,11 +262,12 @@ def pg(context, deadline):
     run_native(context, out, "python3",
                ["-B", "/work/scripts/streaming_8x4_closure24_pg_lifetime.py", "native-supervise"],
                [(out, "/work/pg", True), (inputs, "/work/pg/inputs", False),
-                (context["odb"], "/work/target.odb", False),
+                (target["odb"], "/work/target.odb", False),
                 (ROOT / "scripts", "/work/scripts", False)],
                240, deadline, memory="3g", environment=("PYTHONPATH=/work/scripts",))
-    native_result, stats = native.native_result(out, {"source_odb": {"sha256": ODB}})
-    write(out / "rehearsal-pg-readback.json", dict(status="pass", target_odb_sha256=ODB, gds_sha256=GDS,
+    native_result, stats = native.native_result(out, {"source_odb": {"sha256": target["odb_sha256"]}})
+    write(out / "rehearsal-pg-readback.json", dict(status="pass", target_odb_sha256=target["odb_sha256"],
+          gds_sha256=target["gds_sha256"],
           rails={name: {"iterms": len(row["iterms"]), "bterms": len(row["bterms"]), "psm": stats[name]}
                  for name, row in rails.items()}, census_totals=native_result["inventory_totals"],
           shorts_checked=False, ir_drop_qualified=False,
@@ -253,6 +277,7 @@ def pg(context, deadline):
 
 def layout(context, deadline):
     views_root, expected = checked_views(context)
+    target = active_layout(context)
     out = context["work"] / "layout"
     inputs = out / "inputs"
     inputs.mkdir(parents=True, exist_ok=False)
@@ -270,8 +295,8 @@ def layout(context, deadline):
     # unchanged canonical native command including transistor report parsing.
     source_files = ("scripts/streaming_8x4_signoff_execute.py", "scripts/streaming_tt_layout.py")
     req = dict(schema="pinwheel.streaming-8x4-layout-native-request.v1", timeout_each=900,
-               source_odb_sha256=ODB, producer_sha256={name: sha(ROOT / name) for name in source_files},
-               input_sha256={"/input/actual.gds": GDS, "/input/actual.cdl": sha(cdl), **{
+               source_odb_sha256=target["odb_sha256"], producer_sha256={name: sha(ROOT / name) for name in source_files},
+               input_sha256={"/input/actual.gds": target["gds_sha256"], "/input/actual.cdl": sha(cdl), **{
                    "/work/pdk/" + str(path.relative_to(context["pdk"])): deck_sha256[kind]
                    for kind, path in decks.items()}},
                qualified=False)
@@ -280,11 +305,11 @@ def layout(context, deadline):
                ["-B", "/worker/scripts/streaming_8x4_signoff_execute.py", "native-layout",
                 "--request", "/work/export/inputs/request.json"],
                [(inputs, "/work/export/inputs", False), (ROOT / "scripts", "/worker/scripts", False),
-                (ROOT / "physical", "/worker/physical", False), (context["gds"], "/input/actual.gds", False),
+                (ROOT / "physical", "/worker/physical", False), (target["gds"], "/input/actual.gds", False),
                 (cdl, "/input/actual.cdl", False)], 2100, deadline,
                environment=("PYTHONPATH=/worker/scripts",))
     receipt = read(out / "native-result.json")
-    require(receipt["completed"] and receipt["inputs_unchanged"] and receipt["source_odb_sha256"] == ODB
+    require(receipt["completed"] and receipt["inputs_unchanged"] and receipt["source_odb_sha256"] == target["odb_sha256"]
             and [row["kind"] for row in receipt["events"]] == ["antenna", "lvs"], "Layout receipt changed")
     antenna, lvs = (read(out / f"{kind}-result.json") for kind in ("antenna", "lvs"))
     require(antenna["report_sha256"] == sha(out / "antenna.xml") and
@@ -295,7 +320,7 @@ def layout(context, deadline):
     if observed["passed"]:
         require("Congratulations! Netlists match." in log, "Missing LVS success context")
     write(out / "rehearsal-lvs-readback.json", dict(status="pass" if observed["passed"] else "fail",
-          target_odb_sha256=ODB, gds_sha256=GDS, reference_cdl_sha256=sha(cdl),
+          target_odb_sha256=target["odb_sha256"], gds_sha256=target["gds_sha256"], reference_cdl_sha256=sha(cdl),
           deck_sha256=sha(decks["lvs"]), top=observed["top"], circuit_pairs=len(observed["circuits"]),
           layout_devices=observed["layout_devices"], schematic_devices=observed["schematic_devices"],
           antenna_categories=antenna["result"]["category_count"], antenna_pass=antenna["result"]["passed"],
