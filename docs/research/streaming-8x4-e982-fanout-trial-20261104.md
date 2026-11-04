@@ -86,12 +86,12 @@ Quantitative supply droop and electromigration remain open. The checked
 power result is geometric rail connectivity.
 
 Release adoption requires review of the 19 collateral routes and the
-decap change, fresh digital correspondence and Tiny Tapeout precheck on
-this derivative, qualified CMOS5L extraction and timing with the
-shuttle I/O constraints, and shuttle admission. [Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+decap change, a completed Tiny Tapeout precheck on this derivative,
+qualified CMOS5L extraction and timing with the shuttle I/O constraints,
+and shuttle admission. [Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
 
 The [exact-target runner](../../scripts/streaming_8x4_e982_eco_signoff.py)
-supports `drc`, `views`, `pg`, `lvs`, and `decision` phases. The main
+supports `drc`, `views`, `pg`, `lvs`, `official`, and `decision` phases. The main
 deck's raw files live in `five-01/drc/`. The remaining readbacks below
 are in `build/e982-fanout-20261104/signoff-01/`.
 
@@ -102,3 +102,59 @@ are in `build/e982-fanout-20261104/signoff-01/`.
 | `views/rehearsal-view-readback.json` | `f3e019f5d4abf85e7d6f123c9d2f9d8282cca69e29b0e81e1db9ec34f048b045` |
 | `pg/rehearsal-pg-readback.json` | `869a4052c8ddd40d7bcf2a037f84856d1d4a00215ee4ae00cd2f0ea3de6ac81e` |
 | `layout/rehearsal-lvs-readback.json` | `2518207acf1c17b1dfeece9533d155dc736d1abd6bbb6085aed8e3b7cf2a1428` |
+
+## Digital correspondence
+
+The fresh check reopened the exact ECO connectivity and canonical
+netlists, then checked the five buffers against the pinned three-corner
+Liberty logic. Four clones share the input of their original driver.
+The serial buffer forwards the original signal. Restoring the ten
+rebound sink pins after substituting those Boolean identities recovers
+the complete named graph of the frozen candidate, with 36,005 original
+active gates, all 6,039 state bits, and all 24 public output bits. The
+clock and reset cones and the terminals of the 160 antenna diodes
+match. This transports the accepted zero-delay correspondence from
+`b7e60…` to `e40e4…` using the existing Lean proof and a fresh ECO
+graph check. [ECO digital runner](../../scripts/streaming_8x4_e982_eco_digital.py)
+
+Fresh gate-level replay kept the buffers in the exact ECO design.
+All 35 UART, SPI, I²C, and JTAG cases passed, and the oracle rejected
+the injected stage-two sampler fault. All 14 traces matched the
+frozen candidate byte for byte across 513,297 sampled edges, including
+the negative run. The trace comparison establishes digital behavior
+for this corpus under zero-delay simulation.
+
+| Local readback under `build/e982-fanout-20261104/` | SHA-256 |
+| --- | --- |
+| `digital-02/transport.json` | `7b6aaef9a4970e9d3d64a56f7bebce04f30be8e55b407b4367b4ce99578276e1` |
+| `digital-02/wire/report.json` | `eb1975a2b5bcb047d0453ef6b5086a4bec92d59ee511cecf790e6b311d92116c` |
+| `digital-02/wire/worker/native.jsonl` | `cfa96790f07635b7c7e9c29b9b685eb2c9e15062a1a428b198ab4ad3d4959dad` |
+
+## Decap and buffer power comparison
+
+The five-swap comparison uses the pinned Liberty corners and exact
+placed-cell census. The leakage figures sum the five buffers and
+subtract the five removed decaps. The input capacitance is the sum
+of the five added buffer A pins.
+
+| Corner | Change in nominal cell leakage | Added signal input capacitance |
+| --- | ---: | ---: |
+| Fast, 1.32 V, −40 °C | −6.326 nW | 12.232 fF |
+| Typical, 1.20 V, 25 °C | −1.426 nW | 11.317 fF |
+| Slow, 1.08 V, 125 °C | +2.165 nW | 10.576 fF |
+
+The removed decaps' drawn gate areas and nominal PSP oxide parameters
+give a parallel-plate scale of about 24 fF per decap and 120 fF across
+the five. Effective rail capacitance depends on device bias, overlap
+and fringe capacitance, and the rail admittance of each replacement
+buffer. The retained geometric rail pass and this cell comparison
+leave dynamic power, transient droop, and electromigration open.
+Qualification needs the shuttle supply boundary, activity and current
+waveforms, and acceptable rail-voltage and current-density limits.
+[Power comparison runner](../../scripts/streaming_8x4_e982_eco_power.py)
+
+The local report `signoff-01/eco-power-observation.json` has SHA-256
+`c0133860e060ca4221048b9e5156efeb1a213421f7250bf2a763cdc47d0f470a`.
+It binds the exact candidate ODB, DEF and GDS, the placement partition,
+and the Liberty and SPICE inputs. Normal and optimized Python
+produced byte-identical reports.
