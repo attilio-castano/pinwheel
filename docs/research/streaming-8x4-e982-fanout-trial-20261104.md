@@ -86,9 +86,9 @@ Quantitative supply droop and electromigration remain open. The checked
 power result is geometric rail connectivity.
 
 Release adoption requires review of the 19 collateral routes and the
-decap change, a completed Tiny Tapeout precheck on this derivative,
-qualified CMOS5L extraction and timing with the shuttle I/O constraints,
-and shuttle admission. [Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
+decap change, qualified CMOS5L extraction and timing with the shuttle
+I/O constraints, electrical power qualification, and shuttle admission.
+[Timing intake](streaming-8x4-e982-timing-intake-20261104.md)
 
 The [exact-target runner](../../scripts/streaming_8x4_e982_eco_signoff.py)
 supports `drc`, `views`, `pg`, `lvs`, `official`, and `decision` phases. The main
@@ -129,6 +129,26 @@ for this corpus under zero-delay simulation.
 | `digital-02/transport.json` | `7b6aaef9a4970e9d3d64a56f7bebce04f30be8e55b407b4367b4ce99578276e1` |
 | `digital-02/wire/report.json` | `eb1975a2b5bcb047d0453ef6b5086a4bec92d59ee511cecf790e6b311d92116c` |
 | `digital-02/wire/worker/native.jsonl` | `cfa96790f07635b7c7e9c29b9b685eb2c9e15062a1a428b198ab4ad3d4959dad` |
+
+## Local Tiny Tapeout precheck
+
+All nine checks selected by Tiny Tapeout support revision
+`d66cf179e7bc4d296362ab7e2e3b344dc3c4f665` passed for
+`ihp-sg13cmos5l`. The local offline run used the exact ECO GDS and
+the canonical LEF and powered Verilog. Pin-label overlap, full CMOS5L
+DRC, and zero-area checks each returned zero markers. The main DRC
+covered 332 categories including `NW.b`. The independent geometry
+readback matched the 8×4 boundary and all 43 signal pin rectangles
+and labels. The staged views and raw reports were reopened after the
+run, and the three native processes exited. This result covers the
+pinned local precheck. Run-specific acceptance remains with the shuttle.
+
+| Local readback under `build/e982-fanout-20261104/signoff-01/` | SHA-256 |
+| --- | --- |
+| `official/rehearsal-tt-precheck-readback.json` | `dd3507c40f5e72f643c8f26a866f57e8d05fc83acb9f4bd5d911ff436bbce1ed` |
+| `official/tt/precheck/reports/results.xml` | `73c4850706f26c71aa3a86d0437e7edb8861c1ad8defe7d49ab04df4be040430` |
+| `official/tt/precheck/reports/drc_sg13cmos5l.xml` | `a31ee7a26146bf0912141c9407f13172156699c2003d495acf9235e2d736bdb5` |
+| `eco-pin-geometry.json` | `96b0c0f93fabb2df392cb9dde400b23bf12fcd107d40603dd00b219d6faf7fb2` |
 
 ## Decap and buffer power comparison
 
