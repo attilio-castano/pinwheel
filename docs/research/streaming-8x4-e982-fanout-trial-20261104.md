@@ -238,3 +238,43 @@ applicable recovery, removal or minimum-period checks in this replay.
 | `timing-eco-02/timing-readback.json` | `a42c09b64dc2721cbdf7e224b8b228caaa3cbcb82497ccba52972a78471a48ae` |
 | `timing-baseline-01/timing-readback.json` | `ee429d766cefcc23683aa0497f620484fad627bf4f933db6ede49a65b781ef78` |
 | `electrical-01/readback.json` | `cc452dd0c004af4b125cf47839e097893ca91d66245b5ed2cf57b57afefc4baf` |
+
+## Exact ECO rehearsal package
+
+**GO for local rehearsal. NO-GO for fabrication.** The separate ECO
+bundle binds the `e40e4…` ODB and `dcc496…` GDS at the top of this
+report. It contains seven handoff files and 204 evidence files. The
+handoff includes GDS, canonical LEF, logical and powered Verilog,
+metadata, the bring-up datasheet and the license. The evidence copy
+contains the checked physical reports, the digital transport and
+worker artifacts, and the retained timing and power diagnostics.
+
+The fresh bring-up run used the unmodified ECO gate-level simulator
+from the 35-case wire run. Warm reset, UART receive, SPI duplex and
+64-byte I²C read and write passed across 27,407 sampled edges. The
+I²C read exercised 51 clock-stretch edges. This was a public-pin
+simulation. [Bring-up runner](../../scripts/streaming_8x4_e982_eco_bringup.py)
+
+The bundle is retained locally. Its assembly source revision was
+`a46a599aecfc69e7807e1b79524ddfd4faf455b2`. Given a separate copy,
+the [ECO verifier](../../scripts/streaming_8x4_e982_eco_rehearsal.py)
+checks the source file hashes against the sealed manifest before
+reopening the evidence.
+
+```sh
+python3 -B scripts/streaming_8x4_e982_eco_rehearsal.py \
+  verify /path/to/retained/eco-bundle \
+  --manifest-sha256 1b7261201a8420890f4e9a00bd1652fb022c864feea40666897feaa226337f6b
+```
+
+An independent run reopened a physically separate copy using a clean
+Git archive of the verifier, with reads from the original and
+historical worktrees blocked. It rejected a substituted baseline GDS
+even after the test manifest was resealed. The readback
+`rehearsal-eco-01/independent-readback.json` has SHA-256
+`b68422f2415e5923d715a1ab2f9f2ca5e62a2ba0ac548fd59d03290bbd912aa8`.
+
+The package records qualified CMOS5L timing, electrical power and
+shuttle acceptance as open. The metadata retains `clock_hz: 0`.
+A fresh CAD replay uses the separately retained runtime, PDK and
+historical proof inputs.
