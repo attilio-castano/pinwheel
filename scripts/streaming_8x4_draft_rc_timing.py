@@ -315,6 +315,8 @@ def native_pass(inputs, output, model):
         'Diagnostic native pass uses undeclared mounts')
     command = invocation(model, request['source_odb_sha256'])
     P.write(output / 'invocation.json', command)
+    # LibreLane validates --force-run-dir before creating flow artifacts.
+    (output / 'flow').mkdir(exist_ok=False)
     try: cli(args=command['argv'], standalone_mode=False)
     finally:
         TclStep.run_subprocess = delegate
