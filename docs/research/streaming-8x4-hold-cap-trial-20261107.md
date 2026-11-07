@@ -11,6 +11,10 @@ The [physical follow-up](streaming-8x4-hold-cap-physical-20261107.md)
 subsequently passed main-deck DRC, transistor LVS, supplemental enclosure
 and foundry antenna on this exact candidate.
 
+The [digital follow-up](streaming-8x4-hold-cap-digital-precheck-20261107.md)
+subsequently passed fresh complete-state correspondence, public-pin replay
+and all nine pinned Tiny Tapeout prechecks on the same candidate.
+
 ## Changes and physical scope
 
 The starting point was the previously checked five-net fanout ECO, ODB

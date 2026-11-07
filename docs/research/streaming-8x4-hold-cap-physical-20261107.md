@@ -2,8 +2,10 @@
 
 All four requested checks passed on the exact
 [hold/capacitance candidate](streaming-8x4-hold-cap-trial-20261107.md).
-Carry this candidate forward for the remaining digital, Tiny Tapeout and
-qualification checks. Fabrication readiness requires qualified CMOS5L
+The [digital follow-up](streaming-8x4-hold-cap-digital-precheck-20261107.md)
+also passed fresh correspondence, public-pin replay and pinned Tiny Tapeout
+precheck. The candidate can proceed to local release-package adoption
+review. Fabrication readiness requires qualified CMOS5L
 extraction with the accepted host I/O budget, electrical power
 qualification and shuttle admission.
 
@@ -63,8 +65,8 @@ All work remains local on `codex/8x4-timing-closure` in the same worktree.
 Raw results are in the ignored candidate directory
 `build/8x4-hold-cap-20261107/trial-02/`, under `main-drc-01/`,
 `enclosure-01/` and `layout/`. The aggregate decision is
-`physical-decision.json`. The new candidate awaits fresh digital correspondence,
-Tiny Tapeout precheck and its own release-package adoption review.
+`physical-decision.json`. Fresh digital correspondence and Tiny Tapeout precheck are recorded in
+the linked follow-up. Release-package adoption remains the next local decision.
 
 ## Artifact manifest
 
