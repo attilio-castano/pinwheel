@@ -17,6 +17,9 @@ from streaming_tt_apply_fanout import checked_tcl
 
 DRIVERS = ("fanout2219", "fanout1798", "fanout2439", "fanout875", "fanout2425")
 OUT_ROOT = ROOT / "build/8x4-hold-cap-20261107"
+# The first routed trial moved this leaf around the relocated cap buffer.
+# Re-extract its geometry and propagate its clock through the full STA matrix.
+COLLATERAL_CLOCK = "clknet_leaf_721_clk"
 
 
 def native():
@@ -164,6 +167,10 @@ def route(context, out, deadline, delay_master):
     run_native(context, out, "openroad", ["-exit", "-python", "/work/export/worker.py"],
                [(ROOT / "scripts", "/work/scripts", False), (TARGET["odb"], "/work/input.odb", False)],
                1200, deadline, environment=("PYTHONPATH=/work/scripts", "PINWHEEL_HOLD_CAP_NATIVE=1"))
+    review_route(out)
+
+
+def review_route(out):
     before_body, before_cells = def_components(TARGET["odb"].with_suffix(".def"))
     after_body, after_cells = def_components(out / "trial.def")
     old_head, old_tail, old_nets = def_nets(before_body)
@@ -173,7 +180,9 @@ def route(context, out, deadline, delay_master):
     dirty = set(read(out / "edits.json")["dirty_nets"])
     collateral = sorted(set(changed) - dirty)
     require(all(terminals(old_nets[n]) == terminals(new_nets[n]) and b"+ FIXED" not in old_nets[n]
-                and b"+ USE SIGNAL" in old_nets[n] for n in collateral), "Collateral protected route changed")
+                and (b"+ USE SIGNAL" in old_nets[n] or
+                     (n == COLLATERAL_CLOCK and b"+ USE CLOCK" in old_nets[n]))
+                for n in collateral), "Collateral protected route changed")
     retained = before_cells.keys() & after_cells.keys() - {n.encode() for n in DRIVERS}
     require(all(before_cells[n] == after_cells[n] for n in retained), "Retained instance changed")
     require(all(before_cells[n][0].decode() in FILLERS | {"sg13cmos5l_decap_4", "sg13cmos5l_decap_8"}
@@ -181,6 +190,8 @@ def route(context, out, deadline, delay_master):
             "Removed a non-filler cell")
     result = read(out / "native-result.json")
     write(out / "route-readback.json", dict(result, collateral_nets=collateral,
+          changed_clock_nets=[n for n in changed if b"+ USE CLOCK" in old_nets[n]],
+          verifier_sha256=sha(__file__),
           odb_sha256=sha(out / "trial.odb"), def_sha256=sha(out / "trial.def"), qualified_timing=False))
 
 
@@ -249,7 +260,7 @@ def verify_route(out):
         if name == "engine.frontend._1956_.Y[1]":
             expected = expected - {("engine.frontend._0230_", "D")} | {("holdcap_delay", "A")}
         require(terminals(new[name]) == expected, f"Wrong terminal delta on {name}")
-        if b"+ FIXED" in record or b"+ USE CLOCK" in record:
+        if b"+ FIXED" in record or (b"+ USE CLOCK" in record and name != COLLATERAL_CLOCK):
             require(record == new[name], "Protected routed net changed")
     require(terminals(new["holdcap_delayed_data"]) == {("holdcap_delay", "X"), ("engine.frontend._0230_", "D")},
             "Wrong delayed leaf connectivity")
@@ -265,7 +276,7 @@ def main():
         native()
         return
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("route", "timing"))
+    parser.add_argument("phase", choices=("route", "review", "timing"))
     parser.add_argument("--history", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--delay-master", default="sg13cmos5l_dlygate4sd2_1",
@@ -277,6 +288,9 @@ def main():
     context = setup(args.history.resolve(), ECO_ROOT / "signoff-01")
     if args.phase == "route":
         route(context, out, args.deadline, args.delay_master)
+    elif args.phase == "review":
+        review_route(out)
+        verify_route(out)
     else:
         timing(context, out, args.deadline)
 
