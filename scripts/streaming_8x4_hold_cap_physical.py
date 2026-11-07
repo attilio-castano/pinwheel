@@ -39,19 +39,20 @@ def command(context, phase):
     if phase == "drc":
         return deck_args(context)
     source = context["source"]
-    pins(source / "maximal-enclosure-subset.drc", ENCLOSURE_SUBSET)
+    require(sha(source / "maximal-enclosure-subset.drc") == ENCLOSURE_SUBSET, "Enclosure deck changed")
     execution = pins(source / "execution.json", BASE_ROUTE_SHA)
     event, = [row for row in execution["phases"] if row["phase"] == "enclosure"]
     return event["argv"][event["argv"].index(IMAGE) + 1:]
 
 
 def deck(context, phase, deadline):
+    argv = command(context, phase)
     out = TRIAL / ("main-drc-01" if phase == "drc" else "enclosure-01")
     out.mkdir(parents=True, exist_ok=False)
     mounts = [(TARGET["gds"], "/work/export/design.gds", False)]
     if phase == "enclosure":
         mounts.append((context["source"] / "maximal-enclosure-subset.drc", ENCLOSURE_GENERATOR, False))
-    run_native(context, out, "klayout", command(context, phase), mounts,
+    run_native(context, out, "klayout", argv, mounts,
                3600 if phase == "drc" else 600, deadline)
     write(out / "readback.json", checked_deck(context, phase))
 
