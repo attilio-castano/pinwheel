@@ -4,8 +4,12 @@ Carry this derivative forward for physical requalification. Fresh extraction
 and the nine local STA cases pass setup, hold, signal capacitance, slew and
 fanout under the retained draft models and unchanged integration assumptions.
 Qualified CMOS5L extraction, the accepted host I/O budget and electrical power
-qualification remain open. The new GDS also requires its own full physical
-signoff replay before adoption.
+qualification remain open. At completion of this timing trial, the new GDS also required its own
+full physical signoff replay before adoption.
+
+The [physical follow-up](streaming-8x4-hold-cap-physical-20261107.md)
+subsequently passed main-deck DRC, transistor LVS, supplemental enclosure
+and foundry antenna on this exact candidate.
 
 ## Changes and physical scope
 
