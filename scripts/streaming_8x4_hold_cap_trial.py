@@ -4,6 +4,8 @@ import argparse
 from collections import Counter, defaultdict
 import os
 from pathlib import Path
+import shutil
+import subprocess
 import time
 
 from streaming_8x4_e982_native import ROOT, IMAGE, read, require, run_native, sha, views, write
@@ -24,6 +26,8 @@ def native():
     out = Path("/work/export")
     request = read(out / "request.json")
     require(sha("/work/input.odb") == TARGET["odb_sha256"], "Wrong starting ECO")
+    require(request["source_odb_sha256"] == TARGET["odb_sha256"]
+            and request["producer_sha256"] == sha(__file__), "Native producer changed")
     tech = Tech()
     tech.readLiberty("/work/pdk/ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib/sg13cmos5l_stdcell_typ_1p20V_25C.lib")
     design = Design(tech)
@@ -152,9 +156,12 @@ def native():
 
 def route(context, out, deadline, delay_master):
     out.mkdir(parents=True, exist_ok=False)
+    shutil.copyfile(__file__, out / "worker.py")
     write(out / "request.json", dict(source_odb_sha256=TARGET["odb_sha256"], delay_master=delay_master,
-                                     producer_sha256=sha(__file__)))
-    run_native(context, out, "openroad", ["-exit", "-python", "/work/scripts/" + Path(__file__).name],
+                                     producer_sha256=sha(out / "worker.py"),
+                                     producer_commit=subprocess.check_output(
+                                         ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()))
+    run_native(context, out, "openroad", ["-exit", "-python", "/work/export/worker.py"],
                [(ROOT / "scripts", "/work/scripts", False), (TARGET["odb"], "/work/input.odb", False)],
                1200, deadline, environment=("PYTHONPATH=/work/scripts", "PINWHEEL_HOLD_CAP_NATIVE=1"))
     before_body, before_cells = def_components(TARGET["odb"].with_suffix(".def"))
@@ -180,6 +187,7 @@ def route(context, out, deadline, delay_master):
 def timing(context, out, deadline):
     from streaming_8x4_e982_eco_timing import execute
 
+    verify_route(out)
     stream = out / "stream"
     stream.mkdir(exist_ok=False)
     prior = read(TARGET["gds"].parent / "execution.json")["argv"]
@@ -195,6 +203,52 @@ def timing(context, out, deadline):
     execute(context, out / "timing", "hold-cap-trial", deadline)
 
 
+def verify_route(out):
+    """Reopen exact cell membership and the complete signal-terminal delta."""
+    request, result, edits = (read(out / name) for name in ("request.json", "route-readback.json", "edits.json"))
+    require(request["source_odb_sha256"] == TARGET["odb_sha256"]
+            and result["odb_sha256"] == sha(out / "trial.odb")
+            and result["def_sha256"] == sha(out / "trial.def"), "Route target changed")
+    before_body, before = def_components(TARGET["odb"].with_suffix(".def"))
+    after_body, after = def_components(out / "trial.def")
+    removed = {n.encode() for edit in edits["edits"] for n in edit["site"][3]}
+    added = {b"holdcap_delay"} | {f"holdcap_fill_{n}_0".encode() for n in DRIVERS}
+    widths = {"sg13cmos5l_buf_2": 2400, "sg13cmos5l_dlygate4sd2_1": 3840,
+              "sg13cmos5l_dlygate4sd3_1": 4320}
+    for edit in edits["edits"]:
+        x, _, _, _, end = edit["site"]
+        width = widths[edit["new_master"]]
+        added.update(f"holdcap_tail_{edit['instance']}_replacement_{i}".encode()
+                     if edit["instance"] in DRIVERS else f"holdcap_tail_holdcap_delay_{i}".encode()
+                     for i, _ in enumerate(range(x + width, end, 480)))
+    require(before.keys() - after.keys() == removed and after.keys() - before.keys() == added,
+            "Unexpected instance membership delta")
+    for name in before.keys() & after.keys():
+        if name.decode() in DRIVERS:
+            require(after[name][0] == b"sg13cmos5l_buf_2", "Missing stronger buffer")
+        else:
+            require(before[name] == after[name], "Retained instance changed")
+    require(after[b"holdcap_delay"][0].decode() == request["delay_master"], "Wrong delay cell")
+    old_head, old_tail, old = def_nets(before_body)
+    new_head, new_tail, new = def_nets(after_body)
+    require(old_head == new_head and old_tail == new_tail and new.keys() - old.keys() == {"holdcap_delayed_data"}
+            and old.keys() <= new.keys(), "Unexpected public geometry or net membership")
+    for name, record in old.items():
+        expected = terminals(record)
+        if name == "engine.frontend._1956_.Y[1]":
+            expected = expected - {("engine.frontend._0230_", "D")} | {("holdcap_delay", "A")}
+        require(terminals(new[name]) == expected, f"Wrong terminal delta on {name}")
+        if b"+ FIXED" in record or b"+ USE CLOCK" in record:
+            require(record == new[name], "Protected routed net changed")
+    require(terminals(new["holdcap_delayed_data"]) == {("holdcap_delay", "X"), ("engine.frontend._0230_", "D")},
+            "Wrong delayed leaf connectivity")
+    require(result["route_markers"] == 0 and str(result["antenna"]) == "0", "Router or antenna checks failed")
+    write(out / "connectivity-readback.json", dict(status="pass", source_odb_sha256=TARGET["odb_sha256"],
+          target_odb_sha256=result["odb_sha256"], target_def_sha256=result["def_sha256"],
+          added_instances=sorted(n.decode() for n in added), removed_instances=sorted(n.decode() for n in removed),
+          all_regular_net_terminals_verified=True, fixed_routes_unchanged=True))
+
+
 def main():
     if os.environ.get("PINWHEEL_HOLD_CAP_NATIVE") == "1":
         native()
@@ -203,7 +257,8 @@ def main():
     parser.add_argument("phase", choices=("route", "timing"))
     parser.add_argument("--history", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
-    parser.add_argument("--delay-master", default="sg13cmos5l_dlygate4sd2_1")
+    parser.add_argument("--delay-master", default="sg13cmos5l_dlygate4sd2_1",
+                        choices=("sg13cmos5l_dlygate4sd2_1", "sg13cmos5l_dlygate4sd3_1"))
     parser.add_argument("--deadline", type=int, default=int(time.time()) + 7200)
     args = parser.parse_args()
     out = args.out.resolve()
