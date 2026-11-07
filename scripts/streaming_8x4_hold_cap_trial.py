@@ -200,6 +200,14 @@ def timing(context, out, deadline):
     context["work"] = out
     write(out / "layout.json", {key: str(value) for key, value in context["target"].items()})
     views(context, deadline)
+    inventory = read(out / "views/actual-signal/inventory.json")
+    for name, instance in inventory["instances"].items():
+        rails = {pin: (term["signal_type"], term["net"]) for pin, term in instance["terminals"].items()
+                 if term["signal_type"] in {"POWER", "GROUND"}}
+        require(rails == {"VDD": ("POWER", "VPWR"), "VSS": ("GROUND", "VGND")},
+                f"Wrong rail bindings on {name}")
+    write(out / "rail-readback.json", dict(status="pass", target_odb_sha256=context["target"]["odb_sha256"],
+          inventory_sha256=sha(out / "views/actual-signal/inventory.json"), instances=len(inventory["instances"])))
     execute(context, out / "timing", "hold-cap-trial", deadline)
 
 
@@ -229,6 +237,9 @@ def verify_route(out):
         else:
             require(before[name] == after[name], "Retained instance changed")
     require(after[b"holdcap_delay"][0].decode() == request["delay_master"], "Wrong delay cell")
+    for name in added - {b"holdcap_delay"}:
+        expected_master = b"sg13cmos5l_decap_4" if name.startswith(b"holdcap_fill_") else b"sg13cmos5l_fill_1"
+        require(after[name][0] == expected_master, "Unexpected backfill master")
     old_head, old_tail, old = def_nets(before_body)
     new_head, new_tail, new = def_nets(after_body)
     require(old_head == new_head and old_tail == new_tail and new.keys() - old.keys() == {"holdcap_delayed_data"}
