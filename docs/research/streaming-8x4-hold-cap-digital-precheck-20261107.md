@@ -2,13 +2,13 @@
 
 Fresh Boolean correspondence passed on the exact candidate that passed
 [all four physical checks](streaming-8x4-hold-cap-physical-20261107.md).
-The public-wire replay and pinned Tiny Tapeout precheck are running.
+Fresh public-wire replay also passed. Pinned Tiny Tapeout precheck is running.
 
 | Check | Current result |
 | --- | --- |
 | Complete state/output correspondence | Passed, 6,039 state bits and 24 output bits |
 | Clock/reset cones | Equal across all 6,039 state endpoints |
-| Fresh public-wire replay | Running |
+| Fresh public-wire replay | Passed, all 35 cases and sampler mutation detection |
 | Pinned Tiny Tapeout precheck | Running |
 
 The target is ODB
@@ -48,3 +48,10 @@ including another full main-deck DRC. Runtime binding covers the Python
 interpreter and pinned package-version inventory. All raw artifacts stay
 in the ignored candidate directory. Qualified extracted timing, electrical
 power qualification and shuttle admission remain open.
+
+The fresh wire run closed all 14 native processes, validated 513,297
+physical sampled edges and detected the actual sampler-pin mutation.
+Independent readback reopened its raw traces, journal and artifact set,
+verifying 3,599 bound files. The wire receipt is
+`digital-02/wire/report.json`, SHA-256
+`2bfadee2aff5fd8341b0d00772399571e6c64cabec63da714d4462b9ab30183b`.
