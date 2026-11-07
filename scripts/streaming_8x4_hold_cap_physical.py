@@ -142,7 +142,8 @@ def checked_layout(context):
     baseline = read(ROOT / "build/e982-fanout-20261104/signoff-01/layout/antenna-result.json")
     require(antenna["result"]["categories"] == baseline["result"]["categories"]
             and antenna["report_sha256"] == sha(out / "antenna.xml")
-            and lvs["antenna_categories"] == 23, "Foundry antenna coverage differs")
+            and lvs["antenna_categories"] == antenna["result"]["category_count"]
+            == len(antenna["result"]["categories"]) == 23, "Foundry antenna coverage differs")
     require(antenna["result"]["passed"] == lvs["antenna_pass"]
             and antenna["result"]["passed"] == (antenna["result"]["violation_items"] == 0
                                                   and antenna["result"]["violation_multiplicity"] == 0),
