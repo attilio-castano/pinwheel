@@ -255,7 +255,7 @@ def completed_model(root, run, pins, request, original, seed, inventory, context
                 direct_native_calls=len(calls))
 
 
-def readback(attempt, expected_request=None):
+def readback(attempt, expected_request=None, trial_layout=None):
     attempt = Path(attempt).absolute()
     inputs, run = attempt / "inputs", attempt / "run"
     pins = {}
@@ -264,7 +264,7 @@ def readback(attempt, expected_request=None):
     require(request["schema"] == "pinwheel.streaming-8x4-draft-rc-timing-request.v1"
             and request["policy"] == draft.policy() and request["model_rules_sha256"] == draft.RULE_SHA
             and request["model_qualified"] is False and request["qualified_timing"] is False
-            and request["target_name"] in {"baseline", "eco"} and set(request["layout"]) == LAYOUT,
+            and request["target_name"] in {"baseline", "eco", "hold-cap-trial"} and set(request["layout"]) == LAYOUT,
             "Wrong draft diagnostic target or policy")
     execution = read_bound(pins, run / "execution.json")
     mounts = host_mounts(execution, run, inputs)
@@ -279,6 +279,14 @@ def readback(attempt, expected_request=None):
         reopen(pins, item)
     roles = request["layout"]
     expected_odb, expected_gds = (ECO_ODB, ECO_GDS) if request["target_name"] == "eco" else (TARGET_ODB, TARGET_GDS)
+    if request["target_name"] == "hold-cap-trial":
+        require(trial_layout is not None, "Explicit trial layout manifest required")
+        manifest = read_bound(pins, trial_layout)
+        require(Path(manifest["odb"]) == Path(roles["odb"]["path"])
+                and Path(manifest["gds"]) == Path(roles["gds"]["path"]), "Trial layout paths differ")
+        expected_odb, expected_gds = manifest["odb_sha256"], manifest["gds_sha256"]
+    else:
+        require(trial_layout is None, "Trial manifest is only valid for an explicit trial target")
     require(roles["odb"]["sha256"] == request["source_odb_sha256"]
             == native["target_odb_sha256"] == expected_odb
             and roles["gds"]["sha256"] == native["gds_sha256"] == expected_gds
@@ -352,9 +360,10 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("attempt", type=Path)
     parser.add_argument("--request-sha256")
+    parser.add_argument("--trial-layout", type=Path)
     args = parser.parse_args(argv)
     try:
-        result = readback(args.attempt, args.request_sha256)
+        result = readback(args.attempt, args.request_sha256, args.trial_layout)
         output = args.attempt / "timing-readback.json"
         emit(output, result)
     except (OSError, ValueError, KeyError, TypeError, DecimalException) as exc:

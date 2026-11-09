@@ -1,14 +1,36 @@
 # Research status
 
-Updated 2026-10-27 after the curated 8×4 test-portability repairs. The completed routing and
-target-specific checks are retained; extraction qualification and timing remain
-open. The earlier buffered-SRAM and digital studies below keep their original
-candidate boundaries.
+Updated 2026-11-07 after building and independently verifying the new 8×4
+hold/capacitance candidate's local Tiny Tapeout rehearsal bundle. Qualified
+timing, electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
 
 ## Current 8×4 decision
+
+Use the frozen November 7 hold/capacitance candidate as the current local
+rehearsal reference. Its ODB is `dc654986…` and GDS is `d4cd48f0…`. The
+[fresh rehearsal bundle](streaming-8x4-hold-cap-rehearsal-20261107.md) packages
+the exact handoff assets, selected raw evidence and committed source.
+Verification passed after extracting the actual archive and blocking reads
+of the original repositories. Re-sealed predecessor GDS and changed verifier
+source were rejected.
+
+Main-deck DRC, transistor LVS, supplemental enclosure, foundry antenna,
+complete-state Boolean correspondence, public-pin replay, all nine pinned
+Tiny Tapeout prechecks and four fresh bring-up fixtures pass on this exact
+candidate. The nine draft timing scenarios also pass their provisional
+setup, hold and electrical checks. The package records local rehearsal GO
+and fabrication NO-GO.
+
+Fabrication requires qualified CMOS5L extraction and timing with the host
+I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
+acceptance. Native toolchain and full-PDK re-execution, complete historical
+proof custody, independent backup custody and clean source-to-GDS
+reproducibility have separate recorded scopes.
+
+## Earlier 8×4 baseline context — 27 October 2026
 
 Prepare the completed 8×4 baseline and nominal extraction-reference component
 for review. The [curated integration guide](streaming-8x4-curated-pr-20261026.md)
