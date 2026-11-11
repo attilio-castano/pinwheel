@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-11-07 after building and independently verifying the new 8×4
-hold/capacitance candidate's local Tiny Tapeout rehearsal bundle. Qualified
+Updated 2026-11-11 after fresh geometric power connectivity and a nine-case
+timing coverage audit on the frozen 8×4 hold/capacitance candidate. Qualified
 timing, electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
@@ -23,6 +23,13 @@ Tiny Tapeout prechecks and four fresh bring-up fixtures pass on this exact
 candidate. The nine draft timing scenarios also pass their provisional
 setup, hold and electrical checks. The package records local rehearsal GO
 and fabrication NO-GO.
+
+Fresh geometric power connectivity passed on both rails with 98,904 instance
+terminals and one boundary terminal each. The timing audit reconciled all
+search endpoints and verified constrained min and max paths at all 6,051
+active data and output endpoints and both pulse widths at every FF clock pin
+in each draft case. [Power connectivity](streaming-8x4-hold-cap-pg-20261111.md) ·
+[Timing coverage](streaming-8x4-hold-cap-timing-coverage-20261111.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
