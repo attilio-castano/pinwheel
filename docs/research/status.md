@@ -1,8 +1,8 @@
 # Research status
 
-Updated 2026-11-11 after fresh geometric power connectivity and a nine-case
-timing coverage audit on the frozen 8×4 hold/capacitance candidate. Qualified
-timing, electrical power and shuttle acceptance remain open.
+Updated 2026-11-12 after six static IR-drop and electromigration screening
+cases on the frozen 8×4 hold/capacitance candidate. Qualified timing,
+electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -30,6 +30,14 @@ search endpoints and verified constrained min and max paths at all 6,051
 active data and output endpoints and both pulse widths at every FF clock pin
 in each draft case. [Power connectivity](streaming-8x4-hold-cap-pg-20261111.md) ·
 [Timing coverage](streaming-8x4-hold-cap-timing-coverage-20261111.md)
+
+The verified I²C waveform covered all 124,219 signal pins. Its static rail
+loss ranges from 1.004 mV with distributed ideal contacts to 42.117 mV with
+four contacts per rail, 1 Ω per source and 105 °C sheet resistance. All
+screened edges were below the applicable modeled limits. Sub-range Metal1
+geometry, individual-cut crowding and terminal contacts remain open, along
+with the actual parent supply boundary and operating envelope.
+[Local IR-drop and EM screen](streaming-8x4-hold-cap-ir-em-20261112.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
