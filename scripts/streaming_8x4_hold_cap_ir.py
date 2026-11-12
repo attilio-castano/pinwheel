@@ -14,6 +14,7 @@ from streaming_8x4_hold_cap_timing_coverage import prepare
 OPENROAD = "dcf36133a369abc8f3c5e5738cd4d82e4903c0e0"
 CORNER = "nom_typ_1p20V_25C"
 VOLTAGES = {"VPWR": 1.2, "VGND": 0.0}
+SHEET_TC = {"Metal1": 0.0034, "Metal2": 0.0035, "Metal3": 0.0035, "Metal4": 0.0035}
 TCL = """\
 if {[catch {
     define_corners @CORNER@
@@ -28,9 +29,11 @@ if {[catch {
     set clock [get_clocks clk]
     if {[llength [all_clocks]] != 1 || [get_property $clock period] != 20.0
         || ![get_property $clock is_propagated]} {error "Wrong analysis clock"}
+    report_parasitic_annotation -report_unannotated > /work/export/parasitics.rpt
     @ACTIVITY@
     report_activity_annotation -report_annotated -report_unannotated > /work/export/activity.rpt
     report_power -corner @CORNER@ -digits 9 -format json > /work/export/power.json
+    @SHEET_MODEL@
     set_debug_level PSM resistance 2
     set_debug_level PSM solve 3
     set_pdnsim_source_settings -external_resistance @EXTERNAL_OHM@
@@ -63,6 +66,8 @@ def main():
     parser.add_argument("--scope", help="Slash-separated VCD hierarchy")
     parser.add_argument("--contacts", type=Path, help="Directory containing explicit VPWR.vsrc and VGND.vsrc")
     parser.add_argument("--external-ohm", type=float, default=0.0, help="Series resistance per resolved source")
+    parser.add_argument("--sheet-temperature", type=int, choices=(25, 105), default=25,
+                        help="Temperature sensitivity for sheet R only; Liberty and via R remain fixed")
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.is_relative_to(TRIAL / "power-dc") and not out.exists(), "Use a fresh ignored power-dc case directory")
@@ -97,9 +102,24 @@ def main():
     bindings = {mount: bound(path) for mount, path in inputs.items()}
     require(bindings["/input/typ.spef"]["sha256"] == row["input_sha256"][spef], "Typical SPEF changed")
     producer = bound(Path(__file__).resolve())
+    sheet_scale = {layer: (1 + tc * (args.sheet_temperature + 273.15 - 300))
+                         / (1 + tc * (25 + 273.15 - 300)) for layer, tc in SHEET_TC.items()}
+    sheet_model = ""
+    if args.sheet_temperature != 25:
+        sheet_model = """
+    set tech [ord::get_db_tech]
+    set dbu [[ord::get_db_block] getDbUnitsPerMicron]
+    foreach {name factor} {@FACTORS@} {
+        set layer [$tech findLayer $name]
+        set width_um [expr {double([$layer getWidth]) / $dbu}]
+        set kiloohm_per_um [expr {[$layer getResistance] * $factor / (1000.0 * $width_um)}]
+        set_layer_rc -corner @CORNER@ -layer $name -resistance $kiloohm_per_um
+    }""".replace("@FACTORS@", " ".join(f"{layer} {scale:.15g}" for layer, scale in sheet_scale.items()))
+        sheet_model = sheet_model.replace("@CORNER@", CORNER)
     substitutions = {
         "CORNER": CORNER, "TOP": TOP, "ACTIVITY": activity_cmd, "EXTERNAL_OHM": str(args.external_ohm),
         "LIBRARIES": "\n".join(f"    read_liberty -corner {CORNER} {path}" for path in libs),
+        "SHEET_MODEL": sheet_model,
     }
     script = re.sub(r"@([A-Z_]+)@", lambda match: substitutions[match[1]], TCL)
     out.mkdir(parents=True, exist_ok=False)
@@ -109,7 +129,8 @@ def main():
     write(out / "request.json", dict(schema="pinwheel.streaming-8x4-hold-cap-dc.v1", producer=producer,
           analysis_tcl=tcl_binding, inputs=bindings, target_gds_sha256=TARGET["gds_sha256"], image=IMAGE,
           openroad_commit=OPENROAD, corner=CORNER, clock_period_ns=20.0, temperature_c=25,
-          parasitics="retained draft TYP signal SPEF; PDN resistances from OpenDB technology",
+          sheet_temperature_c=args.sheet_temperature, sheet_resistance_scale=sheet_scale,
+          parasitics="retained draft TYP signal SPEF; OpenDB PDN resistance with optional sheet-only scaling",
           liberty={path: row["input_sha256"][path] for path in libs}, activity=activity_model,
           rail_voltages_v=VOLTAGES, source_model="explicit" if args.contacts else "distributed block pins",
           external_ohm_per_source=args.external_ohm, qualified=False))
@@ -124,7 +145,8 @@ def main():
     log = (out / "container.log").read_text()
     require(OPENROAD in log and all(log.count(f"PINWHEEL_DC_END {rail}") == 1 for rail in VOLTAGES),
             "Native IR solve did not complete on both rails")
-    artifacts = [out / name for name in ("container.log", "execution.json", "power.json", "metrics.json", "activity.rpt")]
+    artifacts = [out / name for name in ("container.log", "execution.json", "power.json", "metrics.json",
+                                          "activity.rpt", "parasitics.rpt")]
     for rail in VOLTAGES:
         artifacts.extend(out / f"{rail}-{kind}.csv" for kind in ("voltage", "current"))
         artifacts.append(out / f"{rail}.spice")
