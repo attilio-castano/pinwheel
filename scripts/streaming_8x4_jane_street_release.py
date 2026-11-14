@@ -201,7 +201,13 @@ def package_release(out, bundle, source):
     require(conversion["target_gds_sha256"] == GDS and oasis["path"] == f"tt_submission/{TOP}.oas",
             "Wrong local OASIS conversion receipt")
     checks = verified_precheck(out)
-    require(not (out / "handoff.json").exists(), "Local handoff already recorded")
+    rtl_files = checked_source(source)
+    outputs = (RELEASE_OVERLAY - set(ASSETS.values())) | {
+        "handoff.json", "release-overlay.zip", "tt_submission-local-preview.zip", "source-receipt.json",
+        "tt_submission/commit_id.json",
+    }
+    require(not any((out / name).exists() or (out / name).is_symlink() for name in outputs),
+            "Use fresh paths for local handoff outputs")
     files = []
     for destination, staged in sorted(RELEASE_INPUTS.items()):
         dest = out / destination
@@ -210,14 +216,14 @@ def package_release(out, bundle, source):
             shutil.copyfileobj(stream, output)
         binding = next(entry for entry in stage_files if entry["path"] == staged)
         files.append(file_spec(out, dict(binding, path=destination)))
-    for entry in checked_source(source):
+    for entry in rtl_files:
         dest = out / entry["path"]
         dest.parent.mkdir(parents=True, exist_ok=True)
         with (source / entry["path"]).open("rb") as stream, dest.open("xb") as output:
             shutil.copyfileobj(stream, output)
         files.append(file_spec(out, entry))
     workflow = out / ".github/workflows/gds.yml"
-    workflow.parent.mkdir(parents=True)
+    workflow.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(RELEASE_WORKFLOW, workflow)
     files.append(record(out, workflow))
     draft = out / "docs/jane-street-8x4-entry.md"

@@ -46,7 +46,8 @@ The runner now accepts real-geometry parasitic intake for this exact
 candidate. It dry-ran on all nine draft cases. The current Ciel PDK uses
 the same seven-layer extraction rules as the earlier nominal diagnostic.
 `ui_in[3]` and `ui_in[5]` have +38.855 and +45.780 ps of draft public-input
-hold margin, respectively.
+hold margin, respectively. A native 40 ps earlier-arrival check puts
+`ui_in[3]` at −1.145 ps while `ui_in[5]` retains +5.780 ps.
 [Timing intake and margins](streaming-8x4-hold-cap-timing-intake-20261114.md)
 
 The verified I²C waveform covered all 124,219 signal pins. Its static rail
@@ -58,7 +59,10 @@ screened edges were below the applicable modeled limits.
 Exact-candidate UART, SPI, I²C write and reset/replacement traces now
 join the I²C read comparator. The parent power intake resolves supplied
 Metal4 contact rectangles to exact frozen-grid nodes and can preserve
-distinct VPWR and VGND source resistances.
+distinct VPWR and VGND source resistances. Six native cases passed
+readback. Under the illustrative sparse heated-grid conditions, UART
+gave the largest modeled rail loss at 42.394 mV and the highest
+covered EM utilization at 85.72%.
 [Workload activity and power intake](streaming-8x4-hold-cap-workload-power-20261114.md)
 
 Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at

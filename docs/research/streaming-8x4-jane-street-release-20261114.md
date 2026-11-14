@@ -62,9 +62,9 @@ its manifest and archive hashes.
 | `precheck.json` | `e1ac7787f2ade84b3941db0281b331a90504670d7e7566a96ccb126b8f6966dc` |
 | `precheck-run/tt/precheck/reports/results.xml` | `574925f52a19a738c6634b3a6d94ac704f0c3ca04c04ea79ce881f1cee11a2f6` |
 | `precheck-run/tt/precheck/reports/drc_sg13cmos5l.xml` | `457bf81960fda8be79350e91a49f6c3c958753a1b152ffdd8f61ca97b7e7e84c` |
-| `handoff.json` | `c7daa29e55d4deb4bfab009ec5a75a13a1024c6d1abff4ae57cea40bff4b5441` |
-| `release-overlay.zip` | `97f46fab1a0ef417c9c533d9ef861a206eab109b747118f84bfcba70ea8c7137` |
-| `tt_submission-local-preview.zip` | `1646dcf7a8e697050cbea217df9ad330328baa18e939e904d29b14b13f6eb238` |
+| `handoff.json` | `c0eff2d9fbdd395bf120c3eba742a4784021c74e9fbf760f8936bd45a3e010ba` |
+| `release-overlay.zip` | `56bc8afd2344aa5b8f71e6bb335c5bc1e9aa93ca8a12590a558536347d1f4a4d` |
+| `tt_submission-local-preview.zip` | `032db2ed4d5498f273c4bed3ed951ba0c5130740fbace3073d5ff9877058c8db` |
 
 ## Local reproduction
 
@@ -123,7 +123,10 @@ netlist payloads in a normal PR. A dedicated release repository with
 the dispatch workflow on its default branch is one workable publication
 path. Confirm the custom-GDS path for the selected release and run the
 hosted action there. Check the downloadable artifact's GDS hash and
-passing precheck. The current branch carries the workflow template,
+passing precheck. The candidate comes from the pinned local hardening
+and its audited physical ECOs. A fresh source-to-GDS run with the current
+stock template has its own evidence requirement if requested by Tiny
+Tapeout. The current branch carries the workflow template,
 source scripts, and receipts' documented identities. Release payload
 and rehearsal archives stay in ignored local storage.
 [Artifact policy](../../tools/artifact-policy.json)
