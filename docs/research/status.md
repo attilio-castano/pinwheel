@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-11-14 after the local via and decap contact current-sharing
-study on the frozen 8×4 hold/capacitance candidate. Qualified timing,
+Updated 2026-11-14 after replacing the modeled ground row around
+`FILLER_3_3251/VSS` on the frozen 8×4 hold/capacitance candidate. Qualified timing,
 electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
@@ -50,12 +50,18 @@ The local sharing model keeps all 48 arrays below the per-cut reference
 with uniform cut resistance and varied feed placement. A deliberate
 mixed-resistance sensitivity exceeds the reference at the two largest
 array transfers. The two decap contact meshes stay below the individual
-contact reference across the tested static scenarios. A coupled local
-diagnostic gives 597 µA through a 0.440 µm ground Metal1 row against a
-440 µA reference. This grounds the next geometry-resolved EM check at
-`FILLER_3_3251/VSS`. Physical sharing, the full rail boundary, and
-transient contact current remain open.
+contact reference across the tested static scenarios. The earlier
+coupled local diagnostic found 597 µA in a 0.440 µm ground Metal1 row
+while retaining the lumped local paths.
 [Via and decap sharing study](streaming-8x4-hold-cap-cut-sharing-20261114.md)
+
+Replacing those local paths puts the original ground-row section at
+152 µA in the largest 50.4 µm window, against the 440 µA reference.
+The original section stays below the reference across all 56 local
+cases. One mixed-resistance sensitivity in the 11.12 µm window
+exceeds the reference near its seam. Physical sharing, the full rail
+and parent boundary, and transient contact current remain open.
+[Geometry-resolved ground-row replacement](streaming-8x4-hold-cap-ground-row-replacement-20261114.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
