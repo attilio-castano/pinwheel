@@ -32,6 +32,47 @@ register path at +31.572 ps. A longer cycle leaves the same-edge hold
 calculation unchanged. Joint changes can accumulate along an input-to-output
 path and need a new STA run. [Original draft model and constraints](streaming-8x4-hold-cap-trial-20261107.md)
 
+## Native host hold sensitivity
+
+The pinned OpenSTA executable replayed all three draft RC graphs with
+fast Liberty and the MAX graph with slow Liberty. Each case varied only
+the minimum delay and assumed driving cell for `ui_in[3]` and
+`ui_in[5]`, plus the design-wide hold uncertainty. The maximum input
+delay, setup uncertainty, 20 ns propagated clock and other constraints
+stayed at their draft values. The four baseline and restored controls
+reproduced the retained global and input path slacks within 3 fs.
+
+| MAX/fast experiment | Global hold (ps) | `ui_in[3]` hold (ps) | `ui_in[5]` hold (ps) |
+| --- | ---: | ---: | ---: |
+| 200 ps minimum input delay, 200 ps hold uncertainty, `buf_2` | +31.572 | +38.855 | +45.780 |
+| 160 ps minimum input delay | −1.145 | −1.145 | +5.780 |
+| 180 ps minimum input delay and 220 ps hold uncertainty | −1.145 | −1.145 | +5.780 |
+| 240 ps hold uncertainty | −8.428 | −1.145 | +5.780 |
+| Stronger `buf_4` input drive | +31.572 | +37.092 | +44.210 |
+| Weaker `buf_1` input drive | +31.572 | +41.919 | +48.500 |
+
+The three 40 ps budget experiments reduce each selected input's hold
+slack by 40 ps in all four cases. They leave setup unchanged within
+3 fs. Global hold responds to the split between input arrival and
+uncertainty because the latter also applies to internal register paths.
+The separate strength changes move setup as well as hold on the selected
+paths. The sweep shows specifically which parent timing changes can spend
+the draft margin. The parent reference edge, valid minimum arrivals and
+input slew still need to be supplied for the actual design.
+
+The native probe completed in 22.409 seconds and confirmed container
+cleanup. The raw logs and `readback.json` stay in the ignored
+`build/8x4-hold-cap-20261107/trial-02/timing-sensitivity-01/` directory.
+Its readback SHA-256 is
+`d734c3fc27cd30b226785f1bda84603f9bb508521265c77fa624450a17f7b179`.
+
+```sh
+python3 -B scripts/streaming_8x4_hold_cap_timing_sensitivity.py \
+  --history "$PINWHEEL_HISTORY" \
+  --out build/8x4-hold-cap-20261107/trial-02/timing-sensitivity-02 \
+  --deadline "$(( $(date +%s) + 330 ))"
+```
+
 ## Intake and local replay
 
 Use `--target hold-cap-trial` with a hash-reviewed request for the frozen
