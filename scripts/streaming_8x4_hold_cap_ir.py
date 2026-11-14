@@ -36,11 +36,19 @@ if {[catch {
     @SHEET_MODEL@
     set_debug_level PSM resistance 2
     set_debug_level PSM solve 3
-    set_pdnsim_source_settings -external_resistance @EXTERNAL_OHM@
     set_pdnsim_net_voltage -net VPWR -voltage 1.2 -corner @CORNER@
     set_pdnsim_net_voltage -net VGND -voltage 0 -corner @CORNER@
-    foreach rail {VPWR VGND} {
+    set external_ohm [dict create @EXTERNAL_OHM@]
+    # The native setter ignores zero after a positive value. Solve the rail
+    # with lower resistance first so an ideal rail inherits the native default.
+    set rails {VPWR VGND}
+    if {[dict get $external_ohm VGND] < [dict get $external_ohm VPWR]} {
+        set rails {VGND VPWR}
+    }
+    foreach rail $rails {
         puts "PINWHEEL_DC_BEGIN $rail"
+        set_pdnsim_source_settings -external_resistance [dict get $external_ohm $rail]
+        puts "PINWHEEL_DC_EXTERNAL_OHM $rail [dict get $external_ohm $rail]"
         set src {}
         if {[file exists /input/$rail.vsrc]} {set src [list -vsrc /input/$rail.vsrc]}
         analyze_power_grid -net $rail -corner @CORNER@ {*}$src -enable_em \
@@ -64,14 +72,20 @@ def main():
     activity.add_argument("--input-activity", type=float, help="Transitions per 20 ns period, duty 0.5")
     activity.add_argument("--vcd", type=Path)
     parser.add_argument("--scope", help="Slash-separated VCD hierarchy")
-    parser.add_argument("--contacts", type=Path, help="Directory containing explicit VPWR.vsrc and VGND.vsrc")
-    parser.add_argument("--external-ohm", type=float, default=0.0, help="Series resistance per resolved source")
+    contacts = parser.add_mutually_exclusive_group()
+    contacts.add_argument("--contacts", type=Path, help="Directory containing explicit VPWR.vsrc and VGND.vsrc")
+    contacts.add_argument("--parent-contacts", type=Path, help="Resolved parent contact receipt")
+    parser.add_argument("--external-ohm", type=float, help="Shared series resistance per resolved source")
     parser.add_argument("--sheet-temperature", type=int, choices=(25, 105), default=25,
                         help="Temperature sensitivity for sheet R only; Liberty and via R remain fixed")
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.is_relative_to(TRIAL / "power-dc") and not out.exists(), "Use a fresh ignored power-dc case directory")
-    require(0 <= args.external_ohm <= 100, "Invalid external resistance")
+    resistance = args.external_ohm if args.external_ohm is not None else 0.0
+    require(0 <= resistance <= 100 and (not resistance or args.contacts is not None), "Invalid external resistance")
+    external = dict.fromkeys(VOLTAGES, resistance)
+    source = dict(source_model="explicit" if args.contacts else "distributed block pins",
+                  external_ohm_per_source=resistance)
     if args.vcd:
         require(args.scope and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_/]*", args.scope), "Supply the exact VCD scope")
         activity_model = dict(kind="functional_vcd", scope=args.scope)
@@ -98,7 +112,19 @@ def main():
     if args.contacts:
         for rail in VOLTAGES:
             inputs[f"/input/{rail}.vsrc"] = (args.contacts / f"{rail}.vsrc").resolve(strict=True)
-    require(not args.external_ohm or args.contacts, "Use explicit contacts for external resistance cases")
+    if args.parent_contacts:
+        from streaming_8x4_hold_cap_parent_power import check_resolved
+
+        require(args.external_ohm is None, "Parent contact receipts supply the two series resistance values")
+        parent, parent_item = check_resolved(args.parent_contacts.resolve(strict=True))
+        for rail, resolved in parent["rails"].items():
+            inputs[f"/input/{rail}.vsrc"] = Path(resolved["vsrc"]["path"])
+            external[rail] = resolved["external_ohm"]
+        pins[parent_item["path"]] = parent_item["sha256"]
+        pins.update({item["path"]: item["sha256"] for item in parent["inputs"]})
+        source = dict(source_model="resolved parent contact rectangles", parent_contacts=parent_item,
+                      external_ohm_per_source=external,
+                      expected_source_nodes_um={rail: resolved["nodes_um"] for rail, resolved in parent["rails"].items()})
     bindings = {mount: bound(path) for mount, path in inputs.items()}
     require(bindings["/input/typ.spef"]["sha256"] == row["input_sha256"][spef], "Typical SPEF changed")
     producer = bound(Path(__file__).resolve())
@@ -117,7 +143,8 @@ def main():
     }""".replace("@FACTORS@", " ".join(f"{layer} {scale:.15g}" for layer, scale in sheet_scale.items()))
         sheet_model = sheet_model.replace("@CORNER@", CORNER)
     substitutions = {
-        "CORNER": CORNER, "TOP": TOP, "ACTIVITY": activity_cmd, "EXTERNAL_OHM": str(args.external_ohm),
+        "CORNER": CORNER, "TOP": TOP, "ACTIVITY": activity_cmd,
+        "EXTERNAL_OHM": " ".join(f"{rail} {value}" for rail, value in external.items()),
         "LIBRARIES": "\n".join(f"    read_liberty -corner {CORNER} {path}" for path in libs),
         "SHEET_MODEL": sheet_model,
     }
@@ -132,8 +159,7 @@ def main():
           sheet_temperature_c=args.sheet_temperature, sheet_resistance_scale=sheet_scale,
           parasitics="retained draft TYP signal SPEF; OpenDB PDN resistance with optional sheet-only scaling",
           liberty={path: row["input_sha256"][path] for path in libs}, activity=activity_model,
-          rail_voltages_v=VOLTAGES, source_model="explicit" if args.contacts else "distributed block pins",
-          external_ohm_per_source=args.external_ohm, qualified=False))
+          rail_voltages_v=VOLTAGES, qualified=False, **source))
     mounts = [(path, mount, False) for mount, path in inputs.items()]
     mounts.append((tcl, "/input/analysis.tcl", False))
     execution = run_native(context, out, "openroad",

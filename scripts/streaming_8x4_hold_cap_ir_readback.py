@@ -122,7 +122,20 @@ def electrical_edges(path, rail, sheet, cut):
     return groups, terminal_edges, sources, loads
 
 
-def check_sources(rail, sources, requested, rectangles):
+def rail_rectangles(lef):
+    lef_text = lef.read_text()
+    result = {}
+    for rail in VOLTAGES:
+        section = lef_text.split(f"  PIN {rail}\n", 1)[1].split(f"  END {rail}\n", 1)[0]
+        require(set(re.findall(r"^\s*LAYER (\w+)\s*;", section, re.M)) == {"Metal4"},
+                "Expected only Metal4 on the power terminal")
+        result[rail] = [tuple(map(float, rectangle.split()))
+                        for rectangle in re.findall(r"^\s*RECT ([\d. ]+) ;$", section, re.M)]
+        require(result[rail], f"Missing exported shapes for {rail}")
+    return result
+
+
+def check_sources(rail, sources, requested, rectangles, expected_nodes=None):
     require(len(sources) == len(set(sources)) > 0, "Repeated or absent source node")
     actual = {(x / DBU, y / DBU) for kind, layer, x, y in sources if (kind, layer) == ("Node", "Metal4")}
     require(len(actual) == len(sources), "Unexpected source layer")
@@ -132,7 +145,10 @@ def check_sources(rail, sources, requested, rectangles):
                    for x0, y0, x1, y1 in rectangles)
 
     require(all(contained(x, y, 0) for x, y in actual), "Source node lies outside its exported rail shapes")
-    if requested is not None:
+    if expected_nodes is not None:
+        require(requested is not None and actual == {tuple(point) for point in expected_nodes},
+                "Parent source solve selected a different set of nodes")
+    elif requested is not None:
         contacts = [tuple(map(float, line.split(","))) for line in Path(requested["path"]).read_text().splitlines()]
         require(len(contacts) == 4 and all(size == 1 and voltage == VOLTAGES[rail] and contained(x, y, size / 2)
                                          for x, y, size, voltage in contacts),
@@ -186,8 +202,8 @@ def reopen_case(path, expected, inventory, rects, workload, unused_drivers):
     annotated_count = None
     if request["activity"]["kind"] == "functional_vcd":
         require(request["inputs"]["/input/activity.vcd"] == workload["artifacts"]["activity.vcd"]
-                and request["activity"]["scope"] == "streaming_quad_host_bridge/dut",
-                "Wrong I²C workload activity")
+                and request["activity"]["scope"] == workload["waveform"]["scope"] == "streaming_quad_host_bridge/dut",
+                "Wrong bound workload activity")
         pins, _ = observed_pins(inventory)
         expected_pins = {f"{name}/{pin}" for name, pin in pins} | inventory["public_bterms"].keys()
         activity = (path / "activity.rpt").read_text()
@@ -202,6 +218,24 @@ def reopen_case(path, expected, inventory, rects, workload, unused_drivers):
     resistances = {name: float(value) for name, value in re.findall(r"^  (\w+): (\S+) Ohm per (?:square|cut)$", log, re.M)}
     require(all(math.isclose(resistances[layer], value, rel_tol=5e-6)
                 for layer, value in (sheet | cut).items()), "Solver resistance differs from declared assumptions")
+    expected_parent_nodes = {}
+    parent_binding = {}
+    if "parent_contacts" in request:
+        from streaming_8x4_hold_cap_parent_power import check_resolved
+
+        parent, item = check_resolved(Path(request["parent_contacts"]["path"]))
+        require(item == request["parent_contacts"]
+                and {rail: value["external_ohm"] for rail, value in parent["rails"].items()} == request["external_ohm_per_source"]
+                and all(request["inputs"][f"/input/{rail}.vsrc"] == value["vsrc"] for rail, value in parent["rails"].items()),
+                "Native case does not bind the resolved parent boundary")
+        native_resistance = re.findall(r"^PINWHEEL_DC_EXTERNAL_OHM (\w+) (\S+)$", log, re.M)
+        require(len(native_resistance) == len(VOLTAGES)
+                and {rail: float(value) for rail, value in native_resistance} == request["external_ohm_per_source"]
+                and [float(value) for _, value in native_resistance] == sorted(float(value) for _, value in native_resistance),
+                "Series resistance command or application order differs")
+        expected_parent_nodes = {rail: value["nodes_um"] for rail, value in parent["rails"].items()}
+        parent_binding["parent_contacts"] = item
+    require(request.get("expected_source_nodes_um", {}) == expected_parent_nodes, "Source node expectation changed")
     rails, volts = {}, {}
     for rail in VOLTAGES:
         run_log = log.split(f"PINWHEEL_DC_BEGIN {rail}\n", 1)[1].split(f"PINWHEEL_DC_END {rail}\n", 1)[0]
@@ -211,7 +245,8 @@ def reopen_case(path, expected, inventory, rects, workload, unused_drivers):
         load_ma = math.fsum(loads) * 1000
         require(loads and math.isclose(load_ma, power["total"] / VOLTAGES["VPWR"] * 1000, rel_tol=5e-4),
                 "Exported PSM loads do not agree with the total power model")
-        source_data = check_sources(rail, sources, request["inputs"].get(f"/input/{rail}.vsrc"), rects[rail])
+        expected_nodes = expected_parent_nodes.get(rail)
+        source_data = check_sources(rail, sources, request["inputs"].get(f"/input/{rail}.vsrc"), rects[rail], expected_nodes)
         require(set(map(int, re.findall(r"^Source nodes: (\d+)$", run_log, re.M))) == {source_data["count"]},
                 "Native source count differs from resolved SPICE source map")
         terminal_set = {(name, pin) for name, inst in inventory["instances"].items()
@@ -231,13 +266,15 @@ def reopen_case(path, expected, inventory, rects, workload, unused_drivers):
                 sheet_temperature_c=request.get("sheet_temperature_c", 25), activity=request["activity"],
                 vcd_annotated_pins=annotated_count, external_ohm_per_source=request["external_ohm_per_source"],
                 rails=rails, minimum_instance_differential_v=volts["VPWR"][worst_inst] - volts["VGND"][worst_inst],
-                worst_instance=worst_inst, elapsed_seconds=execution["elapsed_seconds"])
+                worst_instance=worst_inst, elapsed_seconds=execution["elapsed_seconds"], **parent_binding)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--history", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--workload", type=Path, action="append", default=[],
+                        help="Additional checked waveform receipt for these cases")
     parser.add_argument("cases", type=Path, nargs="+")
     args = parser.parse_args()
     out = args.out.resolve()
@@ -252,22 +289,37 @@ def main():
     views = read(TRIAL / "views/rehearsal-view-readback.json")
     lef = TRIAL / "views/official-format.lef"
     require(sha(lef) == views["view_sha256"]["lef"], "Exported macro LEF changed")
-    lef_text = lef.read_text()
-    rects = {rail: [tuple(map(float, rectangle.split())) for rectangle in
-                    re.findall(r"^\s*RECT ([\d. ]+) ;$", lef_text.split(f"  PIN {rail}\n", 1)[1]
-                               .split(f"  END {rail}\n", 1)[0], re.M)] for rail in VOLTAGES}
+    rects = rail_rectangles(lef)
     timing = TRIAL / "timing/timing-readback.json"
     require(sha(timing) == EVIDENCE["timing/timing-readback.json"], "Timing annotation receipt changed")
     unused = read(timing)["model_matrix"]["TYP"]["cases"][CORNER]["annotation"]["unused_drivers"]
     workload_path = TRIAL / "workload-activity-01/receipt.json"
-    workload = read(workload_path)
-    require(workload["target_odb_sha256"] == TARGET["odb_sha256"] and workload["all_public_observations_replayed"],
-            "Wrong activity replay receipt")
-    cases = [reopen_case(path, row["input_sha256"], inventory, rects, workload, unused) for path in paths]
-    write(out, dict(schema="pinwheel.streaming-8x4-hold-cap-ir-em.v1", status="diagnostic", cases=cases,
-          target_odb_sha256=TARGET["odb_sha256"], target_gds_sha256=TARGET["gds_sha256"],
-          process_spec=PROCESS_SPEC, workload=bound(workload_path), lef=bound(lef), inventory=layout["inventory"],
-          qualified_ir_drop=False, qualified_em=False, transient_droop_analyzed=False))
+    by_vcd_path = {}
+    workload_bindings = []
+    for path in [workload_path, *args.workload]:
+        item = bound(path)
+        workload = read(path)
+        vcd = workload["artifacts"]["activity.vcd"]
+        require(workload["target_odb_sha256"] == TARGET["odb_sha256"]
+                and workload["target_gds_sha256"] == TARGET["gds_sha256"]
+                and workload["all_public_observations_replayed"] is True and workload["waveform"]["clock_period_ps"] == 20000
+                and workload["waveform"]["actual_signal_pins_declared"] == 124176 and bound(vcd["path"]) == vcd
+                and bound(path) == item and vcd["path"] not in by_vcd_path, "Invalid or repeated activity replay receipt")
+        by_vcd_path[vcd["path"]] = workload
+        workload_bindings.append(item)
+    cases = []
+    for path in paths:
+        activity = read(path / "request.json")["inputs"].get("/input/activity.vcd")
+        require(activity is None or activity["path"] in by_vcd_path, "Pass a receipt for every additional waveform")
+        workload = by_vcd_path[activity["path"]] if activity is not None else None
+        cases.append(reopen_case(path, row["input_sha256"], inventory, rects, workload, unused))
+    report = dict(schema="pinwheel.streaming-8x4-hold-cap-ir-em.v1", status="diagnostic", cases=cases,
+                  target_odb_sha256=TARGET["odb_sha256"], target_gds_sha256=TARGET["gds_sha256"],
+                  process_spec=PROCESS_SPEC, workload=workload_bindings[0], lef=bound(lef), inventory=layout["inventory"],
+                  qualified_ir_drop=False, qualified_em=False, transient_droop_analyzed=False)
+    if args.workload:
+        report["additional_workloads"] = workload_bindings[1:]
+    write(out, report)
 
 
 if __name__ == "__main__":
