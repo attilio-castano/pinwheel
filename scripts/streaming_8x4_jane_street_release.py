@@ -43,6 +43,7 @@ REVISION_FILES = {
     "custom_gds/action.yml": "558ce5b2e3a03331774fbbd850923fc921748a1f6cc3c48cf005c339fd1f0ee7",
     "precheck/action.yml": "688091ba49d0ea0930fdd1c171cafffab9fc1c02ae4e8f0e95e961d3b7697531",
 }
+PRECHECK_SCRIPT_SHA = "099e43d90af79d91d132be6eb06b1bc38ebaacf7f2f2e0a0d57a72d8e7c5dd7b"
 ASSETS = {"gds": f"tt_submission/{TOP}.gds", "lef": f"tt_submission/{TOP}.lef",
           "nl": f"tt_submission/{TOP}.v", "pnl": f"views/{TOP}.power.v",
           "info_yaml": "info.yaml", "docs_info_md": "docs/info.md", "license": "LICENSE"}
@@ -168,7 +169,8 @@ def convert(out, bundle, deb):
 
 def verified_precheck(out):
     receipt = read_json(out / "precheck.json")
-    require((receipt["target_gds_sha256"], receipt["support_revision"], receipt["action_revision"],
+    require(receipt["schema"] == "pinwheel.streaming-8x4-jane-street-precheck.v1"
+            and (receipt["target_gds_sha256"], receipt["support_revision"], receipt["action_revision"],
              receipt["pdk_revision"]) == (GDS, SUPPORT, ACTION, PDK_REVISION)
             and receipt["checked_project_docs"] is True and receipt["cleanup"]["status"] == "absent",
             "Release precheck identity or custody differs")
@@ -176,11 +178,19 @@ def verified_precheck(out):
     precheck_dir = out / "precheck-run/tt/precheck"
     xml = precheck_dir / "reports/results.xml"
     require(xml.relative_to(out).as_posix() in proofs, "Precheck XML is missing from receipt")
+    require(digest(precheck_dir / "precheck.py") == PRECHECK_SCRIPT_SHA, "Precheck source bytes differ")
     expected = signoff.selected_checks((precheck_dir / "precheck.py").read_text(), PDK)
     require(expected == receipt["expected_checks"], "Precheck inventory differs from current source")
     confirmed = signoff.precheck_result(xml, expected, receipt["exit_code"])
+    config = out / "native-config.json"
+    journal = out / "native-klayout.jsonl"
+    require({config.name, journal.name} <= proofs, "Missing native precheck configuration or journal")
+    expected_native = checked_native(out, precheck_dir, Path(read_json(config)["pdk"]), out / ASSETS["gds"], journal, config)
     require(receipt["status"] == "pass" and confirmed == receipt["result"] and confirmed["passed"],
             "Current precheck failed")
+    require(receipt["checks"] == expected_native
+            and all(entry["exit_code"] == 0 and entry["report"] and entry["report"]["path"] in proofs
+                    for entry in expected_native), "Precheck deck execution did not independently close")
     return confirmed
 
 

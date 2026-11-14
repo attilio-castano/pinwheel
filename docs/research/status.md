@@ -1,8 +1,8 @@
 # Research status
 
-Updated 2026-11-14 after replacing the modeled ground row around
-`FILLER_3_3251/VSS` on the frozen 8×4 hold/capacitance candidate. Qualified timing,
-electrical power and shuttle acceptance remain open.
+Updated 2026-11-14 for the Jane Street release rehearsal on the frozen
+8×4 hold/capacitance candidate. Qualified timing, electrical power and
+shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -24,6 +24,14 @@ candidate. The nine draft timing scenarios also pass their provisional
 setup, hold and electrical checks. The package records local rehearsal GO
 and fabrication NO-GO.
 
+The November 9 competition rules confirm 8×4. The release rehearsal
+stages the exact frozen views against the current TTIHP27a custom-GDS
+contract. A clean source export regenerated all four RTL files byte
+for byte and matched the placed-cell UART, SPI and I²C fixtures. The
+current release entry and hosted gate are recorded in the linked report.
+[Release rehearsal](streaming-8x4-jane-street-release-20261114.md) ·
+[Competition entry draft](../jane-street-8x4-entry.md)
+
 Fresh geometric power connectivity passed on both rails with 98,904 instance
 terminals and one boundary terminal each. The timing audit reconciled all
 search endpoints and verified constrained min and max paths at all 6,051
@@ -31,11 +39,24 @@ active data and output endpoints and both pulse widths at every FF clock pin
 in each draft case. [Power connectivity](streaming-8x4-hold-cap-pg-20261111.md) ·
 [Timing coverage](streaming-8x4-hold-cap-timing-coverage-20261111.md)
 
+The runner now accepts real-geometry parasitic intake for this exact
+candidate. It dry-ran on all nine draft cases. The current Ciel PDK uses
+the same seven-layer extraction rules as the earlier nominal diagnostic.
+`ui_in[3]` and `ui_in[5]` have +38.855 and +45.780 ps of draft public-input
+hold margin, respectively.
+[Timing intake and margins](streaming-8x4-hold-cap-timing-intake-20261114.md)
+
 The verified I²C waveform covered all 124,219 signal pins. Its static rail
 loss ranges from 1.004 mV with distributed ideal contacts to 42.117 mV with
 four contacts per rail, 1 Ω per source and 105 °C sheet resistance. All
 screened edges were below the applicable modeled limits.
 [Local IR-drop and EM screen](streaming-8x4-hold-cap-ir-em-20261112.md)
+
+Exact-candidate UART, SPI, I²C write and reset/replacement traces now
+join the I²C read comparator. The parent power intake resolves supplied
+Metal4 contact rectangles to exact frozen-grid nodes and can preserve
+distinct VPWR and VGND source resistances.
+[Workload activity and power intake](streaming-8x4-hold-cap-workload-power-20261114.md)
 
 Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
 least 0.160 µm wide through its same-rail row. All 8,505 modeled via edges
