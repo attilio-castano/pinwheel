@@ -241,12 +241,27 @@ def package_release(out, bundle, source):
 def verify_release(out, bundle, expected):
     import hashlib
 
-    checked_stage(out, bundle)
+    stage_files = checked_stage(out, bundle)
     verify_archive(bundle)
     receipt_path = out / "handoff.json"
     require(digest(receipt_path) == expected, "Local handoff manifest SHA-256 differs")
     receipt = read_json(receipt_path)
     files = {entry["path"]: file_spec(out, entry) for entry in receipt["files"]}
+    preview_extras = {f"tt_submission/{TOP}.oas", "tt_submission/commit_id.json"}
+    stage_paths = {entry["path"] for entry in stage_files}
+    require(receipt["schema"] == "pinwheel.streaming-8x4-jane-street-handoff.v1"
+            and receipt["target_gds_sha256"] == GDS and receipt["rehearsal_manifest_sha256"] == BUNDLE_SHA
+            and receipt["github_artifact_created"] is False and receipt["submitted"] is False
+            and receipt["shuttle_acceptance"] is False and receipt["fabrication"] == "no-go"
+            and files.keys() == RELEASE_OVERLAY | stage_paths | preview_extras
+            and len(files) == len(receipt["files"]), "Wrong handoff target, scope or file set")
+    require(all(files[entry["path"]] == entry for entry in stage_files)
+            and all(files[name]["sha256"] == files[staged]["sha256"] for name, staged in RELEASE_INPUTS.items()),
+            "Released file bytes differ from the staged candidate")
+    preview_paths = sorted(name for name in files if name.startswith(("tt_submission/", "docs/"))
+                           or name in {"LICENSE", "info.yaml"})
+    require(receipt["preview_paths"] == preview_paths and receipt["overlay_paths"] == sorted(RELEASE_OVERLAY),
+            "Local preview or overlay file set differs")
     for name in ("precheck_receipt", "conversion_receipt", "source_receipt"):
         file_spec(out, receipt[name])
     source = read_json(out / receipt["source_receipt"]["path"])
