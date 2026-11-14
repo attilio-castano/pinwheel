@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-11-14 after the Metal1 geometry, via array and terminal current
-audit on the frozen 8×4 hold/capacitance candidate. Qualified timing,
+Updated 2026-11-14 after the local via and decap contact current-sharing
+study on the frozen 8×4 hold/capacitance candidate. Qualified timing,
 electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
@@ -45,6 +45,17 @@ from the full solver matrix. Physical current density at via cuts and
 terminal contacts, and the actual parent supply and operating envelope,
 remain open.
 [Metal1, via and terminal current audit](streaming-8x4-hold-cap-metal1-via-terminal-20261114.md)
+
+The local sharing model keeps all 48 arrays below the per-cut reference
+with uniform cut resistance and varied feed placement. A deliberate
+mixed-resistance sensitivity exceeds the reference at the two largest
+array transfers. The two decap contact meshes stay below the individual
+contact reference across the tested static scenarios. A coupled local
+diagnostic gives 597 µA through a 0.440 µm ground Metal1 row against a
+440 µA reference. This grounds the next geometry-resolved EM check at
+`FILLER_3_3251/VSS`. Physical sharing, the full rail boundary, and
+transient contact current remain open.
+[Via and decap sharing study](streaming-8x4-hold-cap-cut-sharing-20261114.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
