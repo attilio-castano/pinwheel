@@ -1,7 +1,7 @@
 # Research status
 
-Updated 2026-11-12 after six static IR-drop and electromigration screening
-cases on the frozen 8×4 hold/capacitance candidate. Qualified timing,
+Updated 2026-11-14 after the Metal1 geometry, via array and terminal current
+audit on the frozen 8×4 hold/capacitance candidate. Qualified timing,
 electrical power and shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
@@ -34,10 +34,17 @@ in each draft case. [Power connectivity](streaming-8x4-hold-cap-pg-20261111.md) 
 The verified I²C waveform covered all 124,219 signal pins. Its static rail
 loss ranges from 1.004 mV with distributed ideal contacts to 42.117 mV with
 four contacts per rail, 1 Ω per source and 105 °C sheet resistance. All
-screened edges were below the applicable modeled limits. Sub-range Metal1
-geometry, individual-cut crowding and terminal contacts remain open, along
-with the actual parent supply boundary and operating envelope.
+screened edges were below the applicable modeled limits.
 [Local IR-drop and EM screen](streaming-8x4-hold-cap-ir-em-20261112.md)
+
+Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
+least 0.160 µm wide through its same-rail row. All 8,505 modeled via edges
+join to physical arrays. Forty-eight arrays need a cut-sharing assessment
+in the sparse-source cases. Signed terminal and source currents reproduce
+from the full solver matrix. Physical current density at via cuts and
+terminal contacts, and the actual parent supply and operating envelope,
+remain open.
+[Metal1, via and terminal current audit](streaming-8x4-hold-cap-metal1-via-terminal-20261114.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
