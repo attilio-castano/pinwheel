@@ -24,6 +24,32 @@ second image differs from the first. SPI uses the existing protocol peer
 and transaction checks on a 1,024-bit finite workload to keep the waveform
 and native readback tractable.
 
+## Observed switching by workload and phase
+
+The VCD audit counts 124,098 connected instance pins and 43 public bits.
+It includes all fanout endpoints, counts only known-to-known transitions
+and measures time spent at unknown values. Both idle windows and both
+upload windows have zero unknown connected bit-time. The full scenarios
+have unknown bit-time during startup and all connected bits known at the
+end. All initialized cycles deliver 12,078 clock-pin transitions across
+6,039 flop clock inputs.
+
+| Observation window | Mean nonclock cell-pin transitions per cycle | Peak in one cycle |
+| --- | ---: | ---: |
+| I²C read | 4,743 | 12,121 |
+| I²C write | 4,750 | 12,121 |
+| SPI duplex | 4,559 | 12,121 |
+| UART receive | 4,494 | 12,121 |
+| Cold and warm reset | 4,462 | 12,121 |
+| Initial upload | 4,511 | 8,774 |
+| Clocked idle after either upload | 3,908 | 3,908 |
+| Replacement upload | 4,566 | 10,169 |
+
+The observed peak comes from startup in each complete scenario.
+These counts measure switching at connected cell pins. Pin fanout,
+net capacitance and internal energy affect how that switching maps to
+rail current.
+
 ## Power boundary intake
 
 The resolver accepts a source record for these exact ODB and GDS hashes
@@ -75,6 +101,9 @@ do
   python3 -B scripts/streaming_8x4_hold_cap_workloads.py \
     --case "$scenario" --out "$TRIAL/workload-$scenario-replay"
 done
+python3 -B scripts/streaming_8x4_hold_cap_activity_epochs.py \
+  --out "$POWER/activity-epochs-replay.json" "$TRIAL/workload-activity-01/receipt.json" \
+  "$TRIAL"/workload-*-replay/receipt.json
 python3 -B scripts/streaming_8x4_hold_cap_parent_power.py \
   --input "$POWER/parent-illustrative-input-01.json" \
   --out "$POWER/resolved-parent-replay"
@@ -94,6 +123,7 @@ python3 -B scripts/streaming_8x4_hold_cap_ir_readback.py \
 | `workload-uart-02/receipt.json` | `641eadd6e37e3beeb2e5fc4e11567ab318a4937e642d6dcb48076a5c6446eee3` |
 | `workload-reset-upload-02/receipt.json` | `845f7bf586a79dedebab008c65415b786e5f150d40f212e32e59d84fb9c74087` |
 | `power-dc/parent-illustrative-resolved-02/resolved.json` | `80c543a9a6cf3f2a7c2bcf2128b6f253f6ed5e309e0854d7b305437481f5acda` |
+| `power-dc/activity-epochs-03.json` | `91091c62833fdbf9c549524b2e5726adc74273a614b44abda087f565490a7098` |
 
 These waveforms cover finite observed workloads. A legal activity bound
 still needs a declared clock, program space and input domain, with physical

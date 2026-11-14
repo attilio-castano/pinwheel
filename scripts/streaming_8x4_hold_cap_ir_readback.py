@@ -8,10 +8,11 @@ import re
 
 from streaming_8x4_draft_rc_timing import bound
 from streaming_8x4_e982_native import read, require, sha, write
-from streaming_8x4_hold_cap_activity import observed_pins
+from streaming_8x4_hold_cap_activity import SCHEMA as BASE_ACTIVITY_SCHEMA, observed_pins
 from streaming_8x4_hold_cap_ir import CORNER, VOLTAGES
 from streaming_8x4_hold_cap_physical import EVIDENCE, TARGET, TRIAL, setup
 from streaming_8x4_hold_cap_timing_coverage import prepare
+from streaming_8x4_hold_cap_workloads import SCHEMA as WORKLOAD_SCHEMA
 
 
 DBU = 1000
@@ -300,10 +301,14 @@ def main():
         item = bound(path)
         workload = read(path)
         vcd = workload["artifacts"]["activity.vcd"]
-        require(workload["target_odb_sha256"] == TARGET["odb_sha256"]
+        waveform = workload["waveform"]
+        require(workload["schema"] in (BASE_ACTIVITY_SCHEMA, WORKLOAD_SCHEMA)
+                and workload["target_odb_sha256"] == TARGET["odb_sha256"]
                 and workload["target_gds_sha256"] == TARGET["gds_sha256"]
-                and workload["all_public_observations_replayed"] is True and workload["waveform"]["clock_period_ps"] == 20000
-                and workload["waveform"]["actual_signal_pins_declared"] == 124176 and bound(vcd["path"]) == vcd
+                and workload["all_public_observations_replayed"] is True and waveform["clock_period_ps"] == 20000
+                and waveform["clock_rising_edges"] == workload["workload_cycles"] > 0
+                and waveform["duration_ps"] == waveform["clock_rising_edges"] * waveform["clock_period_ps"]
+                and waveform["actual_signal_pins_declared"] == 124176 and bound(vcd["path"]) == vcd
                 and bound(path) == item and vcd["path"] not in by_vcd_path, "Invalid or repeated activity replay receipt")
         by_vcd_path[vcd["path"]] = workload
         workload_bindings.append(item)
