@@ -88,6 +88,42 @@ parent remain necessary. Source resistance here is independent for each
 resolved grid node. A shared package impedance or transient RLC model
 needs its own topology and evidence.
 
+## Native static IR and EM measurements
+
+OpenROAD annotated all 124,219 instance and public signal bits in each
+of six native cases. The symmetric cases use 1 Ω per modeled source,
+the four resolved nodes per rail and 105 °C sheet-resistance scaling.
+Cell power stays at the pinned typical 1.20 V and 25 °C Liberty condition,
+with retained draft typical signal SPEF and unchanged via resistance.
+The case names below are under the ignored `power-dc` directory.
+
+| Scenario | Power (mW) | VPWR drop (mV) | VGND rise (mV) | Min. matched-instance VDD−VSS (V) | Max. covered EM utilization |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| I²C read comparator | 23.167 | 21.245 | 20.873 | 1.157912 | 85.14% |
+| I²C write | 23.200 | 21.274 | 20.903 | 1.157852 | 85.28% |
+| SPI duplex | 23.122 | 21.212 | 20.832 | 1.157995 | 85.03% |
+| UART receive | 23.329 | 21.381 | 21.014 | 1.157631 | 85.72% |
+| Reset and replacement upload | 23.280 | 21.338 | 20.971 | 1.157717 | 85.56% |
+
+The budget formed by adding the two extrema reaches 42.394 mV under
+the UART case. Its limiting covered EM edge is a lower ground Metal1
+segment with 0.3086 mA against a 0.36 mA reference. All cases cover
+633,785 wire/equal-share via edges in the table comparison and
+have zero such exceedances. Another 95,033 Metal1 edges per case have
+modeled widths below the table range. Cut sharing, terminal contact and
+rail geometry limitations retain the scope of the prior analysis.
+[IR and EM scope](streaming-8x4-hold-cap-ir-em-20261112.md) ·
+[Ground row replacement](streaming-8x4-hold-cap-ground-row-replacement-20261114.md)
+
+The I²C read comparator reproduced the earlier sparse-heated power JSON,
+both current CSVs, both voltage CSVs and both SPICE descriptions byte for
+byte. The asymmetric I²C control solves VGND with an ideal feed before
+VPWR with 1 Ω per node. It preserves both VPWR CSVs byte for byte, reduces
+the VGND rise from 20.873 to 16.047 mV and raises the paired minimum to
+1.162738 V. The independent readback joins each reported resistor and
+voltage to the frozen grid and verifies the exact four nodes per rail.
+All six invocations exited zero and reported clean container release.
+
 ## Reproduction
 
 Use fresh ignored output directories. `PINWHEEL_HISTORY` points to the
@@ -124,6 +160,8 @@ python3 -B scripts/streaming_8x4_hold_cap_ir_readback.py \
 | `workload-reset-upload-02/receipt.json` | `845f7bf586a79dedebab008c65415b786e5f150d40f212e32e59d84fb9c74087` |
 | `power-dc/parent-illustrative-resolved-02/resolved.json` | `80c543a9a6cf3f2a7c2bcf2128b6f253f6ed5e309e0854d7b305437481f5acda` |
 | `power-dc/activity-epochs-03.json` | `91091c62833fdbf9c549524b2e5726adc74273a614b44abda087f565490a7098` |
+| `power-dc/goal-workload-readback-01.json` | `583e147c2d7cbad0f1d9d2f137b6029286058b5d861a944c88a648e97c4c6a68` |
+| `power-dc/goal-i2c-asymmetric-readback-01.json` | `24a444bf858c26740bfd07ae475aee70a7854b13926acb20a2711934ecb3ac4d` |
 
 These waveforms cover finite observed workloads. A legal activity bound
 still needs a declared clock, program space and input domain, with physical
