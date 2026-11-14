@@ -1,5 +1,8 @@
 # Frozen 8×4 Jane Street release rehearsal
 
+**Local release rehearsal GO. Hosted precheck and entry pending.
+Fabrication NO-GO.**
+
 Jane Street confirmed 8×4 on November 9 for the planned March 2027
 CMOS5L shuttle. The competition asks for a public repository, RTL and
 tests, a passing Tiny Tapeout GDS and precheck, the architecture and
@@ -35,6 +38,33 @@ readback matches all 380,716 expanded top-cell instance placements,
 all 45 top-cell labels, and the exact top Pin Metal4 and prBoundary
 geometry. The GDS sent to precheck is the original frozen GDS.
 [Custom-GDS action](https://github.com/TinyTapeout/tt-gds-action/blob/e7a50f8f46f9f8df4b2c9935bfeb1cbc6b6ae4f6/custom_gds/action.yml)
+
+## Executed checks
+
+All ten current official prechecks passed locally. The main DRC report
+has zero markers and precisely the same 332 rule categories as the
+November 7 result, including `NW.b`. Pin-label overlap and zero-area
+reports also contain zero markers. The KLayout calls closed in 1.265,
+1,594.414, and 2.168 seconds. The complete precheck took 1,611.211
+seconds and its owned-container check confirmed cleanup.
+
+Local package verification reopened all 19 staged files, both ZIPs,
+the source and precheck receipts, raw XML, and all three native deck
+invocations. An independent extraction of the overlay onto a clean
+Git archive passed all nine workflow SHA-256 checks and the ten
+public-pin host regressions. The workflow passed actionlint. Full
+Python discovery passed with 2,922 cases, including 35 reported skips.
+The original rehearsal separately returned `verified=true` and kept
+its manifest and archive hashes.
+
+| Local record under `release-01/` | SHA-256 |
+| --- | --- |
+| `precheck.json` | `e1ac7787f2ade84b3941db0281b331a90504670d7e7566a96ccb126b8f6966dc` |
+| `precheck-run/tt/precheck/reports/results.xml` | `574925f52a19a738c6634b3a6d94ac704f0c3ca04c04ea79ce881f1cee11a2f6` |
+| `precheck-run/tt/precheck/reports/drc_sg13cmos5l.xml` | `457bf81960fda8be79350e91a49f6c3c958753a1b152ffdd8f61ca97b7e7e84c` |
+| `handoff.json` | `c7daa29e55d4deb4bfab009ec5a75a13a1024c6d1abff4ae57cea40bff4b5441` |
+| `release-overlay.zip` | `97f46fab1a0ef417c9c533d9ef861a206eab109b747118f84bfcba70ea8c7137` |
+| `tt_submission-local-preview.zip` | `1646dcf7a8e697050cbea217df9ad330328baa18e939e904d29b14b13f6eb238` |
 
 ## Local reproduction
 
@@ -91,10 +121,11 @@ provides a real run URL and commit when the hosted action executes.
 The existing main-repository artifact policy rejects raw GDS and large
 netlist payloads in a normal PR. A dedicated release repository with
 the dispatch workflow on its default branch is one workable publication
-path. The current branch carries the workflow template, source scripts,
-and receipts' documented identities. Release payload and rehearsal
-archives stay in ignored local storage. Publication, hosted execution,
-and filing the organizer's entry each require their own decision.
+path. Confirm the custom-GDS path for the selected release and run the
+hosted action there. Check the downloadable artifact's GDS hash and
+passing precheck. The current branch carries the workflow template,
+source scripts, and receipts' documented identities. Release payload
+and rehearsal archives stay in ignored local storage.
 [Artifact policy](../../tools/artifact-policy.json)
 
 | Open fabrication gate | Required input and owner |

@@ -27,8 +27,11 @@ and fabrication NO-GO.
 The November 9 competition rules confirm 8×4. The release rehearsal
 stages the exact frozen views against the current TTIHP27a custom-GDS
 contract. A clean source export regenerated all four RTL files byte
-for byte and matched the placed-cell UART, SPI and I²C fixtures. The
-current release entry and hosted gate are recorded in the linked report.
+for byte and matched the placed-cell UART, SPI and I²C fixtures. All ten
+current checks pass locally, with the same 332-category main DRC and
+zero markers. The exact release overlay verified from a clean archive.
+The hosted `tt_submission`, hosted precheck and organizer filing remain
+pending.
 [Release rehearsal](streaming-8x4-jane-street-release-20261114.md) ·
 [Competition entry draft](../jane-street-8x4-entry.md)
 
