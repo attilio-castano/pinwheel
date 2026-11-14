@@ -1,4 +1,4 @@
-"""Check sealed SPEF and OpenSTA annotation evidence without running CAD."""
+"""Check sealed SPEF inputs and, when supplied, OpenSTA annotation evidence."""
 
 import argparse
 from collections import defaultdict
@@ -17,8 +17,11 @@ from streaming_tt_signoff import decode, require
 
 
 REQUEST = "pinwheel.e982-parasitics-preflight-request.v1"
+INTAKE_REQUEST = "pinwheel.e982-parasitics-intake-request.v1"
 ANALYSIS = "pinwheel.e982-spef-annotation-run.v1"
 RESULT = "pinwheel.e982-parasitics-preflight.v1"
+INTAKE_RESULT = "pinwheel.e982-parasitics-intake.v1"
+AUTHORITY_ROLES = ("extraction_receipt", "corner_matrix", "host_timing_contract")
 TARGET = {
     "odb": TARGET_ODB,
     "gds": TARGET_GDS,
@@ -30,6 +33,12 @@ ECO_TARGET = {
     "gds": "dcc496d71202677f6d2fe3785dca6ff9bb225ef954953bf7925171174d4b7e82",
     "netlist": "3167eaaed4365ffc373f9a8609172eeebca48f792134d84a19f259e5f16951ec",
     "inventory": "af31d89940af5af559d2a8fceb5c0767887faa952298a0e7b684b8ee91658ee8",
+}
+HOLD_CAP_TARGET = {
+    "odb": "dc654986c54512095c243407ea481ad3675a0269870ee4715dcbd1bd632c6a73",
+    "gds": "d4cd48f0919ac47ec4b2ceb061bc5dc6a217ce730b02b819a6b7e09d9e73c832",
+    "netlist": "6b50411924e8bcd369137c0187b25d08e2b0f1f1c5baafbce700a657d893d90e",
+    "inventory": "d1a6e5fb7f084cc186a4d213e377bcb48869a036f503bfd136859de9baa50fa2",
 }
 UNITS = {"*T_UNIT": {"PS", "NS"}, "*C_UNIT": {"FF", "PF"}, "*R_UNIT": {"OHM", "KOHM"}}
 META = {"*DATE", "*VENDOR", "*PROGRAM", "*VERSION", "*DESIGN_FLOW"}
@@ -237,10 +246,18 @@ def annotation_evidence(text, corner, context, disconnected):
 
 
 def preflight(workspace, request, *, target_name="baseline"):
-    require(target_name in ("baseline", "eco"), "Unsupported preflight target")
-    pins = TARGET if target_name == "baseline" else ECO_TARGET
-    fields(request, ("schema", "target", "scenarios"), "request")
-    require(request["schema"] == REQUEST, "Unsupported preflight request")
+    targets = {"baseline": TARGET, "eco": ECO_TARGET, "hold-cap-trial": HOLD_CAP_TARGET}
+    require(target_name in targets, "Unsupported preflight target")
+    pins = targets[target_name]
+    require(type(request) is dict and request.get("schema") in (REQUEST, INTAKE_REQUEST),
+            "Unsupported preflight request")
+    intake = request["schema"] == INTAKE_REQUEST
+    roles = ("schema", "target", "scenarios")
+    fields(request, roles + ("authority",) if intake else roles, "request")
+    authority = {}
+    if intake:
+        fields(request["authority"], AUTHORITY_ROLES, "provider authority")
+        authority = {role: file_spec(workspace, request["authority"][role]) for role in AUTHORITY_ROLES}
     fields(request["target"], pins, "target")
     target = {role: file_spec(workspace, binding) for role, binding in request["target"].items()}
     require({role: row["sha256"] for role, row in target.items()} == pins, "Request is for another frozen target")
@@ -249,51 +266,62 @@ def preflight(workspace, request, *, target_name="baseline"):
     context, disconnected = inventory_context(inventory)
     layout = expected_nets(inventory, context)
     require(type(request["scenarios"]) is dict and request["scenarios"], "Empty scenario matrix")
-    results, rc_graphs = {}, {}
+    results, rc_graphs, spef_by_digest = {}, {}, {}
+    file_roles = ("sdc", "spef") if intake else ("sdc", "spef", "annotation", "run")
     for name, row in sorted(request["scenarios"].items()):
-        fields(row, ("rc_corner", "sta_corner", "mode", "sdc", "liberties", "spef", "annotation", "run"), "scenario")
+        fields(row, ("rc_corner", "sta_corner", "mode", "liberties") + file_roles, "scenario")
         require(all(type(value) is str and LABEL.fullmatch(value)
                     for value in (name, row["rc_corner"], row["sta_corner"], row["mode"])), "Invalid scenario label")
-        files = {role: file_spec(workspace, row[role]) for role in ("sdc", "spef", "annotation", "run")}
+        files = {role: file_spec(workspace, row[role]) for role in file_roles}
         require(type(row["liberties"]) is list and row["liberties"], "Missing Liberty bindings")
         liberties = [file_spec(workspace, binding) for binding in row["liberties"]]
         require(len({item["sha256"] for item in liberties}) == len(liberties), "Duplicate Liberty binding")
-        run = decode(local_path(workspace, files["run"]["path"]).read_bytes())
-        fields(run, ("schema", "top", "odb_sha256", "gds_sha256", "netlist_sha256", "scenario", "rc_corner",
-                     "sta_corner", "mode", "sdc_sha256", "liberty_sha256", "spef_sha256", "annotation_sha256",
-                     "runtime_sha256", "annotation_mode", "exit_code"), "analysis run")
-        require(run["schema"] == ANALYSIS and run["top"] == TOP and run["scenario"] == name
-                and all(run[key] == row[key] for key in ("rc_corner", "sta_corner", "mode"))
-                and all(run[role + "_sha256"] == pins[role] for role in ("odb", "gds", "netlist"))
-                and all(run[role + "_sha256"] == files[role]["sha256"] for role in ("sdc", "spef", "annotation"))
-                and run["liberty_sha256"] == [item["sha256"] for item in liberties]
-                and type(run["runtime_sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", run["runtime_sha256"])
-                and run["annotation_mode"] == "read_spef" and type(run["exit_code"]) is int and run["exit_code"] == 0,
-                f"Analysis custody differs for scenario {name}")
-        with local_path(workspace, files["spef"]["path"]).open(encoding="ascii") as stream:
-            spef = spef_evidence(stream, inventory, layout)
+        if not intake:
+            run = decode(local_path(workspace, files["run"]["path"]).read_bytes())
+            fields(run, ("schema", "top", "odb_sha256", "gds_sha256", "netlist_sha256", "scenario", "rc_corner",
+                         "sta_corner", "mode", "sdc_sha256", "liberty_sha256", "spef_sha256", "annotation_sha256",
+                         "runtime_sha256", "annotation_mode", "exit_code"), "analysis run")
+            require(run["schema"] == ANALYSIS and run["top"] == TOP and run["scenario"] == name
+                    and all(run[key] == row[key] for key in ("rc_corner", "sta_corner", "mode"))
+                    and all(run[role + "_sha256"] == pins[role] for role in ("odb", "gds", "netlist"))
+                    and all(run[role + "_sha256"] == files[role]["sha256"] for role in ("sdc", "spef", "annotation"))
+                    and run["liberty_sha256"] == [item["sha256"] for item in liberties]
+                    and type(run["runtime_sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", run["runtime_sha256"])
+                    and run["annotation_mode"] == "read_spef" and type(run["exit_code"]) is int and run["exit_code"] == 0,
+                    f"Analysis custody differs for scenario {name}")
+        digest = files["spef"]["sha256"]
+        if digest not in spef_by_digest:
+            with local_path(workspace, files["spef"]["path"]).open(encoding="ascii") as stream:
+                spef_by_digest[digest] = spef_evidence(stream, inventory, layout)
+        spef = spef_by_digest[digest]
         graph = spef["graph_sha256"]
         rc = row["rc_corner"]
         require(rc_graphs.setdefault(rc, graph) == graph, f"Inconsistent SPEF graph for RC corner {rc}")
-        annotation = annotation_evidence(local_path(workspace, files["annotation"]["path"]).read_text(),
-                                         row["sta_corner"], context, disconnected)
+        evidence = dict(rc_corner=rc, sta_corner=row["sta_corner"], mode=row["mode"], bindings=files,
+                        liberties=liberties, spef=spef)
+        if not intake:
+            evidence["annotation"] = annotation_evidence(local_path(workspace, files["annotation"]["path"]).read_text(),
+                                                         row["sta_corner"], context, disconnected)
         for binding in (*files.values(), *liberties):
             file_spec(workspace, binding)
-        results[name] = dict(rc_corner=rc, sta_corner=row["sta_corner"], mode=row["mode"],
-                             bindings=files, liberties=liberties, spef=spef, annotation=annotation)
+        results[name] = evidence
     require(len(set(rc_graphs.values())) == len(rc_graphs), "Identical SPEF graphs declared as different RC corners")
-    for binding in target.values():
+    for binding in (*target.values(), *authority.values()):
         file_spec(workspace, binding)
-    return dict(schema=RESULT, software_preflight_passed=True, target=target, scenarios=results,
-                extraction_model_qualified=False, qualified_timing=False, tapeout_ready=False)
+    result = dict(schema=INTAKE_RESULT if intake else RESULT, software_preflight_passed=True,
+                  target=target, scenarios=results, extraction_model_qualified=False,
+                  qualified_timing=False, tapeout_ready=False)
+    if intake:
+        result.update(annotation_checked=False, authority_files_bound=authority, authority_reviewed=False)
+    return result
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("request", type=Path)
     parser.add_argument("--request-sha256", required=True)
-    parser.add_argument("--target", choices=("baseline", "eco"), default="baseline",
-                        help="Require the pinned baseline or five-net ECO target")
+    parser.add_argument("--target", choices=("baseline", "eco", "hold-cap-trial"), default="baseline",
+                        help="Require the exact inputs for the chosen frozen target")
     parser.add_argument("--workspace", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args(argv)
     try:
