@@ -75,6 +75,16 @@ route layers fixed. That trial produces a congestion comparison.
 The stock global-route log SHA-256 is
 `931131af8ac9c6a292d404fd22e607e3ab22de61a0380c098a4c5837701b1315`.
 
+The first complete detailed-routing iteration reported 94,859 markers in
+25 minutes 54 seconds. Metal2 and Metal3 shorts accounted for 45,640 and
+28,133 markers. This is the initial detailed route before iterative repair.
+
+The separate `clean-tt-06-reserve19` run reached global routing with the
+same post-CTS state. It measured 303,221 usable Metal3 resource units,
+43,297 more than the stock run. The local admission receipt binds the stock
+worker and the trial's two-CPU and 1.25 GiB equal memory/swap caps. The trial
+reports its own routing outcome and retains the stock run as comparator.
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared

@@ -44,8 +44,10 @@ UART, I²C, SPI and JTAG uploads in one instance with a single cold reset.
 
 A clean build with the stock Tiny Tapeout template has compiled the four
 byte-matched release sources. The resulting synthesis netlist passes the
-four public-pin fixtures and the same successive-upload test. The pinned
-stock flow continues beyond the placement-stage estimates.
+four public-pin fixtures and the same successive-upload test. The stock
+global router finished with 34,932 overflow units, 34,678 on Metal3. The
+first complete detailed-routing pass reported 94,859 markers, primarily
+Metal2 and Metal3 shorts. Detailed routing and a 19% reserve trial are active.
 [Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
 
 Fresh geometric power connectivity passed on both rails with 98,904 instance
@@ -61,6 +63,10 @@ the same seven-layer extraction rules as the earlier nominal diagnostic.
 `ui_in[3]` and `ui_in[5]` have +38.855 and +45.780 ps of draft public-input
 hold margin, respectively. A native 40 ps earlier-arrival check puts
 `ui_in[3]` at −1.145 ps while `ui_in[5]` retains +5.780 ps.
+Fresh extraction using the released five-layer ITF sheet and cut resistance
+improved the MIN and TYP cases. The MAX control exactly reproduced the worst
+five-layer result, with +31.572 ps global hold and +1.554538 ns setup.
+All eight fresh diagnostics had zero capacitance, slew or fanout violations.
 [Timing intake and margins](streaming-8x4-hold-cap-timing-intake-20261114.md)
 
 The verified I²C waveform covered all 124,219 signal pins. Its static rail
@@ -82,8 +88,10 @@ Published TT0004 IHP assemblies confirm how the Metal4 rails meet the
 parent through TopVia1. Projecting that geometry resolves contacts on all
 35 frozen stripes per rail. The calibrated static solve gives 1.255 mV
 of combined rail loss with projected contacts and 42.117 mV with four
-assumed feeds per rail, using the same heated I²C load. The assigned
-TTIHP27a geometry and shared supply impedance remain open.
+assumed feeds per rail, using the same heated I²C load. Rounded-load
+comparisons for UART, SPI and reset/upload keep the four workloads between
+1.253625 and 1.254936 mV under the projected contact model. The assigned
+TTIHP27a geometry, shared supply impedance and transient analysis remain open.
 [Historical parent attachment and rail loss](streaming-8x4-hold-cap-parent-attachment-20261115.md)
 
 Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
