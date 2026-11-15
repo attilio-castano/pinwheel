@@ -1,0 +1,165 @@
+"""Build the frozen release RTL through the stock Tiny Tapeout CMOS5L flow."""
+
+import argparse
+import fcntl
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import tarfile
+import tempfile
+import time
+import uuid
+
+from streaming_8x4_e982_native import ROOT, TOP, read, sha, write
+from streaming_8x4_jane_street_release import ACTION, BUILD, PDK, PDK_REVISION, SUPPORT, TEMPLATE, TEMPLATE_DEF, TEMPLATE_SHA
+from streaming_8x4_jane_street_source import RTL, SOURCE
+from streaming_8x4_tt_rehearsal import file_spec, require
+from streaming_tt_signoff import cleanup, python_environment
+
+
+ENTRY = ROOT / "build/8x4-jane-street-entry-20261114"
+HANDOFF = ENTRY / "release-01"
+HANDOFF_SHA = "c0eff2d9fbdd395bf120c3eba742a4784021c74e9fbf760f8936bd45a3e010ba"
+LL = "3.1.0.dev4"
+IMAGE = "ghcr.io/librelane/librelane:" + LL
+BASELINE = ("info.yaml", "LICENSE", "docs/info.md", *(f"src/{name}" for name in RTL))
+
+
+def capture(argv, **kwargs):
+    return subprocess.check_output(argv, text=True, timeout=30, **kwargs).strip()
+
+
+def git_archive(repo, revision, destination, paths=()):
+    with tempfile.TemporaryFile() as archive:
+        subprocess.run(["git", "-C", str(repo), "archive", revision, *paths],
+                       stdout=archive, check=True, timeout=60)
+        archive.seek(0)
+        with tarfile.open(fileobj=archive) as tar:
+            tar.extractall(destination, filter="data")
+
+
+def bindings(root, paths):
+    return {path: sha(root / path) for path in sorted(paths)}
+
+
+def stage(out, template, support, python):
+    require(sha(HANDOFF / "handoff.json") == HANDOFF_SHA, "Wrong reviewed release handoff")
+    handoff = read(HANDOFF / "handoff.json")
+    files = {item["path"]: item for item in handoff["files"]}
+    for name in BASELINE:
+        file_spec(HANDOFF, files[name])
+    require({name: files[f"src/{name}"]["sha256"] for name in RTL} == RTL, "Wrong generated RTL bytes")
+    project = out / "project"
+    project.mkdir(parents=True)
+    git_archive(template, TEMPLATE, project, ("src/config.json",))
+    git_archive(support, SUPPORT, project / "tt")
+    require(sha(project / "tt" / TEMPLATE_DEF) == TEMPLATE_SHA, "Tiny Tapeout 8x4 DEF differs")
+    for name in BASELINE:
+        dest = project / name
+        dest.parent.mkdir(exist_ok=True, parents=True)
+        shutil.copyfile(HANDOFF / name, dest)
+        file_spec(project, files[name])
+    original = bindings(project, [*BASELINE, "src/config.json", *(
+        item.relative_to(project).as_posix() for item in (project / "tt").rglob("*") if item.is_file())])
+    env = python_environment(os.environ)
+    env.update(PATH=str(python.parent) + os.pathsep + env["PATH"], XDG_CACHE_HOME=str(out / "cache"),
+               YOWASP_CACHE_DIR=str(out / "cache/yowasp"), MPLCONFIGDIR=str(out / "matplotlib"))
+    command = [str(python), "-B", "tt/tt_tool.py", "--create-user-config", "--pdk", PDK]
+    with (out / "config.log").open("x") as log:
+        subprocess.run(command, cwd=project, env=env, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=120)
+    config_file = "src/config_merged.json"
+    config = read(project / config_file)
+    require(config["DESIGN_NAME"] == TOP and config["VERILOG_FILES"] == [f"dir::{name}" for name in RTL]
+            and config["FP_DEF_TEMPLATE"] == f"dir::../tt/{TEMPLATE_DEF}" and config["RT_MAX_LAYER"] == "Metal4"
+            and config["VDD_PIN"] == "VPWR" and config["GND_PIN"] == "VGND"
+            and list(map(float, config["DIE_AREA"].split())) == [0, 0, 1724.16, 710.64],
+            "Generated Tiny Tapeout build does not match the exact release sources and outline")
+    require(bindings(project, original) == original and not (project / "runs").exists(),
+            "Stock config generation changed inputs or found an existing run")
+    write(out / "stage.json", dict(schema="pinwheel.streaming-8x4-tt-clean-stage.v1", handoff_sha256=HANDOFF_SHA,
+        source_commit=SOURCE, template_commit=TEMPLATE, support_commit=SUPPORT, action_commit=ACTION,
+        exact_rtl=RTL, config_command=command, pdk_revision=PDK_REVISION,
+        inputs=bindings(project, [*original, config_file, "src/user_config.json"])))
+
+
+def run(out, pdk, lease, timeout, jobs, memory):
+    project = out / "project"
+    staged = read(out / "stage.json")
+    require(staged["schema"] == "pinwheel.streaming-8x4-tt-clean-stage.v1"
+            and staged["handoff_sha256"] == HANDOFF_SHA and bindings(project, staged["inputs"]) == staged["inputs"],
+            "Clean hardening inputs changed")
+    require(not (project / "runs").exists(), "Select an unused staged directory for a clean build")
+    pdk_source = pdk / PDK / "SOURCES"
+    require(pdk_source.read_text().split() == ["IHP-Open-PDK", PDK_REVISION], "Wrong Ciel PDK revision")
+    pdk_input = sha(pdk_source)
+    image = capture(["docker", "image", "inspect", IMAGE, "--format", "{{.Id}}"])
+    label = "pinwheel-tt-clean-" + out.name
+    owner = str(uuid.uuid4())
+    mount = ["--mount", f"type=bind,source={project},target=/work/project",
+             "--mount", f"type=bind,source={pdk},target=/work/pdk,readonly"]
+    docker = ["docker", "run", "--rm", "--pull", "never", "--network", "none", "--cpus", str(jobs),
+              "--memory", memory, "--memory-swap", memory, "--label", f"org.pinwheel.signoff_owner={owner}",
+              "--name", label, *mount, "--workdir", "/work/project", "--entrypoint", "python3", image]
+    command = [*docker, "-m", "librelane", "--pdk-root", "/work/pdk", "--pdk", PDK,
+               "--run-tag", "wokwi", "--force-run-dir", "runs/wokwi", "--hide-progress-bar",
+               "--jobs", str(jobs), "src/config_merged.json"]
+    started = time.monotonic()
+    receipt = dict(schema="pinwheel.streaming-8x4-tt-clean-run.v1", status="running", candidate_promoted=False,
+                   github_action_run=False, stage_sha256=sha(out / "stage.json"), pdk_source_sha256=pdk_input,
+                   command=command, image=image, owner=owner, timeout_seconds=timeout)
+    with lease.open("rb") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        require(not (lease.parent / "cleanup-unconfirmed.json").exists(), "Prior native cleanup is unconfirmed")
+        (project / "runs/wokwi").mkdir(parents=True)
+        write(out / "execution.json", receipt)
+        def interrupt(_signal, _frame):
+            raise KeyboardInterrupt
+
+        handler = signal.signal(signal.SIGTERM, interrupt)
+        try:
+            with (out / "harden.log").open("x") as log:
+                process = subprocess.run(command, timeout=timeout, stdout=log, stderr=subprocess.STDOUT)
+            receipt["exit_code"] = process.returncode
+            receipt["status"] = "pass" if process.returncode == 0 else "fail"
+        except subprocess.TimeoutExpired:
+            receipt["status"] = "timeout"
+            raise
+        except KeyboardInterrupt:
+            receipt["status"] = "interrupted"
+            raise
+        finally:
+            signal.signal(signal.SIGTERM, handler)
+            receipt["elapsed_seconds"] = time.monotonic() - started
+            receipt["cleanup"] = cleanup(owner)
+            receipt["inputs_unchanged"] = bindings(project, staged["inputs"]) == staged["inputs"] and sha(pdk_source) == pdk_input
+            write(out / "execution.json", receipt)
+    require(receipt["status"] == "pass" and receipt["inputs_unchanged"], "Stock hardening did not complete with intact inputs")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("phase", choices=("stage", "run"))
+    parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--template", type=Path, default=BUILD / "verification-template-4b1204a")
+    parser.add_argument("--support", type=Path, default=BUILD / "verification-support-9d13ff3")
+    parser.add_argument("--python", type=Path, default=ENTRY / "clean-hardening-python/bin/python")
+    parser.add_argument("--pdk", type=Path, default=BUILD / "verification-ciel")
+    parser.add_argument("--lease", type=Path)
+    parser.add_argument("--timeout", type=int, default=21600)
+    parser.add_argument("--jobs", type=int, default=4)
+    parser.add_argument("--memory", default="6g")
+    args = parser.parse_args()
+    out = args.out.resolve()
+    require(out.parent == ENTRY, "Use a dedicated ignored output directory in the current worktree")
+    if args.phase == "stage":
+        require(not out.exists(), "Use a fresh project staging directory")
+        stage(out, args.template.resolve(), args.support.resolve(), args.python.absolute())
+    else:
+        require(args.lease and args.timeout > 0 and args.jobs > 0, "Supply the shared native lease and positive budgets")
+        run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory)
+
+
+if __name__ == "__main__":
+    main()
