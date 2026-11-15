@@ -102,6 +102,32 @@ It leaves the shared package impedance, physical cut sharing and
 transient voltage drop open.
 [Earlier native comparison](streaming-8x4-hold-cap-ir-em-20261112.md#static-ir-drop)
 
+### Shared supply and return resistance
+
+The projected contact sources have their original independent 1 Ω
+branches. Adding a common supply resistance before the supply branches
+and a common return resistance after the ground branches exposes a
+separate effect. Each rail carries the retained 19.306429 mA. In this
+fixed-current model, each common resistor moves every node on its rail
+by the same current–resistance product. Contact and internal branch
+currents stay unchanged because their voltage differences stay fixed.
+
+| Total shared VPWR + VGND resistance (Ω) | Additional loss (mV) | Combined rail extrema (mV) | Minimum instance differential (V) |
+| --- | ---: | ---: | ---: |
+| 0.00 | 0.000 | 1.255 | 1.198745 |
+| 0.10 | 1.931 | 3.185 | 1.196815 |
+| 0.25 | 4.827 | 6.081 | 1.193919 |
+| 0.50 | 9.653 | 10.908 | 1.189092 |
+| 1.00 | 19.306 | 20.561 | 1.179439 |
+
+At 0.25 Ω and 0.50 Ω total, an independent nodal solve splits the
+resistance equally between the rails and explicitly stamps a common
+node and series resistor per rail. Every node's voltage agrees with
+the analytic shift to within 3.1 pV, and the largest contact-current
+difference is below 0.082 pA. The table uses the illustrative
+1.20 V ideal source. Actual TTIHP27a voltage, feed and return topology,
+impedance and transient behavior remain open.
+
 ## UART, SPI and reset/upload sensitivity
 
 The native UART, SPI and reset/upload runs retain named SPICE currents
@@ -139,8 +165,8 @@ the analysis.
 
 ## Evidence and replay
 
-The geometry, restamp and workload bound receipts each match their
-repeats byte for byte.
+The geometry, restamp, workload bound and shared-feed receipts each
+match their repeats byte for byte.
 
 | Ignored receipt | SHA-256 |
 | --- | --- |
@@ -149,6 +175,7 @@ repeats byte for byte.
 | `clean-tt-04/project/runs/wokwi/21-openroad-generatepdn/tt_um_pinwheel_streaming_ready_d2.def` | `6689b7857d574410d859ebe67c03fc54fbe3f4f52ee9a4a0d45183a354929ccd` |
 | `power-dc/tt0004-parent-restamp-01.json` | `5948dd508726a2c91fde85e1a5d8bf324d5f03573cf4002c55ea317133317979` |
 | `power-dc/tt0004-parent-workload-bounds-02.json` | `31cbaebba8a4d415e51e07d7a0d107a092236999403566a81192cc7c99ad9877` |
+| `power-dc/tt0004-shared-feed-01.json` | `71facdfe67c14d0bd3cebc84f19dccd2dd109a72ba541b6562cf1ddbc9cb6b4f` |
 
 The script lists retained source file names and hashes. Point
 `PINWHEEL_GEOMETRY_PYTHON` at the retained KLayout Python interpreter,
@@ -168,6 +195,9 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
   "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_workload_bounds.py \
   --parent-contacts "$POWER/parent-tt0004-projection-resolved-01/resolved.json" \
   --out "$POWER/tt0004-parent-workload-bounds-replay.json"
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_shared_feed.py \
+  --out "$POWER/tt0004-shared-feed-replay.json"
 ```
 
 The `tt_um_urish_sic1` phase is used in the illustrative solver input.
