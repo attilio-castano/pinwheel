@@ -165,3 +165,28 @@ to the upstream test case and its OpenROAD build. The frozen candidate
 still requires an accepted CMOS5L extraction source and the host timing
 contract. [IHP draft PR #1237](https://github.com/IHP-GmbH/IHP-Open-PDK/pull/1237) ·
 [OpenROAD issue #12072](https://github.com/The-OpenROAD-Project/OpenROAD/issues/12072)
+
+## Draft rule provenance and sourced resistance
+
+The retained MIN, TYP and MAX tables use the exact capacitance and
+resistance-model bodies from IHP draft PR #1237 at
+`ffdafdbb4abb17316fa0ffd221ea99c0475c4734`. Each Pinwheel file replaces
+the empty `VIARES` section with 52 named LEF via coefficients. Removing
+those rows and resetting the section count gives this exact byte identity.
+
+| Corner | Upstream Git blob | Retained SHA-256 |
+| --- | --- | --- |
+| MIN | `1705aa6490fb777b0da0a3178d45ba6c18d85480` | `320dea7c8ae3c64a53efb378450ead0d65c28a136de9ac83365f2ff0ff907705` |
+| TYP | `521b63e2b790e58b4693a81aabb4ede5d5db9537` | `bf2af2235b102d7bb58fe782d8d8b41a64cb3efde46593562314a499e9c4a612` |
+| MAX | `7097f37fc872aa383cc628cc31b599cd4c6f437a` | `803c38162f0745a3cd8579634290764786e5492939b17e75933eec4b6b7de672` |
+
+The retained extraction invokes OpenRCX with `-lef_res`. The LEF
+supplies wire sheet resistance and generated block via cut resistance.
+Its values match the released CMOS5L MAX ITF in every retained case.
+The five-layer resistance comparison keeps the original named `VIARES`
+and capacitance tables, then substitutes that case's released CMOS5L
+ITF sheet and cut resistance into a spare local tech LEF. The MAX
+tech LEF remains byte-identical to the installed one. The legacy
+seven-layer deck and original tech LEF give a nominal control on the
+same frozen DEF. [Retained extraction policy](streaming-8x4-draft-rc-timing-diagnostic-20261022.md#L65) ·
+[Earlier via arithmetic tests](streaming-8x4-model24-via-arithmetic-20261024.md)
