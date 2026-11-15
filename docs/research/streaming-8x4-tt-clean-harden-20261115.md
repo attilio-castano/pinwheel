@@ -41,6 +41,12 @@ The succession contains 22,323 public-pin edges with trace SHA-256
 The `clean-tt-04/wire-synthesis/receipt.json` SHA-256 is
 `d61c3207a788c621f1012c84796ae0f0addf8719e7e21589de33246200ff2ccc`.
 
+The same hash-bound synthesized model independently replayed all 13
+positive public-pin traces for the 35 retained cases. All 509,678 edges
+matched the exact release netlist's traces byte for byte. The local replay
+took 105.57 seconds. Its `clean-tt-12-stock-synthesis-corpus/receipt.json`
+SHA-256 is `68f41c1f5a6a65205e5059510be6635b5756c62212c81a1d14483be02c4f4656`.
+
 Local stock equivalence attempts remain inconclusive. A Yosys induction
 attempt reached its 120-second cap. EQY's Yosys partition pass segfaulted
 with the default macOS stack size, then reached a 240-second cap with a
@@ -272,6 +278,18 @@ trial.
 | `marker-coverage.json` | `f7e49b88533b58491d5de09e7b8be6f626e54785a7f5471f1cdcfd8d9c4e9d9b` |
 | `marker-pairs.json` | `cc4d9bf617550b61924a0bd506126b3638558fd92bc5d35fec0e0cab5a2a5976` |
 | `post-route-readback/reconciliation.json` | `0ee451d1d4d2b9724d3e7cde57b08f4f7d102e2f62159c93eb2a172ad7b21e27` |
+
+## Release decision
+
+Keep the frozen custom GDS as the local rehearsal candidate. The clean
+source run reproduced public-pin behavior through synthesis. Both physical
+runs stopped during detailed routing. The 8% reserve and 85% density
+experiments give comparison evidence for the next physical repair. A new
+source-to-GDS candidate still needs detailed-route closure, stream-out,
+fresh LVS and precheck, and a timing check on the resulting layout.
+Fabrication of the frozen candidate remains NO-GO pending qualified timing
+and power and the exact shuttle's acceptance.
+[Active fabrication gates](status.md)
 
 ## Local reproduction
 

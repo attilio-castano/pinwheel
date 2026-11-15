@@ -44,8 +44,9 @@ UART, I²C, SPI and JTAG uploads in one instance with a single cold reset.
 
 A clean build with the stock Tiny Tapeout template has compiled the four
 byte-matched release sources. The resulting synthesis netlist passes the
-four public-pin fixtures and the same successive-upload test. The stock
-global router finished with 34,932 overflow units, 34,678 on Metal3. The
+four public-pin fixtures and the same successive-upload test. All 509,678
+edges of the retained positive corpus match the exact release traces. The
+stock global router finished with 34,932 overflow units, 34,678 on Metal3. The
 stock detailed router still had 41,042 markers after five complete passes.
 The matched 19% and 8% reserve trials reduced global overflow to 14,492
 and 2,622, respectively. The 8% continuation had more detailed-route
@@ -98,8 +99,10 @@ parent through TopVia1. Projecting that geometry resolves contacts on all
 of combined rail loss with projected contacts and 42.117 mV with four
 assumed feeds per rail, using the same heated I²C load. Rounded-load
 comparisons for UART, SPI and reset/upload keep the four workloads between
-1.253625 and 1.254936 mV under the projected contact model. The assigned
-TTIHP27a geometry, shared supply impedance and transient analysis remain open.
+1.253625 and 1.254936 mV under the projected contact model. Adding an
+illustrative 0.50 Ω shared supply-and-return path raises the heated I²C
+result to 10.908 mV. The assigned TTIHP27a geometry, shared supply impedance
+and transient analysis remain open.
 [Historical parent attachment and rail loss](streaming-8x4-hold-cap-parent-attachment-20261115.md)
 
 Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
