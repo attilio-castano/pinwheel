@@ -73,28 +73,65 @@ the older projects' local coordinates. No 27a evidence establishes if its
 parent requires those coordinates or regenerates attachment from other
 accepted macro power pins.
 
+## Static power sensitivity
+
+The restamp uses the retained heated I²C read case's exact conductance
+edges and fixed instance currents. It removes the original external
+source equations and solves both rails for three source arrangements.
+The previous OpenROAD result is reproduced with the four sparse
+1 Ω sources per rail, to a maximum 1.275 nV node-voltage difference
+and 0.309 nA source-current difference. A separate distributed-ideal
+solve applies the same heated sheet resistance, so geometry and series
+resistance are the only changed electrical inputs between these cases.
+The unchanged current load is 19.306429 mA on both rails.
+
+| Source arrangement | VPWR nodes | VGND nodes | VPWR drop (mV) | VGND rise (mV) | Sum (mV) | Minimum instance differential (V) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Four sparse, 1 Ω each | 4 | 4 | 21.244 | 20.873 | 42.117 | 1.157913 |
+| TT0004 projected, 1 Ω each | 665 | 630 | 0.636 | 0.619 | 1.255 | 1.198745 |
+| Distributed ideal | 5,215 | 5,215 | 0.553 | 0.525 | 1.078 | 1.198922 |
+
+The projected VPWR and VGND peak geometric branch currents are 72.95
+and 75.86 µA, respectively, both on Metal4. Peak modeled source currents
+are 56.95 and 54.63 µA. The prior native distributed comparison gave
+1.004 mV at the room-temperature sheet settings. This run gave
+1.078 mV with the same distributed contact locations and heated sheets.
+The observed source-count sensitivity includes a much smaller aggregate
+feed resistance when hundreds of independent 1 Ω branches are supplied.
+It leaves the shared package impedance, physical cut sharing and
+transient voltage drop open.
+[Earlier native comparison](streaming-8x4-hold-cap-ir-em-20261112.md#static-ir-drop)
+
 ## Evidence and replay
 
-The geometry receipt and its repeat match byte for byte.
+The geometry and restamp receipts each match their repeats byte for byte.
 
 | Ignored receipt | SHA-256 |
 | --- | --- |
 | `build/tt-parent-attachment-20261115/parent-attachment-02.json` | `dc95506f75f2fafa6a60a88eabfb546e73ba96d248afc233a53f511377beba90` |
 | `power-dc/parent-tt0004-projection-resolved-01/resolved.json` | `d34fc6e3a042297b12cdd16cef902e52f77d8f63495b7aebf519cf3cc4afa75f` |
 | `clean-tt-04/project/runs/wokwi/21-openroad-generatepdn/tt_um_pinwheel_streaming_ready_d2.def` | `6689b7857d574410d859ebe67c03fc54fbe3f4f52ee9a4a0d45183a354929ccd` |
+| `power-dc/tt0004-parent-restamp-01.json` | `5948dd508726a2c91fde85e1a5d8bf324d5f03573cf4002c55ea317133317979` |
 
 The script lists retained source file names and hashes. Point
-`PINWHEEL_GEOMETRY_PYTHON` at the retained KLayout Python interpreter
-and choose a fresh ignored output.
+`PINWHEEL_GEOMETRY_PYTHON` at the retained KLayout Python interpreter,
+make NumPy 1.26.4 and SciPy 1.17.1 available on its `PYTHONPATH`, and
+choose fresh ignored outputs.
 
 ```sh
 ATTACH=build/tt-parent-attachment-20261115
+POWER=build/8x4-hold-cap-20261107/trial-02/power-dc
 "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_attachment.py \
   --out "$ATTACH/parent-attachment-replay.json"
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_restamp.py \
+  --parent-contacts "$POWER/parent-tt0004-projection-resolved-01/resolved.json" \
+  --out "$POWER/tt0004-parent-restamp-replay.json"
 ```
 
 The `tt_um_urish_sic1` phase is used in the illustrative solver input.
 It records 1.20 V nominal and 1 Ω independently per resolved source
-node. Those values match the earlier sparse diagnostic and do not
-describe the parent chip or package. No fabrication gate closes.
+node. Those values match the earlier sparse diagnostic. The host solve
+completed in 6.625 seconds at 745 MiB peak resident memory without
+using the native CAD lease. Fabrication remains NO-GO.
 [Existing parent intake and static power scope](streaming-8x4-hold-cap-workload-power-20261114.md)
