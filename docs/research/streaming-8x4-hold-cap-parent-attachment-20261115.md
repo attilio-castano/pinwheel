@@ -54,6 +54,25 @@ Allocation, routing coexistence and parent via generation are outside
 this projection. Even a valid future placement needs independently
 reviewed voltage, feed and return impedance and transient allowance.
 
+## Stock hardening PDN comparison
+
+The clean stock hardening run's step 21 DEF records 35 Metal4 stripes
+per rail, each 2.1 µm wide. The DEF boundary-pin rectangles agree exactly
+with their named `SPECIALNETS` stripes. Centers start at 12.880 µm for
+VPWR and 16.980 µm for VGND, at 50.000 µm pitch. All four known TT0004
+macros use the same local widths and respective center sequences. On the
+two 4-tile-high macros the vertical span agrees exactly at 3.560–707.080 µm.
+Projecting the stock rectangles onto the same two historical phases
+produces 315 complete 2.1 × 10 µm intersections per rail.
+
+The frozen custom design starts its same-width stripes at 16.400 µm
+and 24.080 µm at 49.880 µm pitch and carries its pin rectangles to the
+macro boundaries. Both geometries give full same-rail stripe coverage
+in the historical overlap projection. The stock geometry reproduces
+the older projects' local coordinates. No 27a evidence establishes if its
+parent requires those coordinates or regenerates attachment from other
+accepted macro power pins.
+
 ## Evidence and replay
 
 The geometry receipt and its repeat match byte for byte.
@@ -62,6 +81,7 @@ The geometry receipt and its repeat match byte for byte.
 | --- | --- |
 | `build/tt-parent-attachment-20261115/parent-attachment-02.json` | `dc95506f75f2fafa6a60a88eabfb546e73ba96d248afc233a53f511377beba90` |
 | `power-dc/parent-tt0004-projection-resolved-01/resolved.json` | `d34fc6e3a042297b12cdd16cef902e52f77d8f63495b7aebf519cf3cc4afa75f` |
+| `clean-tt-04/project/runs/wokwi/21-openroad-generatepdn/tt_um_pinwheel_streaming_ready_d2.def` | `6689b7857d574410d859ebe67c03fc54fbe3f4f52ee9a4a0d45183a354929ccd` |
 
 The script lists retained source file names and hashes. Point
 `PINWHEEL_GEOMETRY_PYTHON` at the retained KLayout Python interpreter
