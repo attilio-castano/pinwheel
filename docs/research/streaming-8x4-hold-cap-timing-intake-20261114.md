@@ -190,3 +190,50 @@ tech LEF remains byte-identical to the installed one. The legacy
 seven-layer deck and original tech LEF give a nominal control on the
 same frozen DEF. [Retained extraction policy](streaming-8x4-draft-rc-timing-diagnostic-20261022.md#L65) ·
 [Earlier via arithmetic tests](streaming-8x4-model24-via-arithmetic-20261024.md)
+
+### Frozen-layout resistance comparison
+
+The four extractions and eight OpenSTA cases in `itf-resistance-01`
+used the frozen DEF, implemented Verilog, inventory and SDC. The
+extractor read 98,904 components in each case. All four SPEFs contain
+41,787 consumed nets with complete annotation on Liberty fast and slow
+corners. The experiment varied ordinary wire and generated block via
+resistance. It held the explicit named via coefficients and original
+capacitance tables constant within each five-layer case. The five-layer
+MAX control reproduced the retained graph and all compared slack
+values exactly. MIN and TYP changed the extracted graphs.
+
+| RC input | Worst global hold (ps) | Worst setup (ns) | Fast `ui_in[3]` hold (ps) | Fast `ui_in[5]` hold (ps) |
+| --- | ---: | ---: | ---: | ---: |
+| Five-layer MIN with released ITF resistance | +37.039 | +3.190 | +80.315 | +90.909 |
+| Five-layer TYP with released ITF resistance | +38.289 | +2.182 | +63.395 | +69.596 |
+| Five-layer MAX identity control | +31.572 | +1.555 | +38.855 | +45.780 |
+| Legacy seven-layer nominal deck | +30.123 | +2.461 | +68.819 | +104.233 |
+
+Every case had zero capacitance, slew and fanout violations. Relative
+to the corresponding retained fast case, the sourced MIN values raised
+hold slack by 15.943 ps at `ui_in[3]` and 15.454 ps at `ui_in[5]`. The
+sourced TYP values raised it by 9.917 ps and 9.116 ps. The limiting
+five-layer case remains MAX. The legacy comparator extracts 995,054
+capacitor entries to MAX's 1,186,690, and it gives different hold
+and setup margins on the same layout. The fast input hold margins
+depend on the extraction model even though all four cases pass the
+local constraints. The exact design still needs provider-accepted
+CMOS5L parasitics and the shuttle host delay and uncertainty budget
+at `ui_in[5]`.
+
+The run used its separate, explicitly admitted Docker lease while the
+stock hardening container held the shared heavy lease. The runner
+verified the live stock image, owner and 4-CPU/6-GiB caps, and admitted
+timing at 1 CPU and 1 GiB with no extra swap. Native execution completed
+in 62.11 seconds and confirmed container cleanup. The maximum resident
+set recorded across the serial native tool children was 305,472 KiB.
+Normal runs use the shared exclusive lease. The frozen bundle and
+physical artifacts were preserved.
+
+| Local receipt | SHA-256 |
+| --- | --- |
+| `itf-resistance-01/readback.json` | `c3f3df13f1b7c4a34d17f2c903d35ed05ca7d643fffaa58ff33b0be67cd38666` |
+| `itf-resistance-01/admission.json` | `16c485db35358f14359e35014905ce5dfebf90d4f0a3b39fb3d6d689afc61127` |
+| `itf-resistance-01/stock-at-admission.json` | `fa1a4aae498bfd1e6ad1e3ba69db3de026c24a23fb947c66a31568c62fb590e5` |
+| `itf-resistance-01/execution.json` | `8142061b6ae386da65752e675519e03f0455f364355b176aa3fd13d112694f55` |

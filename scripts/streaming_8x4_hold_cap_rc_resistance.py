@@ -2,10 +2,12 @@
 
 import argparse
 from decimal import Decimal
+import fcntl
 import math
 import os
 from pathlib import Path
 import re
+import resource
 import shutil
 import subprocess
 import sys
@@ -37,6 +39,9 @@ BASE_ENV = {"_TCL_ENV_IN": "/dev/null", "LC_ALL": "C"}
 RCX_KEYS = ("CELL_LEFS", "PAD_LEFS", "DESIGN_NAME", "SCRIPTS_DIR", "VDD_PIN", "GND_PIN",
             "PDN_CONNECT_MACROS_TO_GRID", "PDN_ENABLE_GLOBAL_CONNECTIONS", "SCL_POWER_PINS",
             "SCL_GROUND_PINS", "RCX_MERGE_VIA_WIRE_RES")
+NATIVE_SECONDS = 330
+GIB = 1024 ** 3
+STOCK_SCHEMA = "pinwheel.streaming-8x4-tt-clean-run.v1"
 
 TCL = electrical.TCL.split('    puts "PINWHEEL_ELECTRICAL_CORNER $corner"', 1)[0] + r"""
     puts "==================== $corner Corner ===================="
@@ -173,6 +178,40 @@ def check_files(pins):
     require(all(sha(path) == expected for path, expected in pins.items()), "Timing input changed")
 
 
+def concurrent_admission(stock_receipt, out, lease, heavy_lock):
+    stock = read(stock_receipt)
+    require(stock["schema"] == STOCK_SCHEMA and stock["status"] == "running" and stock.get("mode", "stock") == "stock",
+            "Concurrent timing requires the live stock hardening run")
+    command = stock["command"]
+    name = command[command.index("--name") + 1]
+    require(name == "pinwheel-tt-clean-" + stock_receipt.parent.name, "Stock hardening name differs")
+    with heavy_lock.open("rb") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            pass
+        else:
+            raise ValueError("Stock hardening must own the external heavy lease")
+    def docker(*argv):
+        return subprocess.check_output(["docker", *argv], text=True, timeout=10).strip()
+
+    identity = ("{{.Id}} {{.Image}} {{.State.Running}} {{.HostConfig.NanoCpus}} {{.HostConfig.Memory}} "
+                "{{.HostConfig.MemorySwap}} {{index .Config.Labels \"org.pinwheel.signoff_owner\"}}")
+    ident, image, running, cpus, memory, swap, owner = docker(
+        "inspect", "--type", "container", "--format", identity, name).split()
+    require(running == "true" and (image, owner) == (stock["image"], stock["owner"])
+            and (int(cpus), int(memory), int(swap)) == (4 * 10 ** 9, 6 * GIB, 6 * GIB),
+            "Live stock identity, resource caps or status differ")
+    total = int(docker("info", "--format", "{{.MemTotal}}"))
+    require(docker("ps", "--no-trunc", "--format", "{{.ID}}").splitlines() == [ident] and total >= 7 * GIB,
+            "Concurrent timing requires this stock container alone and a 7 GiB aggregate capacity")
+    write(out / "admission.json", dict(mode="stock-concurrent", lease=str(lease), heavy_lease=str(heavy_lock),
+          stock_execution=draft.bound(stock_receipt), stock=dict(container_id=ident, name=name, image=image,
+          owner=owner, nano_cpus=int(cpus), memory_bytes=int(memory), memory_swap_bytes=int(swap)),
+          docker_memory_bytes=total, timing=dict(cpus=1, memory_bytes=GIB, memory_swap_bytes=GIB,
+          timeout_seconds=NATIVE_SECONDS)))
+
+
 def native():
     request = read(OUT / "request.json")
     script = OUT / "probe.tcl"
@@ -203,7 +242,8 @@ def native():
         require(sha(spef) == spef_sha, "Extracted parasitics changed")
         outputs[model] = spef_sha
     write(OUT / "tool.json", dict(openroad_sha256=sha(rcx_bin), sta_sha256=sha(sta_bin),
-                                 completed_models=list(MODELS), extracted_spef_sha256=outputs))
+                                 completed_models=list(MODELS), extracted_spef_sha256=outputs,
+                                 children_peak_rss_kib=resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss))
 
 
 def parse_sta(log, corner, ctx, disconnected):
@@ -287,6 +327,7 @@ def main():
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--deadline", type=int, required=True)
     parser.add_argument("--prepare-only", action="store_true")
+    parser.add_argument("--concurrent-stock-receipt", type=Path)
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.parent == TRIAL and not out.exists(), "Use a fresh directory beside retained timing evidence")
@@ -303,17 +344,34 @@ def main():
         for name in ("tech.lef", "rules.txt"):
             path = out / model / name
             pins[str(path)] = sha(path)
-    run_native(context, out, "python3", ["-B", f"/work/scripts/{Path(__file__).name}", "native"],
+    options = {}
+    mode = "exclusive"
+    if args.concurrent_stock_receipt:
+        stock_receipt = args.concurrent_stock_receipt.resolve(strict=True)
+        lease = TRIAL / ".timing-with-stock.lock"
+        lease.touch(exist_ok=True)
+        mode = "stock-concurrent"
+        options = dict(memory="1g", resource_lease=lease,
+                       admission=lambda heavy_lock: concurrent_admission(stock_receipt, out, lease, heavy_lock))
+    execution = run_native(context, out, "python3", ["-B", f"/work/scripts/{Path(__file__).name}", "native"],
                [(Path(__file__).parent, "/work/scripts", False), (Path(layout["def"]["path"]), DEF, False),
                 (Path(layout["netlist"]["path"]), coverage.NL, False),
                 (Path(layout["sdc"]["path"]), coverage.SDC, False)],
-               330, args.deadline)
+               NATIVE_SECONDS, args.deadline, **options)
+    admission = None
+    if options:
+        command = execution["argv"]
+        require(execution["timeout_seconds"] <= NATIVE_SECONDS and all(command[command.index(flag) + 1] == val
+                for flag, val in (("--cpus", "1"), ("--memory", "1g"), ("--memory-swap", "1g"))),
+                "Concurrent timing execution did not retain admitted caps")
+        admission = draft.bound(out / "admission.json")
     tools = read(out / "tool.json")
     require(tools["completed_models"] == list(MODELS)
             and all(sha(out / model / "design.spef") == tools["extracted_spef_sha256"][model] for model in MODELS),
             "Incomplete native results or changed SPEF output")
     results = readback(out, request, pins)
     write(out / "readback.json", dict(schema=SCHEMA, target=layout, results=results, status="diagnostic",
+          execution_mode=mode, admission=admission,
           request=draft.bound(out / "request.json"), execution=draft.bound(out / "execution.json"),
           native_tools=draft.bound(out / "tool.json"), input_sha256=pins,
           itf_source_revision=PDK_REV, image=IMAGE, frozen_inputs_unchanged=True, qualified_timing=False,
