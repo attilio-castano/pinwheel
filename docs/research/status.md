@@ -33,7 +33,8 @@ zero markers. The exact release overlay verified from a clean archive.
 The hosted `tt_submission`, hosted precheck and organizer filing remain
 pending.
 [Release rehearsal](streaming-8x4-jane-street-release-20261114.md) ·
-[Competition entry draft](../jane-street-8x4-entry.md)
+[Competition entry draft](../jane-street-8x4-entry.md) ·
+[TTIHP27a exact-GDS acceptance review](streaming-8x4-ttihp27a-acceptance-20261115.md)
 
 The exact release Verilog passed 35 public-pin cases with the pinned IHP
 CMOS5L simulation models. All 513,297 recorded edges matched the prior
