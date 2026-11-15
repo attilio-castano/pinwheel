@@ -36,6 +36,16 @@ pending.
 [Competition entry draft](../jane-street-8x4-entry.md) ·
 [TTIHP27a exact-GDS acceptance review](streaming-8x4-ttihp27a-acceptance-20261115.md)
 
+The local acceptance archive is `build/8x4-tt-acceptance-20261115/packet-01/pinwheel-8x4-ttihp27a-acceptance-review.zip`.
+An independent extraction passed all 22 payload checksums. The staged GDS,
+LEF and logical netlist match the frozen release byte for byte. The original
+rehearsal passed its bundled verifier again.
+
+| Acceptance packet record | SHA-256 |
+| --- | --- |
+| Local review ZIP | `4a47e11c0c2088864c0c0d5cf1f00165d641266d7ea347958d160bba122e6ddd` |
+| Extracted `SHA256SUMS` | `c3a0e3e298a71b3d541c3abcbdd1d17b04305a06c5286d5787cd4e88eb375bf0` |
+
 The exact release Verilog passed 35 public-pin cases with the pinned IHP
 CMOS5L simulation models. All 513,297 recorded edges matched the prior
 placed-cell replay, including the expected one-pin sampler failure.
