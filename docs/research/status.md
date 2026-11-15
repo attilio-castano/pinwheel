@@ -51,9 +51,11 @@ The matched 19% and 8% reserve trials reduced global overflow to 14,492
 and 2,622, respectively. The 8% continuation had more detailed-route
 markers in all four matched passes, ending at 73,632 versus 49,229 in
 stock. Both workers stopped with checked inputs and cleanup. A bounded
-stock replay is capturing named markers and geometry. At identical 30%
-reserve, an 85% placement density target shortened the global routes but
-raised global overflow from 34,932 to 42,202.
+stock replay reproduced its first two counts and captured 20,010 named
+markers. Routed geometry confirmed signal crossings at supply vias and
+between signal wires in selected windows. The denser placement trial
+raised global overflow to 42,202 at the same 30% reserve. The stock
+source-to-GDS path remains open at detailed routing.
 [Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
 
 Fresh geometric power connectivity passed on both rails with 98,904 instance

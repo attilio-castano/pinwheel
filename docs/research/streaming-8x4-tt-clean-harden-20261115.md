@@ -240,6 +240,39 @@ guide area and nets with direct added delay-cell terminals account for
 `bank_placement.json` receipt reproduced byte for byte with SHA-256
 `02d87f8f00291f1bda9e210eb084134e1b9909686569f8ebeae9fbfc60c96aaf`.
 
+## Named stock detailed-routing markers
+
+`clean-tt-11-stock-drt-markers` replays the checked stock antenna-repaired
+checkpoint with a two-pass detailed-routing limit and per-iteration marker
+reports. It reproduced 94,859 and 87,429 native markers exactly. The
+first-run routed ODB and text report retained the same 20,010 records by
+rule, layer and bounding box. The two ODB report categories repeat that
+set. Another 67,419 native markers fall outside the saved report. The
+internal antenna check found 158 net and 182 pin violations after the
+first bounded route. The 60-minute wall limit stopped the next internal
+antenna reroute with unchanged inputs and verified worker cleanup.
+
+Of the 7,444 visible Metal2 shorts, 63 name a supply net and 1,236 name a
+diode-loaded net. One record names both, `VGND` and `_10368_`. The
+Metal2 sample spans 2,690 nets and 3,547 distinct named pairs. Its most
+frequent pair accounts for 17 records. The figures describe the capped
+sample and leave prevalence across the full native tally open.
+
+The routed ODB reproduces actual signal centerline penetration of
+same-layer supply via enclosures in all four selected Metal2 Short
+windows. Three of four selected Metal3 signal-to-signal Short windows
+show strict perpendicular centerline crossing. This identifies both
+mechanisms in the stock checkpoint. Repair of a signal family or a local
+antenna access pattern still requires a separately measured physical
+trial.
+
+| `clean-tt-11-stock-drt-markers` receipt | SHA-256 |
+| --- | --- |
+| `execution.json` | `694891352cd3edbd64404710520e3ddd9fa2ccd43bd120a00f32fb0aa653895e` |
+| `marker-coverage.json` | `f7e49b88533b58491d5de09e7b8be6f626e54785a7f5471f1cdcfd8d9c4e9d9b` |
+| `marker-pairs.json` | `cc4d9bf617550b61924a0bd506126b3638558fd92bc5d35fec0e0cab5a2a5976` |
+| `post-route-readback/reconciliation.json` | `0ee451d1d4d2b9724d3e7cde57b08f4f7d102e2f62159c93eb2a172ad7b21e27` |
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
