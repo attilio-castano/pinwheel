@@ -78,6 +78,8 @@ The stock global-route log SHA-256 is
 The first complete detailed-routing iteration reported 94,859 markers in
 25 minutes 54 seconds. Metal2 and Metal3 shorts accounted for 45,640 and
 28,133 markers. This is the initial detailed route before iterative repair.
+The next three completed passes found 87,429, 84,022, and 49,229 markers.
+The fourth complete count included 25,628 Metal2 and 11,004 Metal3 shorts.
 
 ## Capacity reserve trials
 
@@ -96,14 +98,32 @@ and 1.25 GiB equal memory/swap caps. The trial worker was removed at exit.
 
 The reduction in overflow was 58.51%. Metal3 gained 43,297 modeled resource
 units and retained most of the overflow. Estimated wirelength increased from
-4,642,351 to 4,948,185 µm. The `clean-tt-07-reserve08` follow-up is testing
-the same checkpoint at 8% to measure the remaining capacity sensitivity.
+4,642,351 to 4,948,185 µm.
 
 | 19% trial receipt | SHA-256 |
 | --- | --- |
 | `execution.json` | `3136758848d791366b5aac73d98ac9b77c5709bd51f26cdd608f77c887c12767` |
 | `harden.log` | `90fc46749250aa68b22faf5ad51b2c5cea5b97c19cc757b8a3a7ddba4e49bc0b` |
 | `concurrent-admission.json` | `1447e3c31862db2c051ea5107e1b6c9790604c8f573fc01920fec091a84b87a9` |
+
+The `clean-tt-07-reserve08` follow-up completed in 18 minutes 25 seconds
+with the same configuration and checkpoint controls. The measured global
+overflow was 2,622 units, a 92.49% reduction from stock. Estimated wirelength
+was 4,821,595 µm. Three clock nets temporarily lost their spacing rule
+during the optimization. The trial uses the same routing layers and rules.
+
+| Signal layer | Modeled resources at 8% reserve | Demand | Overflow |
+| --- | ---: | ---: | ---: |
+| Metal2 | 279,685 | 196,118 | 14 |
+| Metal3 | 349,015 | 250,217 | 2,590 |
+| Metal4 | 272,376 | 58,058 | 18 |
+| Total | 901,076 | 504,393 | 2,622 |
+
+| 8% trial receipt | SHA-256 |
+| --- | --- |
+| `execution.json` | `4235ef43387ec96d473814a882d4fe49583fe69d7720b197398fe675006c5edb` |
+| `harden.log` | `0f3f27dae1c8e6993e41876865576c608cf24dae598cd47fcdb2204c3ef1c44c` |
+| `concurrent-admission.json` | `bff01b34e413e476e46565cc663fbe59218ccc99254f678c96d6de164e00a464` |
 
 ## Local reproduction
 
