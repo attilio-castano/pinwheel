@@ -184,6 +184,33 @@ The worker completed in 39 minutes 36 seconds with exact config comparison,
 unchanged inputs and confirmed cleanup. The `comparison.json` SHA-256 is
 `cd1c7db935e94352da4f4c602c7c0e500fe62acfb4c7eceba6675d43ba6f2562`.
 
+## Residual Metal3 congestion geometry
+
+The read-only OpenDB probe reproduced the native Metal3 overflow totals and
+maximum local overflow for all four specimens. Saved grid capacity, usage
+and Metal2/Metal4 overflow differed from their native directed totals.
+The Metal3 comparison uses only the calibrated overflow fields.
+
+In the 8% route, the x-band from 1,036.8 to 1,382.4 µm contains 2,368
+of the 2,590 Metal3 overflow units. Its busiest 86.4 µm square is
+`(1152, 216)–(1238.4, 302.4)` µm and holds 159 units. The DEF instance
+origin proxy counts 5.19 connected terminals per grid cell there and
+6.27 across the chip. The corresponding stock window holds 722 units.
+
+The exact 8% guide file has 52,634 unique net blocks matching ordinary
+DEF nets and the native routed-net count. There are 6,112 nets with
+positive-area Metal3 guide overlap in the band, of which 5,980 are signal
+nets and 132 are clocks. Signals account for 97.76% of per-net union area.
+Nets of degree eight or more account for 47.41% of that area. The top 100
+names contribute 7.86%. These are guide overlap measurements. Connecting
+them to individual detailed-route markers requires the completed detailed
+route and its marker coordinates.
+
+| `clean-tt-10-gcell-probe` receipt | SHA-256 |
+| --- | --- |
+| `comparison.json` | `12c4e46a84cebfe1bda9fe2f588d3ecd742d3a2357a6042484ad5209d08675ea` |
+| `reserve08-band-guide-coverage.json` | `f2d914752a4404654c5adfa81ca4657132eb3f7c2134498b842bd24815ec94f4` |
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
