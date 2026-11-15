@@ -1,6 +1,6 @@
 # Research status
 
-Updated 2026-11-14 for the Jane Street release rehearsal on the frozen
+Updated 2026-11-15 for the Jane Street release rehearsal on the frozen
 8×4 hold/capacitance candidate. Qualified timing, electrical power and
 shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
@@ -35,6 +35,19 @@ pending.
 [Release rehearsal](streaming-8x4-jane-street-release-20261114.md) ·
 [Competition entry draft](../jane-street-8x4-entry.md)
 
+The exact release Verilog passed 35 public-pin cases with the pinned IHP
+CMOS5L simulation models. All 513,297 recorded edges matched the prior
+placed-cell replay, including the expected one-pin sampler failure.
+The release model also matched clean RTL across 22,323 edges of successive
+UART, I²C, SPI and JTAG uploads in one instance with a single cold reset.
+[Exact release behavior](streaming-8x4-jane-street-behavior-20261115.md)
+
+A clean build with the stock Tiny Tapeout template has compiled the four
+byte-matched release sources. The resulting synthesis netlist passes the
+four public-pin fixtures and the same successive-upload test. The pinned
+stock flow continues beyond the placement-stage estimates.
+[Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
+
 Fresh geometric power connectivity passed on both rails with 98,904 instance
 terminals and one boundary terminal each. The timing audit reconciled all
 search endpoints and verified constrained min and max paths at all 6,051
@@ -64,6 +77,14 @@ readback. Under the illustrative sparse heated-grid conditions, UART
 gave the largest modeled rail loss at 42.394 mV and the highest
 covered EM utilization at 85.72%.
 [Workload activity and power intake](streaming-8x4-hold-cap-workload-power-20261114.md)
+
+Published TT0004 IHP assemblies confirm how the Metal4 rails meet the
+parent through TopVia1. Projecting that geometry resolves contacts on all
+35 frozen stripes per rail. The calibrated static solve gives 1.255 mV
+of combined rail loss with projected contacts and 42.117 mV with four
+assumed feeds per rail, using the same heated I²C load. The assigned
+TTIHP27a geometry and shared supply impedance remain open.
+[Historical parent attachment and rail loss](streaming-8x4-hold-cap-parent-attachment-20261115.md)
 
 Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
 least 0.160 µm wide through its same-rail row. All 8,505 modeled via edges
