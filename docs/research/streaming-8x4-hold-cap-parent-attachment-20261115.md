@@ -102,9 +102,45 @@ It leaves the shared package impedance, physical cut sharing and
 transient voltage drop open.
 [Earlier native comparison](streaming-8x4-hold-cap-ir-em-20261112.md#static-ir-drop)
 
+## UART, SPI and reset/upload sensitivity
+
+The native UART, SPI and reset/upload runs retain named SPICE currents
+and their voltage reports. Their SPICE resistor and source records match
+the I²C dump's export byte for byte. The replay uses the full-precision
+common conductance from that dump with each workload's rounded current
+injections. Each printed load gets half its last significant digit of
+uncertainty. OpenROAD suppresses loads below 1 aA, which bounds each
+unprinted injection. A passive grid under fixed source voltages has
+monotone nodal response to the nonnegative loads, so solving with these
+input radii bounds each rail loss. The intervals include a further
+10 nV per rail for numerical allowance.
+[OpenROAD current threshold](https://raw.githubusercontent.com/The-OpenROAD-Project/OpenROAD/dcf36133a369abc8f3c5e5738cd4d82e4903c0e0/src/psm/src/ir_solver.h)
+
+For each workload, the four-source calibration checks all 98,904
+native terminal voltages on each rail, with the maximum difference
+0.576 µV before accounting for print rounding. Every row is within
+the model interval and printed voltage precision. The computed sparse
+worst-instance losses preserve the observed native ranking. Reusing
+the projected contacts changes the relative margins and leaves the
+largest loss unresolved between I²C read and UART.
+
+| Workload | Sparse paired loss (mV) | Projected paired loss (mV) | Projected rounding interval (mV) |
+| --- | ---: | ---: | ---: |
+| UART | 42.368722 | 1.254662 | 1.254388–1.254936 |
+| Reset and replacement upload | 42.282359 | 1.254026 | 1.253753–1.254300 |
+| I²C read, retained exact comparator | 42.087134 | 1.254759 | Exact retained load input |
+| SPI | 42.005014 | 1.253898 | 1.253624–1.254172 |
+
+UART and I²C read both exceed the reset/upload and SPI projected
+intervals. Reset/upload and SPI overlap. These comparisons hold for
+the fixed loads, retained heated grid and the illustrative independent
+1 Ω feeds. Shared package impedance and dynamic behavior remain outside
+the analysis.
+
 ## Evidence and replay
 
-The geometry and restamp receipts each match their repeats byte for byte.
+The geometry, restamp and workload bound receipts each match their
+repeats byte for byte.
 
 | Ignored receipt | SHA-256 |
 | --- | --- |
@@ -112,6 +148,7 @@ The geometry and restamp receipts each match their repeats byte for byte.
 | `power-dc/parent-tt0004-projection-resolved-01/resolved.json` | `d34fc6e3a042297b12cdd16cef902e52f77d8f63495b7aebf519cf3cc4afa75f` |
 | `clean-tt-04/project/runs/wokwi/21-openroad-generatepdn/tt_um_pinwheel_streaming_ready_d2.def` | `6689b7857d574410d859ebe67c03fc54fbe3f4f52ee9a4a0d45183a354929ccd` |
 | `power-dc/tt0004-parent-restamp-01.json` | `5948dd508726a2c91fde85e1a5d8bf324d5f03573cf4002c55ea317133317979` |
+| `power-dc/tt0004-parent-workload-bounds-02.json` | `31cbaebba8a4d415e51e07d7a0d107a092236999403566a81192cc7c99ad9877` |
 
 The script lists retained source file names and hashes. Point
 `PINWHEEL_GEOMETRY_PYTHON` at the retained KLayout Python interpreter,
@@ -127,6 +164,10 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
   "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_restamp.py \
   --parent-contacts "$POWER/parent-tt0004-projection-resolved-01/resolved.json" \
   --out "$POWER/tt0004-parent-restamp-replay.json"
+OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  "$PINWHEEL_GEOMETRY_PYTHON" -B scripts/streaming_8x4_hold_cap_parent_workload_bounds.py \
+  --parent-contacts "$POWER/parent-tt0004-projection-resolved-01/resolved.json" \
+  --out "$POWER/tt0004-parent-workload-bounds-replay.json"
 ```
 
 The `tt_um_urish_sic1` phase is used in the illustrative solver input.
