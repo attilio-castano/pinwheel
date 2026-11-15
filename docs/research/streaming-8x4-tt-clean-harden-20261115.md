@@ -153,6 +153,37 @@ shorts. The stock first pass reported 94,859 markers. The two global-route
 reserves produced different guides and antenna repairs. Matching later
 repair iterations is the direct check on detailed routing progress.
 
+| Completed iteration | Stock markers | 8% reserve markers |
+| --- | ---: | ---: |
+| 0 | 94,859 | 117,326 |
+| 1 | 87,429 | 105,879 |
+| 2 | 84,022 | 102,399 |
+
+## Placement density trial
+
+The separate `clean-tt-09-density85` diagnostic started from the stock
+preplacement template state and changed the placement density target from
+60% to 85%. The resolved configuration retained the normal 30% reserve
+and all other settings. Both initial placements had 43,098 cells and
+621,731 µm² of cell area. Estimated placement HPWL fell 17.20% while the
+placer weighted congestion score rose 3.05%.
+
+| Metric | 60% density | 85% density |
+| --- | ---: | ---: |
+| Post-CTS hold buffers inserted | 6,235 | 6,258 |
+| Typical setup estimate (ns) | +8.973 | +9.286 |
+| Typical hold estimate (ns) | +0.283 | +0.288 |
+| Global wirelength (µm) | 4,642,351 | 4,357,972 |
+| Global route modeled total demand | 484,921 | 445,996 |
+| Global route total overflow | 34,932 | 42,202 |
+| Metal3 maximum local horizontal overflow | 8 | 13 |
+
+The denser placement increased peak and total overflow as overall demand
+fell. Its diagnostic stopped at global routing.
+The worker completed in 39 minutes 36 seconds with exact config comparison,
+unchanged inputs and confirmed cleanup. The `comparison.json` SHA-256 is
+`cd1c7db935e94352da4f4c602c7c0e500fe62acfb4c7eceba6675d43ba6f2562`.
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
