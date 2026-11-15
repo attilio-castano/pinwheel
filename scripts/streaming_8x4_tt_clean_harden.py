@@ -1,4 +1,4 @@
-"""Build the frozen release RTL through the stock Tiny Tapeout CMOS5L flow."""
+"""Build the frozen release RTL through the Tiny Tapeout CMOS5L flow."""
 
 import argparse
 import fcntl
@@ -31,6 +31,9 @@ HANDOFF_SHA = "c0eff2d9fbdd395bf120c3eba742a4784021c74e9fbf760f8936bd45a3e010ba"
 LL = "3.1.0.dev4"
 IMAGE = "ghcr.io/librelane/librelane:" + LL
 BASELINE = ("info.yaml", "LICENSE", "docs/info.md", *(f"src/{name}" for name in RTL))
+CONTINUATION = "route-capacity-continuation"
+CONTINUATION_FILE = "route-continuation.json"
+CONTINUATION_SEED = "route-continuation-seed.json"
 
 
 def capture(argv, **kwargs):
@@ -48,6 +51,10 @@ def git_archive(repo, revision, destination, paths=()):
 
 def bindings(root, paths):
     return {path: sha(root / path) for path in sorted(paths)}
+
+
+def flow_directory(run):
+    return run / "project/runs/wokwi"
 
 
 def stage(out, template, support, python):
@@ -129,6 +136,79 @@ def global_route_trial(project, baseline, staged, reserve):
             {**checked, seed.name: sha(seed)})
 
 
+def stage_continuation(out, stock, trial):
+    require(stock.parent == trial.parent == ENTRY and len({stock, trial, out}) == 3,
+            "Choose separate stock, reserve trial, and continuation directories in this worktree")
+    staged = read(out / "stage.json")
+    execution = read(trial / "execution.json")
+    require(execution["schema"] == "pinwheel.streaming-8x4-tt-clean-run.v1"
+            and execution["mode"] == "route-capacity-trial" and execution["status"] == "pass"
+            and execution["exit_code"] == 0 and execution["inputs_unchanged"] is True
+            and execution["cleanup"]["status"] == "absent" and execution["route_trial_config_matches"] is True
+            and execution["stage_sha256"] == sha(trial / "stage.json"),
+            "Continuation requires a completed, checked global-route trial")
+    stock_project, trial_project = stock / "project", trial / "project"
+    require(f"type=bind,source={stock_project},target=/work/stock,readonly" in execution["command"]
+            and f"type=bind,source={trial_project},target=/work/project" in execution["command"],
+            "The supplied stock and trial must match the executed route trial mounts")
+    sources = {stock / "stage.json", trial / "stage.json", trial / "execution.json"}
+    for root in (stock, trial):
+        inputs = read(root / "stage.json")["inputs"]
+        require(inputs == staged["inputs"] and bindings(root / "project", inputs) == inputs,
+                "Continuation changed the staged inputs")
+        sources.update(root / "project" / path for path in inputs)
+    original = dict(execution["route_trial_inputs"])
+    original_seed = trial_project / "route-trial-seed.json"
+    require(sha(original_seed) == original.pop(original_seed.name)
+            and bindings(stock_project, original) == original, "Retained route trial inputs changed")
+    sources.add(original_seed)
+    sources.update(stock_project / path for path in original)
+    trial_root = flow_directory(trial)
+    trial_config = trial_root / "resolved.json"
+    config = read(trial_config)
+    reserve = config["GRT_ADJUSTMENT"]
+    stock_config = read(flow_directory(stock) / "resolved.json")
+    require(0 <= reserve < 0.30 and stock_config["GRT_ADJUSTMENT"] == 0.30
+            and config == {**stock_config, "GRT_ADJUSTMENT": reserve}, "Wrong reserve trial configuration")
+    grt = trial_root / "01-openroad-globalrouting"
+    checkpoint = grt / "state_out.json"
+    state = read(checkpoint)
+    for view, suffix in (("odb", ".odb"), ("def", ".def")):
+        asset = grt / (TOP + suffix)
+        snapshot = trial_root / "final" / view / asset.name
+        require(state[view] == f"/work/project/{asset.relative_to(trial_project).as_posix()}"
+                and sha(asset) == sha(snapshot), f"Trial state does not match its final {view} snapshot")
+        sources.add(snapshot)
+    sources.update((trial_config, checkpoint, grt / "after_grt.guide", grt / "openroad-globalrouting.log"))
+
+    def remap(value):
+        if isinstance(value, dict):
+            return {name: remap(path) for name, path in value.items()}
+        path = Path(value)
+        if path.is_relative_to("/work/stock"):
+            require(path.relative_to("/work/stock").as_posix() in original, "Unbound stock continuation view")
+            return value
+        relative = path.relative_to("/work/project")
+        require(".." not in relative.parts and (trial_project / relative).is_file(), "Invalid trial continuation view")
+        sources.add(trial_project / relative)
+        return f"/work/trial/{relative.as_posix()}"
+
+    for view in state.keys() - {"metrics"}:
+        state[view] = remap(state[view])
+    seed = out / "project" / CONTINUATION_SEED
+    seed.write_text(json.dumps(state, indent=2, allow_nan=True) + "\n")
+    write(out / CONTINUATION_FILE, dict(schema="pinwheel.streaming-8x4-tt-route-continuation.v1",
+        reserve=reserve, image=execution["image"], pdk_source_sha256=execution["pdk_source_sha256"],
+        stock=stock.name, trial=trial.name, stage_sha256=sha(out / "stage.json"), seed_sha256=sha(seed),
+        inputs=bindings(ENTRY, (path.relative_to(ENTRY).as_posix() for path in sources))))
+
+
+def continuation_inputs_match(out, continuation):
+    return (sha(out / "stage.json") == continuation["stage_sha256"]
+            and sha(out / "project" / CONTINUATION_SEED) == continuation["seed_sha256"]
+            and bindings(ENTRY, continuation["inputs"]) == continuation["inputs"])
+
+
 def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
     project = out / "project"
     staged = read(out / "stage.json")
@@ -146,10 +226,26 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
              "--mount", f"type=bind,source={pdk},target=/work/pdk,readonly"]
     extra = []
     trial_inputs = {}
+    continuation_receipt = out / CONTINUATION_FILE
+    continuation = read(continuation_receipt) if continuation_receipt.is_file() else None
+    mode = "stock"
     if baseline:
+        require(continuation is None, "A staged continuation already selects the route to run")
         require(0 <= reserve < 0.30, "Use a routing reserve below the stock 30 percent")
         mounts, extra, trial_inputs = global_route_trial(project, baseline, staged, reserve)
         mount.extend(mounts)
+        mode = "route-capacity-trial"
+    elif continuation:
+        require(continuation["schema"] == "pinwheel.streaming-8x4-tt-route-continuation.v1"
+                and continuation_inputs_match(out, continuation)
+                and continuation["image"] == image and continuation["pdk_source_sha256"] == pdk_input,
+                "Route continuation inputs or pinned tool identities changed")
+        for origin in ("stock", "trial"):
+            source = ENTRY / continuation[origin] / "project"
+            mount.extend(["--mount", f"type=bind,source={source},target=/work/{origin},readonly"])
+        extra = ["--with-initial-state", f"/work/project/{CONTINUATION_SEED}",
+                 "--from", "OpenROAD.CheckAntennas", "--override-config", f"GRT_ADJUSTMENT={continuation['reserve']}"]
+        mode = CONTINUATION
     docker = ["docker", "run", "--rm", "--pull", "never", "--network", "none", "--cpus", str(jobs),
               "--memory", memory, "--memory-swap", memory, "--label", f"org.pinwheel.signoff_owner={owner}",
               "--name", label, *mount, "--workdir", "/work/project", "--entrypoint", "python3", image]
@@ -160,7 +256,9 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
     receipt = dict(schema="pinwheel.streaming-8x4-tt-clean-run.v1", status="running", candidate_promoted=False,
                    github_action_run=False, stage_sha256=sha(out / "stage.json"), pdk_source_sha256=pdk_input,
                    command=command, image=image, owner=owner, timeout_seconds=timeout,
-                   mode="route-capacity-trial" if baseline else "stock", route_trial_inputs=trial_inputs)
+                   mode=mode, route_trial_inputs=trial_inputs)
+    if continuation:
+        receipt["route_continuation_sha256"] = sha(continuation_receipt)
     with lease.open("rb") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         require(not (lease.parent / "cleanup-unconfirmed.json").exists(), "Prior native cleanup is unconfirmed")
@@ -181,6 +279,11 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
                 receipt["route_trial_config_matches"] = after == {**before, "GRT_ADJUSTMENT": reserve}
                 if not receipt["route_trial_config_matches"]:
                     receipt["status"] = "fail"
+            if continuation and process.returncode == 0:
+                expected = read(flow_directory(ENTRY / continuation["trial"]) / "resolved.json")
+                receipt["route_continuation_config_matches"] = read(flow_directory(out) / "resolved.json") == expected
+                if not receipt["route_continuation_config_matches"]:
+                    receipt["status"] = "fail"
         except subprocess.TimeoutExpired:
             receipt["status"] = "timeout"
             raise
@@ -196,40 +299,62 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
                 seed = project / "route-trial-seed.json"
                 retained = bindings(baseline / "project", trial_inputs.keys() - {seed.name})
                 receipt["inputs_unchanged"] &= {**retained, seed.name: sha(seed)} == trial_inputs
+            if continuation:
+                receipt["inputs_unchanged"] &= (sha(continuation_receipt) == receipt["route_continuation_sha256"]
+                                                 and continuation_inputs_match(out, continuation))
             write(out / "execution.json", receipt)
     require(receipt["status"] == "pass" and receipt["inputs_unchanged"], "Hardening did not complete with intact inputs")
 
 
-def stock_candidate(out):
+def review_candidate(out):
     execution = read(out / "execution.json")
-    require(execution.get("mode", "stock") == "stock" and execution["status"] == "pass" and execution["exit_code"] == 0
+    mode = execution.get("mode", "stock")
+    require(mode in ("stock", CONTINUATION) and execution["status"] == "pass" and execution["exit_code"] == 0
             and execution["inputs_unchanged"] is True and execution["cleanup"]["status"] == "absent"
-            and execution["stage_sha256"] == sha(out / "stage.json"), "Stock hardening has no successful terminal run")
+            and execution["stage_sha256"] == sha(out / "stage.json"), "Hardening has no successful terminal full flow")
     project = out / "project"
     stage = read(out / "stage.json")
-    require(bindings(project, stage["inputs"]) == stage["inputs"], "Stock project inputs changed since routing")
-    run_root = project / "runs/wokwi"
+    require(bindings(project, stage["inputs"]) == stage["inputs"], "Project inputs changed since routing")
+    run_root = flow_directory(out)
     final = run_root / "final"
     resolved = read(run_root / "resolved.json")
     require(resolved["meta"]["librelane_version"] == LL and resolved["DESIGN_NAME"] == TOP
-            and resolved["PDK"] == PDK and resolved["RT_MAX_LAYER"] == "Metal4", "Wrong final stock flow configuration")
+            and resolved["PDK"] == PDK and resolved["RT_MAX_LAYER"] == "Metal4", "Wrong final flow configuration")
     assets = {role: final / kind / name for role, kind, name in (
         ("gds", "gds", f"{TOP}.gds"), ("lef", "lef", f"{TOP}.lef"), ("nl", "nl", f"{TOP}.nl.v"),
         ("pnl", "pnl", f"{TOP}.pnl.v"), ("odb", "odb", f"{TOP}.odb"), ("def", "def", f"{TOP}.def"),
     )}
-    require(all(path.is_file() and path.stat().st_size for path in assets.values()), "Stock flow is missing a final view")
+    require(all(path.is_file() and path.stat().st_size for path in assets.values()), "Flow is missing a final view")
     require(sha(assets["gds"]) != GDS, "Treat the frozen GDS through its existing release path")
     trace = [run_root / "resolved.json", out / "execution.json", out / "harden.log"]
     trace.extend(sorted(path for path in final.rglob("*") if path.is_file()))
-    return assets, dict(schema="pinwheel.streaming-8x4-tt-clean-candidate.v1",
+    schema = "pinwheel.streaming-8x4-tt-clean-candidate.v1"
+    route = {}
+    if mode == CONTINUATION:
+        manifest = out / CONTINUATION_FILE
+        continuation = read(manifest)
+        require(execution["route_continuation_config_matches"] is True
+                and sha(manifest) == execution["route_continuation_sha256"]
+                and continuation_inputs_match(out, continuation)
+                and resolved == read(flow_directory(ENTRY / continuation["trial"]) / "resolved.json"),
+                "Final flow is no longer bound to the reserve trial")
+        trace.extend((manifest, project / CONTINUATION_SEED))
+        for step in ("openroad-repairantennas", "openroad-detailedrouting", "checker-trdrc",
+                     "klayout-streamout", "netgen-lvs", "misc-reportmanufacturability"):
+            states = list(run_root.glob(f"*-{step}/state_out.json"))
+            require(len(states) == 1, f"Continuation is missing completed {step}")
+            trace.extend(states)
+        schema = "pinwheel.streaming-8x4-tt-reserve-candidate.v1"
+        route = dict(mode=mode, route_reserve=continuation["reserve"], route_continuation=record(out, manifest))
+    return assets, dict(schema=schema, **route,
         source_stage_sha256=execution["stage_sha256"], files=[record(out, path) for path in trace],
         views={role: record(out, path) for role, path in assets.items()}, candidate_promoted=False,
         qualified_timing=False, qualified_power=False)
 
 
-def check_stock(out, support, action, pdk, python, lease, timeout):
-    assets, candidate = stock_candidate(out)
-    check = out / "stock-precheck"
+def check_candidate(out, support, action, pdk, python, lease, timeout):
+    assets, candidate = review_candidate(out)
+    check = out / ("reserve-precheck" if candidate.get("mode") == CONTINUATION else "stock-precheck")
     check.mkdir(exist_ok=False)
     project = out / "project"
     sources = {**assets, "info_yaml": project / "info.yaml", "docs_info_md": project / "docs/info.md",
@@ -248,12 +373,16 @@ def check_stock(out, support, action, pdk, python, lease, timeout):
     run_precheck(check, support, action, pdk, python, lease, timeout, verify_inputs, candidate["views"]["gds"]["sha256"])
 
 
-def exercise_stock(out, view, models, compiler, vvp):
+def exercise_candidate(out, view, models, compiler, vvp):
     project = out / "project"
     stage = read(out / "stage.json")
-    require(bindings(project, stage["inputs"]) == stage["inputs"], "Stock project inputs changed before simulation")
+    require(bindings(project, stage["inputs"]) == stage["inputs"], "Project inputs changed before simulation")
+    target = "stock"
     if view == "final":
-        netlist = stock_candidate(out)[0]["nl"]
+        assets, candidate = review_candidate(out)
+        netlist = assets["nl"]
+        if candidate.get("mode") == CONTINUATION:
+            target = "reserve"
     else:
         netlist = project / "runs/wokwi/06-yosys-synthesis" / f"{TOP}.nl.v"
         require((netlist.parent / "state_out.json").is_file(), "Synthesis has no terminal state")
@@ -261,7 +390,7 @@ def exercise_stock(out, view, models, compiler, vvp):
     vendor = [models / name for name in PDK_MODELS]
     inputs = {netlist: sha(netlist), compiler: sha(compiler), vvp: sha(vvp),
               **{path: RTL[path.name] for path in rtl}, **{path: PDK_MODELS[path.name] for path in vendor}}
-    require(all(sha(path) == digest for path, digest in inputs.items()), "Stock wire-test input hashes differ")
+    require(all(sha(path) == digest for path, digest in inputs.items()), "Wire-test input hashes differ")
     run_dir = out / f"wire-{view}"
     run_dir.mkdir(exist_ok=False)
     bridge = run_dir / "bridge.sv"
@@ -270,15 +399,15 @@ def exercise_stock(out, view, models, compiler, vvp):
                    inputs={str(path): digest for path, digest in inputs.items()},
                    target_netlist_sha256=inputs[netlist], compiles={}, fixtures={}, successions={})
     try:
-        for name, sources in (("stock", [*vendor, netlist]), ("rtl", rtl)):
+        for name, sources in ((target, [*vendor, netlist]), ("rtl", rtl)):
             model, receipt["compiles"][name] = compile_model(compiler, run_dir, name, [*sources, bridge])
             observed = simulate(vvp, model, sha(model))
             require(observed.pop("model_sha256") == sha(model), f"Wrong loaded model for {name}")
             receipt["fixtures"][name] = observed
             receipt["successions"][name] = succession(vvp, model, run_dir / f"{name}-succession.bin")
         for check in ("fixtures", "successions"):
-            require(receipt[check]["stock"] == receipt[check]["rtl"], f"Stock {view} {check} differ from released RTL")
-        require(all(sha(path) == digest for path, digest in inputs.items()), "Stock wire-test inputs changed")
+            require(receipt[check][target] == receipt[check]["rtl"], f"{target} {view} {check} differ from released RTL")
+        require(all(sha(path) == digest for path, digest in inputs.items()), "Wire-test inputs changed")
         receipt["passed"] = True
     finally:
         write(run_dir / "receipt.json", receipt)
@@ -305,14 +434,22 @@ def main():
                         help="Replay only global routing from a stock run")
     parser.add_argument("--route-reserve", type=float, default=0.19,
                         help="Modeled reserve as a fraction for --route-trial-from (default 0.19)")
+    parser.add_argument("--continue-from", type=Path, help="Stage a continuation from a completed reserve trial")
+    parser.add_argument("--stock-from", type=Path, help="Original stock run required with --continue-from")
     args = parser.parse_args()
+    require((args.continue_from is None) == (args.stock_from is None)
+            and (args.continue_from is None or args.phase == "stage"),
+            "Use --continue-from and --stock-from together with stage")
+    require(args.route_trial_from is None or args.phase == "run", "Use --route-trial-from with run")
     out = args.out.resolve()
     require(out.parent == ENTRY, "Use a dedicated ignored output directory in the current worktree")
     if args.phase == "stage":
         require(not out.exists(), "Use a fresh project staging directory")
         stage(out, args.template.resolve(), args.support.resolve(), args.python.absolute())
+        if args.continue_from:
+            stage_continuation(out, args.stock_from.resolve(strict=True), args.continue_from.resolve(strict=True))
     elif args.phase == "review":
-        write(out / "candidate.json", stock_candidate(out)[1])
+        write(out / "candidate.json", review_candidate(out)[1])
     elif args.phase == "run":
         require(args.lease and args.timeout > 0 and args.jobs > 0, "Supply the shared native lease and positive budgets")
         baseline = args.route_trial_from.resolve(strict=True) if args.route_trial_from else None
@@ -320,12 +457,12 @@ def main():
     elif args.phase == "simulate":
         require(args.iverilog and args.vvp, "Supply the Icarus compiler and runtime")
         models = args.pdk / PDK / "libs.ref/sg13cmos5l_stdcell/verilog"
-        exercise_stock(out, args.view, models.resolve(strict=True), args.iverilog.resolve(strict=True),
-                       args.vvp.resolve(strict=True))
+        exercise_candidate(out, args.view, models.resolve(strict=True), args.iverilog.resolve(strict=True),
+                           args.vvp.resolve(strict=True))
     else:
         require(args.lease and args.timeout > 0, "Supply the shared native lease and positive budget")
-        check_stock(out, args.support.resolve(), args.action.resolve(), args.pdk.resolve(),
-                    args.precheck_python.absolute(), args.lease.resolve(), args.timeout)
+        check_candidate(out, args.support.resolve(), args.action.resolve(), args.pdk.resolve(),
+                        args.precheck_python.absolute(), args.lease.resolve(), args.timeout)
 
 
 if __name__ == "__main__":
