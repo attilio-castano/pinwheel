@@ -319,7 +319,14 @@ def check_action(action):
 
 
 def precheck(out, bundle, support, action, pdk, python, lease, timeout):
-    files = checked_stage(out, bundle)
+    return run_precheck(out, support, action, pdk, python, lease, timeout,
+                        lambda: checked_stage(out, bundle), GDS)
+
+
+def run_precheck(out, support, action, pdk, python, lease, timeout, checked_inputs, gds_sha256):
+    files = checked_inputs()
+    gds = out / ASSETS["gds"]
+    require(digest(gds) == gds_sha256, "Precheck candidate GDS differs from its recorded identity")
     check_action(action)
     require((pdk / PDK).resolve().is_relative_to(pdk / f"ciel/ihp-sg13/versions/{PDK_REVISION}"),
             "Use the Ciel installation of the action's pinned CMOS5L revision")
@@ -352,7 +359,6 @@ def precheck(out, bundle, support, action, pdk, python, lease, timeout):
                        f"raise SystemExit(native_klayout({str(config)!r}, sys.argv[1:]))\n")
     wrapper.chmod(0o755)
     environment["PATH"] = str(binary) + os.pathsep + environment["PATH"]
-    gds = out / ASSETS["gds"]
     precheck_dir = tools / "precheck"
     expected = signoff.selected_checks((precheck_dir / "precheck.py").read_text(), PDK)
     runtime = subprocess.check_output([str(python), "-B", "-c", "import sys,importlib.metadata as m;"
@@ -373,7 +379,7 @@ def precheck(out, bundle, support, action, pdk, python, lease, timeout):
     command.extend(f"{name}={environment[name]}" for name in variables)
     command.extend(argv)
     receipt = dict(schema="pinwheel.streaming-8x4-jane-street-precheck.v1", status="incomplete",
-        target_gds_sha256=GDS, action_revision=ACTION, support_revision=SUPPORT, pdk_revision=PDK_REVISION,
+        target_gds_sha256=gds_sha256, action_revision=ACTION, support_revision=SUPPORT, pdk_revision=PDK_REVISION,
         template_sha256=TEMPLATE_SHA, expected_checks=expected, runtime=runtime, klayout_image=image,
         klayout=version, checked_project_docs=True, github_artifact_created=False, argv=command)
     started = time.monotonic()
@@ -403,7 +409,7 @@ def precheck(out, bundle, support, action, pdk, python, lease, timeout):
             receipt["elapsed_seconds"] = time.monotonic() - started
             signoff.unchanged(frozen)
             signoff.unchanged(pdk_files)
-            require(checked_stage(out, bundle) == files, "Staged package changed during precheck")
+            require(checked_inputs() == files and digest(gds) == gds_sha256, "Staged package changed during precheck")
             artifacts = (attempt / "precheck.log", out / "native-klayout.jsonl", config,
                          *sorted((precheck_dir / "reports").glob("*.xml")))
             receipt["artifacts"] = [record(out, item) for item in artifacts if item.is_file()]

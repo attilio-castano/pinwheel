@@ -12,10 +12,15 @@ import tempfile
 import time
 import uuid
 
+from streaming_8x4_bringup import DEPTH, simulate
 from streaming_8x4_e982_native import ROOT, TOP, read, sha, write
-from streaming_8x4_jane_street_release import ACTION, BUILD, PDK, PDK_REVISION, SUPPORT, TEMPLATE, TEMPLATE_DEF, TEMPLATE_SHA
+from streaming_8x4_jane_street_behavior import PDK_MODELS, compile_model, succession
+from streaming_8x4_jane_street_release import (
+    ACTION, ASSETS, BUILD, GDS, PDK, PDK_REVISION, SUPPORT, TEMPLATE, TEMPLATE_DEF, TEMPLATE_SHA, record, run_precheck,
+)
 from streaming_8x4_jane_street_source import RTL, SOURCE
 from streaming_8x4_tt_rehearsal import file_spec, require
+from streaming_ready_wrapper import bridge_source
 from streaming_tt_signoff import cleanup, python_environment
 
 
@@ -138,27 +143,127 @@ def run(out, pdk, lease, timeout, jobs, memory):
     require(receipt["status"] == "pass" and receipt["inputs_unchanged"], "Stock hardening did not complete with intact inputs")
 
 
+def stock_candidate(out):
+    execution = read(out / "execution.json")
+    require(execution["status"] == "pass" and execution["exit_code"] == 0
+            and execution["inputs_unchanged"] is True and execution["cleanup"]["status"] == "absent"
+            and execution["stage_sha256"] == sha(out / "stage.json"), "Stock hardening has no successful terminal run")
+    project = out / "project"
+    stage = read(out / "stage.json")
+    require(bindings(project, stage["inputs"]) == stage["inputs"], "Stock project inputs changed since routing")
+    run_root = project / "runs/wokwi"
+    final = run_root / "final"
+    resolved = read(run_root / "resolved.json")
+    require(resolved["meta"]["librelane_version"] == LL and resolved["DESIGN_NAME"] == TOP
+            and resolved["PDK"] == PDK and resolved["RT_MAX_LAYER"] == "Metal4", "Wrong final stock flow configuration")
+    assets = {role: final / kind / name for role, kind, name in (
+        ("gds", "gds", f"{TOP}.gds"), ("lef", "lef", f"{TOP}.lef"), ("nl", "nl", f"{TOP}.nl.v"),
+        ("pnl", "pnl", f"{TOP}.pnl.v"), ("odb", "odb", f"{TOP}.odb"), ("def", "def", f"{TOP}.def"),
+    )}
+    require(all(path.is_file() and path.stat().st_size for path in assets.values()), "Stock flow is missing a final view")
+    require(sha(assets["gds"]) != GDS, "Treat the frozen GDS through its existing release path")
+    trace = [run_root / "resolved.json", out / "execution.json", out / "harden.log"]
+    trace.extend(sorted(path for path in final.rglob("*") if path.is_file()))
+    return assets, dict(schema="pinwheel.streaming-8x4-tt-clean-candidate.v1",
+        source_stage_sha256=execution["stage_sha256"], files=[record(out, path) for path in trace],
+        views={role: record(out, path) for role, path in assets.items()}, candidate_promoted=False,
+        qualified_timing=False, qualified_power=False)
+
+
+def check_stock(out, support, action, pdk, python, lease, timeout):
+    assets, candidate = stock_candidate(out)
+    check = out / "stock-precheck"
+    check.mkdir(exist_ok=False)
+    project = out / "project"
+    sources = {**assets, "info_yaml": project / "info.yaml", "docs_info_md": project / "docs/info.md",
+               "license": project / "LICENSE"}
+    files = []
+    for role, name in ASSETS.items():
+        dest = check / name
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(sources[role], dest)
+        files.append(dict(path=name, sha256=sha(sources[role]), bytes=sources[role].stat().st_size))
+    write(check / "candidate.json", candidate)
+
+    def verify_inputs():
+        return [file_spec(check, item) for item in files]
+
+    run_precheck(check, support, action, pdk, python, lease, timeout, verify_inputs, candidate["views"]["gds"]["sha256"])
+
+
+def exercise_stock(out, view, models, compiler, vvp):
+    project = out / "project"
+    stage = read(out / "stage.json")
+    require(bindings(project, stage["inputs"]) == stage["inputs"], "Stock project inputs changed before simulation")
+    if view == "final":
+        netlist = stock_candidate(out)[0]["nl"]
+    else:
+        netlist = project / "runs/wokwi/06-yosys-synthesis" / f"{TOP}.nl.v"
+        require((netlist.parent / "state_out.json").is_file(), "Synthesis has no terminal state")
+    rtl = [project / "src" / name for name in RTL]
+    vendor = [models / name for name in PDK_MODELS]
+    inputs = {netlist: sha(netlist), compiler: sha(compiler), vvp: sha(vvp),
+              **{path: RTL[path.name] for path in rtl}, **{path: PDK_MODELS[path.name] for path in vendor}}
+    require(all(sha(path) == digest for path, digest in inputs.items()), "Stock wire-test input hashes differ")
+    run_dir = out / f"wire-{view}"
+    run_dir.mkdir(exist_ok=False)
+    bridge = run_dir / "bridge.sv"
+    bridge.write_text(bridge_source(DEPTH))
+    receipt = dict(schema="pinwheel.streaming-8x4-tt-clean-wire.v1", passed=False, view=view,
+                   inputs={str(path): digest for path, digest in inputs.items()},
+                   target_netlist_sha256=inputs[netlist], compiles={}, fixtures={}, successions={})
+    try:
+        for name, sources in (("stock", [*vendor, netlist]), ("rtl", rtl)):
+            model, receipt["compiles"][name] = compile_model(compiler, run_dir, name, [*sources, bridge])
+            observed = simulate(vvp, model, sha(model))
+            require(observed.pop("model_sha256") == sha(model), f"Wrong loaded model for {name}")
+            receipt["fixtures"][name] = observed
+            receipt["successions"][name] = succession(vvp, model, run_dir / f"{name}-succession.bin")
+        for check in ("fixtures", "successions"):
+            require(receipt[check]["stock"] == receipt[check]["rtl"], f"Stock {view} {check} differ from released RTL")
+        require(all(sha(path) == digest for path, digest in inputs.items()), "Stock wire-test inputs changed")
+        receipt["passed"] = True
+    finally:
+        write(run_dir / "receipt.json", receipt)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("stage", "run"))
+    parser.add_argument("phase", choices=("stage", "run", "review", "precheck", "simulate"))
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--template", type=Path, default=BUILD / "verification-template-4b1204a")
     parser.add_argument("--support", type=Path, default=BUILD / "verification-support-9d13ff3")
+    parser.add_argument("--action", type=Path, default=BUILD / "verification-action-e7a50f8")
     parser.add_argument("--python", type=Path, default=ENTRY / "clean-hardening-python/bin/python")
+    parser.add_argument("--precheck-python", type=Path, default=BUILD / "verification-precheck-venv/bin/python")
     parser.add_argument("--pdk", type=Path, default=BUILD / "verification-ciel")
     parser.add_argument("--lease", type=Path)
     parser.add_argument("--timeout", type=int, default=21600)
     parser.add_argument("--jobs", type=int, default=4)
     parser.add_argument("--memory", default="6g")
+    parser.add_argument("--view", choices=("synthesis", "final"), default="final")
+    parser.add_argument("--iverilog", type=Path)
+    parser.add_argument("--vvp", type=Path)
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.parent == ENTRY, "Use a dedicated ignored output directory in the current worktree")
     if args.phase == "stage":
         require(not out.exists(), "Use a fresh project staging directory")
         stage(out, args.template.resolve(), args.support.resolve(), args.python.absolute())
-    else:
+    elif args.phase == "review":
+        write(out / "candidate.json", stock_candidate(out)[1])
+    elif args.phase == "run":
         require(args.lease and args.timeout > 0 and args.jobs > 0, "Supply the shared native lease and positive budgets")
         run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory)
+    elif args.phase == "simulate":
+        require(args.iverilog and args.vvp, "Supply the Icarus compiler and runtime")
+        models = args.pdk / PDK / "libs.ref/sg13cmos5l_stdcell/verilog"
+        exercise_stock(out, args.view, models.resolve(strict=True), args.iverilog.resolve(strict=True),
+                       args.vvp.resolve(strict=True))
+    else:
+        require(args.lease and args.timeout > 0, "Supply the shared native lease and positive budget")
+        check_stock(out, args.support.resolve(), args.action.resolve(), args.pdk.resolve(),
+                    args.precheck_python.absolute(), args.lease.resolve(), args.timeout)
 
 
 if __name__ == "__main__":
