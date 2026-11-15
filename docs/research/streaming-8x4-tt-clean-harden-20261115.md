@@ -41,10 +41,39 @@ The succession contains 22,323 public-pin edges with trace SHA-256
 The `clean-tt-04/wire-synthesis/receipt.json` SHA-256 is
 `d61c3207a788c621f1012c84796ae0f0addf8719e7e21589de33246200ff2ccc`.
 
+Local stock equivalence attempts remain inconclusive. A Yosys induction
+attempt reached its 120-second cap. EQY's Yosys partition pass segfaulted
+with the default macOS stack size, then reached a 240-second cap with a
+larger stack.
+
 The stock pre-route typical-corner analysis, after CTS and timing repair,
 reported +8.973 ns setup slack, +0.283 ns hold slack, and zero capacitance or
 slew violations. It reported 389 fanout violations. These are placement-stage
 estimates under the stock constraints.
+
+## Stock global routing
+
+The stock run finished global routing in 34 minutes 30 seconds. Its use of
+the capacity reservation and the completed per-layer overflow were as follows.
+
+| Signal layer | Modeled resources | Demand | Overflow |
+| --- | ---: | ---: | ---: |
+| Metal2 | 212,423 | 172,455 | 134 |
+| Metal3 | 259,924 | 247,474 | 34,678 |
+| Metal4 | 208,744 | 64,992 | 120 |
+| Total | 681,091 | 484,921 | 34,932 |
+
+OpenROAD reran congestion removal six times while temporarily dropping the
+clock net spacing rules inside the global router. The saved DEF still has all
+six clock NDR assignments. The current template permits global overflow and
+passed its guides to antenna repair and detailed routing. A reserve trial
+can use the same post-CTS database and change only the modeled global-route
+capacity reservation from 30% to 19%. It leaves the technology rules and
+route layers fixed. That trial produces a congestion comparison.
+[OpenROAD global routing options](https://openroad.readthedocs.io/en/latest/main/src/grt/README.html)
+
+The stock global-route log SHA-256 is
+`931131af8ac9c6a292d404fd22e607e3ab22de61a0380c098a4c5837701b1315`.
 
 ## Local reproduction
 
@@ -52,6 +81,9 @@ From this worktree, use a fresh, ignored output directory and the shared
 native-tool lease. The runner reads the reviewed release handoff and pinned
 Tiny Tapeout, Ciel and Python inputs described in the
 [release rehearsal](streaming-8x4-jane-street-release-20261114.md).
+On macOS, the staging Python process must be able to load the host Cairo
+library. A Homebrew Cairo installation may need `DYLD_FALLBACK_LIBRARY_PATH`
+set to its library directory for the `stage` command.
 
 ```sh
 RUN=build/8x4-jane-street-entry-20261114/clean-tt-next
@@ -60,3 +92,9 @@ python3 -B "$DRIVER" stage --out "$RUN"
 python3 -B "$DRIVER" run --out "$RUN" --lease "$NATIVE_LEASE" --jobs 4 --memory 6g
 python3 -B "$DRIVER" simulate --out "$RUN" --view synthesis --iverilog "$IVERILOG" --vvp "$VVP"
 ```
+
+After the completed stock global-route step, a separate fresh staged
+directory accepts `run --route-trial-from "$RUN"`. It imports only the
+checked post-CTS state and runs through `OpenROAD.GlobalRouting` at the
+19% modeled reserve. Use the trial's completed per-layer congestion table
+to judge whether to invest in a new detailed route.

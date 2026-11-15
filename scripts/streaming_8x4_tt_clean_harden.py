@@ -2,6 +2,7 @@
 
 import argparse
 import fcntl
+import json
 import os
 from pathlib import Path
 import shutil
@@ -89,7 +90,46 @@ def stage(out, template, support, python):
         inputs=bindings(project, [*original, config_file, "src/user_config.json"])))
 
 
-def run(out, pdk, lease, timeout, jobs, memory):
+def global_route_trial(project, baseline, staged):
+    stock_project = baseline / "project"
+    stock_stage = read(baseline / "stage.json")
+    require(stock_stage["inputs"] == staged["inputs"]
+            and bindings(stock_project, stock_stage["inputs"]) == stock_stage["inputs"],
+            "Route trial changed the staged inputs")
+    stock_run = stock_project / "runs/wokwi"
+    stock_config_path = stock_run / "resolved.json"
+    stock_route_state = stock_run / "39-openroad-globalrouting/state_out.json"
+    stock_config = read(stock_config_path)
+    require(stock_config["GRT_ADJUSTMENT"] == 0.30 and stock_config["CTS_APPLY_NDR"] == "half"
+            and stock_route_state.is_file(),
+            "Route trial requires the completed stock global-route comparator")
+    stock_state = stock_run / "38-openroad-stamidpnr-2/state_out.json"
+    state = read(stock_state)
+    sources = {path.relative_to(stock_project).as_posix() for path in (stock_config_path, stock_route_state, stock_state)}
+
+    def remap(value):
+        if isinstance(value, dict):
+            return {name: remap(path) for name, path in value.items()}
+        relative = Path(value).relative_to("/work/project")
+        require(".." not in relative.parts and (stock_project / relative).is_file(), "Invalid checked seed view")
+        sources.add(relative.as_posix())
+        return f"/work/stock/{relative.as_posix()}"
+
+    for view in state.keys() - {"metrics"}:
+        state[view] = remap(state[view])
+    require(state["odb"].startswith("/work/stock/runs/wokwi/37-openroad-resizertimingpostcts/"),
+            "Route trial must use the stock pre-global-route checkpoint")
+    seed = project / "route-trial-seed.json"
+    # LibreLane serializes non-finite timing metrics in its native state JSON.
+    seed.write_text(json.dumps(state, indent=2, allow_nan=True) + "\n")
+    checked = bindings(stock_project, sources)
+    return (["--mount", f"type=bind,source={stock_project},target=/work/stock,readonly"],
+            ["--with-initial-state", "/work/project/route-trial-seed.json", "--only", "OpenROAD.GlobalRouting",
+             "--override-config", "GRT_ADJUSTMENT=0.19"],
+            {**checked, seed.name: sha(seed)})
+
+
+def run(out, pdk, lease, timeout, jobs, memory, baseline=None):
     project = out / "project"
     staged = read(out / "stage.json")
     require(staged["schema"] == "pinwheel.streaming-8x4-tt-clean-stage.v1"
@@ -104,16 +144,22 @@ def run(out, pdk, lease, timeout, jobs, memory):
     owner = str(uuid.uuid4())
     mount = ["--mount", f"type=bind,source={project},target=/work/project",
              "--mount", f"type=bind,source={pdk},target=/work/pdk,readonly"]
+    extra = []
+    trial_inputs = {}
+    if baseline:
+        mounts, extra, trial_inputs = global_route_trial(project, baseline, staged)
+        mount.extend(mounts)
     docker = ["docker", "run", "--rm", "--pull", "never", "--network", "none", "--cpus", str(jobs),
               "--memory", memory, "--memory-swap", memory, "--label", f"org.pinwheel.signoff_owner={owner}",
               "--name", label, *mount, "--workdir", "/work/project", "--entrypoint", "python3", image]
     command = [*docker, "-m", "librelane", "--pdk-root", "/work/pdk", "--pdk", PDK,
                "--run-tag", "wokwi", "--force-run-dir", "runs/wokwi", "--hide-progress-bar",
-               "--jobs", str(jobs), "src/config_merged.json"]
+               "--jobs", str(jobs), *extra, "src/config_merged.json"]
     started = time.monotonic()
     receipt = dict(schema="pinwheel.streaming-8x4-tt-clean-run.v1", status="running", candidate_promoted=False,
                    github_action_run=False, stage_sha256=sha(out / "stage.json"), pdk_source_sha256=pdk_input,
-                   command=command, image=image, owner=owner, timeout_seconds=timeout)
+                   command=command, image=image, owner=owner, timeout_seconds=timeout,
+                   mode="route-capacity-trial" if baseline else "stock", route_trial_inputs=trial_inputs)
     with lease.open("rb") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         require(not (lease.parent / "cleanup-unconfirmed.json").exists(), "Prior native cleanup is unconfirmed")
@@ -128,6 +174,12 @@ def run(out, pdk, lease, timeout, jobs, memory):
                 process = subprocess.run(command, timeout=timeout, stdout=log, stderr=subprocess.STDOUT)
             receipt["exit_code"] = process.returncode
             receipt["status"] = "pass" if process.returncode == 0 else "fail"
+            if baseline and process.returncode == 0:
+                after = read(project / "runs/wokwi/resolved.json")
+                before = read(baseline / "project/runs/wokwi/resolved.json")
+                receipt["route_trial_config_matches"] = after == {**before, "GRT_ADJUSTMENT": 0.19}
+                if not receipt["route_trial_config_matches"]:
+                    receipt["status"] = "fail"
         except subprocess.TimeoutExpired:
             receipt["status"] = "timeout"
             raise
@@ -139,13 +191,17 @@ def run(out, pdk, lease, timeout, jobs, memory):
             receipt["elapsed_seconds"] = time.monotonic() - started
             receipt["cleanup"] = cleanup(owner)
             receipt["inputs_unchanged"] = bindings(project, staged["inputs"]) == staged["inputs"] and sha(pdk_source) == pdk_input
+            if baseline:
+                seed = project / "route-trial-seed.json"
+                retained = bindings(baseline / "project", trial_inputs.keys() - {seed.name})
+                receipt["inputs_unchanged"] &= {**retained, seed.name: sha(seed)} == trial_inputs
             write(out / "execution.json", receipt)
-    require(receipt["status"] == "pass" and receipt["inputs_unchanged"], "Stock hardening did not complete with intact inputs")
+    require(receipt["status"] == "pass" and receipt["inputs_unchanged"], "Hardening did not complete with intact inputs")
 
 
 def stock_candidate(out):
     execution = read(out / "execution.json")
-    require(execution["status"] == "pass" and execution["exit_code"] == 0
+    require(execution.get("mode", "stock") == "stock" and execution["status"] == "pass" and execution["exit_code"] == 0
             and execution["inputs_unchanged"] is True and execution["cleanup"]["status"] == "absent"
             and execution["stage_sha256"] == sha(out / "stage.json"), "Stock hardening has no successful terminal run")
     project = out / "project"
@@ -244,6 +300,8 @@ def main():
     parser.add_argument("--view", choices=("synthesis", "final"), default="final")
     parser.add_argument("--iverilog", type=Path)
     parser.add_argument("--vvp", type=Path)
+    parser.add_argument("--route-trial-from", type=Path,
+                        help="Replay only global routing from a stock run using 19 percent reserve")
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.parent == ENTRY, "Use a dedicated ignored output directory in the current worktree")
@@ -254,7 +312,8 @@ def main():
         write(out / "candidate.json", stock_candidate(out)[1])
     elif args.phase == "run":
         require(args.lease and args.timeout > 0 and args.jobs > 0, "Supply the shared native lease and positive budgets")
-        run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory)
+        baseline = args.route_trial_from.resolve(strict=True) if args.route_trial_from else None
+        run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory, baseline)
     elif args.phase == "simulate":
         require(args.iverilog and args.vvp, "Supply the Icarus compiler and runtime")
         models = args.pdk / PDK / "libs.ref/sg13cmos5l_stdcell/verilog"
