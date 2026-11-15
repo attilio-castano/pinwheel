@@ -78,8 +78,18 @@ The stock global-route log SHA-256 is
 The first complete detailed-routing iteration reported 94,859 markers in
 25 minutes 54 seconds. Metal2 and Metal3 shorts accounted for 45,640 and
 28,133 markers. This is the initial detailed route before iterative repair.
-The next three completed passes found 87,429, 84,022, and 49,229 markers.
-The fourth complete count included 25,628 Metal2 and 11,004 Metal3 shorts.
+The next four completed passes found 87,429, 84,022, 49,229 and 41,042
+markers. The fourth complete count included 25,628 Metal2 and 11,004
+Metal3 shorts. The stock run was stopped after those five completed passes
+to give the lower-overflow continuation the native worker. The stock run
+was active for 2 hours 34 minutes 46 seconds and preserved its inputs and
+reports. The container cleanup was confirmed.
+
+| Stock stop receipt | SHA-256 |
+| --- | --- |
+| `execution.json` | `d0f9d016e73479c06ce954cfe13fc1161facd2e077e263f3618212e2068d11f6` |
+| `stop-request.json` | `858f82902689ba9fb7894e958fb2071eba2a545465845e1c44a11108b88b62a8` |
+| `harden.log` | `46fc0354e468c9aba73074a2a0203b28a326193c8eb3d076772c6b9a8763e037` |
 
 ## Capacity reserve trials
 
@@ -125,6 +135,16 @@ during the optimization. The trial uses the same routing layers and rules.
 | `harden.log` | `0f3f27dae1c8e6993e41876865576c608cf24dae598cd47fcdb2204c3ef1c44c` |
 | `concurrent-admission.json` | `bff01b34e413e476e46565cc663fbe59218ccc99254f678c96d6de164e00a464` |
 
+## 8% detailed-routing continuation
+
+`clean-tt-08-reserve08-tail` starts at `OpenROAD.CheckAntennas` with the
+exact 8% global-route ODB, its guides and the checked stock ancestor views
+mounted read-only. The pinned flow runs through its final manufacturing
+checks under the same template with the 8% modeled reserve. The
+continuation stage SHA-256 is
+`cbb3fa4faeeae070f7c69b99126cd4f32ecab00a4c8850092db3f8d6b2efafcf`.
+Its separate worker has four CPU equivalents, 6 GiB and a 4.5-hour cap.
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
@@ -148,3 +168,8 @@ directory accepts `run --route-trial-from "$RUN" --route-reserve 0.19`.
 It imports the checked post-CTS state and runs the `OpenROAD.GlobalRouting`
 step. Use the completed per-layer congestion table to choose a candidate
 for detailed routing.
+
+To continue a checked trial through the standard downstream steps, stage
+a new directory with `--continue-from "$TRIAL" --stock-from "$RUN"`.
+Run that directory with the normal shared lease. The `review`, `simulate`
+and `precheck` commands accept a completed, separately bound candidate.

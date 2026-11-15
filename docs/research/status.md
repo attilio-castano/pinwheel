@@ -46,8 +46,10 @@ A clean build with the stock Tiny Tapeout template has compiled the four
 byte-matched release sources. The resulting synthesis netlist passes the
 four public-pin fixtures and the same successive-upload test. The stock
 global router finished with 34,932 overflow units, 34,678 on Metal3. The
-first complete detailed-routing pass reported 94,859 markers, primarily
-Metal2 and Metal3 shorts. Detailed routing and a 19% reserve trial are active.
+stock detailed router still had 41,042 markers after five complete passes.
+The matched 19% and 8% reserve trials reduced global overflow to 14,492
+and 2,622, respectively. The 8% route is continuing through the pinned
+Tiny Tapeout flow as a separate candidate.
 [Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
 
 Fresh geometric power connectivity passed on both rails with 98,904 instance
