@@ -158,6 +158,19 @@ repair iterations is the direct check on detailed routing progress.
 | 0 | 94,859 | 117,326 |
 | 1 | 87,429 | 105,879 |
 | 2 | 84,022 | 102,399 |
+| 3 | 49,229 | 73,632 |
+
+The continuation was stopped after iteration 3 to give the worker to a
+marker-enabled replay of the stronger stock route. It ran for 2 hours
+2 minutes 46 seconds and confirmed container cleanup. Both attempts
+stopped during detailed routing, leaving a new source-to-GDS candidate
+and its post-route timing, LVS, and precheck open.
+
+| 8% continuation stop receipt | SHA-256 |
+| --- | --- |
+| `execution.json` | `a79d11ae8ad41ccddf593f0e56a64643e4dac847218c91bd6ff9e1949cab1f5a` |
+| `stop-request.json` | `cb4d4576cbf734bc312e0a79901fdfd47051b796911517b2837be40127d1c995` |
+| `harden.log` | `779fcd33f5518a8f2342ad74dc7205acf1517edb2f4ad63a5e8262c02c071e73` |
 
 ## Placement density trial
 

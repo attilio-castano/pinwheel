@@ -48,10 +48,10 @@ four public-pin fixtures and the same successive-upload test. The stock
 global router finished with 34,932 overflow units, 34,678 on Metal3. The
 stock detailed router still had 41,042 markers after five complete passes.
 The matched 19% and 8% reserve trials reduced global overflow to 14,492
-and 2,622, respectively. The 8% route is continuing through the pinned
-Tiny Tapeout flow as a separate candidate. Its first detailed pass reported
-117,326 markers after antenna repair, compared with 94,859 for stock. It
-remained worse at each of the first three matched passes. At identical 30%
+and 2,622, respectively. The 8% continuation had more detailed-route
+markers in all four matched passes, ending at 73,632 versus 49,229 in
+stock. Both workers stopped with checked inputs and cleanup. A bounded
+stock replay is capturing named markers and geometry. At identical 30%
 reserve, an 85% placement density target shortened the global routes but
 raised global overflow from 34,932 to 42,202.
 [Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
