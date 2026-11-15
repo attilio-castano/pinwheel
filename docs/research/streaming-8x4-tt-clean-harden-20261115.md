@@ -224,6 +224,22 @@ route and its marker coordinates.
 | `comparison.json` | `12c4e46a84cebfe1bda9fe2f588d3ecd742d3a2357a6042484ad5209d08675ea` |
 | `reserve08-band-guide-coverage.json` | `f2d914752a4404654c5adfa81ca4657132eb3f7c2134498b842bd24815ec94f4` |
 
+Joining the exact stock logical Q pins to the placed DEF identifies all
+4,096 program-word flip-flops and preserves the same positions in the 8%
+trial. Every one of the 64 stock words has bits on both sides of the band.
+The median horizontal word span is 1,025.52 µm. At 85% placement density
+the median span falls to 772.80 µm, and 22 words span both sides. The
+number of word bits placed in the band rises from 1,132 to 1,570.
+
+The stock post-CTS repair adds 6,235 `sg13cmos5l_dlygate4sd3_1` cells. The
+same-net DEF pin join verifies one added delay-cell A terminal connected
+directly to the Q output of each of the 4,096 word flip-flops. Within the
+band, nets with direct word flip-flop terminals account for 3.29% of the
+guide area and nets with direct added delay-cell terminals account for
+1.63%. Logic beyond those direct connections remains unclassified. The
+`bank_placement.json` receipt reproduced byte for byte with SHA-256
+`02d87f8f00291f1bda9e210eb084134e1b9909686569f8ebeae9fbfc60c96aaf`.
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
