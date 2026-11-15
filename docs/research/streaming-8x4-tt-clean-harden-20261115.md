@@ -145,6 +145,14 @@ continuation stage SHA-256 is
 `cbb3fa4faeeae070f7c69b99126cd4f32ecab00a4c8850092db3f8d6b2efafcf`.
 Its separate worker has four CPU equivalents, 6 GiB and a 4.5-hour cap.
 
+The continuation's global-route antenna step found 235 violations, inserted
+386 diodes and reported zero after repair. The stock comparison used 597
+diodes. The first complete detailed-routing pass took 29 minutes 18 seconds
+and reported 117,326 markers, including 56,462 Metal2 and 33,086 Metal3
+shorts. The stock first pass reported 94,859 markers. The two global-route
+reserves produced different guides and antenna repairs. Matching later
+repair iterations is the direct check on detailed routing progress.
+
 ## Local reproduction
 
 From this worktree, use a fresh, ignored output directory and the shared
