@@ -79,11 +79,31 @@ The first complete detailed-routing iteration reported 94,859 markers in
 25 minutes 54 seconds. Metal2 and Metal3 shorts accounted for 45,640 and
 28,133 markers. This is the initial detailed route before iterative repair.
 
-The separate `clean-tt-06-reserve19` run reached global routing with the
-same post-CTS state. It measured 303,221 usable Metal3 resource units,
-43,297 more than the stock run. The local admission receipt binds the stock
-worker and the trial's two-CPU and 1.25 GiB equal memory/swap caps. The trial
-reports its own routing outcome and retains the stock run as comparator.
+## Capacity reserve trials
+
+The separate `clean-tt-06-reserve19` run completed global routing after
+34 minutes 52 seconds. It kept the stock post-CTS state, and the runner
+verified that only `GRT_ADJUSTMENT` changed in the resolved configuration.
+The local admission receipt binds the stock worker and the trial's two-CPU
+and 1.25 GiB equal memory/swap caps. The trial worker was removed at exit.
+
+| Signal layer | Modeled resources at 19% reserve | Demand | Overflow |
+| --- | ---: | ---: | ---: |
+| Metal2 | 253,450 | 195,092 | 44 |
+| Metal3 | 303,221 | 247,665 | 14,387 |
+| Metal4 | 248,902 | 68,470 | 61 |
+| Total | 805,573 | 511,227 | 14,492 |
+
+The reduction in overflow was 58.51%. Metal3 gained 43,297 modeled resource
+units and retained most of the overflow. Estimated wirelength increased from
+4,642,351 to 4,948,185 µm. The `clean-tt-07-reserve08` follow-up is testing
+the same checkpoint at 8% to measure the remaining capacity sensitivity.
+
+| 19% trial receipt | SHA-256 |
+| --- | --- |
+| `execution.json` | `3136758848d791366b5aac73d98ac9b77c5709bd51f26cdd608f77c887c12767` |
+| `harden.log` | `90fc46749250aa68b22faf5ad51b2c5cea5b97c19cc757b8a3a7ddba4e49bc0b` |
+| `concurrent-admission.json` | `1447e3c31862db2c051ea5107e1b6c9790604c8f573fc01920fec091a84b87a9` |
 
 ## Local reproduction
 
@@ -104,7 +124,7 @@ python3 -B "$DRIVER" simulate --out "$RUN" --view synthesis --iverilog "$IVERILO
 ```
 
 After the completed stock global-route step, a separate fresh staged
-directory accepts `run --route-trial-from "$RUN"`. It imports only the
-checked post-CTS state and runs through `OpenROAD.GlobalRouting` at the
-19% modeled reserve. Use the trial's completed per-layer congestion table
-to judge whether to invest in a new detailed route.
+directory accepts `run --route-trial-from "$RUN" --route-reserve 0.19`.
+It imports the checked post-CTS state and runs the `OpenROAD.GlobalRouting`
+step. Use the completed per-layer congestion table to choose a candidate
+for detailed routing.

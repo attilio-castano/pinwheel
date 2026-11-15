@@ -90,7 +90,7 @@ def stage(out, template, support, python):
         inputs=bindings(project, [*original, config_file, "src/user_config.json"])))
 
 
-def global_route_trial(project, baseline, staged):
+def global_route_trial(project, baseline, staged, reserve):
     stock_project = baseline / "project"
     stock_stage = read(baseline / "stage.json")
     require(stock_stage["inputs"] == staged["inputs"]
@@ -125,11 +125,11 @@ def global_route_trial(project, baseline, staged):
     checked = bindings(stock_project, sources)
     return (["--mount", f"type=bind,source={stock_project},target=/work/stock,readonly"],
             ["--with-initial-state", "/work/project/route-trial-seed.json", "--only", "OpenROAD.GlobalRouting",
-             "--override-config", "GRT_ADJUSTMENT=0.19"],
+             "--override-config", f"GRT_ADJUSTMENT={reserve}"],
             {**checked, seed.name: sha(seed)})
 
 
-def run(out, pdk, lease, timeout, jobs, memory, baseline=None):
+def run(out, pdk, lease, timeout, jobs, memory, baseline=None, reserve=0.19):
     project = out / "project"
     staged = read(out / "stage.json")
     require(staged["schema"] == "pinwheel.streaming-8x4-tt-clean-stage.v1"
@@ -147,7 +147,8 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None):
     extra = []
     trial_inputs = {}
     if baseline:
-        mounts, extra, trial_inputs = global_route_trial(project, baseline, staged)
+        require(0 <= reserve < 0.30, "Use a routing reserve below the stock 30 percent")
+        mounts, extra, trial_inputs = global_route_trial(project, baseline, staged, reserve)
         mount.extend(mounts)
     docker = ["docker", "run", "--rm", "--pull", "never", "--network", "none", "--cpus", str(jobs),
               "--memory", memory, "--memory-swap", memory, "--label", f"org.pinwheel.signoff_owner={owner}",
@@ -177,7 +178,7 @@ def run(out, pdk, lease, timeout, jobs, memory, baseline=None):
             if baseline and process.returncode == 0:
                 after = read(project / "runs/wokwi/resolved.json")
                 before = read(baseline / "project/runs/wokwi/resolved.json")
-                receipt["route_trial_config_matches"] = after == {**before, "GRT_ADJUSTMENT": 0.19}
+                receipt["route_trial_config_matches"] = after == {**before, "GRT_ADJUSTMENT": reserve}
                 if not receipt["route_trial_config_matches"]:
                     receipt["status"] = "fail"
         except subprocess.TimeoutExpired:
@@ -301,7 +302,9 @@ def main():
     parser.add_argument("--iverilog", type=Path)
     parser.add_argument("--vvp", type=Path)
     parser.add_argument("--route-trial-from", type=Path,
-                        help="Replay only global routing from a stock run using 19 percent reserve")
+                        help="Replay only global routing from a stock run")
+    parser.add_argument("--route-reserve", type=float, default=0.19,
+                        help="Modeled reserve as a fraction for --route-trial-from (default 0.19)")
     args = parser.parse_args()
     out = args.out.resolve()
     require(out.parent == ENTRY, "Use a dedicated ignored output directory in the current worktree")
@@ -313,7 +316,7 @@ def main():
     elif args.phase == "run":
         require(args.lease and args.timeout > 0 and args.jobs > 0, "Supply the shared native lease and positive budgets")
         baseline = args.route_trial_from.resolve(strict=True) if args.route_trial_from else None
-        run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory, baseline)
+        run(out, args.pdk.resolve(), args.lease.resolve(), args.timeout, args.jobs, args.memory, baseline, args.route_reserve)
     elif args.phase == "simulate":
         require(args.iverilog and args.vvp, "Supply the Icarus compiler and runtime")
         models = args.pdk / PDK / "libs.ref/sg13cmos5l_stdcell/verilog"
