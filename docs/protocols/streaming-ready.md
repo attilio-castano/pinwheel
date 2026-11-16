@@ -89,6 +89,29 @@ as a successful cell. Fault idle-pin changes may create an aborted short HIGH
 or STOP-like transition. The contract describes the captured prefix and custody,
 not transaction atomicity after a target violates its deadline.
 
+## JTAG DR scan
+
+The existing 13-row JTAG image uses unguarded instructions and has the same
+word encoding on the sampled-ready target. The scan starts with five TMS-high
+clocks, then enters Shift-DR from any of the 16 initial TAP states. A positive
+START count supplies the number of data clocks. TMS goes high on the final
+data clock, and two more clocks take the TAP through Update-DR to Run-Test/Idle.
+An initial Shift-DR state contributes one shift on the first reset-preamble
+clock. That clock carries no recorded TDO sample.
+
+[The source proof](../../Pinwheel/Program/StreamingJTAGTrace.lean) checks the
+actual TCK/TMS edges, one TDO sample per data edge, and completion under
+eventual queue credit. The peer must present the intended TDO bit at raw
+input 0 two core clocks before the data edge. The public pad mapping uses
+`uio_out[1]` for TCK, `uio_out[2]` for TMS, and `ui_in[3]` for TDO.
+
+[The package proof](../../Pinwheel/Hardware/StreamingReady/JTAGSession.lean)
+reuses the certified cold upload waveform at duration three. It connects an
+admitted START, the sampled public TCK/TMS trace, and an admitted RELEASE
+after host drain. The acknowledged export contains exactly the captured TDO
+bits in order. The intervening trace uses ordinary runtime commands with no
+RELEASE command. The proof covers a digital DR scan and its readback.
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural
