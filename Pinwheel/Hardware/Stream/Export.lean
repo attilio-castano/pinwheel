@@ -55,10 +55,25 @@ def wrapperVerilog (wi wo : Nat) (child : String) : String :=
   "  .out_ready(out_ready), .in_ready(in_ready), .out_valid(out_valid), .out_data(out_data),\n" ++
   "  .raw_ready(), .raw_valid(), .raw_data());\nendmodule\n"
 
+def parallelVerilog (wi wa wb : Nat) (name left right : String) : String :=
+  s!"module {name}({streamPorts wi (wa + wb) true});\n" ++
+  s!"wire lv, rv, lr, rr; wire [{wa - 1}:0] ld; wire [{wb - 1}:0] rd;\n" ++
+  s!"{left} left(.clk(clk), .reset(reset), .in_valid(in_valid & rr),\n" ++
+  s!"  .in_data(rr ? in_data : {wi}'d0), .out_ready(out_ready & rv),\n" ++
+  "  .in_ready(), .out_valid(), .out_data(), .raw_ready(lr), .raw_valid(lv), .raw_data(ld));\n" ++
+  s!"{right} right(.clk(clk), .reset(reset), .in_valid(in_valid & lr),\n" ++
+  s!"  .in_data(lr ? in_data : {wi}'d0), .out_ready(out_ready & lv),\n" ++
+  "  .in_ready(), .out_valid(), .out_data(), .raw_ready(rr), .raw_valid(rv), .raw_data(rd));\n" ++
+  "assign raw_ready = lr & rr; assign raw_valid = lv & rv;\n" ++
+  "assign raw_data = raw_valid ? {ld, rd} : " ++ s!"{wa + wb}'d0;\n" ++
+  "assign in_ready = ~reset & raw_ready; assign out_valid = ~reset & raw_valid;\n" ++
+  s!"assign out_data = reset ? {wa + wb}'d0 : raw_data;\nendmodule\n"
+
 def Design.hierarchicalRegisters (d : Design wi wo) (path : String) : Array String :=
   match d with
   | .leaf _ c => c.registers.ports.map fun p => path ++ ".r_" ++ c.registers.label p.2
   | .serial a b => a.hierarchicalRegisters (path ++ ".left") ++ b.hierarchicalRegisters (path ++ ".right")
+  | .parallel a b => a.hierarchicalRegisters (path ++ ".left") ++ b.hierarchicalRegisters (path ++ ".right")
 
 def Design.outputWidth (_ : Design wi wo) : Nat := wo
 
@@ -72,6 +87,11 @@ def Design.exportHierarchy (d : Design wi wo) (dir : System.FilePath) (name : St
     let al ← a.exportHierarchy dir (name ++ "_left")
     let bl ← b.exportHierarchy dir (name ++ "_right")
     IO.FS.writeFile (dir / s!"{name}.sv") (serialVerilog wi a.outputWidth wo name (name ++ "_left") (name ++ "_right"))
+    return al ++ bl
+  | .parallel a b => do
+    let al ← a.exportHierarchy dir (name ++ "_left")
+    let bl ← b.exportHierarchy dir (name ++ "_right")
+    IO.FS.writeFile (dir / s!"{name}.sv") (parallelVerilog wi a.outputWidth b.outputWidth name (name ++ "_left") (name ++ "_right"))
     return al ++ bl
 
 def interfaceJson (d : Interface P) : Json := toJson (d.ports.mapIdx fun k p =>

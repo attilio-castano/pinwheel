@@ -1,4 +1,4 @@
-import Pinwheel.Hardware.Stream.CompositionProof
+import Pinwheel.Hardware.Stream.ParallelCircuit
 import Pinwheel.Hardware.Emit
 
 namespace Pinwheel.Hardware.Stream
@@ -8,10 +8,12 @@ leaf implementations and contracts remain reusable independently of the tree. -/
 inductive Design : Nat → Nat → Type 1 where
   | leaf (name : String) (component : Certified wi wo) : Design wi wo
   | serial : Design wi wm → Design wm wo → Design wi wo
+  | parallel : Design wi wa → Design wi wb → Design wi (wa + wb)
 
 def Design.flatten : Design wi wo → Certified wi wo
   | .leaf _ c => c
   | .serial a b => a.flatten.serial b.flatten
+  | .parallel a b => a.flatten.parallel b.flatten
 
 def Design.pipeline (m : Map wi wo) : Nat → Design wi wo
   | 0 => .leaf "map" (Elastic.certified m)

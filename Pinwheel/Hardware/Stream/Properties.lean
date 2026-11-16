@@ -22,6 +22,14 @@ theorem bounded_serial (a : Certified wi wm) (b : Certified wm wo)
   simp only [Certified.serial, Contract.serial, List.length_append, List.length_map]
   omega
 
+theorem bounded_parallel (a : Certified wi wa) (b : Certified wi wb)
+    (ha : Bounded a na) (hb : Bounded b nb) : Bounded (a.parallel b) (min na nb) := by
+  intro s h
+  have h₁ := ha s.1 h.1
+  have h₂ := hb s.2 h.2.1
+  simp only [Certified.parallel, Parallel.contract, List.length_zipWith]
+  omega
+
 theorem bounded_pipeline (m : Map wi wo) (extra : Nat) :
     Bounded (Design.pipeline m extra).flatten (extra + 1) := by
   induction extra generalizing wi with
@@ -41,6 +49,19 @@ theorem stable_elastic (f : α → β) : Stable (elastic f) := elastic_stalled f
 
 theorem stable_serial (a : Machine α β S) (b : Machine β γ T) (h : Stable b) : Stable (a.serial b) :=
   fun i s hr hd hv => h (a.rightInput i s.1) s.2 hr hd hv
+
+theorem stable_parallel (a : Machine α β S) (b : Machine α γ T) (f : β → γ → δ)
+    (ha : Stable a) (hb : Stable b) : Stable (Parallel.machine a b f) := by
+  intro i s hr hd hv
+  have hl : (a.offer s.1).isSome = true := by
+    cases he : a.offer s.1 <;> simp_all [Parallel.machine, joinOffer]
+  have hj : (b.offer s.2).isSome = true := by
+    cases he : a.offer s.1 <;> cases hf : b.offer s.2 <;> simp_all [Parallel.machine, joinOffer]
+  have ea := ha (Parallel.leftInput a b i s) s.1 hr
+    (by simp [Parallel.leftInput, Parallel.leftReady, hd]) hl
+  have eb := hb (Parallel.rightInput a b i s) s.2 hr
+    (by simp [Parallel.rightInput, Parallel.leftReady, hd]) hj
+  simp only [Parallel.machine, ea, eb]
 
 theorem stable_pipeline (m : Map wi wo) (extra : Nat) : Stable (Design.pipeline m extra).flatten.machine := by
   induction extra generalizing wi with
