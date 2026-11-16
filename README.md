@@ -53,6 +53,10 @@ part of the record.
 
 ## Where things stand
 
+A [reusable Lean stream-hardware library](docs/engine/lean-stream-hardware.md)
+adds parameterized FIFOs and elastic pipelines, compositional transaction and
+timing proofs, and checks of freshly emitted flat and hierarchical RTL.
+
 Pinwheel has executable protocol models, emitted circuits, and independent
 simulation checks. For the paired SRAM design, Lean proofs now connect a
 certified program upload to cycle-by-cycle execution and package observations.

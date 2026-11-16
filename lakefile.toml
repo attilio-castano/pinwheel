@@ -51,3 +51,7 @@ root = "test.MapTileEmit"
 [[lean_exe]]
 name = "tiled_chip_emit"
 root = "test.TiledChipEmit"
+
+[[lean_exe]]
+name = "stream_example"
+root = "test.StreamExample"
