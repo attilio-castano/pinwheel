@@ -1,5 +1,6 @@
 import Lean
 import Pinwheel.Hardware.Stream.Timing
+import Pinwheel.Hardware.Stream.Bundle
 
 open Lean Elab Command
 
