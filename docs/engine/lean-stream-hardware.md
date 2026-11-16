@@ -6,6 +6,9 @@ words, buffers them in a D-entry register FIFO, and passes their modular sum
 through L elastic stages. The implementation is a typed circuit and a reusable
 transaction contract, with a proof connecting the two.
 
+The next implemented layer adds [typed payload bundles and fork/join graphs](lean-stream-graphs.md),
+with independently advancing branches and ordered result pairing.
+
 Supported exported configurations have `W > 0`, `D > 0`, and `L > 0`. The Lean
 builder takes `extra = L - 1`; its first stage applies the arithmetic operation
 and its remaining stages apply identity. FIFO depth is independent of latency.
@@ -159,7 +162,7 @@ python3 scripts/check-stream-hardware.py --tag stream-smoke --config 8,3,2
 For proof/API work without CAD:
 
 ```sh
-lake build stream_example
+lake build stream_example Pinwheel.Hardware.Stream.Diamond
 lake env lean test/StreamAudit.lean
 lake env lean test/StreamLaws.lean
 python3 -B -m unittest discover -s test -p test_generic_stream.py -v
@@ -180,7 +183,7 @@ simulation/emission, and compositional proofs. The register FIFO uses a unary
 valid prefix and shifting data; it is chosen for a small, proved implementation,
 not an area or frequency claim. Large FIFOs need a separate RAM-backed refinement.
 
-Further milestones can add richer interface combinators, fanout/arbitration,
+Further milestones can add richer interface combinators, arbitration,
 RAM semantics and inference, graph optimization, multiple clock domains, and
 more convenient elaboration syntax. Those additions must retain explicit
 semantics and refinement boundaries. Existing protocol and physical-design

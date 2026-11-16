@@ -19,6 +19,12 @@ def Design.pipeline (m : Map wi wo) : Nat → Design wi wo
   | 0 => .leaf "map" (Elastic.certified m)
   | n + 1 => .serial (.leaf "map" (Elastic.certified m)) (pipeline (Map.identity wo) n)
 
+theorem Design.pipeline_function (m : Map wi wo) (extra : Nat) (x : BitVec wi) :
+    (pipeline m extra).flatten.function x = m.function x := by
+  induction extra generalizing wi with
+  | zero => rfl
+  | succ n ih => exact ih (Map.identity wo) (m.function x)
+
 def Design.buffered (m : Map wi wo) (depth : Nat) (hd : 0 < depth) (extra : Nat) : Design wi wo :=
   .serial (.leaf "fifo" (fifoCertified wi depth hd)) (.pipeline m extra)
 

@@ -55,16 +55,21 @@ def prepare_json(original: Path, destination: Path, descriptor, hierarchical: bo
     destination.write_text(json.dumps(document))
 
 
-def generate(directory: Path, configuration, descriptor, hints: Path, rtl: Path, solver: Path):
+def generate(directory: Path, configuration, descriptor, hints: Path, rtl: Path, solver: Path,
+             *, design_expression=None, design_import="Pinwheel.Hardware.Stream.Normalize"):
     rb = importer(descriptor)
     source, actual = rb.read_hints(hints), rb.read_rtl(rtl)
     pairs = rb.partitions(source, actual, successor="v-1", oracle=rb.cut_oracle(solver))
     w, d, stages = configuration
-    design = f"""import Pinwheel.Hardware.Stream.Normalize
+    wi = next(p["width"] for p in descriptor["inputs"] if p["index"] == 3)
+    wo = next(p["width"] for p in descriptor["outputs"] if p["index"] == 2)
+    design_expression = design_expression or f"adderDesign {w} {d} {stages - 1} (by decide +kernel)"
+    design = f"""import {design_import}
+import Pinwheel.Hardware.Stream.Normalize
 open Pinwheel.Hardware Pinwheel.Hardware.Stream
 namespace Pinwheel.StreamArtifact
 set_option backward.isDefEq.respectTransparency false
-abbrev baseComponent := (adderDesign {w} {d} {stages - 1} (by decide +kernel)).flatten
+abbrev baseComponent := ({design_expression}).flatten
 abbrev component := baseComponent.normalized
 """
     for p in descriptor["registers"]:
@@ -73,7 +78,7 @@ abbrev component := baseComponent.normalized
     (directory / "Design.lean").write_text(design + "end Pinwheel.StreamArtifact\n")
 
     def adapt(text):
-        return (text.replace("Values Machine.Input", f"Values (In {w+w})")
+        return (text.replace("Values Machine.Input", f"Values (In {wi})")
                 .replace("Values Register", "Values component.Register")
                 .replace("end Pinwheel.Artifact.Backend", "end Pinwheel.StreamArtifact"))
 
@@ -101,7 +106,7 @@ abbrev component := baseComponent.normalized
             lhs, rhs = value(source, sn, "Source"), value(actual, rn, "RTL")
             operation = "step" if kind == "next" else "observe"
             stem = f"{kind}_{endpoint_count}"
-            parameters = f"(i : Values (In {w+w})) (s : Values component.Register)"
+            parameters = f"(i : Values (In {wi})) (s : Values component.Register)"
             lines.append(f"theorem hint_{stem} {parameters} :\n"
                          f"  {lhs} = component.circuit.{operation} i s ({ctor}) := by rfl\n")
             index = matches.get((sn, rn))
@@ -113,10 +118,10 @@ abbrev component := baseComponent.normalized
             entries.append((rhs, f"rtl_{stem}"))
             endpoint_count += 1
         tables[kind] = entries
-    parameters = f"(i : Values (In {w+w})) (s : Values component.Register)"
+    parameters = f"(i : Values (In {wi})) (s : Values component.Register)"
     for kind, descriptor_name, operation, result_type in (
             ("next", "component.registers", "step", "component.Register"),
-            ("output", f"(outputPorts {w}).interface", "observe", f"Out {w}")):
+            ("output", f"(outputPorts {wo}).interface", "observe", f"Out {wo}")):
         entries = tables[kind]
         n = len(entries)
         lines.append(f"def {kind}Table {parameters} : (k : Fin ({descriptor_name}).size) → "
@@ -137,21 +142,21 @@ abbrev component := baseComponent.normalized
                      f"(fun {{b : Nat}} (p : {result_type} b) => component.circuit.{operation} i s p) :=\n"
                      f"  assemble_eq _ _ _ ({kind}Table_correct i s)\n")
     lines.append(f"""
-def rtlSimulator : Timed.Component (Input (BitVec {w+w}))
-    (Values component.Register) (Output (BitVec {w})) :=
+def rtlSimulator : Timed.Component (Input (BitVec {wi}))
+    (Values component.Register) (Output (BitVec {wo})) :=
   ⟨fun i s => rtl_step (inputValues i) s,
    fun i s => decodeOutput (rtl_observe (inputValues i) s)⟩
 theorem rtlSimulator_eq : rtlSimulator = component.simulator := by
   simp only [rtlSimulator, Certified.simulator, rtl_step_eq, rtl_observe_eq]
-theorem rtl_transactions (inputs : List (Input (BitVec {w+w}))) :
+theorem rtl_transactions (inputs : List (Input (BitVec {wi}))) :
     let actual := runHistory rtlSimulator (component.encode component.initial) {{}} inputs
     let model := runHistory component.machine.component component.initial {{}} inputs
     actual.2.inputs.map component.function = actual.2.outputs ++ component.contract.pending model.1 := by
   rw [rtlSimulator_eq]
   exact component.simulator_transactions inputs
 
-def rtlRawSimulator : Timed.Component (Values (In {w+w}))
-    (Values component.Register) (Output (BitVec {w})) :=
+def rtlRawSimulator : Timed.Component (Values (In {wi}))
+    (Values component.Register) (Output (BitVec {wo})) :=
   ⟨fun i s => rtl_step i s, fun i s => decodeOutput (rtl_observe i s)⟩
 theorem rtlRawSimulator_eq : rtlRawSimulator = baseComponent.rawSimulator := by
   simp only [rtlRawSimulator, Certified.rawSimulator, rtl_step_eq, rtl_observe_eq]
@@ -159,8 +164,8 @@ theorem rtlRawSimulator_eq : rtlRawSimulator = baseComponent.rawSimulator := by
 /-- Actual imported RTL from arbitrary register bits, after a cold-reset edge,
 for arbitrary digital inputs, including invalid payload bits. -/
 theorem rtl_initialized_trace (initial : Values component.Register)
-    (resetInput : Values (In {w+w})) (hr : resetInput reset = 1)
-    (inputs : List (Values (In {w+w}))) :
+    (resetInput : Values (In {wi})) (hr : resetInput reset = 1)
+    (inputs : List (Values (In {wi}))) :
     rtlRawSimulator.trace (rtlRawSimulator.step resetInput initial) inputs =
       baseComponent.rawModel.trace baseComponent.initial inputs := by
   rw [rtlRawSimulator_eq]

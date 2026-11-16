@@ -2,6 +2,7 @@ import Lean
 import Pinwheel.Hardware.Stream.Timing
 import Pinwheel.Hardware.Stream.Bundle
 import Pinwheel.Hardware.Stream.ForkJoin
+import Pinwheel.Hardware.Stream.Diamond
 
 open Lean Elab Command
 

@@ -56,6 +56,8 @@ part of the record.
 A [reusable Lean stream-hardware library](docs/engine/lean-stream-hardware.md)
 adds parameterized FIFOs and elastic pipelines, compositional transaction and
 timing proofs, and checks of freshly emitted flat and hierarchical RTL.
+[Typed bundles and fork/join graphs](docs/engine/lean-stream-graphs.md) extend it
+with named payload fields and proved result pairing across unequal branch depths.
 
 Pinwheel has executable protocol models, emitted circuits, and independent
 simulation checks. For the paired SRAM design, Lean proofs now connect a

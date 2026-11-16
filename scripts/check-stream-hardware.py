@@ -229,7 +229,7 @@ def negative_controls(run, config):
 
 
 def provenance():
-    sources = list((ROOT / "Pinwheel/Hardware").rglob("*.lean")) + [
+    sources = list((ROOT / "Pinwheel").rglob("*.lean")) + [
         ROOT / name for name in ("lakefile.toml", "lean-toolchain", "test/StreamExample.lean",
         "test/StreamAudit.lean", "test/StreamLaws.lean", "test/test_generic_stream.py",
         "scripts/check-stream-hardware.py", "scripts/generic_stream_readback.py",
@@ -257,7 +257,7 @@ def main():
               "boundary": "Two-state synchronous RTL; trusted Yosys frontend/JSON interpretation. No physical qualification."}
     try:
         report["provenance"] = provenance()
-        run.command(["lake", "build", "stream_example"], root / "build.log", timeout=300)
+        run.command(["lake", "build", "stream_example", "Pinwheel.Hardware.Stream.Diamond"], root / "build.log", timeout=300)
         run.command(["lake", "env", "lean", "-DwarningAsError=true", "test/StreamAudit.lean"], root / "audit.log")
         run.command(["lake", "env", "lean", "test/StreamLaws.lean"], root / "laws.log")
         run.command(["python3", "-B", "-m", "unittest", "discover", "-s", "test", "-p", "test_generic_stream.py", "-v"],

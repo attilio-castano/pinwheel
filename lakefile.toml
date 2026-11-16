@@ -55,3 +55,7 @@ root = "test.TiledChipEmit"
 [[lean_exe]]
 name = "stream_example"
 root = "test.StreamExample"
+
+[[lean_exe]]
+name = "stream_graph"
+root = "test.StreamGraphExample"
