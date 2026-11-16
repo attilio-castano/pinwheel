@@ -158,6 +158,8 @@ composition, RTL and physical qualification remain separate work.
 The [research status](docs/research/status.md) tracks the current question and
 next decision. Detailed measurements and historical milestones live in the
 [results](docs/research/results.md) and [journal](docs/research/journal.md).
+The [8×4 fabrication blockers](docs/research/status.md#fabrication-blockers)
+list the open gates, who must act, and what evidence closes each gate.
 
 ## Find your way around
 

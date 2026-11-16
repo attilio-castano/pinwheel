@@ -1,11 +1,28 @@
 # Research status
 
-Updated 2026-11-15 for the Jane Street release rehearsal on the frozen
-8×4 hold/capacitance candidate. Qualified timing, electrical power and
-shuttle acceptance remain open.
-This page owns the **active decision and next evidence gates**. Read
-[results](results.md) for conclusions, [journal](journal.md) for receipts and
-linked studies for measurements and reproduction.
+Updated 2026-11-16. This page owns the **active decision and next evidence
+gates**. Read [results](results.md) for conclusions, [journal](journal.md) for
+receipts and linked studies for measurements and reproduction.
+
+## Fabrication blockers
+
+**Fabrication NO-GO. Local rehearsal GO.** This decision applies to the frozen
+Pinwheel 8×4 GDS with SHA-256
+`d4cd48f0919ac47ec4b2ceb061bc5dc6a217ce730b02b819a6b7e09d9e73c832`.
+All three gates are open. The [acceptance memo](streaming-8x4-ttihp27a-acceptance-20261115.md)
+has the detailed requests and supporting evidence.
+
+| Open gate | Who must act | Evidence that closes it |
+| --- | --- | --- |
+| TTIHP27a acceptance | Tiny Tapeout and Pinwheel | A run-specific acceptance record ties the submitted revision and exact custom GDS to a contiguous 8×4 placement. The hosted `tt_submission` has the same GDS digest and a passing precheck. |
+| Qualified timing | IHP or an accepted extraction provider, Tiny Tapeout, and Pinwheel | Accepted five-layer extraction rules or corner SPEFs for the exact filled GDS, with RC-to-Liberty corner pairings. The actual mux clock and I/O budget includes earliest arrivals and slew at `ui_in[3]` and `ui_in[5]`. Setup, hold and electrical checks pass using those inputs. [Timing intake](streaming-8x4-hold-cap-timing-intake-20261114.md) |
+| Qualified power | Tiny Tapeout, IHP, and Pinwheel | Tiny Tapeout confirms TopVia1 attachment to the frozen Metal4 rails and supplies the assigned parent contacts, voltage range, and shared supply and return impedance. Static and transient rail loss and wire, via and contact currents pass against the accepted electrical and reliability limits under the declared workloads and operating range. [Parent power evidence](streaming-8x4-hold-cap-parent-attachment-20261115.md) |
+
+A [fresh stock source-to-GDS run](streaming-8x4-tt-clean-harden-20261115.md)
+becomes an acceptance requirement if Tiny Tapeout requires fresh hardening
+for this candidate. The Jane Street entry and organizer selection have their
+own receipts for the competition-funded route. Record each fabrication
+gate's closeout here with the supporting receipt and its GDS binding.
 
 ## Current 8×4 decision
 
@@ -20,9 +37,8 @@ source were rejected.
 Main-deck DRC, transistor LVS, supplemental enclosure, foundry antenna,
 complete-state Boolean correspondence, public-pin replay, all nine pinned
 Tiny Tapeout prechecks and four fresh bring-up fixtures pass on this exact
-candidate. The nine draft timing scenarios also pass their provisional
-setup, hold and electrical checks. The package records local rehearsal GO
-and fabrication NO-GO.
+candidate. The nine draft timing scenarios also pass setup, hold and
+electrical checks under the retained provisional constraints.
 
 The November 9 competition rules confirm 8×4. The release rehearsal
 stages the exact frozen views against the current TTIHP27a custom-GDS
@@ -142,9 +158,7 @@ exceeds the reference near its seam. Physical sharing, the full rail
 and parent boundary, and transient contact current remain open.
 [Geometry-resolved ground-row replacement](streaming-8x4-hold-cap-ground-row-replacement-20261114.md)
 
-Fabrication requires qualified CMOS5L extraction and timing with the host
-I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS
-acceptance. Native toolchain and full-PDK re-execution, complete historical
+Native toolchain and full-PDK re-execution, complete historical
 proof custody, independent backup custody and clean source-to-GDS
 reproducibility have separate recorded scopes.
 
