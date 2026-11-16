@@ -175,9 +175,14 @@ class ParasiticsPreflightTests(unittest.TestCase):
                 return {"rc_corner": rc, "sta_corner": name, "mode": "functional", "sdc": sdc,
                         "liberties": [liberty], "spef": spef, "annotation": report, "run": run}
 
-            with patch.object(preflight, "TARGET", hashes):
+            with patch.object(preflight, "TARGET", hashes), patch.object(preflight, "HOLD_CAP_TARGET", hashes):
                 request["scenarios"]["slow"] = scenario("slow", "rmax", SPEF)
-                self.assertFalse(preflight.preflight(root, request)["qualified_timing"])
+                baseline = preflight.preflight(root, request)
+                hold_cap = preflight.preflight(root, request, target_name="hold-cap-trial")
+                self.assertEqual(hold_cap, baseline)
+                self.assertFalse(hold_cap["qualified_timing"])
+                with self.assertRaisesRegex(ValueError, "another frozen target"):
+                    preflight.preflight(root, request, target_name="eco")
                 request["scenarios"]["fast"] = scenario("fast", "rmin", SPEF.replace("original", "different date"))
                 with self.assertRaisesRegex(ValueError, "Identical SPEF graphs"):
                     preflight.preflight(root, request)
@@ -190,6 +195,39 @@ class ParasiticsPreflightTests(unittest.TestCase):
                 target["gds"] = save("stale.gds", "older gds")
                 with self.assertRaisesRegex(ValueError, "another frozen target"):
                     preflight.preflight(root, request)
+                with self.assertRaisesRegex(ValueError, "another frozen target"):
+                    preflight.preflight(root, request, target_name="hold-cap-trial")
+
+    def test_provider_intake_checks_draft_graph_and_requires_authority_bindings(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def save(name, content):
+                payload = content.encode()
+                (root / name).write_bytes(payload)
+                return {"path": name, "sha256": hashlib.sha256(payload).hexdigest()}
+
+            target = {role: save(role, role) for role in ("odb", "gds", "netlist")}
+            target["inventory"] = save("inventory.json", json.dumps(self.inventory))
+            authority = {role: save(role, "TEST ONLY") for role in preflight.AUTHORITY_ROLES}
+            row = dict(rc_corner="rmax", sta_corner="slow", mode="functional", sdc=save("timing.sdc", "create_clock"),
+                       spef=save("rmax.spef", SPEF), liberties=[save("slow.lib", "liberty")])
+            request = dict(schema=preflight.INTAKE_REQUEST, target=target, authority=authority, scenarios={"slow": row})
+            hashes = {role: item["sha256"] for role, item in target.items()}
+            with patch.object(preflight, "HOLD_CAP_TARGET", hashes):
+                result = preflight.preflight(root, request, target_name="hold-cap-trial")
+                self.assertTrue(result["software_preflight_passed"])
+                self.assertEqual(result["schema"], preflight.INTAKE_RESULT)
+                self.assertFalse(result["extraction_model_qualified"])
+                self.assertFalse(result["annotation_checked"])
+                self.assertFalse(result["authority_reviewed"])
+                self.assertEqual(result["scenarios"]["slow"]["spef"]["consumed_nets"], 2)
+                row["spef"] = save("broken.spef", SPEF.replace("2 *1:8 *3:A 1\n", ""))
+                with self.assertRaisesRegex(ValueError, "Disconnected SPEF resistance graph"):
+                    preflight.preflight(root, request, target_name="hold-cap-trial")
+                authority.pop("host_timing_contract")
+                with self.assertRaisesRegex(ValueError, "Invalid provider authority fields"):
+                    preflight.preflight(root, request, target_name="hold-cap-trial")
 
 
 if __name__ == "__main__":

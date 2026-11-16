@@ -1,8 +1,17 @@
 # Competition brief
 
-Announcement rechecked: **2026-09-19**; template inventory checked 2026-09-18 (first read 2026-09-12). This is a curated summary, not an archived copy. Linked pages and branches can change; recheck them before implementation and submission.
+Announcement rechecked **2026-11-14**. The November 9 organizer update
+confirms 8×4 for the March 2027 CMOS5L shuttle. The current Verilog template
+targets CMOS5L from `main`. The September inventory below records the earlier
+6×4 phase. [Official announcement and FAQ](https://blog.janestreet.com/protocol-emulator-asic-competition/) ·
+[Pinwheel entry draft](jane-street-8x4-entry.md)
 
-**Changed since the first read:** the announcement first asked for `8x4` tiles (32 tiles, about 1 mm²). It now sets the maximum at `6x4`; see [the outline](#the-outline-and-the-pinned-files) below.
+Jane Street asks for a public repository with RTL, tests, a passing Tiny
+Tapeout GDS and precheck, architecture and instruction documentation,
+toolchain and example programs, and a verification write-up. The FAQ
+allows the Tiny Tapeout custom-GDS action for designs that exceed hosted
+hardening time and recommends gate-level simulation. The public
+submission deadline is January 18, 2027. [Submission and judging](https://blog.janestreet.com/protocol-emulator-asic-competition/#submission-and-judging)
 
 ## Official challenge and rules
 
@@ -13,8 +22,8 @@ Build an open-source protocol-emulator ASIC with programmable pin control and pr
 | Item | Announced position |
 | --- | --- |
 | Process | IHP 130 nm CMOS5L through Tiny Tapeout |
-| Starting point | Linked CMOS5L Verilog template; set `info.yaml` tile size to `6x4` |
-| Area | Current maximum: 6×4 = 24 tiles, about 0.7 mm² of nominal tile area (about 200 × 150 µm per tile); the organizers suggest budgeting about 1,000 logic cells per tile. They are working on the possibility of 8×4 (about 30% more area) and will update the page and email sign-ups if it becomes available |
+| Starting point | CMOS5L Verilog template on `main` with `info.yaml` tile size `8x4` |
+| Area | Maximum 8×4 = 32 tiles, confirmed for the March 2027 shuttle |
 | Licensing | Submission must be open source |
 | Deadline | January 18, 2027 |
 | Prize | Selected designs receive funded fabrication, chips, and development boards |
@@ -41,13 +50,13 @@ The following resources are linked directly from the announcement.
 
 | Resource | Why keep it here |
 | --- | --- |
-| [CMOS5L Verilog template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/cmos5l) | Starting repository for the RTL-to-GDS flow. Its README describes `src/`, `test/`, `docs/info.md`, and LibreLane automation. Preserve the explicit `cmos5l` branch when following this link. |
+| [CMOS5L Verilog template](https://github.com/TinyTapeout/ttihp-verilog-template/tree/main) | Starting repository for the RTL-to-GDS flow. Its README describes `src/`, `test/`, `docs/info.md`, and LibreLane automation. |
 | [Tiny Tapeout](https://www.tinytapeout.com/) | Official entry point for HDL guides, testing, technical specifications, and fabrication documentation. |
 | [SRAM example: 1024×8 test](https://www.tinytapeout.com/chips/ttihp0p2/tt_um_urish_sram_test) | Foundry SRAM macro example with controller description, pin mapping, test instructions, and a linked implementation repository. |
 | [Hardcaml](https://hardcaml.org/) | OCaml hardware design and testing library linked by the organizers. Pinwheel's [UART experiment plan](history/uart-experiment.md) explores Lean specifications and a proposed Lean-to-CIRCT hardware generation path. |
 | [Competition update form](https://docs.google.com/forms/d/e/1FAIpQLSeF7fq756MegxZRQxotBwUJYZx-cL9MrGjxV0z4uD_J0sADxQ/viewform) | Receives deadline, template, and submission-form updates. Signing up neither commits participation nor enters the competition. |
 
-Useful next reading within the template: [project configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/info.yaml) and [testbench instructions](https://github.com/TinyTapeout/ttihp-verilog-template/blob/cmos5l/test/README.md).
+The template provides [project configuration](https://github.com/TinyTapeout/ttihp-verilog-template/blob/main/info.yaml) and [testbench instructions](https://github.com/TinyTapeout/ttihp-verilog-template/blob/main/test/README.md).
 
 ## The outline and the pinned files
 
@@ -55,9 +64,8 @@ Checked 2026-09-18 against support commit
 `da63c9927411e3aca350977d653d24bbf5bca972`, the one recorded in
 `tools/physical-toolchain.json`.
 
-- The CMOS5L tile table has a `6x4` entry: **1,289.28 × 710.64 µm**. This is the
-  rectangle every Pinwheel routed run has used, so those runs were made on the
-  official die area, not on a stand-in for a larger one.
+- The September CMOS5L tile table listed the official `6x4` rectangle of
+  **1,289.28 × 710.64 µm** used by the early Pinwheel routing studies.
 - The official floorplan template is in the same commit:
   `tech/ihp-sg13cmos5l/def/tt_block_6x4_pgvdd.def` (SHA-256
   `b46d9a0ee8352160e48dbc8312f092f985629061df736c7f46d58686535a76f4`). It fixes 186 placement rows of 2,674 sites (a core of
@@ -67,9 +75,9 @@ Checked 2026-09-18 against support commit
   did not apply this template: their 200-odd stand-in ports were placed by the
   tool around the edge. This describes the historical core runs; the later
   [whole-chip SRAM experiment](chip-physical-study.md) now applies the template.
-- `8x4` is absent from the tile table and the DEF inventory, which matches the
-  announcement: it is a possibility, not an allocation. The template's
-  `info.yaml` comment listing valid sizes stops at `8x2` and is stale.
+- The September tile table and DEF inventory omitted `8x4`. The current
+  [8×4 allocation receipt](../physical/streaming_8x4/allocation.json) identifies
+  the template used for the frozen candidate.
 
 Consequences for Pinwheel are recorded in
 [status](research/status.md#the-official-outline-2026-09-18).

@@ -1,0 +1,49 @@
+name: Pinwheel Tiny Tapeout CMOS5L release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gds:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out the reviewed release
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: false
+
+      - name: Verify the frozen release views and RTL
+        run: |
+          sha256sum --check <<'SHA256'
+          d4cd48f0919ac47ec4b2ceb061bc5dc6a217ce730b02b819a6b7e09d9e73c832  release/tt_um_pinwheel_streaming_ready_d2.gds
+          04a956a96fff1b7008d9c2f324866fbb8147e385f57244c81c3ab16474583efd  release/tt_um_pinwheel_streaming_ready_d2.lef
+          6b50411924e8bcd369137c0187b25d08e2b0f1f1c5baafbce700a657d893d90e  release/tt_um_pinwheel_streaming_ready_d2.v
+          c3ae379437eac2d1ae60c23ec244099aae070037ad1b884cbe40243f7b558db6  src/core.sv
+          5d7f6261335f647b94b0ad21ff1a3f292f5d83a5bd27a1937e6ca203708f9e6c  src/frontend.sv
+          369f4594953ddf44e073587556121c31efcdcb743d48f5612a9982f54753fc12  src/package.sv
+          a6d52749a2e6797d21a9704834be14436127f637bc220989b834593c29a0e21e  src/tt.sv
+          41ec64927b9f38f37b5f64bc2a8d979610d78bc917ea651c47b5aa1be6dd2207  info.yaml
+          d5b40163e298e017b613d6b746dc1a8bda7d00ddbb32cca2c0157b8a701df5f8  docs/info.md
+          SHA256
+
+      - name: Stage the exact CMOS5L GDS with Tiny Tapeout
+        uses: TinyTapeout/tt-gds-action/custom_gds@e7a50f8f46f9f8df4b2c9935bfeb1cbc6b6ae4f6
+        with:
+          pdk: ihp-sg13cmos5l
+          top_module: tt_um_pinwheel_streaming_ready_d2
+          gds_path: release/tt_um_pinwheel_streaming_ready_d2.gds
+          lef_path: release/tt_um_pinwheel_streaming_ready_d2.lef
+          verilog_path: release/tt_um_pinwheel_streaming_ready_d2.v
+          tools-ref: 9d13ff3e3e6202090740110438c6a10c1d62ca0f
+
+  precheck:
+    needs: gds
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run Tiny Tapeout precheck on the hosted artifact
+        uses: TinyTapeout/tt-gds-action/precheck@e7a50f8f46f9f8df4b2c9935bfeb1cbc6b6ae4f6
+        with:
+          tools-ref: 9d13ff3e3e6202090740110438c6a10c1d62ca0f

@@ -1,8 +1,8 @@
 # Research status
 
-Updated 2026-11-07 after building and independently verifying the new 8×4
-hold/capacitance candidate's local Tiny Tapeout rehearsal bundle. Qualified
-timing, electrical power and shuttle acceptance remain open.
+Updated 2026-11-15 for the Jane Street release rehearsal on the frozen
+8×4 hold/capacitance candidate. Qualified timing, electrical power and
+shuttle acceptance remain open.
 This page owns the **active decision and next evidence gates**. Read
 [results](results.md) for conclusions, [journal](journal.md) for receipts and
 linked studies for measurements and reproduction.
@@ -23,6 +23,113 @@ Tiny Tapeout prechecks and four fresh bring-up fixtures pass on this exact
 candidate. The nine draft timing scenarios also pass their provisional
 setup, hold and electrical checks. The package records local rehearsal GO
 and fabrication NO-GO.
+
+The November 9 competition rules confirm 8×4. The release rehearsal
+stages the exact frozen views against the current TTIHP27a custom-GDS
+contract. A clean source export regenerated all four RTL files byte
+for byte and matched the placed-cell UART, SPI and I²C fixtures. All ten
+current checks pass locally, with the same 332-category main DRC and
+zero markers. The exact release overlay verified from a clean archive.
+The hosted `tt_submission`, hosted precheck and organizer filing remain
+pending.
+[Release rehearsal](streaming-8x4-jane-street-release-20261114.md) ·
+[Competition entry draft](../jane-street-8x4-entry.md)
+
+The exact release Verilog passed 35 public-pin cases with the pinned IHP
+CMOS5L simulation models. All 513,297 recorded edges matched the prior
+placed-cell replay, including the expected one-pin sampler failure.
+The release model also matched clean RTL across 22,323 edges of successive
+UART, I²C, SPI and JTAG uploads in one instance with a single cold reset.
+[Exact release behavior](streaming-8x4-jane-street-behavior-20261115.md)
+
+A clean build with the stock Tiny Tapeout template has compiled the four
+byte-matched release sources. The resulting synthesis netlist passes the
+four public-pin fixtures and the same successive-upload test. All 509,678
+edges of the retained positive corpus match the exact release traces. The
+stock global router finished with 34,932 overflow units, 34,678 on Metal3. The
+stock detailed router still had 41,042 markers after five complete passes.
+The matched 19% and 8% reserve trials reduced global overflow to 14,492
+and 2,622, respectively. The 8% continuation had more detailed-route
+markers in all four matched passes, ending at 73,632 versus 49,229 in
+stock. Both workers stopped with checked inputs and cleanup. A bounded
+stock replay reproduced its first two counts and captured 20,010 named
+markers. Routed geometry confirmed signal crossings at supply vias and
+between signal wires in selected windows. The denser placement trial
+raised global overflow to 42,202 at the same 30% reserve. The stock
+source-to-GDS path remains open at detailed routing.
+[Clean hardening](streaming-8x4-tt-clean-harden-20261115.md)
+
+Fresh geometric power connectivity passed on both rails with 98,904 instance
+terminals and one boundary terminal each. The timing audit reconciled all
+search endpoints and verified constrained min and max paths at all 6,051
+active data and output endpoints and both pulse widths at every FF clock pin
+in each draft case. [Power connectivity](streaming-8x4-hold-cap-pg-20261111.md) ·
+[Timing coverage](streaming-8x4-hold-cap-timing-coverage-20261111.md)
+
+The runner now accepts real-geometry parasitic intake for this exact
+candidate. It dry-ran on all nine draft cases. The current Ciel PDK uses
+the same seven-layer extraction rules as the earlier nominal diagnostic.
+`ui_in[3]` and `ui_in[5]` have +38.855 and +45.780 ps of draft public-input
+hold margin, respectively. A native 40 ps earlier-arrival check puts
+`ui_in[3]` at −1.145 ps while `ui_in[5]` retains +5.780 ps.
+Fresh extraction using the released five-layer ITF sheet and cut resistance
+improved the MIN and TYP cases. The MAX control exactly reproduced the worst
+five-layer result, with +31.572 ps global hold and +1.554538 ns setup.
+All eight fresh diagnostics had zero capacitance, slew or fanout violations.
+[Timing intake and margins](streaming-8x4-hold-cap-timing-intake-20261114.md)
+
+The verified I²C waveform covered all 124,219 signal pins. Its static rail
+loss ranges from 1.004 mV with distributed ideal contacts to 42.117 mV with
+four contacts per rail, 1 Ω per source and 105 °C sheet resistance. All
+screened edges were below the applicable modeled limits.
+[Local IR-drop and EM screen](streaming-8x4-hold-cap-ir-em-20261112.md)
+
+Exact-candidate UART, SPI, I²C write and reset/replacement traces now
+join the I²C read comparator. The parent power intake resolves supplied
+Metal4 contact rectangles to exact frozen-grid nodes and can preserve
+distinct VPWR and VGND source resistances. Six native cases passed
+readback. Under the illustrative sparse heated-grid conditions, UART
+gave the largest modeled rail loss at 42.394 mV and the highest
+covered EM utilization at 85.72%.
+[Workload activity and power intake](streaming-8x4-hold-cap-workload-power-20261114.md)
+
+Published TT0004 IHP assemblies confirm how the Metal4 rails meet the
+parent through TopVia1. Projecting that geometry resolves contacts on all
+35 frozen stripes per rail. The calibrated static solve gives 1.255 mV
+of combined rail loss with projected contacts and 42.117 mV with four
+assumed feeds per rail, using the same heated I²C load. Rounded-load
+comparisons for UART, SPI and reset/upload keep the four workloads between
+1.253625 and 1.254936 mV under the projected contact model. Adding an
+illustrative 0.50 Ω shared supply-and-return path raises the heated I²C
+result to 10.908 mV. The assigned TTIHP27a geometry, shared supply impedance
+and transient analysis remain open.
+[Historical parent attachment and rail loss](streaming-8x4-hold-cap-parent-attachment-20261115.md)
+
+Every one of the 95,033 sub-range Metal1 solver edges has a drawn path at
+least 0.160 µm wide through its same-rail row. All 8,505 modeled via edges
+join to physical arrays. Forty-eight arrays need a cut-sharing assessment
+in the sparse-source cases. Signed terminal and source currents reproduce
+from the full solver matrix. Physical current density at via cuts and
+terminal contacts, and the actual parent supply and operating envelope,
+remain open.
+[Metal1, via and terminal current audit](streaming-8x4-hold-cap-metal1-via-terminal-20261114.md)
+
+The local sharing model keeps all 48 arrays below the per-cut reference
+with uniform cut resistance and varied feed placement. A deliberate
+mixed-resistance sensitivity exceeds the reference at the two largest
+array transfers. The two decap contact meshes stay below the individual
+contact reference across the tested static scenarios. The earlier
+coupled local diagnostic found 597 µA in a 0.440 µm ground Metal1 row
+while retaining the lumped local paths.
+[Via and decap sharing study](streaming-8x4-hold-cap-cut-sharing-20261114.md)
+
+Replacing those local paths puts the original ground-row section at
+152 µA in the largest 50.4 µm window, against the 440 µA reference.
+The original section stays below the reference across all 56 local
+cases. One mixed-resistance sensitivity in the 11.12 µm window
+exceeds the reference near its seam. Physical sharing, the full rail
+and parent boundary, and transient contact current remain open.
+[Geometry-resolved ground-row replacement](streaming-8x4-hold-cap-ground-row-replacement-20261114.md)
 
 Fabrication requires qualified CMOS5L extraction and timing with the host
 I/O budget, electrical power qualification, and 8×4 shuttle/custom-GDS

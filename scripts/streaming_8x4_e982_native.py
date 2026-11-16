@@ -107,7 +107,8 @@ def check_active_layout(context):
             "Selected ODB or GDS changed")
 
 
-def run_native(context, out, entrypoint, argv, mounts, timeout, deadline, *, memory="6g", environment=()):
+def run_native(context, out, entrypoint, argv, mounts, timeout, deadline, *, memory="6g", environment=(),
+               resource_lease=None, admission=None):
     from streaming_8x4_signoff_execute import owned_native
 
     check_active_layout(context)
@@ -129,9 +130,12 @@ def run_native(context, out, entrypoint, argv, mounts, timeout, deadline, *, mem
                         ("" if writable else ",readonly")])
     command.extend(["--workdir", "/work/export", "--entrypoint", entrypoint, IMAGE, *argv])
     lock_dir = context["history"] / "build/streaming-tt-resources"
-    with (lock_dir / "heavy.lock").open("rb") as lease:
+    require((resource_lease is None) == (admission is None), "A dedicated lease requires a native admission check")
+    with (resource_lease or lock_dir / "heavy.lock").open("rb") as lease:
         fcntl.flock(lease, fcntl.LOCK_EX | fcntl.LOCK_NB)
         require(not (lock_dir / "cleanup-unconfirmed.json").exists(), "Prior native cleanup is unconfirmed")
+        if admission is not None:
+            admission(lock_dir / "heavy.lock")
         receipt = owned_native(command, out, owner, min(timeout, remaining))
     require(receipt.get("status") == "completed" and receipt.get("exit_code") == 0 and
             receipt.get("container_termination", {}).get("status") == "absent",
