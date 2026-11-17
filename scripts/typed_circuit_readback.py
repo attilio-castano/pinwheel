@@ -12,6 +12,11 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+_ABSTRACTION_SPEC = importlib.util.spec_from_file_location(
+    "_typed_boolean_abstraction", ROOT / "scripts/readback_boolean_abstraction.py")
+abstraction = importlib.util.module_from_spec(_ABSTRACTION_SPEC)
+sys.modules[_ABSTRACTION_SPEC.name] = abstraction
+_ABSTRACTION_SPEC.loader.exec_module(abstraction)
 IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 HEADER = """import Design
 open Pinwheel.Hardware
@@ -72,10 +77,13 @@ def importer(descriptor):
     return rb
 
 
-def local_proofs(rb, pairs):
+def local_proofs(rb, pairs, *, start=0, plans=None):
     lines = ["import Lean.Elab.Command\nimport Pinwheel.Hardware.Readback.Boolean\n" + HEADER,
              "set_option linter.unusedSimpArgs false"]
-    for k, pair in enumerate(pairs):
+    for k, pair in enumerate(pairs, start=start):
+        if plans and k in plans:
+            lines.append(abstraction.lean_lemmas(pair, plans[k], f"local_{k}", rb.render_tree))
+            continue
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
         lines.append(f"theorem local_{k} {variables} :\n"
                      f"    {rb.render_tree(pair['left'])} = {rb.render_tree(pair['right'])} := by\n"
@@ -84,10 +92,10 @@ def local_proofs(rb, pairs):
                      "  | rfl\n"
                      "  |\n"
                      "    all_goals bv_normalize\n"
-                     "    all_goals first | omega | grind\n"
+                     "    all_goals first | omega | grind (splits := 32)\n"
                      "    done\n"
                      "  | (simp [Pinwheel.Hardware.Readback.eq_bits, Fin.forall_fin_succ,\n"
-                     "      BitVec.getElem_append, BitVec.getElem_extractLsb']; all_goals grind)\n")
+                     "      BitVec.getElem_append, BitVec.getElem_extractLsb']; all_goals grind (splits := 32))\n")
         if sum(w for w, _, _ in pair["variables"]) <= 8:
             names = " ".join(f"x{j}" for j in range(len(pair["variables"])))
             # Kernel reduction closes small comparison/Boolean identities whose
@@ -99,7 +107,8 @@ def local_proofs(rb, pairs):
     return "\n".join(lines)
 
 
-def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str):
+def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str,
+             interface_checks: str = ""):
     """Profile defines Input/Register/Output, circuit, inputs/registers/outputs.
 
     Each descriptor must have the corresponding Interface type. Source-hint
@@ -109,7 +118,8 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     """
     rb = importer(descriptor)
     source, actual = rb.read_hints(hints), rb.read_rtl(rtl)
-    pairs = rb.partitions(source, actual, successor="v-1", oracle=rb.cut_oracle(solver))
+    oracle = rb.cut_oracle(solver)
+    pairs = rb.partitions(source, actual, successor="v-1", oracle=oracle)
     matches = {(p["source"], p["rtl"]) for p in pairs}
     for left, right in [(source.next[name], actual.next[name]) for name in rb.REGISTERS] + [
             (source.outputs[name], actual.outputs[name]) for name in rb.OUTPUTS]:
@@ -132,6 +142,15 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
             pairs.append({"source": left, "rtl": right, "variables": list(variables),
                           "definitions": sorted(definitions), "dependencies": [], "left": lhs, "right": rhs})
             matches.add((left, right))
+    # Wide tag comparisons can hide a tiny Boolean identity from tactic search.
+    # Generalize shared predicates, prove the stronger finite lemma by kernel
+    # reduction, and instantiate the exact original statement. The solver only
+    # filters suggestions; it never supplies evidence accepted by the kernel.
+    plans = {}
+    for k, pair in enumerate(pairs):
+        plan = abstraction.suggest(pair, max_bits=13)
+        if plan is not None and oracle(plan.pair):
+            plans[k] = plan
     # Imports belong before the namespace; profiles put all imports first.
     lines = profile.splitlines()
     imports = [line for line in lines if line.startswith("import ")]
@@ -151,7 +170,7 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
                 label = f'"r_" ++ ({label})'
                 expected = port.get("reference", "r_" + expected)
             design += f'example : {label} = "{expected}" := by decide +kernel\n'
-    (directory / "Design.lean").write_text(design + "end Pinwheel.TypedArtifact\n")
+    (directory / "Design.lean").write_text(design + interface_checks + "\nend Pinwheel.TypedArtifact\n")
 
     def write(name, text):
         text = text.replace("Values Machine.Input", "Values Input")
@@ -160,7 +179,18 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
 
     write("Graphs", HEADER + source.definitions("Source") + actual.definitions("RTL") +
           "end Pinwheel.TypedArtifact\n")
-    write("LocalProofs", local_proofs(rb, pairs))
+    # Each lemma is independent of the other local lemmas. Bound compilation
+    # units so large configurations retain per-unit timeout/progress evidence,
+    # without changing either the propositions or the kernel-checked proof path.
+    local_modules = []
+    if len(pairs) > 50:
+        for start in range(0, len(pairs), 50):
+            name = f"LocalProofs{start // 50:03d}"
+            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans))
+            local_modules.append(name)
+        write("LocalProofs", "\n".join(f"import {name}" for name in local_modules) + "\n")
+    else:
+        write("LocalProofs", local_proofs(rb, pairs, plans=plans))
     write("Links", rb.links_source(source, actual, pairs, "LocalProofs", "Graphs"))
 
     def value(graph, name, namespace):
@@ -237,6 +267,9 @@ elab "#audit_typed_artifact" : command => do
   logInfo m!"Typed artifact audit: {count} declarations, standard axioms only."
 #audit_typed_artifact
 """)
-    return ["Design", "Graphs", "LocalProofs", "Links", "Proof", "Audit"], {
+    return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", "Proof", "Audit"], {
         "local_equalities": len(pairs), "endpoints": endpoint_count,
+        "local_proof_units": len(local_modules) or 1,
+        "boolean_generalizations": len(plans),
+        "max_generalized_bits": max((plan.bits for plan in plans.values()), default=0),
         "source_nodes": len(source.nodes), "rtl_nodes": len(actual.nodes)}

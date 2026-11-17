@@ -50,6 +50,9 @@ lake build Pinwheel.Hardware.Library
 lake env lean -DwarningAsError=true --run test/MemoryCommandFlops.lean
 lake env lean -DwarningAsError=true test/MemoryCommandContracts.lean
 python3 scripts/check-memory-command.py --tag command-flops-local
+python3 scripts/check-memory-command-artifact.py --tag command-artifact-local
+python3 scripts/check-memory-command-artifact-negatives.py --tag command-negatives-local \
+  --positive-report build/memory-command-artifact/command-artifact-local/report.json
 ```
 
 The retained `build/memory-command/command-flops-01/report.json` passed four
@@ -66,15 +69,31 @@ checked throughout that prefix from explicitly chosen arbitrary words and Q.
 The separate Lean oracle test covers 4,100 exhaustive state/input combinations,
 9 directed edges and a 240-edge trace; the declaration audit checks 427 memory
 declarations for standard axioms only. Semantic zero widths are tested in Lean;
-the HDL emitter requires positive address and data widths. Complete imported
-RTL correspondence is a separate pending gate.
+the HDL emitter requires positive address and data widths.
+
+Complete imported-RTL correspondence passed for the same four configurations
+in `build/memory-command-artifact/command-proof-02/report.json`. The generated
+`memory_trace` theorem relates every raw-input trace from arbitrary initial
+words/Q to the command specification; `command_step` supplies the original
+single-port command transition. Every register and output is included, and
+the generated declarations pass the standard-axiom audit. Yosys and the
+restricted JSON interpretation remain trusted.
+
+`build/memory-command-artifact-negatives/command-negatives-02/report.json`
+binds that positive receipt and rejects an inverted output and an inverted
+word next-state expression at Lean's semantic proof stage. Each rejection is
+paired with a separately kernel-checked concrete mismatch. The earlier
+constant-output experiment was rejected during parsing after dead-state
+removal; it is retained as a failed harness attempt and is not counted as a
+semantic negative control.
 
 ## Streaming adapter and accelerator
 
 Add a request/response adapter with one outstanding read and a held response
 under downstream stalls. Reset cancels pending responses while preserving the
-array. Reuse the stream FIFO and elastic-stage proofs, then move a bounded range
-from one source memory through a proved transform into a separate destination
+array. Reuse the common typed implementation and stream handshake operations,
+with a memory-specific snapshot ledger. Then move a bounded range from one
+source memory through proved stream components into a separate destination
 memory.
 
 The central completion theorem should establish that after `N` completed writes,
@@ -83,6 +102,17 @@ initial source value; all other destination addresses are unchanged. Assumptions
 include initialized source coverage and nonwrapping ranges. Reset may leave a
 written prefix, but must suppress stale responses and further writes from the
 aborted transfer. Eventual completion requires explicit service assumptions.
+
+The executable `Memory.StreamModel` is implemented and tested. It reuses Q as
+the held response and adds one pending bit. Both reads and writes wait behind
+a blocked response; an old response may retire while a new read is accepted.
+The proved ledger records each read's pre-edge memory value and conserves it
+as delivered responses plus at most one pending response. Writes have no
+response. Reset masks both handshakes and preserves the complete memory state,
+including Q, while starting a new response-accounting epoch. Its tests cover
+6,424 exhaustive cases, 11 directed edges and a 240-edge trace. Physical adapter
+refinement is in progress; the fixed-initial-state reset certificate is not
+applied to this state-preserving reset.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Byte enables,

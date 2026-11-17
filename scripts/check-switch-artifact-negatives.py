@@ -160,14 +160,16 @@ def rtl_negative(run, tools, directory, config, descriptor, control):
     try:
         artifact.certify(run, tools, directory, config, descriptor, rtl)
     except RuntimeError as error:
-        if not str(error).startswith("LocalProofs certificate failed:"):
+        failure = re.match(r"(LocalProofs(?:[0-9]+)?) certificate failed:", str(error))
+        if not failure:
             raise
+        stage = failure[1]
         run.records[-1]["expected_failure"] = True
-        errors = semantic_errors(directory / "LocalProofs.log", "LocalProofs")
+        errors = semantic_errors(directory / f"{stage}.log", stage)
     else:
         raise AssertionError(f"Corrupted RTL received a certificate: {control}")
     check_witness(run, directory, rtl_witness(directory, descriptor, kind, endpoint, reset_high))
-    return {"control": control, "stage": "LocalProofs", "rejection": errors,
+    return {"control": control, "stage": stage, "rejection": errors,
             "endpoint_kind": kind, "endpoint": endpoint,
             "witness": {"reset_high": reset_high, "other_inputs": 0, "all_registers": 0},
             "kernel_checked_counterexample": True}

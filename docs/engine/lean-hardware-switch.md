@@ -65,6 +65,10 @@ python3 scripts/check-switch-circuit.py --tag switch-circuit-local
 python3 scripts/check-round-robin-circuit.py --tag selector-local
 python3 scripts/check-round-robin-baseline.py --tag selector-baseline-local
 python3 scripts/check-round-robin-masked.py --tag selector-masked-local
+python3 scripts/check-switch-baseline.py --tag switch-baseline-local
+python3 scripts/check-switch-hierarchy.py --tag switch-hierarchy-local
+python3 scripts/check-switch-artifact.py --tag switch-artifact-local
+python3 scripts/check-switch-hierarchy-artifact.py --tag switch-hierarchy-artifact-local
 ```
 
 Tags create new directories and must not be reused. Reports record commands,
@@ -134,11 +138,53 @@ It supports arbitrary typed value/fallback expressions as well as one-hot
 grants. The fresh matched comparison records 0/5/18/34/58 generic cells for
 sizes 1/2/3/5/8, versus 0/5/18/35/59 in the handwritten baseline. At size 8 this
 reduces the initial implementation's generic cell count by 56.4%. Integration
-into the switch is a separate change followed by fresh RTL validation.
+into the switch is complete (`e244b65`), with the full 2,682-edge RTL campaign
+and all mutation controls rerun successfully. The 5×3 switch decreased from
+1,488 to 1,208 generic cells.
+
+The independent whole-switch baseline uses occupancy-counted FIFOs, binary
+cursors, a two-pass priority scan and a selected one-hot payload mux. It shares
+only dimensions and external role mappings with the Lean implementation. Both
+implementations passed the independent traffic oracle before and after synthesis
+under matching Yosys settings:
+
+| Inputs × outputs / depth / width | Lean cells | Baseline cells | Lean / baseline logic depth |
+| --- | ---: | ---: | ---: |
+| 1×1 / 1 / 1 | 25 | 24 | 6 / 6 |
+| 2×3 / 2 / 8 | 360 | 306 | 13 / 12 |
+| 3×1 / 1 / 8 | 193 | 164 | 10 / 12 |
+| 3×5 / 3 / 17 | 1,394 | 1,350 | 17 / 17 |
+| 5×3 / 2 / 8 | 1,208 | 810 | 18 / 20 |
+
+Evidence is retained in
+`build/switch-baseline/conventional-full-20261116/report.json`. Logic depth is
+the longest generic combinational path with unit cost per cell; it is not a
+timing estimate. The 5×3 case has 49.1% more generic cells with the same 152
+register bits. Sharing winner signals across payload and cursor selection is
+under investigation. The independent baseline has simulation evidence, not a
+Lean refinement theorem.
+
+`Switch.Export` emits reusable FIFO and output-slot leaf modules plus a control
+module. A complete typed state map binds each hierarchical register to the flat
+circuit; the decomposition adds no registers or latency. The retained
+`build/switch-hierarchy/agent-masked-hierarchy-1/report.json` checks every output
+and next register on 2,048 exhaustive 1×1 and 512 sampled 2×3 arbitrary input/state
+cases, including malformed cursors. This comparison is separate from the
+imported-RTL proof campaign. The complete hierarchical artifact matrix passed
+in `build/switch-hierarchy-artifact/masked-boolean-01/report.json`: all 160 typed
+register/output endpoints and reset-initialized traces across the five cases.
+The flat campaign passed through 3×5 and timed out on 5×3 payload proof search;
+that final flat certificate is still in progress.
+
+The proof generator groups independent local equalities into bounded compilation
+units. For small Boolean obligations hidden behind wide comparisons, it proves
+a stronger lemma by `decide +kernel`, then instantiates the exact original
+statement. Solver results only guide proof search. Neither proof step admits
+native decision axioms. All generated declarations are audited.
 
 The packet-switch campaign remains active. Complete artifact certificates over
-a representative parameter matrix, hierarchical RTL,
-matched whole-switch synthesis/timing baselines and a second integration user
+a representative parameter matrix, hierarchical RTL certificates,
+physical timing baselines and a second integration user
 remain campaign gates. Yosys and the restricted JSON adapter remain trusted
 interpretation boundaries; kernel-checked equations do not certify these tools
 or physical behavior.

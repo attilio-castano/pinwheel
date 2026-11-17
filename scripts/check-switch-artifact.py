@@ -5,13 +5,12 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-import os
 from pathlib import Path
 import re
 import time
 
-import process_group
 import typed_circuit_readback as readback
+from typed_artifact_runner import compile_modules
 from validation_run import fresh_directory, sha
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -28,10 +27,16 @@ def sources():
         if path in found:
             continue
         found.add(path)
-        for module in re.findall(r"^import (Pinwheel\.[A-Za-z0-9_.]+)$", path.read_text(), re.M):
-            pending.append(ROOT / (module.replace(".", "/") + ".lean"))
+        for line in path.read_text().splitlines():
+            match = re.match(r"^import\s+(.+)$", line)
+            if match:
+                for module in match[1].split("--", 1)[0].split():
+                    if module == "Pinwheel" or module.startswith(("Pinwheel.", "test.")):
+                        pending.append(ROOT / (module.replace(".", "/") + ".lean"))
     found.update(ROOT / path for path in (
         "scripts/check-switch-artifact.py", "scripts/typed_circuit_readback.py", "scripts/backend_readback.py",
+        "scripts/typed_artifact_runner.py",
+        "scripts/readback_boolean_abstraction.py",
         "scripts/check-round-robin-circuit.py", "scripts/validation_run.py", "scripts/process_group.py",
         "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json",
         "Pinwheel/Hardware/Readback/Boolean.lean"))
@@ -60,8 +65,14 @@ def certify(run, tools, directory, config, descriptor, rtl):
                       "flatten -noscopeinfo\nproc\nopt_clean\ncheck -assert\n"
                       f"write_json {rr.yosys_quote(imported)}\n")
     run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
+    return prove_imported(run, tools, directory, config, descriptor)
+
+
+def prove_imported(run, tools, directory, config, descriptor, *, profile_text=None, interface_checks=""):
+    imported = directory / "import.json"
     modules, evidence = readback.generate(directory, descriptor, directory / "switch.mlir", imported,
-                                         tools["z3"], profile=profile(config, descriptor["destination_width"]))
+                                         tools["z3"], profile=profile_text or profile(config, descriptor["destination_width"]),
+                                         interface_checks=interface_checks)
     n, m, d, w = config
     (directory / "Initialized.lean").write_text(f"""import Proof
 open Pinwheel.Hardware
@@ -78,19 +89,7 @@ end Pinwheel.TypedArtifact
     audit = directory / "Audit.lean"
     audit.write_text(audit.read_text().replace("import Proof", "import Initialized"))
     modules.insert(-1, "Initialized")
-    for module in modules:
-        lean_path = str(directory) + os.pathsep + str(ROOT / ".lake/build/lib/lean")
-        argv = ["env", "LEAN_PATH=" + lean_path, "lake", "env", "lean", "-DwarningAsError=true", "-o", directory / f"{module}.olean",
-                directory / f"{module}.lean"]
-        log = directory / f"{module}.log"
-        started = time.monotonic()
-        record = {"argv": list(map(str, argv)), "label": directory.name + "-" + module, "timeout_seconds": 300}
-        run.records.append(record)
-        result = process_group.run_captured(list(map(str, argv)), cwd=ROOT, timeout=300, log_path=log)
-        record.update(exit_code=result.returncode, seconds=round(time.monotonic() - started, 3))
-        if result.returncode:
-            raise RuntimeError(f"{module} certificate failed: {log}\n{result.stdout[-3000:]}{result.stderr[-1000:]}")
-        print(f"{directory.name}/{module}: checked", flush=True)
+    compile_modules(run, directory, modules)
     return evidence
 
 
