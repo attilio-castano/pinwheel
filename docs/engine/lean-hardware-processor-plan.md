@@ -648,12 +648,33 @@ edges, 34,470 race/history edges and 1,544 positive fault fixtures. Every regist
 and pre/post output is checked. Ten actual expression faults are rejected at each
 divisor 4, 6, 10 and 32. All 693 audited declarations use standard axioms only.
 
-MMIO composition and emitted UART RTL are next steps. Composition
-must offer a newly accepted TX write on the same edge and cancel the held MMIO
-slot with frame completion to prevent repeated transmission. RX arrivals feed
-the MMIO slot independently of software consumption. Synchronous digital samples,
-input synchronization, metastability and oscillator tolerance remain explicit
-environment assumptions.
+`Processor.SerialModel` now composes the MMIO model and sampled UART. Its
+CPU-only TX update supplies the UART offer on the same edge as an accepted
+TXDATA write. Completion clears the held MMIO slot together with the active
+frame. A busy write on that edge faults before completion clears the slot.
+RX arrivals enter the receive slot after software consumption, with explicit
+accepted/dropped events and error-clear priorities.
+
+Universal proofs establish ownership preservation, arbitrary-state reset,
+same-edge acceptance, completion clearing and ordered TX/RX histories. Repeated
+equal bytes retain distinct admission occurrences. The actual CPU/timer/serial
+event history reconstructs the full device state across resets.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SerialModelProofs
+lake env lean -DwarningAsError=true --run test/ProcessorSerialModel.lean
+```
+
+An independent numeric MMIO dispatcher and wire-period/countdown UART oracle
+check 287,688 complete-state, pre/post-output and event edges. The campaign covers
+all 256 bytes at divisor 4, boundaries at divisors 6/10/32, reset cuts, repeated
+equal transmissions, full-duplex races and wrapping timers. Ten actual composition
+faults are rejected after 474 unchanged baseline fixture edges pass. All 189
+audited declarations use standard axioms only.
+
+Structural serial composition and emitted UART RTL remain integration steps.
+Synchronous digital samples, input synchronization, metastability and oscillator
+tolerance remain explicit environment assumptions.
 
 ## Reuse and missing library contracts
 
