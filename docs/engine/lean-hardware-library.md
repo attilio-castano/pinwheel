@@ -191,6 +191,13 @@ Protocol contracts sit above this common implementation layer. A stream
 `Stream.Multiport.Contract` handles per-flow accounting across independently
 handshaken lanes. Neither contract is forced onto all circuits.
 
+Processor-specific checked routing is available by importing
+`Pinwheel.Hardware.Processor.AddressMap`. It validates layouts before routing,
+proves full byte footprints and permissions, and justifies local-address
+narrowing with reconstruction and no-alias theorems. The
+[processor contract](lean-hardware-processor-plan.md) records its environment
+choices and independent validation.
+
 ## A client example
 
 [`IndependentLanes.lean`](../../examples/IndependentLanes.lean) constructs a bank

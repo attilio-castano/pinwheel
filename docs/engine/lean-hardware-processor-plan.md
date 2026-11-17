@@ -154,6 +154,35 @@ stack/ABI conventions; reset registers remain zero. Warm reset preserves RAM;
 reinitialization requires another loading operation. These image assumptions are
 separate from the generic arbitrary-memory theorems.
 
+## Checked address routing
+
+`Processor.AddressMap` implements the frozen routing policy. `check` validates a
+raw configuration and constructs a `Layout` carrying its bounds and disjointness
+proof. `route` accepts only this checked layout and returns either a precise
+misalignment/access fault or a `Hit` containing alignment, complete-footprint
+and permission evidence. Fetch alignment is always four bytes; a malformed
+non-word fetch then faults on permissions.
+
+Local word indices and byte offsets are exact naturals. Their bounds justify
+conversion to `BitVec` addresses, and reconstruction/no-alias theorems recover
+the original full address from region, narrowed word address and offset. The
+module also proves unique routing, exact fault classifications, successful
+routing completeness, ROM/RAM/MMIO permissions and compatibility with the
+byte adapter's alignment/within-word requirements. Peripheral word accesses
+route throughout their windows; register holes/directions belong to MMIO.
+
+```sh
+lake build Pinwheel.Hardware.Processor.AddressMap
+lake env lean -DwarningAsError=true --run test/ProcessorAddressMap.lean
+```
+
+The independent Nat-table oracle passes 6,885 layout checks, 130,428 accesses
+and 21 explicit boundary/policy probes, including layouts ending exactly at
+`2^32`, invalid wrapping/overlapping regions, permission failures and prior
+architectural address wrapping. The 288-declaration audit uses standard axioms
+only. This is a pure routing contract; structural address-decode hardware and
+CPU integration remain later steps.
+
 ## Reuse and missing library contracts
 
 Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RAM
