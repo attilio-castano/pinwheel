@@ -30,4 +30,14 @@ theorem notSelect {α : Sort u} (a : BitVec 1) (x y : α) :
     (if ~~~a = 1 then x else y) = (if a = 1 then y else x) := by
   simp only [bitNotOne,ite_not]
 
+theorem guardOne (p : Prop) [Decidable p] (b : BitVec 1) :
+    ((if p then (1#1) else b) = 1) ↔ p ∨ b = 1 := by
+  by_cases h : p <;> simp [h]
+
+/-- Compare a priority chain asserting a valid bit with the corresponding OR tree. -/
+macro "normalize_mux_guards" : tactic => `(tactic|
+  (simp only [guardOne, bitOrOne, BitVec.and_assoc, or_assoc,
+      (by decide : ¬ (0#1) = (1 : BitVec 1)), or_false] <;>
+    congr 1 <;> simp only [orIte]))
+
 end Pinwheel.Hardware.Readback.Mux

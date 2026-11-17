@@ -10,7 +10,8 @@ IMPORT = 'import Pinwheel.Hardware.Readback.Mux\n'
 MARKER = '  all_goals first\n'
 BRANCH = ('  | (simp only [ite_self, Pinwheel.Hardware.Readback.Mux.orSelect,\n'
           '       Pinwheel.Hardware.Readback.Mux.notSelect, BitVec.and_assoc]\n'
-          '     done)\n')
+          '     done)\n'
+          '  | (normalize_mux_guards; done)\n')
 HEADER = re.compile(r'theorem local_[0-9]+ [^\n]* :\n[ \t]+[^\n]+ := by\n\Z')
 
 
