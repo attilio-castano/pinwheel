@@ -876,6 +876,45 @@ instruction retirement or trap, not merely a timer event. It needs a decreasing
 internal rank plus independently stated memory-service assumptions; bounded
 service yields a cycle bound.
 
+## Independent ISA comparison
+
+`tools/isa_reference.json` pins upstream Sail RISC-V release 0.16 at commit
+`e5acebb04ff573e93203596486b831a5974117c3`, with hashes for its source archive and
+native Darwin-arm64 binary. The isolated dependency cache lives under
+`build/isa-reference/dependencies`. Each case starts a fresh Sail process from an
+explicit ELF32 image. The adapter verifies its initial PC, all integer registers
+and the complete ROM/RAM bytes before executing one instruction. It then compares
+every integer register, final RAM byte, unchanged ROM byte and architectural
+PC/trap outcome against `RV32I.Semantics` with the checked address-map adapter.
+
+```sh
+python3 -B test/isa_reference_test.py
+python3 -B scripts/isa_reference_check.py --tag sail-local --fetch
+```
+
+The full campaign passes 548 cases across all forty RV32I kinds, including x0,
+operand overlap, signed/unsigned boundaries, shifts, taken/untaken branches,
+JALR low bits, byte/halfword access, alignment/access fault priority, address
+wrap to ROM and reserved/disabled encodings. There are 439 successful retirements
+and 109 precise traps. Three actual corrupted ELFs produce independent register,
+memory-byte and missing-x0-fault witnesses. Eight portable tests check encoding,
+complete state comparison and strict scalar/trap/log parsing.
+
+The comparison starts from a valid aligned fetch in a 4 KiB ROM with 4 KiB RAM.
+Sail's machine exception machinery is normalized to this environment's terminal
+trap at the recorded `mepc`, retaining cause and relevant address. FENCE checks
+serialized architectural state and memory preservation. MMIO, concurrent ordering,
+fetch-front-end faults, reset, cycles and RTL have separate campaigns. Sail's
+fixed VLEN markers remain in its printed ISA string while vector execution and
+all optional extensions are disabled by the retained configuration.
+
+`build/isa-reference/sail-matrix-02/report.json` records twelve setup commands
+and 551 successful fresh Sail executions, thirteen sources, eleven tools, five
+project build inputs, 9,934 Lean distribution inputs and 2,773 artifacts. Its
+SHA-256 is `f5bb978db8365bf6ffe9307b10bcf31f403adf7a5b9117507a420b96da34a79a`.
+The release binary, debugger, local adapter and host runtime remain validation
+dependencies. Applicable upstream architecture-test execution is the next ISA gate.
+
 ## Implementation gates
 
 1. Specification hash, execution environment, memory map, fault priorities and
