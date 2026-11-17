@@ -211,6 +211,37 @@ opcode/funct control combinations, all 12-bit immediate fields and boundary/
 neighbor cases. Nine concrete decoder faults are rejected. The audit covers
 3,499 declarations with standard axioms only.
 
+## Executable instruction semantics
+
+`Processor.RV32I.Semantics` defines architectural state with storage only for
+x1–x31, so x0 is intrinsically zero. It specifies modular arithmetic, signed and
+unsigned comparisons, low-five-bit register shifts, precise control transfer,
+ECALL/EBREAK and illegal-instruction traps. JALR clears bit zero before checking
+four-byte alignment; untaken branches do not fault on unused targets, and a
+misaligned taken target performs no link write. Target accessibility remains a
+later fetch check, as required by the frozen environment.
+
+Loads, stores and FENCE produce explicit pending intents rather than invisible
+effects. A context binds the original architectural state and raw word to its
+decoded instruction. `Pending.Issued` additionally binds every captured address,
+operand and destination to actual instruction execution; `step_pending_issued`
+establishes it. Indexed replies prevent acknowledging one operation kind as
+another. `respond` preserves the exact pending request on stalls and commits
+writeback/PC or a precise trap only when the appropriate response is accepted.
+Load extension is architectural, including loads targeting x0; stores and device
+effects must be performed by their provider on the same accepted edge.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.Semantics
+lake env lean -DwarningAsError=true --run test/RV32ISemantics.lean
+```
+
+The independent integer/array oracle passes 174,023 instruction and response
+checks and rejects 13 semantic faults. All 551 audited declarations use standard
+axioms only. This establishes instruction semantics and response-commit lemmas,
+not a processor implementation: fetch checks, memory/device effects, response
+ownership, reset and FENCE service remain controller/integration obligations.
+
 ## Reuse and missing library contracts
 
 Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RAM
