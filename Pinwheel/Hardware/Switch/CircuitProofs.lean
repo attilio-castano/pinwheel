@@ -62,13 +62,8 @@ theorem selection_eval (e : DestinationEncoding (m+1)) (s : Switch.State n (m+1)
       match Arbitration.RoundRobin.grant (s.cursor o) (Switch.request s o) with
       | none => fallback.eval i (encode e s)
       | some k => (value k).eval i (encode e s) := by
-  unfold selection
-  rw [Arbitration.RoundRobinCircuit.priority_eval _ _ _ _ _ _
-    (fun k => k == s.cursor o) (fun _ => rfl), Arbitration.RoundRobinCircuit.find_cursor]
-  dsimp only
-  rw [Arbitration.RoundRobinCircuit.priority_eval _ _ _ _ _ _ _ (request_eval e s hs i o)]
-  cases h : Arbitration.RoundRobin.grant (s.cursor o) (Switch.request s o) <;>
-    simp only [Arbitration.RoundRobin.grant] at h <;> simp only [h] <;> rfl
+  exact Arbitration.RoundRobinMasked.selection_eval _ _ _ _ (s.cursor o) (Switch.request s o)
+    i (encode e s) (fun _ => rfl) (request_eval e s hs i o)
 
 
 theorem grantBit_eval (e : DestinationEncoding (m+1)) (s : Switch.State n (m+1) (BitVec w))
