@@ -14,6 +14,7 @@ import Pinwheel.Hardware.Switch.Progress
 import Pinwheel.Hardware.Memory.CommandFlopsProofs
 import Pinwheel.Hardware.Memory.StreamFlopsProofs
 import Pinwheel.Hardware.Memory.TransferModel
+import Pinwheel.Hardware.Memory.TransferCircuitProofs
 import Pinwheel.Hardware.Memory.TransferHostModel
 
 /-! Reusable synchronous hardware: typed circuits and interfaces, register

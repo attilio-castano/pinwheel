@@ -215,8 +215,69 @@ independent integer/array oracle: 14,474 exhaustive-command edges, 100
 abort/busy/restart edges, and 12 open-controller stalled edges. Cases include
 zero/full-depth/invalid ranges, semantic zero widths, all small memory contents,
 an 8-to-4-bit transform, held start, and reset with incoherent protocol state.
-All 308 model declarations pass the standard-axiom audit. The hardware controller,
-its structural refinement and its RTL evidence are the next implementation step.
+All 308 model declarations pass the standard-axiom audit.
+
+### Open controller hardware
+
+`Memory.TransferInterface` exposes nine inputs and eleven outputs, including
+the auxiliary adapter reset. `Memory.TransferCircuit` uses seven registers:
+phase, source/destination bases, length, completed index and done/error pulses.
+Length and index retain `a+1` bits, so full-capacity transfers do not truncate.
+Range admission subtracts a widened base from capacity before comparing length.
+There is no payload register.
+
+`TransferCircuitProofs` supplies parameterized step/output correspondence,
+`Implementation`, arbitrary-state reset recovery and reset-initialized traces.
+Normal refinement uses `Control.Valid`; output correspondence needs no validity
+premise. Reserved phase 3 suppresses all transactions, asserts `memory_reset`,
+and recovers empty control with an error pulse. `paired_memory_reset` proves
+that the canonical two-adapter bindings clear both pending bits while preserving
+every word and Q. An external memory implementation must honor the same contract.
+
+```sh
+python3 scripts/check-memory-transfer.py --tag controller-local
+python3 scripts/check-memory-transfer-artifact.py --tag controller-artifact-local
+python3 scripts/check-memory-transfer-artifact-negatives.py --tag controller-negatives-local \
+  --positive-report build/memory-transfer-artifact/controller-artifact-local/report.json
+```
+
+The structural tests check 21,320 edges, including semantic zero widths,
+raw command ranges/handshakes and mixed-width traces. The broad imported-memory
+audit checks 1,462 declarations with standard axioms only.
+`build/memory-transfer/controller-matrix-01/report.json` passes independent
+integer-oracle replay of all emitted registers/pre/post outputs and synthesized
+external outputs: 1,950 edges per form, eight additional raw phase-3 recovery
+edges, and 20 actual RTL faults rejected with concrete value mismatches.
+
+| Address/input/output widths | Replay edges per form | Generic synthesized cells |
+| --- | ---: | ---: |
+| 1 / 1 / 1 | 393 | 68 |
+| 2 / 8 / 8 | 459 | 104 |
+| 3 / 8 / 4 | 639 | 148 |
+| 2 / 4 / 17 | 459 | 101 |
+
+The tested transform inverts input bits and then zero-extends or truncates to
+the output width. The implementation theorem itself accepts any proved Map.
+These cell counts are not a matched independent baseline or physical timing result.
+
+`build/memory-transfer-artifact/controller-artifact-02/report.json` certifies
+259 local equalities and all 72 typed register/output endpoints, plus the
+reset-initialized open-controller trace theorem. Yosys `pmuxtree` normalizes its
+case-derived parallel mux before restricted JSON import; pre-normalization JSON
+is retained. Each configuration's selectors compare the same raw phase bits
+with 2, 1 and 0, so they are mutually exclusive for every binary state, including
+phase 3. The first attempt is retained as a failed unsupported-`$pmux` import.
+The importer was not relaxed, and normalization remains inside the stated
+trusted Yosys interpretation boundary.
+
+`build/memory-transfer-artifact-negatives/controller-negatives-01/report.json`
+rejects active write-payload corruption and erased progress-index updates through
+semantic local-proof failures. Both include kernel-checked concrete mismatches
+with a destination write actively offered and ready. No whole-accelerator,
+external-memory, post-synthesis proof or physical behavior follows from these
+open-controller certificates.
+
+### Host ownership and readback
 
 `Memory.TransferHostModel` adds host loading and readback around the same state.
 An offered start blocks new host requests; existing responses remain visible
@@ -241,7 +302,7 @@ Its independent integer/array oracle checks 18,015 complete-state and pre/post
 observation edges: loading/transfer/readback, pending responses before start,
 exhaustive idle host commands, range commands, abort/recovery and seeded traffic.
 All 113 wrapper declarations pass the standard-axiom audit. The physical host
-wrapper and its RTL checks remain to be built; keeping host readback observable
+wrapper and its RTL checks are in progress; keeping host readback observable
 will also prevent synthesis from discarding destination storage.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs

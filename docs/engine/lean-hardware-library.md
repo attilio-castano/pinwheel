@@ -12,8 +12,8 @@ The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
 banks, arbitration, a buffered multiport switch and exclusive-command memory.
 The memory adapter also supports backpressured requests and read responses.
-A memory-transfer specification and completion proof are available; its hardware
-implementation and processor integration are ongoing campaigns.
+A memory-transfer specification, completion proof and certified open controller
+are available; the host accelerator and processor integration are ongoing campaigns.
 
 ## Construction and proof layers
 
@@ -74,9 +74,13 @@ memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`
 transform. Its completion theorem covers arbitrary source/destination snapshots
 and preserves words outside the destination range. Reset aborts future work
-while preserving completed writes. These model proofs currently precede the
-physical controller implementation; see the memory campaign for start/drain
-and external-service assumptions.
+while preserving completed writes. `Memory.TransferCircuit` implements the open
+controller using seven registers and any proved `Stream.Map wi wo`, with generic
+state/output refinement and arbitrary-state reset recovery. It stores no payload;
+the source memory holds a stalled response. Its auxiliary `memory_reset` output
+also cancels attached adapter responses during reserved-phase recovery while
+preserving memory words/Q. See the memory campaign for start/drain and
+external-service assumptions and the complete controller RTL certificates.
 
 `Memory.TransferHostModel` adds independent host memory channels for loading and
 readback. It drains outstanding host responses before start acceptance and gives
