@@ -46,7 +46,7 @@ correctness and physical qualification are not implied by artifact proofs.
 | Serial foundation | Parameterized FIFO/map pipelines; contracts, RTL and fresh-source validation | Complete: `224b288` |
 | Branching foundation | Named bundles; atomic broadcast and ordered join; 27 configurations and 54 artifact certificates | Complete: `5e373bf` through `b1bf8b2` |
 | Packet switch | Buffered input queues, routing, round-robin arbitration, output stability, per-flow order and conditional fairness; multiport RTL certificates and synthesis baseline | Active |
-| Memory and accelerator | Explicit RAM read/write/collision semantics, request/response interfaces, reusable DMA-style movement and a streaming transform; memory assumptions and refinement | Active: RAMs and host accelerator certified through RTL; baseline/matched mapping complete; proved ownership optimization improves estimated delay; synthesis STA and remaining performance gap under investigation |
+| Memory and accelerator | Explicit RAM read/write/collision semantics, request/response interfaces, reusable DMA-style movement and a streaming transform; memory assumptions and refinement | Active: RAMs and host accelerator certified through RTL; baseline/matched mapping complete; proved ownership optimization improves estimated delay; 24 pre-layout STA analyses complete with positive setup/hold slack but fanout violations in every case |
 | Processor system | Simple single-hart RV32I implementation, on-chip memory, GPIO, timer and UART; architectural refinement and reuse of prior components | Planned |
 | Library release gate | Public API consolidation, independent usage example, reproducible evidence, comparative synthesis results | Planned |
 

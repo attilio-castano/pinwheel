@@ -480,7 +480,8 @@ replays all 24 circuits (15,192 edges total). Typical results:
 The candidate improves ABC delay 4.5–14.3% across the tested corners; mapped
 area changes by −1.30% to +1.12% relative to the reference. It remains roughly
 12–25% slower than the independent baseline. The same mapping assumptions and
-limits apply; full timing checks and any further optimization remain separate.
+limits apply. The pre-layout timing analysis below adds sequential timing arcs;
+further optimization and physical qualification remain separate.
 
 ```sh
 lake env lean -DwarningAsError=true --run test/MemoryTransferHostOwnership.lean
@@ -492,6 +493,61 @@ python3 scripts/check-memory-transfer-host-ownership-artifact-negatives.py --tag
 python3 scripts/check-memory-transfer-host-ownership-technology.py --tag ownership-mapped-local \
   --positive-report build/memory-transfer-host-ownership/ownership-local/report.json
 ```
+
+### Matched pre-layout static timing
+
+`scripts/check-memory-transfer-host-sta.py` analyzes the exact checked mapped
+netlists without remapping. The complete ownership receipt is
+`build/memory-transfer-host-sta/ownership-sta-matrix-01/report.json`: four
+configurations, reference/candidate/baseline, and the pinned typical/slow corners
+give 24 completed analyses. Source, tool, runtime, library, parent receipt and
+all consumed artifact identities are checked again at closeout.
+
+The pinned LibreLane image supplies OpenSTA 2.7.0. The comparison uses a 10 ns
+ideal clock, 1 ns maximum and 0.2 ns minimum input delay, 1 ns maximum output
+delay and −0.2 ns minimum output delay (0.2 ns external hold), 0.1/0.05 ns
+setup/hold uncertainty, the same buffer input driver and 10 fF output load.
+There are no timing exceptions or case analyses. Every nonconstant output and
+register D endpoint has maximum and minimum path coverage; constant endpoints
+are separately inventoried. Detailed paths include clock-to-Q and library
+setup/hold arcs. The selected Liberty wire-load model is named `Zero` but has
+**nonzero** resistance and capacitance. Its exact coefficients and successful
+configuration commands are retained; the engine has no independently queried
+selected-model accessor in this workflow.
+
+All 24 cases meet setup and hold under these assumptions. The worst setup slack
+is 6.027626 ns and worst hold slack is 0.023523 ns. However, **all 24 fail
+electrical constraints**, with 340 reported max-fanout violations across the
+variants/corners. No slew, capacitance, pulse-width or period violations are
+reported. The receipt therefore records `status: completed` and
+`analysis_completed: true`, but `constraints_met: false`. This is evidence of
+a completed measurement, not a timing-qualified implementation.
+
+Worst setup slack at the slow corner (ns):
+
+| Address/input/output bits | Reference | Ownership candidate | Baseline |
+| --- | ---: | ---: | ---: |
+| 1/1/1 | 7.111865 | 7.196860 | 7.109914 |
+| 2/8/8 | 6.027626 | 6.616853 | 6.744493 |
+| 3/8/4 | 6.238358 | 6.243358 | 6.826445 |
+| 2/4/17 | 6.065528 | 6.233886 | 6.398284 |
+
+These are comparison assumptions, not a board interface specification. There
+is no fast hold corner, extracted interconnect, clock tree/skew, full PVT
+coverage or post-mapping kernel proof. Positive slack does not establish an
+achievable clock frequency or physical qualification. Fanout repair must retain
+the same functional replay and constraint checks before it can close this gate.
+
+```sh
+python3 -m unittest discover -s test -p 'test_memory_transfer_host_sta.py'
+python3 scripts/check-memory-transfer-host-sta.py --tag host-sta-local --ownership \
+  --positive-report build/memory-transfer-host-ownership-technology/ownership-mapped-local/report.json
+```
+
+The driver uses the already installed image pinned by
+`tools/physical-toolchain.json`; it does not pull a replacement. Twelve parser
+tests exercise missing endpoints, malformed/truncated reports, negative hold,
+electrical violations, unit/clock mismatches and constraint conventions.
 
 ### Pure byte-lane semantics
 
