@@ -248,6 +248,44 @@ python3.12 -B scripts/streaming_8x4_ps2.py \
   --out build/ps2-frozen
 ```
 
+## Passive Classical CAN receive
+
+A three-row image observes a single standard-format data frame carrying one
+byte. The transceiver's digital receive signal enters `ui_in[3]`, with LOW
+representing dominant and HIGH representing recessive. The package releases
+its protocol output enables throughout. The peer waveform includes a dominant
+ACK from another receiver and a recessive idle tail. [Bosch CAN Specification 2.0, Part B](https://www.canlab.cz/sites/default/files/pages/download/Can2spec.pdf#page=43)
+
+The modeled 4 MHz core gives 32 clocks per bit at 125 kbit/s. START arms
+the guard while the bus is recessive. After the first dominant sample at
+index `f`, the program uses raw samples `f + 16 + 32k` for `k` from 0 through
+63. The capture events use the second sampler two clocks later. The peer
+may shift each bit boundary by up to four core clocks in either direction
+from its nominal position relative to `f`. Each sample still lands inside
+its bit. In the zero-based post-START trace, the program completes after
+`f + 2053` input samples.
+
+The 64 samples fit the two RX slots. The [package theorem](../../Pinwheel/Hardware/StreamingReady/CANSession.lean)
+connects the samples to acknowledged host export. The host decoder removes
+stuff bits, checks CRC-15 and frame fields, and returns the 11-bit identifier
+and byte. It rejects a corrupted stuff bit and an independently corrupted
+CRC with correct stuffing. The proof uses one synchronization event at
+start of frame and bounds the resulting clock skew over the entire window.
+
+The frozen RTL and matching CMOS5L gate netlist produced byte-identical
+traces across 11,018 public edges. Each backend exported 64 samples per
+owner. The host decoder recovered identifier `0x012` and payload `0xB2`
+and rejected both malformed captures. The fixture supplies a dominant ACK
+in all three cases to isolate the injected errors. The trace SHA-256 is
+`4b3d3ce229bcc8803a98960004cff72d071b55dfd5774a83f37277135cce1a08`.
+
+```sh
+python3.12 -B scripts/streaming_8x4_can.py \
+  --release "$PINWHEEL_RELEASE" --models "$PINWHEEL_MODELS" \
+  --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
+  --out build/can-frozen
+```
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural
