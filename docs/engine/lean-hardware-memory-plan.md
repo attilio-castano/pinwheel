@@ -36,6 +36,39 @@ The generic read mux currently lives in `Hardware.Execution.Memory`. Reuse it
 first; a later move should preserve compatibility aliases and rerun its existing
 clients. The command RAM adds no fictitious memory-clearing reset.
 
+### Implemented command RAM
+
+`CommandInterface`, `CommandFlops` and `CommandFlopsProofs` now supply the
+interface, structural implementation and universal proofs above. `view` and
+`encode` are inverse on every physical state. `contract` discharges
+`SinglePort.Contract`; `implementation` uses the common hardware certificate
+with `Valid = True`. `trace_correct` starts from arbitrary words and Q.
+They are available from `Pinwheel.Hardware.Library`.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryCommandFlops.lean
+lake env lean -DwarningAsError=true test/MemoryCommandContracts.lean
+python3 scripts/check-memory-command.py --tag command-flops-local
+```
+
+The retained `build/memory-command/command-flops-01/report.json` passed four
+address/data width configurations: 1/1, 1/8, 2/8 and 3/17. Across 1,412 edges,
+an independent Python array oracle matched Lean structural replay and every
+emitted RTL register plus pre/post-edge Q. Twelve actual RTL mutations were
+rejected: ignored enable, reads on write edges and cleared held Q. Generic
+synthesis used 8, 36, 106 and 430 cells respectively; these are not physical
+area or timing results.
+
+Synthesized RTL starts uninitialized. Full writes and a read establish its
+state before Q is compared (1,396 checked edges). Unsynthesized RTL is also
+checked throughout that prefix from explicitly chosen arbitrary words and Q.
+The separate Lean oracle test covers 4,100 exhaustive state/input combinations,
+9 directed edges and a 240-edge trace; the declaration audit checks 427 memory
+declarations for standard axioms only. Semantic zero widths are tested in Lean;
+the HDL emitter requires positive address and data widths. Complete imported
+RTL correspondence is a separate pending gate.
+
 ## Streaming adapter and accelerator
 
 Add a request/response adapter with one outstanding read and a held response

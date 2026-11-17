@@ -10,8 +10,8 @@ open Pinwheel.Hardware
 
 The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
-banks, arbitration and a buffered multiport switch. Memory and processor APIs
-are subsequent integration campaigns.
+banks, arbitration, a buffered multiport switch and exclusive-command memory.
+Backpressured memory and processor integration are ongoing campaigns.
 
 ## Construction and proof layers
 
@@ -32,6 +32,14 @@ and universal state/output correspondence. Its encoding may erase logical
 provenance. `Implementation.Reset` separately establishes initialization from
 arbitrary register bits. This interface is shared by ordinary stream components
 and the multiport switch.
+
+`Memory.CommandInterface` provides complete typed enable/write/address/data/Q
+interfaces. `Memory.CommandFlops` implements the exclusive single-port command
+contract: read captures the addressed word in Q; write changes one word and
+holds Q; disabled commands hold the entire state. Every physical state is
+represented, so `implementation` and `trace_correct` require no initialization
+invariant. There is no reset or implicit zero-filled memory. Its power-of-two
+capacity makes every address-bit pattern legal.
 
 `Artifact.Correspondence` compares a particular imported RTL interpretation with
 every structural register/output expression. It composes with `Implementation`
@@ -64,4 +72,6 @@ See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and
 [multiport switch record](lean-hardware-switch.md) for the corresponding
 semantics, validation commands and current limitations. The
+[memory campaign](lean-hardware-memory-plan.md) distinguishes its two existing
+read/write contracts and records command-memory validation. The
 [roadmap](lean-hardware-roadmap.md) records the remaining integration gates.

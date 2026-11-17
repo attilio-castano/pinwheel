@@ -8,10 +8,11 @@ import Pinwheel.Hardware.Arbitration.RoundRobinMasked
 import Pinwheel.Hardware.Switch.Certified
 import Pinwheel.Hardware.Switch.Contract
 import Pinwheel.Hardware.Switch.Progress
+import Pinwheel.Hardware.Memory.CommandFlopsProofs
 
 /-! Reusable synchronous hardware: typed circuits and interfaces, register
-banks, stream components and composition, arbitration, multiport contracts,
+banks, stream components and composition, arbitration, multiport and memory contracts,
 and implementation/artifact certificates. This entry point does not import
 Pinwheel's protocol processor, retained tapeout, or physical-design packages.
-Memory and processor integration APIs remain separate campaign work.
+Backpressured memory and processor integration remain separate campaign work.
 -/
