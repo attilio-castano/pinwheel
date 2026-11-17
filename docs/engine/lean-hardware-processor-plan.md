@@ -242,6 +242,37 @@ axioms only. This establishes instruction semantics and response-commit lemmas,
 not a processor implementation: fetch checks, memory/device effects, response
 ownership, reset and FENCE service remain controller/integration obligations.
 
+## Atomic peripheral model
+
+`Processor.MmioModel` implements the frozen GPIO, timer and UART-register
+contract as one atomic accepted CPU operation per edge. It assumes checked
+word addressing and has no response backpressure. Reads sample the pre-edge
+state. CPU faults preserve CPU-controlled state, while independent timer and
+serial effects still occur on that edge. Reset clears all device state and
+suppresses the CPU response, tick, arrival and completion effects.
+
+The ordering is CPU access, timer tick, completion of a pre-existing TX byte,
+RX arrival after any CPU consume, then new framing error. This gives the specified
+consume/arrival, busy/completion and W1C/new-error behavior. Serial completion,
+byte arrival and framing errors are explicit frontend inputs; the model does not
+yet derive them from UART wires.
+
+Fixed events retain the actual request, sampled GPIO and response, plus timer,
+serial and reset effects. Checked replay validates responses and event
+preconditions and reconstructs the entire peripheral state across arbitrary
+histories. Initial coverage and event refinement are proved independently of
+CPU progress: timer ticks do not establish instruction retirement.
+
+```sh
+lake build Pinwheel.Hardware.Processor.MmioModel
+lake env lean -DwarningAsError=true --run test/ProcessorMmioModel.lean
+```
+
+The independent oracle passes 49,152 register accesses, 34,944 simultaneous/
+reset edges and 8,192 cross-reset history edges. Fourteen concrete result/event
+corruptions are rejected; all 394 audited declarations use standard axioms only.
+Structural peripherals, UART framing and processor integration remain next gates.
+
 ## Reuse and missing library contracts
 
 Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RAM
@@ -297,10 +328,11 @@ service yields a cycle bound.
 ## Implementation gates
 
 1. Specification hash, execution environment, memory map, fault priorities and
-   reset/effect ordering are frozen above. Complete the decoder and checked map
-   contracts before CPU construction.
-2. Prove byte-access preservation, fault atomicity, decoder coverage and the
-   executable architectural instruction semantics.
+   reset/effect ordering are frozen above. The checked map and decoder contracts
+   are implemented and independently tested; structural decoding remains.
+2. Byte-access preservation, fault atomicity, decoder coverage and executable
+   instruction semantics are proved. Atomic peripheral semantics are implemented;
+   structural devices and UART wire semantics remain.
 3. Construct the core and prove structural, architectural and conditional-progress
    refinements, including arbitrary-state reset recovery.
 4. Differentially replay architectural effects against pinned
