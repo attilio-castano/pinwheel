@@ -4,6 +4,7 @@ import Pinwheel.Hardware.Switch.Progress
 import Pinwheel.Hardware.Switch.Interface
 import Pinwheel.Hardware.Implementation
 import Pinwheel.Hardware.Bank
+import Pinwheel.Hardware.Switch.Certified
 
 open Lean Elab Command
 
@@ -13,7 +14,8 @@ elab "#audit_switch" : command => do
   for (name, _) in env.constants.toList do
     if ["Pinwheel.Hardware.Switch.", "Pinwheel.Hardware.Stream.Multiport.",
         "Pinwheel.Hardware.Arbitration.RoundRobin.",
-        "Pinwheel.Hardware.Implementation.", "Pinwheel.Hardware.Bank."].any (name.toString.startsWith ·) then
+        "Pinwheel.Hardware.Implementation.", "Pinwheel.Hardware.Bank.",
+        "Pinwheel.Hardware.Artifact."].any (name.toString.startsWith ·) then
       count := count + 1
       let axioms ← collectAxioms name
       let bad := axioms.filter fun a => a != ``propext && a != ``Classical.choice && a != ``Quot.sound
