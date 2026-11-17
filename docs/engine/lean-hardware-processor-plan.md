@@ -260,6 +260,52 @@ axioms only. This establishes instruction semantics and response-commit lemmas,
 not a processor implementation: fetch checks, memory/device effects, response
 ownership, reset and FENCE service remain controller/integration obligations.
 
+## Serialized controller and architectural events
+
+`Processor.CoreModel` gives the instruction semantics an explicit cycle protocol:
+fetch request, owned fetch response, execution, data request, owned deferred data
+response, local FENCE service and terminal trap. The default boot PC and all
+registers are zero. Fetch alignment is checked before offering a request;
+permission/range faults remain the fetch provider's responsibility. Pending data
+retains `Pending.Issued` and the unchanged origin state.
+
+Data service has two explicit paths. Deferred service accepts a RAM intent and
+later completes it on an owned response edge. Atomic service delivers the reply
+and retires/traps on the request edge, allowing MMIO effects to occur at the same
+architectural commit point. Unowned response inputs are ignored. Reset suppresses
+offers/completions, cancels ownership and resets the CPU; the connected providers
+must synchronously cancel their pending replies while preserving memory. Untagged
+replies cannot distinguish a stale response offered after a later new request.
+
+The fixed event stream retains raw instruction words, actual completion path,
+intent/reply and resulting architectural state. `Meaning`/`Rule` specify event
+legality through the instruction semantics independently of the controller step.
+Event refinement, exact architectural-state replay and no-event/no-update are
+proved from the controller invariant. Cancellation-aware ledgers account for
+fetches, deferred requests and instructions. `word_conservation` additionally
+preserves the ordered raw-word sequence through completion, cancellation and
+the single held instruction; it does not identify ROM contents independently.
+
+A decreasing rank proves completion within five supplied service opportunities
+from fetch-request state. Reset is excluded; external readiness and response
+delivery are not assumed inevitable. Terminal traps remain quiet until reset.
+FENCE receives local service after all serialized prior accesses complete and
+does not wait for UART physical transmission.
+
+```sh
+lake build Pinwheel.Hardware.Processor.CoreModel
+lake env lean -DwarningAsError=true --run test/ProcessorCoreModel.lean
+```
+
+The campaign checks 27,720 adversarial protocol edges and 9,600 independently
+scheduled integer/array program edges, including repeated raw words and reset
+cancellation. Fourteen semantic faults are rejected; all 729 audited declarations
+use standard axioms only. The oracle chooses traffic from its own numeric
+controller and changes integer RAM only on acknowledgement. This is a pure core
+model refined to the local ISA semantics. Physical CPU construction, actual
+ROM/RAM/MMIO provider correspondence, external ISA differential validation and
+RTL/artifact proofs remain integration gates.
+
 ## Atomic peripheral model
 
 `Processor.MmioModel` implements the frozen GPIO, timer and UART-register
@@ -365,5 +411,6 @@ service yields a cycle bound.
 6. Run loaded polling programs using the peripheral contracts and compare synthesis
    with a straightforward independent implementation under matching constraints.
 
-No processor correctness, ISA compliance, physical timing or fabrication result
-is established by this plan.
+The core model's finite-prefix architectural refinement does not establish a
+physical processor implementation, external ISA compliance, physical timing or
+fabrication result.
