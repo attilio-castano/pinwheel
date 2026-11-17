@@ -22,6 +22,22 @@ families. `Circuit I R O` supplies every next-register and output expression.
 Expression substitution (`Expr.bind`) instantiates proved components without
 textual wiring. All next-register expressions read the same pre-edge snapshot.
 
+`WordOps` adds modular addition, word OR/XOR, signed comparison and fixed or
+variable logical/arithmetic shifts as ordinary expression trees. Universal
+evaluation and substitution theorems cover every width, including zero.
+Variable amounts are unsigned and unmasked: logical overshifts produce zero,
+and arithmetic overshifts replicate the sign bit. An ISA-specific low-bit mask
+must be supplied explicitly. The barrel network uses existing slices, muxes and
+fixed shifts, so it adds no primitive or emitter interpretation.
+
+```sh
+lake env lean -DwarningAsError=true --run test/HardwareWordOps.lean
+```
+
+The independent integer campaign checks 2,909 operand pairs and 11,697 shift
+cases, including zero widths and overshifts, and rejects eight actual expression
+faults. All 126 audited declarations use standard axioms only.
+
 `Interface P` completely enumerates a typed family and proves inverse lookup and
 unique names. It drives traversal, emission, observation and imported endpoint
 assembly. `Bank count P` replicates an interface; `Bank.circuit` independently

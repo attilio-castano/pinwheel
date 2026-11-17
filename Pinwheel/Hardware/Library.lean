@@ -1,4 +1,5 @@
 import Pinwheel.Hardware.BankImplementation
+import Pinwheel.Hardware.WordOps
 import Pinwheel.Hardware.Artifact
 import Pinwheel.Hardware.RunRefinement
 import Pinwheel.Hardware.DecodedImplementation
