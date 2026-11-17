@@ -377,6 +377,62 @@ word (165 to 0), an unaccepted host write leaking into a busy transfer (10 to
 checks the corresponding reset, busy/not-ready or valid/ready condition.
 Malformed import, timeout and parser failure do not count as semantic rejection.
 
+### Accelerator synthesis comparison
+
+`transfer_host_baseline.py` constructs an independent conventional SV array/FSM
+implementation from the host contract. It does not inspect generated Lean
+expressions or RTL. The matched baseline receipt
+`build/memory-transfer-host-baseline/baseline-matrix-02/report.json` checks the
+same 2,532 edges at every unsynthesized register and pre/post output, synthesized
+outputs, eight raw recovery edges and 12 actual RTL faults. Synthesis uses the
+same Yosys flow; longest generic paths are measured on the exact synthesized
+cell graph, excluding flip-flops.
+
+| Address/input/output bits | Cells: Lean / baseline | Generic logic depth: Lean / baseline |
+| --- | ---: | ---: |
+| 1/1/1 | 128 / 115 | 9 / 8 |
+| 2/8/8 | 403 / 307 | 11 / 9 |
+| 3/8/4 | 501 / 413 | 12 / 10 |
+| 2/4/17 | 463 / 358 | 11 / 8 |
+
+`build/memory-transfer-host-technology/mapped-matrix-02/report.json` maps both
+implementations independently at the pinned typical and slow IHP CMOS5L corners,
+with matching drive, 10 fF output load and 10,000 ps ABC target. All 16 mapped
+circuits pass functional replay (10,128 edges total). Functional cell models
+come from the same hashed Liberty files; actual merged ABC library inputs are
+retained in a fresh bundle-local SCL cache.
+
+Typical-corner results:
+
+| Address/input/output bits | Cell area sum: Lean / baseline (library units) | ABC combinational delay: Lean / baseline (ps) |
+| --- | ---: | ---: |
+| 1/1/1 | 1,846.91 / 1,954.03 | 1,102.23 / 920.20 |
+| 2/8/8 | 8,413.11 / 8,511.20 | 1,667.85 / 1,207.37 |
+| 3/8/4 | 11,182.49 / 11,566.46 | 1,624.45 / 1,239.57 |
+| 2/4/17 | 10,345.41 / 10,483.45 | 1,732.58 / 1,417.84 |
+
+Mapped cell area is 1.2–5.5% lower for the Lean composition, despite its larger
+generic cell count. The material regression is delay: approximately 20–40%
+higher across both corners. The generic longest path exposes the chain from
+reset/start readiness through accepted-start and host ownership into the source
+RAM's address/read selection. A phase-only ownership selector is being evaluated
+as a separately proved candidate; the certified reference and these measurements
+remain intact. No optimized result is claimed here.
+
+```sh
+python3 scripts/check-memory-transfer-host-baseline.py --tag host-baseline-local \
+  --positive-report build/memory-transfer-host/host-local/report.json
+python3 scripts/check-memory-transfer-host-technology.py --tag host-mapped-local \
+  --positive-report build/memory-transfer-host-baseline/host-baseline-local/report.json
+```
+
+The technology files are pinned by `tools/technology-library.json` and use the
+existing technology-library installer. Area is in the library's unspecified
+area units, not an asserted square-micron measure. ABC estimates omit sequential
+setup/clock-to-Q, clock trees, placement, routed parasitics and full STA; they do
+not establish clock frequency or physical qualification. Baseline simulation
+and mapped replay do not provide a baseline or post-synthesis kernel proof.
+
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Byte enables,
 non-power-of-two depth, multiple outstanding reads and shared source/destination
