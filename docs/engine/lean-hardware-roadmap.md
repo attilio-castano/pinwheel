@@ -108,6 +108,13 @@ Implementation sequence:
 Do not mark the campaign complete when only its model or simulation passes.
 Each gate needs evidence at its stated abstraction level.
 
+The [switch implementation record](lean-hardware-switch.md) tracks the reusable
+APIs, validation commands and remaining artifact/resource gates. The executable
+model, multiport contracts, conditional fairness, physical codec and complete
+structural refinement are implemented. Reset recovery includes arbitrary physical
+register bits. Whole-switch artifact/RTL campaigns and selector resource
+improvement are the next gates.
+
 ## Decision log
 
 - 2026-11-16: Accepted the reusable-library goal and the three integration designs.

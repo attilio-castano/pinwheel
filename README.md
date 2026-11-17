@@ -60,7 +60,9 @@ timing proofs, and checks of freshly emitted flat and hierarchical RTL.
 with named payload fields and proved result pairing across unequal branch depths.
 The [library roadmap](docs/engine/lean-hardware-roadmap.md) uses a packet switch,
 memory accelerator and processor system as integration targets; the switch campaign
-is active.
+is active. Its [buffered multiport switch](docs/engine/lean-hardware-switch.md)
+now reuses the FIFO/register circuits with proved routing, per-flow accounting,
+conditional fairness, raw-pin refinement and reset recovery.
 
 Pinwheel has executable protocol models, emitted circuits, and independent
 simulation checks. For the paired SRAM design, Lean proofs now connect a
