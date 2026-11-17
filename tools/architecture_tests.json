@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "upstream": {
+    "repository": "https://github.com/riscv-non-isa/riscv-arch-test",
+    "commit": "6e8a45123f14cebfb3df151a0e7b849b4389b33b",
+    "filename": "arch-source-6e8a451.tar.gz",
+    "root": "riscv-arch-test-6e8a45123f14cebfb3df151a0e7b849b4389b33b",
+    "url": "https://codeload.github.com/riscv-non-isa/riscv-arch-test/tar.gz/6e8a45123f14cebfb3df151a0e7b849b4389b33b",
+    "sha256": "6b891613a0990235ac46b5c6ee694f5e92cd07d923ca8a088c03d479d7516f36"
+  },
+  "compiler": {
+    "repository": "https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack",
+    "release": "v15.2.0-1",
+    "filename": "xpack-riscv-none-elf-gcc-15.2.0-1-darwin-arm64.tar.gz",
+    "root": "xpack-riscv-none-elf-gcc-15.2.0-1",
+    "url": "https://github.com/xpack-dev-tools/riscv-none-elf-gcc-xpack/releases/download/v15.2.0-1/xpack-riscv-none-elf-gcc-15.2.0-1-darwin-arm64.tar.gz",
+    "sha256": "6588e8351455fad8aca37551f0e5a5543f3346bfa9a837cf03cbd3bdd4989f8f"
+  },
+  "reference_manifest": "tools/isa_reference.json",
+  "suite": "tests/rv32i/I",
+  "expected_test_files": 39,
+  "rom_bytes": 4194304,
+  "ram_base": 16777216,
+  "ram_bytes": 1048576,
+  "exclusions": [
+    "All upstream directories except tests/rv32i/I: privileged modes/CSR, traps requiring handlers, interrupts, optional extensions and other XLENs.",
+    "ECALL/EBREAK and access-fault/misalignment exception suites are not in the selected I directory; those remain separate Sail548 finite validation.",
+    "Concurrent FENCE visibility and external MMIO/UART behavior: the EEI acknowledges serialized FENCE locally and rejects device accesses.",
+    "No ACT4 coverpoint coverage report or RISC-V certification claim; the unchanged selected generated assembly bodies and signature protocol are executed.",
+    "No emitted RTL, synthesis, timing, reset waveform or physical qualification in this campaign; local paths are architectural Semantics and multicycle CoreModel."
+  ]
+}

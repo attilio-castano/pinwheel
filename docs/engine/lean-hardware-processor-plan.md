@@ -913,7 +913,53 @@ and 551 successful fresh Sail executions, thirteen sources, eleven tools, five
 project build inputs, 9,934 Lean distribution inputs and 2,773 artifacts. Its
 SHA-256 is `f5bb978db8365bf6ffe9307b10bcf31f403adf7a5b9117507a420b96da34a79a`.
 The release binary, debugger, local adapter and host runtime remain validation
-dependencies. Applicable upstream architecture-test execution is the next ISA gate.
+dependencies.
+
+### Unchanged upstream architecture tests
+
+`tools/architecture_tests.json` pins `riscv-non-isa/riscv-arch-test` commit
+`6e8a45123f14cebfb3df151a0e7b849b4389b33b` and xPack RV32 compiler release
+15.2.0-1, including archive hashes. The runner compiles all 39 unchanged assembly
+bodies in `tests/rv32i/I` twice: Sail first generates the signature, then the
+upstream signature converter and self-check macros consume it. The documented
+no-CSR startup and pass/fail adapter live in `test/architecture_test_adapter`.
+They use a parameterized execution environment with 4 MiB ROM and 1 MiB RAM at
+`0x01000000`; this is separate from the small emitted microcontroller image.
+Every byte outside the original ELF load segments is explicitly initialized by
+a supplementary gap image, without overlapping or rewriting those segments.
+
+`test/ArchitectureTestTrace.lean` runs the architectural semantics and multicycle
+controller with owned deferred requests, deterministic stalls and completion-edge
+stores. Comparison covers every retired PC, instruction, next PC, all integer
+registers, read address/size/value including loads to x0, committed stores and
+the complete final RAM. Actual Sail debugger endpoints, memory dumps and
+signatures are checked against its instruction trace. Both modes must reach
+the explicit halt address with the upstream pass status.
+
+```sh
+python3 -B test/architecture_test_test.py
+python3 -B scripts/architecture_test_check.py --tag architecture-local --fetch
+```
+
+The retained `build/architecture-tests/act4-matrix-02/report.json` passes all
+78 programs: 211,197 retirements, 849,652 controller edges and 52,109 memory
+completions. Its SHA-256 is
+`009afdd40049d272b403a285dd8f4fa67212e5f1edeea7bbeb88af196a1a4387`.
+All 408 recorded commands succeed. The receipt covers 25 sources, 6,204 tools
+and bundled compiler files, nine project build inputs, 9,934 Lean distribution
+inputs and 1,716 artifacts. Independent closeout rehashed these inputs and
+reconstructed every program's trace, final memory and signature comparisons.
+Thirteen portable parser/adapter tests pass. Changing an actual ADD instruction
+to SUB produces a register witness; corrupting an expected signature reaches
+the upstream failure status, rather than merely failing a host comparison.
+
+This campaign exercises `RV32I.Semantics` and `CoreModel`. It does not certify
+emitted RTL. Privileged/CSR, interrupt, optional-extension and other-XLEN suites
+are excluded. Exception tests outside the selected I directory retain the
+separate 548-case Sail evidence above. MMIO/UART, reset waveforms, concurrent
+FENCE visibility, synthesis and physical qualification remain separate gates.
+There is no ACT4 coverpoint-closure or RISC-V certification claim. The pinned
+native tools, adapter and recorded macOS runtime remain validation dependencies.
 
 ## Implementation gates
 
@@ -925,13 +971,14 @@ dependencies. Applicable upstream architecture-test execution is the next ISA ga
    instruction semantics are proved. Structural byte RAM, MMIO and digital UART
    components are proved. Their complete processor/serial composition remains.
 3. Complete physical core cycle refinement and arbitrary-state reset recovery are
-   proved. Connect them through provider ownership and actual architectural events
-   to the system's architectural and conditional-progress refinements.
+   proved. Provider ownership and actual architectural events connect them to
+   the system's architectural and conditional service-count progress refinements.
 4. Differentially replay architectural effects against pinned
    [Sail](https://github.com/riscv/sail-riscv) or
    [Spike](https://github.com/riscv-software-src/riscv-isa-sim), with an explicit
    environment adapter; run applicable [architecture tests](https://github.com/riscv/riscv-arch-test)
-   and record exclusions.
+   and record exclusions. The 548-case Sail comparison and all 39 selected
+   architecture-test bodies in both modes pass with the explicit scopes above.
 5. Extend RTL replay and artifact correspondence through memory effects,
    retirement and reset. Include actual corruptions of sign extension, `x0`
    access handling, JALR alignment, byte stores, duplicate effects and stale responses.
