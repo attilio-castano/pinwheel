@@ -488,8 +488,55 @@ and fifty-one retained artifacts. Its SHA-256 is
 `da527a3481192b16f26944667696c6cea3eeb38892f9d05dba71e656d46d345b`.
 This campaign explicitly forces all sixty startup registers, including nonzero
 RAM words and Q. It validates emitted RTL from that supplied image. Reset-driven
-loading, synthesized firmware replay, whole-system model correspondence and an
-imported-system artifact certificate remain separate open gates.
+loading and synthesized firmware replay are covered by the cold-loading campaign
+below. Whole-system model correspondence and an imported-system artifact
+certificate remain open gates.
+
+## Cold reset, loading and synthesized firmware
+
+`Processor.LoadableSystem` holds the core, fetch path and MMIO in reset throughout
+exclusive loader mode. Its RAM uses `ByteAdapterLoader`, with external reset
+blocking writes and ordinary loader edges accepting full words. Two status
+outputs expose loader readiness and execution release. The wrapper retains the
+same sixty registers and adds four loader inputs. Complete staged step/output,
+trace and final-state equality are proved for arbitrary raw state. The four-leaf
+export proves agreement of every bus input and fetch update with the canonical
+wrapper, including the distinct external/effective reset paths.
+
+```sh
+lake build Pinwheel.Hardware.Processor.LoadableSystemStagedProofs \
+  Pinwheel.Hardware.Processor.LoadableSystemExportProofs
+lake env lean -DwarningAsError=true --run test/ProcessorLoadableSystemCircuit.lean
+python3 -B test/test_processor_loadable_system_boot.py
+python3 -B scripts/check-processor-loadable-system-boot.py --tag cold-boot-local
+```
+
+The cold firmware campaign performs two external resets and four accepted loader
+writes before releasing the processor. Emitted and flattened generic synthesized
+RTL both match the fifty-nine-edge trace across all thirty-nine external pre/post
+outputs. The testbench drives clocks and inputs from initially uninitialized DUT
+registers. The synthesis gate checks both graphs for initialization attributes
+and initialization cells.
+
+Raw emitted state becomes defined through reset, explicit loader writes and
+normal request capture. A fixed schedule derived from those handshakes checks
+3,407 register observations and leaves 133 earlier RAM/Q/inactive metadata
+observations unconstrained. All sixty registers are defined and checked from
+cycle 17 onward. External observations require complete binary values on every
+edge. The complete trace must pass parsing before a semantic fault is reported.
+Five actual RTL corruptions exercise loader data, active writeback, retired PC,
+RAM store commit and GPIO store commit. Thirteen portable tests exercise topology,
+definedness, parser and mutation-witness failures. The combined wrapper/export
+audit covers 183 standard-axiom declarations and 256 dirty-state feedback cases.
+
+`build/processor-loadable-system-boot/cold-boot-01/report.json` records twenty-four
+successful commands, ninety-six source hashes, forty-six selected CAD tool/runtime
+hashes and seventy-four retained artifacts. Its SHA-256 is
+`fa46b14071ed5268b4f29c445a9faa1731af64986e4b4be95caea3b632294476`.
+Generic synthesis contains 6,800 cell records, including four `$scopeinfo`
+records. Comparative area/timing and imported-system artifact correspondence
+remain open. The native Lean compiler boundary is recorded separately by the
+FastEmit provenance campaign.
 
 ## Atomic peripheral model
 
