@@ -471,6 +471,42 @@ These certificates cover the imported unsynthesized binary RTL under the existin
 Yosys `proc`/`pmuxtree` and restricted JSON interpretation boundary. Lean is
 version-pinned. UART framing and processor integration remain open.
 
+## Sampled digital UART model
+
+`Hardware.Uart.Model` supplies a reusable 8N1 frontend model parameterized by a
+checked even divisor D of at least four. Accepted TX bytes drive start-low after
+the acceptance edge, followed by eight LSB-first data bits and stop-high. Universal
+theorems give exactly ten D-period symbols and completion on the closing edge.
+Busy offers cannot replace a frame, and completion returns to idle before a later
+offer can be accepted. Ordered accepted/completed/canceled/pending byte histories
+account for reset and repeated equal bytes.
+
+RX validates start at D/2, samples data bit k at D/2+(k+1)D and checks stop at
+D/2+9D. `RxSchedule` states equalities on the sampled input waveform, from which
+decoding and absence of early arrival follow. A canonical periodic 8N1 waveform
+satisfies that schedule. A high start-midpoint sample is ignored as a glitch.
+A low stop sample emits one framing error and waits for high before rearming.
+Reset suppresses pulses, clears both machines and drives TX idle-high.
+
+```sh
+lake build Pinwheel.Hardware.Uart.Model
+lake env lean -DwarningAsError=true --run test/HardwareUartModel.lean
+```
+
+An independent TX bitstream/RX countdown oracle checks all 256 bytes at divisors
+4, 6, 10 and 32 over 392,192 frame edges. It also checks 72,034 malformed-frame,
+reset, back-to-back and randomized edges, plus 65 timing-parameter cases.
+Ten executable faults are rejected after the unchanged model passes each exact
+mutation fixture, adding 1,310 positive fixture edges. All 411 audited declarations
+use standard axioms only.
+
+Physical UART correspondence and MMIO composition are next steps. Composition
+must offer a newly accepted TX write on the same edge and cancel the held MMIO
+slot with frame completion to prevent repeated transmission. RX arrivals feed
+the MMIO slot independently of software consumption. Synchronous digital samples,
+input synchronization, metastability and oscillator tolerance remain explicit
+environment assumptions.
+
 ## Reuse and missing library contracts
 
 Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RAM
