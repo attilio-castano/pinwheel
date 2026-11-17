@@ -196,8 +196,10 @@ no-access, request/response accounting and reset cancellation around owned word
 RAM. A store's memory effect coincides with response acceptance; merely offering
 or stalling that response performs no write. Its physical circuit now has
 universal state-projection, reset and snapshot-invariant proofs; emitted and
-synthesized RTL replay passes three depths, while imported artifact proof
-remains in progress. A RAM read-modify-write implementation requires
+synthesized RTL replay passes three depths, and imported unsynthesized artifact
+certificates cover all 50 state/output endpoints plus actual-event replay and
+reset recovery. Four actual RTL faults fail semantic proofs with kernel-checked
+counterexamples. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect implementations for the frozen contract above.
 
@@ -209,7 +211,8 @@ component-level event contract to reuse, not a CPU architectural relation.
 `ByteAdapterRefinement` now transports it through the physical circuit using
 actual response pins and retained requests, with arbitrary-memory initial
 coverage and reset recovery. Imported-RTL transport still requires a complete
-artifact correspondence certificate as an explicit premise.
+artifact correspondence certificate as an explicit premise, now discharged by
+the three-depth byte artifact campaign.
 
 Keep `Timed.Refinement` for RTL-to-cycle-model equality. `Timed.Events` now
 supplies the generic event-path refinement for internal cycles, fixed extraction,

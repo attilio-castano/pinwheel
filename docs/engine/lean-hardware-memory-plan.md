@@ -664,8 +664,8 @@ lake env lean -DwarningAsError=true --run test/MemoryByteAdapterCircuit.lean
 The structural test passes 22,384 complete raw-state/trace edges at address
 widths 0, 1, 2 and 3, including every register and pre/post output, and rejects
 three actual circuit mutations. Its 303 declarations use standard axioms only.
-Emitted/synthesized RTL replay is now complete; imported artifact correspondence
-remains a separate gate.
+Emitted/synthesized RTL replay and imported unsynthesized artifact correspondence
+are complete for the three-depth matrix below.
 
 `build/memory-byte-adapter/byte-adapter-matrix-01/report.json` passes address
 widths 1, 2 and 3, with fixed 32-bit data: 820, 1,340 and 2,380 edges respectively
@@ -715,6 +715,46 @@ semantic controls corrupt data, response code, request identity/operand, valid,
 reset response and completion multiplicity. All 140 audited declarations use
 standard axioms only. Progress remains explicitly conditional on readiness and
 absence of reset, with no implicit MMIO or processor refinement claim.
+
+`build/memory-byte-adapter-artifact/byte-artifact-matrix-01/report.json`
+certifies address widths 1, 2 and 3: 97, 107 and 124 local equalities and all
+14, 16 and 20 state/output endpoints (328 equalities, 50 endpoints total).
+The certificates transport arbitrary-raw-state traces and final-state projection,
+memory/Q/metadata-preserving reset, pending cancellation and output masking.
+They also transport actual completion-event replay: snapshot validity is an
+explicit premise, or is established by a preceding reset. Reset emits no
+completion and replay preserves already committed stores. Each complete audit
+uses only standard axioms; the receipt closes 75 source, 48 recorded CAD-tool
+and 126 artifact hashes. Lean is version-pinned by `lean-toolchain`, not
+binary-hashed by this runner.
+
+Byte-slice proof preparation changes proof tactics while checking that every
+generated proposition is preserved. It uses kernel-proved bit-slice lemmas and
+finite two-bit cases; malformed theorem boundaries fail before any file changes.
+Seven tests cover these boundaries, unchanged statements, successful kernel
+checking and rejection of a wrong sign-extension equation. No shared readback
+generator semantics were changed.
+
+`build/memory-byte-adapter-artifact-negatives/byte-negatives-03/report.json`
+rejects four actual RTL changes: erasing a word on reset, writing a stalled
+store, zero-extending a signed byte, and writing on a misalignment fault. Each
+fails a local semantic equality and has a standard-axiom, kernel-checked concrete
+counterexample under the active handshake/fault conditions. The negative run
+revalidates the complete positive receipt and retains its own source/tool/artifact
+identities. Earlier failed preparation runs remain failed evidence; parser
+errors, timeouts and resource failures never count as semantic rejection.
+
+```sh
+python3 scripts/check-memory-byte-adapter-artifact.py --tag byte-artifact-local
+python3 scripts/check-memory-byte-adapter-artifact-negatives.py --tag byte-negatives-local \
+  --positive-report build/memory-byte-adapter-artifact/byte-artifact-local/report.json
+```
+
+The proof covers the imported unsynthesized binary RTL. Yosys `proc`/`pmuxtree`
+and the restricted JSON interpretation remain trusted; pre-normalization JSON
+is retained. Synthesized RTL has differential replay evidence, not this artifact
+certificate. No memory image, MMIO behavior, CPU refinement or physical
+qualification follows from these results.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable

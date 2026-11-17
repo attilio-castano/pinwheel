@@ -117,8 +117,9 @@ Reset preserves words, Q and metadata, clears pending, and masks all outputs.
 It also establishes the stronger owned-word snapshot invariant needed for
 atomic byte-access effects. Emitted and synthesized RTL replay passes three
 memory depths with an independent byte-level oracle, explicit full-memory
-loading and 24 actual RTL corruption controls. Imported artifact correspondence
-remains a separate campaign.
+loading and 24 actual RTL corruption controls. Complete imported unsynthesized
+artifact certificates cover all 50 state/output endpoints across those depths;
+four actual RTL faults also fail the local proofs with kernel-checked witnesses.
 
 `Memory.ByteAdapterEffects` relates its actual completion events to atomic RAM
 accesses. Every delivered read, store acknowledgement and fault remains in the
@@ -136,6 +137,11 @@ recovers arbitrary raw states. Initial coverage admits arbitrary words, Q and
 inactive metadata. Artifact transport keeps complete RTL correspondence as an
 explicit premise; it does not substitute model-expected responses for observed
 hardware responses.
+
+The byte artifact campaign discharges this premise for address widths 1, 2 and 3,
+including actual-event replay, arbitrary-state reset recovery and retained memory.
+Snapshot validity remains explicit for atomic effects. The [memory campaign](lean-hardware-memory-plan.md)
+records reproducible commands and the Yosys/JSON interpretation boundary.
 
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
