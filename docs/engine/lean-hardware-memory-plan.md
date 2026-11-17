@@ -694,6 +694,28 @@ The receipt records all 62 source, 46 tool and 227 generated artifact identities
 Address width zero remains covered by Lean and the independent Python replay;
 HDL export requires a positive width. Address width four is outside this matrix.
 
+`ByteAdapterRefinement` lifts atomic RAM semantics through the physical circuit.
+Its fixed extractor counts each pre-edge response-valid/ready handshake once,
+decodes the actual response code/data and attaches the actual retained request.
+An event-agreement proof connects this extractor to `ByteAdapterEffects`.
+`trace_path` and `replay_trace` reconstruct final contents under the snapshot
+invariant. Initial coverage includes arbitrary RAM/Q/metadata with pending zero;
+reset establishes the invariant from every raw state and emits no completion.
+The artifact wrappers use the imported component's actual outputs and require
+complete `Artifact.Correspondence` explicitly. They do not themselves certify a
+particular emitted artifact.
+
+```sh
+lake env lean -DwarningAsError=true --run test/MemoryByteAdapterRefinement.lean
+```
+
+The physical-event test passes 12,004 independent array/event/occurrence-ledger
+edges and 1,536 dirty-reset/recovery edges across address widths 0–3. Seven
+semantic controls corrupt data, response code, request identity/operand, valid,
+reset response and completion multiplicity. All 140 audited declarations use
+standard axioms only. Progress remains explicitly conditional on readiness and
+absence of reset, with no implicit MMIO or processor refinement claim.
+
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable
 RAMs, non-power-of-two depth, multiple outstanding reads and shared

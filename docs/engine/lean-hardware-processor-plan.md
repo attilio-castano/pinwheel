@@ -73,6 +73,10 @@ events, including actual read values, stores and faults. Replaying them
 reconstructs final memory contents under the snapshot invariant; reset preserves
 prior stores and cancels pending work without a completion event. This gives a
 component-level event contract to reuse, not a CPU architectural relation.
+`ByteAdapterRefinement` now transports it through the physical circuit using
+actual response pins and retained requests, with arbitrary-memory initial
+coverage and reset recovery. Imported-RTL transport still requires a complete
+artifact correspondence certificate as an explicit premise.
 
 Keep `Timed.Refinement` for RTL-to-cycle-model equality. `Timed.Events` now
 supplies the generic event-path refinement for internal cycles, fixed extraction,

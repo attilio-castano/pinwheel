@@ -129,6 +129,14 @@ a validity premise. Reset emits no completion and never rolls back prior writes.
 These are finite-prefix safety results; consumer readiness is still required
 for completion.
 
+`Memory.ByteAdapterRefinement` connects those atomic effects to the hardware's
+actual response-valid/code/data pins and retained request fields. Event replay
+reconstructs final RAM contents from every snapshot-valid raw state, and reset
+recovers arbitrary raw states. Initial coverage admits arbitrary words, Q and
+inactive metadata. Artifact transport keeps complete RTL correspondence as an
+explicit premise; it does not substitute model-expected responses for observed
+hardware responses.
+
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`
