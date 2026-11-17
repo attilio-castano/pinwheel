@@ -301,9 +301,81 @@ lake env lean -DwarningAsError=true --run test/MemoryTransferHostModel.lean
 Its independent integer/array oracle checks 18,015 complete-state and pre/post
 observation edges: loading/transfer/readback, pending responses before start,
 exhaustive idle host commands, range commands, abort/recovery and seeded traffic.
-All 113 wrapper declarations pass the standard-axiom audit. The physical host
-wrapper and its RTL checks are in progress; keeping host readback observable
-will also prevent synthesis from discarding destination storage.
+All 113 wrapper declarations pass the standard-axiom audit. Host readback also
+keeps destination storage observable to synthesis.
+
+### Host accelerator hardware
+
+`TransferHostInterface`, `TransferHostCircuit` and `TransferHostCircuitProofs`
+implement the wrapper using the existing open controller and two `StreamFlops`
+instances. All seven control registers, every source/destination word, both Q
+registers and both pending bits have typed identities. The physical wrapper has
+15 inputs and 10 outputs. Idle host requests, drain-before-start, exclusive
+transfer ownership and post-completion readback follow the existing host model.
+
+The parameterized implementation theorem needs only the control validity
+invariant; it permits arbitrary memory contents, held values and pending bits.
+Reset and reserved-phase recovery are proved separately from arbitrary register
+bits, preserving both complete memories including Q. They cancel pending
+responses and restore an idle controller; reserved-phase recovery additionally
+reports an error. There is no fixed initial memory image.
+
+`RunRefinement` extends the common certificate API with final encoded state
+correspondence. Its downstream host test recovers entire memory states after an
+arbitrary reset and input history, including written words absent from current
+outputs. This does not require an injective encoding or recovery of erased ghosts.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryTransferHostCircuit.lean
+lake env lean -DwarningAsError=true --run test/HardwareRunRefinement.lean
+python3 -m unittest discover -s test -p 'test_transfer_host_validation.py'
+python3 -m unittest discover -s test -p 'test_readback_control_proofs.py'
+python3 scripts/check-memory-transfer-host.py --tag host-local
+python3 scripts/check-memory-transfer-host-artifact.py --tag host-artifact-local
+python3 scripts/check-memory-transfer-host-artifact-negatives.py --tag host-negatives-local \
+  --positive-report build/memory-transfer-host-artifact/host-artifact-local/report.json
+```
+
+The structural test checks 2,701 complete-state/pre/post-output edges and 10 raw
+reset/recovery cases; its 421 declarations use standard axioms only. The generic
+final-state specialization has a separate 16-declaration audit.
+
+`build/memory-transfer-host/host-matrix-01/report.json` records 2,532 replay
+edges per RTL form, 141 completed/aborted job snapshots and eight additional raw
+reserved-phase recovery edges. Emitted RTL checks every register and pre/post
+output. Synthesized replay observes outputs after loading every memory word
+through the host interface. Independent read-response ledgers retain the value
+sampled at acceptance; per-job snapshots check every destination prefix and
+completion/abort behavior. All 24 actual RTL faults produce complete binary
+trace mismatches, covering disabled start, ignored host stalls, active readback
+corruption, erased progress, reset-erased memory and a busy host-write leak.
+
+| Address bits | Input/output bits | Registers | Replay edges/form | Generic cells | Artifact equalities/endpoints |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1 | 1/1 | 15 | 365 | 128 | 109/25 |
+| 2 | 8/8 | 19 | 541 | 403 | 118/29 |
+| 3 | 8/4 | 27 | 1,085 | 501 | 133/37 |
+| 2 | 4/17 | 19 | 541 | 463 | 118/29 |
+
+`build/memory-transfer-host-artifact/host-artifact-03/report.json` certifies all
+120 endpoints through 478 local equalities. Each configuration additionally
+checks encoded traces, encoded final state, memory-preserving post-reset traces
+and final state, and reserved-phase recovery traces. A proof-search helper
+exhaustively splits two-bit controls into all four encodings; it changes tactics
+only and introduces no legal-state restriction. The full generated declarations
+pass the standard-axiom audit. Yosys `proc`/`pmuxtree` normalization and the
+restricted JSON interpretation remain trusted; pre-normalization JSON is retained.
+The imported certificate covers unsynthesized binary RTL. Generic cell counts
+are not a baseline comparison, physical area or timing qualification.
+
+`build/memory-transfer-host-artifact-negatives/host-negatives-02/report.json`
+binds that exact positive receipt and rejects three actual RTL corruptions at
+local semantic proof obligations. Kernel-checked witnesses show reset erasing a
+word (165 to 0), an unaccepted host write leaking into a busy transfer (10 to
+231), and corruption of an active read response (60 to 195). The witness also
+checks the corresponding reset, busy/not-ready or valid/ready condition.
+Malformed import, timeout and parser failure do not count as semantic rejection.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Byte enables,

@@ -12,8 +12,8 @@ The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
 banks, arbitration, a buffered multiport switch and exclusive-command memory.
 The memory adapter also supports backpressured requests and read responses.
-A memory-transfer specification, completion proof and certified open controller
-are available; the host accelerator and processor integration are ongoing campaigns.
+A memory-transfer specification, completion proof and certified host accelerator
+are available; comparative synthesis and processor integration are ongoing campaigns.
 
 ## Construction and proof layers
 
@@ -34,6 +34,12 @@ and universal state/output correspondence. Its encoding may erase logical
 provenance. `Implementation.Reset` separately establishes initialization from
 arbitrary register bits. This interface is shared by ordinary stream components
 and the multiport switch.
+
+`Implementation.run_eq` and `Artifact.Correspondence.encoded_run` additionally
+transport the final represented state through any finite input history. This
+covers memory contents and held read values that need not appear on a current
+output. The conclusion is equality after encoding; it does not assume that
+erased logical provenance can be recovered from physical registers.
 
 `Timed.EventRefinement` adds architectural event paths above cycle models.
 Its fixed event extractor and legal-input predicate are explicit parameters;
@@ -85,7 +91,14 @@ external-service assumptions and the complete controller RTL certificates.
 `Memory.TransferHostModel` adds independent host memory channels for loading and
 readback. It drains outstanding host responses before start acceptance and gives
 an active transfer exclusive memory ownership. Its completion and abort proofs
-reuse the closed transfer model. Hardware for this wrapper remains in progress.
+reuse the closed transfer model. `Memory.TransferHostCircuit` composes the open
+controller with two existing `StreamFlops` memories. Its parameterized
+implementation, trace and final-state proofs accept arbitrary host traffic.
+Reset and reserved-phase recovery preserve arbitrary memory words and Q while
+clearing pending responses; reset is state-dependent, with no implicit memory
+image. Four emitted RTL configurations carry complete artifact, reset-trace,
+recovery-trace and final-state certificates. This uses the existing two-state
+RTL interpretation boundary; synthesis replay is a separate check.
 
 `Arbitration.OneHotSelect` shares a round-robin winner decoder across arbitrary
 payload and control selections. Its correctness theorem requires a legal
