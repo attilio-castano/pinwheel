@@ -20,7 +20,8 @@ python3 scripts/fetch-riscv-specification.py
 
 The fetcher verifies existing and downloaded bytes and refuses to replace a
 mismatched cache. Source identity and the execution-environment choices below are
-fixed. Decoder, checked mapping and device implementations remain open gates.
+fixed. The decoder, checked mapping and device implementations below use this
+source and execution environment.
 
 Implement all 40 base instructions, including precise ECALL/EBREAK outcomes,
 legal HINTs and conservative FENCE behavior. Keep `x0` zero while still performing
@@ -433,10 +434,9 @@ The independent numeric firmware/provider oracle checks 8,000 firmware edges,
 reset/restart edges. It compares complete core, fetch, RAM/Q/pending, device,
 output and event state, including an occurrence ledger for repeated requests.
 Ten actual composition faults are rejected after identical positive fixtures
-pass. All 415 audited declarations use standard axioms only. This closes provider
-ownership and effect accounting at the executable model layer. Structural system
-correspondence, an explicit loader and firmware-driven RTL validation remain
-the next integration gates.
+pass. All 415 audited declarations use standard axioms only. Provider ownership
+and effect accounting at the executable model layer support the physical-system
+correspondence and loading proofs below.
 
 `Memory.ByteAdapterLoader` now provides the physical loading primitive around
 the existing byte-RAM registers. Exclusive loader mode masks adapter responses
@@ -489,8 +489,37 @@ and fifty-one retained artifacts. Its SHA-256 is
 This campaign explicitly forces all sixty startup registers, including nonzero
 RAM words and Q. It validates emitted RTL from that supplied image. Reset-driven
 loading and synthesized firmware replay are covered by the cold-loading campaign
-below. Whole-system model correspondence and an imported-system artifact
-certificate remain open gates.
+below. The physical-system model certificate follows, while the actual imported
+system artifact certificate remains an open gate.
+
+`Processor.SystemCertified` proves complete connected-system cycle refinement
+for every checked layout and ROM function with word-address widths at most 30.
+Its typed specification has exactly `SystemModel.step` as its transition and
+includes every core and MMIO output. The proof composes actual physical request,
+provider reply, fault and fetch expressions with the existing component proofs.
+The raw invariant records core representation, RAM snapshots and provider
+ownership. Reset establishes it from arbitrary register bits while retaining
+all RAM words and Q.
+
+Coverage includes every valid logical system state, arbitrary RAM contents/Q
+and caller-chosen inactive byte-request/fetch metadata. Universal trace and
+final-state theorems cover finite input histories. `SystemCircuitEvents` extracts
+actual RAM completions and MMIO responses/autonomous events, with replay proofs
+reconstructing every final RAM word and the complete device state. Artifact
+transport takes a complete correspondence certificate for the actual imported
+RTL as an explicit premise. Core architectural-event extraction has its own
+remaining contract.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SystemCertified \
+  Pinwheel.Hardware.Processor.SystemCircuitEvents
+lake env lean -DwarningAsError=true test/ProcessorSystemCertified.lean
+```
+
+The audit checks 840 declarations with standard axioms only. Downstream universal
+examples transport complete final RAM/Q through reset and an explicit artifact
+correspondence, and reconstruct final RAM from actual post-reset completion
+events.
 
 ## Cold reset, loading and synthesized firmware
 
