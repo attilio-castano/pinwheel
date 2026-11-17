@@ -215,8 +215,8 @@ lossless encoding; the execution layer supplies conservative ordering behavior.
 The independent `Matches` relation characterizes accepted words. Universal
 theorems relate decoding to that relation, prove unique decoding, both encode/
 decode round trips and encoder injectivity, and specify the immediate fields.
-These are pure instruction contracts; no combinational decoder hardware is
-claimed here.
+These are pure instruction contracts. The structural decoder below implements
+them with existing expression forms.
 
 ```sh
 lake build Pinwheel.Hardware.Processor.RV32I.Decode
@@ -228,6 +228,30 @@ The independent Nat decoder/builder campaign checks 381,095 words, including
 opcode/funct control combinations, all 12-bit immediate fields and boundary/
 neighbor cases. Nine concrete decoder faults are rejected. The audit covers
 3,499 declarations with standard axioms only.
+
+`Processor.RV32I.DecodeCircuit` supplies a reusable expression bundle and a
+stateless circuit with one 32-bit input and nine outputs. Its six-bit tag is zero
+for illegal/unsupported words; stable tags1–40 identify the complete instruction
+kind. The other outputs are valid, rd/rs1/rs2, the reconstructed 32-bit immediate,
+and FENCE mode/predecessor/successor fields. Invalid and inapplicable fields are
+zero. FENCE's retained rd/rs1 are data, not architectural register-access enables.
+
+Universal proofs establish exact agreement with `Decode` for every raw word,
+tag inversion/uniqueness, zero-on-invalid behavior and expression substitution.
+The independent Nat-field oracle checks 381,095 words, all forty tags and all
+nine fields, plus 512 input/register-dependent binding cases. Fourteen actual
+expression faults are rejected; all 824 audited declarations use standard axioms.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.DecodeCircuit
+lake env lean -DwarningAsError=true --run test/RV32IDecodeCircuit.lean
+```
+
+The generic `WordALU`, its RV32I adapter and `RegisterFile` now supply proved
+arithmetic and pre-edge register access for the datapath. The register file
+stores only x1–x31 and has reset-priority writes; its read outputs remain pre-edge
+values until the clock edge, including during reset. Structural instruction
+execution, physical CPU control and whole-CPU RTL evidence remain next steps.
 
 ## Executable instruction semantics
 
@@ -421,7 +445,7 @@ service yields a cycle bound.
 1. Specification hash, execution environment, memory map, fault priorities and
    reset/effect ordering are frozen above. The checked map and decoder contracts
    are implemented and independently tested. Structural address routing is
-   proved; structural instruction decoding remains.
+   proved; structural instruction decoding is also complete.
 2. Byte-access preservation, fault atomicity, decoder coverage and executable
    instruction semantics are proved. Atomic peripheral semantics are implemented;
    structural devices and UART wire semantics remain.
