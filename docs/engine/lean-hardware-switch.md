@@ -160,9 +160,52 @@ Evidence is retained in
 `build/switch-baseline/conventional-full-20261116/report.json`. Logic depth is
 the longest generic combinational path with unit cost per cell; it is not a
 timing estimate. The 5×3 case has 49.1% more generic cells with the same 152
-register bits. Sharing winner signals across payload and cursor selection is
-under investigation. The independent baseline has simulation evidence, not a
-Lean refinement theorem.
+register bits. The independent baseline has simulation evidence, not a Lean
+refinement theorem.
+
+`Switch.SharedSelectionCandidate` reuses the register layout and FIFO grant
+wiring while sharing the winner decoder across output payload and cursor
+selection. Its parameterized implementation and arbitrary-state reset proofs
+are complete. The matched three-implementation campaign at
+`build/switch-shared-selection/candidate-20261116/report.json` passed all 2,682
+edges per implementation/form and 26 actual RTL mutation controls. Generic
+cell counts become 25/354/192/1,382/834 in the table's order. The largest gap
+shrinks from 398 to 24 cells. This implementation remains separate while its
+imported RTL proof campaign is being completed.
+
+### Technology mapping comparison
+
+The same checked original/shared/baseline RTL was mapped independently at the
+checksum-pinned IHP CMOS5L typical and slow corners, using matching ABC drive,
+10 fF output load and 10,000 ps target settings. All 30 mapped circuits replayed
+successfully (16,092 total edges). Functional cell models came from those same
+Liberty files; unsupported cells are rejected if the mapping uses them. ABC's
+actual merged SCL inputs are generated in a fresh private cache retained and
+hashed with the run. Receipt:
+`build/switch-technology/mapped-matrix-02/report.json`.
+
+| Configuration | Original/shared/baseline area sum, typical | Original/shared/baseline ABC delay, typical (ps) |
+| --- | ---: | ---: |
+| 1×1 / 1 / 1 | 430 / 430 / 432 | 630 / 630 / 638 |
+| 2×3 / 2 / 8 | 7,291 / 7,175 / 6,720 | 1,579 / 1,596 / 1,792 |
+| 3×1 / 1 / 8 | 3,573 / 3,537 / 3,518 | 1,091 / 1,273 / 1,305 |
+| 3×5 / 3 / 17 | 28,579 / 28,260 / 26,645 | 2,023 / 1,863 / 2,058 |
+| 5×3 / 2 / 8 | 17,395 / 15,296 / 14,924 | 1,981 / 1,704 / 2,036 |
+
+Area sums use the Liberty library's area units; the pinned files do not declare
+a physical area unit. ABC's estimate includes combinational mapping and sizing,
+but not setup/clock-to-Q, clock trees, placement, routing or parasitics. It is
+not an achievable clock-frequency or full-STA result. Both corners preserve
+the material tradeoff: shared selection improves the 5×3 case, but increases
+the 3×1 delay estimate by 15–17% for about 1% area savings. Keep both architectures
+available instead of assuming a universal improvement from the generic counts.
+
+```sh
+python3 scripts/install-technology-library.py
+python3 scripts/check-switch-shared-selection.py --tag shared-switch-local
+python3 scripts/check-switch-technology.py --tag switch-technology-local \
+  --positive-report build/switch-shared-selection/shared-switch-local/report.json
+```
 
 `Switch.Export` emits reusable FIFO and output-slot leaf modules plus a control
 module. A complete typed state map binds each hierarchical register to the flat
