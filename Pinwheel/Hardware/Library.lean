@@ -18,7 +18,7 @@ import Pinwheel.Hardware.Stream.BufferedMerge.Model
 import Pinwheel.Hardware.Stream.BufferedMerge.Proofs
 import Pinwheel.Hardware.Arbitration.RoundRobinMasked
 import Pinwheel.Hardware.Arbitration.OneHotSelect
-import Pinwheel.Hardware.Switch.Certified
+import Pinwheel.Hardware.Switch.Backend
 import Pinwheel.Hardware.Switch.Contract
 import Pinwheel.Hardware.Switch.Progress
 import Pinwheel.Hardware.Memory.CommandFlopsProofs
