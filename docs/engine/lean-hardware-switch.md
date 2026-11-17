@@ -61,8 +61,10 @@ lake env lean --run test/SwitchInterface.lean
 lake env lean --run test/SwitchPacketEncoding.lean
 lake env lean --run test/SwitchCircuit.lean
 python3 scripts/check-switch-model.py --tag switch-model-local
+python3 scripts/check-switch-circuit.py --tag switch-circuit-local
 python3 scripts/check-round-robin-circuit.py --tag selector-local
 python3 scripts/check-round-robin-baseline.py --tag selector-baseline-local
+python3 scripts/check-round-robin-masked.py --tag selector-masked-local
 ```
 
 Tags create new directories and must not be reused. Reports record commands,
@@ -104,6 +106,10 @@ Completed checks on 2026-11-16:
 - Whole structural circuit: 1,920 raw-input cycles across eight configurations
   and 32 resets from malformed physical state. The proof audit covers all
   imported switch declarations and rejects nonstandard axioms.
+- Whole-switch RTL: 2,682 edges in both emitted and synthesized RTL, across
+  1×1, 2×3, 3×1, 3×5 and 5×3 configurations. Every physical observation and every
+  unsynthesized post-edge register matched the independent oracle. Thirteen
+  actual RTL mutations and six trace corruptions were rejected.
 - First selector: 2,242 legal request/cursor combinations at sizes 1, 2, 3, 5,
   and 8, both before and after generic synthesis; the Lean structural check
   additionally covers size 4, totaling 2,306 cases.
@@ -121,10 +127,17 @@ The independently written two-pass selector baseline exposes a resource gap:
 Both were freshly synthesized under identical generic Yosys settings and checked
 by exhaustive simulation and SAT equivalence on legal one-hot cursors. Invalid
 cursor behavior may differ. These are generic cell counts, not physical area or
-timing. The resource gap motivates a smaller proved selector.
+timing.
 
-The packet-switch campaign remains active. Whole-switch RTL replay, complete
-artifact certificates over a representative parameter matrix, hierarchical RTL,
+The smaller proved selector in `Arbitration.RoundRobinMasked` closes this gap.
+It supports arbitrary typed value/fallback expressions as well as one-hot
+grants. The fresh matched comparison records 0/5/18/34/58 generic cells for
+sizes 1/2/3/5/8, versus 0/5/18/35/59 in the handwritten baseline. At size 8 this
+reduces the initial implementation's generic cell count by 56.4%. Integration
+into the switch is a separate change followed by fresh RTL validation.
+
+The packet-switch campaign remains active. Complete artifact certificates over
+a representative parameter matrix, hierarchical RTL,
 matched whole-switch synthesis/timing baselines and a second integration user
 remain campaign gates. Yosys and the restricted JSON adapter remain trusted
 interpretation boundaries; kernel-checked equations do not certify these tools

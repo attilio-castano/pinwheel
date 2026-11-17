@@ -1,0 +1,67 @@
+# Using the Lean hardware library
+
+Import the reusable library without importing Pinwheel's protocol processor or
+physical-design packages:
+
+```lean
+import Pinwheel.Hardware.Library
+open Pinwheel.Hardware
+```
+
+The library is under active development. It currently covers synchronous
+two-state circuits, complete typed interfaces, stream composition, independent
+banks, arbitration and a buffered multiport switch. Memory and processor APIs
+are subsequent integration campaigns.
+
+## Construction and proof layers
+
+`Expr I R width` describes combinational logic over typed input and register
+families. `Circuit I R O` supplies every next-register and output expression.
+Expression substitution (`Expr.bind`) instantiates proved components without
+textual wiring. All next-register expressions read the same pre-edge snapshot.
+
+`Interface P` completely enumerates a typed family and proves inverse lookup and
+unique names. It drives traversal, emission, observation and imported endpoint
+assembly. `Bank count P` replicates an interface; `Bank.circuit` independently
+replicates a circuit. `Implementation.bank` transfers the component proof to
+arbitrary bank size without inspecting its registers.
+
+`Timed.Component` defines specification transitions and observations.
+`Implementation circuit spec` packages a valid-state predicate, state encoding
+and universal state/output correspondence. Its encoding may erase logical
+provenance. `Implementation.Reset` separately establishes initialization from
+arbitrary register bits. This interface is shared by ordinary stream components
+and the multiport switch.
+
+`Artifact.Correspondence` compares a particular imported RTL interpretation with
+every structural register/output expression. It composes with `Implementation`
+and reset recovery to obtain whole-trace correspondence. Yosys and the restricted
+JSON interpretation remain trusted boundaries. Simulation, artifact proof,
+generic synthesis and physical timing are separate evidence levels.
+
+Protocol contracts sit above this common implementation layer. A stream
+`Certified` component includes its accepted/emitted/pending transaction law.
+`Stream.Multiport.Contract` handles per-flow accounting across independently
+handshaken lanes. Neither contract is forced onto all circuits.
+
+## A client example
+
+[`IndependentLanes.lean`](../../examples/IndependentLanes.lean) constructs a bank
+of independently buffered increment pipelines using only the public import. It
+proves trace correspondence for arbitrary lane count, payload width, FIFO depth,
+pipeline depth, traffic and independent backpressure/reset histories by applying
+the existing certificates. Its emitter instantiates three 17-bit lanes.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean --run examples/IndependentLanes.lean /tmp/independent-lanes.mlir
+```
+
+This demonstrates library composition without changes to internals. It does not
+claim an RTL artifact certificate or physical timing result for that example.
+
+See the [stream foundation](lean-stream-hardware.md),
+[bundle/fork-join guide](lean-stream-graphs.md), and
+[multiport switch record](lean-hardware-switch.md) for the corresponding
+semantics, validation commands and current limitations. The
+[roadmap](lean-hardware-roadmap.md) records the remaining integration gates.
