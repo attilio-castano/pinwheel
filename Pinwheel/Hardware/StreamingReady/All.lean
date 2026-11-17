@@ -11,6 +11,7 @@ import Pinwheel.Hardware.StreamingReady.JTAGSession
 import Pinwheel.Hardware.StreamingReady.LoaderEquivalence
 import Pinwheel.Hardware.StreamingReady.Package
 import Pinwheel.Hardware.StreamingReady.PinCorrespondence
+import Pinwheel.Hardware.StreamingReady.PS2Session
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence

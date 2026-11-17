@@ -212,6 +212,42 @@ python3.12 -B scripts/streaming_8x4_swd_dpidr.py \
   --out build/swd-dpidr-frozen
 ```
 
+## PS/2 keyboard receive
+
+An opt-in two-row image programs the existing Ready engine to receive one
+keyboard-to-host frame, then return to idle. The keyboard
+drives open-drain CLK and DATA into `ui_in[3]` and `ui_in[4]` while Pinwheel
+releases its protocol outputs. The waveform contract at a modeled 4 MHz
+core clock allows each low and high half-period to range independently from
+120 through 200 samples, or 30 through 50 microseconds. CLK starts high,
+and the first falling edge may arrive any time after the three-clock setup
+following an admitted START for 11 bits. The receiver takes the DATA bit
+present at each keyboard falling edge. [Freescale AN1723, Figure 5](https://www.nxp.com/docs/en/application-note/AN1723.pdf#page=9)
+
+The sampled CLK-low guard captures two core clocks after each raw falling
+edge. The next poll starts 220 core clocks after the previous capture, after
+the previous low phase has ended and before the next possible falling edge.
+In the zero-based post-START trace, a final fall at index `f` gives a completed
+prefix of length `f + 221`. The [package theorem](../../Pinwheel/Hardware/StreamingReady/PS2Session.lean)
+checks the exact capture indices, released output enables, and 11-bit
+export through an acknowledged drain and accepted RELEASE. The decoder checks
+the start bit, odd parity, and the stop bit after the exact symbols have been
+exported. It recovers the eight LSB-first data bits for every valid byte and
+rejects each independently malformed framing field.
+
+The frozen RTL and matching CMOS5L gate netlist produced byte-identical
+traces across 18,810 public edges. The fixture used minimum, maximum, and
+mixed half-periods. Both backends decoded `0xB2`, rejected the three malformed
+frames, and acknowledged all 11 bits before releasing each owner. The trace
+SHA-256 is `8f40487dfd6ad867ed4fd76df058939dab6930f5f38faa8eebb84e0a81f94cb0`.
+
+```sh
+python3.12 -B scripts/streaming_8x4_ps2.py \
+  --release "$PINWHEEL_RELEASE" --models "$PINWHEEL_MODELS" \
+  --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
+  --out build/ps2-frozen
+```
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural
