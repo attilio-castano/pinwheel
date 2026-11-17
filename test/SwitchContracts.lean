@@ -1,5 +1,6 @@
 import Lean
 import Pinwheel.Hardware.Switch.Contract
+import Pinwheel.Hardware.Switch.Progress
 
 open Lean Elab Command
 
