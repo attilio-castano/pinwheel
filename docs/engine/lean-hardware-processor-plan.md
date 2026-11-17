@@ -407,8 +407,38 @@ result. Serial frontend events remain input pins.
 python3 scripts/check-processor-mmio.py --tag mmio-local
 ```
 
-Imported artifact certificates, UART framing and processor integration remain
-separate gates.
+`MmioRefinement` transports actual response pins and admitted event histories
+through an explicit complete `Artifact.Correspondence`. Its corruption test
+changes the physical timer-read value, checks failed replay and proves that this
+changed circuit cannot carry the correspondence certificate. The transport audit
+covers 22 declarations with standard axioms only.
+
+`build/processor-mmio-artifact/mmio-artifact-01/report.json` now supplies the
+certificate for the emitted MMIO RTL. Eight registers and seven output endpoints
+are covered by 82 local equalities. Arbitrary-state trace/final-state projection,
+reset clearing/masking, actual responses and admitted-event replay are checked
+in the generated final module. The 891-declaration audit uses standard axioms.
+The receipt closes 56 source, 48 recorded CAD-tool and 38 artifact hashes.
+
+`build/processor-mmio-artifact-negatives/mmio-negatives-01/report.json` rejects
+five actual RTL faults through semantic proof failures and kernel-checked
+counterexamples. The controls cover a faulting GPIO write, overwriting full RX,
+clearing a new framing error, returning the post-tick timer and retaining GPIO
+on reset. Each witness checks all eleven inputs, eight registers and seven
+outputs on both source and imported graphs, then the differing endpoint values.
+The run closes 57 source, 48 tool and 131 artifact hashes and binds a copy of the
+complete positive receipt. Parser errors and resource failures cannot count as
+semantic rejection.
+
+```sh
+python3 scripts/check-processor-mmio-artifact.py --tag mmio-artifact-local
+python3 scripts/check-processor-mmio-artifact-negatives.py --tag mmio-negatives-local \
+  --positive-report build/processor-mmio-artifact/mmio-artifact-local/report.json
+```
+
+These certificates cover the imported unsynthesized binary RTL under the existing
+Yosys `proc`/`pmuxtree` and restricted JSON interpretation boundary. Lean is
+version-pinned. UART framing and processor integration remain open.
 
 ## Reuse and missing library contracts
 
