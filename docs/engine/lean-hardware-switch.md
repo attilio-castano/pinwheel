@@ -258,8 +258,19 @@ python3 scripts/check-switch-shared-artifact-negatives.py --tag shared-negatives
   --positive-report build/switch-shared-artifact/shared-artifact-local/report.json
 ```
 
+`Stream.BufferedMerge` is the second integration user under construction. Its
+model directly composes the round-robin arbiter with one elastic output slot;
+it has no input FIFOs or destination fields. A `Multiport.Contract` proves
+per-source conservation/order, with capacity, stall stability, unique acceptance,
+cursor update/hold rules and bounded fairness in eligible refill opportunities.
+The independent integer/occurrence-ledger oracle passes 2,664 exhaustive edges,
+10,000 protocol-respecting stress edges and 103 fairness cases, including equal
+payloads from different sources. Its 123 declarations pass the standard-axiom
+audit. Run `lake env lean -DwarningAsError=true --run test/BufferedMergeModel.lean`.
+Hardware and RTL evidence for this second user remain open.
+
 The packet-switch campaign remains active. The flat, hierarchical and shared
-artifact matrices are complete. Physical timing baselines and a second
-integration user remain campaign gates. Yosys and the restricted JSON adapter remain trusted
+artifact matrices are complete. Physical timing baselines and completion of the
+second integration user remain campaign gates. Yosys and the restricted JSON adapter remain trusted
 interpretation boundaries; kernel-checked equations do not certify these tools
 or physical behavior.

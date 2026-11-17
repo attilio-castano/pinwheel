@@ -88,6 +88,14 @@ payload and control selections. Its correctness theorem requires a legal
 one-hot cursor and allows arbitrary request/value/fallback expressions. It is
 an alternative to `RoundRobinMasked`, with documented synthesis tradeoffs.
 
+`Stream.BufferedMerge` is a second arbitration/buffering integration model:
+multiple inputs feed one output holding register, with no input queues. It
+directly composes round-robin selection and the elastic register. Its multiport
+contract tracks source provenance, conservation and order; a persistent request
+is accepted within N eligible refill opportunities. Downstream stalls do not
+count as opportunities, and output delivery needs downstream service. Physical
+construction and RTL validation remain in progress.
+
 `Artifact.Correspondence` compares a particular imported RTL interpretation with
 every structural register/output expression. It composes with `Implementation`
 and reset recovery to obtain whole-trace correspondence. Yosys and the restricted

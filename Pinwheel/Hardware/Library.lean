@@ -5,6 +5,7 @@ import Pinwheel.Hardware.Stream.Bundle
 import Pinwheel.Hardware.Stream.Implementation
 import Pinwheel.Hardware.Stream.Timing
 import Pinwheel.Hardware.Stream.Diamond
+import Pinwheel.Hardware.Stream.BufferedMerge.Model
 import Pinwheel.Hardware.Arbitration.RoundRobinMasked
 import Pinwheel.Hardware.Arbitration.OneHotSelect
 import Pinwheel.Hardware.Switch.Certified
