@@ -393,6 +393,15 @@ ownership and effect accounting at the executable model layer. Structural system
 correspondence, an explicit loader and firmware-driven RTL validation remain
 the next integration gates.
 
+`Memory.ByteAdapterLoader` now provides the physical loading primitive around
+the existing byte-RAM registers. Exclusive loader mode masks adapter responses
+and cancels pending CPU work. Accepted writes update full words, preserving Q
+and retained metadata. External reset blocks loading and retains memory. Its
+all-raw step/output and reset certificates, 7,680 independent integer-array edges
+and five actual expression-fault controls establish the component behavior.
+The system wrapper must hold the core quiescent, load the complete image and
+release execution only after coverage is established.
+
 ## Atomic peripheral model
 
 `Processor.MmioModel` implements the frozen GPIO, timer and UART-register

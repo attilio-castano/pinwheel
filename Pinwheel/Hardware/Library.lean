@@ -26,6 +26,7 @@ import Pinwheel.Hardware.Memory.ByteAdapterModel
 import Pinwheel.Hardware.Memory.ByteAdapterEffects
 import Pinwheel.Hardware.Memory.ByteAdapterCircuitProofs
 import Pinwheel.Hardware.Memory.ByteAdapterRefinement
+import Pinwheel.Hardware.Memory.ByteAdapterLoader
 import Pinwheel.Hardware.Memory.TransferModel
 import Pinwheel.Hardware.Memory.TransferCircuitProofs
 import Pinwheel.Hardware.Memory.TransferHostModel

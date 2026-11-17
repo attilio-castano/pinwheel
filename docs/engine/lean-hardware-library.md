@@ -243,6 +243,24 @@ including actual-event replay, arbitrary-state reset recovery and retained memor
 Snapshot validity remains explicit for atomic effects. The [memory campaign](lean-hardware-memory-plan.md)
 records reproducible commands and the Yosys/JSON interpretation boundary.
 
+`Memory.ByteAdapterLoader` wraps the same storage with exclusive full-word
+loading. Loader mode cancels the adapter transaction and masks its outputs.
+An accepted loader write changes one addressed word while holding Q and inactive
+request metadata. External reset takes priority and preserves memory. The core
+must remain quiescent while the loader owns the RAM. Loading a complete image
+and releasing the core are system-level protocol obligations.
+
+Universal raw-state projection, complete output correspondence and the shared
+reset certificate cover all byte-adapter traffic. The integer-array test checks
+7,680 raw edges with aligned word-sized CPU traffic and loader/reset races,
+including every register and pre/post output. Five actual expression faults
+are rejected. All 129 audited declarations use standard axioms only.
+
+```sh
+lake build Pinwheel.Hardware.Memory.ByteAdapterLoader
+lake env lean -DwarningAsError=true --run test/MemoryByteAdapterLoader.lean
+```
+
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`
