@@ -13,6 +13,7 @@ import Pinwheel.Hardware.StreamingReady.PinCorrespondence
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
+import Pinwheel.Hardware.StreamingReady.SPISession
 import Pinwheel.Hardware.StreamingReady.SourceRefinement
 import Pinwheel.Hardware.StreamingReady.StepCorrespondence
 import Pinwheel.Hardware.StreamingReady.TinyWiring

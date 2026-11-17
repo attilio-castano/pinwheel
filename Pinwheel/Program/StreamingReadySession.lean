@@ -62,6 +62,13 @@ def RuntimeInput (s : State a) (i : Pins) : Prop :=
   (s.command i).runtime.initialize = false ∧ (s.command i).runtime.command ≠ 15 ∧
     (s.command i).runtime.command ≠ 1 ∧ (s.command i).runtime.command ≠ 2
 
+theorem State.core_admitted_start (s : State a) (p : Program) (pending : Bool) (pin : Pins)
+    (runtime : RuntimeInput s pin)
+    (admitted : ((s.command pin).runtime.command == 3 && s.core.canStart (s.command pin).runtime) = true) :
+    (s.step p pending pin).core = s.core.start p (s.command pin).runtime := by
+  simp only [Bool.and_eq_true,beq_iff_eq] at admitted
+  simp [State.step,StreamingReady.step,runtime.1,admitted.1,admitted.2]
+
 /-- A source command grammar, not an assumed execution-agreement relation. -/
 def RuntimeTrace (p : Program) (pending : Bool) : State a → List Pins → Prop
   | _, [] => True
@@ -71,6 +78,16 @@ def RuntimeTrace (p : Program) (pending : Bool) : State a → List Pins → Prop
 def State.runtimeInputs (s : State a) (p : Program) (pending : Bool) : List Pins → List StreamingReady.Input
   | [] => []
   | i::rest => (s.command i).runtime :: (s.step p pending i).runtimeInputs p pending rest
+
+theorem State.runtime_rawInputs (s : State a) (p : Program) (pending : Bool) (pins : List Pins) :
+    (s.runtimeInputs p pending pins).map Streaming.Input.rawInputs =
+      pins.map Streaming.Session.Pins.rawInputs := by
+  induction pins generalizing s with
+  | nil => rfl
+  | cons i rest ih =>
+    change i.rawInputs :: ((s.step p pending i).runtimeInputs p pending rest).map Streaming.Input.rawInputs =
+      i.rawInputs :: rest.map Streaming.Session.Pins.rawInputs
+    rw [ih]
 
 theorem State.run_core (s : State a) (p : Program) (pending : Bool) (samples : List Pins) :
     (s.run p pending samples).core =

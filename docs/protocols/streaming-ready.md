@@ -89,6 +89,45 @@ as a successful cell. Fault idle-pin changes may create an aborted short HIGH
 or STOP-like transition. The contract describes the captured prefix and custody,
 not transaction atomicity after a target violates its deadline.
 
+## Full-duplex SPI
+
+Two four-row images run SPI modes 0 and 2 using the existing streaming
+instructions. The mode-0 image retains its original words. Mode 2 parks SCK
+high and samples on falling leading edges. The host selects the image with
+`spi_image(mode=0)` or `spi_image(mode=2)` and supplies the bit count at
+START. The pad assignments are MOSI on `uio_out[0]`, SCK on `uio_out[1]`,
+CSn on `uio_out[2]`, and MISO on `ui_in[3]`.
+
+The [package theorem](../../Pinwheel/Hardware/StreamingReady/SPISession.lean)
+connects an admitted START to an admitted RELEASE. It proves one uninterrupted
+CS assertion with one leading/trailing pair per requested bit. The public MOSI
+bits are exactly the host's accepted TX bits. The host acknowledges exactly the
+MISO bits in order, using the raw input sampled two core clocks before each
+leading edge. The intervening inputs are ordinary runtime commands ahead of
+the RELEASE edge.
+
+The theorem also proves that each leading edge starts a full active interval
+of the programmed duration. The [clock proof](../../Pinwheel/Program/StreamingSPI.lean)
+shows that when TX or RX credit is unavailable, CS stays asserted and SCK
+stays at the mode's idle polarity. Eventual credit at each blocked boundary
+suffices to complete the transfer.
+
+The frozen 8×4 replay loads both images in succession after one cold reset.
+At a four-cycle half-period, each image passes 1-, 33-, and 257-bit exchanges.
+The 257-bit cases pause after bit 32 and each reaches a 4,572-cycle inactive
+SCK interval. The frozen RTL and its CMOS5L gate netlist produced identical
+public traces across 27,220 cycles. The recorded trace SHA-256 is
+`1637829b80fb8640aad7544eb3a3eb58583b575557186b1fb1e8b79a78d1a2f1`.
+Use the frozen release directory containing `src/` and `release/` and the
+pinned vendor models from the [release replay](../research/streaming-8x4-jane-street-behavior-20261115.md).
+
+```sh
+python3.12 -B scripts/streaming_8x4_spi_modes.py \
+  --release "$PINWHEEL_RELEASE" --models "$PINWHEEL_MODELS" \
+  --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
+  --out build/spi-modes-frozen
+```
+
 ## JTAG DR scan
 
 The existing 13-row JTAG image uses unguarded instructions and has the same

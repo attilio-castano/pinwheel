@@ -48,6 +48,14 @@ def Session.State.traceRun (s : Session.State a) (p : Program) (pending : Bool) 
   | [] => trace
   | i :: inputs => (s.step p pending i).traceRun p pending (trace.step s.core (s.command i).runtime) inputs
 
+theorem Session.State.traceRun_runtimeInputs (s : Session.State a) (p : Program) (pending : Bool)
+    (trace : BitTrace) (pins : List Session.Pins) :
+    s.traceRun p pending trace pins =
+      StreamingReady.traceRun p s.core trace (s.runtimeInputs p pending pins) := by
+  induction pins generalizing s trace with
+  | nil => rfl
+  | cons i rest ih => exact ih (s.step p pending i) (trace.step s.core (s.command i).runtime)
+
 theorem Session.State.Custody.run (s : Session.State a) (p : Program) (pending : Bool)
     (samples : List Session.Pins) (trace : BitTrace) (ha : a ≤ 3)
     (runtime : Session.RuntimeTrace p pending s samples) (custody : s.Custody trace) :
@@ -63,10 +71,7 @@ theorem Session.State.Custody.started (s : Session.State a) (p : Program) (pendi
     (start : ((s.command i).runtime.command == 3 && s.core.canStart (s.command i).runtime) = true) :
     (s.step p pending i).Custody {} := by
   have clear := s.accepted_clears pending i (Or.inl start)
-  have core : (s.step p pending i).core = s.core.start p (s.command i).runtime := by
-    have command := start
-    simp only [Bool.and_eq_true, beq_iff_eq] at command
-    simp [Session.State.step, StreamingReady.step, runtime.1, command.1, command.2]
+  have core := s.core_admitted_start p pending i runtime start
   have command := start
   simp only [Bool.and_eq_true, beq_iff_eq] at command
   obtain ⟨delivering, operation⟩ := s.host.command_operation (i.host {}) 3 (by decide) (by decide) command.1
