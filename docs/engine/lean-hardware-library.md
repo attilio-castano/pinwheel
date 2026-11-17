@@ -109,6 +109,15 @@ command; reset drops pending work while retaining words/Q. Its snapshot and
 byte-preservation proofs require exclusive ownership, so this model is not an
 MMIO adapter. Physical construction is in progress.
 
+`Memory.ByteAdapterEffects` relates its actual completion events to atomic RAM
+accesses. Every delivered read, store acknowledgement and fault remains in the
+event stream with the completing request. Under the snapshot invariant, replaying
+those events reconstructs the final memory contents. A separate theorem folds
+all actual full-word writes across arbitrary histories, including resets, without
+a validity premise. Reset emits no completion and never rolls back prior writes.
+These are finite-prefix safety results; consumer readiness is still required
+for completion.
+
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`

@@ -613,6 +613,32 @@ including 1,007 committed stores. Eight semantic mutation controls are detected;
 its proofs; physical construction, RTL evidence and processor mapping remain
 separate gates. RAM read-modify-write must not be applied to MMIO devices.
 
+`Memory.ByteAdapterEffects` now provides the history-wide memory-effect theorem.
+`contents_history` folds every actual committed full-word write in edge order,
+across arbitrary traffic and resets, without a `Valid` premise. The separate
+atomic interpretation checks the completing request and actual delivered
+response: reads must equal the current word's checked byte load, successful
+stores apply the checked byte update, and fault completions preserve contents.
+Faults are never filtered out of the fixed event extractor. Under `Valid`,
+`EventRefinement`, `trace_path` and `replay_trace` establish exact reconstruction
+of the final contents from these events. Initial coverage admits every empty
+adapter memory/Q image; reset recovers arbitrary pending state while retaining
+contents. Internal sampling, stalls and reset emit no completion event.
+
+This interpretation relies on exclusive pure RAM: command-time sampling into Q
+is internal, while architectural completion occurs on response acceptance. It
+does not establish device, processor or eventual-service correctness. Reset
+cancellation is accounted for by the protocol ledger; it does not erase the
+cross-reset history of committed stores.
+
+```sh
+lake env lean -DwarningAsError=true --run test/MemoryByteAdapterEffects.lean
+```
+
+The event test independently reconstructs integer-array memory across 12,339
+edges at address widths 0, 1 and 3, detects nine semantic corruption probes,
+and audits 146 declarations for standard axioms only.
+
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable
 RAMs, non-power-of-two depth, multiple outstanding reads and shared

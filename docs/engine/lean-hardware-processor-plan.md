@@ -66,6 +66,12 @@ remain in progress. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect contracts and frozen address windows.
 
+`Memory.ByteAdapterEffects` proves the pure RAM adapter's atomic completion
+events, including actual read values, stores and faults. Replaying them
+reconstructs final memory contents under the snapshot invariant; reset preserves
+prior stores and cancels pending work without a completion event. This gives a
+component-level event contract to reuse, not a CPU architectural relation.
+
 Keep `Timed.Refinement` for RTL-to-cycle-model equality. `Timed.Events` now
 supplies the generic event-path refinement for internal cycles, fixed extraction,
 finite-prefix safety, initial coverage and a separate finite service-count bound.
