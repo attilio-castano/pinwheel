@@ -363,6 +363,9 @@ lake env lean --run examples/IndependentLanes.lean /tmp/independent-lanes.mlir
 This demonstrates library composition without changes to internals. It does not
 claim an RTL artifact certificate or physical timing result for that example.
 
+The [FIFO substitution sketch](lean-hardware-fifo-substitution.md) explores
+how this client could select a storage implementation and reuse its lane proof.
+
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and
 [multiport switch record](lean-hardware-switch.md) for the corresponding
