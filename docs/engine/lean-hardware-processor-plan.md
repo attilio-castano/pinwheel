@@ -500,7 +500,25 @@ Ten executable faults are rejected after the unchanged model passes each exact
 mutation fixture, adding 1,310 positive fixture edges. All 411 audited declarations
 use standard axioms only.
 
-Physical UART correspondence and MMIO composition are next steps. Composition
+`Uart.Structural` now implements this model with six physical registers and
+four input/six output pins. Counters have width `log2(10D)+1`, with a universal
+strict bound on the frame endpoint. RX uses fixed sample-count comparisons and
+TX uses fixed symbol thresholds. Step/output correspondence is proved under the
+phase/counter invariant. Every raw edge establishes that invariant, while malformed
+units suppress spurious completion/arrival/error events and recover their active
+control. Separate reset proofs clear all raw storage and drive TX idle-high.
+
+```sh
+lake build Pinwheel.Hardware.Uart.CircuitProofs
+lake env lean -DwarningAsError=true --run test/HardwareUartCircuit.lean
+```
+
+The independent physical oracle checks 49,152 raw edges, 87,152 complete-frame
+edges, 34,470 race/history edges and 1,544 positive fault fixtures. Every register
+and pre/post output is checked. Ten actual expression faults are rejected at each
+divisor 4, 6, 10 and 32. All 693 audited declarations use standard axioms only.
+
+MMIO composition and emitted UART RTL are next steps. Composition
 must offer a newly accepted TX write on the same edge and cancel the held MMIO
 slot with frame completion to prevent repeated transmission. RX arrivals feed
 the MMIO slot independently of software consumption. Synchronous digital samples,

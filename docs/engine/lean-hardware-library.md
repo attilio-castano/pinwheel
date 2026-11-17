@@ -101,6 +101,27 @@ trace edges and 5,120 RV32 projection edges, rejecting twelve expression faults.
 All 156 audited declarations use standard axioms only. Positive-width RTL export,
 artifact correspondence and synthesis measurements remain separate gates.
 
+`Uart.Structural` adds a parameterized digital 8N1 transmitter/receiver for a
+checked even clock divisor of at least four. Six registers store active control,
+elapsed counters and held bytes. Universal step/output correspondence uses an
+explicit counter/phase invariant. Every raw state enters that invariant after
+one edge, and malformed units suppress their events while recovering. Reset
+clears every raw register and drives TX idle-high. Inactive byte/counter metadata
+otherwise remains stored and is erased by the logical projection.
+
+```sh
+lake build Pinwheel.Hardware.Uart.CircuitProofs
+lake env lean -DwarningAsError=true --run test/HardwareUartCircuit.lean
+```
+
+The independent oracle checks 49,152 raw edges, 87,152 frame edges and 34,470
+race/history edges. All six registers and six pre/post outputs are checked.
+Another 1,544 positive fault fixtures support ten expression-fault controls at
+each tested divisor. The 693-declaration audit uses standard axioms only.
+The model proves exact TX duration/bit order and RX decoding from explicit
+digital sample schedules. MMIO composition, emitted RTL and analog input
+qualification have their own integration gates.
+
 `Interface P` completely enumerates a typed family and proves inverse lookup and
 unique names. It drives traversal, emission, observation and imported endpoint
 assembly. `Bank count P` replicates an interface; `Bank.circuit` independently
