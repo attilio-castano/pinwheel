@@ -33,23 +33,13 @@ theorem driveTrace_eq {rows : List Instruction} (im : Compiled rows idle)
     (ha : a ≤ 3) (runtime : Session.RuntimeTrace im.program false s pins) (structural : s.core.Structural) :
     PublicPins.driveTrace (SessionCorrespondence.values (Initialization.compiledImage im) s) pins =
       pinTrace im.program s.core (s.runtimeInputs im.program false pins) := by
-  induction pins generalizing s with
-  | nil => simp [PublicPins.driveTrace,PublicPins.drive_eq,Session.State.runtimeInputs,pinTrace]
-  | cons i rest ih =>
-    have first := SessionCorrespondence.step_correct (Initialization.compiledImage im)
-      s i ha runtime.1 structural
-    rw [compiled_pending] at first
-    simp only [PublicPins.driveTrace,PublicPins.drive_eq,PublicPins.step_eq,first,
-      Session.State.runtimeInputs,pinTrace]
-    exact congrArg (s.core.pins :: ·) (ih _ runtime.2 (s.step_structural im.program false i structural))
+  simpa only [compiled_pending] using PublicPins.driveTrace_eq (Initialization.compiledImage im)
+    s pins ha (by simpa only [compiled_pending] using runtime) structural
 
 theorem rawTrace_eq (s : Session.State a) (p : Program) (pins : List Session.Pins) :
     (s.runtimeInputs p false pins).map Pinwheel.Program.Streaming.Input.rawInputs =
       pins.map (fun pin => (PublicPins.embed pin).ui.extractLsb' 3 2) := by
-  rw [s.runtime_rawInputs]
-  apply List.map_congr_left
-  intro pin _
-  exact (congrArg Pinwheel.Program.Streaming.Session.Pins.rawInputs (PublicPins.physical_embed pin)).symm
+  exact PublicPins.rawTrace_eq s p false pins
 
 /-- Actual START selects the compiled image. Actual RELEASE certifies that both
     streams have been drained, including the last host acknowledgment. -/

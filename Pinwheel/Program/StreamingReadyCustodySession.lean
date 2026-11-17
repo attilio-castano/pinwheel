@@ -107,6 +107,21 @@ theorem Session.State.Custody.receipt_valid (s : Session.State a) (trace : BitTr
     s.host.receipt.Valid s.core.rxProduced.toNat s.core.rxPopped.toNat :=
   custody.interval.receipt_valid s (custody.counts.order s.core trace custody.related).2
 
+/-- A drained and acknowledged RX prefix is exact even if TX remains owned. -/
+theorem Session.State.Custody.acknowledged_capture (s : Session.State a) (trace : BitTrace)
+    (custody : s.Custody trace) (emptyQueue : s.core.rx.count.val = 0)
+    (emptyPartial : s.core.rxUsed = 0#6) (acknowledged : s.host.exportBits.toNat = 0) :
+    trace.captured = trace.exported ∧ s.host.ackOffset.toNat = trace.captured.length := by
+  have chunks : trace.rxQueued = [] := by
+    apply List.length_eq_zero_iff.mp
+    simpa [emptyQueue] using custody.related.rxQueue.length
+  have exported : trace.captured = trace.exported := by
+    simpa [chunks,State.pendingRx,emptyPartial] using custody.related.rxOrder
+  obtain ⟨acked,length,order⟩ := custody.bytes
+  have empty : s.host.exportedBits = [] := by simp [Host.State.exportedBits,acknowledged]
+  rw [empty,List.append_nil] at order
+  exact ⟨exported,by rw [exported,order,length]⟩
+
 theorem Session.State.Custody.release_all_bits (s : Session.State a) (i : Session.Pins)
     (trace : BitTrace) (custody : s.Custody trace)
     (command : (s.command i).runtime.command = 4#4) (accepted : s.core.canRelease (s.command i).runtime = true) :

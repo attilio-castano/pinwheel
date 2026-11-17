@@ -2,6 +2,7 @@ import Pinwheel.Hardware.StreamingReady.BootCorrespondence
 import Pinwheel.Hardware.StreamingReady.BootUpload
 import Pinwheel.Hardware.StreamingReady.Core
 import Pinwheel.Hardware.StreamingReady.CoreEmit
+import Pinwheel.Hardware.StreamingReady.I2CReadSession
 import Pinwheel.Hardware.StreamingReady.Initialization
 import Pinwheel.Hardware.StreamingReady.InitializedCustody
 import Pinwheel.Hardware.StreamingReady.InitializedSession
@@ -19,6 +20,7 @@ import Pinwheel.Hardware.StreamingReady.StepCorrespondence
 import Pinwheel.Hardware.StreamingReady.TinyWiring
 import Pinwheel.Hardware.StreamingReady.WarmReset
 import Pinwheel.Hardware.StreamingReady.Wiring
+import Pinwheel.Program.StreamingI2CService
 import Pinwheel.Program.StreamingReady
 import Pinwheel.Program.StreamingReadyBitTrace
 import Pinwheel.Program.StreamingReadyBootPins

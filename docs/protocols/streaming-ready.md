@@ -89,6 +89,36 @@ as a successful cell. Fault idle-pin changes may create an aborted short HIGH
 or STOP-like transition. The contract describes the captured prefix and custody,
 not transaction atomicity after a target violates its deadline.
 
+### 64-byte read proof
+
+The [read theorem](../../Pinwheel/Hardware/StreamingReady/I2CReadSession.lean)
+binds the standard image to the initialized package and its public drive
+trace. The digital board model resolves each controller/target pair as
+open drain. At the programmed START and STOP cuts, the target leaves both
+lines released and the controller changes SDA while SCL is high. Each of
+the 585 qualified samples comes from the resolved SDA two core clocks
+earlier. The peer supplies SDA from its own address-ACK and payload plan.
+The [completion theorem](../../Pinwheel/Program/StreamingI2CService.lean)
+requires eventual host credit and valid resolved samples at the final
+aperture of every bounded wait that reaches its deadline.
+
+The host sends the address, read bit and controller ACK/NACK plan through
+the TX queue. On a completed read with an admitted RELEASE, the ordered
+acknowledged export decodes to the target's 64 bytes. Decoding checks the
+address echo, the target's ACK, and the controller's 63 ACKs and final NACK.
+
+During a data WAIT, raw release at offset 28 reaches the second sampler at
+poll 30, the last permitted poll. Release at offset 29 makes public SCL
+high while poll 30 still sees the earlier low sample. The proved fault
+flushes the partial word and preserves the earlier capture prefix.
+The host can acknowledge that prefix while unsent TX remains owned.
+
+Fresh replays of the varying-stretch, last-poll, and one-poll-late read
+cases matched byte for byte across 24,584 public-pin clocks on the frozen
+8×4 RTL and gate netlist. The late case had 12 resolved data rises and
+acknowledged exactly 11 captures. The three cases use the independent
+peer and public sampler-window checks of the existing I²C replay.
+
 ## Full-duplex SPI
 
 Two four-row images run SPI modes 0 and 2 using the existing streaming

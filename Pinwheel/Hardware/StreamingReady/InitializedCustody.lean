@@ -97,6 +97,19 @@ theorem compiled_pending (image : Compiled source idle) : (compiledImage image).
   change (0#1).getLsbD 0 = false
   decide +kernel
 
+theorem Reached.run {a : Nat} {actual : Package.State a} {s : Session.State a}
+    (reached : Reached image actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace image.program false s pins) :
+    Reached image
+      (actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins))
+      (s.run image.program false pins) (s.traceRun image.program false trace pins) := by
+  constructor
+  · rw [reached.package]
+    simpa only [compiled_pending] using SessionCorrespondence.run_correct (compiledImage image)
+      s pins ha (by simpa only [compiled_pending] using runtime) reached.custody.structural
+  · exact reached.custody.run s image.program false pins trace ha runtime
+  · exact reached.freeExport.run s image.program false pins trace ha runtime reached.custody
+
 theorem initialized_run_eq (image : Compiled source idle) (actualBoot : Package.State a)
     (boot : Session.State a) (initialized : BootCorrespondence.Initialized image actualBoot boot)
     (pins : List Session.Pins) (ha : a ≤ 3) (runtime : Session.RuntimeTrace image.program false boot pins) :

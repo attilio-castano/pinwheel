@@ -87,4 +87,25 @@ def driveTrace (s : Package.State a) : List Session.Pins → List Pins
   | [] => [drive s]
   | i :: rest => drive s :: driveTrace (step s i) rest
 
+theorem driveTrace_eq (im : SourceRefinement.Image p) (s : Session.State a)
+    (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace p (im.pending.getLsbD 0) s pins)
+    (structural : s.core.Structural) :
+    driveTrace (SessionCorrespondence.values im s) pins =
+      pinTrace p s.core (s.runtimeInputs p (im.pending.getLsbD 0) pins) := by
+  induction pins generalizing s with
+  | nil => simp [driveTrace,drive_eq,Session.State.runtimeInputs,pinTrace]
+  | cons i rest ih =>
+    have first := SessionCorrespondence.step_correct im s i ha runtime.1 structural
+    simp only [driveTrace,drive_eq,step_eq,first,Session.State.runtimeInputs,pinTrace]
+    exact congrArg (s.core.pins :: ·) (ih _ runtime.2 (s.step_structural p _ i structural))
+
+theorem rawTrace_eq (s : Session.State a) (p : Program) (pending : Bool) (pins : List Session.Pins) :
+    (s.runtimeInputs p pending pins).map Pinwheel.Program.Streaming.Input.rawInputs =
+      pins.map (fun pin => (embed pin).ui.extractLsb' 3 2) := by
+  rw [s.runtime_rawInputs]
+  apply List.map_congr_left
+  intro pin _
+  exact (congrArg Pinwheel.Program.Streaming.Session.Pins.rawInputs (physical_embed pin)).symm
+
 end Pinwheel.Hardware.StreamingReady.PublicPins

@@ -141,10 +141,6 @@ def pending (s : State a) : List Edge :=
     (if high then .trailing :: edgesFor (s.remaining.toNat - 1) else edgesFor s.remaining.toNat) ++
     (if s.phase == .completed then [] else [.deselect])
 
-def pinTrace (p : Program) (s : State a) : List Input → List Pins
-  | [] => [s.pins]
-  | i :: is => s.pins :: pinTrace p (step p i s) is
-
 def events (mode : Mode) : List Pins → List Edge
   | before :: after :: rest => observed mode before after ++ events mode (after :: rest)
   | _ => []
