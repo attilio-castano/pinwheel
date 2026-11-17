@@ -125,6 +125,9 @@ lake env lean -DwarningAsError=true --run test/MemoryStreamModel.lean
 lake env lean -DwarningAsError=true --run test/MemoryStreamFlops.lean
 lake env lean -DwarningAsError=true test/MemoryStreamContracts.lean
 python3 scripts/check-memory-stream.py --tag stream-memory-local
+python3 scripts/check-memory-stream-artifact.py --tag stream-artifact-local
+python3 scripts/check-memory-stream-artifact-negatives.py --tag stream-negatives-local \
+  --positive-report build/memory-stream-artifact/stream-artifact-local/report.json
 ```
 
 `build/memory-stream/stream-flops-01/report.json` passed the four command-memory
@@ -133,7 +136,17 @@ read snapshots, delivered responses and reset epochs. Every emitted register
 and pre/post output agrees; synthesized outputs agree after a reset and full
 initial writes establish observable state. All twelve actual RTL faults were
 rejected: ignored response stalls, dropped pending state and a word incorrectly
-cleared by reset. Imported RTL certification for this adapter remains pending.
+cleared by reset.
+
+Imported RTL certification passed in
+`build/memory-stream-artifact/stream-artifact-20261116-02/report.json`: 133 local
+equalities and all 36 typed register/output endpoints across the four cases.
+The composed theorems cover arbitrary-state traces, traces after protocol reset,
+preservation of every memory word and Q, and clearing of pending. The matching
+`build/memory-stream-artifact-negatives/stream-negatives-20261116/report.json`
+rejects active-response inversion, pending/word next-state corruption and a
+word erased by reset. Each rejection includes a kernel-checked concrete
+counterexample. The RTL interpretation trust boundary is unchanged.
 
 ### First transfer controller
 
@@ -150,6 +163,16 @@ addition: `length ≤ 2^a - base`. Invalid commands pulse error and send no memo
 request; zero length pulses done immediately at its acceptance edge. A start
 held valid is accepted again whenever ready, following ordinary handshake
 semantics. Busy commands cannot replace the latched configuration.
+
+`Memory.TransferRange` implements the checked range codec, nonwrapping and
+injective indexing, and incremental destination-prefix update algebra.
+`Patched` describes the current memory independently of its representation;
+`patch_step` extends that invariant after one accepted write. The copy
+specialization transforms a fixed source snapshot and preserves every
+destination word outside the written prefix. It does not assume in-place
+source stability. Tests cover 682 raw range encodings and 43,203 prefix checks,
+including zero/full-depth ranges, all small source/destination arrays and
+modular transforms. Its 84 declarations pass the standard-axiom audit.
 
 The serial controller has Idle, IssueRead and Transfer phases. IssueRead waits
 for the source read acceptance. Transfer couples source-response retirement to

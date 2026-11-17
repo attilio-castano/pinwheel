@@ -87,7 +87,7 @@ def local_proofs(rb, pairs, *, start=0, plans=None):
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
         lines.append(f"theorem local_{k} {variables} :\n"
                      f"    {rb.render_tree(pair['left'])} = {rb.render_tree(pair['right'])} := by\n"
-                     "  try simp only [BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
+                     "  try simp only [ite_self, BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
                      "  all_goals first\n"
                      "  | rfl\n"
                      "  |\n"
