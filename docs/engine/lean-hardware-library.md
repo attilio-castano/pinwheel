@@ -107,7 +107,15 @@ RAM Q at request acceptance, and commits a store on the same edge as response
 acceptance. A blocked acknowledgement performs no write. Faults issue no RAM
 command; reset drops pending work while retaining words/Q. Its snapshot and
 byte-preservation proofs require exclusive ownership, so this model is not an
-MMIO adapter. Physical construction is in progress.
+MMIO adapter.
+
+`Memory.ByteAdapterCircuit` reuses `CommandFlops` storage and Q, adding six
+retained request fields and one pending bit. Its `DecodedImplementation` proves
+the functional projection and all output pins for arbitrary raw states. Inactive
+metadata is retained, so there is deliberately no canonical encoding requirement.
+Reset preserves words, Q and metadata, clears pending, and masks all outputs.
+It also establishes the stronger owned-word snapshot invariant needed for
+atomic byte-access effects. RTL validation is a separate campaign.
 
 `Memory.ByteAdapterEffects` relates its actual completion events to atomic RAM
 accesses. Every delivered read, store acknowledgement and fault remains in the

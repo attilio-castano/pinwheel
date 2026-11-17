@@ -639,6 +639,33 @@ The event test independently reconstructs integer-array memory across 12,339
 edges at address widths 0, 1 and 3, detects nine semantic corruption probes,
 and audits 146 declarations for standard axioms only.
 
+### Structural byte adapter
+
+`ByteAdapterInterface` exposes nine typed inputs: reset, request-valid, write,
+signed-load, size, word-address, byte-offset, data and response-ready. Its four
+outputs are request-ready, response-valid, response-code and response-data.
+Response codes are read=0, stored=1, reserved-size=2 and misaligned=3; inactive
+code/data are zero. Reserved size takes priority over alignment.
+
+`ByteAdapterCircuit` composes the existing `CommandFlops` memory/Q with six
+retained request metadata fields and a pending bit: `2^a + 8` register endpoints.
+Only request acceptance changes metadata. Reset cancels pending work while
+preserving every word, Q and all six metadata fields. The universal
+`view_step`/`output_eq` proofs have no raw-state invariant; the shared
+`DecodedImplementation` uses `Valid = True` for functional correspondence.
+The separate snapshot validity theorem is required for interpreting byte effects
+and is established by reset, then preserved across every input history.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryByteAdapterCircuit.lean
+```
+
+The structural test passes 22,384 complete raw-state/trace edges at address
+widths 0, 1, 2 and 3, including every register and pre/post output, and rejects
+three actual circuit mutations. Its 303 declarations use standard axioms only.
+The emitted/synthesized RTL and imported artifact campaigns remain separate.
+
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable
 RAMs, non-power-of-two depth, multiple outstanding reads and shared
