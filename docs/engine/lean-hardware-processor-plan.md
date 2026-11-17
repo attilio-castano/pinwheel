@@ -395,17 +395,18 @@ lake build Pinwheel.Hardware.Processor.CoreCertified Pinwheel.Hardware.Processor
 lake env lean -DwarningAsError=true --run test/ProcessorCoreCircuit.lean
 ```
 
-The integrated audit covers 805 declarations, including the complete interface,
+The integrated audit covers 982 declarations, including the complete interface,
 public/private core proofs and test helpers, using standard axioms only.
-The controller-oracle campaign checks 6,248 complete register/pre/post-output
+The controller-oracle campaign checks 6,248 complete register/pre/post-output/event
 edges, eight arbitrary-register phase/reset fixtures and five actual expression
 faults. Cases include atomic/deferred service, all raw data fault codes, unowned
 replies, stalls, PC wraparound and reset during each instruction stage.
 
-The core certificate takes provider values as explicit inputs. Connected ROM
-contents, RAM/MMIO ownership, actual architectural event transport and external
-ISA agreement have their own obligations. Artifact transport theorems take a
-complete correspondence certificate for the actual imported RTL as a premise.
+The core certificate takes provider values as explicit inputs. The connected
+system and event proofs below supply provider ownership and architectural
+transport. External ISA agreement has its own validation campaign. Artifact
+transport theorems take a complete correspondence certificate for the actual
+imported RTL as a premise.
 
 ## Connected ROM/RAM/MMIO model
 
@@ -507,8 +508,8 @@ final-state theorems cover finite input histories. `SystemCircuitEvents` extract
 actual RAM completions and MMIO responses/autonomous events, with replay proofs
 reconstructing every final RAM word and the complete device state. Artifact
 transport takes a complete correspondence certificate for the actual imported
-RTL as an explicit premise. Core architectural-event extraction has its own
-remaining contract.
+RTL as an explicit premise. The event layer below connects actual core ports
+to architectural execution and provider effects.
 
 ```sh
 lake build Pinwheel.Hardware.Processor.SystemCertified \
@@ -520,6 +521,36 @@ The audit checks 840 declarations with standard axioms only. Downstream universa
 examples transport complete final RAM/Q through reset and an explicit artifact
 correspondence, and reconstruct final RAM from actual post-reset completion
 events.
+
+`CoreCircuit.Events` constructs events from actual cancel, retirement and trap
+ports. Retirement instruction, next PC and writeback pins build the after-state.
+An independent theorem identifies that state with the actual next RF and PC.
+The pre-PC comes from the origin snapshot, with a separate equality to the
+retirement-PC port. Completion provenance retains actual atomic/deferred reply
+fields and the held instruction's issued request. Ordered accounting covers
+fetched words, completion, cancellation and the remaining held word, including
+repeated identical instructions.
+
+`SystemCircuitArchitecture` joins these events to actual RAM and MMIO completion
+events. Its architectural paths and replay reconstruct the full final register
+state and terminal status. RAM completion uses the owned pre-edge word, and MMIO
+effects share the architectural completion edge. Reset recovers arbitrary raw
+state and suppresses CPU/RAM completion. A decreasing rank proves retirement or
+trap within five supplied service opportunities. Reset is excluded from this
+progress statement, and external service availability remains a premise.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SystemCircuitArchitecture
+lake env lean -DwarningAsError=true --run test/ProcessorArchitecturalEvents.lean
+```
+
+The event audit covers 547 standard-axiom declarations. Nine independently
+specified event/full-register fixtures and fourteen actual output-expression
+faults check instruction arithmetic, traps, atomic/deferred provenance, ignored
+store payloads, x0 loads, FENCE, unowned replies and reset cancellation. Imported
+RTL event extraction reads actual imported core outputs and requires a complete
+artifact correspondence. Provider provenance is reconstructed through the
+certified connected network and retained raw state.
 
 ## Cold reset, loading and synthesized firmware
 

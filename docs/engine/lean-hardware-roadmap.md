@@ -62,8 +62,9 @@ map are fixed. Decoder, checked routing, instruction execution and atomic device
 contracts support the complete physical core's cycle refinement and reset
 recovery. Digital UART frame timing and structural correspondence are proved.
 Connected system cycle refinement and cold loaded firmware replay are complete.
-Architectural-event extraction, serial integration, external ISA validation and
-the imported whole-system artifact certificate remain open.
+Actual-port architectural-event refinement, cancellation accounting and
+conditional service-count progress are complete. Serial integration, external
+architecture tests and the imported whole-system artifact certificate remain open.
 
 ## First campaign: buffered packet switch
 

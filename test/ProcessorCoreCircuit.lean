@@ -1,6 +1,7 @@
 import Lean
 import Pinwheel.Hardware.Processor.CoreCertified
 import Pinwheel.Hardware.Processor.CoreCircuitRequests
+import Pinwheel.Hardware.Processor.CoreCircuitEvents
 
 open Lean Elab Command Pinwheel.Hardware Pinwheel.Hardware.Processor
 
@@ -13,6 +14,23 @@ def bank (values : Array Nat) : Values CoreCircuit.Register := fun {b} p =>
   BitVec.ofNat b values[(CoreCircuit.registers.position p).val]!
 def capture (d : Interface P) (v : Values P) : Array Nat :=
   d.ports.map (fun ⟨_,p⟩ => (v p).toNat)
+
+def sameEvent (actual expected : CoreModel.Event) : Bool :=
+  match actual,expected with
+  | .reset,.reset => true
+  | .retired word path after,.retired expectedWord expectedPath expectedAfter =>
+      word == expectedWord && decide (path = expectedPath) && after.pc == expectedAfter.pc &&
+        (Array.ofFn fun k : Fin 31 => (after.registers k).toNat) ==
+          (Array.ofFn fun k : Fin 31 => (expectedAfter.registers k).toNat)
+  | .trapped fault path,.trapped expectedFault expectedPath =>
+      decide (fault = expectedFault) && decide (path = expectedPath)
+  | _,_ => false
+
+def sameEvents (actual expected : List CoreModel.Event) : Bool :=
+  match actual,expected with
+  | [],[] => true
+  | [actual],[expected] => sameEvent actual expected
+  | _,_ => false
 
 def phaseCode : CoreModel.Phase → Nat
   | .fetchRequest => 0 | .fetchResponse => 1 | .execute _ => 2 | .dataRequest _ => 3
@@ -41,6 +59,9 @@ def checkEdge (s : CoreModel.State) (raw : Array Nat) (row : Array Nat) : IO (Co
   let actualPre := capture outputs (CoreCircuit.circuit.observe i state)
   unless actualPre == expectedPre do
     throw (IO.userError s!"Core pre-output mismatch phase{raw[31]!} input{row}: expected{expectedPre}, got{actualPre}")
+  let actualEvents := CoreCircuit.Events.extract i state (CoreCircuit.circuit.observe i state)
+  unless sameEvents actualEvents (CoreModel.events (decode i) s) do
+    throw (IO.userError s!"Actual core event mismatch phase{raw[31]!} input{row}")
   let expected := expectedBank i s raw
   let actual := capture CoreCircuit.registers (CoreCircuit.circuit.step i state)
   unless actual == expected do
@@ -114,6 +135,8 @@ def dirtyReset : IO Nat := do
     unless after.all (· == 0) do throw (IO.userError "Dirty core reset did not clear every register")
     let actual := capture outputs (CoreCircuit.circuit.observe i (bank raw))
     unless actual == #[1] ++ Array.replicate 29 0 do throw (IO.userError "Dirty reset leaked an offer or commit")
+    unless sameEvents (CoreCircuit.Events.events i (bank raw)) [.reset] do
+      throw (IO.userError "Dirty reset did not emit exactly one reset event")
     checks := checks+1
   return checks
 
@@ -200,4 +223,4 @@ def main : IO Unit := do
   let resets ← ProcessorCoreCircuitTests.dirtyReset
   let faults ← ProcessorCoreCircuitTests.faultAndStallCases
   let rejected ← ProcessorCoreCircuitTests.controls
-  IO.println s!"Core circuit: {count+faults} complete register/pre/post-output trace edges, {resets} dirty-phase reset cases, {rejected} actual Expr faults rejected."
+  IO.println s!"Core circuit: {count+faults} complete register/pre/post-output and actual-event trace edges, {resets} dirty-phase reset cases, {rejected} actual Expr faults rejected."
