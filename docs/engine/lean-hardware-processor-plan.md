@@ -532,9 +532,25 @@ trace and final-state equality are proved for arbitrary raw state. The four-leaf
 export proves agreement of every bus input and fetch update with the canonical
 wrapper, including the distinct external/effective reset paths.
 
+`LoadableSystemLoading.complete_image` proves image establishment from arbitrary
+raw controller and RAM bits. Its explicit history premises hold loader mode,
+cover every address with an accepted write and supply the image value on each
+accepted write. The final projection is exactly `SystemModel.initial image oldQ`.
+External reset blocks writes, cancels pending ownership and preserves RAM/Q.
+Inactive RAM metadata remains stored throughout loading.
+
+`LoadableSystemProofs.implementation` composes loading with the full connected
+system certificate. It proves state preservation, complete output equality,
+arbitrary-state reset recovery and coverage of every valid logical state.
+`system_run_after_loading` transports arbitrary subsequent normal-mode traffic
+to the connected model from the established image. Trace equality also covers
+later loader-mode changes. Artifact transport additionally takes a complete
+correspondence certificate for the actual imported RTL as an explicit premise.
+
 ```sh
-lake build Pinwheel.Hardware.Processor.LoadableSystemStagedProofs \
+lake build Pinwheel.Hardware.Processor.LoadableSystemProofs \
   Pinwheel.Hardware.Processor.LoadableSystemExportProofs
+lake env lean -DwarningAsError=true --run test/ProcessorLoadableSystemLoading.lean
 lake env lean -DwarningAsError=true --run test/ProcessorLoadableSystemCircuit.lean
 python3 -B test/test_processor_loadable_system_boot.py
 python3 -B scripts/check-processor-loadable-system-boot.py --tag cold-boot-local
@@ -556,12 +572,16 @@ edge. The complete trace must pass parsing before a semantic fault is reported.
 Five actual RTL corruptions exercise loader data, active writeback, retired PC,
 RAM store commit and GPIO store commit. Thirteen portable tests exercise topology,
 definedness, parser and mutation-witness failures. The combined wrapper/export
-audit covers 183 standard-axiom declarations and 256 dirty-state feedback cases.
+audit covers 261 standard-axiom declarations and 256 dirty-state feedback cases.
+A separate integer-bank oracle checks all registers over 120 loading/reset edges
+at RAM address widths 0, 1 and 3, with arbitrary startup bits, reversed address
+coverage and repeated writes. Its downstream universal example transports final
+memory through both artifact loading and execution.
 
-`build/processor-loadable-system-boot/cold-boot-01/report.json` records twenty-four
-successful commands, ninety-six source hashes, forty-six selected CAD tool/runtime
+`build/processor-loadable-system-boot/cold-boot-03/report.json` records twenty-four
+successful commands, 117 source hashes, forty-six selected CAD tool/runtime
 hashes and seventy-four retained artifacts. Its SHA-256 is
-`fa46b14071ed5268b4f29c445a9faa1731af64986e4b4be95caea3b632294476`.
+`1708afa152876747cd667f9f37e7c240022c362787144fab9abb137b398069d0`.
 Generic synthesis contains 6,800 cell records, including four `$scopeinfo`
 records. Comparative area/timing and imported-system artifact correspondence
 remain open. The native Lean compiler boundary is recorded separately by the

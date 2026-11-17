@@ -27,6 +27,10 @@ def valid : Input aw 1 := .right (.at ⟨1,by change 1 < 4; decide⟩)
 def address : Input aw aw := .right (.at ⟨2,by change 2 < 4; decide⟩)
 def data : Input aw 32 := .right (.at ⟨3,by change 3 < 4; decide⟩)
 
+/-- Actual host admission: loader ownership, no external reset, and a valid offer. -/
+def Accepted (i : Values (Input aw)) : Prop := i mode = 1 ∧ i reset = 0 ∧ i valid = 1
+instance (i : Values (Input aw)) : Decidable (Accepted i) := inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
 abbrev E (aw b : Nat) := Expr (Input aw) (Register aw) b
 def effectiveReset : E aw 1 := WordOps.wordOr (.input reset) (.input mode)
 def systemInput : {b : Nat} → SystemInterface.Input b → E aw b

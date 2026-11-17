@@ -1,6 +1,6 @@
 import Lean
 import Pinwheel.Hardware.Processor.LoadableSystemExportProofs
-import Pinwheel.Hardware.Processor.LoadableSystemStagedProofs
+import Pinwheel.Hardware.Processor.LoadableSystemProofs
 import Pinwheel.Hardware.Processor.Examples.ByteProgram
 
 open Lean Elab Pinwheel.Hardware Pinwheel.Hardware.Processor ProcessorSystemFirmware
