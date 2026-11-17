@@ -820,9 +820,79 @@ counters/phases, every raw device selector, reset, wire sampling, refill and
 error-clear races. Nine actual expression faults are rejected after 293 unchanged
 baseline edges pass. All 166 audited declarations use standard axioms only.
 
-Emitted serial RTL and processor-level serial integration remain integration steps.
-Synchronous digital samples, input synchronization, metastability and oscillator
-tolerance remain explicit environment assumptions.
+### Serial RTL replay and artifact correspondence
+
+`Processor.SerialRefinement` extracts CPU responses and autonomous device events
+from the actual imported MMIO response and UART pulse outputs. Its replay
+theorems require complete `Artifact.Correspondence`, the serial valid-state
+invariant and admitted raw device selectors. Reset establishes the invariant
+from arbitrary register bits. Selector 3 retains a separate all-state fault
+theorem; it is not silently admitted as a typed operation. The dedicated test
+audits 32 declarations for standard axioms and checks 28 independently specified
+event sensitivities across divisors 4, 6, 10 and 32.
+
+```sh
+lake env lean -DwarningAsError=true --run test/ProcessorSerialRefinement.lean
+python3 -B scripts/check-processor-serial.py --tag serial-local
+python3 -B scripts/check-processor-serial-artifact.py --tag serial-artifact-local
+python3 -B scripts/check-processor-serial-artifact-negatives.py --tag serial-negatives-local \
+  --positive-report build/processor-serial-artifact/serial-artifact-local/report.json
+```
+
+The complete serial matrix has the following retained replay measurements:
+
+| Clock divisor | Reset-driven edges per form | Additional arbitrary-state RTL edges | Generic synthesized cells |
+| --- | ---: | ---: | ---: |
+| 4 | 12,009 | 1,048 | 648 |
+| 6 | 1,733 | 1,048 | 632 |
+| 10 | 2,509 | 1,048 | 647 |
+| 32 | 6,777 | 1,048 | 626 |
+
+Each configuration checks emitted RTL with all fourteen raw registers observed,
+and synthesized RTL initialized solely by synchronous reset. The separate
+arbitrary-state segments explicitly force all fourteen emitted-RTL registers;
+they make no unforced-startup claim. An independent numeric oracle and the Lean
+replay agree on all registers and pre/post outputs. Occurrence-based TX/RX
+histories distinguish repeated equal bytes and account for cancellation by reset.
+All 256 transmitted bytes are exercised at divisor 4; the portable digital-frame
+oracle tests every byte at every selected divisor. Twelve actual RTL faults per
+configuration produce concrete mismatches after complete binary trace parsing.
+Twenty-two portable oracle/driver/artifact tests also pass. Cell counts are
+resource measurements without matched baseline or physical timing qualification.
+
+`build/processor-serial/serial-matrix-02/report.json` records 143 successful
+commands, 57 sources, 46 selected CAD tool files and 439 artifacts. Its SHA-256 is
+`2b115698c9b1c5776a329c2788b263913f9b7591f687db399b3bb3233dbe7fed`.
+The separate complete imported-RTL certificate at
+`build/processor-serial-artifact/serial-artifact-03/report.json` has SHA-256
+`5170be8ba0736e72baf4e430a7e407beea61cce5caee57e9e5e142507f1428ec`.
+All 108 endpoints across the four configurations are certified, using 672 local
+equalities. The certificate covers every raw next-state and output value, then
+transports initialized traces, final state, reset and actual device-event replay
+under their explicit premises. All generated proofs pass the standard-axiom
+audit. The receipt records 58 successful commands, 69 sources, 48 selected CAD
+tool files and 170 artifacts.
+
+The six actual-RTL negative controls reject lost same-edge TX admission,
+duplicated completion, completion during reset, dropped RX refill, clearing a
+new framing error and successful invalid-selector responses. Each fails an
+ordinary semantic proof and has a separately kernel-checked active counterexample
+with all 22 input/register values and 26 source/mutant output conditions.
+Parser, tool and timeout failures do not count. The negative receipt is
+`build/processor-serial-artifact-negatives/serial-negatives-01/report.json`,
+SHA-256 `9d56e7fab6f169a5faae5844e2367de3f437769435e9bb7c3271987fddadf1f0`:
+43 successful commands and six expected semantic rejections, 71 sources, 48
+selected CAD tool files and 194 artifacts. Its positive receipt is revalidated
+before and after the campaign. Independent closeout rehashed all three receipt
+closures without a mismatch.
+
+These serial receipts pin source and selected CAD artifacts. They do not census
+the Python/Lean/Lake runtime binaries or imported Lean build inputs as the
+separate ISA and native-emitter provenance campaigns do. Yosys `proc`/`pmuxtree`
+and the restricted JSON interpretation remain in the two-state digital RTL
+trust boundary. Full processor-level serial integration and synthesis-preservation
+proofs remain open. Synchronous digital samples, input synchronization,
+metastability and oscillator tolerance remain explicit environment assumptions.
 
 ## Reuse and missing library contracts
 
