@@ -415,9 +415,8 @@ Mapped cell area is 1.2–5.5% lower for the Lean composition, despite its large
 generic cell count. The material regression is delay: approximately 20–40%
 higher across both corners. The generic longest path exposes the chain from
 reset/start readiness through accepted-start and host ownership into the source
-RAM's address/read selection. A phase-only ownership selector is being evaluated
-as a separately proved candidate; the certified reference and these measurements
-remain intact. No optimized result is claimed here.
+RAM's address/read selection. The phase-only ownership candidate below addresses
+that path while retaining the certified reference and its measurements.
 
 ```sh
 python3 scripts/check-memory-transfer-host-baseline.py --tag host-baseline-local \
@@ -432,6 +431,67 @@ area units, not an asserted square-micron measure. ABC estimates omit sequential
 setup/clock-to-Q, clock trees, placement, routed parasitics and full STA; they do
 not establish clock frequency or physical qualification. Baseline simulation
 and mapped replay do not provide a baseline or post-synthesis kernel proof.
+
+### Proved ownership optimization
+
+`Memory.TransferHostOwnershipCandidate` selects host memory inputs whenever the
+controller is idle. It removes accepted-start logic from the memory ownership
+mux. At a start acceptance, both pending bits are already zero and start-valid
+suppresses new host requests, so either branch performs the same idle memory
+transition. The parameterized `step_eq` and `output_eq` prove equivalence for
+every raw binary input/register state, including malformed controller states;
+there is no reachable-state or valid-controller premise. Trace, final-state,
+memory-preserving reset and reserved-phase recovery proofs follow through the
+original certificates.
+
+Import this optional constructor directly:
+
+```lean
+import Pinwheel.Hardware.Memory.TransferHostOwnershipCandidate
+```
+
+`test/MemoryTransferHostOwnership.lean` checks 20,480 raw phase/pending/handshake
+combinations, including zero semantic widths, and audits 50 declarations.
+`build/memory-transfer-host-ownership/ownership-matrix-01/report.json` passes the
+same 2,532 edges per form, all emitted registers/pre/post outputs, synthesized
+outputs, eight recovery edges and 24 actual RTL faults. The source receipt and
+independent baseline remain immutable inputs to the comparison.
+
+`build/memory-transfer-host-ownership-artifact/ownership-artifact-01/report.json`
+checks 470 local equalities and all 120 endpoints, with the candidate itself as
+the source of every `rfl` endpoint binding. All four configurations also carry
+encoded and reset final-state proofs, reset traces and reserved-phase recovery
+traces. The corresponding `ownership-negatives-01` receipt under
+`build/memory-transfer-host-ownership-artifact-negatives` rejects the reset-word,
+busy-host-write and active-readback faults with exact audited kernel witnesses.
+
+The matched mapping receipt is
+`build/memory-transfer-host-ownership-technology/ownership-mapped-01/report.json`.
+It independently remaps reference, candidate and baseline at both corners and
+replays all 24 circuits (15,192 edges total). Typical results:
+
+| Address/input/output bits | Candidate cells / generic depth | Candidate cell area (library units) | ABC delay: reference / candidate / baseline (ps) |
+| --- | ---: | ---: | ---: |
+| 1/1/1 | 128 / 8 | 1,859.46 | 1,102.23 / 1,038.27 / 920.20 |
+| 2/8/8 | 404 / 10 | 8,504.02 | 1,667.85 / 1,438.47 / 1,207.37 |
+| 3/8/4 | 500 / 12 | 11,037.45 | 1,624.45 / 1,551.21 / 1,239.57 |
+| 2/4/17 | 465 / 10 | 10,461.75 | 1,732.58 / 1,638.27 / 1,417.84 |
+
+The candidate improves ABC delay 4.5–14.3% across the tested corners; mapped
+area changes by −1.30% to +1.12% relative to the reference. It remains roughly
+12–25% slower than the independent baseline. The same mapping assumptions and
+limits apply; full timing checks and any further optimization remain separate.
+
+```sh
+lake env lean -DwarningAsError=true --run test/MemoryTransferHostOwnership.lean
+python3 scripts/check-memory-transfer-host-ownership.py --tag ownership-local \
+  --positive-report build/memory-transfer-host-baseline/host-baseline-local/report.json
+python3 scripts/check-memory-transfer-host-ownership-artifact.py --tag ownership-artifact-local
+python3 scripts/check-memory-transfer-host-ownership-artifact-negatives.py --tag ownership-negatives-local \
+  --positive-report build/memory-transfer-host-ownership-artifact/ownership-artifact-local/report.json
+python3 scripts/check-memory-transfer-host-ownership-technology.py --tag ownership-mapped-local \
+  --positive-report build/memory-transfer-host-ownership/ownership-local/report.json
+```
 
 ### Pure byte-lane semantics
 
