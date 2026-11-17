@@ -22,6 +22,31 @@ families. `Circuit I R O` supplies every next-register and output expression.
 Expression substitution (`Expr.bind`) instantiates proved components without
 textual wiring. All next-register expressions read the same pre-edge snapshot.
 
+`FastEmit.moduleText` provides an optional native traversal for shared expression
+graphs. Its cache retains nodes and checks both object identity and signal width
+within one module. The logical definition delegates to `Emit.moduleText`.
+The unsafe native replacement remains part of the exporter trust boundary, with
+generated RTL checked through the existing replay and artifact workflows.
+
+```sh
+lake env lean -DwarningAsError=true --run test/HardwareFastEmit.lean
+python3 -B scripts/check-fast-emit.py --tag fast-emit-local
+```
+
+The native/interpreted campaign compares 29 complete module texts, checks ten
+zero-width errors and emits a depth-256 shared graph containing 1,280 operations
+across five widths. The retained `build/fast-emit/memoized-02/report.json` records
+all 43 successful commands, source hashes, compiler/linker identity, imported
+Lean build inputs, thirteen linked module objects, headers and native libraries.
+Its report SHA-256 is
+`87a7517d5700165d6178cc15049bb7b68e4ceabc1245d7666a8b698dc7f8b73a`.
+The provenance runner currently uses the installed macOS Lean toolchain and its
+explicit deployment-target setting of 99.0, matching Lean's linker diagnostic
+policy. Execution is validated on the recorded host. System libraries supplied
+through the macOS dyld cache are recorded by install name/version and remain
+outside the hashed runtime boundary. Imported Lake objects retain their existing
+build provenance.
+
 `WordOps` adds modular addition, word OR/XOR, signed comparison and fixed or
 variable logical/arithmetic shifts as ordinary expression trees. Universal
 evaluation and substitution theorems cover every width, including zero.
