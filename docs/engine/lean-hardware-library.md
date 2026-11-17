@@ -81,6 +81,14 @@ preserves untouched store bytes and returns the original word on faults.
 Its universal lane/readback theorems are a building block for a transactional
 memory adapter; they do not by themselves suppress bus or device side effects.
 
+`Memory.ByteAdapterModel` composes those operations with the existing exclusive
+word-RAM contract. It permits one outstanding request, samples the old word into
+RAM Q at request acceptance, and commits a store on the same edge as response
+acceptance. A blocked acknowledgement performs no write. Faults issue no RAM
+command; reset drops pending work while retaining words/Q. Its snapshot and
+byte-preservation proofs require exclusive ownership, so this model is not an
+MMIO adapter. Physical construction is in progress.
+
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`

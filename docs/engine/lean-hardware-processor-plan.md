@@ -58,9 +58,11 @@ implementations, request/response accounting, reset preservation, hierarchy,
 
 `Memory.ByteAccess` now supplies pure little-endian word operations, raw
 size/alignment classification, sign extension and byte-preservation/readback
-proofs. It has no bus effects or memory-map assumptions. Add a transactional
-byte-access adapter with size, byte mask, completion/fault, exactly-once
-effects and reset flushing. A RAM read-modify-write implementation requires
+proofs. `Memory.ByteAdapterModel` now adds one-outstanding transactions, fault
+no-access, request/response accounting and reset cancellation around owned word
+RAM. A store's memory effect coincides with response acceptance; merely offering
+or stalling that response performs no write. Its physical circuit and RTL proof
+remain in progress. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect contracts and frozen address windows.
 

@@ -516,8 +516,46 @@ lake env lean -DwarningAsError=true --run test/MemoryByteAccess.lean
 The test checks 11,520 independent arithmetic-reference cases (division and
 remainders, rather than the implementation's lane/pack operations), both load
 modes, stores and later all-lane readback. Eight semantic mutation controls are
-detected; 166 declarations pass the standard-axiom audit. Transactional byte RAM
-composition and its effect/acknowledgement contract are the next integration step.
+detected; 166 declarations pass the standard-axiom audit.
+
+### Transactional byte RAM model
+
+`Memory.ByteAdapterModel` reuses `SinglePort.step` and a 32-bit word RAM with Q.
+The request contains a word address and byte offset separately; this layer does
+not truncate or map a global processor address. It accepts one request when idle.
+A legal read or store samples the addressed word into Q on acceptance. The
+pending request retains its metadata, including the store operand, but no extra
+response or old-word snapshot register is needed.
+
+The next-cycle response can stall. A successful store modifies RAM only when
+that response is accepted; an offered or blocked acknowledgement commits nothing.
+The actual write and acknowledgement therefore share one edge. Loads and fault
+completions perform no write. Invalid size/alignment performs no RAM read either.
+There is no same-edge request replacement. Reset masks both handshakes, drops
+pending work and preserves every word and Q, including previously committed stores.
+
+`Valid` states the exclusive-ownership snapshot invariant: a valid pending
+request's Q equals its still-unmodified addressed word. Reset establishes it for
+arbitrary memory/Q images, and every step preserves it. The byte-preservation
+theorem uses this explicit invariant; arbitrary fabricated Q is not silently
+treated as a valid old word. Other-word preservation, fault no-access, stalled
+state/response stability, acknowledgement/write coincidence and no repeated
+completed store are proved separately. Histories preserve ordered request and
+acceptance-time response accounting per reset epoch. A pending request completes
+on a ready, nonreset edge; eventual consumer readiness remains an assumption.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryByteAdapterModel.lean
+```
+
+The independent integer-array oracle checks 25,398 complete state, command,
+observation and occurrence-ledger edges at address widths 0, 1 and 3. It tracks
+7,452 accepted requests, 6,854 completions and 598 cancellations across resets,
+including 1,007 committed stores. Eight semantic mutation controls are detected;
+360 declarations pass the standard-axiom audit. This is the executable model and
+its proofs; physical construction, RTL evidence and processor mapping remain
+separate gates. RAM read-modify-write must not be applied to MMIO devices.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable
