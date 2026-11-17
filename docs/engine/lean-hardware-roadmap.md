@@ -47,7 +47,7 @@ correctness and physical qualification are not implied by artifact proofs.
 | Branching foundation | Named bundles; atomic broadcast and ordered join; 27 configurations and 54 artifact certificates | Complete: `5e373bf` through `b1bf8b2` |
 | Packet switch | Buffered input queues, routing, round-robin arbitration, output stability, per-flow order and conditional fairness; multiport RTL certificates and synthesis baseline | Active |
 | Memory and accelerator | Explicit RAM read/write/collision semantics, request/response interfaces, reusable DMA-style movement and a streaming transform; memory assumptions and refinement | Active: RAMs and host accelerator certified through RTL; baseline/matched mapping complete; proved ownership optimization improves estimated delay; 24 pre-layout STA analyses complete with positive setup/hold slack but fanout violations in every case |
-| Processor system | Simple single-hart RV32I implementation, on-chip memory, GPIO, timer and UART; architectural refinement and reuse of prior components | Active: source/EEI frozen; byte RAM and atomic MMIO certified through imported RTL; checked map, RV32I decoder/semantics, controller model, structural decoder, ALU and register file proved; execution datapath, physical core and UART underway |
+| Processor system | Simple single-hart RV32I implementation, on-chip memory, GPIO, timer and UART; architectural refinement and reuse of prior components | Active: source/EEI frozen; byte RAM and atomic MMIO certified through imported RTL; checked routing, decoder, execution datapath and complete physical core proved; parameterized digital UART proved; connected system correspondence and whole-system RTL validation underway |
 | Library release gate | Public API consolidation, independent usage example, reproducible evidence, comparative synthesis results | Planned |
 
 Processor scope starts with a simple multicycle implementation and polling
@@ -59,8 +59,10 @@ The [processor plan](lean-hardware-processor-plan.md) records the selected
 official RV32I revision, frozen environment choices, and the remaining device
 and architectural-event contracts. The official specification hash and memory
 map are fixed. Decoder, checked routing, instruction execution and atomic device
-contracts now support construction of the physical core and peripherals. UART
-wire behavior and CPU architectural refinement remain open.
+contracts support the complete physical core's cycle refinement and reset
+recovery. Digital UART frame timing and structural correspondence are proved.
+Connected system refinement, serial integration and external ISA validation
+remain open.
 
 ## First campaign: buffered packet switch
 

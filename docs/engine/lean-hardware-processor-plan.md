@@ -312,8 +312,9 @@ words, all forty instruction kinds and all twelve output fields. It includes
 663 x0 loads and 5,289 target-alignment faults. Another 3,072 coherent register-array
 cases, 100 dependent program steps and 512 binding checks cover operand overlap,
 loops and links. Twenty-two actual expression faults are rejected. All 636 audited
-declarations use standard axioms only. Clocked core correspondence, connected
-memory/device effects and whole-system RTL validation remain integration work.
+declarations use standard axioms only. The physical core below composes this
+datapath with the register file and controller. Connected memory/device effects
+and whole-system RTL validation remain integration work.
 
 ## Serialized controller and architectural events
 
@@ -357,9 +358,53 @@ scheduled integer/array program edges, including repeated raw words and reset
 cancellation. Fourteen semantic faults are rejected; all 729 audited declarations
 use standard axioms only. The oracle chooses traffic from its own numeric
 controller and changes integer RAM only on acknowledgement. This is a pure core
-model refined to the local ISA semantics. Physical CPU construction, actual
-ROM/RAM/MMIO provider correspondence, external ISA differential validation and
-RTL/artifact proofs remain integration gates.
+model refined to the local ISA semantics. The physical core now implements this
+cycle contract. Actual ROM/RAM/MMIO provider correspondence, external ISA
+differential validation and RTL/artifact proofs remain integration gates.
+
+## Physical serialized core
+
+`Processor.CoreCircuit` composes the proved decoder/execution bundles and the
+generic register file using expression substitution. Thirty-one stored integer
+registers and six controller registers hold phase, PC, instruction and precise
+fault metadata. Seven phases implement fetch offer/reply, execution, data
+offer/reply, local FENCE and terminal trap. Reserved phase 7 holds without effects
+until reset. A held instruction and unchanged architectural registers keep data
+requests stable through stalls.
+
+`CoreInterface` has twelve input and thirty output ports. Outputs expose fetch
+and data handshakes, actual retirement/writeback, immediate traps and held
+terminal faults. Inactive output fields are zero. Atomic data service completes
+on the request edge, while deferred service completes on response acceptance.
+Data fault code 1 is misalignment and codes 2/3 are access faults. Loads to x0
+still access the provider. FENCE retires locally without a register write.
+
+`CoreCertified.implementation` proves every next-state register and output
+against `CoreModel` under an explicit representation invariant. The projection
+erases inactive instruction/fault metadata and reconstructs pending provenance
+from the held instruction and architectural state. Coverage represents every
+valid controller-model state. Synchronous reset recovers every raw register image,
+including reserved phases, and clears all thirty-seven physical registers.
+Finite trace and final-state equality follow through `DecodedImplementation`.
+Separate request-stability proofs show that bus-facing outputs depend on reset
+and held state independently of response/service pins.
+
+```sh
+lake build Pinwheel.Hardware.Processor.CoreCertified Pinwheel.Hardware.Processor.CoreCircuitRequests
+lake env lean -DwarningAsError=true --run test/ProcessorCoreCircuit.lean
+```
+
+The integrated audit covers 805 declarations, including the complete interface,
+public/private core proofs and test helpers, using standard axioms only.
+The controller-oracle campaign checks 6,248 complete register/pre/post-output
+edges, eight arbitrary-register phase/reset fixtures and five actual expression
+faults. Cases include atomic/deferred service, all raw data fault codes, unowned
+replies, stalls, PC wraparound and reset during each instruction stage.
+
+The core certificate takes provider values as explicit inputs. Connected ROM
+contents, RAM/MMIO ownership, actual architectural event transport and external
+ISA agreement have their own obligations. Artifact transport theorems take a
+complete correspondence certificate for the actual imported RTL as a premise.
 
 ## Connected ROM/RAM/MMIO model
 
