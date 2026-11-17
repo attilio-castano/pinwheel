@@ -335,7 +335,34 @@ lake env lean -DwarningAsError=true --run test/ProcessorMmioModel.lean
 The independent oracle passes 49,152 register accesses, 34,944 simultaneous/
 reset edges and 8,192 cross-reset history edges. Fourteen concrete result/event
 corruptions are rejected; all 394 audited declarations use standard axioms only.
-Structural peripherals, UART framing and processor integration remain next gates.
+`MmioInterface`/`MmioCircuit` now implement this contract with eleven inputs,
+seven outputs and eight registers. Request-ready is deasserted only during reset;
+response-valid and the response value belong to the same atomic operation edge.
+Raw device selector3 produces a register-hole fault with no CPU effect while
+ordinary timer/serial activity continues. Unused response codes/data and inactive
+TX output data are zero. All outputs are masked during reset; all eight registers
+clear at the reset edge. Inactive TX/RX storage bytes otherwise retain their bits.
+
+`MmioCircuitProofs` proves complete step/output projection for every raw state
+and input, with `DecodedImplementation.Valid = True`. The noninjective view
+forgets inactive byte metadata; exact reset and physical retention proofs are
+separate from that projection. Actual response pins feed event extraction.
+Transport to `MmioModel` events explicitly requires an admitted device selector
+(or reset), so a malformed selector's visible fault is never silently reinterpreted
+as a legitimate model request. Trace/final-state and admitted-event replay are
+universal finite-history theorems.
+
+```sh
+lake build Pinwheel.Hardware.Processor.MmioCircuitProofs
+lake env lean -DwarningAsError=true --run test/ProcessorMmioCircuit.lean
+```
+
+The independent Nat/array oracle checks 28,672 raw control/state edges and 8,192
+history edges, every post-register and every pre/post output, actual responses,
+admitted events and retained metadata. Nine actual expression faults are rejected;
+all 670 audited declarations use standard axioms only. Emitted/synthesized RTL,
+imported artifact certificates, UART framing and processor integration remain
+next gates.
 
 ## Reuse and missing library contracts
 
