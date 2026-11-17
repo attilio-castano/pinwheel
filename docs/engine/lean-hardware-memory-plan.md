@@ -433,7 +433,33 @@ setup/clock-to-Q, clock trees, placement, routed parasitics and full STA; they d
 not establish clock frequency or physical qualification. Baseline simulation
 and mapped replay do not provide a baseline or post-synthesis kernel proof.
 
+### Pure byte-lane semantics
+
+`Memory.ByteAccess` defines accesses within one 32-bit little-endian word.
+Two raw size bits encode byte, halfword, word or reserved; two offset bits select
+a lane. Halfwords require offset 0 or 2 and words require offset 0. Reserved
+size takes fault priority over alignment. Loads sign or zero extend byte/halfword
+values; stores use the low data bytes and retain every untouched lane.
+
+The public operations return explicit faults. A faulting store's `StoreResult`
+contains the unchanged original word; a memory adapter must additionally suppress
+the actual read/write command. This pure layer includes no address mapping,
+ownership, handshake, MMIO or reset behavior. Its universal theorems establish
+raw classification, alignment fit, retained/written bytes, load-after-store,
+sign extension and word preservation on faults.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryByteAccess.lean
+```
+
+The test checks 11,520 independent arithmetic-reference cases (division and
+remainders, rather than the implementation's lane/pack operations), both load
+modes, stores and later all-lane readback. Eight semantic mutation controls are
+detected; 166 declarations pass the standard-axiom audit. Transactional byte RAM
+composition and its effect/acknowledgement contract are the next integration step.
+
 External SRAM remains a supplied implementation contract. Digital trace proofs
-do not independently qualify a macro's electrical behavior. Byte enables,
-non-power-of-two depth, multiple outstanding reads and shared source/destination
-storage are later extensions with explicit semantics.
+do not independently qualify a macro's electrical behavior. Native byte-enable
+RAMs, non-power-of-two depth, multiple outstanding reads and shared
+source/destination storage need separate implementation contracts.

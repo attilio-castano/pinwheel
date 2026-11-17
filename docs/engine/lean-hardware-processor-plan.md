@@ -44,7 +44,10 @@ Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RA
 implementations, request/response accounting, reset preservation, hierarchy,
 `Implementation`, and imported RTL correspondence.
 
-Add a byte-access adapter with size, byte mask, completion/fault, exactly-once
+`Memory.ByteAccess` now supplies pure little-endian word operations, raw
+size/alignment classification, sign extension and byte-preservation/readback
+proofs. It has no bus effects or memory-map assumptions. Add a transactional
+byte-access adapter with size, byte mask, completion/fault, exactly-once
 effects and reset flushing. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect contracts and frozen address windows.

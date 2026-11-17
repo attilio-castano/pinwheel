@@ -75,6 +75,12 @@ preserving words and Q, so this component uses a state-preserving reset theorem
 instead of `Implementation.Reset`'s fixed initial state. The raw-input
 `implementation` and `trace_correct` still use the shared certificate API.
 
+`Memory.ByteAccess` supplies pure 32-bit little-endian byte, halfword and word
+operations. It checks all raw size/offset encodings, sign or zero extends loads,
+preserves untouched store bytes and returns the original word on faults.
+Its universal lane/readback theorems are a building block for a transactional
+memory adapter; they do not by themselves suppress bus or device side effects.
+
 `Memory.TransferRange` supplies checked nonwrapping ranges and incremental
 memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
 backpressured memories with a serial controller and a proved `Stream.Map wi wo`
