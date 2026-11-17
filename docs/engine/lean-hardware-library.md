@@ -11,7 +11,8 @@ open Pinwheel.Hardware
 The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
 banks, arbitration, a buffered multiport switch and exclusive-command memory.
-Backpressured memory and processor integration are ongoing campaigns.
+The memory adapter also supports backpressured requests and read responses.
+Memory-transfer and processor integration are ongoing campaigns.
 
 ## Construction and proof layers
 
@@ -40,6 +41,19 @@ holds Q; disabled commands hold the entire state. Every physical state is
 represented, so `implementation` and `trace_correct` require no initialization
 invariant. There is no reset or implicit zero-filled memory. Its power-of-two
 capacity makes every address-bit pattern legal.
+
+`Memory.StreamFlops` adds one pending bit and reuses Q for its held response.
+It can retire a response while accepting the next read. Its memory-specific
+ledger relates delivered responses to the values sampled when reads were
+accepted; writes produce no response. Reset cancels pending responses while
+preserving words and Q, so this component uses a state-preserving reset theorem
+instead of `Implementation.Reset`'s fixed initial state. The raw-input
+`implementation` and `trace_correct` still use the shared certificate API.
+
+`Arbitration.OneHotSelect` shares a round-robin winner decoder across arbitrary
+payload and control selections. Its correctness theorem requires a legal
+one-hot cursor and allows arbitrary request/value/fallback expressions. It is
+an alternative to `RoundRobinMasked`, with documented synthesis tradeoffs.
 
 `Artifact.Correspondence` compares a particular imported RTL interpretation with
 every structural register/output expression. It composes with `Implementation`

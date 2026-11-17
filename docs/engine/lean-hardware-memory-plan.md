@@ -110,9 +110,67 @@ The proved ledger records each read's pre-edge memory value and conserves it
 as delivered responses plus at most one pending response. Writes have no
 response. Reset masks both handshakes and preserves the complete memory state,
 including Q, while starting a new response-accounting epoch. Its tests cover
-6,424 exhaustive cases, 11 directed edges and a 240-edge trace. Physical adapter
-refinement is in progress; the fixed-initial-state reset certificate is not
-applied to this state-preserving reset.
+6,424 exhaustive cases, 11 directed edges and a 240-edge trace.
+
+`Memory.StreamInterface`, `StreamFlops` and `StreamFlopsProofs` now implement
+the physical adapter and its all-state refinement. The circuit instantiates
+the command memory through expression substitution and adds exactly one bit.
+The fixed-initial-state reset certificate is not applied to its state-preserving
+reset. Its raw-state tests cover 18,464 exhaustive cases plus 13 directed and
+240 trace edges; the retained audit checks 753 memory declarations.
+
+```sh
+lake build Pinwheel.Hardware.Library
+lake env lean -DwarningAsError=true --run test/MemoryStreamModel.lean
+lake env lean -DwarningAsError=true --run test/MemoryStreamFlops.lean
+lake env lean -DwarningAsError=true test/MemoryStreamContracts.lean
+python3 scripts/check-memory-stream.py --tag stream-memory-local
+```
+
+`build/memory-stream/stream-flops-01/report.json` passed the four command-memory
+configurations. An independent Python array/pending-bit oracle records accepted
+read snapshots, delivered responses and reset epochs. Every emitted register
+and pre/post output agrees; synthesized outputs agree after a reset and full
+initial writes establish observable state. All twelve actual RTL faults were
+rejected: ignored response stalls, dropped pending state and a word incorrectly
+cleared by reset. Imported RTL certification for this adapter remains pending.
+
+### First transfer controller
+
+Use separate source and destination memories, a common address width, and
+`Stream.Map wi wo` for the transform. That existing API already packages the
+pure function, register-free expression and universal correctness proof.
+The first reusable circuit has explicit source read-request/response ports and
+destination write-request/ready ports. A composed theorem connects it to two
+`StreamFlops` memories.
+
+Runtime commands carry source base, destination base and an `a+1`-bit length.
+Accept start only while idle. Check both nonwrapping ranges without truncated
+addition: `length ≤ 2^a - base`. Invalid commands pulse error and send no memory
+request; zero length pulses done immediately at its acceptance edge. A start
+held valid is accepted again whenever ready, following ordinary handshake
+semantics. Busy commands cannot replace the latched configuration.
+
+The serial controller has Idle, IssueRead and Transfer phases. IssueRead waits
+for the source read acceptance. Transfer couples source-response retirement to
+destination-write acceptance and applies `Map` combinationally. Source Q holds
+the payload under stalls; no additional payload register is needed. A completed
+write increments the index and either issues the next read or pulses done.
+Reset wins over every handshake, clears protocol state and preserves both
+arrays/Q values. Unused physical phase encodings must have explicit safe
+recovery behavior.
+
+The main invariant relates each committed write to the initial source snapshot
+and the destination's written prefix. The remaining destination addresses keep
+their initial values. Reset preserves the committed prefix and cancels the
+uncommitted read. Open-controller progress requires source request/response and
+destination service assumptions; the concrete serialized two-memory composition
+should complete in two edges per word after start acceptance.
+
+A closed demonstration needs a host loader/readback interface so destination
+storage remains observable after synthesis. That wrapper must drain host reads
+before accepting start, block host traffic while busy and define host/start
+arbitration. It is a separate step after controller and composition proofs.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Byte enables,
