@@ -284,6 +284,37 @@ axioms only. This establishes instruction semantics and response-commit lemmas,
 not a processor implementation: fetch checks, memory/device effects, response
 ownership, reset and FENCE service remain controller/integration obligations.
 
+## Structural execution datapath
+
+`Processor.RV32I.ExecuteCircuit` composes the instruction decoder and word ALU
+as a reusable expression bundle with four inputs and twelve outputs. The inputs
+are the raw instruction, PC and two pre-edge source operands. Five result classes
+select immediate retirement, pending load, pending store, pending FENCE and trap.
+The remaining fields carry next PC, writeback, memory intent or precise trap data.
+Inactive fields are zero. Loads targeting x0 still produce a complete memory
+intent, and misaligned taken targets suppress link writeback.
+
+Universal evaluation covers arbitrary instruction/PC/operand bits. Architectural
+correspondence additionally binds the PC and operands to the architectural
+register file at the decoded source indices. `circuit_retirement` reconstructs
+the entire resulting architectural state from actual next-PC/writeback outputs.
+`circuit_pending` and `circuit_load` recover actual memory intent and destination,
+and `circuit_trap` recovers the precise cause, address and unchanged origin.
+Expression substitution preserves these results for larger datapaths.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.ExecuteCircuitProofs
+lake env lean -DwarningAsError=true --run test/RV32IExecuteCircuit.lean
+```
+
+The independent Nat/Int oracle checks 231,148 raw cases, including 140,874 illegal
+words, all forty instruction kinds and all twelve output fields. It includes
+663 x0 loads and 5,289 target-alignment faults. Another 3,072 coherent register-array
+cases, 100 dependent program steps and 512 binding checks cover operand overlap,
+loops and links. Twenty-two actual expression faults are rejected. All 636 audited
+declarations use standard axioms only. Clocked core correspondence, connected
+memory/device effects and whole-system RTL validation remain integration work.
+
 ## Serialized controller and architectural events
 
 `Processor.CoreModel` gives the instruction semantics an explicit cycle protocol:
