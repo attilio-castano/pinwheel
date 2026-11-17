@@ -41,6 +41,26 @@ covers memory contents and held read values that need not appear on a current
 output. The conclusion is equality after encoding; it does not assume that
 erased logical provenance can be recovered from physical registers.
 
+`DecodedImplementation circuit spec` supports the other common representation:
+a physical-state projection `view`, which may forget inactive metadata. Several
+raw register states can represent one logical state. The certificate proves
+preservation of a raw-state invariant, projected next-state equality and output
+equality. Its trace and final-state theorems compose with an explicit
+`Artifact.Correspondence`; they do not require an inverse encoding. This lets a
+component retain unused request bits instead of clearing them merely to obtain
+a canonical register image.
+
+`DecodedImplementation.Reset` establishes the invariant from arbitrary raw
+state and a logical initial state that may depend on retained pre-reset memory.
+Separate component theorems still specify which physical bits reset preserves;
+the projection alone makes no such claim. The regression demonstrates distinct
+inactive metadata, equal traces, retained storage through reset, and projected
+final-state transport, with 151 declarations audited for standard axioms only.
+
+```sh
+lake env lean -DwarningAsError=true --run test/HardwareDecodedImplementation.lean
+```
+
 `Timed.EventRefinement` adds architectural event paths above cycle models.
 Its fixed event extractor and legal-input predicate are explicit parameters;
 an empty event list preserves the abstract state. The finite-prefix theorem
@@ -133,7 +153,8 @@ provenance erasure, initialization boundary and validation commands.
 
 `Artifact.Correspondence` compares a particular imported RTL interpretation with
 every structural register/output expression. It composes with `Implementation`
-and reset recovery to obtain whole-trace correspondence. Yosys and the restricted
+or `DecodedImplementation` and reset recovery to obtain whole-trace
+correspondence. Yosys and the restricted
 JSON interpretation remain trusted boundaries. Simulation, artifact proof,
 generic synthesis and physical timing are separate evidence levels.
 

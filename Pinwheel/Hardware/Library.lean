@@ -1,6 +1,7 @@
 import Pinwheel.Hardware.BankImplementation
 import Pinwheel.Hardware.Artifact
 import Pinwheel.Hardware.RunRefinement
+import Pinwheel.Hardware.DecodedImplementation
 import Pinwheel.Hardware.Timed.Events
 import Pinwheel.Hardware.Stream.Bundle
 import Pinwheel.Hardware.Stream.Implementation
