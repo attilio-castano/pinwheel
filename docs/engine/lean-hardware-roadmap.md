@@ -55,6 +55,10 @@ peripherals. Privileged modes, interrupts, caches, speculation and multiple cloc
 domains require later explicit decisions. Before processor implementation, freeze
 the authoritative ISA version and the execution environment, including reset,
 alignment, unsupported operations and faults.
+The [processor plan](lean-hardware-processor-plan.md) records the selected
+official RV32I revision, proposed environment choices, and the missing byte-access
+and architectural-event contracts. Specification hash and memory-map freeze
+remain prerequisites to CPU construction.
 
 ## First campaign: buffered packet switch
 
