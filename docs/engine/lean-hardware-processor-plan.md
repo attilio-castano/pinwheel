@@ -180,8 +180,26 @@ The independent Nat-table oracle passes 6,885 layout checks, 130,428 accesses
 and 21 explicit boundary/policy probes, including layouts ending exactly at
 `2^32`, invalid wrapping/overlapping regions, permission failures and prior
 architectural address wrapping. The 288-declaration audit uses standard axioms
-only. This is a pure routing contract; structural address-decode hardware and
-CPU integration remain later steps.
+only.
+
+`Processor.AddressDecode` now implements the routing decisions as ordinary
+typed expressions, reusing the generic `AddressWindow` full-footprint check.
+Thirty-three-bit endpoints preserve the upper bound `2^32` before local address
+narrowing. Static kind/size specializations and the runtime two-bit controls
+have universal agreement proofs with `AddressMap.route`. Runtime kinds0/1/2
+mean fetch/load/store; sizes0/1/2 mean byte/half/word. Either control3 returns
+code7 for malformed controls. Ordinary result codes0–4 select the five regions,
+5 is misalignment and6 is access fault. MMIO register holes remain device checks.
+
+```sh
+lake build Pinwheel.Hardware.Processor.AddressDecode
+lake env lean -DwarningAsError=true --run test/HardwareAddressDecode.lean
+```
+
+The shared window/routing campaign checks 505 window configurations, 43,275
+footprints and 103,888 runtime routing cases with an independent integer/table
+oracle. Eleven actual expression faults are rejected; all 187 audited declarations
+use standard axioms only. CPU integration and emitted RTL validation remain open.
 
 ## Instruction representation and decoding
 
@@ -329,7 +347,8 @@ service yields a cycle bound.
 
 1. Specification hash, execution environment, memory map, fault priorities and
    reset/effect ordering are frozen above. The checked map and decoder contracts
-   are implemented and independently tested; structural decoding remains.
+   are implemented and independently tested. Structural address routing is
+   proved; structural instruction decoding remains.
 2. Byte-access preservation, fault atomicity, decoder coverage and executable
    instruction semantics are proved. Atomic peripheral semantics are implemented;
    structural devices and UART wire semantics remain.

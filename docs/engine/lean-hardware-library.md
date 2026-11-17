@@ -59,6 +59,26 @@ adapter cases against integer oracles, and rejects twelve actual expression
 faults. The 293-declaration audit uses standard axioms only. These are structural
 expression proofs; complete processor decoding and RTL evidence remain separate.
 
+`AddressWindow` checks the entire positive access footprint against a validated
+half-open window. It widens addresses and arithmetic to `w+1` bits, so the upper
+bound may equal `2^w` and an overflowing access cannot wrap into the window.
+Every width, including zero, has universal evaluation and substitution proofs.
+The local-offset theorem requires successful admission before narrowing.
+`Processor.AddressDecode` specializes this API to checked processor layouts and
+proves complete runtime routing against `AddressMap`, including fault priority,
+permissions and invalid raw kind/size controls.
+
+```sh
+lake build Pinwheel.Hardware.Processor.AddressDecode
+lake env lean -DwarningAsError=true --run test/HardwareAddressDecode.lean
+```
+
+The independent integer/table oracle checks 505 window configurations, 43,275
+complete footprints and 103,888 routing cases, including relocated regions and
+an upper endpoint exactly at `2^32`. Eleven actual expression faults are rejected;
+all 187 audited declarations use standard axioms only. This is structural
+combinational evidence; RTL replay/certification will be part of CPU integration.
+
 `Interface P` completely enumerates a typed family and proves inverse lookup and
 unique names. It drives traversal, emission, observation and imported endpoint
 assembly. `Bank count P` replicates an interface; `Bank.circuit` independently
