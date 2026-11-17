@@ -49,8 +49,11 @@ effects and reset flushing. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect contracts and frozen address windows.
 
-Keep `Timed.Refinement` for RTL-to-cycle-model equality. The architecture needs
-an additional event-path refinement allowing internal cycles. Events must expose
+Keep `Timed.Refinement` for RTL-to-cycle-model equality. `Timed.Events` now
+supplies the generic event-path refinement for internal cycles, fixed extraction,
+finite-prefix safety, initial coverage and a separate finite service-count bound.
+The transfer example checks actual memory effects and completion/abort markers;
+it does not establish the CPU-specific architectural relation. Events must expose
 actual reads, writes, device effects, retirement, traps, reset and environment
 changes. Fixed extraction from observations, initial-state coverage, instruction
 accounting and architectural-state agreement prevent a vacuous retirement proof.

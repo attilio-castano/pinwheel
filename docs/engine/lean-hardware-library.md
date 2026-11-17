@@ -35,6 +35,24 @@ provenance. `Implementation.Reset` separately establishes initialization from
 arbitrary register bits. This interface is shared by ordinary stream components
 and the multiport switch.
 
+`Timed.EventRefinement` adds architectural event paths above cycle models.
+Its fixed event extractor and legal-input predicate are explicit parameters;
+an empty event list preserves the abstract state. The finite-prefix theorem
+composes with cycle-for-cycle refinement using an event-agreement proof.
+`InitialCoverage` covers all admitted initial states and requires that domain
+to be nonempty. Separate `ProgressBound` theorems bound service opportunities
+without an outcome; eventual or bounded service remains an environment obligation.
+Timer and device effects must remain visible even on edges without retirement.
+
+The event-layer test applies this API to transfer read samples, actual writes,
+abort and completion markers. It proves reconstruction of the memory effects;
+the meaning of a completed destination range still comes from the transfer
+session theorem, and this is not yet processor architectural refinement.
+
+```sh
+lake env lean -DwarningAsError=true --run test/HardwareEventRefinement.lean
+```
+
 `Memory.CommandInterface` provides complete typed enable/write/address/data/Q
 interfaces. `Memory.CommandFlops` implements the exclusive single-port command
 contract: read captures the addressed word in Q; write changes one word and

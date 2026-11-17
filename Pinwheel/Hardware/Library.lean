@@ -1,5 +1,6 @@
 import Pinwheel.Hardware.BankImplementation
 import Pinwheel.Hardware.Artifact
+import Pinwheel.Hardware.Timed.Events
 import Pinwheel.Hardware.Stream.Bundle
 import Pinwheel.Hardware.Stream.Implementation
 import Pinwheel.Hardware.Stream.Timing
