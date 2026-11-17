@@ -9,7 +9,7 @@ namespace Pinwheel.Hardware.Memory.ByteAdapterInterface
 abbrev inputPorts (a : Nat) : Hardware.Stream.Ports where
   size := 9
   widths := fun k => if k.val = 4 ∨ k.val = 6 then 2 else if k.val = 5 then a else if k.val = 7 then 32 else 1
-  names := fun k => #["reset", "request_valid", "write", "signed", "size", "address", "offset", "data", "response_ready"][k]
+  names := fun k => #["reset", "request_valid", "write", "signed_load", "size", "address", "offset", "data", "response_ready"][k]
   distinct := by decide +kernel
 
 abbrev outputPorts : Hardware.Stream.Ports where

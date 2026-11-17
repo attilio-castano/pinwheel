@@ -62,7 +62,8 @@ proofs. `Memory.ByteAdapterModel` now adds one-outstanding transactions, fault
 no-access, request/response accounting and reset cancellation around owned word
 RAM. A store's memory effect coincides with response acceptance; merely offering
 or stalling that response performs no write. Its physical circuit now has
-universal state-projection, reset and snapshot-invariant proofs; RTL validation
+universal state-projection, reset and snapshot-invariant proofs; emitted and
+synthesized RTL replay passes three depths, while imported artifact proof
 remains in progress. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
 UART need separate observable-effect contracts and frozen address windows.

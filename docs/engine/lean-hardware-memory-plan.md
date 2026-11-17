@@ -664,7 +664,35 @@ lake env lean -DwarningAsError=true --run test/MemoryByteAdapterCircuit.lean
 The structural test passes 22,384 complete raw-state/trace edges at address
 widths 0, 1, 2 and 3, including every register and pre/post output, and rejects
 three actual circuit mutations. Its 303 declarations use standard axioms only.
-The emitted/synthesized RTL and imported artifact campaigns remain separate.
+Emitted/synthesized RTL replay is now complete; imported artifact correspondence
+remains a separate gate.
+
+`build/memory-byte-adapter/byte-adapter-matrix-01/report.json` passes address
+widths 1, 2 and 3, with fixed 32-bit data: 820, 1,340 and 2,380 edges respectively
+(4,540 per form). The independent Python integer/array oracle tracks request
+occurrences, including arbitrary startup pending work, cancellation and store
+effects. It agrees with structural Lean replay, every emitted register and every
+pre/post output. Synthesized RTL starts with uninitialized storage and receives
+explicit full-word stores to every address and a read to prime Q before subword
+traffic; no synthesized state is forced. All pre/post outputs, including the
+loading prefix, are checked. Generalized names preserve semantic roles, including
+the Verilog-safe physical input `signed_load` for the logical `signed` field.
+
+The campaign rejects 24 actual RTL corruptions by concrete value mismatches in
+complete binary traces. These include early stores, ignored stalls, accepting
+while pending, clearing retained metadata, reset erasing memory, faulting requests
+changing Q and repeated completion. Parser errors, unknown values or truncated
+traces do not count as semantic rejection. Nineteen portable oracle/driver tests
+also pass. Generic cell counts are 542, 858 and 1,226 for the three depths; these
+are resource measurements, not a matched baseline or physical timing result.
+
+```sh
+python3 scripts/check-memory-byte-adapter.py --tag byte-adapter-local
+```
+
+The receipt records all 62 source, 46 tool and 227 generated artifact identities.
+Address width zero remains covered by Lean and the independent Python replay;
+HDL export requires a positive width. Address width four is outside this matrix.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Native byte-enable

@@ -115,7 +115,10 @@ the functional projection and all output pins for arbitrary raw states. Inactive
 metadata is retained, so there is deliberately no canonical encoding requirement.
 Reset preserves words, Q and metadata, clears pending, and masks all outputs.
 It also establishes the stronger owned-word snapshot invariant needed for
-atomic byte-access effects. RTL validation is a separate campaign.
+atomic byte-access effects. Emitted and synthesized RTL replay passes three
+memory depths with an independent byte-level oracle, explicit full-memory
+loading and 24 actual RTL corruption controls. Imported artifact correspondence
+remains a separate campaign.
 
 `Memory.ByteAdapterEffects` relates its actual completion events to atomic RAM
 accesses. Every delivered read, store acknowledgement and fault remains in the
