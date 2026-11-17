@@ -2,6 +2,7 @@ import Pinwheel.Hardware.BankImplementation
 import Pinwheel.Hardware.WordOps
 import Pinwheel.Hardware.WordALU
 import Pinwheel.Hardware.AddressWindow
+import Pinwheel.Hardware.RegisterFile
 import Pinwheel.Hardware.Artifact
 import Pinwheel.Hardware.RunRefinement
 import Pinwheel.Hardware.DecodedImplementation

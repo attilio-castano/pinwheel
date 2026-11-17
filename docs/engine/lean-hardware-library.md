@@ -79,6 +79,28 @@ an upper endpoint exactly at `2^32`. Eleven actual expression faults are rejecte
 all 187 audited declarations use standard axioms only. This is structural
 combinational evidence; RTL replay/certification will be part of CPU integration.
 
+`RegisterFile` provides two combinational read ports and one synchronous write
+port for arbitrary address/data widths. Address zero always reads zero and has
+no storage; the remaining `2^a - 1` words use the existing balanced read-mux
+construction. Reset wins over writing. Reads observe the pre-edge bank even
+while reset is asserted, then observe zero after the reset edge. There is no
+write-through forwarding. Complete step/output/reset/trace and register-update
+proofs cover arbitrary raw state, including the zero-width Lean boundaries.
+
+`Processor.RV32I.RegisterFile` specializes it to 31 stored 32-bit registers and
+proves agreement with the architectural register operations. Writeback scheduling
+and retirement remain CPU obligations.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.RegisterFile
+lake env lean -DwarningAsError=true --run test/HardwareRegisterFile.lean
+```
+
+The integer/array oracle checks 70,588 exhaustive raw edges, 10,584 mixed-width
+trace edges and 5,120 RV32 projection edges, rejecting twelve expression faults.
+All 156 audited declarations use standard axioms only. Positive-width RTL export,
+artifact correspondence and synthesis measurements remain separate gates.
+
 `Interface P` completely enumerates a typed family and proves inverse lookup and
 unique names. It drives traversal, emission, observation and imported endpoint
 assembly. `Bank count P` replicates an interface; `Bank.circuit` independently
