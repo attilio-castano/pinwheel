@@ -170,8 +170,9 @@ are complete. The matched three-implementation campaign at
 `build/switch-shared-selection/candidate-20261116/report.json` passed all 2,682
 edges per implementation/form and 26 actual RTL mutation controls. Generic
 cell counts become 25/354/192/1,382/834 in the table's order. The largest gap
-shrinks from 398 to 24 cells. This implementation remains separate while its
-imported RTL proof campaign is being completed.
+shrinks from 398 to 24 cells. Its imported RTL proof campaign now passes the
+full matrix. This implementation remains an explicit alternative because the
+technology mapping results below show different area/delay tradeoffs.
 
 ### Technology mapping comparison
 
@@ -213,21 +214,42 @@ circuit; the decomposition adds no registers or latency. The retained
 `build/switch-hierarchy/agent-masked-hierarchy-1/report.json` checks every output
 and next register on 2,048 exhaustive 1×1 and 512 sampled 2×3 arbitrary input/state
 cases, including malformed cursors. This comparison is separate from the
-imported-RTL proof campaign. The complete hierarchical artifact matrix passed
-in `build/switch-hierarchy-artifact/masked-boolean-01/report.json`: all 160 typed
-register/output endpoints and reset-initialized traces across the five cases.
-The flat campaign passed through 3×5 and timed out on 5×3 payload proof search;
-that final flat certificate is still in progress.
+imported-RTL proof campaign. All three complete artifact matrices now pass:
+
+| RTL architecture | Receipt under `build/` | Local equalities | Typed register/output endpoints |
+| --- | --- | ---: | ---: |
+| Original flat | `switch-artifact/payload-matrix-01/report.json` | 1,698 | 160 |
+| Original hierarchy | `switch-hierarchy-artifact/payload-matrix-01/report.json` | 1,711 | 160 |
+| Shared selection | `switch-shared-artifact/payload-matrix-01/report.json` | 1,930 | 160 |
+
+Each covers the same five configurations, arbitrary binary inputs/registers,
+and the composed reset-initialized protocol trace theorem. The flat negative
+receipt `build/switch-artifact-negatives/payload-matrix-01/report.json` rejects
+two semantic RTL corruptions and two coordinated metadata faults. The shared
+receipt `build/switch-shared-artifact-negatives/active-witnesses-02/report.json`
+rejects active-output payload inversion and FIFO data-update corruption. Both
+shared controls fail local semantic equalities and include kernel-checked
+concrete witnesses with an active or retained packet. Parser errors and proof
+timeouts do not count as successful negative controls.
 
 The proof generator groups independent local equalities into bounded compilation
 units. For small Boolean obligations hidden behind wide comparisons, it proves
 a stronger lemma by `decide +kernel`, then instantiates the exact original
-statement. Solver results only guide proof search. Neither proof step admits
-native decision axioms. All generated declarations are audited.
+statement. Wide mux trees use finite payload labels; OR networks use sets of
+payload labels. Lean checks both the label equality and the interpretation
+that recovers the exact original wide expression. These strategies close the
+previous 5×3 payload timeouts without restricting cursor states. Solver results
+only guide proof search. No proof step admits native decision axioms. All
+generated declarations are audited, and receipts bind the generator helpers.
 
-The packet-switch campaign remains active. Complete artifact certificates over
-a representative parameter matrix, hierarchical RTL certificates,
-physical timing baselines and a second integration user
-remain campaign gates. Yosys and the restricted JSON adapter remain trusted
+```sh
+python3 scripts/check-switch-shared-artifact.py --tag shared-artifact-local
+python3 scripts/check-switch-shared-artifact-negatives.py --tag shared-negatives-local \
+  --positive-report build/switch-shared-artifact/shared-artifact-local/report.json
+```
+
+The packet-switch campaign remains active. The flat, hierarchical and shared
+artifact matrices are complete. Physical timing baselines and a second
+integration user remain campaign gates. Yosys and the restricted JSON adapter remain trusted
 interpretation boundaries; kernel-checked equations do not certify these tools
 or physical behavior.

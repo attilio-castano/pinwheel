@@ -26,6 +26,7 @@ def sources():
                  "scripts/readback_boolean_abstraction.py",
                  "Pinwheel/Hardware/Artifact.lean", "Pinwheel/Hardware/Readback/Boolean.lean"):
         result[path] = sha(ROOT / path)
+    result.update({str(path.relative_to(ROOT)): sha(path) for path in readback.source_paths()})
     return dict(sorted(result.items()))
 
 

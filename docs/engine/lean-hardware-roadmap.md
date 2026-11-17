@@ -114,8 +114,10 @@ model, multiport contracts, conditional fairness, physical codec and complete
 structural refinement are implemented. Reset recovery includes arbitrary physical
 register bits. Whole-switch emitted/synthesized RTL replay, an independent
 resource baseline and arbitrary-state hierarchy comparisons are complete.
-Full-matrix artifact proof scaling, shared selection and physical timing remain
-open. The [memory campaign](lean-hardware-memory-plan.md) is progressing in
+Full-matrix artifact certificates for both flat architectures and the original
+hierarchy are complete. Shared selection has matched technology-mapping and
+mapped-RTL replay evidence; physical timing and a second arbitration integration
+remain open. The [memory campaign](lean-hardware-memory-plan.md) is progressing in
 parallel using the existing single-port contract and decoded flop storage.
 
 ## Decision log

@@ -40,6 +40,7 @@ def sources():
         "scripts/check-round-robin-circuit.py", "scripts/validation_run.py", "scripts/process_group.py",
         "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json",
         "Pinwheel/Hardware/Readback/Boolean.lean"))
+    found.update(readback.source_paths())
     return {str(p.relative_to(ROOT)): sha(p) for p in sorted(found)}
 
 

@@ -12,11 +12,31 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-_ABSTRACTION_SPEC = importlib.util.spec_from_file_location(
-    "_typed_boolean_abstraction", ROOT / "scripts/readback_boolean_abstraction.py")
-abstraction = importlib.util.module_from_spec(_ABSTRACTION_SPEC)
-sys.modules[_ABSTRACTION_SPEC.name] = abstraction
-_ABSTRACTION_SPEC.loader.exec_module(abstraction)
+
+
+def _helper(name):
+    spec = importlib.util.spec_from_file_location("_typed_" + name, ROOT / "scripts" / (name + ".py"))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+abstraction = _helper("readback_boolean_abstraction")
+mux_abstraction = _helper("readback_mux_abstraction")
+union_abstraction = _helper("readback_union_abstraction")
+
+
+def source_paths():
+    """Owning proof-generator dependencies for every client's evidence closure."""
+    return tuple(ROOT / name for name in (
+        "scripts/typed_circuit_readback.py", "scripts/backend_readback.py",
+        "scripts/typed_artifact_runner.py", "scripts/process_group.py",
+        "scripts/readback_boolean_abstraction.py", "scripts/readback_mux_abstraction.py",
+        "scripts/readback_union_abstraction.py", "Pinwheel/Hardware/Artifact.lean",
+        "Pinwheel/Hardware/Readback/Boolean.lean"))
+
+
 IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 HEADER = """import Design
 open Pinwheel.Hardware
@@ -82,7 +102,8 @@ def local_proofs(rb, pairs, *, start=0, plans=None):
              "set_option linter.unusedSimpArgs false"]
     for k, pair in enumerate(pairs, start=start):
         if plans and k in plans:
-            lines.append(abstraction.lean_lemmas(pair, plans[k], f"local_{k}", rb.render_tree))
+            _, helper, plan = plans[k]
+            lines.append(helper.lean_lemmas(pair, plan, f"local_{k}", rb.render_tree))
             continue
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
         lines.append(f"theorem local_{k} {variables} :\n"
@@ -148,9 +169,11 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     # filters suggestions; it never supplies evidence accepted by the kernel.
     plans = {}
     for k, pair in enumerate(pairs):
-        plan = abstraction.suggest(pair, max_bits=13)
-        if plan is not None and oracle(plan.pair):
-            plans[k] = plan
+        for kind, helper in (("boolean", abstraction), ("mux", mux_abstraction), ("union", union_abstraction)):
+            plan = helper.suggest(pair, max_bits=13)
+            if plan is not None and oracle(plan.pair):
+                plans[k] = kind, helper, plan
+                break
     # Imports belong before the namespace; profiles put all imports first.
     lines = profile.splitlines()
     imports = [line for line in lines if line.startswith("import ")]
@@ -270,6 +293,10 @@ elab "#audit_typed_artifact" : command => do
     return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", "Proof", "Audit"], {
         "local_equalities": len(pairs), "endpoints": endpoint_count,
         "local_proof_units": len(local_modules) or 1,
-        "boolean_generalizations": len(plans),
-        "max_generalized_bits": max((plan.bits for plan in plans.values()), default=0),
+        "boolean_generalizations": sum(kind == "boolean" for kind, _, _ in plans.values()),
+        "mux_generalizations": sum(kind == "mux" for kind, _, _ in plans.values()),
+        "union_generalizations": sum(kind == "union" for kind, _, _ in plans.values()),
+        "max_generalized_bits": max((plan.bits for _, _, plan in plans.values()), default=0),
+        "max_mux_label_bits": max((plan.tag_width for kind, _, plan in plans.values() if kind == "mux"), default=0),
+        "max_union_label_bits": max((len(plan.leaves) for kind, _, plan in plans.values() if kind == "union"), default=0),
         "source_nodes": len(source.nodes), "rtl_nodes": len(actual.nodes)}
