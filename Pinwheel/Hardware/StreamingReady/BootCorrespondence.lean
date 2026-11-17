@@ -90,6 +90,8 @@ structure Effects (image : Compiled source idle) (n : Nat) (installed : Bool) (c
   structural : (ofCarrier after).Structural
   within : nextN ≤ image.program.length
   complete : nextInstalled = true → nextN = image.program.length
+  carrier : after = if c.runtime.command = 2#4 then
+    Streaming.Initialization.committed before c.runtime.rawInputs else before.sample c.runtime.rawInputs
 
 theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : Bool) (c : Pinwheel.Program.Streaming.Host.Command)
     (before : Carrier a) (phase : before.phase = .free)
@@ -111,21 +113,25 @@ theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : B
     rfl
   cases delivery with
   | quiet safe command =>
-    refine ⟨before.sample c.runtime.rawInputs,?_,?_,phase,generation,rfl,ofCarrier_sample_structural _ _ structural,within,complete⟩
+    refine ⟨before.sample c.runtime.rawInputs,?_,?_,phase,generation,rfl,ofCarrier_sample_structural _ _ structural,within,complete,?_⟩
     · funext w port
       exact idle_step _ _ _ (coldInput safe) command phase port
     · exact rejected_quiet _ _ command (txInput safe) (rxInput safe)
+    · rw [command]
+      rfl
   | write safe uninstalled live command address word =>
     have actualWrite : Write (HostCorrespondence.commandValues c) (BitVec.ofNat 6 n) (rowWord image.program n) :=
       ⟨coldInput safe,command,address,word.trans (image_row image n live)⟩
     have bound : n+1 ≤ image.program.length := by rw [← image_length image]; omega
-    refine ⟨before.sample c.runtime.rawInputs,?_,?_,phase,?_,rfl,ofCarrier_sample_structural _ _ structural,bound,?_,⟩
+    refine ⟨before.sample c.runtime.rawInputs,?_,?_,phase,?_,rfl,ofCarrier_sample_structural _ _ structural,bound,?_,?_⟩
     · subst installed
       funext w port
       exact write_step _ _ _ _ _ actualWrite phase port
     · exact rejected_write _ _ _ _ _ actualWrite phase (txInput safe) (rxInput safe)
     · simpa only [Pinwheel.Program.Streaming.State.sample,uninstalled,Bool.false_eq_true,ite_false] using generation
     · intro impossible; contradiction
+    · rw [command]
+      rfl
   | commit safe uninstalled allWritten command count pins =>
     have allRows : nextN = image.program.length := allWritten.trans (image_length image)
     have actualCommit : Commit image.program (HostCorrespondence.commandValues c) :=
@@ -140,7 +146,9 @@ theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : B
         (metadataAfter image.program nextN).written.getLsbD k.val = true := by
       rw [allRows]
       exact metadata_covered _ _ (Initialization.length_le _)
-    refine ⟨Streaming.Initialization.committed before c.runtime.rawInputs,?_,?_,phase,?_,rfl,⟨structural.accepted,structural.txValid,structural.rxUsed,structural.reservationCredit,structural.partialCredit⟩,within,fun _ => allRows⟩
+    refine ⟨Streaming.Initialization.committed before c.runtime.rawInputs,?_,?_,phase,?_,rfl,
+      ⟨structural.accepted,structural.txValid,structural.rxUsed,structural.reservationCredit,structural.partialCredit⟩,
+      within,fun _ => allRows,?_⟩
     · subst installed
       funext w port
       exact commit_step _ _ _ _ actualCommit phase pending room covered port
@@ -148,6 +156,8 @@ theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : B
       exact rejected_commit _ _ _ _ actualCommit phase pending room covered (txInput safe) (rxInput safe)
     · change before.generation + 1#16 = 1#16
       rw [generation,uninstalled]
+      rfl
+    · rw [command]
       rfl
 
 theorem frontend_project (actual : Package.State a) (pin : Session.Pins) (control : Pinwheel.Program.Streaming.Host.BootControl.State)

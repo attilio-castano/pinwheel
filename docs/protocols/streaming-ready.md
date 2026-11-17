@@ -286,6 +286,50 @@ python3.12 -B scripts/streaming_8x4_can.py \
   --out build/can-frozen
 ```
 
+## Ethernet serial PHY transmit
+
+A six-row image sends a minimum-size Ethernet frame to an external 10 Mbit/s
+serial network interface (SNI) PHY. The host supplies seven preamble octets,
+the start-frame delimiter, and 64 MAC-frame octets including the FCS. The
+72 octets become 576 LSB-first bits in nine quad-host words. The PHY handles
+Manchester encoding and the twisted-pair interface. [TI DP83848-EP SNI timing](https://www.ti.com/lit/ds/symlink/dp83848-ep.pdf#page=22)
+
+`ui_in[3]` receives `TX_CLK` and `ui_in[4]` receives the external arm signal.
+`uio_out[0]` provides `TXD` and `uio_out[1]` provides `TX_EN`. START sets the idle
+levels. The host stages the first two FIFO words with arm low. The program
+then waits for arm and uses three waits on high, low, and high to align to
+a fresh PHY clock rise. In the modeled 60 MHz domain the PHY rises every
+six core clocks, with one or two sampled high ticks. In the checked schedule,
+arm coincides with a PHY rise and the first enabled rise occurs 18 ticks later.
+The TX bit launches two ticks before its sampling edge.
+
+The host runs eight more `EXCHANGE64` transactions at 384-tick intervals.
+The checked admission cuts fall 16 ticks after the preceding pair's second
+word enters the shifter, with both queue slots available. The frontend then
+stages the two new words before the shifter empties. The [package proof](../../Pinwheel/Hardware/StreamingReady/EthernetSession.lean)
+checks the actual sampled request, response, and engine recurrences. It
+establishes the exact frame bit on every PHY sampling edge, continuous
+`TX_EN` during the frame, and RELEASE after all 576 bits are accepted and
+consumed. The [core timing proof](../../Pinwheel/Program/StreamingEthernetCoreFrame.lean)
+also covers arbitrary transmitted bits under explicit reservation credit.
+
+The frozen RTL and matching CMOS5L gate netlist produced byte-identical
+traces across 14,373 public edges. The independent PHY model accepted the
+valid frame at both high widths and rejected the flipped-FCS control.
+Each run checked all 576 sampling edges, the setup interval, nine admitted
+bursts, and RELEASE. The trace SHA-256 is
+`6e830b8973ab4929eb3db3016d18b47a2cbb992d46fb9021ae536383d63dee80`.
+These results use a digital SNI model. A board implementation needs a
+qualified core frequency and a shared timing budget for the PHY clock,
+pad delays, and setup and hold.
+
+```sh
+python3.12 -B scripts/streaming_8x4_ethernet.py \
+  --release "$PINWHEEL_RELEASE" --models "$PINWHEEL_MODELS" \
+  --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
+  --out build/ethernet-frozen
+```
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural
