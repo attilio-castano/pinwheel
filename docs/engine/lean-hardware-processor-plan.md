@@ -1039,7 +1039,13 @@ native tools, adapter and recorded macOS runtime remain validation dependencies.
    proved; structural instruction decoding is also complete.
 2. Byte-access preservation, fault atomicity, decoder coverage and executable
    instruction semantics are proved. Structural byte RAM, MMIO and digital UART
-   components are proved. Their complete processor/serial composition remains.
+   components are proved. The [combined processor/UART circuit](../../Pinwheel/Hardware/Processor/SerialSystemCircuitProofs.lean)
+   shares one MMIO bank. Its [reset and loader proofs](../../Pinwheel/Hardware/Processor/SerialSystemBoot.lean)
+   establish the observed trace on all 45 outputs from arbitrary registers.
+   External reset retains RAM and its registered read value. A held loader session
+   establishes a supplied image when every accepted write agrees with the image
+   and every address receives an accepted write. The complete combined RTL
+   correspondence remains open.
 3. Complete physical core cycle refinement and arbitrary-state reset recovery are
    proved. Provider ownership and actual architectural events connect them to
    the system's architectural and conditional service-count progress refinements.
