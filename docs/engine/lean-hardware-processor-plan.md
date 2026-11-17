@@ -183,6 +183,34 @@ architectural address wrapping. The 288-declaration audit uses standard axioms
 only. This is a pure routing contract; structural address-decode hardware and
 CPU integration remain later steps.
 
+## Instruction representation and decoding
+
+`Processor.RV32I.Instruction` represents all 40 RV32I instructions and their raw
+immediate fields. Byte offsets and sign extension are explicit: B/J encodings
+append their implicit low zero before extension, and U immediates append twelve
+zeros. `Processor.RV32I.Decode` checks the complete opcode/funct combination,
+including full shift funct7 and exact ECALL/EBREAK words. Unsupported extensions
+and the remaining reserved encodings are rejected by this execution environment.
+Ordinary FENCE accepts its reserved operand/control fields and retains them for
+lossless encoding; the execution layer supplies conservative ordering behavior.
+
+The independent `Matches` relation characterizes accepted words. Universal
+theorems relate decoding to that relation, prove unique decoding, both encode/
+decode round trips and encoder injectivity, and specify the immediate fields.
+These are pure instruction contracts; no combinational decoder hardware is
+claimed here.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.Decode
+lake env lean -DwarningAsError=true --run test/RV32IDecode.lean
+```
+
+The independent Nat decoder/builder campaign checks 381,095 words, including
+192,549 rejected illegal/unsupported words, every instruction kind, complete
+opcode/funct control combinations, all 12-bit immediate fields and boundary/
+neighbor cases. Nine concrete decoder faults are rejected. The audit covers
+3,499 declarations with standard axioms only.
+
 ## Reuse and missing library contracts
 
 Reuse typed `Expr`/`Circuit`, complete interfaces, register banks, whole-word RAM
