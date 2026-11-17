@@ -361,6 +361,38 @@ model refined to the local ISA semantics. Physical CPU construction, actual
 ROM/RAM/MMIO provider correspondence, external ISA differential validation and
 RTL/artifact proofs remain integration gates.
 
+## Connected ROM/RAM/MMIO model
+
+`Processor.SystemModel` connects the serialized core to a checked ROM image,
+the exclusive byte-RAM adapter and atomic MMIO. ROM words are supplied explicitly.
+RAM words and Q may start arbitrarily. `SystemModelProofs.Valid` combines core
+validity and the RAM snapshot invariant with exact fetch and deferred-request
+ownership. Initial states satisfy it, every edge preserves it and reset recovers
+arbitrary system states while retaining RAM words and Q.
+
+`ram_response` derives the actual completing value from the addressed RAM word.
+`ram_completion` binds that request/response and memory effect to the same core
+completion edge. `ram_completion_count` excludes orphan RAM completion events.
+`mmio_completion` binds the actual device request and pre-edge response to atomic
+core completion, with autonomous timer/serial events recorded afterward.
+Finite core/RAM event paths, complete MMIO replay and the actual RAM-write fold
+through reset connect the component histories.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SystemModelProofs
+lake env lean -DwarningAsError=true --run test/ProcessorSystemModel.lean
+```
+
+The independent numeric firmware/provider oracle checks 8,000 firmware edges,
+2,448 fault/boundary edges, 25,920 reset/restart edges and 5,152 fabricated-state
+reset/restart edges. It compares complete core, fetch, RAM/Q/pending, device,
+output and event state, including an occurrence ledger for repeated requests.
+Ten actual composition faults are rejected after identical positive fixtures
+pass. All 415 audited declarations use standard axioms only. This closes provider
+ownership and effect accounting at the executable model layer. Structural system
+correspondence, an explicit loader and firmware-driven RTL validation remain
+the next integration gates.
+
 ## Atomic peripheral model
 
 `Processor.MmioModel` implements the frozen GPIO, timer and UART-register
