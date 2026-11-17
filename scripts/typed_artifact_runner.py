@@ -10,9 +10,9 @@ import process_group
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def compile_modules(run, directory, modules, *, timeout=300):
+def compile_modules(run, directory, modules, *, timeout=300, extra_lean_paths=()):
     for module in modules:
-        lean_path = str(directory) + os.pathsep + str(ROOT / ".lake/build/lib/lean")
+        lean_path = os.pathsep.join(map(str, (directory, ROOT / ".lake/build/lib/lean", *extra_lean_paths)))
         # Lake prepends its build cache to an inherited LEAN_PATH. Override it
         # inside `lake env` so freshly generated modules win over cache names.
         argv = ["lake", "env", "env", "LEAN_PATH=" + lean_path, "lean", "-DwarningAsError=true",

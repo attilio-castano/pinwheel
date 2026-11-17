@@ -363,11 +363,42 @@ lake env lean --run examples/IndependentLanes.lean /tmp/independent-lanes.mlir
 This demonstrates library composition without changes to internals. It does not
 claim an RTL artifact certificate or physical timing result for that example.
 
-The [FIFO substitution example](lean-hardware-fifo-substitution.md) selects a
-shift FIFO or a depth-three circular FIFO and applies the same ordering theorem
-to the actual pins of each increment lane. A packet switch now accepts either
-FIFO through the same interface. The guide records the reset-initialized RTL
-certificates and matched generic synthesis counts for the two 2×2 instances.
+The [standalone lane client](../../examples/independent-lanes/LaneClient.lean)
+uses its own Lake package with Pinwheel as a local dependency. It applies one
+banked trace theorem to any FIFO implementing the lane's queue contract. A
+synchronous reset of all lanes establishes the model from arbitrary register
+bits. Thereafter, lane resets, input offers and downstream stalls may vary
+independently on every edge.
+
+From the Pinwheel checkout, use the pinned Lean toolchain, Python 3.12 or newer,
+and the [pinned CAD tools](../../scripts/install-hardware-tools.py). Run the
+whole default matrix with a fresh tag.
+
+```sh
+python3 -B scripts/install-hardware-tools.py
+python3 -B scripts/check-independent-lanes.py --tag lanes-local
+```
+
+The command builds the Lake client, simulates the typed circuit in Lean, emits
+SystemVerilog through CIRCT, and replays the RTL in Icarus against an independent
+integer FIFO and elastic-stage model. Each lane exercises stalls, full-queue
+replacement, modular wraparound, and reset with work pending. Replay checks the
+first reset edge's post-edge outputs and both observations on every later edge.
+Lean checks every imported next-register and output equation for arbitrary inputs
+and raw state, then lifts correspondence to arbitrary traces after the initial
+reset. The certificate uses the restricted Yosys JSON interpretation.
+
+The default configurations are three 17-bit lanes with two elastic stages and
+two 8-bit lanes with three stages. Both run once per FIFO backend. Repeat
+`--config LANES,WIDTH,EXTRA` to choose a different matrix. `EXTRA` counts
+stages after the increment stage. The report at
+`build/independent-lanes/<tag>/report.json` records coverage, commands and hashes.
+
+The client has to build its interface description and pass the same port arrays
+and labels to the emitter. It also materializes each register snapshot during
+simulation to avoid reevaluating prior edges. The [FIFO substitution guide](lean-hardware-fifo-substitution.md)
+records the shared transaction theorem and the separate 2×2 packet-switch
+synthesis comparison.
 
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and
