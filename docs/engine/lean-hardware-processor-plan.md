@@ -1,8 +1,8 @@
 # Processor integration contract
 
-The processor is a later integration test for the library. Implementation stays
-focused on the memory-transfer controller first. This record selects the semantic
-target and identifies the contracts to freeze before CPU construction.
+The processor is the next integration test for the library. This record freezes
+the semantic target and first execution environment; decoder, mapping and device
+contracts are developed before CPU construction.
 
 ## ISA target and execution environment
 
@@ -19,8 +19,8 @@ python3 scripts/fetch-riscv-specification.py
 ```
 
 The fetcher verifies existing and downloaded bytes and refuses to replace a
-mismatched cache. Source identity is fixed; memory-map, decoder and environment
-implementation gates remain open.
+mismatched cache. Source identity and the execution-environment choices below are
+fixed. Decoder, checked mapping and device implementations remain open gates.
 
 Implement all 40 base instructions, including precise ECALL/EBREAK outcomes,
 legal HINTs and conservative FENCE behavior. Keep `x0` zero while still performing
@@ -30,14 +30,14 @@ not raise target-alignment faults. FENCE reserved fields need their specified
 conservative handling, rather than blanket illegal-instruction rejection.
 These requirements come from the [RV32I chapter](https://docs.riscv.org/reference/isa/v20260120/unpriv/rv32.html).
 
-The following are project execution-environment choices, to be encoded explicitly:
+The following are frozen project execution-environment choices, to be encoded explicitly:
 
 | Concern | First implementation contract |
 | --- | --- |
 | Core | Single hart, multicycle, serialized memory access; polling peripherals |
 | Reset | PC and integer registers zero; clear pending control and terminal status; preserve memories |
 | Initialization | Program/image and initialized-data coverage are explicit loader assumptions |
-| Address space | Distinct executable/readable code ROM and readable/writable nonexecutable RAM; no truncation aliases; freeze capacities and peripheral windows with the memory map |
+| Address space | Distinct executable/readable code ROM and readable/writable nonexecutable RAM; checked disjoint regions and full access footprints before narrowing; map below |
 | Data representation | Little endian; signed and unsigned byte/halfword loads; byte-masked stores preserve other bytes |
 | Misalignment | Precise fatal data-access trap, checked before mapping; no partial store |
 | Unsupported encodings | Precise terminal illegal-instruction event, while accepting legal base HINT/FENCE encodings |
@@ -49,6 +49,110 @@ The code ROM is loaded only while execution is quiescent. Self-modifying code
 and instruction-cache synchronization are outside this first environment;
 [FENCE.I belongs to Zifencei](https://docs.riscv.org/reference/isa/v20260120/unpriv/zifencei.html).
 TransferRange's nonwrapping admission rule must not replace ISA address arithmetic.
+
+## Frozen memory map and MMIO contract
+
+These addresses, capacities, permissions and fault choices belong to this
+execution environment; they are not mandated by RV32I. ROM and RAM contain
+`2^a` 32-bit words, default `a = 10` (4 KiB). ROM/reset base is zero; RAM and
+peripheral bases are elaboration parameters. The default map is:
+
+| Region | Inclusive default range | Permitted operations |
+| --- | --- | --- |
+| Code ROM | `0x00000000–0x00000fff` | Aligned instruction fetch; byte/halfword/word loads |
+| Data RAM | `0x00010000–0x00010fff` | Byte/halfword/word loads and stores; no execution |
+| GPIO | `0x40000000–0x400000ff` | Defined aligned word registers only |
+| Timer | `0x40000100–0x400001ff` | Defined aligned word registers only |
+| UART | `0x40000200–0x400002ff` | Defined aligned word registers only |
+
+All other addresses fault. A checked layout requires word-aligned bases,
+positive capacities, widened interval ends at most `2^32`, and pairwise
+disjoint regions. After modular ISA address calculation, admission checks
+alignment, the entire byte footprint and permissions before any local word-index
+narrowing. Subword MMIO accesses, register holes and unsupported directions
+fault with no device effect. MMIO never enters the RAM read-modify-write adapter.
+
+| Register | Access | Defined operation |
+| --- | --- | --- |
+| GPIO `+0x00 INPUT` | Read | Sample 32 digital input bits on the access edge |
+| GPIO `+0x04 OUTPUT` | Read/write | Read or replace the 32-bit output register |
+| Timer `+0x00 COUNT` | Read | Read the pre-edge 32-bit cycle count |
+| UART `+0x00 STATUS` | Read | Bits 0/1/2/3: TX ready, RX valid, overrun, framing error; other bits zero |
+| UART `+0x04 TXDATA` | Write | Start transmitting the low eight bits if idle; upper bits ignored; busy faults |
+| UART `+0x08 RXDATA` | Read | Consume and zero extend the buffered byte; empty faults |
+| UART `+0x0c CLEAR` | Write | Write-one-to-clear error bits 2 and 3; other written bits ignored |
+
+The timer increments modulo `2^32` on every nonreset edge, including CPU stalls
+and terminal halt. No timer write, compare register or interrupt is provided.
+UART has one active transmitter and one received-byte slot. A new valid arrival
+to an occupied slot drops the new byte and sets overrun. Busy/empty faults keep
+each instruction bounded; firmware polls status. With exclusive CPU ownership,
+TX readiness cannot disappear without a CPU write, and RX availability cannot
+disappear without a CPU read.
+
+UART uses 8N1, LSB first, idle high, with an elaboration-time even clock divisor
+`D ≥ 4`. A successful TX write starts a frame lasting `10D` clock periods. RX
+checks start/stop samples, accepts complete bytes, and records framing errors.
+The serial proof must specify its sampled digital input waveform. Analog input
+synchronization, metastability and oscillator tolerance require separate physical
+assumptions; no physical qualification is implied by this environment choice.
+
+MMIO is a dedicated, always-ready single-edge operation on the current device
+state and sampled inputs, returning success/value/effect or a precise fault.
+It is not a held ready/valid response whose timer or GPIO payload can change
+while blocked. The CPU's MMIO access, irreversible device effect and matching
+retirement/trap share an edge. RAM retains the separate request/response adapter;
+the core holds the pending instruction and asserts response-ready throughout
+the RAM wait state, except during reset, so RAM acknowledgement/write and
+retirement/trap also coincide.
+
+Nonreset reads and admission checks use pre-edge state. Autonomous timer/serial
+progression is determined from that same pre-edge state and combined with the
+CPU operation. A newly started TX frame is installed on the commit edge and is
+not advanced as though it had already been active. Consequently:
+
+- Timer reads return the old count, then the counter increments.
+- RX consumption plus arrival returns the old byte and retains the new byte.
+- RX-empty reads concurrent with arrival fault; the new byte becomes available afterward.
+- TX-busy writes concurrent with frame completion fault; TX becomes ready afterward.
+- New overrun/framing errors win over simultaneous software clearing.
+- Loads to `x0` still perform device reads, consumption and faults.
+
+Reset takes priority over all access, retirement and autonomous activity. It
+clears PC/registers, pending control and terminal status; preserves ROM, RAM and
+RAM Q; clears GPIO output, timer, UART buffering/errors/serial control; and drives
+TX idle high. It cancels pending work without completion, suppressing tick/arrival
+processing on that edge. Prior stores and already transmitted serial bits remain
+historical effects. Peripheral reset is an explicit event, not rollback.
+
+## Fault ordering and program initialization
+
+Use this priority: reset; fetch alignment then fetch permissions/range; decoder
+legality and exact ECALL/EBREAK; instruction-specific checks; successful commit.
+Data alignment precedes mapping, followed by MMIO size/register/readiness checks.
+JALR clears target bit zero before the taken-target alignment check. A misaligned
+taken jump/branch traps on that instruction and suppresses its link write; an
+aligned but inaccessible target allows the jump to retire, then faults on the
+following fetch at the target PC. Untaken branches do not check target alignment.
+These target-fault distinctions follow the pinned RV32I chapter §§2.2 and 2.5.
+
+Terminal records retain faulting PC, optional fetched instruction, cause and
+relevant address/access kind. These are monitor outputs, not privileged CSRs.
+Reserved or unsupported instruction encodings produce this environment's
+illegal-instruction outcome; that policy is distinct from unspecified ISA
+behavior for some reserved encodings. All legal base HINTs are accepted. FENCE
+conservatively treats reserved fields as ordinary FENCE, ignoring unused rs1/rd
+as required by §2.7. Serialized accesses allow it to retire after earlier accesses
+complete; it does not wait for an accepted UART byte's final physical bit.
+
+Program tests retain exact ROM images, placement, length and hashes, explicitly
+filling unused ROM words with zero (illegal if executed). They explicitly load
+every RAM word, initially zero except initialized data. Loading occurs only while
+the CPU is quiescent with exclusive loader ownership, and execution starts only
+after loading completes and pending memory work drains. Boot code establishes
+stack/ABI conventions; reset registers remain zero. Warm reset preserves RAM;
+reinitialization requires another loading operation. These image assumptions are
+separate from the generic arbitrary-memory theorems.
 
 ## Reuse and missing library contracts
 
@@ -66,7 +170,7 @@ universal state-projection, reset and snapshot-invariant proofs; emitted and
 synthesized RTL replay passes three depths, while imported artifact proof
 remains in progress. A RAM read-modify-write implementation requires
 exclusive ownership and must not be reused blindly for MMIO. GPIO, timer and
-UART need separate observable-effect contracts and frozen address windows.
+UART need separate observable-effect implementations for the frozen contract above.
 
 `Memory.ByteAdapterEffects` proves the pure RAM adapter's atomic completion
 events, including actual read values, stores and faults. Replaying them
@@ -101,8 +205,9 @@ service yields a cycle bound.
 
 ## Implementation gates
 
-1. Freeze the specification hash, instruction decoder, execution environment,
-   memory map, fault priorities and reset/effect ordering.
+1. Specification hash, execution environment, memory map, fault priorities and
+   reset/effect ordering are frozen above. Complete the decoder and checked map
+   contracts before CPU construction.
 2. Prove byte-access preservation, fault atomicity, decoder coverage and the
    executable architectural instruction semantics.
 3. Construct the core and prove structural, architectural and conditional-progress
