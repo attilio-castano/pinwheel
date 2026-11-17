@@ -38,6 +38,27 @@ The independent integer campaign checks 2,909 operand pairs and 11,697 shift
 cases, including zero widths and overshifts, and rejects eight actual expression
 faults. All 126 audited declarations use standard axioms only.
 
+`WordALU` selects those operations at runtime using a four-bit control. Codes
+0–9 denote add, subtract, AND, OR, XOR, signed less-than, unsigned less-than,
+left shift, logical right shift and arithmetic right shift. Codes 10–15 return
+zero and deassert validity. Operand width and shift-amount width are independent;
+all raw selector values have universal evaluation/substitution proofs. Validity
+reports selector legality, not arithmetic overflow or an overshift.
+
+The separate `Processor.RV32I.ALU` adapter proves agreement with the instruction
+semantics, including explicit low-five-bit register shifts and signed 12-bit
+immediates for SLTIU. The public generic import does not pull in processor modules.
+
+```sh
+lake build Pinwheel.Hardware.Processor.RV32I.ALU
+lake env lean -DwarningAsError=true --run test/HardwareWordALU.lean
+```
+
+The campaign checks 147,632 generic runtime-selector cases and 31,344 RV32
+adapter cases against integer oracles, and rejects twelve actual expression
+faults. The 293-declaration audit uses standard axioms only. These are structural
+expression proofs; complete processor decoding and RTL evidence remain separate.
+
 `Interface P` completely enumerates a typed family and proves inverse lookup and
 unique names. It drives traversal, emission, observation and imported endpoint
 assembly. `Bank count P` replicates an interface; `Bank.circuit` independently
