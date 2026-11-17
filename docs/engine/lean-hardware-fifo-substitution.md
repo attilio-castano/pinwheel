@@ -79,3 +79,62 @@ write, full-rate replacement and reset with retained storage. It also runs both
 composed lanes through cancellation, stalls, repeated payloads and modular
 overflow. Emitted-RTL certificates and matched synthesis measurements for these
 instances remain future work.
+
+## Replacing the input queues in a packet switch
+
+The switch now takes a FIFO as an argument. For example, these definitions
+build the same two-input, two-output switch with four-bit payloads. Each queue
+stores a five-bit word consisting of a destination bit and the payload.
+
+```lean
+import Pinwheel.Hardware.Library
+open Pinwheel.Hardware
+
+def dest : Switch.Physical.DestinationEncoding 2 := ⟨1, by decide, by decide⟩
+def switchWith (fifo : Stream.BackendAPI.Fifo 5 3) :=
+  Switch.WithFifo.circuit (w := 4) dest fifo 1
+
+def shiftSwitch := switchWith (Stream.BackendAPI.shift 5 3 (by decide))
+def circularSwitch := switchWith (Stream.CircularFifo3.backend 5)
+```
+
+The existing round-robin arbiter, output holding registers and cursor update
+logic use the FIFO's offered word and valid bit. The router reads those pins
+with the probe inputs tied low, so computing a grant cannot depend on the
+dequeue decision it is about to make. The real FIFO samples the resulting
+dequeue decision together with the live reset and input offer. Its ready pin
+determines admission, including full-queue replacement on a dequeue edge.
+
+[WithFifo.interchangeable](../../Pinwheel/Hardware/Switch/Backend.lean) gives
+equality of every pre-edge and post-edge output for every finite input history
+following a synchronous reset, starting each implementation from arbitrary
+register bits. It works for any two backends with the same depth and packed
+width. Each refines the existing switch model, so routing, output stalls and
+arbitration use the same specification for both layouts.
+
+For the 2×2 instance, the readback campaign independently checks each emitted
+SystemVerilog implementation against its typed Lean circuit. Each certificate
+covers arbitrary input and register bits and composes with reset recovery to
+prove the initialized trace theorem. The pinned Yosys import and the restricted
+JSON interpretation are the external trust boundary. Both audits reported
+only standard Lean axioms.
+
+| Depth-three input FIFO | RTL next-register equations | RTL output equations | Mapped flip-flops | Other generic cells | Total generic cells |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Shift | 20 | 6 | 50 | 142 | 192 |
+| Circular | 20 | 6 | 56 | 182 | 238 |
+
+Each circular queue spends six bits on its count and pointers. Each shift
+queue spends three bits on validity. Across two inputs that accounts for the
+six additional flip-flops. Both rows use the same CIRCT lowering and Yosys
+generic synthesis. These counts apply to this width and depth. Timing, physical
+area and correspondence of the mapped gates fall outside the RTL certificate.
+
+Reproduce both rows with a fresh tag. The report under
+`build/switch-fifo-backends/<tag>/report.json` records the commands, endpoint
+coverage, cell breakdown, source and tool hashes, and hashes of the generated
+proofs and artifacts.
+
+```sh
+python3 scripts/check-switch-fifo-backends.py --tag switch-fifo-pair-01
+```

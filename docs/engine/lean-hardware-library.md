@@ -365,7 +365,9 @@ claim an RTL artifact certificate or physical timing result for that example.
 
 The [FIFO substitution example](lean-hardware-fifo-substitution.md) selects a
 shift FIFO or a depth-three circular FIFO and applies the same ordering theorem
-to the actual pins of each increment lane.
+to the actual pins of each increment lane. A packet switch now accepts either
+FIFO through the same interface. The guide records the reset-initialized RTL
+certificates and matched generic synthesis counts for the two 2×2 instances.
 
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and

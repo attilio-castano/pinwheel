@@ -19,8 +19,8 @@ rr = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(rr)
 
 
-def sources():
-    pending = [ROOT / "test/SwitchCircuitEmit.lean", ROOT / "Pinwheel/Hardware/Switch/Certified.lean"]
+def sources(roots=("test/SwitchCircuitEmit.lean", "Pinwheel/Hardware/Switch/Certified.lean")):
+    pending = [ROOT / name for name in roots]
     found = set()
     while pending:
         path = pending.pop()
