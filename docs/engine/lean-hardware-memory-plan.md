@@ -218,10 +218,31 @@ an 8-to-4-bit transform, held start, and reset with incoherent protocol state.
 All 308 model declarations pass the standard-axiom audit. The hardware controller,
 its structural refinement and its RTL evidence are the next implementation step.
 
-A closed demonstration needs a host loader/readback interface so destination
-storage remains observable after synthesis. That wrapper must drain host reads
-before accepting start, block host traffic while busy and define host/start
-arbitration. It is a separate step after controller and composition proofs.
+`Memory.TransferHostModel` adds host loading and readback around the same state.
+An offered start blocks new host requests; existing responses remain visible
+and retire only when their host is ready. Start is accepted on a later edge
+with both pre-edge pending bits clear. Busy edges exclusively reserve both
+memories for the controller, so host offers cannot delay an active coherent
+session. After completion, ordinary host traffic can resume immediately.
+
+The wrapper proves pending-free start readiness, independent idle memory effects,
+drain-before-start, accepted-start and busy-step equality with the closed model,
+lifted session/completion proofs, reset prefix preservation, and absence of stale
+controller work after abort. Invalid accepted commands preserve both complete
+memory states while changing controller status/configuration. Quiet continuation
+preserves a completed session; new idle host writes start a different memory history.
+
+```sh
+lake build Pinwheel.Hardware.Memory.TransferHostModel
+lake env lean -DwarningAsError=true --run test/MemoryTransferHostModel.lean
+```
+
+Its independent integer/array oracle checks 18,015 complete-state and pre/post
+observation edges: loading/transfer/readback, pending responses before start,
+exhaustive idle host commands, range commands, abort/recovery and seeded traffic.
+All 113 wrapper declarations pass the standard-axiom audit. The physical host
+wrapper and its RTL checks remain to be built; keeping host readback observable
+will also prevent synthesis from discarding destination storage.
 
 External SRAM remains a supplied implementation contract. Digital trace proofs
 do not independently qualify a macro's electrical behavior. Byte enables,

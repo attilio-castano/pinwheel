@@ -60,6 +60,11 @@ while preserving completed writes. These model proofs currently precede the
 physical controller implementation; see the memory campaign for start/drain
 and external-service assumptions.
 
+`Memory.TransferHostModel` adds independent host memory channels for loading and
+readback. It drains outstanding host responses before start acceptance and gives
+an active transfer exclusive memory ownership. Its completion and abort proofs
+reuse the closed transfer model. Hardware for this wrapper remains in progress.
+
 `Arbitration.OneHotSelect` shares a round-robin winner decoder across arbitrary
 payload and control selections. Its correctness theorem requires a legal
 one-hot cursor and allows arbitrary request/value/fallback expressions. It is
