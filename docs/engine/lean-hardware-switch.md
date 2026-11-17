@@ -67,8 +67,10 @@ python3 scripts/check-round-robin-baseline.py --tag selector-baseline-local
 python3 scripts/check-round-robin-masked.py --tag selector-masked-local
 python3 scripts/check-switch-baseline.py --tag switch-baseline-local
 python3 scripts/check-switch-hierarchy.py --tag switch-hierarchy-local
-python3 scripts/check-switch-artifact.py --tag switch-artifact-local
-python3 scripts/check-switch-hierarchy-artifact.py --tag switch-hierarchy-artifact-local
+python3 scripts/check-switch-artifact.py --tag switch-artifact-local \
+  --config 1,1,1,1 --config 2,3,2,8 --config 3,1,1,8 --config 3,5,3,17 --config 5,3,2,8
+python3 scripts/check-switch-hierarchy-artifact.py --tag switch-hierarchy-artifact-local \
+  --config 1,1,1,1 --config 2,3,2,8 --config 3,1,1,8 --config 3,5,3,17 --config 5,3,2,8
 ```
 
 Tags create new directories and must not be reused. Reports record commands,
@@ -218,15 +220,15 @@ imported-RTL proof campaign. All three complete artifact matrices now pass:
 
 | RTL architecture | Receipt under `build/` | Local equalities | Typed register/output endpoints |
 | --- | --- | ---: | ---: |
-| Original flat | `switch-artifact/payload-matrix-01/report.json` | 1,698 | 160 |
-| Original hierarchy | `switch-hierarchy-artifact/payload-matrix-01/report.json` | 1,711 | 160 |
-| Shared selection | `switch-shared-artifact/payload-matrix-01/report.json` | 1,930 | 160 |
+| Original flat | `switch-artifact/private-imports-full-01/report.json` | 1,698 | 160 |
+| Original hierarchy | `switch-hierarchy-artifact/private-imports-full-01/report.json` | 1,711 | 160 |
+| Shared selection | `switch-shared-artifact/private-imports-01/report.json` | 1,930 | 160 |
 
 Each covers the same five configurations, arbitrary binary inputs/registers,
 and the composed reset-initialized protocol trace theorem. The flat negative
-receipt `build/switch-artifact-negatives/payload-matrix-01/report.json` rejects
+receipt `build/switch-artifact-negatives/private-imports-01/report.json` rejects
 two semantic RTL corruptions and two coordinated metadata faults. The shared
-receipt `build/switch-shared-artifact-negatives/active-witnesses-02/report.json`
+receipt `build/switch-shared-artifact-negatives/private-imports-01/report.json`
 rejects active-output payload inversion and FIFO data-update corruption. Both
 shared controls fail local semantic equalities and include kernel-checked
 concrete witnesses with an active or retained packet. Parser errors and proof
@@ -241,6 +243,14 @@ that recovers the exact original wide expression. These strategies close the
 previous 5×3 payload timeouts without restricting cursor states. Solver results
 only guide proof search. No proof step admits native decision axioms. All
 generated declarations are audited, and receipts bind the generator helpers.
+Generated modules and mismatch witnesses set their private import path after
+Lake initializes its environment, so cached modules cannot take precedence.
+An isolated Lean regression exercises a real same-name cache collision and
+checks that both production compilation paths use the private definition:
+`python3 test/test_typed_artifact_runner.py`. Inspection found no current
+shadowing in the older retained matrices; their historical ambient cache state
+was not separately archived. The receipts above rerun the full matrices with
+the corrected search order.
 
 ```sh
 python3 scripts/check-switch-shared-artifact.py --tag shared-artifact-local

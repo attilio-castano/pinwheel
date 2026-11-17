@@ -13,7 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 def compile_modules(run, directory, modules, *, timeout=300):
     for module in modules:
         lean_path = str(directory) + os.pathsep + str(ROOT / ".lake/build/lib/lean")
-        argv = ["env", "LEAN_PATH=" + lean_path, "lake", "env", "lean", "-DwarningAsError=true",
+        # Lake prepends its build cache to an inherited LEAN_PATH. Override it
+        # inside `lake env` so freshly generated modules win over cache names.
+        argv = ["lake", "env", "env", "LEAN_PATH=" + lean_path, "lean", "-DwarningAsError=true",
                 "-o", directory / f"{module}.olean", directory / f"{module}.lean"]
         log, started = directory / f"{module}.log", time.monotonic()
         record = {"argv": list(map(str, argv)), "label": directory.name + "-" + module,

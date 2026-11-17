@@ -72,14 +72,14 @@ declarations for standard axioms only. Semantic zero widths are tested in Lean;
 the HDL emitter requires positive address and data widths.
 
 Complete imported-RTL correspondence passed for the same four configurations
-in `build/memory-command-artifact/payload-matrix-01/report.json`. The generated
+in `build/memory-command-artifact/private-imports-01/report.json`. The generated
 `memory_trace` theorem relates every raw-input trace from arbitrary initial
 words/Q to the command specification; `command_step` supplies the original
 single-port command transition. Every register and output is included, and
 the generated declarations pass the standard-axiom audit. Yosys and the
 restricted JSON interpretation remain trusted.
 
-`build/memory-command-artifact-negatives/payload-matrix-01/report.json`
+`build/memory-command-artifact-negatives/private-imports-01/report.json`
 binds that positive receipt and rejects an inverted output and an inverted
 word next-state expression at Lean's semantic proof stage. Each rejection is
 paired with a separately kernel-checked concrete mismatch. The earlier
@@ -139,11 +139,11 @@ rejected: ignored response stalls, dropped pending state and a word incorrectly
 cleared by reset.
 
 Imported RTL certification passed in
-`build/memory-stream-artifact/payload-matrix-01/report.json`: 133 local
+`build/memory-stream-artifact/private-imports-01/report.json`: 133 local
 equalities and all 36 typed register/output endpoints across the four cases.
 The composed theorems cover arbitrary-state traces, traces after protocol reset,
 preservation of every memory word and Q, and clearing of pending. The matching
-`build/memory-stream-artifact-negatives/payload-matrix-01/report.json`
+`build/memory-stream-artifact-negatives/private-imports-01/report.json`
 rejects active-response inversion, pending/word next-state corruption and a
 word erased by reset. Each rejection includes a kernel-checked concrete
 counterexample. The RTL interpretation trust boundary is unchanged.
