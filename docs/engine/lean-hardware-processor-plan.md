@@ -768,7 +768,28 @@ equal transmissions, full-duplex races and wrapping timers. Ten actual compositi
 faults are rejected after 474 unchanged baseline fixture edges pass. All 189
 audited declarations use standard axioms only.
 
-Structural serial composition and emitted UART RTL remain integration steps.
+`Processor.SerialCircuit` now implements the composition using the original
+eight MMIO and six UART registers. Eight inputs supply atomic CPU MMIO and a
+sampled RX wire. Thirteen outputs expose the complete MMIO response/device state
+and UART frontend pins. The CPU-only TX predicate supplies the immediate bypass,
+while actual UART pulses drive the MMIO update. Complete step/output, invariant,
+reset, valid-state coverage and finite-run correspondence are proved. Reset
+recovers arbitrary raw bits and clears every register. Raw device selector 3
+retains its explicit register-hole response. Typed device-event transport uses
+the admitted-selector premise and actual composite response pins.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SerialCircuitProofs
+lake env lean -DwarningAsError=true --run test/ProcessorSerialCircuit.lean
+```
+
+The independent numeric raw-state oracle checks 434,433 complete register and
+pre/post-output edges across divisors 4, 6, 10 and 32. Cases include malformed
+counters/phases, every raw device selector, reset, wire sampling, refill and
+error-clear races. Nine actual expression faults are rejected after 293 unchanged
+baseline edges pass. All 166 audited declarations use standard axioms only.
+
+Emitted serial RTL and processor-level serial integration remain integration steps.
 Synchronous digital samples, input synchronization, metastability and oscillator
 tolerance remain explicit environment assumptions.
 
