@@ -7,8 +7,20 @@ target and identifies the contracts to freeze before CPU construction.
 ## ISA target and execution environment
 
 Use the official **Unprivileged ISA release 20260120, RV32I version 2.1**.
-Archive and hash the [official specification PDF](https://docs.riscv.org/reference/isa/v20260120/_attachments/riscv-unprivileged.pdf)
-before implementation; that source-identity gate remains open.
+The [official specification PDF](https://docs.riscv.org/reference/isa/v20260120/_attachments/riscv-unprivileged.pdf)
+is archived in the ignored build cache and pinned by `tools/riscv-isa.json`:
+4,580,174 bytes, SHA-256
+`06bb3c23074f72060a0ec061a80933af948cae7ceafdcd9d1fe177b05fd150bc`.
+The manifest retains title, release, target chapter and CC-BY-4.0 attribution.
+Fresh checkouts obtain the exact same source with:
+
+```sh
+python3 scripts/fetch-riscv-specification.py
+```
+
+The fetcher verifies existing and downloaded bytes and refuses to replace a
+mismatched cache. Source identity is fixed; memory-map, decoder and environment
+implementation gates remain open.
 
 Implement all 40 base instructions, including precise ECALL/EBREAK outcomes,
 legal HINTs and conservative FENCE behavior. Keep `x0` zero while still performing

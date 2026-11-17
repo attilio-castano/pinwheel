@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "title": "The RISC-V Instruction Set Manual, Volume I: Unprivileged Architecture",
+  "release": "20260120",
+  "target": {"base": "RV32I", "version": "2.1", "chapter": 2},
+  "url": "https://docs.riscv.org/reference/isa/v20260120/_attachments/riscv-unprivileged.pdf",
+  "filename": "riscv-unprivileged-20260120.pdf",
+  "bytes": 4580174,
+  "sha256": "06bb3c23074f72060a0ec061a80933af948cae7ceafdcd9d1fe177b05fd150bc",
+  "license": "CC-BY-4.0",
+  "attribution": "RISC-V International; official unprivileged ISA release 20260120. See the document preamble for original authors and derivative attribution.",
+  "scope": "Source identity for the processor semantic target; does not establish implementation correctness or ISA compliance."
+}
