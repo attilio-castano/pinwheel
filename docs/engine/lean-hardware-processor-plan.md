@@ -447,6 +447,50 @@ and five actual expression-fault controls establish the component behavior.
 The system wrapper must hold the core quiescent, load the complete image and
 release execution only after coverage is established.
 
+## Structural system and emitted firmware replay
+
+`Processor.SystemCircuit` composes the existing physical core, byte-RAM adapter,
+atomic MMIO and three fetch-response registers through `SystemWiring`. Its ROM
+is an explicit elaboration-time function. The four-word RAM example has sixty
+registers, six external inputs and thirty-seven outputs. Serial byte events
+remain frontend inputs at this integration boundary.
+
+`SystemExport` retains the four component modules and exposes every raw register
+through a typed tap. The generated top contains named connections and wire
+declarations. The bus uses the canonical `SystemWiring` expressions. Universal
+proofs establish that cached staged evaluation has the same complete next state,
+outputs, finite traces and final raw state as `SystemCircuit` for arbitrary raw
+bits. Actual feedback uses the core's request subset, with a proof that response
+inputs cannot change those request endpoints. The 225-declaration standard-axiom
+audit and 128 dirty-state/control cases exercise the complete bus and register map.
+
+```sh
+lake build Pinwheel.Hardware.Processor.SystemExportProofs
+lake env lean -DwarningAsError=true --run test/ProcessorSystemCircuit.lean
+python3 -B test/test_processor_system_boot.py
+python3 -B scripts/check-processor-system-boot.py --tag emitted-boot-local
+```
+
+The thirteen-instruction byte program reaches EBREAK after fifty-two edges,
+including its first reset edge. It retires twelve instructions, performs one
+byte store, checks signed/unsigned loads and an x0 load, reads back GPIO output,
+samples the pre-edge timer and executes FENCE. The emitted RTL matches all sixty
+post-edge registers and all thirty-seven pre/post outputs on every edge.
+Four actual RTL changes corrupt active writeback, retired PC, RAM store commit
+and GPIO store commit. Each produces a concrete mismatch after its complete
+binary trace passes parsing and its active condition is checked. Eleven portable
+tests reject malformed traces, descriptor omissions, register aliases and
+same-width wiring swaps.
+
+`build/processor-system-boot/emitted-boot-01/report.json` records nineteen
+successful commands, eighty-four source hashes, forty-six tool/runtime hashes
+and fifty-one retained artifacts. Its SHA-256 is
+`da527a3481192b16f26944667696c6cea3eeb38892f9d05dba71e656d46d345b`.
+This campaign explicitly forces all sixty startup registers, including nonzero
+RAM words and Q. It validates emitted RTL from that supplied image. Reset-driven
+loading, synthesized firmware replay, whole-system model correspondence and an
+imported-system artifact certificate remain separate open gates.
+
 ## Atomic peripheral model
 
 `Processor.MmioModel` implements the frozen GPIO, timer and UART-register
@@ -670,10 +714,11 @@ service yields a cycle bound.
    are implemented and independently tested. Structural address routing is
    proved; structural instruction decoding is also complete.
 2. Byte-access preservation, fault atomicity, decoder coverage and executable
-   instruction semantics are proved. Atomic peripheral semantics are implemented;
-   structural devices and UART wire semantics remain.
-3. Construct the core and prove structural, architectural and conditional-progress
-   refinements, including arbitrary-state reset recovery.
+   instruction semantics are proved. Structural byte RAM, MMIO and digital UART
+   components are proved. Their complete processor/serial composition remains.
+3. Complete physical core cycle refinement and arbitrary-state reset recovery are
+   proved. Connect them through provider ownership and actual architectural events
+   to the system's architectural and conditional-progress refinements.
 4. Differentially replay architectural effects against pinned
    [Sail](https://github.com/riscv/sail-riscv) or
    [Spike](https://github.com/riscv-software-src/riscv-isa-sim), with an explicit
