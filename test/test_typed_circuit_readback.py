@@ -74,6 +74,15 @@ class TypedCircuitReadback(unittest.TestCase):
             path.write_text(text)
             return (reader or self.reader).read_hints(path)
 
+    def test_shared_expression_is_named_once(self):
+        node = (3, "var", (), 0)
+        for _ in range(20):
+            node = (3, "xor", (node, node), None)
+        text = readback.render_shared(self.reader, node)
+        self.assertEqual(text.count("let "), 20)
+        self.assertIn("g18 ^^^ g18", text)
+        self.assertEqual(readback.tree_size(node), 2 ** 21 - 1)
+
     def test_descriptor_order_and_explicit_register_references(self):
         self.assertEqual(list(self.reader.INPUTS.items()), [
             ("z_data", (3, "input_0")), ("a_data", (3, "input_1"))])

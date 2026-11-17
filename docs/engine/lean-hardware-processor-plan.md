@@ -618,6 +618,38 @@ records. Comparative area/timing and imported-system artifact correspondence
 remain open. The native Lean compiler boundary is recorded separately by the
 FastEmit provenance campaign.
 
+### Tapped core RTL correspondence
+
+The [core probe](../../scripts/probe-processor-core-artifact.py) uses the core
+MLIR and SystemVerilog retained by a passing cold-boot run. It checks their
+hashes, imports the SystemVerilog through Yosys and compares both graphs at
+every next-register and output port, with arbitrary inputs and register bits.
+For the retained core, Z3 found the disjunction of all 104 mismatches
+unsatisfiable (37 next-register values and 67 outputs). Inverting one observed
+output made the same query satisfiable.
+
+Lean independently proves 45 imported RTL output equations by definitional
+equality with the typed circuit. These include all 37 state taps. It also checks
+50 source MLIR equations against that circuit (one next-register value and 49
+outputs). These inventories overlap. The full RTL-to-typed trace theorem still
+requires kernel proofs for the remaining logic. The current run first stops in
+`LocalProofs004`, on `local_206` and `local_208`. They cover write enable
+and destination selection. The next proof step is to isolate the decoder
+conditions shared by those two equations, prove their smaller equalities,
+then rerun the full correspondence and axiom audit.
+
+Run each scope with a fresh tag and a passing cold-boot receipt:
+
+```sh
+python3 -B scripts/probe-processor-core-artifact.py --scope solver --tag core-solver-local --cold-report build/processor-loadable-system-boot/cold-boot-03/report.json
+python3 -B scripts/probe-processor-core-artifact.py --scope kernel --tag core-kernel-local --cold-report build/processor-loadable-system-boot/cold-boot-03/report.json
+```
+
+Each receipt records the solver control, direct theorem inventories and
+`kernel_correspondence`. Only a successful complete Lean audit sets that field.
+The top-level CPU/UART reset and image-loading theorems apply to the typed
+circuit. Extending artifact correspondence to that hierarchy is a separate gate.
+
 ## Atomic peripheral model
 
 `Processor.MmioModel` implements the frozen GPIO, timer and UART-register

@@ -97,7 +97,42 @@ def importer(descriptor):
     return rb
 
 
-def local_proofs(rb, pairs, *, start=0, plans=None):
+def tree_size(*roots):
+    memo = {}
+
+    def size(t):
+        if id(t) not in memo:
+            memo[id(t)] = 1 + sum(size(c) for c in t[2])
+        return memo[id(t)]
+    return sum(size(t) for t in roots)
+
+
+def render_shared(rb, root):
+    """Name every distinct operation once in dependency order in a local Lean term."""
+    memo, bindings = {}, []
+
+    def visit(tree):
+        key = id(tree)
+        if key in memo:
+            return memo[key]
+        width, op, args, value = tree
+        if op == "var":
+            return f"x{value}"
+        refs = [visit(child) for child in args]
+        node = rb.Node(width, op, tuple(range(len(refs))), value)
+        term = rb.Graph.expression(None, node, refs.__getitem__)
+        if op == "lit":
+            return f"({term})"
+        name = f"g{len(bindings)}"
+        bindings.append(f"let {name} : BitVec {width} := {term}; ")
+        memo[key] = name
+        return name
+
+    output = visit(root)
+    return "(" + "".join(bindings) + output + ")"
+
+
+def local_proofs(rb, pairs, *, start=0, plans=None, compact=False):
     lines = ["import Lean.Elab.Command\nimport Pinwheel.Hardware.Readback.Boolean\n" + HEADER,
              "set_option linter.unusedSimpArgs false"]
     for k, pair in enumerate(pairs, start=start):
@@ -105,9 +140,10 @@ def local_proofs(rb, pairs, *, start=0, plans=None):
             _, helper, plan = plans[k]
             lines.append(helper.lean_lemmas(pair, plan, f"local_{k}", rb.render_tree))
             continue
+        render = (lambda t: render_shared(rb, t)) if compact and pair["size"] > 2000 else rb.render_tree
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
         lines.append(f"theorem local_{k} {variables} :\n"
-                     f"    {rb.render_tree(pair['left'])} = {rb.render_tree(pair['right'])} := by\n"
+                     f"    {render(pair['left'])} = {render(pair['right'])} := by\n"
                      "  try simp only [ite_self, BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
                      "  all_goals first\n"
                      "  | rfl\n"
@@ -129,7 +165,7 @@ def local_proofs(rb, pairs, *, start=0, plans=None):
 
 
 def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str,
-             interface_checks: str = ""):
+             interface_checks: str = "", compact: bool = False):
     """Profile defines Input/Register/Output, circuit, inputs/registers/outputs.
 
     Each descriptor must have the corresponding Interface type. Source-hint
@@ -147,9 +183,12 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
         if (left, right) not in matches:
             # A suggested cut can erase correlations needed at an endpoint.
             # Fall back to its complete expressions, still proved by Lean.
-            variables, definitions = {}, set()
+            variables, definitions, expanded = {}, set(), {}
 
             def expand(graph, name, namespace):
+                key = (namespace, name)
+                if key in expanded:
+                    return expanded[key]
                 node = graph.nodes[name]
                 if node.op in ("input", "reg"):
                     key = (node.width, node.op, node.value)
@@ -157,11 +196,13 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
                         variables[key] = len(variables)
                     return node.width, "var", (), variables[key]
                 definitions.add(f"{namespace}.{name}")
-                return node.width, node.op, tuple(expand(graph, arg, namespace) for arg in node.args), node.value
+                tree = node.width, node.op, tuple(expand(graph, arg, namespace) for arg in node.args), node.value
+                expanded[key] = tree
+                return tree
 
             lhs, rhs = expand(source, left, "Source"), expand(actual, right, "RTL")
             pairs.append({"source": left, "rtl": right, "variables": list(variables),
-                          "definitions": sorted(definitions), "dependencies": [], "left": lhs, "right": rhs})
+                          "definitions": sorted(definitions), "dependencies": [], "left": lhs, "right": rhs, "size": tree_size(lhs, rhs)})
             matches.add((left, right))
     # Wide tag comparisons can hide a tiny Boolean identity from tactic search.
     # Generalize shared predicates, prove the stronger finite lemma by kernel
@@ -169,6 +210,8 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     # filters suggestions; it never supplies evidence accepted by the kernel.
     plans = {}
     for k, pair in enumerate(pairs):
+        if compact and pair["size"] > 2000:
+            continue
         for kind, helper in (("boolean", abstraction), ("mux", mux_abstraction), ("union", union_abstraction)):
             plan = helper.suggest(pair, max_bits=13)
             if plan is not None and oracle(plan.pair):
@@ -209,11 +252,11 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     if len(pairs) > 50:
         for start in range(0, len(pairs), 50):
             name = f"LocalProofs{start // 50:03d}"
-            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans))
+            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans, compact=compact))
             local_modules.append(name)
         write("LocalProofs", "\n".join(f"import {name}" for name in local_modules) + "\n")
     else:
-        write("LocalProofs", local_proofs(rb, pairs, plans=plans))
+        write("LocalProofs", local_proofs(rb, pairs, plans=plans, compact=compact))
     write("Links", rb.links_source(source, actual, pairs, "LocalProofs", "Graphs"))
 
     def value(graph, name, namespace):
@@ -221,7 +264,8 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
         return graph.expression(node, None) if node.op in ("input", "reg", "lit") else f"{namespace}.{name} i s"
 
     matches = {(p["source"], p["rtl"]): k for k, p in enumerate(pairs)}
-    lines = ["import Links\n" + HEADER]
+    lines = ["import Links\n" + ("import SourceBindings\n" if compact else "") + HEADER]
+    source_lines = ["import Graphs\n" + HEADER]
     parameters = "(i : Values Input) (s : Values Register)"
     endpoint_count = 0
     for kind, mapping, constructors, desc, typ, operation in (
@@ -233,7 +277,7 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
             sn, rn = mapping[name], (actual.next if kind == "next" else actual.outputs)[name]
             lhs, rhs = value(source, sn, "Source"), value(actual, rn, "RTL")
             stem = f"{kind}_{len(entries)}"
-            lines.append(f"theorem hint_{stem} {parameters} :\n"
+            (source_lines if compact else lines).append(f"theorem hint_{stem} {parameters} :\n"
                          f"  {lhs} = circuit.{operation} i s {ctor} := by rfl\n")
             index = matches.get((sn, rn))
             proof = f"exact link_{index} i s" if index is not None else "rfl"
@@ -273,6 +317,8 @@ theorem trace_eq (s : Values Register) (inputs : List (Values Input)) :
 
 end Pinwheel.TypedArtifact
 """)
+    if compact:
+        write("SourceBindings", "\n".join([*source_lines, "end Pinwheel.TypedArtifact\n"]))
     write("Proof", "\n".join(lines))
     write("Audit", """import Lean
 import Proof
@@ -290,7 +336,7 @@ elab "#audit_typed_artifact" : command => do
   logInfo m!"Typed artifact audit: {count} declarations, standard axioms only."
 #audit_typed_artifact
 """)
-    return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", "Proof", "Audit"], {
+    return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", *(["SourceBindings"] if compact else []), "Proof", "Audit"], {
         "local_equalities": len(pairs), "endpoints": endpoint_count,
         "local_proof_units": len(local_modules) or 1,
         "boolean_generalizations": sum(kind == "boolean" for kind, _, _ in plans.values()),
