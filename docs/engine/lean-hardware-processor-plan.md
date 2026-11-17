@@ -384,9 +384,31 @@ lake env lean -DwarningAsError=true --run test/ProcessorMmioCircuit.lean
 The independent Nat/array oracle checks 28,672 raw control/state edges and 8,192
 history edges, every post-register and every pre/post output, actual responses,
 admitted events and retained metadata. Nine actual expression faults are rejected;
-all 670 audited declarations use standard axioms only. Emitted/synthesized RTL,
-imported artifact certificates, UART framing and processor integration remain
-next gates.
+all 670 audited declarations use standard axioms only.
+
+`build/processor-mmio/mmio-matrix-01/report.json` passes independent replay of
+1,117 edges in both emitted and synthesized RTL, plus 144 emitted raw-state edges
+across sixteen dirty startup images. The integer/ordered-event oracle checks
+all eight emitted registers and all seven pre/post outputs. Synthesized replay
+starts with a synchronous reset and forces no registers; raw emitted segments
+cover otherwise unreachable startup values such as the timer's wrap boundary.
+The campaign covers all 512 device/register/direction combinations, simultaneous
+events, invalid selectors and reset. Each nonreset operation has exactly one
+atomic response, including faults; timer ticks are counted separately.
+
+Twelve actual RTL faults produce concrete mismatches in complete binary traces.
+Unknown values, malformed/truncated traces and tool failures do not count as
+negative success. Eighteen portable oracle/driver tests pass. The receipt closes
+45 source, 46 recorded CAD-tool and 206 artifact identities and all 54 commands.
+The 497 generic cells are a resource measurement, not a matched baseline or timing
+result. Serial frontend events remain input pins.
+
+```sh
+python3 scripts/check-processor-mmio.py --tag mmio-local
+```
+
+Imported artifact certificates, UART framing and processor integration remain
+separate gates.
 
 ## Reuse and missing library contracts
 
