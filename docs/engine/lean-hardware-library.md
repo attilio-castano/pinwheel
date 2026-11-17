@@ -12,7 +12,8 @@ The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
 banks, arbitration, a buffered multiport switch and exclusive-command memory.
 The memory adapter also supports backpressured requests and read responses.
-Memory-transfer and processor integration are ongoing campaigns.
+A memory-transfer specification and completion proof are available; its hardware
+implementation and processor integration are ongoing campaigns.
 
 ## Construction and proof layers
 
@@ -49,6 +50,15 @@ accepted; writes produce no response. Reset cancels pending responses while
 preserving words and Q, so this component uses a state-preserving reset theorem
 instead of `Implementation.Reset`'s fixed initial state. The raw-input
 `implementation` and `trace_correct` still use the shared certificate API.
+
+`Memory.TransferRange` supplies checked nonwrapping ranges and incremental
+memory-patch proofs. `Memory.TransferModel` composes two exclusively owned
+backpressured memories with a serial controller and a proved `Stream.Map wi wo`
+transform. Its completion theorem covers arbitrary source/destination snapshots
+and preserves words outside the destination range. Reset aborts future work
+while preserving completed writes. These model proofs currently precede the
+physical controller implementation; see the memory campaign for start/drain
+and external-service assumptions.
 
 `Arbitration.OneHotSelect` shares a round-robin winner decoder across arbitrary
 payload and control selections. Its correctness theorem requires a legal

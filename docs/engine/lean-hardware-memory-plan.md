@@ -183,12 +183,40 @@ Reset wins over every handshake, clears protocol state and preserves both
 arrays/Q values. Unused physical phase encodings must have explicit safe
 recovery behavior.
 
-The main invariant relates each committed write to the initial source snapshot
-and the destination's written prefix. The remaining destination addresses keep
-their initial values. Reset preserves the committed prefix and cancels the
-uncommitted read. Open-controller progress requires source request/response and
-destination service assumptions; the concrete serialized two-memory composition
-should complete in two edges per word after start acceptance.
+`Memory.TransferModel` implements both the open controller and its closed
+composition with two backpressured memories. Its parameterized `Session`
+invariant relates each committed write to the initial source snapshot and the
+destination's written prefix. `session_step` preserves the invariant and
+`completed_patch` establishes the full transformed range. Every destination
+word outside the written prefix retains its initial value.
+
+`started_complete` proves completion after two further edges per word after a
+valid start; zero length completes on the acceptance edge. The closed composition
+supplies the memory service internally. Open-controller progress instead uses
+an explicit `Service` predicate: `work_step` decreases remaining work by one
+on a service edge, while `work_stalled` preserves it. These theorems do not
+assume an arbitrary external memory eventually responds or holds responses
+stable; an external adapter must supply that contract.
+
+`abort_preserves_prefix` preserves both arrays and Q registers, cancels the
+pending protocol state, and retains the committed-prefix property after reset.
+`no_start_run` excludes stale work after abort until a new start. Valid start
+requires the source to have no pending response. Idle control alone is not a
+drain guarantee; reset or the later host wrapper must establish this condition.
+The destination response is drained under the composition's exclusive ownership.
+
+```sh
+lake build Pinwheel.Hardware.Memory.TransferModel
+lake env lean -DwarningAsError=true --run test/MemoryTransferModel.lean
+```
+
+Validation compares pre/post outputs and the complete composed state with an
+independent integer/array oracle: 14,474 exhaustive-command edges, 100
+abort/busy/restart edges, and 12 open-controller stalled edges. Cases include
+zero/full-depth/invalid ranges, semantic zero widths, all small memory contents,
+an 8-to-4-bit transform, held start, and reset with incoherent protocol state.
+All 308 model declarations pass the standard-axiom audit. The hardware controller,
+its structural refinement and its RTL evidence are the next implementation step.
 
 A closed demonstration needs a host loader/readback interface so destination
 storage remains observable after synthesis. That wrapper must drain host reads

@@ -11,10 +11,11 @@ import Pinwheel.Hardware.Switch.Contract
 import Pinwheel.Hardware.Switch.Progress
 import Pinwheel.Hardware.Memory.CommandFlopsProofs
 import Pinwheel.Hardware.Memory.StreamFlopsProofs
+import Pinwheel.Hardware.Memory.TransferModel
 
 /-! Reusable synchronous hardware: typed circuits and interfaces, register
 banks, stream components and composition, arbitration, multiport and memory contracts,
 and implementation/artifact certificates. This entry point does not import
 Pinwheel's protocol processor, retained tapeout, or physical-design packages.
-Memory-transfer and processor integration remain separate campaign work.
+Memory-transfer hardware and processor integration remain separate campaign work.
 -/
