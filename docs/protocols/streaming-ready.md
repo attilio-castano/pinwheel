@@ -181,6 +181,37 @@ after host drain. The acknowledged export contains exactly the captured TDO
 bits in order. The intervening trace uses ordinary runtime commands with no
 RELEASE command. The proof covers a digital DR scan and its readback.
 
+## SWD DPIDR read
+
+The fixed 20-row image reads the Debug Port Identification Register from a
+point-to-point target already in SWD mode, with a one-clock turnaround and
+an OK acknowledgment. The request is `0xA5` in LSB-first order. The image
+clocks eight request bits, one turnaround, 36 reply bits, another turnaround,
+and eight driven-low idle clocks. The 36 reply bits fit the two RX slots,
+so the wire exchange runs without queue service. [Arm ADIv5, sections B4.1–B4.3](https://documentation-service.arm.com/static/622222b2e6f58973271ebc21)
+
+The fixture drives SWCLK on `uio_out[0]` and joins the SWDIO drive
+`uio_out[1]` to the raw sense input `ui_in[4]`. The modeled target advances
+its output on observed SWCLK rising edges, starting after the first turnaround
+edge and releasing after the parity edge. The [package proof](../../Pinwheel/Hardware/StreamingReady/SWDSession.lean)
+checks the 54 clock edges, both released turnaround samples, and exclusive
+drive at every observation. Each reply bit uses the public SWDIO sample two
+core clocks before its rising edge. The host acknowledges the exact 36-bit
+reply before RELEASE. The decoder returns the 32-bit value after checking
+the ACK and even parity, and rejects the flipped-parity reply.
+
+The frozen RTL and CMOS5L gate netlist produced identical public traces over
+8,619 clocks for the valid and flipped-parity cases. The four-cycle half
+period yields a 506-core-clock exchange after START. The trace SHA-256 is
+`be2cf74265d790118d2d832d2bef256223e8e2be9b4d535a44559adf5bc1a547`.
+
+```sh
+python3.12 -B scripts/streaming_8x4_swd_dpidr.py \
+  --release "$PINWHEEL_RELEASE" --models "$PINWHEEL_MODELS" \
+  --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
+  --out build/swd-dpidr-frozen
+```
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural

@@ -186,25 +186,6 @@ theorem one_poll_late (actual : Package.State a) (s : Session.State a) (trace : 
     change some (inputs[k].rawInputs[0]) = _
     rw [stimulus.scl entry.release k bound]
 
-private theorem fault_drain_trace (s : State a) (trace : BitTrace) (inputs : List Input)
-    (fault : s.phase = .fault) (ordinary : ∀ i ∈ inputs, i.Runtime ∧ i.command ≠ 4#4) :
-    let final := run image.program s inputs
-    final.phase = .fault ∧ final.rxUsed = s.rxUsed ∧
-      (traceRun image.program s trace inputs).captured = trace.captured := by
-  induction inputs generalizing s trace with
-  | nil => exact ⟨fault,rfl,rfl⟩
-  | cons i rest ih =>
-    obtain ⟨⟨cold,warm⟩,release⟩ := ordinary i List.mem_cons_self
-    have next : step image.program i s = clock image.program i s := by
-      simp [step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,fault]
-    have phase : (step image.program i s).phase = .fault := by simp [next,clock,engine,fault]
-    have usedStable : (step image.program i s).rxUsed = s.rxUsed := by simp [next,clock,engine,fault]
-    have captures : (trace.step s i).captured = trace.captured := by
-      simp [BitTrace.step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,fault,
-        BitTrace.clock,State.rxEvent,State.captures]
-    obtain ⟨last,used,bits⟩ := ih _ _ phase (fun j member => ordinary j (List.mem_cons_of_mem _ member))
-    exact ⟨last,used.trans usedStable,bits.trans captures⟩
-
 /-- ACK of a drained fault prefix preserves the exact pre-fault captures
     even in a session where unsent TX still prevents RELEASE. -/
 theorem acknowledge_fault (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
@@ -217,7 +198,8 @@ theorem acknowledge_fault (actual : Package.State a) (s : Session.State a) (trac
     result.exported = trace.captured ∧ final.host.ackOffset.toNat = trace.captured.length := by
   intro final result drained acked
   have continued := reached.run pins ha runtime
-  have hold := fault_drain_trace s.core trace (s.runtimeInputs image.program false pins) fault
+  have hold := retained_trace image.program s.core trace (s.runtimeInputs image.program false pins)
+    (by simp [fault,Phase.retained])
     (fun i member => ⟨runtime.runtimeInputs image.program false s pins i member,unreleased i member⟩)
   have emptyPartial : final.core.rxUsed = 0#6 := by
     dsimp only [final]

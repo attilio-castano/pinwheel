@@ -97,9 +97,16 @@ endmodule
 '''
 
 
-def bridge_source(depth):
+def bridge_source(depth, *, swdio_link=False):
     if type(depth) is not int or depth not in (2, 4):
         raise ValueError('Qualified streaming depth must be 2 or 4')
+    if type(swdio_link) is not bool:
+        raise ValueError('SWDIO link selection must be Boolean')
+    # Both devices drive pad 3 so the pre/post-edge OE checks see any overlap.
+    data_link = ('  tran swdio_link(pads[1],pads[3]);' if swdio_link else
+                 '  tranif1 sda_link(pads[1],pads[3],links[1]);')
+    link_check = ("""\n      if(links!==2'b0) $fatal(1,"SWD fixture uses a fixed board link");"""
+                  if swdio_link else '')
     return f'''`timescale 1ns/1ps
 // Public TT ports only. MISO/raw inputs are sampled before the core edge;
 // READY, BUSY and protocol pads are observed afterward. No private DUT state.
@@ -123,7 +130,7 @@ module streaming_quad_host_bridge;
     assign (weak1,weak0) pads[k]=pullups[k] ? 1'b1 : 1'bz;
   end endgenerate
   tranif1 scl_link(pads[0],pads[2],links[0]);
-  tranif1 sda_link(pads[1],pads[3],links[1]);
+{data_link}
   reg [3:0] edge_miso;
   reg [1:0] edge_inputs;
   reg [7:0] wire_values,known,required,connected;
@@ -145,7 +152,7 @@ module streaming_quad_host_bridge;
         in_peer_enabled<0 || in_peer_enabled>255 || in_links<0 || in_links>3 || in_pullups<0 || in_pullups>255)
         $fatal(1,"Malformed streaming quad pin input");
       initialize=in_initialize;csn=in_csn;sck=in_sck;mosi=in_mosi;
-      peer_levels=in_peer_levels;peer_enabled=in_peer_enabled;links=in_links;pullups=in_pullups;
+      peer_levels=in_peer_levels;peer_enabled=in_peer_enabled;links=in_links;pullups=in_pullups;{link_check}
       clk=0;#10;
       if((^uo_out[3:0])===1'bx || (^pads[1:0])===1'bx) $fatal(1,"Unknown streaming pre-edge pins");
       if((output_enabled & peer_enabled)!==8'b0) $fatal(1,"External peer drives a DUT output");

@@ -122,6 +122,36 @@ theorem Session.State.Custody.acknowledged_capture (s : Session.State a) (trace 
   rw [empty,List.append_nil] at order
   exact ⟨exported,by rw [exported,order,length]⟩
 
+/-- Retained transfers can drain RX without taking new samples. -/
+theorem retained_trace (p : Program) (s : State a) (trace : BitTrace) (inputs : List Input)
+    (retained : s.phase.retained = true)
+    (ordinary : ∀ i ∈ inputs, i.Runtime ∧ i.command ≠ 4#4) :
+    let final := run p s inputs
+    final.phase = s.phase ∧ final.rxUsed = s.rxUsed ∧
+      (traceRun p s trace inputs).captured = trace.captured := by
+  induction inputs generalizing s trace with
+  | nil => exact ⟨rfl,rfl,rfl⟩
+  | cons i rest ih =>
+    obtain ⟨⟨cold,warm⟩,release⟩ := ordinary i List.mem_cons_self
+    have terminal : s.phase = .completed ∨ s.phase = .fault := by
+      cases phase : s.phase <;> simp [Phase.retained,phase] at retained ⊢
+    have notFree : s.phase ≠ .free := by
+      rcases terminal with phase | phase <;> simp [phase]
+    have next : step p i s = clock p i s := by
+      simp [step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,notFree]
+    have stable : engine p s = s := by
+      rcases terminal with phase | phase <;> simp [engine,phase]
+    have phaseStable : (step p i s).phase = s.phase := by simp [next,clock,stable]
+    have usedStable : (step p i s).rxUsed = s.rxUsed := by simp [next,clock,stable]
+    have noCapture : s.captures = false := by
+      rcases terminal with phase | phase <;> simp [State.captures,phase]
+    have captures : (trace.step s i).captured = trace.captured := by
+      simp [BitTrace.step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,notFree,
+        BitTrace.clock,State.rxEvent,noCapture]
+    obtain ⟨last,used,bits⟩ := ih _ _ (by rw [phaseStable]; exact retained)
+      (fun j member => ordinary j (List.mem_cons_of_mem _ member))
+    exact ⟨last.trans phaseStable,used.trans usedStable,bits.trans captures⟩
+
 theorem Session.State.Custody.release_all_bits (s : Session.State a) (i : Session.Pins)
     (trace : BitTrace) (custody : s.Custody trace)
     (command : (s.command i).runtime.command = 4#4) (accepted : s.core.canRelease (s.command i).runtime = true) :

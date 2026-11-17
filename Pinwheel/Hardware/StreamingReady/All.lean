@@ -17,6 +17,7 @@ import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
 import Pinwheel.Hardware.StreamingReady.SourceRefinement
 import Pinwheel.Hardware.StreamingReady.StepCorrespondence
+import Pinwheel.Hardware.StreamingReady.SWDSession
 import Pinwheel.Hardware.StreamingReady.TinyWiring
 import Pinwheel.Hardware.StreamingReady.WarmReset
 import Pinwheel.Hardware.StreamingReady.Wiring
