@@ -403,6 +403,15 @@ reject a same-width output swap on the shift variants with at least two lanes.
 Clients supply their traffic and reset theorem. The lane simulator materializes
 each register snapshot to avoid reevaluating prior edges.
 
+`TypedHierarchy` adds typed instance wiring for single-clock assemblies.
+Each child connects width-indexed pins to external ports or declared internal
+nets, and binds its registers into the flat reference state. The exporter checks
+driver coverage and the state bijection, then derives the wrapper and physical
+register paths from those bindings. The shared readback workflow checks those
+paths against the Lean declaration and proves the flattened, imported RTL
+equivalent to the flat reference. The switch uses FIFO and output-slot instances.
+The host accelerator uses a controller and two memory instances.
+
 The [FIFO substitution guide](lean-hardware-fifo-substitution.md) records the
 shared transaction theorem and the 2×2 packet-switch replay and synthesis
 comparison.

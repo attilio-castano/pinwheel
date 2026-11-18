@@ -10,6 +10,8 @@ import shutil
 import time
 
 import typed_circuit_readback as readback
+import typed_circuit_hierarchy as hierarchy
+import typed_module_checks as module_checks
 from readback_control_proofs import split_two_bit_controls
 from typed_artifact_runner import compile_modules
 from validation_run import fresh_directory, sha
@@ -27,6 +29,8 @@ def sources():
                  "Pinwheel/Hardware/RunRefinement.lean"):
         result[name] = sha(ROOT / name)
     result.update({str(path.relative_to(ROOT)): sha(path) for path in readback.source_paths()})
+    for path in (*hierarchy.source_paths(), *module_checks.source_paths(), ROOT / "scripts/readback_miter.py"):
+        result[str(path.relative_to(ROOT))] = sha(path)
     return dict(sorted(result.items()))
 
 
@@ -46,17 +50,21 @@ abbrev outputs := Memory.TransferHostInterface.outputs {wi} {wo}
 
 
 def certify(run, tools, directory, config, descriptor, rtl):
-    a, wi, wo = config
     imported, script = directory / "import.json", directory / "import.ys"
     script.write_text(f"read_verilog -sv {rr.yosys_quote(rtl)}\n"
         f"hierarchy -check -top {descriptor['module']}\nflatten -noscopeinfo\nproc\n"
         f"write_json {rr.yosys_quote(directory / 'before-pmuxtree.json')}\npmuxtree\nopt_clean\ncheck -assert\n"
         f"write_json {rr.yosys_quote(imported)}\n")
     run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
+    return prove_imported(run, tools, directory, config, descriptor, directory / "transfer-host.mlir")
+
+
+def prove_imported(run, tools, directory, config, descriptor, mlir, *, profile_text=None, path_checks=""):
+    a, wi, wo = config
     shutil.copyfile(ROOT / "test/MemoryTransferSupport.lean", directory / "MemoryTransferSupport.lean")
     compile_modules(run, directory, ["MemoryTransferSupport"])
-    modules, evidence = readback.generate(directory, descriptor, directory / "transfer-host.mlir", imported,
-        tools["z3"], profile=profile(a, wi, wo))
+    modules, evidence = readback.generate(directory, descriptor, mlir, directory / "import.json",
+        tools["z3"], profile=profile_text or profile(a, wi, wo), interface_checks=path_checks)
     evidence["finite_control_proof_search"] = split_two_bit_controls(directory, modules)
     (directory / "HostTrace.lean").write_text(f"""import Proof
 open Pinwheel.Hardware
@@ -120,11 +128,51 @@ end Pinwheel.TypedArtifact
             "reserved_phase_recovery_trace_checked": True}
 
 
+def certify_hierarchy(run, tools, directory, config, descriptor, canonical, *, miswire):
+    a, wi, wo = config
+    leaves = hierarchy.lower_leaves(run, tools, directory, descriptor)
+    imported = hierarchy.import_assembly(run, tools, directory, descriptor, leaves, normalize_muxes=True)
+    if imported != canonical:
+        raise ValueError("Imported hierarchy has a different canonical port mapping")
+    startup, rows, coverage = checks.reference.stimulus(a, wi, wo)
+    frames, events, ledger = checks.reference.oracle(a, wi, wo, startup, rows)
+    for filename, data in (("startup.json", startup), ("traffic.json", rows), ("expected.json", frames),
+                           ("events.json", events), ("ledger.json", ledger)):
+        (directory / filename).write_text(json.dumps(data, indent=2) + "\n")
+    tb, executable = directory / "tb.sv", directory / "replay.vvp"
+    tb.write_text(checks.testbench(descriptor, startup, rows, registers=True))
+    run([tools["iverilog"], "-g2012", "-s", "tb", "-o", executable,
+         directory / "hierarchical.sv", tb], directory.name + "-compile-replay")
+    replay = run([tools["vvp"], executable], directory.name + "-replay")
+    (directory / "replay.txt").write_text(replay)
+    checks.memory.check_trace(replay, checks.controller.expected(frames, True))
+
+    top = json.dumps(descriptor["module"])
+    profile_text = (profile(a, wi, wo) + "import Pinwheel.Hardware.Memory.TransferHostExport\n"
+                    + f"abbrev assembly := Memory.TransferHostExport.hierarchy transform {a} {top}\n")
+    paths = hierarchy.path_checks(descriptor, "assembly")
+    mlir = directory / "flat.mlir"
+    evidence = prove_imported(run, tools, directory, config, imported, mlir,
+                              profile_text=profile_text, path_checks=paths)
+    if miswire:
+        evidence["miswire"] = hierarchy.check_miswire(
+            run, tools, directory, descriptor, leaves, mlir, profile_text, paths,
+            ("source", "destination"), "req_data", normalize_muxes=True,
+            proof_search=split_two_bit_controls, extra_lean_paths=(directory,),
+        )
+    return {**evidence, "replay_cycles": len(rows), "replay_coverage": coverage}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", required=True)
+    parser.add_argument("--hierarchy", action="store_true", help="Check the smallest three-instance accelerator")
+    parser.add_argument("--miswire", action="store_true", help="Swap the two memory write-data connections")
     args = parser.parse_args()
-    out = fresh_directory(ROOT / "build/memory-transfer-host-artifact", args.tag)
+    if args.miswire and not args.hierarchy:
+        parser.error("--miswire requires --hierarchy")
+    family = "memory-transfer-host-hierarchy" if args.hierarchy else "memory-transfer-host-artifact"
+    out = fresh_directory(ROOT / "build" / family, args.tag)
     report = {"schema": 1, "status": "running", "commands": [], "configurations": [],
         "boundary": "All imported unsynthesized binary state/output equations, including both full memories/Q/pending. "
                     "Reset/recovery traces preserve arbitrary memory contents; encoded and post-reset final state "
@@ -133,26 +181,34 @@ def main():
     run, started = rr.Commands(out, report["commands"]), time.monotonic()
     try:
         report["source_sha256"] = sources()
-        manifest, tools, paths = rr.selected_tools()
-        cad = ROOT / "build/tools" / manifest["packages"]["oss-cad-suite"]["directory"]
-        tools["z3"] = cad / "bin/z3"
-        paths += [cad / "bin/z3", cad / "libexec/z3"]
+        manifest, tools, paths = module_checks.tool_config()
         report["tool_manifest"], report["tool_sha256"] = manifest, rr.tool_hashes(paths)
         run(["lake", "build", "Pinwheel.Hardware.Memory.TransferHostCircuitProofs", "Pinwheel.Hardware.Emit",
-             "Pinwheel.Hardware.RunRefinement", "Pinwheel.Hardware.Readback.Boolean"], "build", timeout=900)
+             "Pinwheel.Hardware.RunRefinement", "Pinwheel.Hardware.Readback.Boolean",
+             "Pinwheel.Hardware.Memory.TransferHostExport"], "build", timeout=900)
         checks.controller.prepare_support(run, out)
-        for a, wi, wo in checks.MATRIX:
+        configs = checks.MATRIX[:1] if args.hierarchy else checks.MATRIX
+        for a, wi, wo in configs:
             directory = out / f"host-{a}-{wi}-{wo}"
             directory.mkdir()
-            run(checks.controller.lean_command(out, "--run", "test/MemoryTransferHostEmit.lean", a, wi, wo, directory),
-                directory.name + "-emit")
+            flags = ["--hierarchy"] if args.hierarchy else []
+            run(checks.controller.lean_command(out, "--run", "test/MemoryTransferHostEmit.lean",
+                                               *flags, a, wi, wo, directory), directory.name + "-emit")
             descriptor = json.loads((directory / "interface.json").read_text())
-            checks.validate_descriptor(descriptor, a, wi, wo)
-            rtl = directory / "transfer-host.sv"
-            rtl.write_text(run([tools["circt"], directory / "transfer-host.mlir", "--canonicalize", "--lower-seq-to-sv",
-                "--lower-hw-to-sv", "--hw-legalize-modules", "--export-verilog", "-o", "/dev/null"], directory.name + "-lower"))
-            report["configurations"].append({"configuration": [a, wi, wo],
-                **certify(run, tools, directory, (a, wi, wo), descriptor, rtl)})
+            config = (a, wi, wo)
+            if args.hierarchy:
+                canonical = hierarchy.normalize_descriptor(descriptor)
+                checks.validate_descriptor(canonical, *config)
+                evidence = certify_hierarchy(run, tools, directory, config, descriptor, canonical,
+                                             miswire=args.miswire)
+            else:
+                checks.validate_descriptor(descriptor, *config)
+                rtl = directory / "transfer-host.sv"
+                rtl.write_text(run([tools["circt"], directory / "transfer-host.mlir", "--canonicalize",
+                    "--lower-seq-to-sv", "--lower-hw-to-sv", "--hw-legalize-modules", "--export-verilog",
+                    "-o", "/dev/null"], directory.name + "-lower"))
+                evidence = certify(run, tools, directory, config, descriptor, rtl)
+            report["configurations"].append({"configuration": config, **evidence})
         if sources() != report["source_sha256"] or rr.tool_hashes(paths) != report["tool_sha256"]:
             raise RuntimeError("Owning sources/tools changed during host artifact certification")
         report["status"] = "passed"

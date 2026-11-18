@@ -369,6 +369,24 @@ restricted JSON interpretation remain trusted; pre-normalization JSON is retaine
 The imported certificate covers unsynthesized binary RTL. Generic cell counts
 are not a baseline comparison, physical area or timing qualification.
 
+The smallest host accelerator also exports as a `TypedHierarchy`. Its control
+instance owns the original controller registers. Separate source and destination
+instances own their memory words, registered read data and pending bits. The
+control instance consumes raw state taps and drives typed memory request pins.
+The ordered state map comes from the same instance bindings as the Verilog.
+
+```sh
+python3 -B scripts/check-memory-transfer-host-artifact.py \
+  --tag host-hierarchy-local --hierarchy --miswire
+```
+
+This command replays the hierarchy against the integer oracle, including every
+register, and proves every imported next-register and output equation against the
+existing flat circuit. It reuses the memory-preserving reset, recovery and final
+state theorems. The negative control swaps the source and destination memory
+write-data connections. The altered hierarchy imports successfully, produces a
+satisfiable mismatch query and fails an endpoint equality in Lean.
+
 `build/memory-transfer-host-artifact-negatives/host-negatives-02/report.json`
 binds that exact positive receipt and rejects three actual RTL corruptions at
 local semantic proof obligations. Kernel-checked witnesses show reset erasing a

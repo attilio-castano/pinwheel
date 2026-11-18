@@ -214,8 +214,8 @@ python3 scripts/check-switch-technology.py --tag switch-technology-local \
 module. A complete typed state map binds each hierarchical register to the flat
 circuit. `TypedHierarchy` derives the wrapper and state map from width-indexed
 instance connections and register bindings. The decomposition adds no registers
-or latency. To check the 2×2 switch and reject a swap of the two five-bit FIFO
-payload connections, run:
+or latency. This command checks the 2×2 switch and rejects a swap of the two
+five-bit FIFO payload connections.
 
 ```sh
 python3 -B scripts/check-switch-hierarchy-artifact.py --tag typed-switch-local \
