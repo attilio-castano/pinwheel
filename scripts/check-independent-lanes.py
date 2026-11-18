@@ -3,37 +3,26 @@
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 from pathlib import Path
 
-import typed_circuit_readback as readback
-from typed_artifact_runner import compile_modules
+import typed_module_checks as checks
 from validation_run import fresh_directory, sha
 
 ROOT = Path(__file__).resolve().parents[1]
 CLIENT = ROOT / "examples/independent-lanes"
 EMITTER = CLIENT / "EmitAndSimulate.lean"
-spec = importlib.util.spec_from_file_location(
-    "hardware_tools", ROOT / "scripts/check-round-robin-circuit.py"
-)
-cad = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(cad)
-
 DEFAULT_CONFIGS = ((3, 17, 1), (2, 8, 2))
 FIFO_DEPTH = 3
 
 
 def source_hashes():
     paths = {
-        *readback.source_paths(),
+        *checks.source_paths(),
         Path(__file__).resolve(),
         ROOT / "lean-toolchain",
         ROOT / "lakefile.toml",
         ROOT / "lake-manifest.json",
-        ROOT / "scripts/check-round-robin-circuit.py",
-        ROOT / "scripts/validation_run.py",
-        ROOT / "tools/hardware-toolchain.json",
         CLIENT / "lean-toolchain",
         CLIENT / "lakefile.toml",
         CLIENT / "lake-manifest.json",
@@ -131,47 +120,16 @@ def fixture(count, width, extra):
     return inputs, expected, coverage
 
 
-def testbench(descriptor, traffic, expected):
-    ins, outs = descriptor["inputs"], descriptor["outputs"]
-    lines = ["`timescale 1ns/1ps", "module tb;", "reg clk = 0;"]
-    for kind, ports in (("reg", ins), ("wire", outs)):
-        lines.extend(f"{kind} [{p['width'] - 1}:0] {p['name']};" for p in ports)
-    connections = ", ".join(f".{p['name']}({p['name']})" for p in ins + outs)
-    lines.extend([f"{descriptor['module']} dut(.clk(clk), {connections});", "initial begin"])
-    for cycle, (row, edge) in enumerate(zip(traffic, expected, strict=True)):
-        for p, value in zip(ins, row, strict=True):
-            lines.append(f"  {p['name']} = {p['width']}'d{value};")
-        lines.append("  #1;")
-        for phase, values in zip(("before", "after"), edge, strict=True):
-            if phase == "after":
-                lines.append("  clk = 1; #1;")
-            if values is not None:
-                for p, value in zip(outs, values, strict=True):
-                    name = p["name"]
-                    lines.append(
-                        f"  if ({name} !== {p['width']}'d{value}) "
-                        f'$fatal(1, "cycle {cycle} {phase} {name}: expected {value}, got %0h", {name});'
-                    )
-        lines.append("  clk = 0; #1;")
-    lines.extend(['  $display("Lane replay passed");', "end", "endmodule"])
-    return "\n".join(lines) + "\n"
-
-
 def profile(count, width, extra, backend):
     circular = "true" if backend == "circular" else "false"
-    return f"""import LaneClient
-abbrev laneCount := {count}
+    return checks.profile(
+        "LaneClient", f"LaneClient.design laneCount wordWidth extraStages {circular}",
+        bindings=f"""abbrev laneCount := {count}
 abbrev wordWidth := {width}
 abbrev extraStages := {extra}
 abbrev fifo := LaneClient.selectFifo wordWidth {circular}
-abbrev Input := LaneClient.Input laneCount wordWidth
-abbrev Output := LaneClient.Output laneCount wordWidth
-abbrev Register := LaneClient.Register laneCount fifo extraStages
-abbrev circuit := LaneClient.circuit laneCount fifo extraStages
-abbrev inputs := LaneClient.inputs laneCount wordWidth
-abbrev outputs := LaneClient.outputs laneCount wordWidth
-abbrev registers := LaneClient.registers laneCount fifo extraStages
-"""
+""",
+    )
 
 
 INITIALIZED = """import Proof
@@ -208,43 +166,16 @@ def verify(run, tools, out, config, backend):
             if seen != wanted:
                 raise ValueError(f"{label}: cycle {cycle}: Lean {seen}, expected {wanted}")
 
-    descriptor = json.loads((directory / "interface.json").read_text())
-    readback.validate_descriptor(descriptor)
-    mlir, rtl = directory / "lanes.mlir", directory / "lanes.sv"
-    rtl.write_text(run([tools["circt"], mlir, "--lower-seq-to-sv", "--lower-hw-to-sv",
-                        "--hw-legalize-modules", "--export-verilog", "-o", "/dev/null"], label + "-lower"))
-    tb, replay = directory / "tb.sv", directory / "replay.vvp"
-    tb.write_text(testbench(descriptor, traffic, expected))
-    run([tools["iverilog"], "-g2012", "-s", "tb", "-o", replay, rtl, tb], label + "-compile-replay")
-    if run([tools["vvp"], replay], label + "-replay").strip() != "Lane replay passed":
-        raise ValueError(f"{label}: missing completed replay marker")
-
-    script, imported = directory / "import.ys", directory / "import.json"
-    script.write_text(
-        f"read_verilog -sv {cad.yosys_quote(rtl)}\nhierarchy -check -top {descriptor['module']}\n"
-        f"proc\npmuxtree\nopt_clean\ncheck -assert\nwrite_json {cad.yosys_quote(imported)}\n"
+    evidence = checks.verify(
+        run, tools, directory, "lanes", profile(*config, backend), INITIALIZED, traffic, expected,
+        extra_lean_paths=(CLIENT / ".lake/build/lib/lean",),
+        swap_outputs=(2, 5) if count >= 2 and backend == "shift" else None,
     )
-    run([tools["yosys"], "-Q", "-T", "-s", script], label + "-import")
-    modules, evidence = readback.generate(
-        directory, descriptor, mlir, imported, tools["z3"], profile=profile(*config, backend)
-    )
-    (directory / "Initialized.lean").write_text(INITIALIZED)
-    audit = directory / "Audit.lean"
-    audit.write_text(audit.read_text().replace("import Proof", "import Initialized"))
-    modules.insert(-1, "Initialized")
-    compile_modules(run, directory, modules, extra_lean_paths=(CLIENT / ".lake/build/lib/lean",))
-    if "standard axioms only" not in (directory / "Audit.log").read_text():
-        raise RuntimeError(f"{label}: missing Lean axiom audit")
     return {
         **evidence,
         "label": label,
         "configuration": config,
         "backend": backend,
-        "registers": len(descriptor["registers"]),
-        "outputs": len(descriptor["outputs"]),
-        "initialized_trace_checked": True,
-        "replay_cycles": len(traffic),
-        "replay_output_values": (2 * len(traffic) - 1) * len(descriptor["outputs"]),
         "coverage_by_lane": coverage,
     }
 
@@ -270,21 +201,18 @@ def main():
 
     out = fresh_directory(ROOT / "build/independent-lanes", args.tag)
     report = {"schema": 1, "status": "running", "commands": [], "configurations": []}
-    run = cad.Commands(out, report["commands"])
+    run = checks.cad.Commands(out, report["commands"])
     try:
         report["source_sha256"] = source_hashes()
-        manifest, tools, tool_paths = cad.selected_tools()
-        root = ROOT / "build/tools" / manifest["packages"]["oss-cad-suite"]["directory"]
-        tools["z3"] = root / "bin/z3"
-        tool_paths += [tools["z3"], root / "libexec/z3"]
+        manifest, tools, tool_paths = checks.tool_config()
         report["tool_manifest"] = manifest
-        report["tool_sha256"] = cad.tool_hashes(tool_paths)
+        report["tool_sha256"] = checks.cad.tool_hashes(tool_paths)
         run(["lake", "-d", CLIENT, "--no-cache", "build"], "client-build", timeout=900)
         run(["lake", "--no-cache", "build", "Pinwheel.Hardware.Readback.Boolean"], "readback-build", timeout=900)
         for config in configs:
             for backend in ("shift", "circular"):
                 report["configurations"].append(verify(run, tools, out, config, backend))
-        if report["source_sha256"] != source_hashes() or report["tool_sha256"] != cad.tool_hashes(tool_paths):
+        if report["source_sha256"] != source_hashes() or report["tool_sha256"] != checks.cad.tool_hashes(tool_paths):
             raise RuntimeError("Source or tool drift during validation")
         report["status"] = "passed"
     except BaseException as error:

@@ -1,15 +1,8 @@
 import LaneClient
-import Lean.Data.Json
 
 open Lean Pinwheel.Hardware
 
 namespace LaneClient
-
-private def portJson (d : Interface P) (stem : String := "") : Json :=
-  toJson (d.ports.map fun ⟨width, port⟩ =>
-    let name := toJson (stem ++ d.label port)
-    Json.mkObj ([("index", toJson (d.position port).val), ("width", toJson width), ("name", name)] ++
-      (if stem.isEmpty then [] else [("reference", name)])))
 
 private def checkedInput (d : Interface P) (row : Array Nat) : Except String (Values P) := do
   unless row.size == d.size do throw "Wrong input vector length"
@@ -19,17 +12,14 @@ private def checkedInput (d : Interface P) (row : Array Nat) : Except String (Va
 
 def emitAndSimulate (count width extra : Nat) (circular : Bool) (dir : System.FilePath) : IO Unit := do
   let fifo := selectFifo width circular
-  let dut := circuit count fifo extra
-  let ins := inputs count width
-  let outs := outputs count width
-  let regs := registers count fifo extra
-  let name := "independent_lanes"
-  let mlir ← IO.ofExcept (Emit.moduleText name dut ins.ports regs.ports outs.ports
-    ins.label regs.label outs.label)
-  IO.FS.writeFile (dir / "lanes.mlir") mlir
-  let descriptor := Json.mkObj [("module", toJson name), ("clock", toJson "clk"),
-    ("inputs", portJson ins), ("registers", portJson regs "r_"), ("outputs", portJson outs)]
-  IO.FS.writeFile (dir / "interface.json") (descriptor.pretty ++ "\n")
+  let module := design count width extra circular
+  let dut := module.circuit
+  let ins := module.inputs
+  let outs := module.outputs
+  let regs := module.registers
+  let emitted ← IO.ofExcept module.emit
+  IO.FS.writeFile (dir / "lanes.mlir") emitted.mlir
+  IO.FS.writeFile (dir / "interface.json") (emitted.descriptor.pretty ++ "\n")
   let data ← IO.FS.readFile (dir / "traffic.json")
   let rows : Array (Array Nat) ← IO.ofExcept (Json.parse data >>= fromJson?)
   let traffic ← rows.mapM (fun row => IO.ofExcept (checkedInput ins row))

@@ -5,6 +5,7 @@ import Pinwheel.Hardware.AddressWindow
 import Pinwheel.Hardware.RegisterFile
 import Pinwheel.Hardware.Uart.CircuitProofs
 import Pinwheel.Hardware.Artifact
+import Pinwheel.Hardware.TypedModule
 import Pinwheel.Hardware.RunRefinement
 import Pinwheel.Hardware.DecodedImplementation
 import Pinwheel.Hardware.Timed.Events

@@ -119,6 +119,12 @@ prove the initialized trace theorem. The pinned Yosys import and the restricted
 JSON interpretation are the external trust boundary. Both audits reported
 only standard Lean axioms.
 
+The same `TypedModule` API and validation runner serve the switch and
+standalone lane examples. The switch replays traffic from the independent
+packet-switch oracle against both emitted designs. On the shift version, the
+runner also interchanges the two 4-bit payload drivers and checks that the
+modified RTL fails both replay and kernel correspondence.
+
 | Depth-three input FIFO | RTL next-register equations | RTL output equations | Mapped flip-flops | Other generic cells | Total generic cells |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | Shift | 20 | 6 | 50 | 142 | 192 |

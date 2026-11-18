@@ -394,11 +394,18 @@ two 8-bit lanes with three stages. Both run once per FIFO backend. Repeat
 stages after the increment stage. The report at
 `build/independent-lanes/<tag>/report.json` records coverage, commands and hashes.
 
-The client has to build its interface description and pass the same port arrays
-and labels to the emitter. It also materializes each register snapshot during
-simulation to avoid reevaluating prior edges. The [FIFO substitution guide](lean-hardware-fifo-substitution.md)
-records the shared transaction theorem and the separate 2×2 packet-switch
-synthesis comparison.
+The lane and 2×2 switch clients use `TypedModule` to bind a circuit to its
+complete input, register and output interfaces. Calling `emit` returns both
+MLIR and the readback descriptor from those interfaces. The shared validation
+runner derives its typed bindings from the same Lean declaration and checks
+every ordinal, width and label. It checks that both replay and correspondence
+reject a same-width output swap on the shift variants with at least two lanes.
+Clients supply their traffic and reset theorem. The lane simulator materializes
+each register snapshot to avoid reevaluating prior edges.
+
+The [FIFO substitution guide](lean-hardware-fifo-substitution.md) records the
+shared transaction theorem and the 2×2 packet-switch replay and synthesis
+comparison.
 
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and

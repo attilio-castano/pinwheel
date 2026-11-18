@@ -80,4 +80,10 @@ def registers (count : Nat) (fifo : Fifo w d) (extra : Nat) :
     Interface (Register count fifo extra) :=
   Bank.interface count (lane fifo extra).registers
 
+def design (count width extra : Nat) (circular : Bool) :
+    TypedModule (Input count width) (Register count (selectFifo width circular) extra) (Output count width) :=
+  let fifo := selectFifo width circular
+  ⟨"independent_lanes", circuit count fifo extra, inputs count width, registers count fifo extra,
+    outputs count width⟩
+
 end LaneClient
