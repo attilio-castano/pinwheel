@@ -594,6 +594,14 @@ outputs. The testbench drives clocks and inputs from initially uninitialized DUT
 registers. The synthesis gate checks both graphs for initialization attributes
 and initialization cells.
 
+The cold-boot exporter uses `TypedHierarchy` for the core, loadable RAM, MMIO
+and bus/fetch instances. The bus reads the same driven core and MMIO outputs
+that the top level exposes. The typed instance bindings supply the register
+paths used by replay. The exporter uses the existing leaf emitter and layout
+names so the wrapper, leaf RTL and interface descriptor match the earlier
+cold-boot fixture byte for byte. The topology check still compares every
+connection, including equal-width reset and loader signals.
+
 Raw emitted state becomes defined through reset, explicit loader writes and
 normal request capture. A fixed schedule derived from those handshakes checks
 3,407 register observations and leaves 133 earlier RAM/Q/inactive metadata
@@ -641,12 +649,14 @@ then rerun the full correspondence and axiom audit.
 Run each scope with a fresh tag and a passing cold-boot receipt:
 
 ```sh
-python3 -B scripts/probe-processor-core-artifact.py --scope solver --tag core-solver-local --cold-report build/processor-loadable-system-boot/cold-boot-03/report.json
-python3 -B scripts/probe-processor-core-artifact.py --scope kernel --tag core-kernel-local --cold-report build/processor-loadable-system-boot/cold-boot-03/report.json
+python3 -B scripts/probe-processor-core-artifact.py --scope solver --tag core-solver-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
+python3 -B scripts/probe-processor-core-artifact.py --scope kernel --tag core-kernel-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
 ```
 
 Each receipt records the solver control, direct theorem inventories and
 `kernel_correspondence`. Only a successful complete Lean audit sets that field.
+The core probe checks its cold-boot receipt against the current source hashes,
+so generate that receipt with the current exporter before running the probe.
 The top-level CPU/UART reset and image-loading theorems apply to the typed
 circuit. Extending artifact correspondence to that hierarchy is a separate gate.
 
