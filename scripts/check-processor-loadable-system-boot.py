@@ -389,7 +389,8 @@ def main():
     try:
         report["source_sha256"]=source_hashes();manifest,tools,paths=rr.selected_tools()
         report["tool_manifest"],report["tool_sha256"]=manifest,rr.tool_hashes(paths)
-        run(["lake","build","Pinwheel.Hardware.Processor.LoadableSystemExportProofs",
+        run(["lake","build","Pinwheel.Hardware.Processor.Examples.ByteProgram",
+             "Pinwheel.Hardware.Processor.LoadableSystemExportProofs",
              "Pinwheel.Hardware.Processor.LoadableSystemProofs","Pinwheel.Hardware.FastEmit:dynlib"],"build",900)
         run(["python3","test/test_processor_loadable_system_boot.py"],"portable-tests")
         audit=run(["lake","env","lean","-DwarningAsError=true","--run","test/ProcessorLoadableSystemExport.lean"],"export-audit")

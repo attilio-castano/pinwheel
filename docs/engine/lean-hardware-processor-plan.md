@@ -580,7 +580,8 @@ correspondence certificate for the actual imported RTL as an explicit premise.
 
 ```sh
 lake build Pinwheel.Hardware.Processor.LoadableSystemProofs \
-  Pinwheel.Hardware.Processor.LoadableSystemExportProofs
+  Pinwheel.Hardware.Processor.LoadableSystemExportProofs \
+  Pinwheel.Hardware.Processor.Examples.ByteProgram
 lake env lean -DwarningAsError=true --run test/ProcessorLoadableSystemLoading.lean
 lake env lean -DwarningAsError=true --run test/ProcessorLoadableSystemCircuit.lean
 python3 -B test/test_processor_loadable_system_boot.py
