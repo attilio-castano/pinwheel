@@ -212,7 +212,17 @@ python3 scripts/check-switch-technology.py --tag switch-technology-local \
 
 `Switch.Export` emits reusable FIFO and output-slot leaf modules plus a control
 module. A complete typed state map binds each hierarchical register to the flat
-circuit; the decomposition adds no registers or latency. The retained
+circuit. `TypedHierarchy` derives the wrapper and state map from width-indexed
+instance connections and register bindings. The decomposition adds no registers
+or latency. To check the 2×2 switch and reject a swap of the two five-bit FIFO
+payload connections, run:
+
+```sh
+python3 -B scripts/check-switch-hierarchy-artifact.py --tag typed-switch-local \
+  --config 2,2,3,4 --miswire
+```
+
+The retained
 `build/switch-hierarchy/agent-masked-hierarchy-1/report.json` checks every output
 and next register on 2,048 exhaustive 1×1 and 512 sampled 2×3 arbitrary input/state
 cases, including malformed cursors. This comparison is separate from the

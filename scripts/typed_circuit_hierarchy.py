@@ -51,3 +51,102 @@ def prepare_json(original, destination, descriptor):
         names[canonical] = deepcopy(names[actual])
     destination.write_text(json.dumps(document) + "\n")
     return flat
+
+
+def source_paths():
+    from pathlib import Path
+    return (Path(__file__).resolve(),)
+
+
+def lower_leaves(run, tools, directory, descriptor):
+    from typed_circuit_readback import IDENTIFIER
+    leaves = descriptor.get("leaves")
+    if (not isinstance(leaves, list) or not leaves
+            or any(not isinstance(n, str) or not IDENTIFIER.fullmatch(n) for n in leaves)
+            or len(set(leaves)) != len(leaves)):
+        raise ValueError("Expected distinct leaf module identifiers")
+    sources = []
+    for index, leaf in enumerate(leaves):
+        target = directory / (leaf + ".sv")
+        target.write_text(run([tools["circt"], directory / (leaf + ".mlir"), "--canonicalize",
+                               "--lower-seq-to-sv", "--lower-hw-to-sv", "--hw-legalize-modules",
+                               "--export-verilog", "-o", "/dev/null"],
+                              directory.name + f"-lower-{index}"))
+        sources.append(target)
+    return sources
+
+
+def import_assembly(run, tools, directory, descriptor, leaves, *, normalize_muxes=False):
+    """Import the actual assembled hierarchy, retaining physical and canonical names."""
+    from typed_module_checks import cad
+    flat = normalize_descriptor(descriptor)
+    actual = directory / "hierarchical.sv"
+    top = directory / "hierarchy_top.sv"
+    actual.write_text("\n".join(p.read_text() for p in [*leaves, top]))
+    raw, imported, script = (directory / n for n in ("raw.json", "import.json", "import.ys"))
+    script.write_text(f"read_verilog -sv {cad.yosys_quote(actual)}\n"
+                      f"hierarchy -check -top {flat['module']}\n"
+                      "flatten -noscopeinfo\nproc\n"
+                      + ("pmuxtree\n" if normalize_muxes else "")
+                      + f"opt_clean\ncheck -assert\nwrite_json {cad.yosys_quote(raw)}\n")
+    run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
+    flat = prepare_json(raw, imported, descriptor)
+    (directory / "canonical-interface.json").write_text(json.dumps(flat, indent=2) + "\n")
+    return flat
+
+
+def path_checks(descriptor, design):
+    """Bind the physical paths used by Yosys to the declared instance state."""
+    return "\n".join(
+        f"example : {design}.statePath register_{index} = {json.dumps(r['reference'])} := by decide +kernel"
+        for index, r in enumerate(descriptor["registers"])
+    )
+
+
+def swap_instance_inputs(text, instances, pin):
+    """Exchange one named input's wiring on two instances of the same leaf."""
+    instance_matches, wires = [], []
+    for name in instances:
+        pattern = r"(?m)^(\w+) " + re.escape(name) + r"\(([^\n]*)\);$"
+        matches = list(re.finditer(pattern, text))
+        if len(matches) != 1:
+            raise ValueError(f"Expected exactly one connection list for instance {name}")
+        instance = matches[0]
+        ports = list(re.finditer(r"\." + re.escape(pin) + r"\((\w+)\)", instance[2]))
+        if len(ports) != 1:
+            raise ValueError(f"Expected exactly one {pin} connection on {name}")
+        instance_matches.append(instance)
+        port = ports[0]
+        wires.append((instance.start(2) + port.start(1), instance.start(2) + port.end(1), port[1]))
+    left, right = wires
+    if instance_matches[0][1] != instance_matches[1][1] or left[2] == right[2]:
+        raise ValueError("Miswire requires distinct wires on the same leaf input")
+    for start, end, wire in sorted([(left[0], left[1], right[2]), (right[0], right[1], left[2])],
+                                   reverse=True):
+        text = text[:start] + wire + text[end:]
+    return text
+
+
+def check_miswire(run, tools, directory, descriptor, leaves, mlir, profile, checks, instances, pin,
+                  *, normalize_muxes=False, proof_search=None, extra_lean_paths=()):
+    from readback_miter import miter
+    import typed_circuit_readback as readback
+    from typed_module_checks import reject_semantic_certificate
+
+    negative = directory / ("miswire-" + directory.name)
+    negative.mkdir()
+    top = (directory / "hierarchy_top.sv").read_text()
+    (negative / "hierarchy_top.sv").write_text(swap_instance_inputs(top, instances, pin))
+    flat = import_assembly(run, tools, negative, descriptor, leaves, normalize_muxes=normalize_muxes)
+    imported = negative / "import.json"
+    rb = readback.importer(flat)
+    query = negative / "mismatch.smt2"
+    query.write_text(miter(rb, rb.read_hints(mlir), rb.read_rtl(imported)))
+    if run([tools["z3"], "-smt2", query], negative.name + "-mismatch").strip() != "sat":
+        raise ValueError("Deliberate cross-instance miswire must change an endpoint")
+    modules, _ = readback.generate(negative, flat, mlir, imported, tools["z3"], profile=profile,
+                                   interface_checks=checks)
+    if proof_search is not None:
+        proof_search(negative, modules)
+    failure = reject_semantic_certificate(run, negative, modules, extra_lean_paths=extra_lean_paths)
+    return {"instances": instances, "input": pin, "mismatch": "sat", "kernel_rejection_module": failure}

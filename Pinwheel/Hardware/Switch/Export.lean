@@ -1,6 +1,5 @@
 import Pinwheel.Hardware.Switch.Circuit
-import Pinwheel.Hardware.Emit
-import Lean.Data.Json
+import Pinwheel.Hardware.TypedHierarchy
 
 /-! Hierarchical export with the same state bits and same-edge behavior as the
 structural switch. FIFO and elastic-slot leaves expose raw register taps. A
@@ -93,75 +92,63 @@ theorem tapped_output (c : Circuit I R O) (i : Values I) (s : Values R) (r : R b
 def fifoInstance (k : Fin (n+1)) : String := "fifo_" ++ Nat.repr k.val
 def slotInstance (o : Fin (m+1)) : String := "slot_" ++ Nat.repr o.val
 def stateLabel (d : Interface R) (r : R b) : String := "state_" ++ d.label r
-def fifoWire (k : Fin (n+1)) (r : Stream.CellReg (dw+w) depth b) : String :=
-  fifoInstance k ++ "_" ++ stateLabel (Stream.CellReg.interface (dw+w) depth) r
-def slotWire (o : Fin (m+1)) (r : Stream.CellReg w 1 b) : String :=
-  slotInstance o ++ "_" ++ stateLabel (Stream.CellReg.interface w 1) r
-def fifoInputWire (k : Fin (n+1)) (p : Stream.In (dw+w) b) : String :=
-  fifoInstance k ++ "_" ++ (Stream.inputPorts (dw+w)).interface.label p
-def slotInputWire (o : Fin (m+1)) (p : Stream.In w b) : String :=
-  slotInstance o ++ "_" ++ (Stream.inputPorts w).interface.label p
-
-def hierarchyReference : Structural.Register n m dw w depth b → String
-  | .left (.at k r) => fifoInstance k ++ ".r_" ++ (Stream.CellReg.interface (dw+w) depth).label r
-  | .right (.left (.at o r)) => slotInstance o ++ ".r_" ++ (Stream.CellReg.interface w 1).label r
-  | .right (.right r) => "control.r_" ++ (cursorInterface n m).label r
-
 def tapInterface (d : Interface R) : Interface R :=
   d.rename (stateLabel d) (by
     intro a b h
     apply d.unique
     simpa only [stateLabel, String.append_right_inj] using h)
 
-def controlInputConnection : ControlIn n m dw w depth b → String
-  | .left p => (Physical.inputInterface n m dw w).label p
-  | .right (.left (.at k r)) => fifoWire k r
-  | .right (.right (.at o r)) => slotWire o r
+abbrev Net (n m dw w depth : Nat) :=
+  Stream.Joint
+    (Bank (n+1) (Stream.Joint (Stream.In (dw+w)) (Stream.CellReg (dw+w) depth)))
+    (Bank (m+1) (Stream.Joint (Stream.In w) (Stream.CellReg w 1)))
 
-def controlOutputConnection : ControlOut n m dw w b → String
-  | .left p => (Physical.outputInterface n m w).label p
-  | .right (.left (.at k p)) => fifoInputWire k p
-  | .right (.right (.at o p)) => slotInputWire o p
+private def nets (n m dw w depth : Nat) : Interface (Net n m dw w depth) :=
+  Stream.Joint.interface
+    (Bank.interface (n+1) (Stream.Joint.interface (Stream.inputPorts (dw+w)).interface
+      (Stream.CellReg.interface (dw+w) depth)))
+    (Bank.interface (m+1) (Stream.Joint.interface (Stream.inputPorts w).interface
+      (Stream.CellReg.interface w 1)))
 
-def connections (d : Interface P) (wire : {b : Nat} → P b → String) : Array String :=
-  d.ports.map (fun ⟨_, p⟩ => s!".{d.label p}({wire p})")
-
-def vectorDeclaration (direction name : String) (width : Nat) : String :=
-  s!"{direction} [{width-1}:0] {name}"
-
-def instanceText (moduleName instanceName : String) (ports : Array String) : String :=
-  s!"{moduleName} {instanceName}(" ++ String.intercalate ", " (#[".clk(clk)"] ++ ports).toList ++ ");"
-
-/-- Wiring only: every gate and state transition is emitted from typed Exprs. -/
-def hierarchyVerilog (e : DestinationEncoding (m+1)) (n w depth : Nat) (name : String) : String := Id.run do
+/-- The controller sees raw taps, so the assembly covers malformed encodings too. -/
+def hierarchy (e : DestinationEncoding (m+1)) (n w depth : Nat) (name : String) :
+    TypedHierarchy (In n m e.width w) (Structural.Register n m e.width w depth)
+      (Out n m w) (Net n m e.width w depth) := Id.run do
   let ii := Physical.inputInterface n m e.width w
   let oi := Physical.outputInterface n m w
-  let fi := (Stream.inputPorts (e.width+w)).interface
+  let ri := Structural.registers n m e.width w depth
   let fr := Stream.CellReg.interface (e.width+w) depth
-  let si := (Stream.inputPorts w).interface
   let sr := Stream.CellReg.interface w 1
-  let ci := controlInputInterface n m e.width w depth
-  let co := controlOutputInterface n m e.width w
-  let ports := #["input wire clk"] ++
-    ii.ports.map (fun ⟨b, p⟩ => vectorDeclaration "input wire" (ii.label p) b) ++
-    oi.ports.map (fun ⟨b, p⟩ => vectorDeclaration "output wire" (oi.label p) b)
-  let mut lines := #[s!"module {name}(" ++ String.intercalate ", " ports.toList ++ ");"]
+  let fifo : TypedModule _ _ _ := ⟨name ++ "_fifo",
+    tapped (Stream.Fifo.circuit (e.width+w) depth), (Stream.inputPorts (e.width+w)).interface,
+    fr, tapInterface fr⟩
+  let slot : TypedModule _ _ _ := ⟨name ++ "_slot",
+    tapped (Stream.Elastic.circuit (Stream.Map.identity w)), (Stream.inputPorts w).interface,
+    sr, tapInterface sr⟩
+  let ctl : TypedModule _ _ _ := ⟨name ++ "_control", control e n w depth,
+    controlInputInterface n m e.width w depth, cursorInterface n m,
+    controlOutputInterface n m e.width w⟩
+  let mut instances := #[]
   for k in List.finRange (n+1) do
-    lines := lines ++ fi.ports.map (fun ⟨b, p⟩ => vectorDeclaration "wire" (fifoInputWire k p) b ++ ";")
-    lines := lines ++ fr.ports.map (fun ⟨b, r⟩ => vectorDeclaration "wire" (fifoWire (dw := e.width) (w := w) k r) b ++ ";")
-    lines := lines.push (instanceText (name ++ "_fifo") (fifoInstance k)
-      (connections fi (fifoInputWire k) ++ connections (tapInterface fr) (fifoWire (dw := e.width) (w := w) k)))
-  for o in List.finRange (m+1) do
-    lines := lines ++ si.ports.map (fun ⟨b, p⟩ => vectorDeclaration "wire" (slotInputWire o p) b ++ ";")
-    lines := lines ++ sr.ports.map (fun ⟨b, r⟩ => vectorDeclaration "wire" (slotWire o r) b ++ ";")
-    lines := lines.push (instanceText (name ++ "_slot") (slotInstance o)
-      (connections si (slotInputWire o) ++ connections (tapInterface sr) (slotWire o)))
-  lines := lines.push (instanceText (name ++ "_control") "control"
-    (connections ci controlInputConnection ++ connections co controlOutputConnection))
-  return String.intercalate "\n" (lines.push "endmodule").toList ++ "\n"
-
-def interfaceJson (d : Interface P) : Json := toJson (d.ports.mapIdx (fun index p =>
-  Json.mkObj [("name", toJson (d.label p.2)), ("width", toJson p.1), ("index", toJson index)]))
+    instances := instances.push (TypedHierarchy.Instance.connect (fifoInstance k) fifo
+      (fun p => .net (.left (.at k (.left p)))) (fun p => .net (.left (.at k (.right p))))
+      (Structural.fifoReg k))
+  for k in List.finRange (m+1) do
+    instances := instances.push (TypedHierarchy.Instance.connect (slotInstance k) slot
+      (fun p => .net (.right (.at k (.left p)))) (fun p => .net (.right (.at k (.right p))))
+      (Structural.slotReg k))
+  let controller := TypedHierarchy.Instance.connect "control" ctl
+    (fun p => match p with
+      | .left p => .input p
+      | .right (.left (.at k r)) => .net (.left (.at k (.right r)))
+      | .right (.right (.at k r)) => .net (.right (.at k (.right r))))
+    (fun p => match p with
+      | .left p => .output p
+      | .right (.left (.at k p)) => .net (.left (.at k (.left p)))
+      | .right (.right (.at k p)) => .net (.right (.at k (.left p))))
+    (fun r => .right (.right r))
+  return ⟨name, ⟨name ++ "_flat", Structural.circuit e n w depth, ii, ri, oi⟩,
+    nets n m e.width w depth, instances.push controller⟩
 
 def rolesJson (n m dw w : Nat) : Json :=
   let ii := Physical.inputInterface n m dw w
@@ -189,63 +176,23 @@ def registerRolesJson (n m dw w depth : Nat) : Json :=
      ("cursor", toJson (Array.ofFn (fun o : Fin (m+1) =>
         Array.ofFn (fun k : Fin (n+1) => flatName (Structural.cursorReg o k)))))]
 
-def leafJson (name : String) (inputs : Interface I) (registers : Interface R) (outputs : Interface O) : Json :=
-  Json.mkObj [("module", toJson name), ("mlir", toJson (name ++ ".mlir")),
-    ("inputs", interfaceJson inputs), ("outputs", interfaceJson outputs),
-    ("registers", toJson (registers.ports.map (fun ⟨b, r⟩ => Json.mkObj
-      [("name", toJson ("r_" ++ registers.label r)),
-       ("reference", toJson ("r_" ++ registers.label r)), ("width", toJson b)])))]
-
 def exportHierarchy (e : DestinationEncoding (m+1)) (n w depth : Nat)
     (dir : System.FilePath) (name : String) : IO Unit := do
   unless w > 0 && depth > 0 do throw (IO.userError "Hierarchy payload width and FIFO depth must be positive")
-  IO.FS.createDirAll dir
-  let ii := Physical.inputInterface n m e.width w
-  let oi := Physical.outputInterface n m w
-  let ri := Structural.registers n m e.width w depth
-  let fi := (Stream.inputPorts (e.width+w)).interface
-  let fr := Stream.CellReg.interface (e.width+w) depth
-  let si := (Stream.inputPorts w).interface
-  let sr := Stream.CellReg.interface w 1
-  let ci := controlInputInterface n m e.width w depth
-  let cr := cursorInterface n m
-  let co := controlOutputInterface n m e.width w
-  let fifoName := name ++ "_fifo"
-  let slotName := name ++ "_slot"
-  let controlName := name ++ "_control"
-  IO.FS.writeFile (dir / (fifoName ++ ".mlir")) (← IO.ofExcept
-    (Emit.moduleText fifoName (tapped (Stream.Fifo.circuit (e.width+w) depth))
-      fi.ports fr.ports fr.ports fi.label fr.label (stateLabel fr)))
-  IO.FS.writeFile (dir / (slotName ++ ".mlir")) (← IO.ofExcept
-    (Emit.moduleText slotName (tapped (Stream.Elastic.circuit (Stream.Map.identity w)))
-      si.ports sr.ports sr.ports si.label sr.label (stateLabel sr)))
-  IO.FS.writeFile (dir / (controlName ++ ".mlir")) (← IO.ofExcept
-    (Emit.moduleText controlName (control e n w depth) ci.ports cr.ports co.ports ci.label cr.label co.label))
-  IO.FS.writeFile (dir / "hierarchy_top.sv") (hierarchyVerilog e n w depth name)
-  IO.FS.writeFile (dir / "flat.mlir") (← IO.ofExcept
-    (Emit.moduleText (name ++ "_flat") (Structural.circuit e n w depth)
-      ii.ports ri.ports oi.ports ii.label ri.label oi.label))
+  let design := hierarchy e n w depth name
+  let emitted ← IO.ofExcept design.emit
   let initial : Values (Structural.Register n m e.width w depth) := Structural.encode e Switch.initial
-  let registerMap := ri.ports.map (fun ⟨_, r⟩ => ("r_" ++ ri.label r, toJson (hierarchyReference r)))
-  let leaves := #[leafJson fifoName fi fr (tapInterface fr), leafJson slotName si sr (tapInterface sr),
-    leafJson controlName ci cr co]
-  let descriptor := Json.mkObj
-    [("schema", toJson (1 : Nat)), ("module", toJson name), ("flat_module", toJson (name ++ "_flat")),
-     ("input_count", toJson (n+1)), ("output_count", toJson (m+1)), ("depth", toJson depth),
-     ("payload_width", toJson w), ("destination_width", toJson e.width), ("clock", toJson "clk"),
-     ("reset_synchronous", toJson true), ("inputs", interfaceJson ii), ("outputs", interfaceJson oi),
-     ("registers", toJson (ri.ports.map (fun ⟨b, r⟩ => Json.mkObj
-       [("name", toJson ("r_" ++ ri.label r)), ("flat_reference", toJson ("r_" ++ ri.label r)),
-        ("reference", toJson (hierarchyReference r)), ("width", toJson b),
-        ("initial", toJson ((initial r).toNat)), ("reset", toJson ((initial r).toNat))]))),
-     ("roles", rolesJson n m e.width w), ("register_roles", registerRolesJson n m e.width w depth),
-     ("register_map", Json.mkObj registerMap.toList),
-     ("hierarchical_registers", toJson (ri.ports.map (fun p => hierarchyReference p.2))),
-     ("leaves", toJson #[fifoName, slotName, controlName]), ("leaf_interfaces", toJson leaves),
-     ("top_verilog", toJson "hierarchy_top.sv"),
+  let rows ← IO.ofExcept (emitted.descriptor.getObjVal? "registers" >>= Json.getArr?)
+  let annotated := (rows.zip design.flat.registers.ports).map fun (row, ⟨_, r⟩) =>
+    row.mergeObj (Json.mkObj [("initial", toJson (initial r).toNat), ("reset", toJson (initial r).toNat)])
+  let emitted := { emitted with descriptor := emitted.descriptor.setObjVal! "registers" (toJson annotated) }
+  emitted.write dir
+    [("schema", toJson (1 : Nat)), ("input_count", toJson (n+1)), ("output_count", toJson (m+1)),
+     ("depth", toJson depth), ("payload_width", toJson w), ("destination_width", toJson e.width),
+     ("reset_synchronous", toJson true), ("roles", rolesJson n m e.width w),
+     ("register_roles", registerRolesJson n m e.width w depth),
      ("startup", toJson "encoded_initial; hardware requires a reset edge before use"),
      ("state_contract", toJson "one-to-one with flat structural registers, including malformed raw encodings"),
      ("latency_added", toJson (0 : Nat))]
-  IO.FS.writeFile (dir / "interface.json") (descriptor.pretty ++ "\n")
 
 end Pinwheel.Hardware.Switch.Export
