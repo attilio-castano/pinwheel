@@ -22,6 +22,10 @@ import Pinwheel.Hardware.StreamingReady.ProtocolSwitch
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
 import Pinwheel.Hardware.StreamingReady.RegisteredStoreSession
+import Pinwheel.Hardware.StreamingReady.SegmentControl
+import Pinwheel.Hardware.StreamingReady.SegmentCustody
+import Pinwheel.Hardware.StreamingReady.SegmentExport
+import Pinwheel.Hardware.StreamingReady.SegmentPackage
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
 import Pinwheel.Hardware.StreamingReady.SourceRefinement
@@ -52,6 +56,7 @@ import Pinwheel.Program.StreamingReadyOwnerCut
 import Pinwheel.Program.StreamingReadyProgress
 import Pinwheel.Program.StreamingReadyReservation
 import Pinwheel.Program.StreamingReadySafety
+import Pinwheel.Program.StreamingReadySegmentReadback
 import Pinwheel.Program.StreamingReadyService
 import Pinwheel.Program.StreamingReadySession
 import Pinwheel.Program.StreamingReadySessionService

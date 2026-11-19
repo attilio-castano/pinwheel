@@ -506,6 +506,41 @@ The same gate reruns the independent Reactive late-fetch control to check
 that crossing the ACK aperture still fails even if read data agrees. The
 evidence concerns digital circuit semantics and emitted RTL replay.
 
+### Checked segments and combined register reads
+
+The [segment compiler](../../Pinwheel/Program/StreamingReadySegments.lean)
+extends the Ready cell language with a per-segment count, a forward branch
+on a qualified receive bit, and a terminal instruction that discards
+accepted but unsent TX. The checker enumerates both sides of every branch.
+It checks row and branch bounds, capture availability, finite guards and
+path-level TX/RX counts. Its clock bounds apply when queue credit is
+immediately available and guards succeed within their declared windows.
+Certification binds the source rows to their encoded image before upload.
+
+One 24-row image performs the register-address write, repeated START and
+one-byte read. The target's ACKs select whether to continue or execute STOP.
+The host can queue all 36 TX bits before any branch. On each early NACK the
+engine preserves the accepted and consumed counters, closes TX, and discards
+the pending suffix. RX drains under the same owner before ordinary RELEASE.
+A guard timeout uses the existing fault path and retains unused accepted TX
+until explicit cancellation. The [control proof](../../Pinwheel/Hardware/StreamingReady/SegmentControl.lean)
+checks the instruction fields, count and latched branch decision. The
+[custody proof](../../Pinwheel/Hardware/StreamingReady/SegmentCustody.lean)
+checks discard, TX rejection, RX drain and owner-checked RELEASE.
+
+The [package simulation](../../Pinwheel/Hardware/StreamingReady/SegmentPackage.lean)
+transports the complete timed pad and host transcript across both instruction
+stores, including branches that redirect the fetch address. The
+[readback theorem](../../Pinwheel/Program/StreamingReadySegmentReadback.lean)
+relates the exact receive prefixes to the independent combined-read
+outcomes. A source gate checks those prefixes from emitted RTL against a
+wire-reactive target, including success, the three NACKs, a guard timeout,
+and a warm SPI exchange following an early RELEASE.
+
+```sh
+python3 -B scripts/check-ready-segments.py --tag ready-segments
+```
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
