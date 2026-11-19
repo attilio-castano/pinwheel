@@ -15,6 +15,7 @@ import time
 
 from streaming_ready_compile import i2c_image, validate_image
 from streaming_ready_peers import StreamingI2cPeer, expected_rx, payloads
+from streaming_ready_readback import mutation_specs
 from streaming_ready_transport import ReadyHost, pack_read
 from streaming_ready_wire_cases import audit_deadline_trace, packed
 from streaming_rtl import QuadRTL
@@ -51,19 +52,16 @@ def wire_events(path):
 
 
 def mutate_core(text, kind):
-    if kind == 'sampler-stage':
-        pattern = r"(?m)^(\s*r_stage2 <= [^\n;]+: )r_stage1(;)"
-        replacement = r'\g<1>raw_inputs\g<2>'
-        operation = 'Replace exactly the second sampler register driver with reset-or-raw_inputs'
-    elif kind == 'guard-bypass':
-        pattern = r"(?m)^(\s*r_current_word <= .* \? )(_GEN_\d+)( : r_current_word;)$"
-        replacement = r"\g<1>(\g<2> & 64'hbfffffffffffffff)\g<3>"
-        operation = 'Clear only stream guard-enable bit62 on the current-word entry assignment'
-    else:
+    operations = {
+        'sampler-stage': 'Replace exactly the second sampler register driver with reset-or-raw_inputs',
+        'guard-bypass': 'Clear only stream guard-enable bit62 on the current-word entry assignment',
+    }
+    if kind not in operations:
         raise ValueError('Unknown Ready wire mutation')
+    _, pattern, replacement, _ = next(spec for spec in mutation_specs('core') if spec[0] == kind)
     result, changes = re.subn(pattern, replacement, text)
     require(changes == 1 and result != text, 'Mutation must change exactly one recognized actual SV driver')
-    return result, operation
+    return result, operations[kind]
 
 
 def prepare_controls(sources, directory, tools, run, *, freeze=None):

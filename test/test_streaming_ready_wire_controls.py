@@ -58,6 +58,22 @@ class ReadyWireControlTests(unittest.TestCase):
         self.assertIn("r_stage2 <= _GEN_1 ? 2'h0 : r_stage1;", guard)
         self.assertEqual(len(one.splitlines()), len(SV.splitlines()))
 
+    def test_balanced_lowering_mutates_only_the_named_driver_expression(self):
+        balanced = """module core;
+wire [1:0] _GEN_9 = _GEN_1 ? 2'h0 : r_stage1;
+wire [63:0] _GEN_10 = _GEN_2 ? _GEN_3 : r_current_word;
+always @(posedge clk) begin
+  r_stage2 <= _GEN_9;
+  r_current_word <= _GEN_10;
+end
+endmodule
+"""
+        sampler, _ = mutate_core(balanced, 'sampler-stage')
+        self.assertEqual(sampler, balanced.replace(": r_stage1;", ": raw_inputs;"))
+        guard, _ = mutate_core(balanced, 'guard-bypass')
+        self.assertEqual(guard, balanced.replace("? _GEN_3 : r_current_word;",
+            "? (_GEN_3 & 64'hbfffffffffffffff) : r_current_word;"))
+
     def test_missing_or_ambiguous_sv_shape_refused(self):
         for text in ('module x; endmodule', SV + SV):
             for name in ('sampler-stage', 'guard-bypass'):
