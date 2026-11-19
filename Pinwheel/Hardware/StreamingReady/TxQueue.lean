@@ -22,7 +22,7 @@ def stepCount (count : BitVec 4) (put take : Bool) : BitVec 4 :=
 def Ring.WellFormed (q : Ring α) : Prop :=
   q.count ≤ 2 ∧ q.tail = q.head + q.count.extractLsb' 0 1
 
-/-- There is neither empty bypass nor full replacement. -/
+/-- Pre-edge occupancy bounds both admitted controls. -/
 def Ring.Legal (q : Ring α) (put take : Bool) : Prop :=
   (put = true → q.count < 2) ∧ (take = true → q.count ≠ 0)
 
@@ -37,9 +37,8 @@ def Ring.step (q : Ring α) (clear put take : Bool) (incoming resetValue : α) :
       stepCount q.count put take,
       fun index => if put && index == q.tail then incoming else q.slot index⟩
 
-/-- When popping, the inactive slot receives the former head. Keeping this
-inactive value lets the encoding relate both slots without imposing any
-constraint on the data stored in an empty queue. -/
+/-- On a pop the inactive slot receives the former head. This relates both
+encoded slots for arbitrary inactive data. -/
 def Shift.step (q : Shift α) (clear put take : Bool) (incoming resetValue : α) : Shift α :=
   if clear then ⟨0, fun _ => resetValue⟩
   else
