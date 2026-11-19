@@ -186,6 +186,11 @@ def step (p : Program) (i : Input) (s : State a) : State a :=
 def run (p : Program) (s : State a) (inputs : List Input) : State a :=
   inputs.foldl (fun s i => step p i s) s
 
+/-- Pin observations at the initial cut and after each supplied clock. -/
+def pinTrace (p : Program) (s : State a) : List Input → List Pins
+  | [] => [s.pins]
+  | i :: rest => s.pins :: pinTrace p (step p i s) rest
+
 def State.ReservationCredit (s : State a) : Prop :=
   (s.phase = .low ∨ s.phase = .waiting) → s.current.isStream = true →
     s.current.cell.receive = true → s.rx.writable = true

@@ -21,13 +21,22 @@ def timing(half_cycles, tco):
 
 
 class StreamingSPIPeer:
-    def __init__(self, transmit, receive, *, half_cycles=4, tco=1):
+    def __init__(self, transmit, receive, *, half_cycles=4, tco=1, mode=0, bit_count=None):
         if type(transmit) is not bytes or type(receive) is not bytes or len(transmit) != len(receive):
             raise ValueError('SPI target needs matching captured TX and reply bytes')
+        if type(mode) is not int or mode not in (0, 2):
+            raise ValueError('SPI target supports modes 0 and 2')
+        capacity = 8 * len(transmit)
+        if bit_count is None:
+            bit_count = capacity
+        if type(bit_count) is not int or not 0 <= bit_count <= capacity:
+            raise ValueError('SPI bit count exceeds the supplied bit vectors')
         timing(half_cycles, tco)
-        self.expected = tuple(bool((byte >> bit) & 1) for byte in transmit for bit in range(7, -1, -1))
-        self.reply = tuple(bool((byte >> bit) & 1) for byte in receive for bit in range(7, -1, -1))
+        self.expected = tuple(bool((byte >> bit) & 1) for byte in transmit for bit in range(7, -1, -1))[:bit_count]
+        self.reply = tuple(bool((byte >> bit) & 1) for byte in receive for bit in range(7, -1, -1))[:bit_count]
         self.half_cycles, self.tco = half_cycles, tco
+        self.mode = mode
+        self.idle_clock = int(mode == 2)
         self.selected = self.finished = False
         self.selected_at = self.released_at = None
         self.previous_clock = self.previous_mosi = 0
@@ -40,7 +49,9 @@ class StreamingSPIPeer:
 
     def drive(self, cycle, pads, ui=0):
         pads.logical
-        clock, mosi, cs = pads.bit(3), pads.bit(2), pads.bit(4)
+        # Normalize SCK to inactive/active so the same edge oracle covers
+        # leading rising edges in mode 0 and leading falling edges in mode 2.
+        clock, mosi, cs = pads.bit(3) ^ self.idle_clock, pads.bit(2), pads.bit(4)
         if not cs:
             require(pads.enabled == OUTPUT_MASK, 'SPI must drive MOSI/SCLK/CS')
             if not self.selected:
@@ -92,7 +103,7 @@ class StreamingSPIPeer:
         # Longer low intervals are observed evidence, never inferred from FIFO state.
         extra = sum(max(0, duration - self.half_cycles - 1) for duration in self.low_durations)
         require(not require_stall or extra > 0, 'SPI fixture did not exercise a long low interval')
-        return dict(protocol='spi-mode0', bits=len(self.bits), clock_edges=len(self.clock_edges),
+        return dict(protocol=f'spi-mode{self.mode}', bits=len(self.bits), clock_edges=len(self.clock_edges),
             continuous_cs=True, half_cycles=self.half_cycles, high_phase_edges=sorted(set(self.high_durations)),
             low_min_edges=min(self.low_durations, default=0), low_max_edges=max(self.low_durations, default=0),
             low_extra_edges=extra, setup_edges=(self.clock_edges[0][0] - self.selected_at if self.clock_edges else 0),

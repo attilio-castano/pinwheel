@@ -22,16 +22,17 @@ class Wires:
             self.drive = self.peer.drive(self.cycle, pads)
 
 
-def spi_wave(peer, *, stall=0, high_extra=0, wrong_data=False):
+def spi_wave(peer, *, stall=0, high_extra=0, wrong_data=False, clock_polarity=0):
     wires = Wires(peer)
-    wires.hold(4, 4)
-    wires.hold(0, 4)
+    pad_mask = clock_polarity << 1
+    wires.hold(4 ^ pad_mask, 4)
+    wires.hold(pad_mask, 4)
     for index, bit in enumerate(peer.expected):
         value = int(bit) ^ int(wrong_data and index == 3)
-        wires.hold(value, 5 + (stall if index == 4 else 0))
-        wires.hold(value | 2, 4 + high_extra)
-    wires.hold(int(peer.expected[-1]) if peer.expected else 0, 6)
-    wires.hold(4, 5)
+        wires.hold(value ^ pad_mask, 5 + (stall if index == 4 else 0))
+        wires.hold((value | 2) ^ pad_mask, 4 + high_extra)
+    wires.hold((int(peer.expected[-1]) if peer.expected else 0) ^ pad_mask, 6)
+    wires.hold(4 ^ pad_mask, 5)
     return wires
 
 
@@ -75,6 +76,15 @@ class StreamingPeerTests(unittest.TestCase):
         peer = StreamingSPIPeer(b'', b'')
         spi_wave(peer)
         self.assertEqual(peer.check(())['clock_edges'], 0)
+
+    def test_spi_mode_two_uses_falling_leading_edges_for_partial_bytes(self):
+        peer = StreamingSPIPeer(b'\xd3\x80', b'\xa5\x00', mode=2, bit_count=9)
+        spi_wave(peer, clock_polarity=1, stall=13)
+        result = peer.check(peer.reply, require_stall=True)
+        self.assertEqual((result['protocol'], result['clock_edges']), ('spi-mode2', 18))
+        self.assertEqual(result['high_phase_edges'], [4])
+        with self.assertRaisesRegex(RuntimeError, 'assert CS once with idle clock'):
+            spi_wave(StreamingSPIPeer(b'\x80', b'\x00', mode=2, bit_count=1))
 
     def test_jtag_nonbyte_last_bit_and_low_stall(self):
         peer = StreamingJTAGPeer(0x196a5, 0x13cc3, 17)

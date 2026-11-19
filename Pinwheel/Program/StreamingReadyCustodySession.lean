@@ -48,6 +48,14 @@ def Session.State.traceRun (s : Session.State a) (p : Program) (pending : Bool) 
   | [] => trace
   | i :: inputs => (s.step p pending i).traceRun p pending (trace.step s.core (s.command i).runtime) inputs
 
+theorem Session.State.traceRun_runtimeInputs (s : Session.State a) (p : Program) (pending : Bool)
+    (trace : BitTrace) (pins : List Session.Pins) :
+    s.traceRun p pending trace pins =
+      StreamingReady.traceRun p s.core trace (s.runtimeInputs p pending pins) := by
+  induction pins generalizing s trace with
+  | nil => rfl
+  | cons i rest ih => exact ih (s.step p pending i) (trace.step s.core (s.command i).runtime)
+
 theorem Session.State.Custody.run (s : Session.State a) (p : Program) (pending : Bool)
     (samples : List Session.Pins) (trace : BitTrace) (ha : a ≤ 3)
     (runtime : Session.RuntimeTrace p pending s samples) (custody : s.Custody trace) :
@@ -63,10 +71,7 @@ theorem Session.State.Custody.started (s : Session.State a) (p : Program) (pendi
     (start : ((s.command i).runtime.command == 3 && s.core.canStart (s.command i).runtime) = true) :
     (s.step p pending i).Custody {} := by
   have clear := s.accepted_clears pending i (Or.inl start)
-  have core : (s.step p pending i).core = s.core.start p (s.command i).runtime := by
-    have command := start
-    simp only [Bool.and_eq_true, beq_iff_eq] at command
-    simp [Session.State.step, StreamingReady.step, runtime.1, command.1, command.2]
+  have core := s.core_admitted_start p pending i runtime start
   have command := start
   simp only [Bool.and_eq_true, beq_iff_eq] at command
   obtain ⟨delivering, operation⟩ := s.host.command_operation (i.host {}) 3 (by decide) (by decide) command.1
@@ -101,6 +106,51 @@ theorem Session.State.Custody.receipt_valid (s : Session.State a) (trace : BitTr
     (custody : s.Custody trace) :
     s.host.receipt.Valid s.core.rxProduced.toNat s.core.rxPopped.toNat :=
   custody.interval.receipt_valid s (custody.counts.order s.core trace custody.related).2
+
+/-- A drained and acknowledged RX prefix is exact even if TX remains owned. -/
+theorem Session.State.Custody.acknowledged_capture (s : Session.State a) (trace : BitTrace)
+    (custody : s.Custody trace) (emptyQueue : s.core.rx.count.val = 0)
+    (emptyPartial : s.core.rxUsed = 0#6) (acknowledged : s.host.exportBits.toNat = 0) :
+    trace.captured = trace.exported ∧ s.host.ackOffset.toNat = trace.captured.length := by
+  have chunks : trace.rxQueued = [] := by
+    apply List.length_eq_zero_iff.mp
+    simpa [emptyQueue] using custody.related.rxQueue.length
+  have exported : trace.captured = trace.exported := by
+    simpa [chunks,State.pendingRx,emptyPartial] using custody.related.rxOrder
+  obtain ⟨acked,length,order⟩ := custody.bytes
+  have empty : s.host.exportedBits = [] := by simp [Host.State.exportedBits,acknowledged]
+  rw [empty,List.append_nil] at order
+  exact ⟨exported,by rw [exported,order,length]⟩
+
+/-- Retained transfers can drain RX without taking new samples. -/
+theorem retained_trace (p : Program) (s : State a) (trace : BitTrace) (inputs : List Input)
+    (retained : s.phase.retained = true)
+    (ordinary : ∀ i ∈ inputs, i.Runtime ∧ i.command ≠ 4#4) :
+    let final := run p s inputs
+    final.phase = s.phase ∧ final.rxUsed = s.rxUsed ∧
+      (traceRun p s trace inputs).captured = trace.captured := by
+  induction inputs generalizing s trace with
+  | nil => exact ⟨rfl,rfl,rfl⟩
+  | cons i rest ih =>
+    obtain ⟨⟨cold,warm⟩,release⟩ := ordinary i List.mem_cons_self
+    have terminal : s.phase = .completed ∨ s.phase = .fault := by
+      cases phase : s.phase <;> simp [Phase.retained,phase] at retained ⊢
+    have notFree : s.phase ≠ .free := by
+      rcases terminal with phase | phase <;> simp [phase]
+    have next : step p i s = clock p i s := by
+      simp [step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,notFree]
+    have stable : engine p s = s := by
+      rcases terminal with phase | phase <;> simp [engine,phase]
+    have phaseStable : (step p i s).phase = s.phase := by simp [next,clock,stable]
+    have usedStable : (step p i s).rxUsed = s.rxUsed := by simp [next,clock,stable]
+    have noCapture : s.captures = false := by
+      rcases terminal with phase | phase <;> simp [State.captures,phase]
+    have captures : (trace.step s i).captured = trace.captured := by
+      simp [BitTrace.step,cold,(show i.command ≠ 15#4 from warm),release,State.canStart,notFree,
+        BitTrace.clock,State.rxEvent,noCapture]
+    obtain ⟨last,used,bits⟩ := ih _ _ (by rw [phaseStable]; exact retained)
+      (fun j member => ordinary j (List.mem_cons_of_mem _ member))
+    exact ⟨last.trans phaseStable,used.trans usedStable,bits.trans captures⟩
 
 theorem Session.State.Custody.release_all_bits (s : Session.State a) (i : Session.Pins)
     (trace : BitTrace) (custody : s.Custody trace)

@@ -97,6 +97,28 @@ theorem compiled_pending (image : Compiled source idle) : (compiledImage image).
   change (0#1).getLsbD 0 = false
   decide +kernel
 
+theorem Reached.run {a : Nat} {actual : Package.State a} {s : Session.State a}
+    (reached : Reached image actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace image.program false s pins) :
+    Reached image
+      (actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins))
+      (s.run image.program false pins) (s.traceRun image.program false trace pins) := by
+  constructor
+  · rw [reached.package]
+    simpa only [compiled_pending] using SessionCorrespondence.run_correct (compiledImage image)
+      s pins ha (by simpa only [compiled_pending] using runtime) reached.custody.structural
+  · exact reached.custody.run s image.program false pins trace ha runtime
+  · exact reached.freeExport.run s image.program false pins trace ha runtime reached.custody
+
+theorem initialized_run_eq (image : Compiled source idle) (actualBoot : Package.State a)
+    (boot : Session.State a) (initialized : BootCorrespondence.Initialized image actualBoot boot)
+    (pins : List Session.Pins) (ha : a ≤ 3) (runtime : Session.RuntimeTrace image.program false boot pins) :
+    actualBoot.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins) =
+      SessionCorrespondence.values (compiledImage image) (boot.run image.program false pins) := by
+  rw [initialized.package]
+  simpa only [compiled_pending] using SessionCorrespondence.run_correct (compiledImage image) boot pins
+    ha (by simpa only [compiled_pending] using runtime) initialized.structural
+
 /-- The pre-START source state and its bounds are reached from concrete boot.
 The START premise is the actual circuit admission flag, not source agreement. -/
 theorem started_run (image : Compiled source idle) (actualBoot : Package.State a) (boot : Session.State a)
@@ -114,11 +136,7 @@ theorem started_run (image : Compiled source idle) (actualBoot : Package.State a
       (((boot.run image.program false before).step image.program false startPin).traceRun image.program false {} after) := by
   have control := control_run boot image.program false before (initialized_control initialized)
   have structural := boot.run_structural image.program false before initialized.structural
-  have beforePackage : actualBoot.run (Package.Components.typed a) (before.map SessionCorrespondence.pins) =
-      SessionCorrespondence.values (compiledImage image) (boot.run image.program false before) := by
-    rw [initialized.package]
-    simpa only [compiled_pending] using SessionCorrespondence.run_correct (compiledImage image) boot before
-      ha (by simpa only [compiled_pending] using beforeRuntime) initialized.structural
+  have beforePackage := initialized_run_eq image actualBoot boot initialized before ha beforeRuntime
   have admitted := start
   rw [beforePackage] at admitted
   have sourceStart := start_source (compiledImage image) _ startPin startRuntime admitted
