@@ -47,6 +47,29 @@ def emit(run, tools, out):
     return inventories, ring, shift
 
 
+def i2c_replay_profiles(replays):
+    """Bind each completed read and missed data slot to the same uploaded image."""
+    profiles = {}
+    for budget, profile in ((31, "I2cProfile.standard"), (19, "I2CReadSession.shortDeadlineProfile")):
+        uploads = []
+        for layout in ("ring", "shift"):
+            replayed = replays[layout]
+            late = replayed["i2c_late_slot_42"][f"budget-{budget}"]
+            if budget == 31:
+                success, = [case for case in replayed["i2c"]["cases"]
+                            if case["direction"] == "read" and case["profile"] == "lastpoll"]
+            else:
+                success = replayed["i2c_short_budget"]["last_poll"]
+            if late["budget"] != budget or late["image_words"] != success["image_words"]:
+                raise RuntimeError(f"I²C replays used different images at poll budget {budget}")
+            uploads.append(success["image_words"])
+        ring, shift = uploads
+        if ring != shift:
+            raise RuntimeError(f"I²C FIFO layouts loaded different images at poll budget {budget}")
+        profiles[budget] = (profile, ring)
+    return profiles
+
+
 def certify_composition(run, tools, gate, out, report):
     wrapper = report["wrapper_certificate"]
     proof_dirs = [out / key / "proof" for key in ("ring", "shift", "frontend")]
@@ -66,19 +89,27 @@ def certify_composition(run, tools, gate, out, report):
     gate.compile_lean(run, tools, directory, module, paths=proof_dirs)
     (directory / fixture.name).write_bytes(fixture.read_bytes())
     gate.compile_lean(run, tools, directory, FIXTURE, paths=proof_dirs)
-    ring_deadline = report["replays"]["ring"]["i2c_short_budget"]
-    shift_deadline = report["replays"]["shift"]["i2c_short_budget"]
-    words = ring_deadline["last_poll"]["image_words"]
-    budget = ring_deadline["budget"]
-    if words != shift_deadline["last_poll"]["image_words"] or budget != shift_deadline["budget"]:
-        raise RuntimeError("The two replays loaded different I²C deadline profiles")
-    targets = "ReadyTxShortBudget"
+    targets = "ReadyTxI2CProfiles"
+    profiles = i2c_replay_profiles(report["replays"])
     (directory / f"{targets}.lean").write_text(f"""import {FIXTURE}
-open Pinwheel.Hardware.StreamingReady Pinwheel.Program.StreamingReady
+open Pinwheel.Hardware Pinwheel.Hardware.StreamingReady Pinwheel.Program.StreamingReady
+open Pinwheel.Artifact.StreamingReadyTxShift Pinwheel.Artifact.StreamingReadySessionD2
+""" + "".join(f"""
+example : {profile}.budgetMinusOne.val + 1 = {budget} := by decide +kernel
+example : (i2cImage {profile}).words = {words} := by decide +kernel
 
-example : I2CReadSession.shortDeadlineProfile.budgetMinusOne.val + 1 = {budget} := by decide +kernel
-example : (i2cImage I2CReadSession.shortDeadlineProfile).words = {words} := by decide +kernel
-""")
+abbrev completeBudget{budget} := i2c_completed_from_service {profile}
+abbrev missBudget{budget} := i2c_read_to_missed_deadline {profile}
+
+theorem bootBudget{budget} (l r : Package.State 1) :
+    let image := i2cImage {profile}
+    let pins := BootPins.coldPin :: BootPins.compiled image
+    ∃ boot, BootCorrespondence.Initialized image (physicalRun r (pins.map PublicPins.embed)) boot ∧
+      TxShiftPackage.Related (shiftRun l pins) (physicalRun r (pins.map PublicPins.embed)) := by
+  apply boot_i2c_profile {profile}
+  apply Pinwheel.Program.Streaming.BootPins.check_sound
+  decide +kernel
+""" for budget, (profile, words) in profiles.items()))
     gate.compile_lean(run, tools, directory, targets, paths=proof_dirs)
     audit = gate.audit_source((ROOT / "test/ProofAudit.lean").read_text(),
                              [*generated, module, FIXTURE, targets], root_module=targets)

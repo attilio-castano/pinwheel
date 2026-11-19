@@ -63,6 +63,12 @@ structure Result (profile : I2cProfile) (actual : Package.State a) (s : Session.
     (((s.run (program profile) false frame).run (program profile) false drain).host.ackOffset).toNat = 585
   emptyExport :
     (((s.run (program profile) false frame).run (program profile) false drain).host.exportBits).toNat = 0
+  reached :
+    let cut := s.run (program profile) false frame
+    let captured := s.traceRun (program profile) false {} frame
+    let actualCut := actual.run (Package.Components.typed a) (frame.map SessionCorrespondence.pins)
+    Reached (i2cImage profile) (actualCut.run (Package.Components.typed a) (drain.map SessionCorrespondence.pins))
+      (cut.run (program profile) false drain) (cut.traceRun (program profile) false captured drain)
   admitted :
     let cut := actual.run (Package.Components.typed a) (frame.map SessionCorrespondence.pins)
     ActualRelease (cut.run (Package.Components.typed a) (drain.map SessionCorrespondence.pins)) releasePin
@@ -188,7 +194,7 @@ theorem completed_from_service (profile : I2cProfile) (actual : Package.State a)
       StreamingI2CRead.wireBits payload :=
     released.exported.symm.trans captureAfterDrain
   refine ⟨edges, drainPins, releasePin, frameSegment.wire, completeAtCut, ?_, ?_, exported, ?_, ?_,
-    released.emptyExport, admitted⟩
+    released.emptyExport, drainSegment.reached, admitted⟩
   · rw [commands_eq]
     exact events
   · rw [commands_eq]

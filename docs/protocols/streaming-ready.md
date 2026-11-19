@@ -422,8 +422,34 @@ The depth-two FIFO substitution workflow replays budgets 31 and 19 on
 both layouts. At each budget the last-poll case completes the 64-byte read.
 The one-poll-late case retains and acknowledges the 11 captured slots,
 refuses RELEASE with unused TX, and clears custody on explicit warm
-cancellation. Lean binds the 19-poll image words used by replay to the
-profile in the deadline theorem.
+cancellation. The second late case waits until slot 42 and drains a 32-bit
+word followed by a 10-bit remainder. The peer observes 43 physical rises
+in that case, and the host acknowledges exactly 42 captures. Lean binds the
+image words from both budgets to the profiles used by the proofs.
+
+### Complete reads under service and exact fault prefixes
+
+The [completion proof](../../Pinwheel/Hardware/StreamingReady/I2CReadSuccess.lean)
+derives a finite completed read for an admitted START. The peer supplies
+resolved SDA at each capture aperture and meets each guard deadline. The
+host offers the prescribed TX plan, eventually provides reservation credit,
+and supplies a finite drain with an admissible RELEASE after completion.
+The theorem gives START, 585 qualified slots, and STOP at the resolved bus,
+the exact exported payload and acknowledgment, and the empty export at
+RELEASE. The schedule and proof use the supplied `I2cProfile`.
+
+The [fault proof](../../Pinwheel/Hardware/StreamingReady/I2CReadTimeout.lean)
+starts from an initialized image and admitted START. At any reachable data
+WAIT, a peer that holds SCL low through every eligible aperture forces a
+timeout. The proof derives the slot ordinal from the remaining count and
+checks the earlier resolved samples against the peer's payload. After an
+ordinary host drain, the exported and acknowledged bits are exactly the
+payload-dependent wire prefix before the failed slot.
+
+The [layout proof](../../test/StreamingReadyTxShiftProof.lean) uses one package
+simulation to transport both contracts, including the host reply pads across
+drain and RELEASE. The gate checks both theorem instances and the certified
+cold-upload sequence for each replayed profile.
 
 ## Depth-two TX FIFO substitution
 
@@ -451,7 +477,7 @@ The check emits and independently certifies both cores, imports the shared
 wrapper, and audits the composed Lean proof. Both replays exercise the full
 push/pop edge directly and then run the existing SPI backpressure cases,
 I²C read/write and deadline cases, and Ethernet refill schedules including
-the missed credit control. The 15 trace files must agree byte for
+the missed credit control. The 17 trace files must agree byte for
 byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
 
 ## Verification boundaries
