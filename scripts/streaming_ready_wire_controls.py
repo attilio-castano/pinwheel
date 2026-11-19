@@ -91,13 +91,16 @@ def prepare_controls(sources, directory, tools, run, *, freeze=None):
     return result
 
 
-def observe(vvp, executable, directory, *, depth, profile):
+def observe(vvp, executable, directory, *, depth, profile, image=None):
     """Observe the whole outcome, then ask the independent schedule oracle."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     _, read_data = payloads()
-    plan, image = pack_read(0x52, 64), i2c_image()
+    plan = pack_read(0x52, 64)
+    if image is None:
+        image = i2c_image()
     validate_image(image)
+    stream = image.source.instructions[image.certificate.stream_row]
     trace = EdgeTrace(directory / 'wire.bin')
     peer, pending, rtl, oracle_rejected = None, None, None, False
     error_text, native_exit = None, None
@@ -109,7 +112,9 @@ def observe(vvp, executable, directory, *, depth, profile):
             host = ReadyHost(transport, depth=depth)
             host.initialize()
             loaded = host.load(image)
-            peer = StreamingI2cPeer(plan, read_data, profile=profile)
+            peer = StreamingI2cPeer(plan, read_data, profile=profile,
+                low_cycles=stream.cell.low_cycles, high_cycles=stream.cell.high_cycles,
+                wait_budget=stream.guard.limit.budget)
             rtl.device = peer
             pending = loaded.submit(plan.tx_bits, bit_count=585)
             transport.idle(64)
@@ -159,6 +164,19 @@ def observe(vvp, executable, directory, *, depth, profile):
     return result
 
 
+def check_late_custody(value):
+    require(value.get('native_exit_code') == 0 and value.get('oracle_rejected') is False and
+        value.get('error') is None, 'I2C late-poll control did not complete its expected fault path')
+    observed = value.get('observation', {})
+    require(observed.get('fault') is True and observed.get('retained') is True and
+        observed.get('captured_bits') == 11 and observed.get('physical_data_rises') in (11, 12) and
+        observed.get('owner_tag') == 65537 and observed.get('tx_accepted') == 32 and
+        observed.get('rx_sha256') == hashlib.sha256(packed(expected_rx(pack_read(0x52, 64), payloads()[1])[:11])).hexdigest() and
+        all(observed.get(name) is True for name in
+            ('prefix_acknowledged', 'unused_tx_release_refused', 'warm_cancelled')),
+        'Correct two-stage late readiness did not retain exactly its 11-bit prefix')
+
+
 def check_controls(result):
     require(result.get('schema') == SCHEMA and result.get('passed') is True and result.get('depth') in (2, 4),
         'Incomplete Ready wire-control scope')
@@ -172,14 +190,7 @@ def check_controls(result):
             (isinstance(value.get('error'), str) and 'I2C ' in value['error'] if index else value.get('error') is None),
             'Ready wire control used a native failure or the wrong distinguishing oracle')
         if index == 0:
-            observed = value.get('observation', {})
-            require(observed.get('fault') is True and observed.get('retained') is True and
-                observed.get('captured_bits') == 11 and observed.get('physical_data_rises') in (11, 12) and
-                observed.get('owner_tag') == 65537 and observed.get('tx_accepted') == 32 and
-                observed.get('rx_sha256') == hashlib.sha256(packed(expected_rx(pack_read(0x52, 64), payloads()[1])[:11])).hexdigest() and
-                all(observed.get(name) is True for name in
-                    ('prefix_acknowledged', 'unused_tx_release_refused', 'warm_cancelled')),
-                'Correct two-stage late readiness did not retain exactly its11-bit prefix')
+            check_late_custody(value)
         if index < 2:
             observed = value.get('observation', {})
             alignment = observed.get('deadline_alignment', {})

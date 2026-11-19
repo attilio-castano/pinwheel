@@ -4,9 +4,12 @@ from pathlib import Path
 
 from streaming_8x4_ethernet import replay_schedules
 from streaming_8x4_spi_modes import run_cases
-from streaming_ready_compile import spi_image
-from streaming_ready_wire_cases import check_i2c_cases, run_i2c_cases
-from streaming_ready_wire_controls import check_controls, prepare_controls, run_ready_controls
+from streaming_ready_compile import i2c_image, spi_image
+from streaming_ready_wire_cases import check_deadline_alignment, check_i2c_cases, run_i2c_case, run_i2c_cases
+from streaming_ready_wire_controls import check_controls, check_late_custody, observe, prepare_controls, run_ready_controls
+
+
+SHORT_BUDGET = 19
 
 
 def testbench(assembly):
@@ -66,6 +69,22 @@ endmodule
 """
 
 
+def replay_short_budget(vvp, executable, out):
+    image = i2c_image(wait_budget=SHORT_BUDGET, stretch_bound=SHORT_BUDGET - 3)
+    last = run_i2c_case(vvp, executable, out / "lastpoll", depth=2, direction="read",
+                        profile="lastpoll", image=image)
+    if not last["passed"]:
+        raise RuntimeError(f"Short-budget last-poll read failed: {last['error']}")
+    peer = last["peer"]
+    check_deadline_alignment(peer["deadline_alignment"], peer["deadline_trace"], budget=SHORT_BUDGET)
+    late = observe(vvp, executable, out / "late", depth=2, profile="late", image=image)
+    check_late_custody(late)
+    observed = late["observation"]
+    check_deadline_alignment(observed["deadline_alignment"], observed["deadline_trace"],
+                             budget=SHORT_BUDGET, late=True)
+    return dict(budget=SHORT_BUDGET, last_poll=last, late_poll=late)
+
+
 def replay(run, tools, out, assembly, sources):
     core = sources[0]
     out.mkdir(parents=True, exist_ok=False)
@@ -86,15 +105,18 @@ def replay(run, tools, out, assembly, sources):
     mutants = prepare_controls(sources, out / "mutants", tools, run)
     controls = run_ready_controls(tools["vvp"], bridge, mutants, out / "i2c-controls", depth=2)
     check_controls(controls)
+    short = replay_short_budget(tools["vvp"], bridge, out / "i2c-short-budget")
     ethernet = replay_schedules(tools["vvp"], bridge, out / "ethernet.bin")
-    return dict(spi=spi, i2c=i2c, i2c_controls=controls, ethernet=ethernet, full_boundary_passed=True)
+    return dict(spi=spi, i2c=i2c, i2c_controls=controls, i2c_short_budget=short,
+                ethernet=ethernet, full_boundary_passed=True)
 
 
 def compare(ring: Path, shift: Path):
     """Require byte-for-byte equality on every unchanged public-pin case."""
-    paths = [Path("spi.bin"), Path("ethernet.bin"), Path("i2c-controls/unchanged-late/wire.bin")]
+    paths = list(map(Path, ("spi.bin", "ethernet.bin", "i2c-controls/unchanged-late/wire.bin",
+                           "i2c-short-budget/lastpoll/wire.bin", "i2c-short-budget/late/wire.bin")))
     paths.extend(sorted(path.relative_to(ring) for path in (ring / "i2c").glob("*/wire.bin")))
-    if len(paths) != 13:
+    if len(paths) != 15:
         raise RuntimeError("The Ready TX FIFO replay omitted an expected pin trace")
     for path in paths:
         if (ring / path).read_bytes() != (shift / path).read_bytes():
