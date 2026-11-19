@@ -341,6 +341,33 @@ python3.12 -B scripts/streaming_8x4_ethernet.py \
   --out build/ethernet-frozen
 ```
 
+### Host refill policies
+
+The [credit checker](../../Pinwheel/Program/StreamingEthernetCredit.lean)
+uses the session's runtime commands to establish the PHY slot levels, TX
+credit and next bit at each reservation. The shared frame theorem then
+establishes the exact wire trace. The original uniform policy launches
+refills 384 clocks apart. The staggered policy delays every other refill by
+24 clocks. Lean checks both policies for one- and two-clock sampled PHY high
+widths.
+
+With the pinned hardware tools installed, run the depth-two typed workflow
+with a fresh tag.
+
+```sh
+python3 -B scripts/typed_ready_workflow.py --ethernet-only --tag refill-policies
+```
+
+The replay uses the independent PHY at high width one and compares legacy
+and typed RTL traces byte for byte. Lean binds the replay's frame bytes,
+image and observed refill launch cuts to the two proved schedules. The
+late control delays the first refill by 180 clocks and the second by 64.
+Lean checks that the engine lacks credit at the reservation after bit 64.
+The host admits all 576 bits and releases the owner. The PHY sees the first
+incorrect bit at index 65, counted from zero, with completion six clocks
+late. Find the generated proofs and traces under
+`build/typed-ethernet/refill-policies`.
+
 ## Typed protocol matrix
 
 With the pinned hardware tools installed, run SPI and I²C at FIFO depths two
