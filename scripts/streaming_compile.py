@@ -213,17 +213,20 @@ def lower(instructions, *, idle_levels=0, idle_enabled=0):
     return CompiledImage(source, words, certificate)
 
 
-def spi_image(half_cycles=4):
-    """One generic duplex stream, START count is the number of wire bits."""
+def spi_image(half_cycles=4, *, mode=0):
+    """One leading-edge duplex stream, START count is the number of wire bits."""
     integer(half_cycles, 3, 256, 'SPI half cycles')
-    hold = Cell(half_cycles, half_cycles, low_enabled=7, high_enabled=7)
-    stream = Cell(half_cycles, half_cycles, low_enabled=7, high_levels=2, high_enabled=7,
-                  transmit=True, receive=True)
+    if type(mode) is not int or mode not in (0, 2):
+        raise ValueError('Streaming SPI supports modes 0 and 2')
+    idle_clock = mode
+    hold = Cell(half_cycles, half_cycles, low_levels=idle_clock, low_enabled=7,
+                high_levels=idle_clock, high_enabled=7)
+    stream = Cell(half_cycles, half_cycles, low_levels=idle_clock, low_enabled=7,
+                  high_levels=idle_clock ^ 2, high_enabled=7, transmit=True, receive=True)
     # A pulse returns to its LOW pins before HALT. Keep CS asserted through
     # that return; only HALT releases CS, so there is no reselection glitch.
-    release = Cell(half_cycles, half_cycles, low_enabled=7, high_enabled=7)
     return lower((Instruction('pulse', hold), Instruction('stream', stream),
-                  Instruction('pulse', release), Instruction('halt')), idle_levels=4, idle_enabled=7)
+                  Instruction('pulse', hold), Instruction('halt')), idle_levels=4 | idle_clock, idle_enabled=7)
 
 
 def jtag_image(half_cycles=4):

@@ -8,7 +8,7 @@ import hashlib
 import json
 import re
 
-from streaming_compile import Cell, FIELDS, BOOLS, integer, word_bytes
+from streaming_compile import Cell, FIELDS, BOOLS, integer, spi_image as legacy_spi_image, word_bytes
 
 FORMAT = 'pinwheel-streaming-ready-cell64-v1'
 OPCODES = {'pulse': 0, 'stream': 1, 'halt': 2, 'fault': 3, 'drive_wait': 4}
@@ -237,6 +237,16 @@ def lower(instructions, *, idle_levels=0, idle_enabled=0):
         hashlib.sha256(word_bytes(words)).hexdigest(), len(words),
         next(k for k, instruction in enumerate(source.instructions) if instruction.operation == 'stream'))
     return CompiledImage(source, words, certificate)
+
+
+def spi_image(half_cycles=4, *, mode=0):
+    """Compile leading-edge duplex SPI for the sampled-ready target."""
+    legacy = legacy_spi_image(half_cycles, mode=mode)
+    image = lower((Instruction(row.operation, row.cell) for row in legacy.source.instructions),
+        idle_levels=legacy.idle_levels, idle_enabled=legacy.idle_enabled)
+    if image.words != legacy.words:
+        raise ValueError('Ready SPI lift changed an unguarded instruction word')
+    return image
 
 
 def i2c_image(low_cycles=4, high_cycles=4, wait_budget=31, *, peer_tco=1, stretch_bound=28):

@@ -6,6 +6,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 import streaming_compile as c
+from streaming_ready_compile import spi_image as ready_spi_image
 
 
 class StreamingCompile(unittest.TestCase):
@@ -14,6 +15,17 @@ class StreamingCompile(unittest.TestCase):
         self.assertEqual(image.words, (0x71c01818, 0xc75c01819, 0x71c01818, 2))
         self.assertEqual((image.idle_levels, image.idle_enabled), (4, 7))
         self.assertEqual(image.certificate.stream_row, 1)
+
+    def test_spi_mode_two_flips_only_clock_polarity(self):
+        image = ready_spi_image(mode=2)
+        self.assertEqual(image.words, (0x75d01818, 0xc71d01819, 0x75d01818, 2))
+        self.assertEqual((image.idle_levels, image.idle_enabled), (6, 7))
+        self.assertEqual(image.certificate.stream_row, 1)
+        flipped = (1 << 20) | (1 << 26)
+        self.assertEqual(image.words, tuple(word ^ flipped for word in c.spi_image().words[:3]) + (2,))
+        for mode in (1, 3, 0.0, False):
+            with self.assertRaises(ValueError):
+                ready_spi_image(mode=mode)
 
     def test_spi_finishing_pulse_keeps_cs_asserted_until_halt(self):
         source = c.spi_image().source.instructions
