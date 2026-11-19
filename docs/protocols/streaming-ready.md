@@ -158,6 +158,24 @@ python3.12 -B scripts/streaming_8x4_spi_modes.py \
   --out build/spi-modes-frozen
 ```
 
+The [typed export](../../Pinwheel/Hardware/StreamingReady/TypedExport.lean)
+uses `TypedModule` for the existing sampled-ready core and shared quad frontend.
+With the pinned hardware tools installed, run the depth-two source workflow
+with a fresh tag.
+
+```sh
+python3 -B scripts/check-typed-spi.py --tag spi-local
+```
+
+The check builds both emitters from Lean source and requires identical port and
+register inventories, MLIR, lowered RTL, and public-pin traces. It runs the
+same six cases with the independent peer above on each emission. It also
+reconstructs the typed RTL's register and output equations and certifies the
+package and top-level wiring used by the replay. The
+[artifact proof](../../test/StreamingReadyTypedSPIProof.lean) applies the
+existing cold-boot and START-to-RELEASE theorems to the reconstructed digital
+device. The report and generated certificates are in `build/typed-spi/spi-local`.
+
 ## JTAG DR scan
 
 The existing 13-row JTAG image uses unguarded instructions and has the same
