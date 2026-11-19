@@ -1,5 +1,4 @@
-import Pinwheel.Hardware.StreamingReady.InitializedCustody
-import Pinwheel.Hardware.StreamingReady.PublicPins
+import Pinwheel.Hardware.StreamingReady.SessionProof
 import Pinwheel.Program.StreamingSPIData
 
 /-! The sampled-ready package executes both leading-edge SPI modes using
@@ -93,62 +92,43 @@ theorem completed_release (mode : Mode) (d : Fin 256)
     trace.accepted = mosiOnLeading mode pins ∧
     trace.exported = misoOnLeading mode pins apertures ∧
     final.host.ackOffset.toNat = count ∧ final.host.exportBits.toNat = 0
-  have initial := started_run im actualBoot bootState initialized before startPin [] ha
-    beforeRuntime startRuntime start trivial
-  have reached := started_run im actualBoot bootState initialized before startPin after ha
-    beforeRuntime startRuntime start afterRuntime
-  have released := reached.release_all_bits releasePin ha releaseRuntime release
-  change trace.accepted = trace.consumed ∧ trace.captured = trace.exported ∧
-    trace.exported.length = final.host.ackOffset.toNat ∧ final.host.exportBits.toNat = 0 at released
-  have releaseEq := release
-  rw [reached.package] at releaseEq
-  have acceptedRelease := release_source (Initialization.compiledImage im) final releasePin
-    ha releaseRuntime releaseEq
-  have admission : ActualStart actualReady startPin := start
-  have actualEq : actualReady = SessionCorrespondence.values (Initialization.compiledImage im) ready :=
-    initialized_run_eq im actualBoot bootState initialized before ha beforeRuntime
-  rw [actualEq] at admission
-  have acceptedStart := start_source (Initialization.compiledImage im) ready startPin startRuntime admission
-  have coreStart : started.core = ready.core.start im.program cmd :=
-    ready.core_admitted_start im.program false startPin startRuntime acceptedStart
+  have first := SessionProof.start im actualBoot bootState initialized before startPin ha
+    beforeRuntime startRuntime start
+  have segment := SessionProof.advance first.reached after ha afterRuntime
+  have released : SessionProof.Released final trace :=
+    SessionProof.release segment.reached releasePin ha releaseRuntime release
+  have coreStart : started.core = ready.core.start im.program cmd := first.coreStart
   have positioned : Positioned mode d started.core :=
     coreStart ▸ positioned_start mode d ready.core cmd
   have ordinary : ∀ i ∈ inputs, Unreleased i := fun i member =>
     ⟨afterRuntime.runtimeInputs im.program false started after i member,noRelease i member⟩
-  have retained : (run im.program started.core inputs).phase.retained = true := by
-    have admitted := acceptedRelease.2
-    simp only [State.canRelease,Bool.and_eq_true] at admitted
-    exact started.run_core im.program false after ▸ admitted.1.1
+  have retained : (run im.program started.core inputs).phase.retained = true :=
+    started.run_core im.program false after ▸ released.retained
   have completed : (run (image mode d).program started.core inputs).phase = .completed := by
     change (run (image mode d).program started.core inputs).phase.retained = true at retained
     rcases (run_schedule mode d started.core inputs positioned ordinary).1.phase with
       phase | (phase | phase | phase) | phase <;> simp [phase,Phase.retained] at retained ⊢
   have complete : (run im.program (ready.core.start im.program cmd) inputs).phase = .completed :=
     coreStart ▸ completed
-  have initialEq : actualStarted =
-      SessionCorrespondence.values (Initialization.compiledImage im) started := initial.package
-  have pinsEq : pins = pinTrace im.program started.core inputs := by
-    unfold pins
-    rw [initialEq]
-    exact driveTrace_eq im started after ha afterRuntime initial.custody.structural
+  have pinsEq : pins = pinTrace im.program started.core inputs := segment.wire
   have traceEq : trace = traceRun im.program started.core {} inputs :=
     started.traceRun_runtimeInputs im.program false {} after
   have aperturesEq : apertures = 0 :: 0 :: inputs.map (·.rawInputs) := by
     unfold apertures inputs
     rw [rawTrace_eq]
   have data := completed_data mode d ready.core cmd inputs ordinary complete
-  refine ⟨?_,?_,?_,?_,?_,?_,released.2.2.2⟩
+  refine ⟨?_,?_,?_,?_,?_,?_,released.emptyExport⟩
   · rw [pinsEq,coreStart]
     exact completed_exchange mode d ready.core cmd inputs ordinary complete
   · rw [pinsEq]
     exact completed_timing mode d started.core inputs positioned ordinary completed
   · rw [pinsEq]
     exact driven_trace mode d started.core inputs positioned ordinary
-  · rw [released.1,traceEq,pinsEq,coreStart]
+  · rw [released.accepted,traceEq,pinsEq,coreStart]
     exact data.1
-  · rw [← released.2.1,traceEq,pinsEq,aperturesEq,coreStart]
+  · rw [← released.exported,traceEq,pinsEq,aperturesEq,coreStart]
     exact data.2.trans (start_apertures mode d ready.core cmd inputs ordinary)
-  · rw [← released.2.2.1,← released.2.1,traceEq,coreStart,data.2]
+  · rw [← released.ackOffset,← released.exported,traceEq,coreStart,data.2]
     exact (completed_count mode d ready.core cmd inputs ordinary complete).2
 
 end Pinwheel.Hardware.StreamingReady.SPISession
