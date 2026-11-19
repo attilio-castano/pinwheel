@@ -1,14 +1,20 @@
-import Pinwheel.Hardware.StreamingReady.InitializedCustody
-import Pinwheel.Hardware.StreamingReady.PublicPins
+import Pinwheel.Hardware.StreamingReady.SessionProof
 import Pinwheel.Program.StreamingI2CDeadline
 import Pinwheel.Program.StreamingI2CTx
 
-/-! The standard read image and the public pads of the sampled-ready package. -/
+/-! The read image and deadline profiles at the public pads of the sampled-ready package. -/
 namespace Pinwheel.Hardware.StreamingReady.I2CReadSession
 open Pinwheel.Program Pinwheel.Program.StreamingReady
 open Pinwheel.Hardware.StreamingReady.InitializedCustody
 
 abbrev image := i2cImage .standard
+
+/-- The same LOW and HIGH durations, with 19 guard polls. -/
+def shortDeadlineProfile : I2cProfile :=
+  { I2cProfile.standard with
+    budgetMinusOne := 18
+    stretchBound := 16
+    waitMargin := by decide }
 
 /-- These are the words uploaded in the frozen RTL and gate replays. -/
 theorem standard_words : image.words =
@@ -18,20 +24,23 @@ theorem standard_words : image.words =
 def rawSamples (pins : List Session.Pins) : List (BitVec 2) :=
   pins.map (fun pin => (PublicPins.embed pin).ui.extractLsb' 3 2)
 
-theorem public_trace (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
-    (reached : Reached image actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
-    (runtime : Session.RuntimeTrace image.program false s pins) :
+theorem public_trace {profile : I2cProfile} (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins) :
     PublicPins.driveTrace actual pins =
-      pinTrace image.program s.core (s.runtimeInputs image.program false pins) := by
-  rw [reached.package]
-  simpa only [compiled_pending] using PublicPins.driveTrace_eq (Initialization.compiledImage image)
-    s pins ha (by simpa only [compiled_pending] using runtime) reached.custody.structural
+      pinTrace (i2cImage profile).program s.core (s.runtimeInputs (i2cImage profile).program false pins) :=
+  (SessionProof.advance reached pins ha runtime).wire
 
-theorem runtime_raw_at (s : Session.State a) (pins : List Session.Pins) (k : Nat) :
-    ((s.runtimeInputs image.program false pins)[k]?).map Pinwheel.Program.Streaming.Input.rawInputs =
+theorem runtime_raw_at_for (profile : I2cProfile) (s : Session.State a) (pins : List Session.Pins) (k : Nat) :
+    ((s.runtimeInputs (i2cImage profile).program false pins)[k]?).map Pinwheel.Program.Streaming.Input.rawInputs =
       (rawSamples pins)[k]? := by
   rw [← List.getElem?_map,PublicPins.rawTrace_eq]
   rfl
+
+theorem runtime_raw_at (s : Session.State a) (pins : List Session.Pins) (k : Nat) :
+    ((s.runtimeInputs image.program false pins)[k]?).map Pinwheel.Program.Streaming.Input.rawInputs =
+      (rawSamples pins)[k]? :=
+  runtime_raw_at_for .standard s pins k
 
 private theorem drive_at_prefix (p : Program) (s : State a) (pre rest : List Input) :
     (pinTrace p s (pre ++ rest))[pre.length]? = some (run p s pre).pins := by
@@ -50,36 +59,36 @@ def PublicConnection (actual : Package.State a) (pins : List Session.Pins)
     ((PublicPins.driveTrace actual pins)[k]?).map (fun drive =>
       StreamingI2CRead.resolvedRaw drive (peer k))
 
-private theorem command_length (s : Session.State a) (pins : List Session.Pins) :
-    (s.runtimeInputs image.program false pins).length = pins.length := by
-  have same := congrArg List.length (PublicPins.rawTrace_eq s image.program false pins)
+private theorem command_length {profile : I2cProfile} (s : Session.State a) (pins : List Session.Pins) :
+    (s.runtimeInputs (i2cImage profile).program false pins).length = pins.length := by
+  have same := congrArg List.length (PublicPins.rawTrace_eq s (i2cImage profile).program false pins)
   simpa only [List.length_map] using same
 
-theorem connected_inputs (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
-    (reached : Reached image actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
-    (runtime : Session.RuntimeTrace image.program false s pins)
+theorem connected_inputs {profile : I2cProfile} (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
     (peer : Nat → Pinwheel.I2C.Pins) (wire : PublicConnection actual pins peer)
     (pre : List Input) (i : Input) (rest : List Input)
-    (suffix : s.runtimeInputs image.program false pins = pre ++ i :: rest) :
-    i.rawInputs = StreamingI2CRead.resolvedRaw (run image.program s.core pre).pins (peer pre.length) := by
+    (suffix : s.runtimeInputs (i2cImage profile).program false pins = pre ++ i :: rest) :
+    i.rawInputs = StreamingI2CRead.resolvedRaw (run (i2cImage profile).program s.core pre).pins (peer pre.length) := by
   have bound : pre.length < pins.length := by
-    rw [← command_length s pins,suffix]
+    rw [← command_length (profile := profile) s pins,suffix]
     simp
   have placed := wire pre.length bound
   rw [public_trace actual s trace reached pins ha runtime,suffix,drive_at_prefix,
-    ← runtime_raw_at s pins pre.length,suffix,
+    ← runtime_raw_at_for profile s pins pre.length,suffix,
     List.getElem?_append_right (Nat.le_refl _),Nat.sub_self] at placed
   exact Option.some.inj placed
 
-theorem connected_at (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
-    (reached : Reached image actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
-    (runtime : Session.RuntimeTrace image.program false s pins)
+theorem connected_at {profile : I2cProfile} (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace) (pins : List Session.Pins) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
     (peer : Nat → Pinwheel.I2C.Pins) (wire : PublicConnection actual pins peer)
-    (k : Nat) (hk : k < (s.runtimeInputs image.program false pins).length) :
-    let inputs := s.runtimeInputs image.program false pins
+    (k : Nat) (hk : k < (s.runtimeInputs (i2cImage profile).program false pins).length) :
+    let inputs := s.runtimeInputs (i2cImage profile).program false pins
     inputs[k].rawInputs =
-      StreamingI2CRead.resolvedRaw (run image.program s.core (inputs.take k)).pins (peer k) := by
-  let inputs := s.runtimeInputs image.program false pins
+      StreamingI2CRead.resolvedRaw (run (i2cImage profile).program s.core (inputs.take k)).pins (peer k) := by
+  let inputs := s.runtimeInputs (i2cImage profile).program false pins
   have split := List.take_append_drop k inputs
   rw [List.drop_eq_getElem_cons hk] at split
   have raw := connected_inputs actual s trace reached pins ha runtime peer wire
@@ -89,54 +98,106 @@ theorem connected_at (actual : Package.State a) (s : Session.State a) (trace : B
   rw [length] at raw
   exact raw
 
-theorem wait_stimulus (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
-    (reached : Reached image actual s trace) (entry : StreamingI2CDeadline.WaitEntry s.core)
+theorem wait_stimulus {profile : I2cProfile} (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace) (entry : StreamingI2CDeadline.WaitEntry s.core profile)
     (pins : List Session.Pins) (stretch : Nat) (sda : Pinwheel.I2C.Drive) (ha : a ≤ 3)
-    (runtime : Session.RuntimeTrace image.program false s pins)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
     (wire : PublicConnection actual pins (StreamingI2CDeadline.target stretch sda))
-    (budget : pins.length ≤ 31) (delayed : pins.length ≤ stretch + 3) :
-    StreamingI2CDeadline.Stimulus s.core stretch sda (s.runtimeInputs image.program false pins) := by
-  apply StreamingI2CDeadline.Stimulus.of_runtime_resolved _ entry _ _ _
-    (runtime.runtimeInputs image.program false s pins)
+    (budget : pins.length ≤ profile.budgetMinusOne.val + 1) (delayed : pins.length ≤ stretch + 3) :
+    StreamingI2CDeadline.Stimulus s.core stretch sda (s.runtimeInputs (i2cImage profile).program false pins) := by
+  apply StreamingI2CDeadline.Stimulus.of_runtime_resolved_for profile _ entry _ _ _
+    (runtime.runtimeInputs (i2cImage profile).program false s pins)
     (connected_at actual s trace reached pins ha runtime _ wire)
-  · rwa [command_length]
-  · rwa [command_length]
+  · rwa [command_length (profile := profile)]
+  · rwa [command_length (profile := profile)]
 
 /-- The four driven-low clocks supply both initial low sampler values. -/
-theorem enter_wait (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
-    (reached : Reached image actual s trace) (pins : List Session.Pins)
+theorem enter_wait {profile : I2cProfile} (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace) (pins : List Session.Pins)
     (low : s.core.phase = .low) (countdown : s.core.countdown = 3#8)
-    (row : s.core.current = StreamingI2CDeadline.streamRow)
+    (row : s.core.current = StreamingI2CDeadline.streamRowFor profile)
     (sclDrive : (PublicPins.drive actual).enabled[0] = true)
     (length : pins.length = 4) (ha : a ≤ 3)
-    (runtime : Session.RuntimeTrace image.program false s pins)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
     (peer : Nat → Pinwheel.I2C.Pins) (wire : PublicConnection actual pins peer) :
-    let final := s.run image.program false pins
+    let final := s.run (i2cImage profile).program false pins
     let finalActual := actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)
-    Reached image finalActual final (s.traceRun image.program false trace pins) ∧
-    StreamingI2CDeadline.WaitEntry final.core := by
+    Reached (i2cImage profile) finalActual final (s.traceRun (i2cImage profile).program false trace pins) ∧
+    StreamingI2CDeadline.WaitEntry final.core profile := by
   rw [reached.package,PublicPins.drive_eq] at sclDrive
   refine ⟨reached.run pins ha runtime,?_⟩
   rw [s.run_core]
-  apply StreamingI2CDeadline.enter_wait_from_low _ _ low countdown row sclDrive
-    ((command_length s pins).trans length) (runtime.runtimeInputs image.program false s pins)
+  apply StreamingI2CDeadline.enter_wait_from_low_for profile _ _ low countdown row sclDrive
+    ((command_length (profile := profile) s pins).trans length) (runtime.runtimeInputs (i2cImage profile).program false s pins)
   intro k bound
-  let inputs := s.runtimeInputs image.program false pins
-  have runtimeInputs := runtime.runtimeInputs image.program false s pins
+  let inputs := s.runtimeInputs (i2cImage profile).program false pins
+  have runtimeInputs := runtime.runtimeInputs (i2cImage profile).program false s pins
   have within : (inputs.take k).length ≤ s.core.countdown.toNat := by
-    have len : inputs.length = 4 := (command_length s pins).trans length
+    have len : inputs.length = 4 := (command_length (profile := profile) s pins).trans length
     simp only [countdown,BitVec.toNat_ofNat,List.length_take,len]
     have inside : k < inputs.length := bound
     omega
-  have keep := (low_prefix image.program s.core (inputs.take k) low
+  have keep := (low_prefix (i2cImage profile).program s.core (inputs.take k) low
     (fun i member => runtimeInputs i (List.mem_of_mem_take member)) within).2.2.1
   have raw := connected_at actual s trace reached pins ha runtime peer wire k bound
   change inputs[k].rawInputs =
-    StreamingI2CRead.resolvedRaw (run image.program s.core (inputs.take k)).pins (peer k) at raw
+    StreamingI2CRead.resolvedRaw (run (i2cImage profile).program s.core (inputs.take k)).pins (peer k) at raw
   rw [keep] at raw
   exact ⟨peer k,raw⟩
 
 /-- At the last allowed poll the package still captures one physical SDA sample. -/
+theorem last_poll_for (profile : I2cProfile) (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace)
+    (entry : StreamingI2CDeadline.WaitEntry s.core profile) (pins : List Session.Pins)
+    (length : pins.length = profile.budgetMinusOne.val + 1)
+    (minimum : 2 ≤ profile.budgetMinusOne.val) (sda : Pinwheel.I2C.Drive) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
+    (resolved : PublicConnection actual pins (StreamingI2CDeadline.target (profile.budgetMinusOne.val - 2) sda)) :
+    let final := s.run (i2cImage profile).program false pins
+    let finalActual := actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)
+    let result := s.traceRun (i2cImage profile).program false trace pins
+    Reached (i2cImage profile) finalActual final result ∧
+    StreamingI2CDeadline.CaptureResult s.core final.core trace result
+      (StreamingI2CRead.resolvedRaw (PublicPins.drive actual)
+        (StreamingI2CDeadline.target (profile.budgetMinusOne.val - 2) sda (profile.budgetMinusOne.val - 2)))[1] profile := by
+  let stretch := profile.budgetMinusOne.val - 2
+  have stimulus := wait_stimulus actual s trace reached entry pins stretch sda ha runtime resolved (by omega) (by omega)
+  have timely := StreamingI2CDeadline.stretch_success_for profile s.core entry trace stretch sda
+    (s.runtimeInputs (i2cImage profile).program false pins) stimulus (by omega) (by rw [command_length (profile := profile), length]; omega)
+  refine ⟨reached.run pins ha runtime,?_⟩
+  rw [s.run_core,s.traceRun_runtimeInputs,reached.package,PublicPins.drive_eq]
+  exact timely
+
+/-- Raw SCL already rose on the public input. The sampler sees it too late
+    to qualify a capture, so the earlier captured prefix remains owned. -/
+theorem one_poll_late_for (profile : I2cProfile) (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
+    (reached : Reached (i2cImage profile) actual s trace)
+    (entry : StreamingI2CDeadline.WaitEntry s.core profile) (pins : List Session.Pins)
+    (length : pins.length = profile.budgetMinusOne.val + 1)
+    (minimum : 2 ≤ profile.budgetMinusOne.val) (sda : Pinwheel.I2C.Drive) (ha : a ≤ 3)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
+    (resolved : PublicConnection actual pins (StreamingI2CDeadline.target (profile.budgetMinusOne.val - 1) sda)) :
+    let final := s.run (i2cImage profile).program false pins
+    let finalActual := actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)
+    let result := s.traceRun (i2cImage profile).program false trace pins
+    Reached (i2cImage profile) finalActual final result ∧
+    StreamingI2CDeadline.TimeoutResult s.core final.core trace result ∧
+    (∀ k < profile.budgetMinusOne.val + 1, ((rawSamples pins)[k]?).map (fun raw => raw.getLsbD 0) =
+      some (decide (profile.budgetMinusOne.val - 1 ≤ k))) := by
+  let inputs := s.runtimeInputs (i2cImage profile).program false pins
+  have stimulus := wait_stimulus actual s trace reached entry pins (profile.budgetMinusOne.val - 1) sda ha runtime resolved (by omega) (by omega)
+  have len : inputs.length = profile.budgetMinusOne.val + 1 := (command_length (profile := profile) s pins).trans length
+  have timeout := StreamingI2CDeadline.one_late_for profile s.core entry trace sda inputs minimum stimulus len
+    reached.custody.related reached.custody.structural
+  refine ⟨reached.run pins ha runtime,?_,?_⟩
+  · rw [s.run_core,s.traceRun_runtimeInputs]
+    exact timeout
+  · intro k hk
+    have bound : k < inputs.length := len.symm ▸ hk
+    rw [← runtime_raw_at_for profile s pins k,List.getElem?_eq_getElem bound]
+    change some (inputs[k].rawInputs[0]) = _
+    rw [stimulus.scl entry.release k bound]
+
 theorem last_poll (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
     (reached : Reached image actual s trace)
     (entry : StreamingI2CDeadline.WaitEntry s.core) (pins : List Session.Pins)
@@ -149,16 +210,9 @@ theorem last_poll (actual : Package.State a) (s : Session.State a) (trace : BitT
     Reached image finalActual final result ∧
     StreamingI2CDeadline.CaptureResult s.core final.core trace result
       (StreamingI2CRead.resolvedRaw (PublicPins.drive actual)
-        (StreamingI2CDeadline.target 28 sda 28))[1] := by
-  have stimulus := wait_stimulus actual s trace reached entry pins 28 sda ha runtime resolved (by omega) (by omega)
-  have timely := StreamingI2CDeadline.stretch_success s.core entry trace 28 sda
-    (s.runtimeInputs image.program false pins) stimulus (by decide) ((command_length s pins).trans length)
-  refine ⟨reached.run pins ha runtime,?_⟩
-  rw [s.run_core,s.traceRun_runtimeInputs,reached.package,PublicPins.drive_eq]
-  exact timely
+        (StreamingI2CDeadline.target 28 sda 28))[1] :=
+  last_poll_for .standard actual s trace reached entry pins length (by decide) sda ha runtime resolved
 
-/-- Raw SCL already rose on the public input. The sampler sees it too late
-    to qualify a capture, so the earlier captured prefix remains owned. -/
 theorem one_poll_late (actual : Package.State a) (s : Session.State a) (trace : BitTrace)
     (reached : Reached image actual s trace)
     (entry : StreamingI2CDeadline.WaitEntry s.core) (pins : List Session.Pins)
@@ -171,20 +225,8 @@ theorem one_poll_late (actual : Package.State a) (s : Session.State a) (trace : 
     Reached image finalActual final result ∧
     StreamingI2CDeadline.TimeoutResult s.core final.core trace result ∧
     (∀ k < 31, ((rawSamples pins)[k]?).map (fun raw => raw.getLsbD 0) =
-      some (decide (29 ≤ k))) := by
-  let inputs := s.runtimeInputs image.program false pins
-  have stimulus := wait_stimulus actual s trace reached entry pins 29 sda ha runtime resolved (by omega) (by omega)
-  have len : inputs.length = 31 := (command_length s pins).trans length
-  have timeout := StreamingI2CDeadline.one_late s.core entry trace sda inputs stimulus len
-    reached.custody.related reached.custody.structural
-  refine ⟨reached.run pins ha runtime,?_,?_⟩
-  · rw [s.run_core,s.traceRun_runtimeInputs]
-    exact timeout
-  · intro k hk
-    have bound : k < inputs.length := len.symm ▸ hk
-    rw [← runtime_raw_at s pins k,List.getElem?_eq_getElem bound]
-    change some (inputs[k].rawInputs[0]) = _
-    rw [stimulus.scl entry.release k bound]
+      some (decide (29 ≤ k))) :=
+  one_poll_late_for .standard actual s trace reached entry pins length (by decide) sda ha runtime resolved
 
 /-- ACK of a drained fault prefix preserves the exact pre-fault captures
     even in a session where unsent TX still prevents RELEASE. -/
@@ -249,21 +291,12 @@ theorem completed_read (actualBoot : Package.State a) (boot : Session.State a)
     final.host.ackOffset.toNat = 585 ∧ final.host.exportBits.toNat = 0 := by
   intro p ready actualReady started actualStarted final actualFinal inputs trace
   intro startRuntime start count runtime noRelease wire legal completed tx releaseRuntime release
-  have initial := started_run image actualBoot boot initialized before startPin [] ha
-    beforeRuntime startRuntime start trivial
-  have reached := started_run image actualBoot boot initialized before startPin after ha
-    beforeRuntime startRuntime start runtime
-  have released := reached.release_all_bits releasePin ha releaseRuntime release
-  change trace.accepted = trace.consumed ∧ trace.captured = trace.exported ∧
-    trace.exported.length = final.host.ackOffset.toNat ∧ final.host.exportBits.toNat = 0 at released
-  have actualEq : actualReady = SessionCorrespondence.values (Initialization.compiledImage image) ready :=
-    initialized_run_eq image actualBoot boot initialized before ha beforeRuntime
-  have admission := start
-  rw [actualEq] at admission
-  have admitted := start_source (Initialization.compiledImage image) ready startPin startRuntime admission
+  have initial := SessionProof.start image actualBoot boot initialized before startPin ha beforeRuntime startRuntime start
+  have segment := SessionProof.advance initial.reached after ha runtime
+  have released : SessionProof.Released final trace :=
+    SessionProof.release segment.reached releasePin ha releaseRuntime release
   let command := (ready.command startPin).runtime
-  have coreStart : started.core = ready.core.start p command :=
-    ready.core_admitted_start p false startPin startRuntime admitted
+  have coreStart : started.core = ready.core.start p command := initial.coreStart
   have coreFinal : final.core = run p started.core inputs := started.run_core p false after
   have traceEq : trace = traceRun p started.core {} inputs := started.traceRun_runtimeInputs p false {} after
   have finished : (run p (ready.core.start p command) inputs).phase = .completed := by
@@ -271,7 +304,7 @@ theorem completed_read (actualBoot : Package.State a) (boot : Session.State a)
     exact completed
   have ordinary : ∀ i ∈ inputs, StreamingI2CTrace.Unreleased i :=
     fun i member => ⟨runtime.runtimeInputs p false started after i member,noRelease i member⟩
-  have initReach : Reached image actualStarted started {} := initial
+  have initReach : Reached image actualStarted started {} := initial.reached
   have connected : StreamingI2CTrace.Connected started.core inputs peer := by
     intro pre i rest suffix
     exact connected_inputs actualStarted started {} initReach after ha runtime peer wire pre i rest suffix
@@ -285,21 +318,21 @@ theorem completed_read (actualBoot : Package.State a) (boot : Session.State a)
     calc
       _ = (traceRun p (ready.core.start p command) {} inputs).consumed := txQualified.symm
       _ = trace.consumed := by rw [traceEq,coreStart]
-      _ = trace.accepted := released.1.symm
+      _ = trace.accepted := released.accepted.symm
       _ = _ := tx
   have result := StreamingI2CTrace.completed_read ready.core command inputs ordinary finished
     count payload peer size (coreStart ▸ connected) (coreStart ▸ legal) ordered
   obtain ⟨frame,resolved,captured⟩ := result
   have exported : trace.exported = StreamingI2CRead.wireBits payload := by
-    rw [← released.2.1,traceEq,coreStart]
+    rw [← released.exported,traceEq,coreStart]
     exact captured
-  refine ⟨public_trace actualStarted started {} initReach after ha runtime,?_,?_,exported,?_,?_,released.2.2.2⟩
+  refine ⟨segment.wire,?_,?_,exported,?_,?_,released.emptyExport⟩
   · rw [coreStart]
     exact frame
   · rw [coreStart]
     exact resolved
   · rw [exported]
     exact StreamingI2CRead.decode_wireBits payload size
-  · rw [← released.2.2.1,exported,StreamingI2CRead.wireBits_length payload size]
+  · rw [← released.ackOffset,exported,StreamingI2CRead.wireBits_length payload size]
 
 end Pinwheel.Hardware.StreamingReady.I2CReadSession
