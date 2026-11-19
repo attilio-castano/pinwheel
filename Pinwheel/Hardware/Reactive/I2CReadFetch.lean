@@ -47,7 +47,7 @@ def drive (s : Values RegisteredFetch.Register) : Pins :=
   let enabled := registerOutput s .enabled
   ⟨if enabled[0] then .low else .release, if enabled[1] then .low else .release⟩
 
-private theorem drive_eq (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
+theorem drive_eq (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
     (hw : Values RegisteredFetch.Register) (represented : @RegisteredFetch.project hw = @baseState cfg request s) :
     drive hw = RegisterRead.pins request s.phase := by
   have enabled := congrArg (fun regs : Values RegisteredFetch.Base => regs (.core .enabled)) represented
@@ -91,6 +91,16 @@ theorem request_is_low (cfg : Config) (request : RegisterRead.Request) (s : Regi
     (bus : Bus) (waiting : (RegisteredFetch.fetchWait 37).eval (runtimeInput bus).values hw = 1) :
     s.phase = .fall 8 ∧ s.remaining = 0 :=
   (first_ack_dispatch s).mp (request_control cfg request s hw represented bus 37 waiting)
+
+theorem wait_at_dispatch (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
+    (hw : Values RegisteredFetch.Register) (represented : @RegisteredFetch.project hw = @baseState cfg request s)
+    (bus : Bus) (empty : hw .response = 0) (cut : s.phase = .fall 8 ∧ s.remaining = 0) :
+    (RegisteredFetch.fetchWait 37).eval (runtimeInput bus).values hw = 1 := by
+  apply (RegisteredFetch.fetchWait_eq_one 37 _ _).mpr
+  refine ⟨rfl, empty, ?_⟩
+  rw [represented]
+  have controlEq := (first_ack_dispatch s).mpr cut
+  simp [baseState, Core.values, State.values, embed, lift, controlEq]
 
 /-- The alternate cut stalls the terminal high phase before capture. -/
 theorem late_request_is_capture (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
@@ -188,7 +198,7 @@ def wireTrace (hw : Values RegisteredFetch.Register) : List Pins → List Wire
 def result (hw : Values RegisteredFetch.Register) : Option RegisterRead.Outcome :=
   Compile.I2CRead.result (view (fromValues (fun r => registerOutput hw r)))
 
-private theorem related_result (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
+theorem related_result (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State)
     (hw : Values RegisteredFetch.Register) (h : Related cfg request s hw) :
     result hw = RegisterRead.result s := by
   have regs : (fun {w} (r : Reactive.Register w) => hw (.base (.core r))) = @(embed (lift request s)).values := by
@@ -196,6 +206,29 @@ private theorem related_result (cfg : Config) (request : RegisterRead.Request) (
     exact congrArg (fun bank : Values RegisteredFetch.Base => bank (.core reg)) h.registers
   simp only [result, registerOutput_eq]
   rw [regs, from_values, view_embed, result_lift]
+
+private def directOutput (hw : Values RegisteredFetch.Base) (r : Reactive.Register w) : BitVec w :=
+  (Core.circuit Core.direct).observe (runtimeInput {}).values hw (.state r)
+
+def directDrive (hw : Values RegisteredFetch.Base) : Pins :=
+  let enabled := directOutput hw .enabled
+  ⟨if enabled[0] then .low else .release, if enabled[1] then .low else .release⟩
+
+def directResult (hw : Values RegisteredFetch.Base) : Option RegisterRead.Outcome :=
+  Compile.I2CRead.result (view (fromValues (fun r => directOutput hw r)))
+
+private def withoutResponse (hw : Values RegisteredFetch.Base) : Values RegisteredFetch.Register
+  | _, .base r => hw r
+  | _, .savedWord => 0
+  | _, .response => 0
+
+theorem directDrive_eq (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State) :
+    directDrive (baseState cfg request s) = RegisterRead.pins request s.phase :=
+  drive_eq cfg request s (withoutResponse (baseState cfg request s)) rfl
+
+theorem directResult_eq (cfg : Config) (request : RegisterRead.Request) (s : RegisterRead.State) :
+    directResult (baseState cfg request s) = RegisterRead.result s :=
+  related_result cfg request s (withoutResponse (baseState cfg request s)) ⟨rfl, by simp [withoutResponse]⟩
 
 /-- The retimed circuit and the independent protocol agree at every finite
     prefix of peer drives. The schedule comes from hardware and wire samples
