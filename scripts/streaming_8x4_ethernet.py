@@ -28,6 +28,11 @@ GRANT = 91
 READY = 143
 RESPONSE_CLOSE = 248
 CASES = (('valid-width-1', 1, False), ('valid-width-2', 2, False), ('bad-fcs', 2, True))
+REFILL_POLICIES = {
+    'uniform': (0,) * 8,
+    'staggered': (0, 24) * 4,
+    'late': (180, 64) + (0,) * 6,
+}
 
 
 def fixture_frame():
@@ -105,6 +110,35 @@ class SerialPHY:
                     high_ticks=self.high_ticks, setup_ticks=SETUP, sampled_rises=rises,
                     sampled_hex=sampled_bytes.hex(), accepted=valid)
 
+    def check_missed_deadline(self, records, first, bits, completion_delay):
+        try:
+            self.check(records, first, bits, False)
+        except ValueError as error:
+            require(str(error) == 'SNI TX_EN or BUSY diverged from the uninterrupted frame window',
+                    'The late refill did not fail the PHY frame deadline check')
+        else:
+            raise ValueError('The PHY unexpectedly accepted the late refill')
+
+        by_cycle = {record['cycle']: record['observation'] for record in records}
+        sampled = []
+        for bit in range(len(bits)):
+            cycle = first + BIT_CYCLES * bit
+            before, edge = by_cycle[cycle - 1], by_cycle[cycle]
+            require(edge['edge_inputs'] & TX_CLK and not before['edge_inputs'] & TX_CLK,
+                    'The late fixture did not supply the expected PHY clock')
+            require(before['enabled'] == TXD | TX_EN and before['levels'] & TX_EN,
+                    'TXD/TX_EN were not driven on the late fixture sampling edge')
+            sampled.append(bool(before['levels'] & TXD))
+        first_mismatch = next((i for i, (expected, observed) in enumerate(zip(bits, sampled, strict=True))
+                               if expected != observed), None)
+        require(first_mismatch == BURST_BITS + 1 and completion_delay == BIT_CYCLES and
+                not phy_accepts(sampled), 'Missed reservation did not produce the expected one-cell slip')
+        return dict(go=self.go, first_rise=first, high_ticks=self.high_ticks, accepted=False,
+                    first_mismatch_bit=first_mismatch, expected_bit=bits[first_mismatch],
+                    observed_bit=sampled[first_mismatch],
+                    mismatch_rise=first + BIT_CYCLES * first_mismatch,
+                    completion_delay=completion_delay)
+
 
 def push_burst(rtl, transport, tag, offset, bits):
     start = rtl.cycle
@@ -120,7 +154,7 @@ def push_burst(rtl, transport, tag, offset, bits):
                 tx_push=[start + GRANT + 1, start + GRANT + 2], ready=ready, response_close=rtl.cycle)
 
 
-def exchange(rtl, transport, loaded, name, high_ticks, corrupt):
+def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=None, missed_deadline=False):
     peer = SerialPHY(high_ticks)
     rtl.device = peer
     start = rtl.cycle
@@ -134,24 +168,39 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt):
             'SNI START did not create an empty armed owner')
     bursts = [push_burst(rtl, transport, started.tag, 0, bits)]
     first = peer.arm(rtl.cycle)
-    for offset in range(BURST_BITS, WIRE_BITS, BURST_BITS):
-        launch = first + FIRST_REFILL + (offset - BURST_BITS) * BIT_CYCLES
+    for index, offset in enumerate(range(BURST_BITS, WIRE_BITS, BURST_BITS)):
+        delay = refill_delays[index] if refill_delays is not None else 0
+        launch = first + FIRST_REFILL + (offset - BURST_BITS) * BIT_CYCLES + delay
         require(rtl.cycle < launch, 'A previous refill exceeded the next host launch deadline')
         transport.idle(launch - rtl.cycle)
         bursts.append(push_burst(rtl, transport, started.tag, offset, bits))
     done = first + BIT_CYCLES * (WIRE_BITS - 1) + 4
     transport.idle(done - rtl.cycle)
+    if missed_deadline:
+        require(rtl.snapshot.busy, 'SNI late refill unexpectedly met the original completion deadline')
+        while rtl.snapshot.busy and rtl.cycle < done + BIT_CYCLES:
+            transport.idle(1)
     require(not rtl.snapshot.busy, 'SNI program did not finish at the exact final deadline')
+    completion_delay = rtl.cycle - done
     released = require_accepted(transport.request(Opcode.RELEASE, tag=started.tag))
     require(released.tag == started.tag and not released.busy and not released.retained,
             'SNI owner did not release after consuming the frame')
-    trace = peer.check([record for record in rtl.records if record['cycle'] > start], first, bits, corrupt)
+    records = [record for record in rtl.records if record['cycle'] > start]
+    if missed_deadline:
+        trace = peer.check_missed_deadline(records, first, bits, completion_delay)
+    else:
+        trace = peer.check(records, first, bits, corrupt)
     rtl.device = None
-    return dict(name=name, owner_tag=started.tag, tx_bits=bursts[-1]['offset'] + BURST_BITS,
-                bursts=bursts, phy=trace)
+    result = dict(name=name, owner_tag=started.tag, tx_bits=bursts[-1]['offset'] + BURST_BITS,
+                  bursts=bursts, phy=trace)
+    if refill_delays is not None:
+        result['refill_delays'] = [burst['start'] - first - FIRST_REFILL - index * BURST_BITS * BIT_CYCLES
+                                   for index, burst in enumerate(bursts[1:])]
+        require(tuple(result['refill_delays']) == refill_delays, 'SNI refill launch differed from its schedule')
+    return result
 
 
-def replay(vvp, executable, trace_path):
+def replay(vvp, executable, trace_path, *, cases=CASES):
     trace = EdgeTrace(trace_path)
     try:
         with QuadRTL(vvp, executable, record_limit=6000, record_sink=trace) as rtl:
@@ -159,18 +208,23 @@ def replay(vvp, executable, trace_path):
             host = ReadyHost(transport, depth=DEPTH)
             host.initialize()
             loaded = host.load(ethernet_sni_image())
-            cases = [exchange(rtl, transport, loaded, *case) for case in CASES]
+            results = [exchange(rtl, transport, loaded, *case) for case in cases]
             require(transport.opcode_counts[Opcode.COMMIT] == 1 and
-                    transport.opcode_counts[Opcode.EXCHANGE64] == len(CASES) * (WIRE_BITS // BURST_BITS) and
-                    all(transport.opcode_counts[op] == len(CASES) for op in (Opcode.START, Opcode.RELEASE)) and
+                    transport.opcode_counts[Opcode.EXCHANGE64] == len(cases) * (WIRE_BITS // BURST_BITS) and
+                    all(transport.opcode_counts[op] == len(cases) for op in (Opcode.START, Opcode.RELEASE)) and
                     transport.opcode_counts[Opcode.WARM_RESET] == 0 and
-                    len({case['owner_tag'] for case in cases}) == len(CASES),
+                    len({case['owner_tag'] for case in results}) == len(cases),
                     'SNI cases changed image or reused an owner')
     finally:
         recorded = trace.close()
-    return dict(cases=cases, words=list(loaded.image.words), idle_levels=loaded.image.idle_levels,
+    return dict(cases=results, words=list(loaded.image.words), idle_levels=loaded.image.idle_levels,
                 idle_enabled=loaded.image.idle_enabled, image_certificate=asdict(loaded.image.certificate),
                 trace=recorded, exit_code=rtl.process.returncode)
+
+def replay_schedules(vvp, executable, trace_path):
+    """Use the independent PHY to check two refill policies and one missed reservation."""
+    cases = tuple((name, 1, False, delays, name == 'late') for name, delays in REFILL_POLICIES.items())
+    return replay(vvp, executable, trace_path, cases=cases)
 
 
 def run(release, models, iverilog, vvp, out):
