@@ -71,6 +71,25 @@ target's `0x96`, and the timing check rejects it. The positive replays also
 cover stretching and each of the three early-NACK paths. This scoped
 experiment uses direct digital samples and a declared synthetic timing window.
 
+The [closed-loop refinement](../../Pinwheel/Hardware/Reactive/I2CReadConnected.lean)
+connects each circuit to a separate copy of the same target. Each target
+chooses its drive from its state, then advances on its own resolved SCL and
+SDA. At the fetch cut, repeating the low observation must preserve the
+target's drive and leave it in the same state as a single observation.
+The proof derives the aligned schedules from this local condition.
+
+The [bounded target theorem](../../Pinwheel/Hardware/Reactive/I2CReadTarget.lean)
+discharges that condition for address `0x53`, register `0xA6`, four-clock
+phases and an eight-clock wait budget. The target follows the observed
+transaction slots and can return any byte or NACK at any of the three ACK
+positions. It can hold SCL for zero to five clocks after the first resolved
+fall, adding up to two bus wait clocks. For every target in this family,
+both installed circuits finish with the expected outcome and frame counts,
+the same ordered wire changes and captures, and a five-clock first-ACK
+capture. The registered circuit adds exactly one clock, extending the first
+ACK low interval from eight to nine clocks. RTL replay also tests targets
+that stretch later in the frame.
+
 ```sh
 python3 -B scripts/check-i2c-fetch-retiming.py --tag fetch-retiming
 ```
