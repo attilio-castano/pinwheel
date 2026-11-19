@@ -23,6 +23,8 @@ import Pinwheel.Hardware.StreamingReady.SourceRefinement
 import Pinwheel.Hardware.StreamingReady.StepCorrespondence
 import Pinwheel.Hardware.StreamingReady.SWDSession
 import Pinwheel.Hardware.StreamingReady.TinyWiring
+import Pinwheel.Hardware.StreamingReady.TxShiftPackage
+import Pinwheel.Hardware.StreamingReady.TypedExportShift
 import Pinwheel.Hardware.StreamingReady.WarmReset
 import Pinwheel.Hardware.StreamingReady.Wiring
 import Pinwheel.Program.StreamingI2CService

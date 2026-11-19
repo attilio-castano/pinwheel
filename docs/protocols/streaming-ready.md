@@ -398,6 +398,35 @@ reconstructed configuration under the existing protocol assumptions.
 Find the shared frontend, per-depth certificates, replay traces and axiom
 audits under `build/typed-ready/protocol-matrix`.
 
+## Depth-two TX FIFO substitution
+
+The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
+keeps the transmit head in a fixed slot and moves each word with its valid-bit
+count. Its emitted register inventory has 103 entries. The ring has 105,
+including separate TX head and tail pointers. The implementations share the
+core port interface, quad frontend, and package wiring.
+
+The [queue law](../../Pinwheel/Hardware/StreamingReady/TxQueue.lean) relates the
+stored slots in head order. Admission and dequeue both inspect pre-edge
+occupancy. A full simultaneous push and pop removes the old head and rejects
+the push. A push into an empty queue supplies data on a later edge. The
+[package proof](../../test/StreamingReadyTxShiftProof.lean) relates the actual
+imported RTL of both layouts. One cold edge establishes the relation from
+independent startup assignments. Every public pad then agrees after any
+finite input prefix, and the SPI, I²C, and Ethernet pin contracts use the same
+reference trace.
+
+```sh
+python3 -B scripts/check-ready-tx-fifo.py --tag tx-layout
+```
+
+The check emits and independently certifies both cores, imports the shared
+wrapper, and audits the composed Lean proof. Both replays exercise the full
+push/pop edge directly and then run the existing SPI backpressure cases,
+I²C read/write and deadline cases, and Ethernet refill schedules including
+the missed credit control. The 13 unchanged trace files must agree byte for
+byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
+
 ## Verification boundaries
 
 The source model proves structural queue bounds, exact data order, natural
