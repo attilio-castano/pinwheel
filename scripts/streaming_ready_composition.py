@@ -78,6 +78,35 @@ theorem physical_run_correct (s : Package.State @A@) (inputs : List TinyWiring.P
     rw [physical_step_correct]
     exact ih _
 
+/-- Observe the three protocol pad drives and enables from the reconstructed wrapper. -/
+def publicDrive (s : Package.State @A@) : Pins :=
+  let out := physicalObserve s (PublicPins.embed {})
+  ⟨(out .uio).extractLsb' 0 3, (out .oe).extractLsb' 0 3⟩
+
+theorem publicDrive_correct (s : Package.State @A@) : publicDrive s = PublicPins.drive s := by
+  have wiring : Wiring.Certificate @A@ (Wiring.canonical @A@) := by
+    constructor <;> intros <;> rfl
+  have observe_eq (i : Package.Pins) :
+      ((Wiring.canonical @A@).observe (Package.Components.typed @A@) s i : Values Package.Output) =
+        (fun {w} => s.observe (Package.Components.typed @A@) i (w := w)) := by
+    funext w port
+    exact wiring.observe_eq _ _ _ port
+  simp only [publicDrive, PublicPins.drive, physical_observe_correct,
+    TinyWiring.Description.observe, observe_eq]
+
+/-- The initial protocol-pad observation and each subsequent post-edge observation. -/
+def publicDriveTrace (s : Package.State @A@) : List TinyWiring.Pins → List Pins
+  | [] => [publicDrive s]
+  | pin :: rest => publicDrive s :: publicDriveTrace (physicalStep s pin) rest
+
+theorem publicDriveTrace_correct (s : Package.State @A@) (pins : List Session.Pins) :
+    publicDriveTrace s (pins.map PublicPins.embed) = PublicPins.driveTrace s pins := by
+  induction pins generalizing s with
+  | nil => simp only [List.map_nil, publicDriveTrace, PublicPins.driveTrace, publicDrive_correct]
+  | cons pin rest ih =>
+    simp only [List.map_cons, publicDriveTrace, PublicPins.driveTrace, publicDrive_correct,
+      physical_step_correct, PublicPins.engine_embed, PublicPins.step_eq, ih]
+
 theorem source_runtime_step_correct (image : SourceRefinement.Image p)
     (s : Session.State @A@) (i : TinyWiring.Pins)
     (hi : Session.RuntimeInput s (SessionCorrespondence.physicalPins i)) (hs : s.core.Structural) :
