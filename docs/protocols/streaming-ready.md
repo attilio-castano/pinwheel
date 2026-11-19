@@ -160,21 +160,14 @@ python3.12 -B scripts/streaming_8x4_spi_modes.py \
 
 The [typed export](../../Pinwheel/Hardware/StreamingReady/TypedExport.lean)
 uses `TypedModule` for the existing sampled-ready core and shared quad frontend.
-With the pinned hardware tools installed, run the depth-two source workflow
-with a fresh tag.
+The depth-two SPI-only entry point uses the same
+[typed protocol workflow](#typed-protocol-matrix).
 
 ```sh
 python3 -B scripts/check-typed-spi.py --tag spi-local
 ```
 
-The check builds both emitters from Lean source and requires identical port and
-register inventories, MLIR, lowered RTL, and public-pin traces. It runs the
-same six cases with the independent peer above on each emission. It also
-reconstructs the typed RTL's register and output equations and certifies the
-package and top-level wiring used by the replay. The
-[artifact proof](../../test/StreamingReadyTypedSPIProof.lean) applies the
-existing cold-boot and START-to-RELEASE theorems to the reconstructed digital
-device. The report and generated certificates are in `build/typed-spi/spi-local`.
+The report and generated certificates are in `build/typed-spi/spi-local`.
 
 ## JTAG DR scan
 
@@ -347,6 +340,36 @@ python3.12 -B scripts/streaming_8x4_ethernet.py \
   --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
   --out build/ethernet-frozen
 ```
+
+## Typed protocol matrix
+
+With the pinned hardware tools installed, run SPI and I²C at FIFO depths two
+and four with a fresh tag.
+
+```sh
+python3 -B scripts/typed_ready_workflow.py --tag protocol-matrix
+```
+
+The workflow builds the legacy and typed emitters from Lean source and
+requires identical port and register inventories, MLIR, and lowered RTL.
+Each depth shares one core and wrapper certificate across both protocols.
+The frontend certificate serves both depths after the workflow verifies
+identical frontend RTL. Each depth's simulations use the same certified
+digital core and wrapper bytes.
+
+SPI runs the existing six exchanges against both emissions and compares the
+public traces byte for byte. Its
+[artifact proof](../../test/StreamingReadyTypedSPIProof.lean) carries cold
+boot and START-to-RELEASE onto the reconstructed RTL. I²C runs the existing
+read and write cases, including last-poll success. The separate one-poll-late
+control checks retained fault and acknowledgment, and sampler-stage and
+guard-bypass mutations must fail the independent wire oracle. The
+[I²C artifact proof](../../test/StreamingReadyTypedI2CProof.lean) carries
+cold boot, the completed 64-byte read, and both deadline theorems onto each
+reconstructed configuration under the existing protocol assumptions.
+
+Find the shared frontend, per-depth certificates, replay traces and axiom
+audits under `build/typed-ready/protocol-matrix`.
 
 ## Verification boundaries
 
