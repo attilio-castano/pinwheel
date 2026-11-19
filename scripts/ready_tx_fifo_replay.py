@@ -10,6 +10,9 @@ from streaming_ready_wire_controls import check_controls, check_late_custody, ob
 
 
 SHORT_BUDGET = 19
+LATE_SLOT = 42
+LATE_CASE = f"i2c-late-slot-{LATE_SLOT}"
+LATE_BUDGETS = (31, SHORT_BUDGET)
 
 
 def testbench(assembly):
@@ -77,12 +80,30 @@ def replay_short_budget(vvp, executable, out):
         raise RuntimeError(f"Short-budget last-poll read failed: {last['error']}")
     peer = last["peer"]
     check_deadline_alignment(peer["deadline_alignment"], peer["deadline_trace"], budget=SHORT_BUDGET)
-    late = observe(vvp, executable, out / "late", depth=2, profile="late", image=image)
-    check_late_custody(late)
+    late = replay_late(vvp, executable, out / "late", image, budget=SHORT_BUDGET)
+    return dict(budget=SHORT_BUDGET, last_poll=last, late_poll=late)
+
+
+def replay_late(vvp, executable, out, image, *, budget, deadline_slot=11):
+    late = observe(vvp, executable, out, depth=2, profile="late", image=image, deadline_slot=deadline_slot)
+    check_late_custody(late, deadline_slot=deadline_slot)
     observed = late["observation"]
     check_deadline_alignment(observed["deadline_alignment"], observed["deadline_trace"],
-                             budget=SHORT_BUDGET, late=True)
-    return dict(budget=SHORT_BUDGET, last_poll=last, late_poll=late)
+                             budget=budget, late=True, deadline_slot=deadline_slot)
+    return late
+
+
+def replay_later_slot(vvp, executable, out):
+    results = {}
+    for budget in LATE_BUDGETS:
+        name = f"budget-{budget}"
+        image = i2c_image(wait_budget=budget, stretch_bound=budget - 3)
+        late = replay_late(vvp, executable, out / name, image, budget=budget, deadline_slot=LATE_SLOT)
+        terminal = late["observation"]["terminal_reply"]
+        if (terminal["rx_start"], terminal["rx_valid"]) != (32, LATE_SLOT - 32):
+            raise RuntimeError("Later fault did not drain one full RX word followed by the exact partial word")
+        results[name] = dict(budget=budget, image_words=list(image.words), late_poll=late)
+    return results
 
 
 def replay(run, tools, out, assembly, sources):
@@ -106,17 +127,19 @@ def replay(run, tools, out, assembly, sources):
     controls = run_ready_controls(tools["vvp"], bridge, mutants, out / "i2c-controls", depth=2)
     check_controls(controls)
     short = replay_short_budget(tools["vvp"], bridge, out / "i2c-short-budget")
+    later = replay_later_slot(tools["vvp"], bridge, out / LATE_CASE)
     ethernet = replay_schedules(tools["vvp"], bridge, out / "ethernet.bin")
     return dict(spi=spi, i2c=i2c, i2c_controls=controls, i2c_short_budget=short,
-                ethernet=ethernet, full_boundary_passed=True)
+                i2c_late_slot_42=later, ethernet=ethernet, full_boundary_passed=True)
 
 
 def compare(ring: Path, shift: Path):
     """Require byte-for-byte equality on every unchanged public-pin case."""
     paths = list(map(Path, ("spi.bin", "ethernet.bin", "i2c-controls/unchanged-late/wire.bin",
                            "i2c-short-budget/lastpoll/wire.bin", "i2c-short-budget/late/wire.bin")))
+    paths.extend(Path(LATE_CASE) / f"budget-{budget}" / "wire.bin" for budget in LATE_BUDGETS)
     paths.extend(sorted(path.relative_to(ring) for path in (ring / "i2c").glob("*/wire.bin")))
-    if len(paths) != 15:
+    if len(paths) != 17:
         raise RuntimeError("The Ready TX FIFO replay omitted an expected pin trace")
     for path in paths:
         if (ring / path).read_bytes() != (shift / path).read_bytes():

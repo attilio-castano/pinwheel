@@ -91,7 +91,7 @@ def prepare_controls(sources, directory, tools, run, *, freeze=None):
     return result
 
 
-def observe(vvp, executable, directory, *, depth, profile, image=None):
+def observe(vvp, executable, directory, *, depth, profile, image=None, deadline_slot=11):
     """Observe the whole outcome, then ask the independent schedule oracle."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
@@ -114,7 +114,7 @@ def observe(vvp, executable, directory, *, depth, profile, image=None):
             loaded = host.load(image)
             peer = StreamingI2cPeer(plan, read_data, profile=profile,
                 low_cycles=stream.cell.low_cycles, high_cycles=stream.cell.high_cycles,
-                wait_budget=stream.guard.limit.budget)
+                wait_budget=stream.guard.limit.budget, deadline_slot=deadline_slot)
             rtl.device = peer
             pending = loaded.submit(plan.tx_bits, bit_count=585)
             transport.idle(64)
@@ -125,18 +125,23 @@ def observe(vvp, executable, directory, *, depth, profile, image=None):
                 tx_accepted=pending.tx_accepted, owner_tag=pending.tag,
                 rx_sha256=hashlib.sha256(packed(pending.rx_bits)).hexdigest(),
                 terminal_reply=asdict(pending.last))
-            summary = peer.check(pending.rx_bits, fault=pending.last.fault, require_host_stall=True)
-            require(profile == 'late' and len(pending.rx_bits) == 11 and pending.last.fault,
-                'I2C control oracle unexpectedly accepted a non-late result')
-            observed['peer'] = summary
-            acknowledged = pending.pump(max_bits=0)
-            require(acknowledged.rx_start == 11 and acknowledged.rx_valid == 0, 'Late fault prefix was not acknowledged exactly')
-            held = transport.request(Opcode.RELEASE, tag=pending.tag)
-            require(held.code is Code.REJECTED and held.retained, 'Late fault discarded unused accepted TX')
-            cancelled = host.warm_reset()
-            require(cancelled.tag == pending.tag and not cancelled.valid and not cancelled.retained,
-                'Late fault explicit cancellation changed allocation IDs')
-            observed.update(prefix_acknowledged=True, unused_tx_release_refused=True, warm_cancelled=True)
+            observed['peer'] = peer.check(pending.rx_bits, fault=pending.last.fault, require_host_stall=True)
+            if profile == 'late':
+                accepted, tag = pending.tx_accepted, pending.tag
+                acknowledged = pending.pump(max_bits=0)
+                require(acknowledged.rx_start == deadline_slot and acknowledged.rx_valid == 0 and
+                    not acknowledged.rx_queued and acknowledged.fault and acknowledged.retained and
+                    acknowledged.tag == tag and acknowledged.tx_accepted == accepted,
+                    'Late fault prefix was not acknowledged exactly')
+                held = transport.request(Opcode.RELEASE, tag=tag)
+                require(held.code is Code.REJECTED and held.fault and held.retained and held.tag == tag and
+                    held.tx_accepted == accepted, 'Late fault discarded unused accepted TX')
+                cancelled = host.warm_reset()
+                require(cancelled.tag == tag and not cancelled.valid and not cancelled.retained and
+                    not cancelled.busy and not cancelled.tx_accepted and not cancelled.rx_queued,
+                    'Late fault explicit cancellation failed to clear custody with the same allocation IDs')
+                observed.update(prefix_acknowledged=True, acknowledgment_reply=asdict(acknowledged),
+                    unused_tx_release_refused=True, warm_cancelled=True)
     except Exception as error:
         cause = error.cause if isinstance(error, StreamTransportError) else error
         error_text = repr(cause)
@@ -164,17 +169,22 @@ def observe(vvp, executable, directory, *, depth, profile, image=None):
     return result
 
 
-def check_late_custody(value):
+def check_late_custody(value, *, deadline_slot=11):
     require(value.get('native_exit_code') == 0 and value.get('oracle_rejected') is False and
         value.get('error') is None, 'I2C late-poll control did not complete its expected fault path')
     observed = value.get('observation', {})
+    accepted = observed.get('tx_accepted')
+    expected_tx = accepted == 32 if deadline_slot == 11 else (
+        type(accepted) is int and deadline_slot + 1 < accepted <= 585)
+    expected_rx_digest = hashlib.sha256(packed(expected_rx(pack_read(0x52, 64),
+        payloads()[1])[:deadline_slot])).hexdigest()
     require(observed.get('fault') is True and observed.get('retained') is True and
-        observed.get('captured_bits') == 11 and observed.get('physical_data_rises') in (11, 12) and
-        observed.get('owner_tag') == 65537 and observed.get('tx_accepted') == 32 and
-        observed.get('rx_sha256') == hashlib.sha256(packed(expected_rx(pack_read(0x52, 64), payloads()[1])[:11])).hexdigest() and
+        observed.get('captured_bits') == deadline_slot and
+        observed.get('physical_data_rises') in (deadline_slot, deadline_slot + 1) and
+        observed.get('owner_tag') == 65537 and expected_tx and observed.get('rx_sha256') == expected_rx_digest and
         all(observed.get(name) is True for name in
             ('prefix_acknowledged', 'unused_tx_release_refused', 'warm_cancelled')),
-        'Correct two-stage late readiness did not retain exactly its 11-bit prefix')
+        f'Correct two-stage late readiness did not retain exactly its {deadline_slot}-bit prefix')
 
 
 def check_controls(result):
