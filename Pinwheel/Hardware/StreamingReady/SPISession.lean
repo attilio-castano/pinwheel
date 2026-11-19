@@ -40,43 +40,45 @@ theorem rawTrace_eq (s : Session.State a) (p : Program) (pins : List Session.Pin
       pins.map (fun pin => (PublicPins.embed pin).ui.extractLsb' 3 2) := by
   exact PublicPins.rawTrace_eq s p false pins
 
-/-- Actual START selects the compiled image. Actual RELEASE certifies that both
-    streams have been drained, including the last host acknowledgment. -/
-theorem completed_release (mode : Mode) (d : Fin 256)
-    (actualBoot : Package.State a) (bootState : Session.State a)
-    (initialized : BootCorrespondence.Initialized (image mode d) actualBoot bootState)
-    (before : List Session.Pins) (startPin : Session.Pins) (after : List Session.Pins)
-    (releasePin : Session.Pins) (ha : a ≤ 3)
-    (beforeRuntime : Session.RuntimeTrace (image mode d).program false bootState before) :
+/-- Pin framing, payloads, and final host acknowledgment of one exchange. -/
+def Exchange (mode : Mode) (d : Fin 256)
+    (actualReady : Package.State a) (ready : Session.State a) (startPin : Session.Pins)
+    (after : List Session.Pins) : Prop :=
     let p := (image mode d).program
-    let ready := bootState.run p false before
-    let actualReady := actualBoot.run (Package.Components.typed a) (before.map SessionCorrespondence.pins)
     let started := ready.step p false startPin
     let actualStarted := actualReady.step (Package.Components.typed a) (SessionCorrespondence.pins startPin)
     let final := started.run p false after
-    let actualFinal := actualStarted.run (Package.Components.typed a) (after.map SessionCorrespondence.pins)
-    let inputs := started.runtimeInputs p false after
     let trace := started.traceRun p false {} after
     let pins := PublicPins.driveTrace actualStarted after
     let apertures := 0 :: 0 :: after.map (fun pin => (PublicPins.embed pin).ui.extractLsb' 3 2)
     let count := (ready.command startPin).runtime.startCount.toNat
-    Session.RuntimeInput ready startPin →
-    ActualStart actualReady startPin →
-    Session.RuntimeTrace p false started after →
-    (∀ i ∈ inputs, i.command ≠ 4#4) →
-    Session.RuntimeInput final releasePin →
-    ActualRelease actualFinal releasePin →
     events mode pins = .select :: edgesFor count ++ [.deselect] ∧
     activePulses mode d.val pins ∧
     (∀ sample ∈ pins, sample.enabled = 7#3) ∧
     trace.accepted = mosiOnLeading mode pins ∧
     trace.exported = misoOnLeading mode pins apertures ∧
-    final.host.ackOffset.toNat = count ∧ final.host.exportBits.toNat = 0 := by
+    final.host.ackOffset.toNat = count ∧ final.host.exportBits.toNat = 0
+
+/-- Actual START selects an installed SPI image. The proof also applies to
+    a warm-installed image with old words outside its executable range. -/
+theorem completed_from_start (mode : Mode) (d : Fin 256)
+    (rep : SourceRefinement.Image (image mode d).program)
+    (actualReady : Package.State a) (ready : Session.State a) (startPin : Session.Pins)
+    (first : SessionProof.Started (image mode d) actualReady ready startPin rep)
+    (after : List Session.Pins) (releasePin : Session.Pins) (ha : a ≤ 3) :
+    let p := (image mode d).program
+    let started := ready.step p false startPin
+    let actualStarted := actualReady.step (Package.Components.typed a) (SessionCorrespondence.pins startPin)
+    let final := started.run p false after
+    let actualFinal := actualStarted.run (Package.Components.typed a) (after.map SessionCorrespondence.pins)
+    Session.RuntimeTrace p false started after →
+    (∀ i ∈ started.runtimeInputs p false after, i.command ≠ 4#4) →
+    Session.RuntimeInput final releasePin →
+    ActualRelease actualFinal releasePin →
+    Exchange mode d actualReady ready startPin after := by
   dsimp only
-  intro startRuntime start afterRuntime noRelease releaseRuntime release
+  intro afterRuntime noRelease releaseRuntime release
   let im := image mode d
-  let ready := bootState.run im.program false before
-  let actualReady := actualBoot.run (Package.Components.typed a) (before.map SessionCorrespondence.pins)
   let started := ready.step im.program false startPin
   let actualStarted := actualReady.step (Package.Components.typed a) (SessionCorrespondence.pins startPin)
   let final := started.run im.program false after
@@ -92,8 +94,6 @@ theorem completed_release (mode : Mode) (d : Fin 256)
     trace.accepted = mosiOnLeading mode pins ∧
     trace.exported = misoOnLeading mode pins apertures ∧
     final.host.ackOffset.toNat = count ∧ final.host.exportBits.toNat = 0
-  have first := SessionProof.start im actualBoot bootState initialized before startPin ha
-    beforeRuntime startRuntime start
   have segment := SessionProof.advance first.reached after ha afterRuntime
   have released : SessionProof.Released final trace :=
     SessionProof.release segment.reached releasePin ha releaseRuntime release
@@ -130,5 +130,42 @@ theorem completed_release (mode : Mode) (d : Fin 256)
     exact data.2.trans (start_apertures mode d ready.core cmd inputs ordinary)
   · rw [← released.ackOffset,← released.exported,traceEq,coreStart,data.2]
     exact (completed_count mode d ready.core cmd inputs ordinary complete).2
+
+/-- A cold-loaded SPI session uses the same START-to-RELEASE proof. -/
+theorem completed_release (mode : Mode) (d : Fin 256)
+    (actualBoot : Package.State a) (bootState : Session.State a)
+    (initialized : BootCorrespondence.Initialized (image mode d) actualBoot bootState)
+    (before : List Session.Pins) (startPin : Session.Pins) (after : List Session.Pins)
+    (releasePin : Session.Pins) (ha : a ≤ 3)
+    (beforeRuntime : Session.RuntimeTrace (image mode d).program false bootState before) :
+    let p := (image mode d).program
+    let ready := bootState.run p false before
+    let actualReady := actualBoot.run (Package.Components.typed a) (before.map SessionCorrespondence.pins)
+    let started := ready.step p false startPin
+    let actualStarted := actualReady.step (Package.Components.typed a) (SessionCorrespondence.pins startPin)
+    let final := started.run p false after
+    let actualFinal := actualStarted.run (Package.Components.typed a) (after.map SessionCorrespondence.pins)
+    let inputs := started.runtimeInputs p false after
+    let trace := started.traceRun p false {} after
+    let pins := PublicPins.driveTrace actualStarted after
+    let apertures := 0 :: 0 :: after.map (fun pin => (PublicPins.embed pin).ui.extractLsb' 3 2)
+    let count := (ready.command startPin).runtime.startCount.toNat
+    Session.RuntimeInput ready startPin →
+    ActualStart actualReady startPin →
+    Session.RuntimeTrace p false started after →
+    (∀ i ∈ inputs, i.command ≠ 4#4) →
+    Session.RuntimeInput final releasePin →
+    ActualRelease actualFinal releasePin →
+    events mode pins = .select :: edgesFor count ++ [.deselect] ∧
+    activePulses mode d.val pins ∧
+    (∀ sample ∈ pins, sample.enabled = 7#3) ∧
+    trace.accepted = mosiOnLeading mode pins ∧
+    trace.exported = misoOnLeading mode pins apertures ∧
+    final.host.ackOffset.toNat = count ∧ final.host.exportBits.toNat = 0 := by
+  intro p ready actualReady _ _ _ _ _ _ _ _ _ runtime admitted
+  have first := SessionProof.start (image mode d) actualBoot bootState initialized before startPin ha
+    beforeRuntime runtime admitted
+  exact completed_from_start mode d (Initialization.compiledImage (image mode d))
+    actualReady ready startPin first after releasePin ha
 
 end Pinwheel.Hardware.StreamingReady.SPISession

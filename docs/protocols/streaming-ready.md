@@ -451,6 +451,31 @@ simulation to transport both contracts, including the host reply pads across
 drain and RELEASE. The gate checks both theorem instances and the certified
 cold-upload sequence for each replayed profile.
 
+### Warm I²C to SPI switch
+
+The [RELEASE proof](../../Pinwheel/Hardware/StreamingReady/SessionProof.lean)
+establishes a free, drained package with preserved generation and transfer
+counters and cleared host export fields. The
+[warm loader proof](../../Pinwheel/Hardware/StreamingReady/BootCorrespondence.lean)
+uses a certified WRITE/COMMIT pin sequence from that exact frontend state.
+COMMIT increments the generation, preserves the transfer counter, and
+installs the new length and idle configuration. The physical word bank keeps
+older rows beyond the new length. SPI runs from the new compiled program
+through the same START-to-RELEASE proof used for a cold upload.
+
+The [switch proof](../../test/StreamingReadyProtocolSwitchProof.lean) composes
+the I²C result, RELEASE, warm upload and SPI exchange on one package state
+history for both imported FIFO layouts. A separate admission theorem proves
+that a delivered stale-generation START is rejected while the free owner,
+generation, transfer counter and driven pads remain stable.
+
+The independent replay drives one cold reset, a 64-byte I²C read and RELEASE,
+and a four-row mode-0 SPI upload over the seven-row I²C image. The wire
+receipt rejects a generation-1 START after generation 2 is installed. The
+public pads hold the prior I²C idle drive through this rejection. A valid SPI
+START exchanges 33 bits and RELEASE returns the SPI idle drive. Both layouts
+match on all 13,987 edges in this sequence.
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
@@ -477,7 +502,8 @@ The check emits and independently certifies both cores, imports the shared
 wrapper, and audits the composed Lean proof. Both replays exercise the full
 push/pop edge directly and then run the existing SPI backpressure cases,
 I²C read/write and deadline cases, and Ethernet refill schedules including
-the missed credit control. The 17 trace files must agree byte for
+the missed credit control. It also runs the one-boot I²C-to-SPI switch.
+The 18 trace files must agree byte for
 byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
 
 ## Verification boundaries
@@ -489,10 +515,11 @@ unbounded peer-readiness fairness are separate. Bounded guards may terminate
 in FAULT and do not require the peer eventually to become ready.
 
 The new correspondence covers every represented register and output equation,
-source runtime steps/runs, actual cold/upload/COMMIT initialization, and warm
-cancellation. Concrete cold boot is a 1,961-clock public-pin sequence, derived
-from arbitrary startup. A second warm upload is not part of that concrete cold
-boot theorem.
+source runtime steps/runs, actual cold/upload/COMMIT initialization, warm
+cancellation, and certified warm upload after RELEASE. Concrete I²C cold boot
+is a 1,961-clock public-pin sequence derived from arbitrary startup. The warm
+proof starts from the reached RELEASE boundary and an upload certificate for
+that frontend state.
 
 Development and fresh committed-source qualification are distinct. The full
 Ready gate must regenerate raw artifact certificates, actual wrapper proofs,
