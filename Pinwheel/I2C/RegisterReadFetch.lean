@@ -247,6 +247,45 @@ structure AckTiming.Observed (timing : AckTiming) (samples : List Observation)
   high : ∀ clock, timing.rise ≤ clock → clock < timing.fall → sclAt samples clock = some true
   low : ∀ clock, timing.fall ≤ clock → clock < timing.nextRise → sclAt samples clock = some false
 
+private theorem predecessor_check (clock : Nat) (p : Nat → Prop) :
+    (0 < clock ∧ p (clock - 1)) ↔ (∃ prev, clock = prev + 1 ∧ p prev) := by
+  constructor
+  · intro ⟨nonzero, holds⟩
+    exact ⟨clock - 1, by omega, holds⟩
+  · intro ⟨prev, atEdge, holds⟩
+    rw [atEdge, Nat.add_sub_cancel]
+    exact ⟨Nat.succ_pos _, holds⟩
+
+instance (samples : List Observation) (before after : Bool) (clock : Nat) :
+    Decidable (sclEdge samples before after clock) :=
+  decidable_of_iff (0 < clock ∧ sclAt samples (clock - 1) = some before ∧ sclAt samples clock = some after)
+    (predecessor_check clock (fun prev => sclAt samples prev = some before ∧ sclAt samples clock = some after))
+
+instance (samples : List Observation) (slot : Fin 16) (value : Bool) (clock : Nat) :
+    Decidable (captureAt samples slot value clock) :=
+  decidable_of_iff (0 < clock ∧
+    (samples[clock - 1]?).bind Observation.capture = some (slot, value))
+    (predecessor_check clock (fun prev => (samples[prev]?).bind Observation.capture = some (slot, value)))
+
+private def observedChecks (t : AckTiming) (samples : List Observation) (slot : Fin 16) (value : Bool) : Prop :=
+  sclEdge samples false true t.rise ∧ captureAt samples slot value t.sample ∧
+  sclEdge samples true false t.fall ∧ sclEdge samples false true t.nextRise ∧
+  (∀ k : Fin t.fall, t.rise ≤ k.val → sclAt samples k.val = some true) ∧
+  (∀ k : Fin t.nextRise, t.fall ≤ k.val → sclAt samples k.val = some false)
+
+/-- Executable checking of the observed edge coordinates, capture, and the
+    complete high and low intervals in a finite waveform. -/
+instance (timing : AckTiming) (samples : List Observation) (slot : Fin 16) (value : Bool) :
+    Decidable (timing.Observed samples slot value) := by
+  haveI : Decidable (observedChecks timing samples slot value) := by unfold observedChecks; infer_instance
+  apply decidable_of_iff (observedChecks timing samples slot value)
+  constructor
+  · rintro ⟨rise, sample, fall, nextRise, high, low⟩
+    exact ⟨rise, sample, fall, nextRise, fun k lo hi => high ⟨k, hi⟩ lo, fun k lo hi => low ⟨k, hi⟩ lo⟩
+  · intro observed
+    exact ⟨observed.rise, observed.sample, observed.fall, observed.nextRise,
+      fun k lo => observed.high k.val lo k.isLt, fun k lo => observed.low k.val lo k.isLt⟩
+
 private theorem sample_before (before after : List Observation) (next hold : Observation)
     (cycles clock : Nat) (earlier : clock < before.length) :
     (before ++ List.replicate cycles hold ++ next :: after)[clock]? = (before ++ next :: after)[clock]? := by
