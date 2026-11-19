@@ -59,11 +59,12 @@ def certify_composition(run, tools, gate, out, report):
     ((module, source),) = composition.generate(1).items()
     path = directory / f"{module}.lean"
     path.write_text(source)
-    imports = [line.removeprefix("import ") for line in source.splitlines() if line.startswith("import Pinwheel.")]
+    fixture = ROOT / "test" / f"{FIXTURE}.lean"
+    imports = [line.removeprefix("import ") for text in (source, fixture.read_text())
+               for line in text.splitlines() if line.startswith("import Pinwheel.")]
     run([tools["lake"], "--no-cache", "build", *imports], "build-composition-dependencies", timeout=1800)
     gate.compile_lean(run, tools, directory, module, paths=proof_dirs)
-    name = f"{FIXTURE}.lean"
-    (directory / name).write_bytes((ROOT / "test" / name).read_bytes())
+    (directory / fixture.name).write_bytes(fixture.read_bytes())
     gate.compile_lean(run, tools, directory, FIXTURE, paths=proof_dirs)
     audit = gate.audit_source((ROOT / "test/ProofAudit.lean").read_text(),
                              [*generated, module, FIXTURE], root_module=FIXTURE)
@@ -87,8 +88,7 @@ def main():
         report["tool_sha256"] = checks.cad.tool_hashes(paths)
         prefix = Path(run(["lake", "env", "lean", "--print-prefix"], "lean-toolchain").strip())
         tools["lake"] = prefix / "bin/lake"
-        modules = ("TypedExportShift", "TxShiftPackage", "Readback", "TinyWiring",
-                   "SPISession", "I2CReadSession", "EthernetRefill")
+        modules = ("TypedExportShift", "TxShiftPackage", "Readback", "TinyWiring")
         run([tools["lake"], "--no-cache", "build", *(f"{READY}.{module}" for module in modules)],
             "build-ready-source", timeout=1800)
         inventories, ring, shift = emit(run, tools, out)
