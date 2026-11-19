@@ -74,10 +74,11 @@ def read_image(path):
     return last, levels, enabled, words
 
 
-def execute(vvp, executable, image, *, ack_bits, stretch_cycles):
+def execute(vvp, executable, image, *, ack_bits=(0, 0, 0), stretch_cycles=0,
+            payload=0x96, fall_stretches=()):
     last, levels, enabled, words = image
-    peer = I2CReadPeer(0x53, 0xA6, (0x96,), ack_bits, phase_cycles=PHASE_CYCLES,
-                       stretch_cycles=stretch_cycles)
+    peer = I2CReadPeer(0x53, 0xA6, (payload,), ack_bits, phase_cycles=PHASE_CYCLES,
+                       stretch_cycles=stretch_cycles, fall_stretches=fall_stretches)
     edges = []
     with Simulation(vvp, executable) as simulation:
         simulation.advance(0, 1, rst_n=0)
@@ -102,11 +103,35 @@ def execute(vvp, executable, image, *, ack_bits, stretch_cycles):
     require(current.mode == 5, "I2C read or precise NACK did not reach the compiled HALT")
     if not any(ack_bits):
         decoded = i2c_read_result(Result(current.samples, current.mode, False, False), byte_count=1)
-        require(decoded.payload == (0x96,), "Functional I2C result differs from the independent target")
+        require(decoded.payload == (payload,), "Functional I2C result differs from the independent target")
     else:
         require(current.samples == 1 << (8 + ack_bits.index(1)),
                 "I2C retained samples did not identify the exact NACK")
     return edges, peer, peer.check()
+
+
+def check_fall_stretches(edges, peer):
+    """Bind the peer's independent timers to observed SCL edges and controller release."""
+    expected = [(index, duration) for index, duration in enumerate(peer.fall_stretches) if duration]
+    anchors = peer.fall_stretch_arms
+    require(expected == [(arm["fall_index"], arm["duration"]) for arm in anchors],
+            "The falling-edge stretch plan did not run at every declared fall")
+    samples = {edge.cycle: edge.pads for edge in edges}
+    witnesses = []
+    for arm in anchors:
+        fall = arm["fall_edge"]
+        target_release = arm["first_target_release_edge"]
+        controller_release = next(edge.cycle for edge in edges if edge.cycle > fall and
+                                  not edge.pads.logical.enabled & 1)
+        rise = next(edge.cycle for edge in edges if edge.cycle > fall and edge.pads.bit(0))
+        require(samples[fall - 1].bit(0) == 1 and samples[fall].bit(0) == 0 and
+                target_release == fall + arm["duration"] and rise == max(target_release, controller_release),
+                "Resolved stretch did not obey its falling-edge-relative release")
+        witnesses.append(dict(arm, first_controller_release_edge=controller_release, resolved_rise_edge=rise,
+                              independently_held_clocks=rise - controller_release))
+    require(any(hold["independently_held_clocks"] > 0 for hold in witnesses),
+            "No falling-edge timer held SCL after the controller released")
+    return witnesses
 
 
 def acknowledge(edges, peer):
@@ -165,15 +190,26 @@ def replay(run, tools, emitted, out):
         executables[name] = executable
 
     cases = {}
-    scenarios = (("read", (0, 0, 0), 0), ("write-address-nack", (1, 0, 0), 0),
-                 ("register-nack", (0, 1, 0), 0), ("read-address-nack", (0, 0, 1), 0),
-                 ("stretched-read", (0, 0, 0), 2))
-    for label, ack_bits, stretch in scenarios:
+    # Falling edge 8 leads into the first ACK. Its timer finishes before the
+    # retimed LOW cut at the end of the following controller phase.
+    scenarios = {
+        "read": {},
+        "write-address-nack": dict(ack_bits=(1, 0, 0)),
+        "register-nack": dict(ack_bits=(0, 1, 0)),
+        "read-address-nack": dict(ack_bits=(0, 0, 1)),
+        "stretched-read": dict(stretch_cycles=2),
+        # Initial falling edge plus five following low samples, matching Fin 6 value 5.
+        "causal-initial-stretch": dict(payload=0x3C, fall_stretches=(6,)),
+        "causal-stretch-read": dict(payload=0x3C, fall_stretches=(0, 0, 9, 0, 0, 0, 0, 0, 10, 0, 0, 0, 9)),
+        "causal-stretch-address-nack": dict(ack_bits=(1, 0, 0), fall_stretches=(0,) * 8 + (10,)),
+    }
+    for label, scenario in scenarios.items():
         baseline = None
         kinds = ("baseline", "low", "late") if label == "read" else ("baseline", "low")
         for kind in kinds:
-            edges, peer, wire = execute(tools["vvp"], executables[kind], image, ack_bits=ack_bits,
-                                        stretch_cycles=stretch)
+            edges, peer, wire = execute(tools["vvp"], executables[kind], image, **scenario)
+            if peer.fall_stretches:
+                wire["fall_stretch_witnesses"] = check_fall_stretches(edges, peer)
             aperture = acknowledge(edges, peer)
             require(aperture["low_within_limit"] and aperture["sample_within_aperture"] == (kind != "late"),
                     "I2C capture aperture did not distinguish the late ACK variant")

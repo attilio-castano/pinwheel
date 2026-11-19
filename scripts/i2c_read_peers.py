@@ -17,7 +17,7 @@ def require(condition, message, category='wire-order'):
 class I2CReadPeer:
     def __init__(self, address, register, payload_bytes, ack_bits=(0, 0, 0), *,
                  phase_cycles=4, stretch_cycles=0, scl_stuck=False,
-                 fault_after_rises=None, fault_delay_cycles=2):
+                 fault_after_rises=None, fault_delay_cycles=2, fall_stretches=()):
         if type(address) is not int or not 0 <= address < 128:
             raise ValueError('I2C read address must fit seven bits')
         if type(register) is not int or not 0 <= register < 256:
@@ -32,6 +32,8 @@ class I2CReadPeer:
             raise ValueError('I2C read clock fault configuration')
         if fault_after_rises is not None and (type(fault_after_rises) is not int or fault_after_rises < 1):
             raise ValueError('I2C read clock fault must follow a positive rise count')
+        if type(fall_stretches) is not tuple or any(type(cycles) is not int or cycles < 0 for cycles in fall_stretches):
+            raise ValueError('I2C read falling-edge stretches must be an immutable tuple of nonnegative cycles')
         self.address, self.register = address, register
         self.payload_bytes, self.ack_bits = tuple(payload_bytes), tuple(ack_bits)
         self.phase_cycles, self.stretch_cycles, self.scl_stuck = phase_cycles, stretch_cycles, scl_stuck
@@ -48,6 +50,9 @@ class I2CReadPeer:
         self.stretch_events = 0
         self.fault_after_rises, self.fault_delay_cycles = fault_after_rises, fault_delay_cycles
         self.fault_at, self.faulted = None, False
+        self.fall_stretches = fall_stretches
+        self.falls, self.fall_release = 0, 0
+        self.fall_stretch_arms = []
 
     def expected(self):
         prefix = (self.address << 1, self.register, (self.address << 1) | 1)
@@ -112,6 +117,12 @@ class I2CReadPeer:
             if self.rise_at is not None and not self.faulted:
                 require(cycle - self.rise_at >= self.phase_cycles, 'I2C read clock high interval')
             self.fall_at = cycle
+            duration = self.fall_stretches[self.falls] if self.falls < len(self.fall_stretches) else 0
+            if duration:
+                self.fall_release = cycle + duration
+                self.fall_stretch_arms.append(dict(fall_index=self.falls, fall_edge=cycle,
+                    duration=duration, first_target_release_edge=self.fall_release))
+            self.falls += 1
         if not bus[0]:
             slot = len(self.bits)
             if slot >= self.stop_after:
@@ -138,7 +149,9 @@ class I2CReadPeer:
         else:
             self.both_high_since = None
         self.previous, self.previous_clock_command = bus, clock_command
-        return PadDrive(0, int(self.clock_sink or self.scl_stuck or self.faulted) |
+        # A peer decision made on observation k reaches the DUT at edge k+1.
+        fall_sink = cycle + 1 < self.fall_release
+        return PadDrive(0, int(self.clock_sink or fall_sink or self.scl_stuck or self.faulted) |
                         int(self.sda_sink) << 1, links=3)
 
     def check(self, *, timeout=False, fault=False):
@@ -152,9 +165,12 @@ class I2CReadPeer:
             require(self.stopped and self.bits == self.expected(), 'I2C read wire bytes/ACK order or STOP differs')
             expected_starts = 1 if self.nack_stage in (0, 1) else 2
             require(self.starts == expected_starts, 'I2C read repeated START count')
-        return dict(address=self.address, register=self.register, payload_bytes=list(self.payload_bytes),
+        result = dict(address=self.address, register=self.register, payload_bytes=list(self.payload_bytes),
                     ack_bits=list(self.ack_bits), clock_count=len(self.bits), starts=self.starts,
                     stopped=self.stopped, observed_bits=self.bits, phase_cycles=self.phase_cycles,
                     stretch_cycles=self.stretch_cycles, stretch_events=self.stretch_events,
                     scl_stuck=self.scl_stuck, guard_clock_lost=self.faulted,
                     board_links=[[0, 2], [1, 3]])
+        if self.fall_stretches:
+            result.update(fall_stretches=list(self.fall_stretches), fall_stretch_arms=self.fall_stretch_arms)
+        return result
