@@ -36,6 +36,7 @@ import Pinwheel.Hardware.PinBoundary
 import Pinwheel.Hardware.Emit
 import Pinwheel.Hardware.Execution.Emit
 import Pinwheel.Hardware.Reactive.Emit
+import Pinwheel.Hardware.Reactive.I2CReadFetch
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 import Pinwheel.Hardware.Storage
