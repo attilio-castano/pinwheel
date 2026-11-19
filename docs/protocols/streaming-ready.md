@@ -476,6 +476,36 @@ public pads hold the prior I²C idle drive through this rejection. A valid SPI
 START exchanges 33 bits and RELEASE returns the SPI idle drive. Both layouts
 match on all 13,987 edges in this sequence.
 
+### Registered instruction reads
+
+The [registered store](../../Pinwheel/Hardware/StreamingReady/RegisteredStore.lean)
+reads the word for the next program counter and captures it in a 64-bit
+register on the edge that updates the counter. The decoder consumes that
+value in the existing fetch phase. An admitted write to the selected word
+forwards the new data to the read register. Cold reset establishes agreement
+from an arbitrary read-register value. The same image format and host
+frontend work with both stores.
+
+The [public session proof](../../Pinwheel/Hardware/StreamingReady/RegisteredStoreSession.lean)
+transports the full clock-indexed pad and host transcript. Each execution
+obtains inputs from its own environment, which advances on that execution's
+observations. The two executions produce identical inputs and outputs on
+every edge, so the store change preserves sampling apertures as well as
+captured bits and ownership. The [causal I²C bridge](../../Pinwheel/Hardware/StreamingReady/CausalSession.lean)
+derives input samples from the resolved bus and retains the host-service,
+target data setup, and deadline premises of the read theorem.
+
+```sh
+python3 -B scripts/check-ready-registered-store.py --tag ready-store
+```
+
+The gate emits and replays both stores on the same images. It compares all
+public edges across the warm I²C-to-SPI handoff and stale START, and checks
+last-poll success and exact late-poll fault prefixes at budgets 31 and 19.
+The same gate reruns the independent Reactive late-fetch control to check
+that crossing the ACK aperture still fails even if read data agrees. The
+evidence concerns digital circuit semantics and emitted RTL replay.
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)

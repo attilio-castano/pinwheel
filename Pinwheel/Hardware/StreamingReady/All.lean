@@ -1,5 +1,6 @@
 import Pinwheel.Hardware.StreamingReady.BootCorrespondence
 import Pinwheel.Hardware.StreamingReady.BootUpload
+import Pinwheel.Hardware.StreamingReady.CausalSession
 import Pinwheel.Hardware.StreamingReady.CANSession
 import Pinwheel.Hardware.StreamingReady.Core
 import Pinwheel.Hardware.StreamingReady.CoreEmit
@@ -20,6 +21,7 @@ import Pinwheel.Hardware.StreamingReady.PS2Session
 import Pinwheel.Hardware.StreamingReady.ProtocolSwitch
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
+import Pinwheel.Hardware.StreamingReady.RegisteredStoreSession
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
 import Pinwheel.Hardware.StreamingReady.SourceRefinement
