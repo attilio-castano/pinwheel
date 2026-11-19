@@ -66,8 +66,22 @@ def certify_composition(run, tools, gate, out, report):
     gate.compile_lean(run, tools, directory, module, paths=proof_dirs)
     (directory / fixture.name).write_bytes(fixture.read_bytes())
     gate.compile_lean(run, tools, directory, FIXTURE, paths=proof_dirs)
+    ring_deadline = report["replays"]["ring"]["i2c_short_budget"]
+    shift_deadline = report["replays"]["shift"]["i2c_short_budget"]
+    words = ring_deadline["last_poll"]["image_words"]
+    budget = ring_deadline["budget"]
+    if words != shift_deadline["last_poll"]["image_words"] or budget != shift_deadline["budget"]:
+        raise RuntimeError("The two replays loaded different I²C deadline profiles")
+    targets = "ReadyTxShortBudget"
+    (directory / f"{targets}.lean").write_text(f"""import {FIXTURE}
+open Pinwheel.Hardware.StreamingReady Pinwheel.Program.StreamingReady
+
+example : I2CReadSession.shortDeadlineProfile.budgetMinusOne.val + 1 = {budget} := by decide +kernel
+example : (i2cImage I2CReadSession.shortDeadlineProfile).words = {words} := by decide +kernel
+""")
+    gate.compile_lean(run, tools, directory, targets, paths=proof_dirs)
     audit = gate.audit_source((ROOT / "test/ProofAudit.lean").read_text(),
-                             [*generated, module, FIXTURE], root_module=FIXTURE)
+                             [*generated, module, FIXTURE, targets], root_module=targets)
     (directory / "ReadyTxFifoAudit.lean").write_text(audit)
     report["axiom_audit"] = gate.compile_lean(run, tools, directory, "ReadyTxFifoAudit", paths=proof_dirs).strip()
 
@@ -114,7 +128,6 @@ def main():
         replay_dirs = {}
         sources = [out / "ring/core.sv", out / "shift/core.sv", frontend, package, tt, bridge]
         report["rtl_sha256"] = {str(path.relative_to(out)): gate.digest(path) for path in sources}
-        certify_composition(run, tools, gate, out, report)
         for name in ("ring", "shift"):
             replay_dirs[name] = out / f"{name}-replay"
             report["replays"][name] = replay.replay(
@@ -122,6 +135,7 @@ def main():
                 [out / name / "core.sv", frontend, package, tt, bridge]
             )
         report["identical_public_traces"] = replay.compare(replay_dirs["ring"], replay_dirs["shift"])
+        certify_composition(run, tools, gate, out, report)
         gate.assert_hashes(out, report["rtl_sha256"])
         report["passed"] = True
     except BaseException as error:

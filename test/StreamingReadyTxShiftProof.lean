@@ -11,7 +11,7 @@ namespace Pinwheel.Artifact.StreamingReadyTxShift
 
 open Pinwheel.Hardware Pinwheel.Hardware.StreamingReady
 open Pinwheel.Hardware.StreamingReady.InitializedCustody
-open Pinwheel.Program.StreamingReady
+open Pinwheel.Program Pinwheel.Program.StreamingReady
 open StreamingReadySessionD2
 open StreamingReadyWrappersD2 (tiny_correct package_correct)
 
@@ -74,6 +74,76 @@ theorem driveTrace_eq (l r : Package.State 1) (pins : List Session.Pins)
     PackageSimulation.driveTrace actualTiny actualPackage shift l pins = PublicPins.driveTrace r pins := by
   rw [simulates.driveTrace_eq tiny_correct package_correct pins related, ring_correct]
   exact PackageSimulation.driveTrace_typed tiny_correct package_correct _ _
+
+theorem drive_eq (l r : Package.State 1) (related : TxShiftPackage.Related l r) :
+    PackageSimulation.drive actualTiny actualPackage shift l = PublicPins.drive r := by
+  have same : [PackageSimulation.drive actualTiny actualPackage shift l] = [PublicPins.drive r] :=
+    driveTrace_eq l r [] related
+  exact (List.cons.inj same).1
+
+def shiftRun (l : Package.State 1) (pins : List Session.Pins) : Package.State 1 :=
+  (pins.map PublicPins.embed).foldl (actualTiny.step actualPackage shift) l
+
+theorem run_related (l r : Package.State 1) (pins : List Session.Pins)
+    (related : TxShiftPackage.Related l r) :
+    TxShiftPackage.Related (shiftRun l pins)
+      (r.run (Package.Components.typed 1) (pins.map SessionCorrespondence.pins)) := by
+  have next := simulates.physical_run tiny_correct package_correct (pins.map PublicPins.embed) related
+  change TxShiftPackage.Related (shiftRun l pins) (physicalRun r (pins.map PublicPins.embed)) at next
+  simpa only [physical_run_correct, embedded_engine_pins] using next
+
+def ShiftPublicConnection (l : Package.State 1) (pins : List Session.Pins)
+    (peer : Nat → Pinwheel.I2C.Pins) : Prop :=
+  ∀ k < pins.length, (I2CReadSession.rawSamples pins)[k]? =
+    ((PackageSimulation.driveTrace actualTiny actualPackage shift l pins)[k]?).map
+      (fun drive => Pinwheel.Program.StreamingI2CRead.resolvedRaw drive (peer k))
+
+theorem i2c_connection (l r : Package.State 1) (pins : List Session.Pins)
+    (peer : Nat → Pinwheel.I2C.Pins) (related : TxShiftPackage.Related l r) :
+    ShiftPublicConnection l pins peer ↔ I2CReadSession.PublicConnection r pins peer := by
+  simp only [ShiftPublicConnection, I2CReadSession.PublicConnection, driveTrace_eq l r pins related]
+
+theorem i2c_last_poll (profile : I2cProfile) (l r : Package.State 1)
+    (s : Session.State 1) (trace : BitTrace) (pins : List Session.Pins)
+    (related : TxShiftPackage.Related l r) (reached : Reached (i2cImage profile) r s trace)
+    (entry : StreamingI2CDeadline.WaitEntry s.core profile)
+    (length : pins.length = profile.budgetMinusOne.val + 1)
+    (minimum : 2 ≤ profile.budgetMinusOne.val) (sda : Pinwheel.I2C.Drive)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
+    (resolved : ShiftPublicConnection l pins (StreamingI2CDeadline.target (profile.budgetMinusOne.val - 2) sda)) :
+    let stretch := profile.budgetMinusOne.val - 2
+    let final := s.run (i2cImage profile).program false pins
+    let ringFinal := r.run (Package.Components.typed 1) (pins.map SessionCorrespondence.pins)
+    let result := s.traceRun (i2cImage profile).program false trace pins
+    TxShiftPackage.Related (shiftRun l pins) ringFinal ∧
+    Reached (i2cImage profile) ringFinal final result ∧
+    StreamingI2CDeadline.CaptureResult s.core final.core trace result
+      (StreamingI2CRead.resolvedRaw (PackageSimulation.drive actualTiny actualPackage shift l)
+        (StreamingI2CDeadline.target stretch sda stretch))[1] profile := by
+  refine ⟨run_related l r pins related, ?_⟩
+  simpa only [drive_eq l r related] using
+    I2CReadSession.last_poll_for profile r s trace reached entry pins length minimum sda (by decide)
+      runtime ((i2c_connection l r pins _ related).mp resolved)
+
+theorem i2c_one_poll_late (profile : I2cProfile) (l r : Package.State 1)
+    (s : Session.State 1) (trace : BitTrace) (pins : List Session.Pins)
+    (related : TxShiftPackage.Related l r) (reached : Reached (i2cImage profile) r s trace)
+    (entry : StreamingI2CDeadline.WaitEntry s.core profile)
+    (length : pins.length = profile.budgetMinusOne.val + 1)
+    (minimum : 2 ≤ profile.budgetMinusOne.val) (sda : Pinwheel.I2C.Drive)
+    (runtime : Session.RuntimeTrace (i2cImage profile).program false s pins)
+    (resolved : ShiftPublicConnection l pins (StreamingI2CDeadline.target (profile.budgetMinusOne.val - 1) sda)) :
+    let final := s.run (i2cImage profile).program false pins
+    let ringFinal := r.run (Package.Components.typed 1) (pins.map SessionCorrespondence.pins)
+    let result := s.traceRun (i2cImage profile).program false trace pins
+    TxShiftPackage.Related (shiftRun l pins) ringFinal ∧
+    Reached (i2cImage profile) ringFinal final result ∧
+    StreamingI2CDeadline.TimeoutResult s.core final.core trace result ∧
+    (∀ k < profile.budgetMinusOne.val + 1, ((I2CReadSession.rawSamples pins)[k]?).map (fun raw => raw.getLsbD 0) =
+      some (decide (profile.budgetMinusOne.val - 1 ≤ k))) :=
+  ⟨run_related l r pins related,
+    I2CReadSession.one_poll_late_for profile r s trace reached entry pins length minimum sda (by decide)
+      runtime ((i2c_connection l r pins _ related).mp resolved)⟩
 
 /-- Any pin-trace property obtained from the original SPI, I²C, or Ethernet
 theorem carries over at a related protocol state. -/

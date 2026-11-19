@@ -398,6 +398,33 @@ reconstructed configuration under the existing protocol assumptions.
 Find the shared frontend, per-depth certificates, replay traces and axiom
 audits under `build/typed-ready/protocol-matrix`.
 
+## Shared session and deadline proofs
+
+The [session proof](../../Pinwheel/Hardware/StreamingReady/SessionProof.lean)
+gives SPI and I²C the same START, segment, and RELEASE argument. START
+establishes ownership and the core start state. Each segment returns the
+next reached state and accumulated bit custody, with its public drive trace
+related to the source trace. A later segment can use that reached state
+directly. An admitted RELEASE accounts for the last acknowledgment.
+
+The [guarded-cell theorem](../../Pinwheel/Program/StreamingReadyGuardedCell.lean)
+handles both outcomes of a bounded wait. Prior misses preserve the capture
+prefix. The first ready poll captures the bit from the second sampler,
+including when it is the final permitted poll. A miss at the deadline
+faults. With the custody invariant, the earlier captures remain available
+in the export and RX queue.
+The [I²C deadline proof](../../Pinwheel/Hardware/StreamingReady/I2CReadSession.lean)
+derives both outcomes for profiles with at least three polls using the
+resolved open-drain inputs. It counts elapsed polls from the sampled wait
+entry and distinguishes the raw edge from the two-clock-later aperture.
+
+The depth-two FIFO substitution workflow replays budgets 31 and 19 on
+both layouts. At each budget the last-poll case completes the 64-byte read.
+The one-poll-late case retains and acknowledges the 11 captured slots,
+refuses RELEASE with unused TX, and clears custody on explicit warm
+cancellation. Lean binds the 19-poll image words used by replay to the
+profile in the deadline theorem.
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
@@ -424,7 +451,7 @@ The check emits and independently certifies both cores, imports the shared
 wrapper, and audits the composed Lean proof. Both replays exercise the full
 push/pop edge directly and then run the existing SPI backpressure cases,
 I²C read/write and deadline cases, and Ethernet refill schedules including
-the missed credit control. The 13 unchanged trace files must agree byte for
+the missed credit control. The 15 trace files must agree byte for
 byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
 
 ## Verification boundaries
