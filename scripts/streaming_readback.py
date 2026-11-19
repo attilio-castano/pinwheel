@@ -371,6 +371,12 @@ def links_source(rb,source,rtl,pairs):
     return adapt(rb,'import Hints\n'+rb.links_source(source,rtl,pairs,'LocalProofs','Graphs'))
 
 
+def register_term(rb, constructor):
+    if getattr(rb, 'RETAINED_REGISTER', None):
+        return f'⟨{constructor}, trivial⟩'
+    return constructor
+
+
 def model_source(rb,graph):
     lines = ['import Graphs\n'+rb.HEADER]
     for method,interface,roots,result in [('Step',rb.REGISTERS,graph.next,rb.REGISTER_TYPE),
@@ -378,12 +384,22 @@ def model_source(rb,graph):
         lines.append('def rtl'+method+' (i : Values '+rb.INPUT_TYPE+') (s : Values '+rb.REGISTER_TYPE+') : Values '+result)
         consumed = set()
         if method == 'Step':
+            retained = getattr(rb, 'RETAINED_REGISTER', None)
+            if retained:
+                for name,_,ctor in CORE_REGISTERS:
+                    if 'r_'+name not in interface:
+                        lines.append(f'  | _, ⟨.{ctor}, kept⟩ => by simp [{retained}] at kept')
             for name,ctor,count,width in rb.FAMILIES:
                 values = ', '.join('('+rb.graph_value(graph,roots['r_'+name+str(k)],'RTL')+')' for k in range(count))
-                lines.append('  | _, .'+ctor+" k => (#["+values+"])[k.toNat]'(by exact k.isLt)")
+                pattern = f'.{ctor} k'
+                if retained:
+                    pattern = f'⟨{pattern}, _⟩'
+                lines.append(f'  | _, {pattern} => (#['+values+"])[k.toNat]'(by exact k.isLt)")
                 consumed.update('r_'+name+str(k) for k in range(count))
         for name,(_,ctor) in interface.items():
             if name not in consumed:
+                if method == 'Step':
+                    ctor = getattr(rb, 'REGISTER_PATTERNS', {}).get(name, ctor)
                 lines.append('  | _, '+ctor+' => '+rb.graph_value(graph,roots[name],'RTL'))
     return adapt(rb,'\n'.join(lines)+'\nend '+rb.NAMESPACE+'\n')
 
@@ -409,21 +425,28 @@ def endpoints_source(rb,source,rtl,pairs):
 
 
 def proof_source(rb):
+    retained = getattr(rb, 'RETAINED_REGISTER', None)
     lines = ['import Endpoints\nimport Pinwheel.Hardware.Streaming.Package\n'+rb.HEADER,
         'theorem step_correct (i : Values '+rb.INPUT_TYPE+') (s : Values '+rb.REGISTER_TYPE+')',
-        '    (r : '+rb.REGISTER_TYPE+' w) : rtlStep i s r = '+rb.CIRCUIT+'.step i s r := by',
-        '  cases r with']
+        '    (r : '+rb.REGISTER_TYPE+' w) : rtlStep i s r = '+rb.CIRCUIT+'.step i s r := by']
+    if retained:
+        lines.append('  rcases r with ⟨r, kept⟩')
+    lines.append('  cases r with')
     if rb.KIND == 'core':
         for name,ctor,count,width in rb.FAMILIES:
             term = '(fun j => Fin.elim0 j)'
             for k in reversed(range(count)):
                 term = '(Fin.cases (rtl_next_r_'+name+str(k)+' i s) '+term+')'
+            register = register_term(rb, f'.{ctor} (BitVec.ofFin j)')
             lines += ['  | '+ctor+' k =>',
-                '    have h : ∀ j : Fin '+str(count)+', rtlStep i s (.'+ctor+' (BitVec.ofFin j)) =',
-                '        '+rb.CIRCUIT+'.step i s (.'+ctor+' (BitVec.ofFin j)) := '+term,
+                '    have h : ∀ j : Fin '+str(count)+', rtlStep i s ('+register+') =',
+                '        '+rb.CIRCUIT+'.step i s ('+register+') := '+term,
                 '    exact h k.toFin']
         for name,_,ctor in CORE_REGISTERS:
-            lines.append('  | '+ctor+' => exact rtl_next_r_'+name+' i s')
+            if retained and 'r_'+name not in rb.REGISTERS:
+                lines.append(f'  | {ctor} => simp [{retained}] at kept')
+            else:
+                lines.append('  | '+ctor+' => exact rtl_next_r_'+name+' i s')
     else:
         for name,_,ctor in FRONTEND_REGISTERS:
             lines.append('  | '+ctor+' => exact rtl_next_r_'+name+' i s')
