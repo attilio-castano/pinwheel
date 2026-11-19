@@ -102,8 +102,10 @@ private theorem countdown_toNat (s : State a) (profile : I2cProfile)
   rw [entry.countdown, BitVec.toNat_ofNat, Nat.mod_eq_of_lt]
   exact Nat.lt_trans profile.budgetMinusOne.isLt (by decide)
 
-private theorem Stimulus.misses {profile : I2cProfile} {s : State a} {stretch sda inputs}
-    (stimulus : Stimulus s stretch sda inputs) (entry : WaitEntry s profile)
+private theorem low_misses {profile : I2cProfile} {s : State a} {stretch : Nat} {inputs : List Input}
+    (ordinary : ∀ i ∈ inputs, i.Runtime)
+    (low : ∀ k (hk : k < inputs.length), k < stretch → inputs[k].rawInputs[0] = false)
+    (entry : WaitEntry s profile)
     (n : Nat) (inside : n ≤ inputs.length) (budget : n ≤ profile.budgetMinusOne.val)
     (delayed : n ≤ stretch + 2) :
     MissHistory (programFor profile) s (inputs.take n) := by
@@ -116,16 +118,22 @@ private theorem Stimulus.misses {profile : I2cProfile} {s : State a} {stretch sd
       omega
     have held := bounded_wait_prefix (programFor profile) s (inputs.take n) profile.budgetMinusOne
       entry.phase (stream_limit profile s entry.current) prior within
-    have low (k : Nat) (hk : k < inputs.length) (early : k < stretch) :
-        inputs[k].rawInputs[0] = false := by
-      simp [stimulus.scl entry.release k hk,Nat.not_le.mpr early]
-    have sample := low_cut profile s entry inputs stimulus.ordinary stretch n (by omega) (by omega) low
+    have sample := low_cut profile s entry inputs ordinary stretch n (by omega) (by omega) low
     have miss : (run (programFor profile) s (inputs.take n)).waitReady = false := by
       rw [State.waitReady,held.2.2.2.2,entry.current]
       exact (matches_scl profile _).trans sample
     have index : n < inputs.length := by omega
     rw [List.take_succ_eq_append_getElem index]
-    exact miss_append (programFor profile) s _ _ prior (stimulus.ordinary _ (List.getElem_mem index)) miss
+    exact miss_append (programFor profile) s _ _ prior (ordinary _ (List.getElem_mem index)) miss
+
+private theorem Stimulus.misses {profile : I2cProfile} {s : State a} {stretch sda inputs}
+    (stimulus : Stimulus s stretch sda inputs) (entry : WaitEntry s profile)
+    (n : Nat) (inside : n ≤ inputs.length) (budget : n ≤ profile.budgetMinusOne.val)
+    (delayed : n ≤ stretch + 2) :
+    MissHistory (programFor profile) s (inputs.take n) :=
+  low_misses stimulus.ordinary
+    (fun k hk early => (stimulus.scl entry.release k hk).trans (decide_eq_false (by omega)))
+    entry n inside budget delayed
 
 structure WaitingPrefix (s cut : State a) (trace cutTrace : BitTrace) (n : Nat)
     (profile : I2cProfile := .standard) : Prop where
@@ -252,6 +260,41 @@ structure TimeoutResult (s final : State a) (trace finalTrace : BitTrace) : Prop
   recoverable : trace.captured = finalTrace.exported ++ finalTrace.rxQueued.flatMap Streaming.Chunk.rxBits
   samplerHigh : final.samplerSecond[0] = true
 
+/-- Every poll misses if SCL stays low through the final two-stage aperture.
+The last two raw samples may already be high. SDA does not affect expiry. -/
+theorem missed_guard_for (profile : I2cProfile) (s : State a) (entry : WaitEntry s profile)
+    (trace : BitTrace) (inputs : List Input) (length : inputs.length = profile.budgetMinusOne.val + 1)
+    (ordinary : ∀ i ∈ inputs, i.Runtime)
+    (low : ∀ k (hk : k < inputs.length), k + 2 < inputs.length → inputs[k].rawInputs[0] = false) :
+    GuardedCell.TimeoutResult (programFor profile) s (run (programFor profile) s inputs)
+      trace (traceRun (programFor profile) s trace inputs) := by
+  let poll := profile.budgetMinusOne.val
+  have index : poll < inputs.length := by omega
+  let misses := inputs.take poll
+  let last := inputs[poll]
+  have samples (k : Nat) (hk : k < inputs.length) (early : k < poll - 1) :
+      inputs[k].rawInputs[0] = false :=
+    low k hk (by omega)
+  have history := low_misses ordinary samples entry poll (by omega) (Nat.le_refl _) (by omega)
+  have deadline : misses.length = s.countdown.toNat := by
+    simp only [misses,List.length_take,countdown_toNat s profile entry]
+    omega
+  have limit := stream_limit profile s entry.current
+  have outcome := GuardedCell.bounded_poll (programFor profile) s trace misses last profile.budgetMinusOne
+    entry.phase limit history (Nat.le_of_eq deadline) (ordinary last (List.getElem_mem index))
+  have held := bounded_wait_prefix (programFor profile) s misses profile.budgetMinusOne
+    entry.phase limit history (Nat.le_of_eq deadline)
+  have miss : (run (programFor profile) s misses).waitReady = false := by
+    rw [State.waitReady,held.2.2.2.2,entry.current]
+    change (i2cGuard profile 1 1).matches (run (programFor profile) s misses).samplerSecond = false
+    rw [matches_scl]
+    exact low_cut profile s entry inputs ordinary (poll - 1) poll (by omega) (by omega) samples
+  have timeout := outcome.timeout miss deadline
+  have decomposition : misses ++ [last] = inputs := by
+    unfold misses last
+    rw [← List.take_succ_eq_append_getElem index,List.take_of_length_le (by omega)]
+  simpa only [decomposition] using timeout
+
 /-- Releasing SCL one clock after the last legal aperture still raises the
 wire in time for the second sampler to update on the fault edge. The same
 edge tested the earlier LOW and retains exactly the already captured prefix. -/
@@ -262,33 +305,8 @@ theorem one_late_for (profile : I2cProfile) (s : State a) (entry : WaitEntry s p
     TimeoutResult s (run (programFor profile) s inputs) trace (traceRun (programFor profile) s trace inputs) := by
   let poll := profile.budgetMinusOne.val
   have pollMin : 2 ≤ poll := minimum
-  have index : poll < inputs.length := by omega
-  let misses := inputs.take poll
-  let cut := run (programFor profile) s misses
-  let last := inputs[poll]
-  have history := stimulus.misses entry poll (by omega) (Nat.le_refl _) (by omega)
-  have deadline : misses.length = s.countdown.toNat := by
-    simp only [misses,List.length_take,countdown_toNat s profile entry]
-    omega
-  have limit := stream_limit profile s entry.current
-  have outcome := GuardedCell.bounded_poll (programFor profile) s trace misses last profile.budgetMinusOne
-    entry.phase limit history (Nat.le_of_eq deadline) (stimulus.ordinary last (List.getElem_mem index))
-  have held := bounded_wait_prefix (programFor profile) s misses profile.budgetMinusOne
-    entry.phase limit history (Nat.le_of_eq deadline)
-  have aperture : cut.samplerSecond = inputs[poll - 2].rawInputs := by
-    have sample := cut_after_two (programFor profile) s inputs stimulus.ordinary (poll - 2) (by omega)
-    simpa only [Nat.sub_add_cancel pollMin] using sample
-  have miss : cut.waitReady = false := by
-    change (run (programFor profile) s misses).waitReady = false
-    rw [State.waitReady,held.2.2.2.2,entry.current]
-    change (i2cGuard profile 1 1).matches cut.samplerSecond = false
-    rw [matches_scl profile,aperture,stimulus.scl entry.release (poll - 2) (by omega)]
-    exact decide_eq_false (by omega)
-  have timeout := outcome.timeout miss deadline
-  have decomposition : misses ++ [last] = inputs := by
-    unfold misses last
-    rw [← List.take_succ_eq_append_getElem index,List.take_of_length_le (by omega)]
-  rw [decomposition] at timeout
+  have timeout := missed_guard_for profile s entry trace inputs length stimulus.ordinary
+    (fun k hk early => (stimulus.scl entry.release k hk).trans (decide_eq_false (by omega)))
   have seen : (run (programFor profile) s inputs).samplerSecond = inputs[poll - 1].rawInputs := by
     have lastSample := cut_after_two (programFor profile) s inputs stimulus.ordinary (poll - 1) (by omega)
     have cutLength : (poll - 1) + 2 = inputs.length := by omega

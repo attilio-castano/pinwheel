@@ -59,7 +59,7 @@ def PublicConnection (actual : Package.State a) (pins : List Session.Pins)
     ((PublicPins.driveTrace actual pins)[k]?).map (fun drive =>
       StreamingI2CRead.resolvedRaw drive (peer k))
 
-private theorem command_length {profile : I2cProfile} (s : Session.State a) (pins : List Session.Pins) :
+theorem command_length {profile : I2cProfile} (s : Session.State a) (pins : List Session.Pins) :
     (s.runtimeInputs (i2cImage profile).program false pins).length = pins.length := by
   have same := congrArg List.length (PublicPins.rawTrace_eq s (i2cImage profile).program false pins)
   simpa only [List.length_map] using same
