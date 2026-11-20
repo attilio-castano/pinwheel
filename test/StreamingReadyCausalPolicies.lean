@@ -3,6 +3,7 @@ import Pinwheel.Hardware.StreamingReady.SegmentCadencedHost
 import Pinwheel.Hardware.StreamingReady.SegmentCausalI2C
 import Pinwheel.Hardware.StreamingReady.SegmentClockTable
 import Pinwheel.Hardware.StreamingReady.SegmentPolicyTiming
+import Pinwheel.Hardware.StreamingReady.SegmentUARTTx
 import Pinwheel.Program.StreamingJTAG
 import Pinwheel.Program.StreamingReadyDuplex
 import Pinwheel.Program.StreamingReadySegmentWire
@@ -33,13 +34,11 @@ private def writeWord (raw : BitVec 2) (address : Nat) (word : BitVec 64) : Valu
   | _, .rawInputs => raw
   | _, _ => 0
 
-private def install (machine : SegmentClockTable.Machine 1) (words : List (BitVec 64)) (idle : Pins) (raw : BitVec 2) :
+private def upload (machine : SegmentClockTable.Machine 1) (initial : SegmentClockTable.Table (Register 1))
+    (words : List (BitVec 64)) (idle : Pins) (raw : BitVec 2) :
     SegmentClockTable.Table (Register 1) :=
   let edge (before : SegmentClockTable.Table (Register 1)) (i : Values Input) :=
     machine.edge i (fun r => before.read r)
-  let cold : Values Input := fun port => match port with
-    | .initialize => 1
-    | _ => 0
   let commit : Values Input := fun port => match port with
     | .command => 2
     | .count => BitVec.ofNat 7 words.length
@@ -47,9 +46,15 @@ private def install (machine : SegmentClockTable.Machine 1) (words : List (BitVe
     | .idleEnabled => idle.enabled
     | .rawInputs => raw
     | _ => 0
-  let reset := machine.edge cold (fun _ => 0)
-  let loaded := (words.zipIdx).foldl (fun before (word, address) => edge before (writeWord raw address word)) reset
+  let loaded := (words.zipIdx).foldl (fun before (word, address) => edge before (writeWord raw address word)) initial
   edge loaded commit
+
+private def install (machine : SegmentClockTable.Machine 1) (words : List (BitVec 64)) (idle : Pins) (raw : BitVec 2) :
+    SegmentClockTable.Table (Register 1) :=
+  let cold : Values Input := fun port => match port with
+    | .initialize => 1
+    | _ => 0
+  upload machine (machine.edge cold (fun _ => 0)) words idle raw
 
 private def start (machine : SegmentClockTable.Machine 1) (initial : SegmentClockTable.Table (Register 1)) (budget : Nat)
     (raw : BitVec 2) : SegmentClockTable.Table (Register 1) :=
@@ -60,6 +65,16 @@ private def start (machine : SegmentClockTable.Machine 1) (initial : SegmentCloc
     | .rawInputs => raw
     | _ => 0
   machine.edge offer (fun r => initial.read r)
+
+private def releaseOwner (machine : SegmentClockTable.Machine 1) (state : Values (Register 1)) (raw : BitVec 2) :
+    SegmentClockTable.Table (Register 1) :=
+  let release : Values Input := fun p => match p with
+    | .command => 4
+    | .expectedGeneration => state (.base .generation)
+    | .expectedTransfer => state (.base .transfer)
+    | .rawInputs => raw
+    | _ => 0
+  machine.edge release state
 
 private def pack (bits : List Bool) : BitVec 32 :=
   (bits.foldl (fun (word : BitVec 32) bit => (word <<< 1) + BitVec.ofNat 32 bit.toNat) 0) <<< (32 - bits.length)
@@ -292,7 +307,7 @@ private def duplexBits (count : Nat) : List Bool × List Bool :=
    (List.range count).map fun n => (5 * n + 1) % 13 < 6)
 
 private def readDuplex (registered : Bool) (protocol : Duplex) (slow : Bool)
-    (omitSecond := false) : IO Json := do
+    (omitSecond := false) : IO (Json × Option (SegmentClockTable.Table (Register 1))) := do
   let duration : Fin 256 := 3
   let count : BitVec 16 := 33
   let (tx, rx) := duplexBits count.toNat
@@ -332,7 +347,7 @@ private def readDuplex (registered : Bool) (protocol : Duplex) (slow : Bool)
       parked.core (.base .phase) == 2#3 && !protocol.clockActive (SegmentCausal.pads registered parked) &&
       parked.core (.base .generation) == 1#16 && parked.core (.base .transfer) == 1#16)
       "Missing TX chunk did not reject the horizon and preserve the live owner"
-    return Json.mkObj [("protocol", toJson protocol.name), ("missing_tx_offset", toJson cut)]
+    return ⟨Json.mkObj [("protocol", toJson protocol.name), ("missing_tx_offset", toJson cut)], none⟩
   checkHorizon registered rows cooldown plan states
   let some terminal := states.findIdx? (fun s =>
     s.core (.base .phase) == 5#3 || s.core (.base .phase) == 6#3)
@@ -381,19 +396,78 @@ private def readDuplex (registered : Bool) (protocol : Duplex) (slow : Bool)
     drained.core (.base .txConsumed) == count && drained.core (.base .rxPopped) == count &&
     drained.core (.base .rxCount) == 0#4)
     s!"{protocol.name} changed terminal ownership or clock accounting"
-  let release : Values Input := fun p => match p with
-    | .command => 4
-    | .expectedGeneration => drained.core (.base .generation)
-    | .expectedTransfer => drained.core (.base .transfer)
-    | .rawInputs => SegmentCausal.resolved registered peer drained
-    | _ => 0
-  let freed := machine.edge release drained.core
+  let freed := releaseOwner machine drained.core (SegmentCausal.resolved registered peer drained)
   requireFixture (freed.read (.base .phase) == 0#3 && freed.read (.base .valid) == 1#1)
     s!"{protocol.name} refused matched RELEASE after drain"
-  return Json.mkObj [ ("protocol", toJson protocol.name), ("cooldown", toJson cooldown),
+  return ⟨Json.mkObj [ ("protocol", toJson protocol.name), ("cooldown", toJson cooldown),
     ("tx_chunk_boundary", toJson cut), ("wire_clocks", toJson leading.length),
     ("clocks_from_start", toJson terminal), ("parked_edges", toJson waiting.length),
-    ("tx", toJson sent.tx), ("rx", toJson returned)]
+    ("tx", toJson sent.tx), ("rx", toJson returned)], some freed⟩
+
+private def uartTx (registered : Bool) (predecessor : SegmentClockTable.Table (Register 1)) (mutated : Bool) : IO Json := do
+  let hold : Fin 253 := 12
+  let byte : BitVec 8 := 0xa5
+  let config := Pinwheel.Program.StreamingReadyUARTTx.config hold
+  let rows := Pinwheel.Program.StreamingReadyUARTTx.rows hold byte
+  let first := Row.cell (.pulse (Pinwheel.Program.StreamingReadyUARTTx.cell 13 false))
+  let (rows, words) ← if mutated then do
+      let rows := rows.set 0 first
+      let .ok image := compile rows 0
+        | throw (IO.userError "UART TX mutation did not compile through the ordinary API")
+      pure (rows, image.words)
+    else do
+      let .ok image := Pinwheel.Program.StreamingReadyUARTTx.image hold byte
+        | throw (IO.userError "UART TX holdout did not compile through the ordinary API")
+      pure (rows, image.words)
+  let idle := Pinwheel.Program.StreamingReadyUARTTx.pins true
+  let machine := SegmentClockTable.compile 1 supported registered
+  let installed := upload machine predecessor words idle 0
+  let previousGeneration := predecessor.read (.base .generation)
+  let previousTransfer := predecessor.read (.base .transfer)
+  let generation := previousGeneration + 1
+  let transfer := previousTransfer + 1
+  requireFixture (predecessor.read (.base .phase) == 0#3 && installed.read (.base .phase) == 0#3 &&
+    installed.read (.base .valid) == 1#1 && installed.read (.base .generation) == generation &&
+    installed.read (.base .transfer) == previousTransfer &&
+    installed.read (.base .count) == BitVec.ofNat 7 words.length &&
+    (words.zipIdx).all (fun (word, index) => installed.read (.base (.word (BitVec.ofNat 6 index))) == word))
+    "SPI RELEASE did not allow a new UART TX COMMIT with continuous owner tags"
+  let stale : Values Input := fun p => match p with
+    | .command => 3
+    | .expectedGeneration => previousGeneration
+    | _ => 0
+  let stillFree := machine.edge stale (fun r => installed.read r)
+  requireFixture (stillFree.read (.base .phase) == 0#3 && stillFree.read (.base .transfer) == previousTransfer)
+    "Stale SPI generation started a UART TX owner"
+  let started := start machine stillFree 0 0
+  requireFixture (started.read (.base .phase) == 1#3 && started.read (.base .transfer) == transfer)
+    "UART TX START did not acquire the expected new owner"
+  let opened : SegmentCausal.State 1 Nat Unit := ⟨fun r => started.read r, 0, ()⟩
+  let cooldown := rowQuiet rows
+  let host := SegmentCadencedHost.host (fixturePolicy cooldown [])
+  let peer : SegmentCausal.Peer Unit := ⟨fun _ _ => 0, fun _ _ => ()⟩
+  let states := SegmentClockTable.history supported registered host peer opened (config.frameCycles + 6)
+  checkHorizon registered rows cooldown [] states
+  let observed := (states.drop 1).map (SegmentCausal.pads registered)
+  let mismatch := (observed.zipIdx.find? fun (pad, k) =>
+    pad != Pinwheel.Program.StreamingReadyUARTTx.pins (Pinwheel.UART.expected config byte k)).map Prod.snd
+  requireFixture (mismatch == if mutated then some config.cycles else none)
+    "UART TX waveform oracle did not identify the exact held-bit mismatch"
+  let terminal := states.findIdx? (fun s => s.core (.base .phase) == 5#3 || s.core (.base .phase) == 6#3)
+  requireFixture (terminal == some (config.frameCycles + (if mutated then 2 else 1)))
+    "UART TX terminal edge differed from its independent waveform duration"
+  let retained := states.getLast?.getD opened
+  requireFixture (retained.core (.base .phase) == 5#3 && retained.core (.base .generation) == generation &&
+    retained.core (.base .transfer) == transfer && retained.core (.base .txAccepted) == 0#16 &&
+    retained.core (.base .txConsumed) == 0#16 && retained.core (.base .rxProduced) == 0#16)
+    "UART TX changed ownership or reserved host data during its authored frame"
+  let released := releaseOwner machine retained.core 0
+  requireFixture (released.read (.base .phase) == 0#3 && released.read (.base .valid) == 1#1 &&
+    released.read (.base .levels) == idle.levels && released.read (.base .enabled) == idle.enabled)
+    "UART TX did not release the warm owner and hold its configured idle pad"
+  return Json.mkObj [("cycles_per_bit", toJson config.cycles), ("byte", toJson byte.toNat),
+    ("terminal_clock", toJson terminal), ("first_wire_mismatch", toJson mismatch),
+    ("generation", toJson generation.toNat), ("transfer", toJson transfer.toNat)]
 
 def main : IO Unit := do
   let cases : List Target := [⟨0x96, none, 5⟩, ⟨0x96, some 0, 5⟩, ⟨0x96, some 1, 0⟩, ⟨0x96, some 2, 0⟩]
@@ -406,15 +480,24 @@ def main : IO Unit := do
   let duplexRegistered ← duplex.mapM (fun (p, slow) => readDuplex true p slow)
   let missingDirect ← readDuplex false (.spi .mode0) false true
   let missingRegistered ← readDuplex true (.spi .mode0) false true
+  let some (_, some precedingDirect) := duplexDirect.head?
+    | throw (IO.userError "Direct UART TX has no released SPI predecessor")
+  let some (_, some precedingRegistered) := duplexRegistered.head?
+    | throw (IO.userError "Registered UART TX has no released SPI predecessor")
+  let uartDirect ← [false, true].mapM (uartTx false precedingDirect)
+  let uartRegistered ← [false, true].mapM (uartTx true precedingRegistered)
   requireFixture (direct.map Json.compress == registered.map Json.compress)
     "Causal policies changed observable behavior across instruction stores"
   requireFixture (swdDirect.map Json.compress == swdRegistered.map Json.compress)
     "Causal SWD reply changed across instruction stores"
-  requireFixture (duplexDirect.map Json.compress == duplexRegistered.map Json.compress)
+  requireFixture (duplexDirect.map (·.1.compress) == duplexRegistered.map (·.1.compress))
     "Causal full-duplex behavior changed across instruction stores"
-  requireFixture (missingDirect.compress == missingRegistered.compress)
+  requireFixture (missingDirect.1.compress == missingRegistered.1.compress)
     "Causal missing-credit control changed across instruction stores"
-  IO.println (Json.mkObj [("schema", toJson "pinwheel.ready-causal-policies.v2"),
+  requireFixture (uartDirect.map Json.compress == uartRegistered.map Json.compress)
+    "Warm UART TX waveform or mutation changed across instruction stores"
+  IO.println (Json.mkObj [("schema", toJson "pinwheel.ready-causal-policies.v3"),
     ("i2c", Json.arr direct.toArray), ("swd", Json.arr swdDirect.toArray),
-    ("duplex", Json.arr duplexDirect.toArray), ("duplex_missing_credit", missingDirect),
+    ("duplex", Json.arr (duplexDirect.map Prod.fst).toArray), ("duplex_missing_credit", missingDirect.1),
+    ("uart_tx", Json.arr uartDirect.toArray),
     ("stores", toJson ["direct", "registered"])]).compress
