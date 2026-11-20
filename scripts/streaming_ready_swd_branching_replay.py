@@ -186,7 +186,7 @@ def exchange(rtl, loaded, case, *, observe, execution):
         records.append(edge)
         if observe is not None:
             state = observe(rtl)
-            core_edges.append({"edge": edge["cycle"], **state})
+            core_edges.append({"edge": edge["cycle"], "raw": edge["observation"]["edge_inputs"], **state})
             current = state["rx_produced"]
             if current != produced:
                 require(current == produced + 1, "SWD capture counter skipped a slot")

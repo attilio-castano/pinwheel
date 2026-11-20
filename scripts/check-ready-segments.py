@@ -188,17 +188,29 @@ def timing_status(rtl):
 def observe_core(rtl, trace, observations):
     def record(edge):
         trace(edge)
-        observations.append({"edge": edge["cycle"], **timing_status(rtl)})
+        observations.append(clock_observation(edge, timing_status(rtl)))
     rtl.record_sink = record
 
 
+def clock_observation(edge, core):
+    return {"edge": edge["cycle"], "raw": edge["observation"]["edge_inputs"], **core}
+
+
 def segment_execution(edges, words):
-    """Project the executed rows and service from the core's clocked observations."""
+    """Resolve service windows from public raw pins at the actual clock cuts."""
     start = next(index for index, cut in enumerate(edges)
                  if cut["command"] == 3 and cut["pre_phase"] == 0 and cut["phase"] == 1)
-    fetches, supplies, branches, tx_bits = [], [], [], []
+    fetches, supplies, branches, tx_bits, rx_bits = [], [], [], [], []
     polls, parked, slots, terminal = [], 0, 0, None
-    for cut, following in zip(edges[start + 1:], edges[start + 2:]):
+    require(start >= 1, "Clock trace must start before the START aperture")
+    for index in range(start + 1, len(edges) - 1):
+        cut, following = edges[index], edges[index + 1]
+        before, middle = edges[index - 2:index]
+        require((before["edge"], middle["edge"]) == (cut["edge"] - 2, cut["edge"] - 1) and
+                not any(step["command_initialize"] or step["command"] == 15 for step in (before, middle)),
+                "Ordinary consecutive clocks required at the sampler aperture")
+        raw_sample = before["raw"]
+        require(cut["stage2"] == raw_sample, "Second sampler differs from the public pins two clocks earlier")
         phase = cut["pre_phase"]
         kind = cut["pre_stream_flags"] & 7
         if phase == 1:
@@ -220,11 +232,11 @@ def segment_execution(edges, words):
                 if transmits:
                     tx_bits.append(bool(following["cell_bit"]))
         if phase == 3 and kind == 1 and cut["phase"] == 4:
-            supplies.append({"kind": "cell", "parked": parked, "samples": [cut["stage2"]]})
+            supplies.append({"kind": "cell", "parked": parked, "samples": [raw_sample]})
             parked = 0
             slots += 1
         if phase == 7:
-            polls.append(cut["stage2"])
+            polls.append(raw_sample)
             if cut["phase"] != 7:
                 if kind == 1:
                     supplies.append({"kind": "cell", "parked": parked, "samples": polls})
@@ -234,6 +246,9 @@ def segment_execution(edges, words):
                     require(kind == 4, "Unexpected word at a standalone guard poll")
                     supplies.append({"kind": "wait", "samples": polls})
                 polls = []
+        if phase in (3, 7) and cut["phase"] == 4 and kind == 1 and cut["pre_stream_flags"] & 16:
+            source = (words[cut["pc"]] >> 33) & 1
+            rx_bits.append(bool((raw_sample >> source) & 1))
         if cut["phase"] in (5, 6):
             terminal = {"pc": cut["pc"], "phase": cut["phase"],
                         "edge": cut["edge"], "clocks": cut["edge"] - edges[start]["edge"],
@@ -241,8 +256,11 @@ def segment_execution(edges, words):
                         "poll_countdown": cut["countdown"], "tx_reserved": cut["tx_consumed"],
                         "rx_produced": cut["rx_produced"]}
             break
+    if terminal is not None:
+        require((len(tx_bits), len(rx_bits)) == (terminal["tx_reserved"], terminal["rx_produced"]),
+                "Trace lost a reservation or capture")
     return {"fetches": fetches, "supplies": supplies, "branches": branches,
-            "tx_bits": tx_bits, "terminal": terminal}
+            "tx_bits": tx_bits, "rx_bits": rx_bits, "terminal": terminal}
 
 
 def deadline_aperture(edges, held_at, budget):
@@ -361,6 +379,7 @@ def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked
         rtl.record_sink = trace
     completed = pending.finish(max_exchanges=20)
     rx, terminal, released = completed.rx_bits, completed.terminal, completed.release
+    require(list(rx) == execution["rx_bits"], "Host RX differs from chronological raw-pin captures")
     require(counters["tx_accepted"] == BUDGET and counters["rx_produced"] == expected_slots and
             counters["rx_popped"] == expected_slots and counters["rx_queued"] == 0,
             "Ready changed the accepted TX count or captured/acknowledged RX ledger")
@@ -668,6 +687,7 @@ def check_swd_execution(run, lean, out, swd, manifests):
         name = entry["name"]
         label = "swd_" + name.replace("-", "_")
         executed = entry["execution"]
+        require(list(entry["rx_bits"]) == executed["rx_bits"], "SWD RX differs from chronological raw-pin captures")
         terminal = executed["terminal"]
         parked = sum(item.get("parked", 0) for item in executed["supplies"])
         clocks = terminal["clocks"] - parked
@@ -836,7 +856,7 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v6", passed=False, commands=[], source_commit=source_commit(),
+    report = dict(schema="pinwheel.ready-segments.v7", passed=False, commands=[], source_commit=source_commit(),
                   source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={})
     run = Commands(ROOT, logs, report["commands"])
     try:
