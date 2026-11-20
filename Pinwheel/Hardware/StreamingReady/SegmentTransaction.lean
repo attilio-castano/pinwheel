@@ -169,7 +169,7 @@ private theorem inv_one_inv (value : BitVec 1) : ~~~(1#1 &&& ~~~value) = value :
   by decide +revert +kernel
 
 set_option linter.unusedSimpArgs false in
-private theorem fetch_counts {s : Values (Register a)}
+theorem fetch_counts {s : Values (Register a)}
     (h : AtBoundary registered rows pc capture s) (i : Values Core.Input)
     (ordinary : NoReset i) :
     let after : Values (Register a) := (circuit a registered).step i s
@@ -341,7 +341,7 @@ private theorem wait_tx_step (registered : Bool) (i : Values Core.Input) (s : Va
     Core.owned, Core.busy, Core.identity, Core.isPhase, Core.clearedRuntime, Core.takingTX,
     Core.reserving, ordinary.1, ordinary.2, phase, inv_one_inv]
 
-private theorem wait_prefix (registered : Bool) (s : Values (Register a))
+theorem wait_prefix (registered : Bool) (s : Values (Register a))
     (misses : List (Values Core.Input)) (phase : s (.base .phase) = 7#3)
     (bounded : SegmentTiming.guardBudget s ≠ 0#8) (history : SegmentTiming.MissHistory registered s misses)
     (within : misses.length ≤ (s (.base .countdown)).toNat) :
@@ -368,7 +368,7 @@ private theorem wait_prefix (registered : Bool) (s : Values (Register a))
     exact ⟨active_step (drain_ordinary input) phase (.inr (.inr (.inr (.inr rfl)))) active,
       count.trans (wait_tx_step registered i s (drain_ordinary input) phase)⟩
 
-private theorem successor_wait (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
+theorem successor_wait (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
     (entry : successors rows budget cursor = some (.next following))
     (limit : g.limit = .misses n) :
     following.pc = cursor.pc + 1 ∧ following.slots = none ∧ following.capture = cursor.capture ∧
@@ -466,7 +466,7 @@ theorem wait_clock_bound (row : rows[cursor.pc]? = some (.cell (.driveWait pins 
   simp only [List.length_cons, List.length_append, List.length_nil]
   omega
 
-private theorem terminal_end {s : Values (Register a)}
+theorem terminal_end {s : Values (Register a)}
     (h : Cut registered rows cursor capture s) (i : Values Core.Input)
     (drain : ProtocolOwnership.DrainInput i) (row : rows[cursor.pc]? = some (terminalRow exit)) :
     RetainedEnd (endOf cursor exit) ((circuit a registered).step i s) := by

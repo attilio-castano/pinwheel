@@ -598,8 +598,28 @@ The [flat timeout contract](../../Pinwheel/Hardware/StreamingReady/SegmentTraceT
 uses the same clock list and an expired final poll. It proves the restored
 idle pads, retained prefix, exact acknowledgment after drain, and unsent TX
 custody through cancellation. Either contract can be checked without
-assembling a proof for each row. A separate remaining obligation is to
-derive successful trace admission from external peer and host timing bounds.
+assembling a proof for each row.
+
+### Timing conditions for admission
+
+The [timing theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTimingContract.lean)
+derives admission from a flat list of clock inputs after START. At each
+observed FETCH the list must have room for the fetched instruction's
+worst-case duration. At an applicable stream boundary the host has a
+bounded number of clocks to clear the two wait flags. The theorem derives
+each reservation, dwell and qualified poll from the list, and follows the
+actual captured branch bit. It returns the first retained edge, the fresh
+owner and a checked planned exit or the precise guard expiry site.
+
+The command-zero service windows allow RX pops. The guarded stream
+allows host TX offers at credit recovery and requires a TX-quiet interval
+after reservation covering LOW and the poll budget. The receive-only SWD
+stream uses drain clocks throughout its remaining list. The timing theorem
+checks both instruction stores and uses the same row providers for the
+[standard and split I²C images and the branching SWD image](../../Pinwheel/Hardware/StreamingReady/SegmentTimingImages.lean).
+Its premises use digital clocks and reached controller status. Deriving
+those premises from a standalone causal peer and host policy is a
+separate integration step.
 
 The [wire model](../../Pinwheel/Program/StreamingReadySegmentWire.lean)
 derives SDA from the controller and target drives. For the standard image
@@ -607,9 +627,10 @@ and the fixture request it checks every payload, all three early NACKs, and
 expiry at every streaming slot on a representative all-ACK exchange. The
 source replay uses the public raw pins two clocks before each aperture for
 both I²C and branching SWD. It checks the sampled history, host readback,
-and wire verdict on the direct and registered stores. The independent
-deadline fixture distinguishes readiness at the last eligible aperture
-from readiness one clock later.
+and wire verdict on the direct and registered stores. The emitted deadline
+replays distinguish release on the last physically qualifying sample from
+release one clock later. On the late path the peer observes SCL rise, and
+the engine still expires without capturing the new bit.
 
 ### Shared Ready runner
 
