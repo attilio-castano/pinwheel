@@ -1,8 +1,8 @@
 """Shared host ownership and protocol decoding for the sampled-ready target.
 
 The quad framing implementation is shared unchanged. Ready images have their
-own validator. Fixed streams use the START cell count, while a branching
-image supplies separate TX, RX, and terminal path bounds.
+own validator. Fixed streams use the START cell count, while a checked
+image supplies its START count, TX payload and terminal path bounds.
 """
 from dataclasses import dataclass
 
@@ -11,6 +11,7 @@ from streaming_transport import (Code, MAX_BITS, Opcode, PendingStream, Receipt,
 
 
 REGISTER_READ_SCHEMA = 'pinwheel.ready-register-read.v1'
+CHECKED_IMAGE_SCHEMA = 'pinwheel.ready-image.v1'
 REGISTER_READ_NACKS = ('write-address-nack', 'register-nack', 'read-address-nack')
 REGISTER_READ_EXITS = frozenset({('complete', 36, 36), ('discard', 27, 27),
                                 ('discard', 18, 18), ('discard', 9, 9)})
@@ -31,7 +32,7 @@ def _manifest_exits(records):
 
 @dataclass(frozen=True)
 class ReadyPathPlan:
-    """Bounds for a checked branching image, independent of its wire decoder."""
+    """Bounds for a checked image, independent of its wire decoder."""
     start_count: int
     tx_bits: tuple[bool, ...]
     exits: tuple[tuple[str, int, int], ...]
@@ -47,7 +48,7 @@ class ReadyPathPlan:
             if type(exit_) is not tuple or len(exit_) != 3:
                 raise ValueError('Invalid Ready path exit record')
             kind, tx, rx = exit_
-            if (type(kind) is not str or kind not in ('complete', 'discard') or
+            if (type(kind) is not str or kind not in ('complete', 'discard', 'fault') or
                     uint(tx, 16, 'Ready exit TX count') > len(self.tx_bits) or
                     (kind == 'complete' and tx != len(self.tx_bits))):
                 raise ValueError('Ready path exit is inconsistent with its TX plan')
@@ -59,11 +60,12 @@ class ReadyPathPlan:
 
     @property
     def can_end_tx_early(self):
-        return any(tx < len(self.tx_bits) for _, tx, _ in self.exits)
+        return any(kind != 'fault' and tx < len(self.tx_bits) for kind, tx, _ in self.exits)
 
     def consumed(self, kind, received, accepted):
-        """Select a single TX disposition for the decoded terminal path."""
-        matches = {tx for mode, tx, rx in self.exits if mode == kind and rx == received}
+        """Select one TX disposition. With no decoded kind, consider both success exits."""
+        matches = {tx for mode, tx, rx in self.exits
+                   if rx == received and (mode == kind or (kind is None and mode != 'fault'))}
         if len(matches) != 1:
             raise StreamProtocolError('Ready completed with an invalid RX prefix or ambiguous terminal path')
         (tx,) = matches
@@ -218,7 +220,86 @@ class BranchingSwdRead:
         return BranchingSwdResult('ok', word), consumed
 
 
-_BRANCHING_IMAGES = (CombinedI2cRead, BranchingSwdRead)
+@dataclass(frozen=True)
+class CheckedReadyExit:
+    kind: str
+    tx: int
+    rx: int
+    core_clocks: int | None
+    external_polls: int
+
+    def validate_timing(self):
+        uint(self.external_polls, 32, 'External poll count')
+        if (self.core_clocks is None) != (self.external_polls != 0):
+            raise ValueError('A static core clock bound requires zero external polls')
+        if self.core_clocks is not None and uint(self.core_clocks, 32, 'Core clock bound') == 0:
+            raise ValueError('A terminal path requires at least one core clock')
+
+
+@dataclass(frozen=True)
+class CheckedReadyImage:
+    """Transport metadata exported by the Lean checker.
+
+    Validation checks the wire format and the path bounds the host uses.
+    The source gate binds the words and outcomes to the checked Lean image.
+    Clock bounds describe core execution. The host sets its own wait budget.
+    """
+    words: tuple[int, ...]
+    start_count: int
+    tx_bits: tuple[bool, ...]
+    exits: tuple[CheckedReadyExit, ...]
+    idle_levels: int
+    idle_enabled: int
+
+    @classmethod
+    def from_manifest(cls, manifest):
+        if type(manifest) is not dict or manifest.get('schema') != CHECKED_IMAGE_SCHEMA:
+            raise ValueError('Unsupported checked Ready image manifest')
+        try:
+            words, bits, exits = (manifest[key] for key in ('words', 'tx_bits', 'exits'))
+            if any(type(values) is not list for values in (words, bits, exits)) or any(
+                    type(record) is not dict for record in exits):
+                raise ValueError('Expected Ready word, TX bit and exit lists')
+            exits = tuple(CheckedReadyExit(record['kind'], record['tx'], record['rx'],
+                                          record['core_clocks'], record['external_polls']) for record in exits)
+            image = cls(tuple(words), manifest['start_count'], tuple(bits), exits,
+                        manifest['idle_levels'], manifest['idle_enabled'])
+        except (KeyError, TypeError) as error:
+            raise ValueError('Malformed checked Ready image manifest') from error
+        image.validate()
+        return image
+
+    @property
+    def path_plan(self):
+        return ReadyPathPlan(self.start_count, self.tx_bits,
+                             tuple((end.kind, end.tx, end.rx) for end in self.exits))
+
+    def validate(self):
+        uint(self.idle_levels, 3, 'Idle levels')
+        uint(self.idle_enabled, 3, 'Idle enables')
+        if type(self.words) is not tuple or not 1 <= len(self.words) <= 64:
+            raise ValueError('Checked Ready image requires 1..64 immutable words')
+        for word in self.words:
+            uint(word, 64, 'Checked Ready image word')
+        if type(self.exits) is not tuple or any(type(end) is not CheckedReadyExit for end in self.exits):
+            raise ValueError('Checked Ready image requires immutable exit records')
+        for end in self.exits:
+            end.validate_timing()
+        plan = self.path_plan
+        if len(plan.tx_bits) != plan.start_count:
+            raise ValueError('Checked Ready image TX payload length must equal its START budget')
+        consumed_by_length = {}
+        for kind, tx, rx in plan.exits:
+            if kind != 'fault' and consumed_by_length.setdefault(rx, tx) != tx:
+                raise ValueError('Ready success exits with the same RX length disagree on TX consumed')
+
+    def project(self, rx, accepted, *, fault):
+        if fault:
+            return None, None
+        return rx, self.path_plan.consumed(None, len(rx), accepted)
+
+
+_CHECKED_IMAGES = (CombinedI2cRead, BranchingSwdRead, CheckedReadyImage)
 
 
 @dataclass(frozen=True)
@@ -232,7 +313,7 @@ class ReadyCompletion:
 
 
 def validate_ready_image(image):
-    if type(image) in _BRANCHING_IMAGES:
+    if type(image) in _CHECKED_IMAGES:
         image.validate()
     else:
         from streaming_ready_compile import validate_image
@@ -271,9 +352,9 @@ class ReadyHost(StreamHost):
             raise ValueError('Ready TX bits must be an immutable Boolean tuple')
         image = loaded.image
         validate_ready_image(image)
-        if type(image) in _BRANCHING_IMAGES:
+        if type(image) in _CHECKED_IMAGES:
             if bits or bit_count is not None:
-                raise ValueError('A checked branching image supplies its own TX plan and START count')
+                raise ValueError('A checked image supplies its own TX plan and START count')
             path_plan = image.path_plan
             plan = dict(bits=path_plan.tx_bits, total=path_plan.start_count,
                         transmit=bool(path_plan.tx_bits), receive=bool(path_plan.rx_capacity), path_plan=path_plan)
