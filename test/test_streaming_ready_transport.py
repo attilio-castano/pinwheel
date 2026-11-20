@@ -8,7 +8,8 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from streaming_ready_transport import (CombinedI2cRead, LoadedReady, ReadyHost, byte_bits, pack_read, pack_write, project)
+from streaming_ready_transport import (BranchingSwdRead, CombinedI2cRead, LoadedReady, ReadyHost,
+    byte_bits, pack_read, pack_write, project)
 from streaming_ready_compile import Cell, Instruction, lower
 from streaming_transport import (Code, Flags, Opcode, QuadTransport, Receipt,
     StreamProtocolError, StreamRejected, StreamTransportError, decode_request)
@@ -310,6 +311,11 @@ class UnifiedCompletionTests(unittest.TestCase):
                     exits=[dict(kind='complete' if size == 36 else 'discard', tx=size, rx=size)
                            for size in (36, 27, 18, 9)])
 
+    @staticmethod
+    def swd_manifest():
+        return dict(schema='pinwheel.ready-swd-read.v1', words=[13, 2], tx_bits=[], tx_budget=0, start_count=0,
+                    idle_levels=0, idle_enabled=1, exits=[dict(kind='complete', tx=0, rx=size) for size in (3, 36)])
+
     def fixture(self, raw, *, accepted, fault=False):
         terminal = Flags.VALID | Flags.RETAINED | (Flags.FAULT if fault else 0)
 
@@ -318,11 +324,13 @@ class UnifiedCompletionTests(unittest.TestCase):
                 return reply(request, flags=Flags.VALID)
             if request.opcode is Opcode.START:
                 return reply(request)
-            if request.opcode in (Opcode.EXCHANGE32, Opcode.EXCHANGE64):
+            ack = (request.payload >> 64) & 65535
+            if request.opcode in (Opcode.EXCHANGE32, Opcode.EXCHANGE64) or (
+                    request.opcode is Opcode.EXCHANGE0 and ack == 0 and raw):
                 data = sum(bit << index for index, bit in enumerate(reversed(raw)))
                 return reply(request, flags=terminal, tx_accepted=accepted, rx_valid=len(raw), data=data)
             if request.opcode is Opcode.EXCHANGE0:
-                self.assertEqual((request.payload >> 64) & 65535, len(raw))
+                self.assertEqual(ack, len(raw))
                 return reply(request, flags=terminal, tx_accepted=accepted, rx_start=len(raw))
             if request.opcode is Opcode.WARM_RESET:
                 return reply(request, flags=Flags(0))
@@ -359,6 +367,57 @@ class UnifiedCompletionTests(unittest.TestCase):
         result = spi.finish(max_exchanges=1)
         self.assertEqual((result.result, result.tx_consumed, result.tx_cancelled), ((True, False), 2, 0))
         self.assertIs(result.release, host._last)
+        self.assertIsNone(host._pending)
+
+    def test_swd_ack_selects_terminal_length_and_decoded_status(self):
+        program = BranchingSwdRead.from_manifest(self.swd_manifest())
+        word = 0x915DC37B
+        data = tuple(bool(word >> bit & 1) for bit in range(32))
+        parity = bool(word.bit_count() % 2)
+        ok = (True, False, False)
+        cases = (
+            ('ok', ok + data + (parity,), word),
+            ('bad-parity', ok + data + (not parity,), None),
+            ('wait', (False, True, False), None),
+            ('fault', (False, False, True), None),
+            ('invalid-ack', (True, True, False), None),
+        )
+        for name, raw, expected in cases:
+            with self.subTest(outcome=name):
+                host, link = self.fixture(raw, accepted=0)
+                pending = host.load(program).submit()
+                result = pending.finish(max_exchanges=1)
+                self.assertEqual((result.result.outcome, result.result.word), (name, expected))
+                self.assertEqual((result.tx_consumed, result.tx_cancelled), (0, 0))
+                self.assertEqual(result.rx_bits, raw)
+                self.assertFalse(result.terminal.fault)
+                self.assertEqual((result.terminal.rx_start, result.terminal.rx_valid), (len(raw), 0))
+                self.assertEqual(result.release.tag, pending.tag)
+                requests = [decode_request(packet) for packet in link.frames][-4:]
+                self.assertEqual([request.opcode for request in requests],
+                                 [Opcode.START, Opcode.EXCHANGE0, Opcode.EXCHANGE0, Opcode.RELEASE])
+                self.assertEqual((requests[0].payload >> 96) & 65535, 0)
+
+    def test_swd_wrong_ack_length_retains_owner_and_engine_fault_needs_cancel(self):
+        program = BranchingSwdRead.from_manifest(self.swd_manifest())
+        for raw in ((True, False, False), (False, True, False) + (False,) * 33):
+            with self.subTest(length=len(raw)):
+                host, _ = self.fixture(raw, accepted=0)
+                pending = host.load(program).submit()
+                with self.assertRaises(StreamProtocolError):
+                    pending.finish(max_exchanges=1)
+                self.assertEqual(host.transport.opcode_counts[Opcode.RELEASE], 0)
+                self.assertIs(host._pending, pending)
+
+        host, _ = self.fixture((True,), accepted=0, fault=True)
+        pending = host.load(program).submit()
+        result = pending.finish(max_exchanges=1)
+        self.assertEqual((result.result.outcome, result.rx_bits), ('deadline', (True,)))
+        self.assertTrue(result.terminal.fault)
+        self.assertIsNone(result.release)
+        self.assertIsNone(result.tx_consumed)
+        self.assertIs(host._pending, pending)
+        pending.cancel()
         self.assertIsNone(host._pending)
 
     def test_timeout_is_acknowledged_but_cancellation_is_explicit_and_recoverable(self):
