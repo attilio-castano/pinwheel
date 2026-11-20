@@ -32,6 +32,9 @@ STORES = {"direct": "0", "registered": "1"}
 ADDRESS, REGISTER, PAYLOAD = 0x53, 0xA6, 0x96
 BUDGET = 36
 DEADLINE_SLOT = 13
+# This controller-owned slot already releases SDA, so idle takeover after
+# the fault leaves the visible late SCL rise without creating a wire STOP.
+LATE_DEADLINE_SLOT = 14
 CASES = {"read": None, "write-address-nack": 0, "register-nack": 1, "read-address-nack": 2}
 STATUS = ("phase", "generation", "transfer", "tx_accepted", "tx_consumed", "tx_queued", "tx_free",
           "rx_produced", "rx_popped", "rx_queued")
@@ -223,11 +226,19 @@ def segment_execution(edges, words):
                         "Branch did not consume a qualified latched sample")
                 branches.append({"pc": pc, "bit": bool(cut["capture_bit"]), "next_pc": following["pc"]})
         if phase == 2 and kind == 1:
+            transmits = bool(cut["pre_stream_flags"] & 8)
+            receives = bool(cut["pre_stream_flags"] & 16)
+            tx_available = bool(cut["pre_tx_valid"] or cut["pre_tx_queued"])
+            # The preceding clock's result is the input to this reservation.
+            # A concurrent pop or offer supplies credit on the following edge.
+            rx_room = middle["rx_queued"] < 2
+            credit = (not transmits or tx_available) and (not receives or rx_room)
+            require(cut["phase"] == (3 if credit else 2),
+                    "Segmented stream did not reserve from pre-edge host credit")
             if cut["phase"] == 2:
                 parked += 1
             else:
-                transmits = bool(cut["pre_stream_flags"] & 8)
-                require(cut["phase"] == 3 and cut["tx_consumed"] == cut["pre_tx_consumed"] + int(transmits),
+                require(cut["tx_consumed"] == cut["pre_tx_consumed"] + int(transmits),
                         "Segmented stream left its boundary with the wrong TX reservation")
                 if transmits:
                     tx_bits.append(bool(following["cell_bit"]))
@@ -350,13 +361,15 @@ def replay_spi(vvp, executable, path):
     return dict(image_words=list(spi.words), exchange=result, trace=recorded)
 
 
-def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked_image=None):
+def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked_image=None, aperture_stretch=None):
     """Run one read on the current owner generation and the existing pin trace."""
     transport = host.transport
     prior_counts = transport.opcode_counts.copy()
-    expected_slots = DEADLINE_SLOT if deadline else 36 if nack is None else 9 * (nack + 1)
-    if deadline:
-        stretches = (0,) * DEADLINE_SLOT + (4096,)
+    late = deadline and aperture_stretch is not None
+    stretch_slot, stretch_duration = aperture_stretch or (DEADLINE_SLOT, 4096)
+    expected_slots = stretch_slot if deadline else 36 if nack is None else 9 * (nack + 1)
+    if deadline or aperture_stretch is not None:
+        stretches = (0,) * stretch_slot + (stretch_duration,)
     else:
         stretches = (11, 0, 0, 0, 0, 0, 0, 0, 13)
     ack = tuple(int(i == nack) for i in range(3))
@@ -398,9 +411,10 @@ def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked
                 transport.opcode_counts[Opcode.WARM_RESET] == prior_counts[Opcode.WARM_RESET] and
                 transport.opcode_counts[Opcode.RELEASE] == prior_counts[Opcode.RELEASE],
                 "Finishing a timeout must return a live owner without sending RELEASE or WARM_RESET")
-        require(peer.bits == peer.expected()[:expected_slots] and not peer.stopped and peer.starts == 1 and
-                peer.fall_stretch_arms[-1]["fall_index"] == DEADLINE_SLOT and not rtl.observation.bit(0),
-                "Missed deadline was not a real held-low data clock")
+        wire_slots = expected_slots + int(late)
+        require(peer.bits == peer.expected()[:wire_slots] and not peer.stopped and peer.starts == 1 and
+                peer.fall_stretch_arms[-1]["fall_index"] == stretch_slot and bool(rtl.observation.bit(0)) == late,
+                "Missed deadline did not preserve the physical clock prefix")
         require(counters["tx_consumed"] == expected_slots + 1,
                 "Data timeout failed to keep the TX reservation for the unqualified slot")
         wire = dict(starts=peer.starts, stopped=peer.stopped, observed_bits=peer.bits,
@@ -466,7 +480,7 @@ def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked
     return result
 
 
-def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=False):
+def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=False, aperture_stretch=None):
     trace = EdgeTrace(path)
     try:
         with QuadRTL(vvp, executable, record_limit=0, record_sink=trace) as rtl:
@@ -475,7 +489,8 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
             host.initialize()
             loaded = host.load(CombinedI2cRead.from_manifest(image))
             require(loaded.generation == 1, "Cold image did not commit to the first generation")
-            result = i2c_exchange(rtl, host, loaded, image, nack=nack, deadline=deadline)
+            result = i2c_exchange(rtl, host, loaded, image, nack=nack, deadline=deadline,
+                                  aperture_stretch=aperture_stretch)
             require(result["receipt"]["tag"] == 0x10001, "Unexpected first I2C owner tag")
             result["subsequent_spi"] = warm_spi(rtl, host, loaded.generation) if reload else None
     finally:
@@ -483,10 +498,43 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
     edges = list(struct.iter_unpack("<I16B", path.read_bytes()))
     require([row[0] for row in edges if row[1]] == [1] and len(edges) == rtl.cycle,
             "Replay did not retain every physical edge or exactly one cold reset")
-    if deadline:
+    if deadline and aperture_stretch is None:
         wire = result["wire"]
         wire["aperture"] = deadline_aperture(edges, wire["fall_stretch_arms"][-1]["fall_edge"], image["wait_budget"])
     return {**result, "trace": recorded}
+
+
+def replay_deadline_edge(vvp, executable, path, image, deadline, *, late=False):
+    """Release target SCL at or just after the final raw sample."""
+    fault_wire = deadline["wire"]
+    fault_arm = fault_wire["fall_stretch_arms"][-1]
+    fault_cut = fault_wire["aperture"]
+    # The stalled replay locates the final poll. The Ready sampler reads the
+    # raw pin two clocks earlier, so shorten the target's stretch to that edge.
+    slot = LATE_DEADLINE_SLOT if late else DEADLINE_SLOT
+    stretch = fault_cut["last_poll"] - 2 + int(late) - fault_arm["fall_edge"]
+    require(stretch > 0, "The timeout fixture has no stretched last-sample aperture")
+    result = replay(vvp, executable, path, image, deadline=late, aperture_stretch=(slot, stretch))
+    wire = result["wire"]
+    (arm,) = wire["fall_stretch_arms"]
+    edges = list(struct.iter_unpack("<I16B", path.read_bytes()))
+    master_released = next(row[0] for row in edges if row[0] > arm["fall_edge"] and not row[13] & 1)
+    raw_release = next(row[0] for row in edges if row[0] > master_released and row[16] & 1)
+    budget = image["wait_budget"]
+    last_poll = master_released + budget
+    samples = [supply["samples"] for supply in result["execution"]["supplies"]
+               if supply["kind"] == "cell"][slot]
+    require(arm["fall_index"] == slot and
+            raw_release == arm["first_target_release_edge"] == wire["rising_cycles"][slot] and
+            raw_release + 2 == last_poll + int(late) and len(samples) == budget and
+            all(not sample & 1 for sample in samples[:-1]) and bool(samples[-1] & 1) != late,
+            "I2C did not distinguish the final eligible sample from a late SCL rise")
+    if late:
+        require(result["execution"]["terminal"]["edge"] == last_poll,
+                "A physically visible late rise deferred expiry")
+    wire["aperture"] = dict(master_released=master_released, target_released=raw_release,
+                           last_poll=last_poll, eligible_polls=budget)
+    return result
 
 
 def replay_inverted_ack(vvp, executable, path, image, reference):
@@ -539,9 +587,10 @@ def source_commit():
 
 
 def check_readback(run, lean, out, cases):
-    outcomes = {"read": f"some (.success {PAYLOAD})", "write-address-nack": "some .writeAddressNack",
+    outcomes = {"read": f"some (.success {PAYLOAD})", "last-poll": f"some (.success {PAYLOAD})",
+                "write-address-nack": "some .writeAddressNack",
                 "register-nack": "some .registerNack", "read-address-nack": "some .readAddressNack",
-                "deadline": "none"}
+                "deadline": "none", "late-poll": "none"}
     source = ["import Pinwheel.Program.StreamingSPI", "import Pinwheel.Program.StreamingReadySegmentReadback",
               "open Pinwheel.Program.StreamingReadySegments", ""]
     for name, outcome in outcomes.items():
@@ -557,7 +606,8 @@ def check_readback(run, lean, out, cases):
 
 def check_ownership(run, lean, out, cases, ethernet, split, switches, swd):
     reports = {name.replace("-", "_") + "_" + summary["closure"]: summary
-               for name in (*CASES.keys(), "deadline") for summary in cases[name]["ownership"]}
+               for name in (*CASES.keys(), "deadline", "last-poll", "late-poll")
+               for summary in cases[name]["ownership"]}
     reports["spi_released"] = cases["spi"]["exchange"]["ownership"]
     reports["warm_spi_released"] = cases["write-address-nack"]["subsequent_spi"]["exchange"]["ownership"]
     reports.update({"split_" + name.replace("-", "_") + "_" + summary["closure"]: summary
@@ -604,10 +654,14 @@ def lean_bits(bits):
     return "[" + ", ".join("true" if bit else "false" for bit in bits) + "]"
 
 
+def lean_samples(samples):
+    return "[" + ", ".join(f"{sample}#2" for sample in samples) + "]"
+
+
 def lean_observations(items):
     supplied = []
     for item in items:
-        samples = "[" + ", ".join(f"{sample}#2" for sample in item["samples"]) + "]"
+        samples = lean_samples(item["samples"])
         supplied.append(f".cell {item['parked']} {samples}" if item["kind"] == "cell" else f".wait {samples}")
     return "[" + ", ".join(supplied) + "]"
 
@@ -652,6 +706,15 @@ def check_i2c_execution(run, lean, out, images, original, split, switches):
                         "Observed execution exceeded the checked path bound plus measured credit delay")
                 outcome = f".planned ⟨.{kind}, {tx}, {rx}, {path['core_clocks']}⟩"
             label = variant + "_" + name.replace("-", "_")
+            if name in ("last-poll", "late-poll"):
+                slot = LATE_DEADLINE_SLOT if case["missed_deadline"] else DEADLINE_SLOT
+                samples = [supply["samples"] for supply in executed["supplies"]
+                           if supply["kind"] == "cell"][slot]
+                verdict = "none" if case["missed_deadline"] else f"(some {samples[-1]}#2)"
+                source.append(f"""
+example : pollWindow (Pinwheel.Program.StreamingReady.i2cGuard .standard 1 1)
+    {lean_samples(samples)} = some {verdict} := by decide +kernel
+""")
             source.append(f"""
 def {label} := run {rows} {BUDGET} {lean_bits(manifest['tx_bits'])}
   {lean_observations(executed['supplies'])}
@@ -856,7 +919,7 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v7", passed=False, commands=[], source_commit=source_commit(),
+    report = dict(schema="pinwheel.ready-segments.v8", passed=False, commands=[], source_commit=source_commit(),
                   source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={})
     run = Commands(ROOT, logs, report["commands"])
     try:
@@ -880,6 +943,9 @@ def main():
             cases = {name: replay(tools["vvp"], executable, directory / f"{name}.bin", image,
                                   nack=stage, reload=stage == 0) for name, stage in CASES.items()}
             cases["deadline"] = replay(tools["vvp"], executable, directory / "deadline.bin", image, deadline=True)
+            for name, late in (("last-poll", False), ("late-poll", True)):
+                cases[name] = replay_deadline_edge(tools["vvp"], executable, directory / f"{name}.bin",
+                                                   image, cases["deadline"], late=late)
             cases["spi"] = replay_spi(tools["vvp"], executable, directory / "spi.bin")
             report["stores"][store] = cases
             split = {name: replay(tools["vvp"], executable, directory / f"split-{name}.bin",
