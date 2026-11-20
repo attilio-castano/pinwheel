@@ -4,6 +4,7 @@ import Pinwheel.Hardware.StreamingReady.CausalSession
 import Pinwheel.Hardware.StreamingReady.CANSession
 import Pinwheel.Hardware.StreamingReady.Core
 import Pinwheel.Hardware.StreamingReady.CoreEmit
+import Pinwheel.Hardware.StreamingReady.EthernetDeadline
 import Pinwheel.Hardware.StreamingReady.EthernetRefill
 import Pinwheel.Hardware.StreamingReady.EthernetSession
 import Pinwheel.Hardware.StreamingReady.I2CReadSession
