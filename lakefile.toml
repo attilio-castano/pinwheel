@@ -59,3 +59,7 @@ root = "test.StreamExample"
 [[lean_exe]]
 name = "stream_graph"
 root = "test.StreamGraphExample"
+
+[[lean_exe]]
+name = "switch_replay"
+root = "test.SwitchReplay"
