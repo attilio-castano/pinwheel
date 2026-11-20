@@ -781,8 +781,18 @@ composes local admission, drain, and settlement over the concatenated
 physical clocks. It preserves chronological per-session receipts and
 increments the owner counters once per session within the tag limits.
 The mixed RTL gate uses one cold reset and one host per store to run CAN,
-PS/2, UART RX, I²C, SWD, SPI, JTAG, and Ethernet. The bench selects the
-external wiring appropriate to each peer. The separate UART TX source
+PS/2, UART RX, I²C, SWD, SPI, JTAG, and Ethernet. CAN, PS/2, and UART RX
+load through `CheckedReadyImage.from_manifest` and the ordinary `ReadyHost`
+API. Lean generates each `pinwheel.ready-image.v1` manifest from its checked
+image. The manifest carries the exact words, START count, TX plan, idle
+pads, and per-path TX and RX counts. An externally timed path records its
+external poll count and has a `null` static clock bound. The host returns
+the chronological RX bits for the protocol decoder.
+
+The gate checks the observed RTL writes, START count, and terminal counts
+against the Lean source rows and binds the manifests and traces to the
+committed source. The bench selects the external wiring appropriate to each
+peer. The separate UART TX source
 fixture loads an ordinary pulse program after SPI RELEASE and checks its
 pad waveform against the UART model. It rejects a stale START and detects
 a one-clock extension of the start bit.

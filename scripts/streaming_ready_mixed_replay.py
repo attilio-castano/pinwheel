@@ -12,10 +12,9 @@ from streaming_peers import StreamingJTAGPeer
 from streaming_ready_compile import Instruction, lower, spi_image
 import streaming_ready_swd_branching_replay as swd
 from streaming_ready_switch_replay import free_cut, install
-from streaming_ready_transport import BranchingSwdRead, CombinedI2cRead, ReadyHost
+from streaming_ready_transport import BranchingSwdRead, CheckedReadyImage, CombinedI2cRead, ReadyHost
 from streaming_rtl import QuadRTL
 from streaming_transport import Opcode, QuadTransport
-from streaming_uart_compile import uart_image
 from streaming_uart_wire_cases import Recording, receive_frame
 from streaming_wire_cases import require
 
@@ -94,26 +93,54 @@ def check_leg(events, generation, count, *, fault):
             settle['command'] == (15 if fault else 4),
             'Actual START, first retained result or settlement selected a different owner or transition')
     return dict(start=start['edge'], terminal=terminal['edge'], settlement=settle['edge'],
+                start_count=start['command_start_count'],
                 clocks_through_terminal=terminal['edge'] - start['edge'],
                 owner_tag=(generation << 16) | generation,
                 terminal_tx_accepted=terminal['tx_accepted'], terminal_tx_reserved=terminal['tx_consumed'],
                 terminal_rx_captured=terminal['rx_produced'])
 
 
+def check_receive_cuts(name, result, captured, cuts):
+    if name == 'can':
+        expected = [(point['capture_edge'], point['bit']) for point in result['wire']['apertures']]
+        mask = can.CAN_RX
+    elif name == 'ps2':
+        expected = [(point['expected_capture_edge'], point['data']) for point in result['wire']['apertures']]
+        mask = ps2.DATA
+    else:
+        observation = result['observation']
+        expected = [(edge + 2, bit) for edge, bit in
+                    zip(observation['raw_sample_edges'], observation['raw_center_bits'], strict=True)]
+        mask = 1 << result['waveform']['rx_input']
+    actual = [dict(edge=edge, rx_produced=count, bit=bool(stage2 & mask)) for edge, count, stage2 in captured]
+    require(cuts['start_count'] == cuts['terminal_tx_accepted'] == cuts['terminal_tx_reserved'] == 0 and
+            cuts['terminal_rx_captured'] == len(expected) and
+            [cut['rx_produced'] for cut in actual] == list(range(1, len(expected) + 1)) and
+            [(cut['edge'], cut['bit']) for cut in actual] == expected,
+            f'{name} checked receive did not follow the independent capture apertures and zero-TX plan')
+    return actual
+
+
 def replay_mixed(vvp, executable, trace_path, i2c_manifest, swd_manifest, *,
-                 observe, execution, spi_exchange, i2c_exchange):
+                 receive_manifests, observe, execution, spi_exchange, i2c_exchange):
     """Exercise one physical tape with eight protocols and a cancelled I²C timeout."""
-    can_image = can.can_receive_image()
+    can_image, ps2_image, uart_image = (CheckedReadyImage.from_manifest(receive_manifests[name])
+                                       for name in ('can', 'ps2', 'uart-rx'))
     i2c_image = CombinedI2cRead.from_manifest(i2c_manifest)
     swd_image = BranchingSwdRead.from_manifest(swd_manifest)
     tape = Recording(trace_path)
-    events, results = [], []
+    events, captures, results = [], [], []
+    previous_rx = 0
 
     def observe_edge(edge):
+        nonlocal previous_rx
         tape(edge)
         if edge['pins']['initialize']:
             return
         cut = observe(rtl)
+        if cut['rx_produced'] > previous_rx:
+            captures.append((edge['cycle'], cut['rx_produced'], cut['stage2']))
+        previous_rx = cut['rx_produced']
         if cut['command'] or cut['pre_phase'] != cut['phase']:
             events.append(dict(edge=edge['cycle'], **cut))
 
@@ -123,13 +150,16 @@ def replay_mixed(vvp, executable, trace_path, i2c_manifest, swd_manifest, *,
             host = ReadyHost(transport, depth=2)
             host.initialize()
             legs = (
-                ('can', can_image, can.CAPTURE_BITS,
-                 lambda loaded: can.exchange(rtl, transport, loaded, 'mixed-can', None, 380, 3, observe=observe)),
-                ('ps2', ps2.ps2_receive_image(), ps2.FRAME_BITS,
+                ('can', can_image, can_image.path_plan.start_count,
+                 # The explicit COUNT row keeps the first aperture and extends the final dwell one clock.
+                 lambda loaded: can.exchange(rtl, transport, loaded, 'mixed-can', None, 380, 3,
+                                             observe=observe, bit_count=None, completion_delta=1)),
+                ('ps2', ps2_image, ps2_image.path_plan.start_count,
                  lambda loaded: ps2.exchange(rtl, transport, loaded, 'mixed-ps2', 0xB2, None, 770,
-                                             ps2.MIXED_LOW, ps2.MIXED_HIGH)),
-                ('uart-rx', uart_image(12), 8,
-                 lambda loaded: receive_frame(rtl, transport, host, loaded, tape, q=12, profile='valid', payload=0x96)),
+                                             ps2.MIXED_LOW, ps2.MIXED_HIGH, bit_count=None)),
+                ('uart-rx', uart_image, uart_image.path_plan.start_count,
+                 lambda loaded: receive_frame(rtl, transport, host, loaded, tape, q=12,
+                                              profile='valid', payload=0x96, bit_count=None)),
                 ('i2c-timeout', i2c_image, i2c_image.tx_budget,
                  lambda loaded: i2c_exchange(rtl, host, loaded, i2c_manifest, deadline=True, blocked_image=can_image)),
                 ('i2c-read', i2c_image, i2c_image.tx_budget,
@@ -148,6 +178,7 @@ def replay_mixed(vvp, executable, trace_path, i2c_manifest, swd_manifest, *,
                 loaded, uploaded = install(rtl, host, image, observe, previous_generation=generation - 1,
                                            transfer=generation - 1, start_count=count)
                 first = len(events)
+                first_capture = len(captures)
                 try:
                     result = run_session(loaded)
                 except Exception as error:
@@ -155,6 +186,8 @@ def replay_mixed(vvp, executable, trace_path, i2c_manifest, swd_manifest, *,
                     raise
                 fault = name == 'i2c-timeout'
                 cuts = check_leg(events[first:], generation, count, fault=fault)
+                if type(image) is CheckedReadyImage:
+                    cuts['capture_cuts'] = check_receive_cuts(name, result, captures[first_capture:], cuts)
                 settled = free_cut(rtl, observe, generation, generation, idle=(image.idle_levels, image.idle_enabled))
                 rtl.device = None
                 results.append(dict(protocol=name, upload=uploaded, cuts=cuts, session=result, settled=settled))

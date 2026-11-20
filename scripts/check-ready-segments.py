@@ -17,7 +17,7 @@ from streaming_ready_compile import spi_image
 import streaming_ready_swd_branching_replay as swd_replay
 from streaming_ready_mixed_replay import replay_mixed
 from streaming_ready_switch_replay import replay_switch
-from streaming_ready_transport import BranchingSwdRead, CombinedI2cRead, ReadyHost, byte_bits
+from streaming_ready_transport import BranchingSwdRead, CheckedReadyImage, CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
 from streaming_rtl import QuadRTL
 from streaming_transport import (Code, Opcode, QuadTransport, Receipt, StreamProtocolError, StreamRejected,
@@ -163,6 +163,23 @@ def read_swd_images(run, lean, out):
         manifest = json.loads(raw)
         (out / f"swd-{name}-image.json").write_text(json.dumps(manifest, indent=2) + "\n")
         manifests[name] = manifest
+    return manifests
+
+
+RECEIVE_ROWS = {
+    "can": "canRows",
+    "ps2": "ps2Rows",
+    "uart-rx": "(uartRows ⟨8, 0⟩)",
+}
+
+
+def read_receive_images(run, lean, out):
+    raw = run([*lean, "--run", "test/StreamingReadyReceiveManifests.lean"], "compile-checked-receive-images")
+    manifests = json.loads(raw)
+    require(type(manifests) is dict and set(manifests) == set(RECEIVE_ROWS), "Missing checked receive image")
+    for manifest in manifests.values():
+        CheckedReadyImage.from_manifest(manifest)
+    (out / "checked-receive-images.json").write_text(json.dumps(manifests, indent=2) + "\n")
     return manifests
 
 
@@ -833,6 +850,42 @@ example : (apertures {case['wire']['sof']}).map (· + 2) = {cuts} := by decide +
     run([*lean, witness], "check-observed-handoff")
 
 
+def check_mixed_receive_images(run, lean, out, mixed, manifests):
+    """Bind the observed command and terminal counts to the checked source rows."""
+    source = ["import Pinwheel.Program.StreamingReadyReceiveImages",
+              "open Pinwheel.Program.StreamingReadyReceiveImages Pinwheel.Program.StreamingReadySegments"]
+    legs = {leg["protocol"]: leg for leg in mixed["sessions"]}
+    for name, rows in RECEIVE_ROWS.items():
+        upload, cuts = legs[name]["upload"], legs[name]["cuts"]
+        writes = upload["writes"]
+        manifest = manifests[name]
+        observed_words = [write["word"] for write in writes]
+        observed_addresses = [write["address"] for write in writes]
+        require(observed_words == manifest["words"] and cuts["start_count"] == manifest["start_count"] and
+                upload["idle_levels"] == manifest["idle_levels"] and upload["idle_enabled"] == manifest["idle_enabled"],
+                f"{name} RTL commands differed from the checked manifest")
+        outcomes = []
+        for end in manifest["exits"]:
+            bound = end["core_clocks"]
+            clock_bound = "none" if bound is None else f"some {bound}"
+            outcomes.append(f"(.{end['kind']}, {end['tx']}, {end['rx']}, {end['external_polls']}, {clock_bound})")
+        source.append(f"""
+example : ({rows}.map fun row => row.encode.toNat) = {observed_words} ∧
+    List.range {rows}.length = {observed_addresses} := by decide +kernel
+
+example : (((check {rows} {cuts['start_count']}).map
+      (fun paths => paths.map fun path => (path.exit, path.tx, path.rx, path.externalPolls, path.maxCoreClocks))) ==
+    some [{', '.join(outcomes)}]) = true := by decide +kernel
+
+example : ((check {rows} {cuts['start_count']}).any fun paths => paths.any fun path =>
+    path.exit == .complete && path.tx == {cuts['terminal_tx_reserved']} &&
+      path.rx == {cuts['terminal_rx_captured']}) = true := by decide +kernel
+""")
+    witness = out / "ObservedMixedReceiveImages.lean"
+    witness.write_text("\n".join(source) + "\n")
+    run([*lean, witness], "check-observed-mixed-receive-images")
+
+
 def check_ethernet_timing(run, lean, out, ethernet):
     """Match the measured host cuts and first reservation miss to Lean execution."""
     source = [
@@ -929,7 +982,7 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v10", passed=False, commands=[], source_commit=source_commit(),
+    report = dict(schema="pinwheel.ready-segments.v11", passed=False, commands=[], source_commit=source_commit(),
                   source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={},
                   mixed={}, ethernet_refill_boundary={})
     run = Commands(ROOT, logs, report["commands"])
@@ -953,6 +1006,7 @@ def main():
         report["image"] = image
         report["variants"] = {name: images[name] for name in ("split", "inverted-ack")}
         report["swd_images"] = read_swd_images(run, lean, out)
+        report["receive_images"] = read_receive_images(run, lean, out)
         builds = build_rtl(run, lean, tools, out)
         swd_builds = build_linked_bridges(run, tools, out, "swd")
         mixed_builds = build_linked_bridges(run, tools, out, "mixed", selectable_swdio=True)
@@ -1007,7 +1061,8 @@ def main():
             report["switches"][store] = switches
             report["swd"][store] = replay_swd(tools["vvp"], swd_builds[store], directory, report["swd_images"])
             report["mixed"][store] = replay_mixed(tools["vvp"], mixed_builds[store], directory / "mixed.bin",
-                images["split"], report["swd_images"]["standard"], observe=timing_status, execution=segment_execution,
+                images["split"], report["swd_images"]["standard"], receive_manifests=report["receive_images"],
+                observe=timing_status, execution=segment_execution,
                 spi_exchange=spi_exchange, i2c_exchange=i2c_exchange)
         require(report["stores"]["direct"] == report["stores"]["registered"],
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
@@ -1040,6 +1095,7 @@ def main():
         check_swd_execution(run, lean, out, swd, report["swd_images"])
         check_ethernet_timing(run, lean, out, report["ethernet"]["direct"])
         check_can_handoff(run, lean, out, switches)
+        check_mixed_receive_images(run, lean, out, report["mixed"]["direct"], report["receive_images"])
         require(source_commit() == report["source_commit"] and source_hashes() == report["source_sha256"],
                 "Source inputs changed during replay")
         require(all(sha(path) == expected for path, expected in frozen.items()), "Emitted inputs changed during replay")

@@ -56,10 +56,10 @@ def opcode_counts(transport):
     return {op.name: count for op, count in transport.opcode_counts.items() if count}
 
 
-def receive_frame(rtl, transport, host, loaded, recording, *, q, profile, payload, timing_delta=0):
-    """One actual START8, an autonomous frame, then exact drain/ACK/RELEASE."""
+def receive_frame(rtl, transport, host, loaded, recording, *, q, profile, payload, timing_delta=0, bit_count=8):
+    """One admitted START, an autonomous frame, then exact drain, ACK and RELEASE."""
     before, start_count = transport.transactions, transport.opcode_counts[Opcode.START]
-    pending = loaded.submit(bit_count=8)
+    pending = loaded.submit(bit_count=bit_count)
     start = pending.last
     require(start.busy and not start.retained and start.valid and start.tx_accepted == 0,
         'UART START did not arm a free valid RX-only owner')

@@ -76,9 +76,10 @@ def peer_frame(identifier, byte, corrupt=None):
 class ObserverPeer:
     """Resolve transmitter and external ACK drives on the digital CAN sense input."""
 
-    def __init__(self, frame, delay, skew_seed):
+    def __init__(self, frame, delay, skew_seed, *, completion_delta=0):
         self.frame = frame
         self.delay = delay
+        self.completion_delta = completion_delta
         self.starts = (0, *(BIT_CYCLES * index + (13 * index + skew_seed) % (2 * SKEW + 1) - SKEW
                             for index in range(1, CAPTURE_BITS)))
         self.busy_start = None
@@ -89,7 +90,7 @@ class ObserverPeer:
 
     @property
     def completion(self):
-        return self.sof + SOF_TO_COMPLETION
+        return self.sof + SOF_TO_COMPLETION + self.completion_delta
 
     def drive(self, cycle, pads, _ui=0):
         require(pads.logical.enabled == 0, 'Passive CAN observer enabled a protocol output')
@@ -135,9 +136,10 @@ class ObserverPeer:
 
 
 def exchange(rtl, transport, loaded, name, corrupt, delay, skew_seed,
-             *, identifier=IDENTIFIER, byte=PAYLOAD, observe=None):
+             *, identifier=IDENTIFIER, byte=PAYLOAD, observe=None, bit_count=CAPTURE_BITS,
+             completion_delta=0):
     frame = peer_frame(identifier, byte, corrupt)
-    peer = ObserverPeer(frame, delay, skew_seed)
+    peer = ObserverPeer(frame, delay, skew_seed, completion_delta=completion_delta)
     rtl.device = peer
     exchanges = (Opcode.EXCHANGE32, Opcode.EXCHANGE64)
     before = tuple(transport.opcode_counts[op] for op in exchanges)
@@ -161,7 +163,7 @@ def exchange(rtl, transport, loaded, name, corrupt, delay, skew_seed,
 
         rtl.record_sink = observe_edge
     try:
-        pending = loaded.submit(bit_count=CAPTURE_BITS)
+        pending = loaded.submit(bit_count=bit_count)
         started = pending.last
         require(peer.busy_start is not None and rtl.snapshot.busy and rtl.cycle < peer.sof,
                 'CAN START did not arm the observer before the peer SOF')

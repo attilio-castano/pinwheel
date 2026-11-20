@@ -110,12 +110,12 @@ class KeyboardPeer:
                     high_ticks=self.high, apertures=apertures)
 
 
-def exchange(rtl, transport, loaded, name, byte, bad_field, delay, low, high):
+def exchange(rtl, transport, loaded, name, byte, bad_field, delay, low, high, *, bit_count=FRAME_BITS):
     peer = KeyboardPeer(byte, bad_field, delay, low, high)
     rtl.device = peer
     exchanges = (Opcode.EXCHANGE32, Opcode.EXCHANGE64)
     before = tuple(transport.opcode_counts[op] for op in exchanges)
-    pending = loaded.submit(bit_count=FRAME_BITS)
+    pending = loaded.submit(bit_count=bit_count)
     require(peer.busy_start is not None and rtl.snapshot.busy, 'PS/2 START did not admit the receiver')
     transport.idle(peer.terminal - rtl.cycle)
     require(not rtl.snapshot.busy and before == tuple(transport.opcode_counts[op] for op in exchanges),
