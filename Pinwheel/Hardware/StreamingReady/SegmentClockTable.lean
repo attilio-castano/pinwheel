@@ -15,47 +15,67 @@ structure Table (R : Nat → Type) where
 def Table.read (table : Table R) (r : R w) : BitVec w :=
   BitVec.ofNat w table.values[(table.ports.position r).val]
 
-@[noinline] def capture (ports : Interface R) (values : Values R) : Table R :=
-  ⟨ports, Vector.ofFn (fun k => (values (ports.signal k).2).toNat)⟩
+/-- Retain the actual typed next-register expressions across clocks. -/
+structure Machine (a : Nat) where
+  ports : Interface (Register a)
+  expressions : Vector (Sigma (E a)) ports.size
 
-theorem capture_read (ports : Interface R) (values : Values R) (r : R w) :
-    (capture ports values).read r = values r := by
-  simp only [Table.read, capture, Vector.getElem_ofFn]
-  rw [ports.signal_position r]
-  simp
+@[noinline] def compile (a : Nat) (supported : a = 1 ∨ a = 2) (registered : Bool) : Machine a :=
+  let ports := (SegmentExport.core a supported registered).registers
+  ⟨ports, Vector.ofFn fun k => ⟨_, (circuit a registered).next (ports.signal k).2⟩⟩
 
-def store (a : Nat) (supported : a = 1 ∨ a = 2) (registered : Bool) (s : Values (Register a)) :
+@[noinline] def Machine.edge (m : Machine a) (i : Values Core.Input) (s : Values (Register a)) :
     Table (Register a) :=
-  capture (SegmentExport.core a supported registered).registers s
+  ⟨m.ports, m.expressions.map fun ⟨_, e⟩ => (e.eval i s).toNat⟩
 
-theorem store_eq (a : Nat) (supported : a = 1 ∨ a = 2) (registered : Bool)
-    (s : Values (Register a)) (r : Register a w) :
-    (store a supported registered s).read r = s r :=
-  capture_read _ s r
+private theorem prepared_read (ports : Interface (Register a)) (c : Circuit Core.Input (Register a) Core.Output)
+    (i : Values Core.Input) (s : Values (Register a)) (r : Register a w) :
+    ((Machine.mk ports (Vector.ofFn fun k => ⟨_, c.next (ports.signal k).2⟩)).edge i s).read r = c.step i s r := by
+  simp only [Table.read, Machine.edge, Vector.getElem_map]
+  rw [Vector.getElem_ofFn]
+  let evaluate (p : Sigma (Register a)) : Nat := ((c.next p.2).eval i s).toNat
+  change BitVec.ofNat w (evaluate (ports.signal (ports.position r))) = _
+  rw [ports.signal_position r]
+  simp [evaluate, Circuit.step]
 
-def cached (supported : a = 1 ∨ a = 2) (registered : Bool) (s : SegmentCausal.State a H P) :
-    SegmentCausal.State a H P :=
-  let table := store a supported registered s.core
-  {s with core := fun r => table.read r}
+theorem edge_read (supported : a = 1 ∨ a = 2) (registered : Bool)
+    (i : Values Core.Input) (s : Values (Register a)) (r : Register a w) :
+    ((compile a supported registered).edge i s).read r = (circuit a registered).step i s r :=
+  prepared_read _ _ i s r
 
-theorem cached_eq (supported : a = 1 ∨ a = 2) (registered : Bool) (s : SegmentCausal.State a H P) :
-    cached supported registered s = s := by
-  have eq : (fun {w} (r : Register a w) => (store a supported registered s.core).read r) = @s.core := by
+private def advance (m : Machine a) (registered : Bool) (host : SegmentCausal.Host H)
+    (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) : SegmentCausal.State a H P :=
+  let step := SegmentCausal.step registered host peer s
+  let table := m.edge (SegmentCausal.input registered host peer s) s.core
+  {step with core := fun r => table.read r}
+
+private theorem advance_eq (supported : a = 1 ∨ a = 2) (registered : Bool) (host : SegmentCausal.Host H)
+    (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) :
+    advance (compile a supported registered) registered host peer s = SegmentCausal.step registered host peer s := by
+  have same : (fun {w} (r : Register a w) =>
+      ((compile a supported registered).edge (SegmentCausal.input registered host peer s) s.core).read r) =
+      @(SegmentCausal.step registered host peer s).core := by
     funext w r
-    exact store_eq a supported registered s.core r
-  simp only [cached, eq]
+    exact edge_read supported registered _ s.core r
+  dsimp only [advance]
+  rw [same]
+
+private def snapshots (step : SegmentCausal.State a H P → SegmentCausal.State a H P)
+    (s : SegmentCausal.State a H P) : Nat → List (SegmentCausal.State a H P)
+  | 0 => [s]
+  | n + 1 => s :: snapshots step (step s) n
 
 /-- A finite causal history includes both the initial state and the state
     after the final physical clock. Each snapshot uses the emitter's register
     interface and decodes to the same actual circuit state. -/
 def history (supported : a = 1 ∨ a = 2) (registered : Bool) (host : SegmentCausal.Host H)
-    (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) : Nat → List (SegmentCausal.State a H P)
-  | 0 => [s]
-  | n + 1 => s :: history supported registered host peer (cached supported registered (SegmentCausal.step registered host peer s)) n
+    (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) (n : Nat) : List (SegmentCausal.State a H P) :=
+  snapshots (advance (compile a supported registered) registered host peer) s n
 
 theorem history_at (supported : a = 1 ∨ a = 2) (registered : Bool) (host : SegmentCausal.Host H)
     (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) (n k : Nat) (within : k ≤ n) :
     (history supported registered host peer s n)[k]? = some (SegmentCausal.run registered host peer s k) := by
+  unfold history
   induction n generalizing s k with
   | zero =>
     have zero : k = 0 := by omega
@@ -65,7 +85,7 @@ theorem history_at (supported : a = 1 ∨ a = 2) (registered : Bool) (host : Seg
     cases k with
     | zero => rfl
     | succ k =>
-      simp only [history, List.getElem?_cons_succ, cached_eq, SegmentCausal.run]
+      simp only [snapshots, List.getElem?_cons_succ, advance_eq, SegmentCausal.run]
       exact ih (SegmentCausal.step registered host peer s) k (Nat.le_of_succ_le_succ within)
 
 end Pinwheel.Hardware.StreamingReady.SegmentClockTable
