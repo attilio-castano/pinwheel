@@ -58,8 +58,11 @@ import Pinwheel.Program.StreamingReadyFields
 import Pinwheel.Program.StreamingReadyOwnerCut
 import Pinwheel.Program.StreamingReadyProgress
 import Pinwheel.Program.StreamingReadyReservation
+import Pinwheel.Program.StreamingReadyRegisterReadVariants
 import Pinwheel.Program.StreamingReadySafety
 import Pinwheel.Program.StreamingReadySegmentReadback
+import Pinwheel.Program.StreamingReadySegmentExecution
+import Pinwheel.Program.StreamingReadySegmentSplit
 import Pinwheel.Program.StreamingReadyService
 import Pinwheel.Program.StreamingReadySession
 import Pinwheel.Program.StreamingReadySessionService
