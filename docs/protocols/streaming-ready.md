@@ -583,7 +583,7 @@ START-to-terminal run remains open.
 
 ### Shared Ready runner
 
-SPI, the combined I²C read, and Ethernet use `ReadyHost.load`,
+SPI, the combined I²C read, branching SWD, and Ethernet use `ReadyHost.load`,
 `LoadedReady.submit`, and `ReadyPending.finish`. The runner collects contiguous RX intervals under
 one owner and confirms the final acknowledgment before RELEASE. SPI supplies
 an exact bit count. The combined I²C read takes its request, TX plan, and
@@ -592,7 +592,9 @@ the address and register echoes and matches the captured ACK against the
 declared exit. A timeout returns the captured prefix and keeps the owner live
 until the caller explicitly invokes `cancel`. The existing quad receipts
 carry accepted TX counts. The runner derives consumed and cancelled TX
-counts for successful exits from the checked plan and decoded RX.
+counts for successful exits from the checked plan and decoded RX. I²C and
+branching SWD use the same checked path-plan interface for completion,
+early exit, and capture length.
 
 The [ownership proof](../../Pinwheel/Hardware/StreamingReady/ProtocolOwnership.lean)
 accounts for each accepted TX bit as reserved, discarded by an early exit,
@@ -606,6 +608,31 @@ The source gate uses the shared runner for standalone SPI and for SPI
 warm-loaded on the same host after I²C early RELEASE. It checks the measured
 ownership reports in Lean, including the timeout cut before explicit
 cancellation, and compares the emitted stores with independent wire peers.
+
+### Branching SWD RDBUFF read
+
+The [59-row image](../../Pinwheel/Program/StreamingSWDBranching.lean) reads
+the result of a modeled prior AP read from DP RDBUFF. It assumes a
+point-to-point target already in SWD mode, one-clock turnaround, and
+overrun detection disabled. Its three ACK bits select a path in the engine.
+OK captures the 32-bit value and parity. WAIT and FAULT take the short
+path through a released turnaround and eight driven-low idle clocks.
+A malformed ACK keeps SWDIO released through a possible 33-bit data
+phase and the following turnaround. Retrying a WAIT and resynchronizing
+after a malformed ACK are separate operations.
+[Arm ADIv5, sections B4.2.3–B4.2.5](https://documentation-service.arm.com/static/622222b2e6f58973271ebc21)
+
+Every SWD path completes in the engine and returns its capture under the
+same owner. The decoder reports OK, WAIT, FAULT, bad parity, or malformed
+ACK. The runner acknowledges all 36 captured bits on an OK path and all
+three on the other paths before RELEASE.
+
+The source gate tests these five outcomes on the direct and registered
+stores, with four core clocks per SWCLK high half-cycle. Separately captured
+ACK bits exercise RX credit backpressure while SWCLK is low and SWDIO is
+released. Lean checks the measured branch decisions, service clocks, RX
+bits, and custody. The independent wire peer rejects an inverted ACK branch
+and a driven turnaround. The same gate replays the fixed DPIDR image.
 
 ### Warm CAN and I²C handoff
 

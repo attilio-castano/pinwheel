@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay I2C, SPI, and timed Ethernet on both Ready instruction stores."""
+"""Replay segmented protocols on both source-emitted Ready instruction stores."""
 
 import argparse
 from dataclasses import asdict
@@ -10,11 +10,13 @@ import subprocess
 
 from i2c_read_peers import I2CReadPeer, I2CReadWireError
 import streaming_8x4_ethernet as ethernet_replay
+import streaming_8x4_swd_dpidr as dpidr_replay
 from streaming_peers import StreamingSPIPeer
 from streaming_ready_artifacts import LOWERING_PASSES, lowering_copy
 from streaming_ready_compile import spi_image
+import streaming_ready_swd_branching_replay as swd_replay
 from streaming_ready_switch_replay import replay_switch
-from streaming_ready_transport import CombinedI2cRead, ReadyHost, byte_bits
+from streaming_ready_transport import BranchingSwdRead, CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
 from streaming_rtl import QuadRTL
 from streaming_transport import (Code, Opcode, QuadTransport, Receipt, StreamProtocolError, StreamRejected,
@@ -71,9 +73,9 @@ def lower(run, circt, source, directory, label):
     return rtl
 
 
-def diagnostic_bridge():
+def diagnostic_bridge(*, swdio_link=False):
     """Record core accounting ports alongside, and separate from, public pads."""
-    bridge = bridge_source(2)
+    bridge = bridge_source(2, swdio_link=swdio_link)
     token = '      $display("STREAM_QUAD '
     clock = "      clk=1;#10;clk=0;"
     require(bridge.count(token) == bridge.count(clock) == 1, "Expected one clock and reply per Ready edge")
@@ -82,6 +84,13 @@ def diagnostic_bridge():
     pre_fields = ", ".join(PRE_EDGE.values())
     before = f'      $display("SEGMENT_PRE{" %0d" * len(PRE_EDGE)}", {pre_fields});\n'
     return bridge.replace(clock, before + clock).replace(token, probe + token)
+
+
+def compile_bridge(run, tools, core, frontend, package, tt, bridge, label):
+    executable = core.parent / f"{bridge.stem}.vvp"
+    run([tools["iverilog"], "-g2012", "-s", "streaming_quad_host_bridge", "-o", executable,
+         core, frontend, package, tt, bridge], label)
+    return executable
 
 
 def build_rtl(run, lean, tools, out):
@@ -109,13 +118,19 @@ def build_rtl(run, lean, tools, out):
     builds = {}
     for store, directory in emitted.items():
         rtl = lower(run, tools["circt"], directory / "core.mlir", out / store, f"lower-{store}")
-        executable = rtl.parent / "bridge.vvp"
-        run([tools["iverilog"], "-g2012", "-s", "streaming_quad_host_bridge", "-o", executable,
-             rtl, frontend_rtl, package, tt, bridge], f"compile-{store}")
-        builds[store] = executable
+        builds[store] = compile_bridge(run, tools, rtl, frontend_rtl, package, tt, bridge, f"compile-{store}")
     require((out / "direct/core.sv").read_bytes() != (out / "registered/core.sv").read_bytes(),
             "Lowering erased the store distinction")
     return builds
+
+
+def build_swd_bridges(run, tools, out):
+    shell = out / "shell"
+    bridge = shell / "swd-bridge.sv"
+    bridge.write_text(diagnostic_bridge(swdio_link=True))
+    return {store: compile_bridge(run, tools, out / store / "core.sv", shell / "frontend.sv",
+                                  shell / "package.sv", shell / "tt.sv", bridge, f"compile-swd-{store}")
+            for store in STORES}
 
 
 def wire_tx():
@@ -137,6 +152,27 @@ def read_image(run, lean, out, variant="standard"):
     return image
 
 
+def read_swd_images(run, lean, out):
+    manifests = {}
+    for name in ("standard", "inverted-ack", "short-turnaround"):
+        raw = run([*lean, "--run", "test/StreamingReadySWDImages.lean", name], f"compile-swd-{name}-image")
+        manifest = json.loads(raw)
+        (out / f"swd-{name}-image.json").write_text(json.dumps(manifest, indent=2) + "\n")
+        manifests[name] = manifest
+    return manifests
+
+
+def replay_swd(vvp, executable, directory, manifests):
+    images = {name: BranchingSwdRead.from_manifest(manifest) for name, manifest in manifests.items()}
+    reports = {"standard": swd_replay.replay(vvp, executable, directory / "swd-standard.bin", images["standard"],
+                                             observe=timing_status, execution=segment_execution)}
+    for name in ("inverted-ack", "short-turnaround"):
+        reports[name] = swd_replay.replay_negative(vvp, executable, directory / f"swd-{name}.bin",
+                                                   images[name], name, observe=timing_status)
+    reports["dpidr"] = dpidr_replay.replay(vvp, executable, directory / "swd-dpidr.bin")
+    return reports
+
+
 def status(rtl):
     words = rtl.log[-2].split()
     require(len(words) == len(STATUS) + 1 and words[0] == "SEGMENT_STATUS", "Missing core status observation")
@@ -156,7 +192,7 @@ def observe_core(rtl, trace, observations):
     rtl.record_sink = record
 
 
-def i2c_execution(edges, words):
+def segment_execution(edges, words):
     """Project the executed rows and service from the core's clocked observations."""
     start = next(index for index, cut in enumerate(edges)
                  if cut["command"] == 3 and cut["pre_phase"] == 0 and cut["phase"] == 1)
@@ -178,9 +214,15 @@ def i2c_execution(edges, words):
             if cut["phase"] == 2:
                 parked += 1
             else:
-                require(cut["phase"] == 3 and cut["tx_consumed"] == cut["pre_tx_consumed"] + 1,
-                        "I2C stream left its boundary without reserving its next bit")
-                tx_bits.append(bool(following["cell_bit"]))
+                transmits = bool(cut["pre_stream_flags"] & 8)
+                require(cut["phase"] == 3 and cut["tx_consumed"] == cut["pre_tx_consumed"] + int(transmits),
+                        "Segmented stream left its boundary with the wrong TX reservation")
+                if transmits:
+                    tx_bits.append(bool(following["cell_bit"]))
+        if phase == 3 and kind == 1 and cut["phase"] == 4:
+            supplies.append({"kind": "cell", "parked": parked, "samples": [cut["stage2"]]})
+            parked = 0
+            slots += 1
         if phase == 7:
             polls.append(cut["stage2"])
             if cut["phase"] != 7:
@@ -189,13 +231,13 @@ def i2c_execution(edges, words):
                     parked = 0
                     slots += 1
                 else:
-                    require(kind == 4, "Unexpected word at an I2C guard poll")
+                    require(kind == 4, "Unexpected word at a standalone guard poll")
                     supplies.append({"kind": "wait", "samples": polls})
                 polls = []
         if cut["phase"] in (5, 6):
             terminal = {"pc": cut["pc"], "phase": cut["phase"],
                         "edge": cut["edge"], "clocks": cut["edge"] - edges[start]["edge"],
-                        "slot": slots - 1 if kind == 1 else 0,
+                        "slot": slots - 1 if phase == 7 and kind == 1 else 0,
                         "poll_countdown": cut["countdown"], "tx_reserved": cut["tx_consumed"],
                         "rx_produced": cut["rx_produced"]}
             break
@@ -313,7 +355,7 @@ def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked
         require(first.tx_accepted == BUDGET, "Host did not queue the full path before any branch decision")
         pending.wait(max_exchanges=20)
         counters = status(rtl)
-        execution = i2c_execution(observations, image["words"])
+        execution = segment_execution(observations, image["words"])
         require(execution["terminal"] is not None, "Did not observe the I2C terminal cut")
     finally:
         rtl.record_sink = trace
@@ -455,7 +497,7 @@ def replay_inverted_ack(vvp, executable, path, image, reference):
                 raise RuntimeError("Inverted ACK branch passed the independent I2C wire oracle")
     finally:
         recorded = trace.close()
-    execution = i2c_execution(observations, image["words"])
+    execution = segment_execution(observations, image["words"])
     (branch,) = execution["branches"]
     normal = reference["execution"]["branches"][0]
     target = (image["words"][branch["pc"]] >> 3) & 63
@@ -494,7 +536,7 @@ def check_readback(run, lean, out, cases):
     run([*lean, witness], "check-observed-readback")
 
 
-def check_ownership(run, lean, out, cases, ethernet, split, switches):
+def check_ownership(run, lean, out, cases, ethernet, split, switches, swd):
     reports = {name.replace("-", "_") + "_" + summary["closure"]: summary
                for name in (*CASES.keys(), "deadline") for summary in cases[name]["ownership"]}
     reports["spi_released"] = cases["spi"]["exchange"]["ownership"]
@@ -513,6 +555,9 @@ def check_ownership(run, lean, out, cases, ethernet, split, switches):
         terminal, released = (Receipt(**evidence[key]) for key in ("terminal", "release"))
         reports[f"ethernet_{name}_released"] = ownership(
             evidence["terminal_counters"], terminal, released, "completed", "released")
+    for entry in swd["standard"]["cases"]:
+        reports["swd_" + entry["name"].replace("-", "_") + "_released"] = ownership(
+            entry["counters"], Receipt(**entry["receipt"]), Receipt(**entry["release"]), "completed", "released")
     source = ["import Pinwheel.Hardware.StreamingReady.ProtocolOwnership",
               "open Pinwheel.Hardware.StreamingReady.ProtocolOwnership", ""]
     for name, record in reports.items():
@@ -540,6 +585,19 @@ def lean_bits(bits):
     return "[" + ", ".join("true" if bit else "false" for bit in bits) + "]"
 
 
+def lean_observations(items):
+    supplied = []
+    for item in items:
+        samples = "[" + ", ".join(f"{sample}#2" for sample in item["samples"]) + "]"
+        supplied.append(f".cell {item['parked']} {samples}" if item["kind"] == "cell" else f".wait {samples}")
+    return "[" + ", ".join(supplied) + "]"
+
+
+def lean_branches(edges):
+    branches = [(edge["bit"], edge["next_pc"] != edge["pc"] + 1) for edge in edges]
+    return "[" + ", ".join(f"({str(bit).lower()}, {str(taken).lower()})" for bit, taken in branches) + "]"
+
+
 def check_i2c_execution(run, lean, out, images, original, split, switches):
     """Feed sampler events observed on both stores to the branch-sensitive semantics."""
     source = [
@@ -562,11 +620,6 @@ def check_i2c_execution(run, lean, out, images, original, split, switches):
                 continue
             executed = case["execution"]
             terminal = executed["terminal"]
-            supplied = []
-            for item in executed["supplies"]:
-                samples = "[" + ", ".join(f"{sample}#2" for sample in item["samples"]) + "]"
-                supplied.append(f".cell {item['parked']} {samples}" if item["kind"] == "cell"
-                                else f".wait {samples}")
             tx, rx = terminal["tx_reserved"], terminal["rx_produced"]
             if case["missed_deadline"]:
                 require(terminal["poll_countdown"] == 0, "Fault did not expire at the final poll")
@@ -579,21 +632,15 @@ def check_i2c_execution(run, lean, out, images, original, split, switches):
                 require(terminal["clocks"] <= path["core_clocks"] + parked,
                         "Observed execution exceeded the checked path bound plus measured credit delay")
                 outcome = f".planned ⟨.{kind}, {tx}, {rx}, {path['core_clocks']}⟩"
-            branches = [
-                "(" + ("true" if edge["bit"] else "false") + ", "
-                + ("true" if edge["next_pc"] != edge["pc"] + 1 else "false") + ")"
-                for edge in executed["branches"]
-            ]
-            branch_list = "[" + ", ".join(branches) + "]"
             label = variant + "_" + name.replace("-", "_")
             source.append(f"""
 def {label} := run {rows} {BUDGET} {lean_bits(manifest['tx_bits'])}
-  [{", ".join(supplied)}]
+  {lean_observations(executed['supplies'])}
 
 example : {label}.any (fun r =>
     decide (r.terminal = {outcome}) &&
     decide (r.fetchPCs = {executed['fetches']}) &&
-    decide (r.branches = {branch_list}) &&
+    decide (r.branches = {lean_branches(executed['branches'])}) &&
     decide (r.txBits = {lean_bits(executed['tx_bits'])}) &&
     decide (r.rxBits = {lean_bits(case['rx_bits'])}) &&
     r.remainingObservations.isEmpty) = true := by decide +kernel
@@ -601,6 +648,48 @@ example : {label}.any (fun r =>
     witness = out / "ObservedReadyRowExecution.lean"
     witness.write_text("\n".join(source) + "\n")
     run([*lean, witness], "check-observed-row-execution", timeout=300)
+
+
+def check_swd_execution(run, lean, out, swd, manifests):
+    variants = {"standard": "standard", "inverted-ack": "invertedAck", "short-turnaround": "shortTurnaround"}
+    outcomes = {"wait": ".wait", "fault": ".fault", "bad-parity": ".badParity", "invalid-ack": ".invalidAck"}
+    source = [
+        "import Pinwheel.Hardware.StreamingReady.SWDSession",
+        "import Pinwheel.Program.StreamingSWDBranching",
+        "open Pinwheel.Program.StreamingSWDBranching",
+        "open Pinwheel.Program.StreamingReadySegments.Execution",
+        "set_option maxRecDepth 8192",
+    ]
+    for name, variant in variants.items():
+        source.append(f"example : (image .{variant}).words.map BitVec.toNat = {swd[name]['words']} := by decide +kernel")
+    source.append("example : Pinwheel.Hardware.StreamingReady.SWDSession.readImage.words.map BitVec.toNat = "
+                  f"{swd['dpidr']['words']} := by decide +kernel")
+    for entry in swd["standard"]["cases"]:
+        name = entry["name"]
+        label = "swd_" + name.replace("-", "_")
+        executed = entry["execution"]
+        terminal = executed["terminal"]
+        parked = sum(item.get("parked", 0) for item in executed["supplies"])
+        clocks = terminal["clocks"] - parked
+        rx = terminal["rx_produced"]
+        require(terminal["phase"] == 5 and entry["receipt"]["rx_start"] == rx and
+                any((path["kind"], path["tx"], path["rx"], path["core_clocks"]) == ("complete", 0, rx, clocks)
+                    for path in manifests["standard"]["exits"]),
+                "SWD measured execution disagreed with its exact serviced path clocks")
+        outcome = f".ok {entry['result']['word']}#32" if name == "ok" else outcomes[name]
+        source.append(f"""
+def {label} := run (rows 3 .standard) 0 [] {lean_observations(executed['supplies'])} idlePins
+example : {label}.any (fun r =>
+    decide (r.terminal = .planned ⟨.complete, 0, {rx}, {clocks}⟩) &&
+    decide (r.fetchPCs = {executed['fetches']}) &&
+    decide (r.branches = {lean_branches(executed['branches'])}) &&
+    decide (r.rxBits = {lean_bits(entry['rx_bits'])}) &&
+    decide (decode r.rxBits = {outcome}) &&
+    r.txBits.isEmpty && r.remainingObservations.isEmpty) = true := by decide +kernel
+""")
+    witness = out / "ObservedBranchingSWD.lean"
+    witness.write_text("\n".join(source) + "\n")
+    run([*lean, witness], "check-observed-swd-execution")
 
 
 def check_can_handoff(run, lean, out, switches):
@@ -747,8 +836,8 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v5", passed=False, commands=[], source_commit=source_commit(),
-                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={})
+    report = dict(schema="pinwheel.ready-segments.v6", passed=False, commands=[], source_commit=source_commit(),
+                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={})
     run = Commands(ROOT, logs, report["commands"])
     try:
         report["toolchain"], tools, _ = tool_config()
@@ -760,7 +849,9 @@ def main():
         image = images["standard"]
         report["image"] = image
         report["variants"] = {name: images[name] for name in ("split", "inverted-ack")}
+        report["swd_images"] = read_swd_images(run, lean, out)
         builds = build_rtl(run, lean, tools, out)
+        swd_builds = build_swd_bridges(run, tools, out)
         frozen = {path: sha(path) for path in out.rglob("*") if path.is_file() and path.parent != logs}
         for store, executable in builds.items():
             directory = out / (store + "-replay")
@@ -805,6 +896,7 @@ def main():
                                                          images["split"]["wait_budget"])
                 switches[name] = result
             report["switches"][store] = switches
+            report["swd"][store] = replay_swd(tools["vvp"], swd_builds[store], directory, report["swd_images"])
         require(report["stores"]["direct"] == report["stores"]["registered"],
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
         require(report["ethernet"]["direct"] == report["ethernet"]["registered"],
@@ -813,18 +905,22 @@ def main():
                 "Instruction stores changed the split or inverted-ACK execution")
         require(report["switches"]["direct"] == report["switches"]["registered"],
                 "Instruction stores changed the protocol handoff")
+        require(report["swd"]["direct"] == report["swd"]["registered"],
+                "Instruction stores changed the SWD wire events or ownership receipts")
         switches = report["switches"]["direct"]
+        swd = report["swd"]["direct"]
         traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES),
                   *(f"split-{name}" for name in report["split"]["direct"]), "inverted-ack",
-                  *(f"switch-{name}" for name in switches))
+                  *(f"switch-{name}" for name in switches), *(f"swd-{name}" for name in swd))
         for name in traces:
             direct = (out / "direct-replay" / f"{name}.bin").read_bytes()
             cached = (out / "registered-replay" / f"{name}.bin").read_bytes()
             require(direct == cached and direct and len(direct) % 20 == 0, f"Changed public pin trace: {name}")
         check_readback(run, lean, out, report["stores"]["direct"])
         check_ownership(run, lean, out, report["stores"]["direct"], report["ethernet"]["direct"],
-                        report["split"]["direct"], switches)
+                        report["split"]["direct"], switches, swd)
         check_i2c_execution(run, lean, out, images, report["stores"]["direct"], report["split"]["direct"], switches)
+        check_swd_execution(run, lean, out, swd, report["swd_images"])
         check_ethernet_timing(run, lean, out, report["ethernet"]["direct"])
         check_can_handoff(run, lean, out, switches)
         require(source_commit() == report["source_commit"] and source_hashes() == report["source_sha256"],
