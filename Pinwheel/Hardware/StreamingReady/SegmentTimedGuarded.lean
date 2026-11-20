@@ -20,7 +20,7 @@ open SegmentAdmission (TimedService)
 def slotBudget (cell : Cell) (n : Fin 255) (bound : Nat) : Nat :=
   bound + cell.lowDuration.val + n.val + cell.highDuration.val + 4
 
-private theorem split_dwell (clocks : List (Values Core.Input)) (ticks : Nat) (room : ticks < clocks.length) :
+theorem split_dwell (clocks : List (Values Core.Input)) (ticks : Nat) (room : ticks < clocks.length) :
     ∃ (holds : List (Values Core.Input)) (last : Values Core.Input) (rest : List (Values Core.Input)),
       clocks = holds ++ @last :: rest ∧ holds.length = ticks := by
   have nonempty : clocks.drop ticks ≠ [] := by
