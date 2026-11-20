@@ -173,9 +173,9 @@ class RdbuffPeer:
                     slots=self.slots, apertures=apertures)
 
 
-def exchange(rtl, loaded, case, *, observe, execution):
+def exchange(rtl, loaded, case, *, observe, execution, peer_factory=RdbuffPeer):
     name, ack, word, bad_parity = case
-    peer = RdbuffPeer(ack, word, bad_parity)
+    peer = peer_factory(ack, word, bad_parity)
     sink, records, core_edges, captures = rtl.record_sink, [], [], []
     produced = observe(rtl)["rx_produced"] if observe is not None else 0
     require(produced == 0, "A SWD transfer inherited a prior capture")

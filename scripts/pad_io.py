@@ -5,6 +5,7 @@ from pinwheel_host import Pins
 
 OUTPUT_MASK = 0x1c
 INPUT_MASK = 0x03
+SWDIO_LINK = 4
 PAD_MAP = dict(logical_inputs=[0, 1], logical_outputs=[2, 3, 4],
                spi=dict(mosi=2, sclk=3, cs_n=4, miso=0),
                uart=dict(tx=2, rx=0),
@@ -14,7 +15,7 @@ PAD_MAP = dict(logical_inputs=[0, 1], logical_outputs=[2, 3, 4],
 
 @dataclass(frozen=True)
 class PadDrive:
-    """External strong drivers, weak pullups and two declared I2C board links."""
+    """External strong drivers, weak pullups and declared board wiring."""
     levels: int = 0
     enabled: int = 0
     links: int = 0
@@ -25,8 +26,8 @@ class PadDrive:
             value = getattr(self, name)
             if type(value) is not int or not 0 <= value <= 255:
                 raise ValueError('External pad ' + name + ' must fit eight bits')
-        if type(self.links) is not int or not 0 <= self.links < 4:
-            raise ValueError('Board links must fit two bits')
+        if type(self.links) is not int or not 0 <= self.links <= SWDIO_LINK:
+            raise ValueError('Expected I2C open-drain links or a standalone SWDIO link')
 
 
 @dataclass(frozen=True)
@@ -60,6 +61,10 @@ class PadObservation:
         if drive.links & 1:
             required |= 5
         if drive.links & 2:
+            required |= 10
+        if drive.links == SWDIO_LINK:
+            if self.enabled & 10 and drive.enabled & 10:
+                raise RuntimeError('Both devices drive the linked SWDIO pads')
             required |= 10
         if self.known & required != required:
             raise RuntimeError('Unknown/contention on resolved package pads: ' + repr(self))
