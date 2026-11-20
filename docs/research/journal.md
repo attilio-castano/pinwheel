@@ -6560,7 +6560,7 @@ public observation with the independent full-register circuit. General
 `Buffered.run` source-execution simulation remains open. Mixed configuration
 replacement and rejected runtime writes have finite recording evidence.
 
-The offline [Program to pins explorer](../explorer/index.html#session) records
+The offline [Program to pins explorer](https://attilio-castano.github.io/pinwheel/#session) records
 691 actual typed SRAM/controller edges and three independently checked SPI
 results. It includes same-image payload reuse, result reads, stale/matching
 release and one-byte slower-clock replacement. The exporter compares 24,185

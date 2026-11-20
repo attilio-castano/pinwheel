@@ -6,26 +6,32 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 from dataclasses import asdict
 from datetime import datetime, timezone
-from html.parser import HTMLParser
+from functools import cache
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPLORER = ROOT / "docs" / "explorer"
 CACHE = ROOT / "build" / "explorer"
-LARGE_RECORDINGS = ("buffered-session.json", "i2c-traces.json")
-RECEIPT_SCHEMA = "pinwheel-explorer-recording-receipts-v1"
+OUTPUT = ROOT / "build" / "explorer-site" / "index.html"
+CANDIDATE_RECORDINGS = ("buffered-session.json", "i2c-traces.json")
+RECORDING_FILES = ("uart-trace.json", "spi-traces.json", *CANDIDATE_RECORDINGS)
+RECEIPT_SCHEMA = "pinwheel-explorer-recording-receipts-v2"
 SEMANTIC_DIGEST = "sha256-canonical-json-v1"
+
+
+def canonical_json(value) -> bytes:
+    return json.dumps(value, ensure_ascii=False, allow_nan=False,
+        sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def canonical_sha256(value) -> str:
     """Hash JSON values, independently of indentation or object member order."""
-    encoded = json.dumps(value, ensure_ascii=False, allow_nan=False,
-        sort_keys=True, separators=(",", ":")).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
+    return hashlib.sha256(canonical_json(value)).hexdigest()
 
 
 def read_json(text: str):
@@ -43,62 +49,13 @@ def read_json(text: str):
     return json.loads(text, object_pairs_hook=unique_members, parse_constant=invalid_constant)
 
 
-class SnapshotData(HTMLParser):
-    """Read the inert data script; never evaluate JavaScript or HTML."""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=False)
-        self.blocks = []
-        self.current = None
-
-    def handle_starttag(self, tag, attrs):
-        attributes = dict(attrs)
-        if tag == "script" and attributes.get("id") == "explorer-data":
-            if attributes.get("type") != "application/json" or self.current is not None:
-                raise ValueError("Explorer snapshot has an invalid recording data script.")
-            self.current = []
-
-    def handle_data(self, data):
-        if self.current is not None:
-            self.current.append(data)
-
-    def handle_endtag(self, tag):
-        if tag == "script" and self.current is not None:
-            self.blocks.append("".join(self.current))
-            self.current = None
+def read_recordings(candidates=None):
+    candidates = candidates or {}
+    return {name: candidates[name] if name in candidates else read_json((EXPLORER / name).read_text())
+            for name in RECORDING_FILES}
 
 
-def snapshot_payload(path: Path):
-    if not path.is_file():
-        raise ValueError("No recording cache or standalone explorer snapshot; regenerate the recordings first.")
-    parser = SnapshotData()
-    parser.feed(path.read_text())
-    parser.close()
-    if parser.current is not None or len(parser.blocks) != 1:
-        raise ValueError("Explorer snapshot must contain exactly one complete JSON data script.")
-    return read_json(parser.blocks[0])
-
-
-def large_recordings():
-    """Prefer generated caches; a bad cache must fail, not silently fall back."""
-    recordings = {}
-    snapshot = None
-    for name in LARGE_RECORDINGS:
-        cached = CACHE / name
-        if cached.exists():
-            recordings[name] = read_json(cached.read_text())
-            continue
-        if snapshot is None:
-            snapshot = snapshot_payload(EXPLORER / "index.html")
-        if name == "buffered-session.json":
-            recordings[name] = snapshot["bufferedSession"]
-        else:
-            recordings[name] = {"traces": [trace for trace in snapshot["protocolTraces"]
-                if trace["protocol"] == "i2c"]}
-    return recordings
-
-
-def recording_receipts(recordings):
+def recording_receipts(recordings, source_trees):
     session = recordings["buffered-session.json"]
     i2c = recordings["i2c-traces.json"]["traces"]
     if len(i2c) != 4 or any(trace["protocol"] != "i2c" for trace in i2c):
@@ -114,7 +71,10 @@ def recording_receipts(recordings):
         "schema": RECEIPT_SCHEMA,
         "digestConvention": SEMANTIC_DIGEST,
         "digestEncoding": "UTF-8 JSON; sorted object keys; compact separators; unescaped Unicode; finite numbers",
+        "sourceTrees": source_trees,
         "recordings": {
+            "uart-trace.json": {"sha256": canonical_sha256(recordings["uart-trace.json"])},
+            "spi-traces.json": {"sha256": canonical_sha256(recordings["spi-traces.json"])},
             "buffered-session.json": {
                 "sha256": canonical_sha256(session),
                 "id": session["id"],
@@ -145,13 +105,9 @@ def recording_receipts(recordings):
     }
 
 
-def verify_receipts(expected):
+def read_receipts():
     path = EXPLORER / "recordings.json"
-    if not path.is_file():
-        raise ValueError("Missing recordings.json; validate and accept recordings with --refresh-receipts.")
-    actual = read_json(path.read_text())
-    if actual != expected:
-        raise ValueError("Recording data or receipt changed; regenerate and validate with --refresh-receipts before accepting it.")
+    return read_json(path.read_text()) if path.is_file() else None
 
 
 def revision() -> str:
@@ -179,20 +135,21 @@ def references(value):
             yield from references(child)
 
 
-def validate_source_hashes(trace):
-    if not trace.get("sourceHashes"):
-        raise ValueError(f"Recording {trace['id']} must identify its source bytes.")
-    for rel, expected in trace["sourceHashes"].items():
-        path = (ROOT / rel).resolve()
-        if not path.is_relative_to(ROOT) or not path.is_file():
-            raise ValueError(f"Missing or invalid trace source: {rel}")
-        actual = hashlib.sha256(path.read_bytes()).hexdigest()
-        if actual != expected:
-            raise ValueError(f"Recorded trace source changed: {rel}; regenerate it first.")
+def git_source(source_tree, path):
+    if not isinstance(source_tree, str) or not re.fullmatch(r"[0-9a-f]{40}", source_tree):
+        raise ValueError(f"Recording source tree must be a full Git commit ID: {source_tree}")
+    if any(part in {"", ".", ".."} for part in path.split("/")) or "\x00" in path:
+        raise ValueError(f"Invalid recording source path: {path}")
+    result = subprocess.run(
+        ["git", "--no-replace-objects", "cat-file", "blob", f"{source_tree}:{path}"],
+        cwd=ROOT, capture_output=True,
+    )
+    if result.returncode:
+        raise ValueError(f"Missing source at recording tree {source_tree}: {path}")
+    return result.stdout
 
 
 def validate_recording(trace):
-    validate_source_hashes(trace)
     frames = trace["frames"]
     end = trace["activeCycles"]
     if len(frames) != end + 2 or [f["cycle"] for f in frames] != list(range(len(frames))):
@@ -236,15 +193,8 @@ def validate_recording(trace):
 
 
 def validate_buffered_session(session):
-    from buffered_counted_hardware import _read_program, decode_control
-    from buffered_reactive_hardware import decode_reactive_instruction
-    from buffered_sram_hardware import (ALLOCATED_SRAM_BITS, FORMAT,
-        ROW_METADATA_WIDTH, SRAM_COPIES, SRAM_WORD_WIDTH, lower_sram)
-    from buffered_reactive_hardware_rtl import STATE_WIDTHS
-
-    validate_source_hashes(session)
     if (session.get("schema") != "pinwheel-explorer-buffered-session-v1" or
-            session["target"] != FORMAT or session["checks"].get("passed") is not True):
+            session["checks"].get("passed") is not True):
         raise ValueError("Buffered session must identify the checked SRAM target.")
     frames, stages, images = session["frames"], session["stages"], session["images"]
     if not frames or [f["edge"] for f in frames] != list(range(len(frames))):
@@ -262,33 +212,6 @@ def validate_buffered_session(session):
         raise ValueError("Buffered session stage and image identities must be unique.")
     image_by_id = {image["id"]: image for image in images}
     stage_ids = {stage["id"] for stage in stages}
-    for image in images:
-        bound = lower_sram(_read_program(image["source"]["definition"]))
-        rows = image["rows"]
-        if image["target"] != FORMAT or image["programKey"] != bound.program_key or image["imageKey"] != bound.key:
-            raise ValueError("Buffered source/image identity differs from canonical lowering.")
-        if (image["virtualSpan"], image["txBits"], image["rxBits"], len(rows)) != (
-                bound.virtual_span, bound.tx_bits, bound.rx_bits, len(bound.words)):
-            raise ValueError("Buffered image geometry differs from its source.")
-        if [row["pc"] for row in rows] != list(range(len(rows))):
-            raise ValueError("Buffered resident rows must preserve address order.")
-        if ([int(row["wordHex"], 16) for row in rows] != list(bound.words) or
-                [int(row["controlHex"], 16) for row in rows] != list(bound.controls) or
-                [row["branchIndex"] for row in rows] != list(bound.branch_indices) or
-                [d["index"] for d in image["dictionary"]] != list(range(16)) or
-                [int(d["wordHex"], 16) for d in image["dictionary"]] != list(bound.branch_table)):
-            raise ValueError("Buffered recorded rows/dictionary differ from admitted source bytes.")
-        for row, word, control in zip(rows, bound.words, bound.controls):
-            if (row["instruction"] != asdict(decode_reactive_instruction(word)) or
-                    row["loop"] != asdict(decode_control(control))):
-                raise ValueError("Buffered displayed instruction/loop differs from its resident bytes.")
-        storage = dict(bound.storage(), instructionWordBits=SRAM_WORD_WIDTH,
-            metadataBits=ROW_METADATA_WIDTH, physicalRowBits=SRAM_WORD_WIDTH + ROW_METADATA_WIDTH,
-            dictionaryWordBits=56, instructionReplicas=SRAM_COPIES,
-            allocatedInstructionSRAMBits=ALLOCATED_SRAM_BITS)
-        if (image["storage"] != storage or image["wireOrder"] != bound.wire_order or
-                image["idleLevels"] != bound.idle_levels or image["idleEnabled"] != bound.idle_enabled):
-            raise ValueError("Buffered displayed storage/wire contract differs from its canonical image.")
     for stage in stages:
         if not stage.get("sources"):
             raise ValueError("Every buffered stage must navigate to its governing sources.")
@@ -303,9 +226,6 @@ def validate_buffered_session(session):
         if frame["stage"] not in stage_ids or frame["imageId"] not in image_by_id or frame["rawInputs"] not in range(4):
             raise ValueError("Buffered frame has an unknown stage, image or input.")
         state, image = frame["state"], image_by_id[frame["imageId"]]
-        for key, width in STATE_WIDTHS.items():
-            if type(state.get(key)) is not int or not 0 <= state[key] < 2 ** width:
-                raise ValueError(f"Invalid buffered observation {key} at edge {frame['edge']}.")
         if state["busy"] and (not state["valid"] or state["retained"] or state["pc"] >= len(image["rows"])):
             raise ValueError("Buffered busy state lacks an admitted resident instruction.")
         if state["valid"] and not frame["fetch"]["ready"]:
@@ -343,53 +263,141 @@ def validate_buffered_session(session):
         raise ValueError("Buffered images must match their executed typed constructor exports.")
 
 
-def bundle(*, refresh_receipts: bool = False) -> tuple[str, dict]:
+def validate_buffered_model(session):
+    """Check newly admitted images against the model at their source tree."""
+    from buffered_counted_hardware import _read_program, decode_control
+    from buffered_reactive_hardware import decode_reactive_instruction
+    from buffered_sram_hardware import (ALLOCATED_SRAM_BITS, FORMAT,
+        ROW_METADATA_WIDTH, SRAM_COPIES, SRAM_WORD_WIDTH, lower_sram)
+    from buffered_reactive_hardware_rtl import STATE_WIDTHS
+
+    if session["target"] != FORMAT:
+        raise ValueError("Buffered session must identify the checked SRAM target.")
+    for image in session["images"]:
+        bound = lower_sram(_read_program(image["source"]["definition"]))
+        rows = image["rows"]
+        if image["target"] != FORMAT or image["programKey"] != bound.program_key or image["imageKey"] != bound.key:
+            raise ValueError("Buffered source/image identity differs from canonical lowering.")
+        if (image["virtualSpan"], image["txBits"], image["rxBits"], len(rows)) != (
+                bound.virtual_span, bound.tx_bits, bound.rx_bits, len(bound.words)):
+            raise ValueError("Buffered image geometry differs from its source.")
+        if [row["pc"] for row in rows] != list(range(len(rows))):
+            raise ValueError("Buffered resident rows must preserve address order.")
+        if ([int(row["wordHex"], 16) for row in rows] != list(bound.words) or
+                [int(row["controlHex"], 16) for row in rows] != list(bound.controls) or
+                [row["branchIndex"] for row in rows] != list(bound.branch_indices) or
+                [d["index"] for d in image["dictionary"]] != list(range(16)) or
+                [int(d["wordHex"], 16) for d in image["dictionary"]] != list(bound.branch_table)):
+            raise ValueError("Buffered recorded rows/dictionary differ from admitted source bytes.")
+        for row, word, control in zip(rows, bound.words, bound.controls):
+            if (row["instruction"] != asdict(decode_reactive_instruction(word)) or
+                    row["loop"] != asdict(decode_control(control))):
+                raise ValueError("Buffered displayed instruction/loop differs from its resident bytes.")
+        storage = dict(bound.storage(), instructionWordBits=SRAM_WORD_WIDTH,
+            metadataBits=ROW_METADATA_WIDTH, physicalRowBits=SRAM_WORD_WIDTH + ROW_METADATA_WIDTH,
+            dictionaryWordBits=56, instructionReplicas=SRAM_COPIES,
+            allocatedInstructionSRAMBits=ALLOCATED_SRAM_BITS)
+        if (image["storage"] != storage or image["wireOrder"] != bound.wire_order or
+                image["idleLevels"] != bound.idle_levels or image["idleEnabled"] != bound.idle_enabled):
+            raise ValueError("Buffered displayed storage/wire contract differs from its canonical image.")
+    for frame in session["frames"]:
+        state = frame["state"]
+        for key, width in STATE_WIDTHS.items():
+            if type(state.get(key)) is not int or not 0 <= state[key] < 2 ** width:
+                raise ValueError(f"Invalid buffered observation {key} at edge {frame['edge']}.")
+
+
+def bundle(*, candidates=None, refresh_receipts: bool = False) -> tuple[str, dict]:
     content = json.loads((EXPLORER / "content.json").read_text())
     proofs = content.get("executionProofs", [])
     if ({p["id"] for p in proofs} != {"spi", "i2c"} or len(proofs) != 2 or
             any(not p.get("sources") or any(not p.get(key) for key in ("name", "scope", "proved", "open"))
                 for p in proofs)):
         raise ValueError("Explorer requires both scoped source/interpreter proofs and their open state relations.")
-    trace = json.loads((EXPLORER / "uart-trace.json").read_text())
-    recordings = large_recordings()
-    protocol_traces = [
-        *json.loads((EXPLORER / "spi-traces.json").read_text())["traces"],
-        *recordings["i2c-traces.json"]["traces"],
-    ]
+    recordings = read_recordings(candidates)
+    trace = recordings["uart-trace.json"]
+    protocol_traces = [*recordings["spi-traces.json"]["traces"], *recordings["i2c-traces.json"]["traces"]]
     buffered_session = recordings["buffered-session.json"]
+    traces = [trace, *protocol_traces, buffered_session]
+    if len(traces) != 10 or len({t["id"] for t in traces}) != 10:
+        raise ValueError("Explorer requires unique UART, four SPI, four I2C and buffered session recordings.")
+
+    prior_receipts = read_receipts()
+    if prior_receipts is None and not refresh_receipts:
+        raise ValueError("Missing recordings.json; validate and accept recordings with --refresh-receipts.")
+    prior_receipts = prior_receipts or {}
+    bindings = prior_receipts.get("sourceTrees", {})
+    if not isinstance(bindings, dict):
+        raise ValueError("Recording source tree bindings must be an object.")
+    generations = {recording["sourceRevision"] for recording in traces}
+    source_trees = {generation: tree for generation, tree in bindings.items() if generation in generations}
+    receipts = recording_receipts(recordings, source_trees)
+    if not refresh_receipts and receipts != prior_receipts:
+        raise ValueError("Recording data or receipt changed; regenerate and validate with --refresh-receipts before accepting it.")
+
+    # A recording's Git tree is independent of the page's current checkout.
+    blob = cache(git_source)
+    tree_for = {}
+    for recording in traces:
+        generation = recording["sourceRevision"]
+        tree = source_trees.get(generation, generation)
+        tree_for[recording["id"]] = tree
+        if not recording.get("sourceHashes"):
+            raise ValueError(f"Recording {recording['id']} must identify its source bytes.")
+        for path, expected in recording["sourceHashes"].items():
+            if hashlib.sha256(blob(tree, path)).hexdigest() != expected:
+                raise ValueError(f"Recorded trace source changed: {path} at {tree}.")
+
     source_revision = revision()
-    for recording in [trace, *protocol_traces]:
+    for recording in traces[:-1]:
         validate_recording(recording)
     validate_buffered_session(buffered_session)
-    if len({t["id"] for t in [trace, *protocol_traces]}) != 9:
-        raise ValueError("Explorer requires unique UART, four SPI and four I2C recordings.")
-    receipts = recording_receipts(recordings)
-    if not refresh_receipts:
-        verify_receipts(receipts)
+    if refresh_receipts:
+        name = "buffered-session.json"
+        accepted = prior_receipts.get("recordings", {}).get(name, {}).get("sha256")
+        if receipts["recordings"][name]["sha256"] != accepted:
+            tree = tree_for[buffered_session["id"]]
+            if tree != source_revision or any(
+                    (ROOT / path).read_bytes() != blob(tree, path) for path in buffered_session["sourceHashes"]):
+                raise ValueError("Generate new buffered recordings from committed source inputs before admission.")
+            validate_buffered_model(buffered_session)
+
     sources = {}
     path_sources = [{"path": "docs/architecture.md", "start": 84, "end": 110, "label": "Hardware and program paths"}]
-    revision_files = {}
-    for ref in references([content, trace, protocol_traces, buffered_session, path_sources]):
-        path = (ROOT / ref["path"]).resolve()
+    on_remote = cache(revision_on_remote)
+
+    @cache
+    def checkout_source(rel):
+        path = (ROOT / rel).resolve()
         if not path.is_relative_to(ROOT) or not path.is_file():
-            raise ValueError(f"Missing or invalid source: {ref['path']}")
-        lines = path.read_text().splitlines()
-        start, end = ref["start"], ref["end"]
-        if not isinstance(start, int) or not isinstance(end, int) or not 1 <= start <= end <= len(lines):
-            raise ValueError(f"Invalid source range: {ref}")
-        key = f"{ref['path']}:{start}:{end}"
-        if ref["path"] not in revision_files:
-            original = subprocess.run(
-                ["git", "show", f"{source_revision}:{ref['path']}"],
-                cwd=ROOT, capture_output=True, check=False,
-            )
-            revision_files[ref["path"]] = original.returncode == 0 and original.stdout == path.read_bytes()
-        sources[key] = {
-            **ref,
-            "text": "\n".join(lines[start - 1 : end]),
-            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-            "atRevision": revision_files[ref["path"]],
-        }
+            raise ValueError(f"Missing or invalid source: {rel}")
+        data = path.read_bytes()
+        try:
+            matches = data == blob(source_revision, rel)
+        except ValueError:
+            matches = False
+        return data, source_revision if matches else None
+
+    def add_excerpts(refs, tree=None):
+        for ref in refs:
+            path, start, end = ref["path"], ref["start"], ref["end"]
+            data, commit = (blob(tree, path), tree) if tree else checkout_source(path)
+            lines = data.decode("utf-8").splitlines()
+            if not isinstance(start, int) or not isinstance(end, int) or not 1 <= start <= end <= len(lines):
+                raise ValueError(f"Invalid source range: {ref}")
+            key = f"{tree or 'checkout'}:{path}:{start}:{end}"
+            sources[key] = {
+                **ref,
+                "text": "\n".join(lines[start - 1 : end]),
+                "sha256": hashlib.sha256(data).hexdigest(),
+                "revision": commit,
+                "revisionOnRemote": bool(commit and on_remote(commit)),
+                "fromCheckout": tree is None,
+            }
+
+    add_excerpts(references([content, path_sources]))
+    for recording in traces:
+        add_excerpts(references(recording), tree_for[recording["id"]])
     for target in content["targets"]:
         node_ids = {node["id"] for node in target["nodes"]}
         if len(node_ids) != len(target["nodes"]):
@@ -406,20 +414,12 @@ def bundle(*, refresh_receipts: bool = False) -> tuple[str, dict]:
         "pathSources": path_sources,
         "snapshot": {
             "revision": source_revision,
-            "revisionOnRemote": revision_on_remote(source_revision),
+            "revisionOnRemote": on_remote(source_revision),
             "generatedAt": datetime.now(timezone.utc).isoformat(timespec="seconds"),
             "repository": "https://github.com/attilio-castano/pinwheel",
-            "traceSha256": hashlib.sha256((EXPLORER / "uart-trace.json").read_bytes()).hexdigest(),
-            "recordingHashes": {
-                **{name: hashlib.sha256((EXPLORER / name).read_bytes()).hexdigest()
-                    for name in ("uart-trace.json", "spi-traces.json")},
-                **{name: receipt["sha256"] for name, receipt in receipts["recordings"].items()},
-            },
-            "recordingDigestConventions": {
-                "uart-trace.json": "sha256-file-bytes",
-                "spi-traces.json": "sha256-file-bytes",
-                **{name: SEMANTIC_DIGEST for name in LARGE_RECORDINGS},
-            },
+            "recordingSourceTrees": tree_for,
+            "recordingHashes": {name: receipt["sha256"] for name, receipt in receipts["recordings"].items()},
+            "recordingDigestConventions": {name: SEMANTIC_DIGEST for name in receipts["recordings"]},
         },
     }
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
@@ -435,18 +435,26 @@ def main() -> None:
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--check", action="store_true", help="Validate inputs and committed recording receipts without writing")
     modes.add_argument("--refresh-receipts", action="store_true",
-        help="Validate recordings and source bytes, then update their receipts and standalone page")
+        help="Validate recording candidates, then update retained recordings, receipts and the standalone page")
     args = parser.parse_args()
-    page, receipts = bundle(refresh_receipts=args.refresh_receipts)
+    candidates = {}
+    if args.refresh_receipts:
+        for name in CANDIDATE_RECORDINGS:
+            path = CACHE / name
+            if path.exists():
+                candidates[name] = read_json(path.read_text())
+    page, receipts = bundle(candidates=candidates, refresh_receipts=args.refresh_receipts)
     if args.check:
         print("Explorer inputs, trace identity and source references are valid.")
-    else:
-        if args.refresh_receipts:
-            (EXPLORER / "recordings.json").write_text(json.dumps(receipts,
-                ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2) + "\n")
-        output = EXPLORER / "index.html"
-        output.write_text(page)
-        print(f"Built {output.relative_to(ROOT)} ({len(page.encode()):,} bytes).")
+        return
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    if args.refresh_receipts:
+        for name, recording in candidates.items():
+            (EXPLORER / name).write_bytes(canonical_json(recording) + b"\n")
+        (EXPLORER / "recordings.json").write_text(json.dumps(receipts,
+            ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2) + "\n")
+    OUTPUT.write_text(page)
+    print(f"Built {OUTPUT} ({len(page.encode()):,} bytes).")
 
 
 if __name__ == "__main__":

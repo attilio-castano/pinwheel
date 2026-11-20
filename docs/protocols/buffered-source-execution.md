@@ -4,7 +4,7 @@ This continuation proves that independently interpreting the resident image
 preserves the buffered source program's execution. It starts with parametric
 mode-0 SPI, then uses a reactive four-byte I²C read to exercise waits, checked
 phases, scratch decisions and terminal outcomes. The
-[design explorer](../explorer/index.html#session) records that earlier proof
+[design explorer](https://attilio-castano.github.io/pinwheel/#session) records that earlier proof
 boundary. The later [initialized SPI refinement](buffered-spi-refinement.md)
 now connects the supported SPI source to actual packed-circuit and digital SRAM
 execution. The reactive I²C circuit relation remains open.

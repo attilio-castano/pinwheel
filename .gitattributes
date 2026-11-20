@@ -1,5 +1,6 @@
-# Keep generated explorer artifacts out of default code review diffs.
-docs/explorer/index.html linguist-generated=true
+# Collapse generated Explorer recordings in default review diffs.
+docs/explorer/buffered-session.json linguist-generated=true
+docs/explorer/i2c-traces.json linguist-generated=true
 docs/explorer/uart-trace.json linguist-generated=true
 docs/explorer/spi-traces.json linguist-generated=true
 

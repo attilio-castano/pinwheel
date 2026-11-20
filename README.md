@@ -6,9 +6,9 @@ and AI-assisted development.
 **Start with the [interactive design explorer](https://attilio-castano.github.io/pinwheel/).**
 Click through the architecture, follow a program from source to pins, and
 inspect protocol waveforms, design decisions and the evidence behind them.
-The website opens directly in your browser. After cloning the repo, you can also
-open `docs/explorer/index.html` in a browser; it works
-offline with no setup. [How to use and refresh it](docs/explorer/README.md).
+After cloning the repo, run `python3 -B scripts/build-explorer.py` and open
+`build/explorer-site/index.html` for offline use.
+[How to use and refresh it](docs/explorer/README.md).
 
 I started this project as a former mathematician with no experience designing
 hardware. The question is whether Lean and modern AI tools can make the journey
@@ -52,6 +52,12 @@ the project is exploring. Failed experiments and the limits of each result are
 part of the record.
 
 ## Where things stand
+
+A [reusable Lean stream-hardware library](docs/engine/lean-stream-hardware.md)
+adds parameterized FIFOs and elastic pipelines, compositional transaction and
+timing proofs, and checks of freshly emitted flat and hierarchical RTL.
+[Typed bundles and fork/join graphs](docs/engine/lean-stream-graphs.md) extend it
+with named payload fields and proved result pairing across unequal branch depths.
 
 Pinwheel has executable protocol models, emitted circuits, and independent
 simulation checks. For the paired SRAM design, Lean proofs now connect a
