@@ -578,8 +578,13 @@ Standalone [bounded waits](../../Pinwheel/Hardware/StreamingReady/SegmentWaitRef
 advance on a qualified poll or retain ownership at expiry. The
 [pulse proof](../../Pinwheel/Hardware/StreamingReady/SegmentPulseRefinement.lean)
 connects the fetched row to its declared LOW and HIGH dwells and next
-FETCH. A theorem composing every row into an arbitrary
-START-to-terminal run remains open.
+FETCH. The [transaction theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTransaction.lean)
+composes these cuts from admitted START. Under the supplied row service
+witnesses, the actual run reaches a checked image exit with the same
+TX/RX counts and the owner allocated by START. The [counted stream proof](../../Pinwheel/Hardware/StreamingReady/SegmentUnguardedReceive.lean)
+supplies this row evidence for unguarded streams. Guard expiry has a separate
+row theorem and source replay. Deriving the row service witnesses from one
+whole-transaction timing contract remains open.
 
 ### Shared Ready runner
 

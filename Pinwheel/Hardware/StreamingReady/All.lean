@@ -36,6 +36,8 @@ import Pinwheel.Hardware.StreamingReady.SegmentPulseRefinement
 import Pinwheel.Hardware.StreamingReady.SegmentReload
 import Pinwheel.Hardware.StreamingReady.SegmentStreamStep
 import Pinwheel.Hardware.StreamingReady.SegmentTiming
+import Pinwheel.Hardware.StreamingReady.SegmentTransaction
+import Pinwheel.Hardware.StreamingReady.SegmentUnguardedTransaction
 import Pinwheel.Hardware.StreamingReady.SegmentWaitRefinement
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
