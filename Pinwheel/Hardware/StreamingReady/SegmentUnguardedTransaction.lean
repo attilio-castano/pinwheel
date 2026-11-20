@@ -16,22 +16,11 @@ private theorem successor_stream (row : rows[cursor.pc]? = some (.cell (.stream 
       following.coreClocks = cursor.coreClocks + (1 + slots * (3 + cell.lowDuration.val + cell.highDuration.val)) := by
   simp [successors, row, armed] at checked
   obtain ⟨_, advance⟩ := checked
-  change (if (0 < slots ∧ cursor.tx + (if cell.transmit then slots else 0) ≤ budget) ∧
-      cursor.rx + (if cell.receive then slots else 0) < 65536 then
-    some (Successors.next {
-      pc := cursor.pc + 1
-      slots := none
-      capture := cell.receive
-      tx := cursor.tx + if cell.transmit then slots else 0
-      rx := cursor.rx + if cell.receive then slots else 0
-      coreClocks := cursor.coreClocks + (1 + slots *
-        (1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1) + 0))
-    }) else none) = some (.next following) at advance
-  simp at advance
   obtain ⟨⟨⟨positive, txFits⟩, rxFits⟩, rfl⟩ := advance
   refine ⟨rfl, rfl, rfl, rfl, rfl, positive, txFits, rxFits, ?_⟩
   have durations : 1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1) =
     3 + cell.lowDuration.val + cell.highDuration.val := by omega
+  change cursor.coreClocks + (1 + slots * (1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1))) = _
   rw [durations]
 
 private theorem count_without_wrap (before : BitVec 16) (enabled : Bool) (slots : Nat)

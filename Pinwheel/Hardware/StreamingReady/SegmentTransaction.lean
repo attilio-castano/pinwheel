@@ -117,7 +117,7 @@ def terminalPhase : Exit → BitVec 3
   | .fault => 6#3
 
 def endOf (cursor : Cursor) (exit : Exit) : PathEnd :=
-  ⟨exit, cursor.tx, cursor.rx, cursor.coreClocks + 1⟩
+  ⟨exit, cursor.tx, cursor.rx, cursor.coreClocks + 1, cursor.externalPolls⟩
 
 /-- A delivered path contains the actual inputs for each instruction. COUNT and
     BRANCH take one edge. The BRANCH successor uses the qualified capture that
@@ -378,10 +378,8 @@ theorem successor_wait (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)
   simp [successors, row] at entry
   obtain ⟨canonical, advance⟩ := entry
   rw [limit] at advance
-  change (if cursor.slots = none then some (Successors.next
-    {cursor with pc := cursor.pc + 1, coreClocks := cursor.coreClocks + (1 + (n.val + 1))}) else none) =
-      some (.next following) at advance
-  simp at advance
+  change cursor.slots = none ∧
+    {cursor with pc := cursor.pc + 1, coreClocks := cursor.coreClocks + (1 + (n.val + 1))} = following at advance
   obtain ⟨empty, rfl⟩ := advance
   exact ⟨rfl, empty, rfl, rfl, rfl, rfl, canonical⟩
 

@@ -57,15 +57,18 @@ def Result.branches (result : Result) : List (Bool × Bool) :=
   | _ => none
 
 /-- A guard window ends at the first qualified sample or at the final
-    unqualified poll. Insufficient, surplus and post-qualification samples
-    do not constitute a complete window. -/
+    missed poll of a bounded guard. An unbounded guard can only qualify.
+    Insufficient, surplus and post-qualification samples are rejected. -/
 def pollWindow (guard : Guard) (samples : List (BitVec 2)) : Option (Option (BitVec 2)) := do
-  let .misses misses := guard.limit | none
   let last ← samples.getLast?
-  let budget := misses.val + 1
-  if samples.length > budget || samples.dropLast.any guard.matches then none
-  else if guard.matches last then some (some last)
-  else if samples.length == budget then some none else none
+  if samples.dropLast.any guard.matches then none else
+    match guard.limit with
+    | .unbounded => if guard.matches last then some (some last) else none
+    | .misses misses =>
+      let budget := misses.val + 1
+      if samples.length > budget then none
+      else if guard.matches last then some (some last)
+      else if samples.length == budget then some none else none
 
 /-- After a prefix of misses, the next qualified poll succeeds even at the
     last eligible cut. A miss settles only at the end of the aperture. -/
@@ -77,6 +80,11 @@ theorem pollWindow_after_misses (guard : Guard) (limit : Fin 255)
       else if prior.length == limit.val then some none else none := by
   simp [pollWindow, bounded, misses, Nat.not_lt_of_ge within]
   done
+
+theorem pollWindow_unbounded (guard : Guard) (unbounded : guard.limit = .unbounded)
+    (prior : List (BitVec 2)) (last : BitVec 2) (misses : prior.any guard.matches = false) :
+    pollWindow guard (prior ++ [last]) = if guard.matches last then some (some last) else none := by
+  simp [pollWindow, unbounded, misses]
 
 structure Machine where
   tx : List Bool

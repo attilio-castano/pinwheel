@@ -31,6 +31,7 @@ import Pinwheel.Hardware.StreamingReady.SegmentCausalI2C
 import Pinwheel.Hardware.StreamingReady.SegmentClockTable
 import Pinwheel.Hardware.StreamingReady.SegmentControl
 import Pinwheel.Hardware.StreamingReady.SegmentCustody
+import Pinwheel.Hardware.StreamingReady.SegmentEventWait
 import Pinwheel.Hardware.StreamingReady.SegmentExport
 import Pinwheel.Hardware.StreamingReady.SegmentGuardedTransaction
 import Pinwheel.Hardware.StreamingReady.SegmentHandoffFence

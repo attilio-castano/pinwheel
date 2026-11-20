@@ -259,7 +259,7 @@ theorem from_clocks (registered : Bool) (s : Values (Register a)) (cell : Cell) 
   | nil => simp at room
   | cons fetch rest =>
     have fetchInput : NoReset fetch := ordinary fetch (by simp)
-    obtain ⟨canonical, _, _, _, _, _, positive, _, _⟩ := successor_stream row armed limit checked
+    obtain ⟨canonical, _, _, _, _, _, positive, _, _⟩ := successor_stream row armed checked
     have liveSlots := cut.slots slots armed
     have nonzero : s (.base .remaining) ≠ 0#16 := by
       intro zero

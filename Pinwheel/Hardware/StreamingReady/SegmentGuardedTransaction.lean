@@ -592,30 +592,14 @@ theorem run_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 25
 
 theorem successor_stream {cursor following : Cursor}
     (row : rows[cursor.pc]? = some (.cell (.stream cell (some g)))) (armed : cursor.slots = some slots)
-    (limit : g.limit = .misses n) (checked : successors rows budget cursor = some (.next following)) :
+    (checked : successors rows budget cursor = some (.next following)) :
     (Instruction.stream cell (some g)).Canonical ∧ following.pc = cursor.pc + 1 ∧
       following.slots = none ∧ following.capture = cell.receive ∧
       following.tx = cursor.tx + (if cell.transmit then slots else 0) ∧
       following.rx = cursor.rx + (if cell.receive then slots else 0) ∧
       0 < slots ∧ following.tx ≤ budget ∧ following.rx < 65536 := by
-  rcases g with ⟨mask, expected, budgetLimit⟩
-  change budgetLimit = .misses n at limit
-  subst budgetLimit
   simp [successors, row, armed] at checked
-  obtain ⟨canonical, advance⟩ := checked
-  change (if (0 < slots ∧ cursor.tx + (if cell.transmit then slots else 0) ≤ budget) ∧
-      cursor.rx + (if cell.receive then slots else 0) < 65536 then
-    some (Successors.next {
-      pc := cursor.pc + 1
-      slots := none
-      capture := cell.receive
-      tx := cursor.tx + if cell.transmit then slots else 0
-      rx := cursor.rx + if cell.receive then slots else 0
-      coreClocks := cursor.coreClocks + (1 + slots *
-        (1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1) + (n.val + 1)))
-    }) else none) = some (.next following) at advance
-  simp at advance
-  obtain ⟨⟨⟨positive, txFits⟩, rxFits⟩, rfl⟩ := advance
+  obtain ⟨canonical, ⟨⟨⟨positive, txFits⟩, rxFits⟩, rfl⟩⟩ := checked
   exact ⟨canonical, rfl, rfl, rfl, rfl, rfl, positive, txFits, rxFits⟩
 
 private theorem count_without_wrap (before : BitVec 16) (enabled : Bool) (slots : Nat)
@@ -641,7 +625,7 @@ theorem service_stream (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 25
       (captured registered cell ((circuit a registered).step fetch s) previous plans) s
       (@fetch :: plans.flatMap SlotPlan.inputs) := by
   obtain ⟨canonical, nextPC, nextSlots, _, nextTX, nextRX, positive, txFits, rxFits⟩ :=
-    successor_stream row armed limit checked
+    successor_stream row armed checked
   obtain ⟨completed, active⟩ := run_stream_row registered cell g n limit receive s fetch plans cut.boundary
     ordinary row canonical positive (cut.slots _ armed) served
   refine ⟨by simp, active, ⟨nextPC ▸ completed.boundary, ?_, by simp [nextSlots], ?_, ?_⟩⟩
@@ -724,7 +708,7 @@ theorem timeout_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fi
 /-- The expired row accounts for its completed slots and the in-flight TX
     reservation against the same checked path and bounded counter budget. -/
 theorem timeout_span (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
+    (_limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
     (cut : Cut registered rows cursor previous s) (row : rows[cursor.pc]? = some (.cell (.stream cell (some g))))
     (checked : successors rows budget cursor = some (.next following)) (budgetFits : budget < 65536)
     (armed : cursor.slots = some slots) (inside : slot < slots)
@@ -732,7 +716,7 @@ theorem timeout_span (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
     TimeoutSpan registered rows budget cursor slot
       (cursor.tx + if cell.transmit then slot + 1 else 0)
       (cursor.rx + if cell.receive then slot else 0) s inputs poll := by
-  obtain ⟨_, _, _, _, nextTX, nextRX, _, txFits, rxFits⟩ := successor_stream row armed limit checked
+  obtain ⟨_, _, _, _, nextTX, nextRX, _, txFits, rxFits⟩ := successor_stream row armed checked
   refine ⟨expired.active, ⟨.stream cell (some g), row, .stream armed inside, expired.current⟩,
     ⟨following, checked⟩, expired.position, ?_, ?_, expired.deadline⟩
   · have full : cursor.tx + (if cell.transmit then slots else 0) < 65536 := by

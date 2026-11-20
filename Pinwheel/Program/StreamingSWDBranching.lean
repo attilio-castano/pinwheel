@@ -102,9 +102,9 @@ def rows (d : Fin 256) (v : Variant) : List Row :=
 
 private def path (kind : Ack) : PathEnd :=
   match kind with
-  | .ok => ⟨.complete, 0, 36, 510⟩
-  | .wait | .fault => ⟨.complete, 0, 3, 211⟩
-  | .invalid => ⟨.complete, 0, 3, 435⟩
+  | .ok => ⟨.complete, 0, 36, 510, 0⟩
+  | .wait | .fault => ⟨.complete, 0, 3, 211, 0⟩
+  | .invalid => ⟨.complete, 0, 3, 435, 0⟩
 
 set_option maxRecDepth 8192 in
 def image (v : Variant) : Image (rows 3 v) 0 where

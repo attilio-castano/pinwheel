@@ -149,7 +149,8 @@ structure TimeoutCut (s after : Values (Register a)) : Prop where
   valid : after .captureValid = s .captureValid
 
 set_option linter.unusedSimpArgs false in
-private theorem receive_edge (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+/-- Any qualified receive poll captures the second sampler, independently of the wait budget. -/
+theorem receive_edge (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (ordinary : DrainInput i) (waiting : s (.base .phase) = 7#3) (qualified : ready i s = 1#1)
     (stream : (s (.base .currentWord)).extractLsb' 0 3 = 1#3)
     (receives : (s (.base .currentWord)).extractLsb' 35 1 = 1#1) :

@@ -56,6 +56,7 @@ structure Cursor where
   tx : Nat := 0
   rx : Nat := 0
   coreClocks : Nat := 0
+  externalPolls : Nat := 0
   deriving DecidableEq, Repr
 
 structure PathEnd where
@@ -63,20 +64,25 @@ structure PathEnd where
   tx : Nat
   rx : Nat
   coreClocks : Nat
+  externalPolls : Nat := 0
   deriving DecidableEq, Repr
+
+/-- A static clock bound exists only for paths with no unbounded guard. -/
+def PathEnd.maxCoreClocks (ending : PathEnd) : Option Nat :=
+  if ending.externalPolls == 0 then some ending.coreClocks else none
 
 inductive Successors where
   | finish (result : PathEnd)
   | next (cursor : Cursor)
   | both (fallthrough taken : Cursor)
 
-private def boundedWait : StreamingReady.WaitLimit → Option Nat
-  | .unbounded => none
-  | .misses n => some (n.val + 1)
+private def pollClocks : StreamingReady.WaitLimit → Nat
+  | .unbounded => 1
+  | .misses n => n.val + 1
 
-private def guardClocks : Option StreamingReady.Guard → Option Nat
-  | none => some 0
-  | some guard => boundedWait guard.limit
+private def externalPolls : StreamingReady.WaitLimit → Nat
+  | .unbounded => 1
+  | .misses _ => 0
 
 private def cellClocks (cell : StreamingReady.Cell) : Nat :=
   1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1)
@@ -85,11 +91,12 @@ private def Cursor.next (cursor : Cursor) (clocks : Nat) : Cursor :=
   {cursor with pc := cursor.pc + 1, coreClocks := cursor.coreClocks + clocks}
 
 private def Cursor.finish (cursor : Cursor) (exit : Exit) : Successors :=
-  .finish ⟨exit, cursor.tx, cursor.rx, cursor.coreClocks + 1⟩
+  .finish ⟨exit, cursor.tx, cursor.rx, cursor.coreClocks + 1, cursor.externalPolls⟩
 
-/-- Successful instruction boundaries under timely guard responses and
-    immediate queue credit. `coreClocks` includes each worst-case guard poll
-    window. Waiting for host credit is accounted for separately at runtime. -/
+/-- Successful instruction boundaries under qualifying guards and immediate
+    queue credit. `coreClocks` counts each bounded guard window and the
+    qualifying clock of each unbounded guard. `externalPolls` counts the
+    latter apertures, whose elapsed wait is supplied by the peer contract. -/
 def successors (rows : List Row) (txBudget : Nat) (cursor : Cursor) : Option Successors := do
   let row ← rows[cursor.pc]?
   match row with
@@ -110,17 +117,21 @@ def successors (rows : List Row) (txBudget : Nat) (cursor : Cursor) : Option Suc
     | .halt => if cursor.slots.isNone && cursor.tx == txBudget then some (cursor.finish .complete) else none
     | .fault => if cursor.slots.isNone then some (cursor.finish .fault) else none
     | .pulse cell => if cursor.slots.isNone then some (.next (cursor.next (1 + cellClocks cell))) else none
-    | .driveWait _ guard => do
-      let clocks ← boundedWait guard.limit
-      if cursor.slots.isNone then some (.next (cursor.next (1 + clocks))) else none
+    | .driveWait _ guard =>
+      if cursor.slots.isNone then
+        some (.next {(cursor.next (1 + pollClocks guard.limit)) with
+          externalPolls := cursor.externalPolls + externalPolls guard.limit})
+      else none
     | .stream cell guard => do
       let slots ← cursor.slots
-      let polls ← guardClocks guard
+      let polls := (guard.map (fun g => pollClocks g.limit)).getD 0
+      let external := (guard.map (fun g => externalPolls g.limit)).getD 0
       let tx := cursor.tx + if cell.transmit then slots else 0
       let rx := cursor.rx + if cell.receive then slots else 0
       if 0 < slots && tx ≤ txBudget && rx < 65536 && cell.txOutput.val < 3 then
         some (.next {(cursor.next (1 + slots * (cellClocks cell + polls))) with
-          slots := none, capture := cell.receive, tx, rx})
+          slots := none, capture := cell.receive, tx, rx,
+          externalPolls := cursor.externalPolls + slots * external})
       else none
 
 def paths (rows : List Row) (txBudget : Nat) : Nat → Cursor → Option (List PathEnd)
@@ -225,8 +236,8 @@ def registerReadCheck (profile : I2cProfile) : Option (List PathEnd) := check (r
 
 set_option maxRecDepth 8192 in
 def registerReadImage : Image (registerReadRows .standard) 36 where
-  outcomes := [⟨.complete, 36, 36, 1598⟩, ⟨.discard, 27, 27, 1236⟩,
-    ⟨.discard, 18, 18, 821⟩, ⟨.discard, 9, 9, 458⟩]
+  outcomes := [⟨.complete, 36, 36, 1598, 0⟩, ⟨.discard, 27, 27, 1236, 0⟩,
+    ⟨.discard, 18, 18, 821, 0⟩, ⟨.discard, 9, 9, 458, 0⟩]
   checked := by decide +kernel
 
 theorem registerRead_rows : registerReadImage.words.length = 24 := rfl

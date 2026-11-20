@@ -704,7 +704,7 @@ def check_i2c_execution(run, lean, out, images, original, split, switches):
                 parked = sum(item.get("parked", 0) for item in executed["supplies"])
                 require(terminal["clocks"] <= path["core_clocks"] + parked,
                         "Observed execution exceeded the checked path bound plus measured credit delay")
-                outcome = f".planned ⟨.{kind}, {tx}, {rx}, {path['core_clocks']}⟩"
+                outcome = f".planned ⟨.{kind}, {tx}, {rx}, {path['core_clocks']}, 0⟩"
             label = variant + "_" + name.replace("-", "_")
             if name in ("last-poll", "late-poll"):
                 slot = LATE_DEADLINE_SLOT if case["missed_deadline"] else DEADLINE_SLOT
@@ -763,7 +763,7 @@ def check_swd_execution(run, lean, out, swd, manifests):
         source.append(f"""
 def {label} := run (rows 3 .standard) 0 [] {lean_observations(executed['supplies'])} idlePins
 example : {label}.any (fun r =>
-    decide (r.terminal = .planned ⟨.complete, 0, {rx}, {clocks}⟩) &&
+    decide (r.terminal = .planned ⟨.complete, 0, {rx}, {clocks}, 0⟩) &&
     decide (r.fetchPCs = {executed['fetches']}) &&
     decide (r.branches = {lean_branches(executed['branches'])}) &&
     decide (r.rxBits = {lean_bits(entry['rx_bits'])}) &&
@@ -939,6 +939,7 @@ def main():
         run([*lean, "test/ProofAudit.lean"], "audit-library")
         run([*lean, "test/StreamingReadyTraceContract.lean"], "check-flat-trace-deadline")
         run([*lean, "test/StreamingReadyTimingAdmission.lean"], "check-timing-admission")
+        run([*lean, "test/StreamingReadyEventPaths.lean"], "check-event-paths")
         report["causal_source"] = check_causal_policies(run, lean, out)
         run([*lean, "test/StreamingReadySegmentBehavior.lean"], "check-register-read-behavior")
         images = {name: read_image(run, lean, out, name) for name in ("standard", "split", "inverted-ack")}
