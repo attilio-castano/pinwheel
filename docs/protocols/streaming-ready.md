@@ -541,10 +541,10 @@ and a warm SPI exchange following an early RELEASE.
 python3 -B scripts/check-ready-segments.py --tag ready-segments
 ```
 
-### Shared SPI and register-read runner
+### Shared Ready runner
 
-Both programs use `ReadyHost.load`, `LoadedReady.submit`, and
-`ReadyPending.finish`. The runner collects contiguous RX intervals under
+SPI, the combined I²C read, and Ethernet use `ReadyHost.load`,
+`LoadedReady.submit`, and `ReadyPending.finish`. The runner collects contiguous RX intervals under
 one owner and confirms the final acknowledgment before RELEASE. SPI supplies
 an exact bit count. The combined I²C read takes its request, TX plan, and
 per-exit TX/RX counts from the Lean-generated manifest. Its decoder checks
@@ -566,6 +566,38 @@ The source gate uses the shared runner for standalone SPI and for SPI
 warm-loaded on the same host after I²C early RELEASE. It checks the measured
 ownership reports in Lean, including the timeout cut before explicit
 cancellation, and compares the emitted stores with independent wire peers.
+
+### Refill timing and ownership
+
+SPI can park between cells when it runs out of TX credit. The combined
+I²C read has a bounded clock poll within a cell. Ethernet needs credit
+before each reservation on a fixed six-clock cadence. The
+[reservation checker](../../Pinwheel/Program/StreamingReadyReservationTiming.lean)
+finds the first missed cut in an executed input sequence. A same-edge
+push can supply credit at the next cut. Ethernet uses the checker to
+discharge the pre-edge obligations of its exact frame theorem.
+
+The shared runner takes an explicit Ethernet refill schedule through
+`ReadyPending.pump(scheduled_bits=64)`. The host chooses when to offer a
+burst. The frontend checks current room, and the receipt confirms the
+accepted prefix. The source gate measures the grant, both 32-bit core
+pushes, and the first pre-edge cut that sees both accepts. It checks
+those offsets against Lean and compares complete public pin traces across
+the direct and registered instruction stores.
+
+Both on-time schedules pass the independent digital PHY check. With
+the late schedule, the reservation for zero-based bit 64 misses its cut,
+the first sampled mismatch is at bit 65, and completion slips six clocks.
+The same run accounts for all 576 accepted and reserved TX bits and
+releases the owner.
+
+The [guarded stream theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTiming.lean)
+starts from a reached LOW state with the encoded source row loaded. It
+connects that row's guard budget to the actual circuit countdown, then
+follows the successive polls. A qualified last poll captures the bit
+already in the second sampler stage. An unqualified last poll retains
+the owner, flushes the captured RX tail, and drives the installed idle
+pads. The same theorem covers direct and registered instruction stores.
 
 ## Depth-two TX FIFO substitution
 

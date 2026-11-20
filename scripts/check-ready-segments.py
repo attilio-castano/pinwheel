@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run checked I2C and SPI through one host runner on both Ready stores."""
+"""Replay I2C, SPI, and timed Ethernet on both Ready instruction stores."""
 
 import argparse
 from dataclasses import asdict
@@ -9,13 +9,14 @@ import struct
 import subprocess
 
 from i2c_read_peers import I2CReadPeer
+import streaming_8x4_ethernet as ethernet_replay
 from streaming_peers import StreamingSPIPeer
 from streaming_ready_artifacts import LOWERING_PASSES, lowering_copy
 from streaming_ready_compile import spi_image
 from streaming_ready_transport import CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
 from streaming_rtl import QuadRTL
-from streaming_transport import Code, Opcode, QuadTransport, StreamProtocolError, StreamRejected
+from streaming_transport import Code, Opcode, QuadTransport, Receipt, StreamProtocolError, StreamRejected
 from streaming_wire_cases import EdgeTrace, require
 from typed_module_checks import tool_config
 from typed_ready_engine import legacy_assembly
@@ -30,6 +31,18 @@ DEADLINE_SLOT = 13
 CASES = {"read": None, "write-address-nack": 0, "register-nack": 1, "read-address-nack": 2}
 STATUS = ("phase", "generation", "transfer", "tx_accepted", "tx_consumed", "tx_queued", "tx_free",
           "rx_produced", "rx_popped", "rx_queued")
+PRE_EDGE = {
+    "frontend_phase": "dut.engine.frontend.r_phase",
+    "tx_push": "dut.engine.core_tx_push",
+    "tx_push_bits": "dut.engine.core_tx_bits",
+    "pre_phase": "dut.engine.status_phase",
+    "pre_tx_accepted": "dut.engine.status_tx_accepted",
+    "pre_tx_consumed": "dut.engine.status_tx_consumed",
+    "pre_tx_queued": "dut.engine.status_tx_queued",
+    "pre_tx_free": "dut.engine.status_tx_free",
+    "pre_tx_valid": "dut.engine.core.r_tx_valid",
+    "pre_stream_flags": "{dut.engine.core.r_current_word[35:34], dut.engine.core.r_current_word[2:0]}",
+}
 
 
 def lower(run, circt, source, directory, label):
@@ -45,10 +58,13 @@ def diagnostic_bridge():
     """Record core accounting ports alongside, and separate from, public pads."""
     bridge = bridge_source(2)
     token = '      $display("STREAM_QUAD '
-    require(bridge.count(token) == 1, "Expected one physical-edge reply in the Ready bridge")
+    clock = "      clk=1;#10;clk=0;"
+    require(bridge.count(token) == bridge.count(clock) == 1, "Expected one clock and reply per Ready edge")
     fields = ", ".join(f"dut.engine.status_{name}" for name in STATUS)
     probe = f'      $display("SEGMENT_STATUS{" %0d" * len(STATUS)}", {fields});\n'
-    return bridge.replace(token, probe + token)
+    pre_fields = ", ".join(PRE_EDGE.values())
+    before = f'      $display("SEGMENT_PRE{" %0d" * len(PRE_EDGE)}", {pre_fields});\n'
+    return bridge.replace(clock, before + clock).replace(token, probe + token)
 
 
 def build_rtl(run, lean, tools, out):
@@ -106,6 +122,12 @@ def status(rtl):
     words = rtl.log[-2].split()
     require(len(words) == len(STATUS) + 1 and words[0] == "SEGMENT_STATUS", "Missing core status observation")
     return dict(zip(STATUS, map(int, words[1:]), strict=True))
+
+
+def timing_status(rtl):
+    words = rtl.log[-3].split()
+    require(len(words) == len(PRE_EDGE) + 1 and words[0] == "SEGMENT_PRE", "Missing pre-edge Ready observation")
+    return {**status(rtl), **dict(zip(PRE_EDGE, map(int, words[1:]), strict=True))}
 
 
 def deadline_aperture(edges, held_at, budget):
@@ -325,11 +347,17 @@ def check_readback(run, lean, out, cases):
     run([*lean, witness], "check-observed-readback")
 
 
-def check_ownership(run, lean, out, cases):
+def check_ownership(run, lean, out, cases, ethernet):
     reports = {name.replace("-", "_") + "_" + summary["closure"]: summary
                for name in (*CASES.keys(), "deadline") for summary in cases[name]["ownership"]}
     reports["spi_released"] = cases["spi"]["exchange"]["ownership"]
     reports["warm_spi_released"] = cases["write-address-nack"]["subsequent_spi"]["exchange"]["ownership"]
+    for name, replayed in ethernet.items():
+        (case,) = replayed["cases"]
+        evidence = case["ownership"]
+        terminal, released = (Receipt(**evidence[key]) for key in ("terminal", "release"))
+        reports[f"ethernet_{name}_released"] = ownership(
+            evidence["terminal_counters"], terminal, released, "completed", "released")
     source = ["import Pinwheel.Hardware.StreamingReady.ProtocolOwnership",
               "open Pinwheel.Hardware.StreamingReady.ProtocolOwnership", ""]
     for name, record in reports.items():
@@ -353,14 +381,95 @@ def check_ownership(run, lean, out, cases):
     run([*lean, witness], "check-observed-ownership")
 
 
+def check_ethernet_timing(run, lean, out, ethernet):
+    """Match the measured host cuts and first reservation miss to Lean execution."""
+    source = [
+        "import Pinwheel.Hardware.StreamingReady.EthernetRefill",
+        "open Pinwheel.Program",
+        "open StreamingEthernetSchedule StreamingEthernetRefill",
+        "set_option maxRecDepth 30000",
+        "set_option maxHeartbeats 20000000",
+    ]
+    for name, replayed in ethernet.items():
+        (case,) = replayed["cases"]
+        phy = case["phy"]
+        width = phy["high_ticks"]
+        first = phy["first_rise"]
+        require(case["name"] == name and phy["accepted"] == (name != "late"),
+                "The Ethernet PHY returned the wrong verdict for its schedule")
+        source.append(f"""
+example : (StreamingEthernetCore.image.words, StreamingEthernetCore.idlePins) =
+  ({replayed['words']}, ⟨{replayed['idle_levels']}, {replayed['idle_enabled']}⟩) := by decide +kernel
+
+example : (List.finRange 8).map {name} = {case['refill_delays']} := by decide +kernel
+""")
+        bursts = case["bursts"][1:]
+        launches = [burst["start"] - first for burst in bursts]
+        measured_cuts = [tuple(edge - first for edge in (burst["grant"], *burst["tx_push"], burst["visible"]))
+                         for burst in bursts]
+        timing = case["timing"]
+        missed = timing["first_missing_reservation"]
+        verdict = "none" if missed is None else f"(some {missed})"
+        cuts = [cut["edge"] for cut in timing["reservations"]]
+        visibility = "late_visibility" if name == "late" else f"{name}_visibility (by decide)"
+        reservation = "late_reservationMiss" if name == "late" else f"{name}_noReservationMiss (by decide)"
+        source.append(f"""
+example : (List.finRange 8).map (fun i => launch {name} i - (firstSample + 1)) =
+  {launches} := by decide +kernel
+
+example : (List.finRange 8).map (fun i =>
+    let (grant, firstPush, secondPush, visible) := refillCuts {name} i
+    (grant - (firstSample + 1), firstPush - (firstSample + 1),
+     secondPush - (firstSample + 1), visible - (firstSample + 1))) =
+  {measured_cuts} := by decide +kernel
+
+example : checkRefillVisibility {name} {width} = true := {visibility}
+
+example : (List.range {case['tx_bits']}).map (fun bit => ({first} + reservationCut bit) - firstSample) =
+  {cuts} := by decide +kernel
+
+example : firstReservationMiss {name} {width} = .ok {verdict} := {reservation}
+""")
+        if name != "late":
+            payload = ", ".join(f"{byte}#8" for byte in bytes.fromhex(phy["sampled_hex"]))
+            source.append(f"""
+example : checkCredit {name} {width} = true := {name}_credit (by decide)
+
+example : StreamingEthernetFrame.frameBytes = [{payload}] := by decide +kernel
+""")
+        else:
+            require(missed is not None, "The late PHY result lacks a missed reservation")
+            miss = timing["reservations"][missed]
+            counters = case["ownership"]["terminal_counters"]
+            code = int(case["ownership"]["release"]["code"])
+            source.append(f"""
+example :
+  let core := (bodyAt late {width} (reservationCut {missed})).core
+  core.phase = .boundary ∧ core.txConsumed = {miss['reserved_before']} ∧ core.canReserve = false :=
+  late_noCreditAtMiss
+
+example :
+  let settled := (complete late {width}).run StreamingEthernetCore.program false
+    ((releaseClocked {width}).take {phy['completion_delay']})
+  settled.core.phase = .completed ∧ settled.core.txAccepted = {counters['tx_accepted']} ∧
+    settled.core.txConsumed = {counters['tx_consumed']} ∧ settled.core.drained = true ∧
+    (StreamingEthernetRefill.released late {width}).core.phase = .free ∧
+    (StreamingEthernetRefill.released late {width}).host.code = {code} :=
+  late_settles
+""")
+    witness = out / "ObservedEthernetTiming.lean"
+    witness.write_text("\n".join(source) + "\n")
+    run([*lean, witness], "check-observed-ethernet-timing", timeout=300)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", required=True)
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v2", passed=False, commands=[], source_commit=source_commit(),
-                  source_sha256=source_hashes(), stores={})
+    report = dict(schema="pinwheel.ready-segments.v3", passed=False, commands=[], source_commit=source_commit(),
+                  source_sha256=source_hashes(), stores={}, ethernet={})
     run = Commands(ROOT, logs, report["commands"])
     try:
         report["toolchain"], tools, _ = tool_config()
@@ -379,14 +488,23 @@ def main():
             cases["deadline"] = replay(tools["vvp"], executable, directory / "deadline.bin", image, deadline=True)
             cases["spi"] = replay_spi(tools["vvp"], executable, directory / "spi.bin")
             report["stores"][store] = cases
+            report["ethernet"][store] = {
+                name: ethernet_replay.replay_timed_runner(tools["vvp"], executable,
+                    directory / f"ethernet-{name}.bin", schedule=name, observe=timing_status)
+                for name in ethernet_replay.REFILL_POLICIES
+            }
         require(report["stores"]["direct"] == report["stores"]["registered"],
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
-        for name in report["stores"]["direct"]:
+        require(report["ethernet"]["direct"] == report["ethernet"]["registered"],
+                "Instruction stores changed the Ethernet timing or ownership receipts")
+        traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES))
+        for name in traces:
             direct = (out / "direct-replay" / f"{name}.bin").read_bytes()
             cached = (out / "registered-replay" / f"{name}.bin").read_bytes()
             require(direct == cached and direct and len(direct) % 20 == 0, f"Changed public pin trace: {name}")
         check_readback(run, lean, out, report["stores"]["direct"])
-        check_ownership(run, lean, out, report["stores"]["direct"])
+        check_ownership(run, lean, out, report["stores"]["direct"], report["ethernet"]["direct"])
+        check_ethernet_timing(run, lean, out, report["ethernet"]["direct"])
         require(source_commit() == report["source_commit"] and source_hashes() == report["source_sha256"],
                 "Source inputs changed during replay")
         require(all(sha(path) == expected for path, expected in frozen.items()), "Emitted inputs changed during replay")
