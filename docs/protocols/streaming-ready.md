@@ -541,6 +541,32 @@ and a warm SPI exchange following an early RELEASE.
 python3 -B scripts/check-ready-segments.py --tag ready-segments
 ```
 
+### Shared SPI and register-read runner
+
+Both programs use `ReadyHost.load`, `LoadedReady.submit`, and
+`ReadyPending.finish`. The runner collects contiguous RX intervals under
+one owner and confirms the final acknowledgment before RELEASE. SPI supplies
+an exact bit count. The combined I²C read takes its request, TX plan, and
+per-exit TX/RX counts from the Lean-generated manifest. Its decoder checks
+the address and register echoes and matches the captured ACK against the
+declared exit. A timeout returns the captured prefix and keeps the owner live
+until the caller explicitly invokes `cancel`. The existing quad receipts
+carry accepted TX counts. The runner derives consumed and cancelled TX
+counts for successful exits from the checked plan and decoded RX.
+
+The [ownership proof](../../Pinwheel/Hardware/StreamingReady/ProtocolOwnership.lean)
+accounts for each accepted TX bit as reserved, discarded by an early exit,
+or still owned at the drained cut. The captured RX count is exactly the
+acknowledged end offset. A timeout can reserve the next TX bit before it
+misses its guard, so the reservation count can exceed the number of observed
+wire cells. [Legacy refinement](../../Pinwheel/Hardware/StreamingReady/SegmentLegacy.lean)
+lets the fixed-length SPI proof close on the same segmented package.
+
+The source gate uses the shared runner for standalone SPI and for SPI
+warm-loaded on the same host after I²C early RELEASE. It checks the measured
+ownership reports in Lean, including the timeout cut before explicit
+cancellation, and compares the emitted stores with independent wire peers.
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
