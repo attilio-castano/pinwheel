@@ -134,34 +134,68 @@ class ObserverPeer:
                     slot_starts=[self.sof + start for start in self.starts], apertures=apertures)
 
 
-def exchange(rtl, transport, loaded, name, corrupt, delay, skew_seed):
-    frame = peer_frame(IDENTIFIER, PAYLOAD, corrupt)
+def exchange(rtl, transport, loaded, name, corrupt, delay, skew_seed,
+             *, identifier=IDENTIFIER, byte=PAYLOAD, observe=None):
+    frame = peer_frame(identifier, byte, corrupt)
     peer = ObserverPeer(frame, delay, skew_seed)
     rtl.device = peer
     exchanges = (Opcode.EXCHANGE32, Opcode.EXCHANGE64)
     before = tuple(transport.opcode_counts[op] for op in exchanges)
-    pending = loaded.submit(bit_count=CAPTURE_BITS)
-    require(peer.busy_start is not None and rtl.snapshot.busy and rtl.cycle < peer.sof,
-            'CAN START did not arm the observer before the peer SOF')
-    transport.idle(peer.completion - rtl.cycle)
-    require(not rtl.snapshot.busy and before == tuple(transport.opcode_counts[op] for op in exchanges),
-            'CAN observer did not reach completion without host queue service')
+    wire_sink = rtl.record_sink
+    capture_cuts = []
+    if observe is not None:
+        produced = observe(rtl)['rx_produced']
+        require(produced == 0, 'CAN capture inherited RX custody before START')
+
+        def observe_edge(record):
+            nonlocal produced
+            if wire_sink is not None:
+                wire_sink(record)
+            state = observe(rtl)
+            captured = state['rx_produced']
+            if captured != produced:
+                require(captured == produced + 1, 'CAN capture skipped an RX prefix position')
+                capture_cuts.append(dict(edge=record['cycle'], rx_produced=captured,
+                                         bit=bool(state['stage2'] & CAN_RX)))
+                produced = captured
+
+        rtl.record_sink = observe_edge
+    try:
+        pending = loaded.submit(bit_count=CAPTURE_BITS)
+        started = pending.last
+        require(peer.busy_start is not None and rtl.snapshot.busy and rtl.cycle < peer.sof,
+                'CAN START did not arm the observer before the peer SOF')
+        transport.idle(peer.completion - rtl.cycle)
+        require(not rtl.snapshot.busy and before == tuple(transport.opcode_counts[op] for op in exchanges),
+                'CAN observer did not reach completion without host queue service')
+    finally:
+        rtl.record_sink = wire_sink
     wire_records = tuple(rtl.records)
     terminal = pending.wait(max_exchanges=6)
     require(terminal.retained and not terminal.fault and pending.tx_accepted == 0,
             'CAN observer did not retain the complete receive-only owner')
+    counters = observe(rtl) if observe is not None else None
     wire = peer.check(wire_records, pending.rx_bits)
     decoded = decode_can_frame(pending.rx_bits)
-    require(decoded == ((IDENTIFIER, PAYLOAD) if corrupt is None else None), 'CAN decoder verdict differs')
-    released = pending.release()
-    require(released.tag == pending.tag and not released.busy and not released.retained and
-            pending.last.rx_start == CAPTURE_BITS and pending.last.rx_valid == 0,
+    require(decoded == ((identifier, byte) if corrupt is None else None), 'CAN decoder verdict differs')
+    completed = pending.finish(max_exchanges=6)
+    terminal, released = completed.terminal, completed.release
+    require(released is not None and released.tag == pending.tag and not released.busy and not released.retained and
+            terminal.rx_start == CAPTURE_BITS and terminal.rx_valid == 0 and completed.result == pending.rx_bits and
+            completed.tx_consumed == completed.tx_cancelled == 0,
             'CAN observer did not release after acknowledging the exact captured interval')
     rtl.device = None
-    return dict(name=name, corrupt=corrupt, source_identifier=IDENTIFIER, source_byte=PAYLOAD, decoded=decoded,
-                peer_crc=frame.crc, peer_stuff_slots=frame.stuff_slots, external_ack_slot=frame.ack_slot,
-                captured=list(pending.rx_bits), owner_tag=pending.tag, rx_acknowledged=pending.last.rx_start,
-                wire=wire)
+    evidence = dict(name=name, corrupt=corrupt, source_identifier=identifier, source_byte=byte, decoded=decoded,
+                    peer_crc=frame.crc, peer_stuff_slots=frame.stuff_slots, external_ack_slot=frame.ack_slot,
+                    captured=list(pending.rx_bits), owner_tag=pending.tag, rx_acknowledged=terminal.rx_start,
+                    wire=wire)
+    if counters is not None:
+        require([(cut['edge'], cut['bit']) for cut in capture_cuts] ==
+                [(aperture['capture_edge'], aperture['bit']) for aperture in wire['apertures']],
+                'CAN hardware capture edges or sampler values diverged from the peer apertures')
+        evidence.update(start=asdict(started), receipt=asdict(terminal), release=asdict(released), counters=counters,
+                        capture_cuts=capture_cuts)
+    return evidence
 
 
 def replay(vvp, executable, trace_path):

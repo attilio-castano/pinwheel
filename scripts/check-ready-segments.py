@@ -13,6 +13,7 @@ import streaming_8x4_ethernet as ethernet_replay
 from streaming_peers import StreamingSPIPeer
 from streaming_ready_artifacts import LOWERING_PASSES, lowering_copy
 from streaming_ready_compile import spi_image
+from streaming_ready_switch_replay import replay_switch
 from streaming_ready_transport import CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
 from streaming_rtl import QuadRTL
@@ -44,6 +45,14 @@ PRE_EDGE = {
     "pre_tx_valid": "dut.engine.core.r_tx_valid",
     "pre_stream_flags": "{dut.engine.core.r_current_word[35:34], dut.engine.core.r_current_word[2:0]}",
     "command": "dut.engine.core_command",
+    "command_initialize": "dut.engine.core_initialize",
+    "command_address": "dut.engine.core_address",
+    "command_word": "dut.engine.core_word",
+    "command_count": "dut.engine.core_count",
+    "command_idle_levels": "dut.engine.core_idle_levels",
+    "command_idle_enabled": "dut.engine.core_idle_enabled",
+    "command_generation": "dut.engine.core_expected_generation",
+    "command_start_count": "dut.engine.core_start_count",
     "pc": "dut.engine.status_pc",
     "stage2": "dut.engine.status_stage2",
     "countdown": "dut.engine.core.r_countdown",
@@ -281,7 +290,10 @@ def replay_spi(vvp, executable, path):
     return dict(image_words=list(spi.words), exchange=result, trace=recorded)
 
 
-def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=False):
+def i2c_exchange(rtl, host, loaded, image, *, nack=None, deadline=False, blocked_image=None):
+    """Run one read on the current owner generation and the existing pin trace."""
+    transport = host.transport
+    prior_counts = transport.opcode_counts.copy()
     expected_slots = DEADLINE_SLOT if deadline else 36 if nack is None else 9 * (nack + 1)
     if deadline:
         stretches = (0,) * DEADLINE_SLOT + (4096,)
@@ -289,8 +301,112 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
         stretches = (11, 0, 0, 0, 0, 0, 0, 0, 13)
     ack = tuple(int(i == nack) for i in range(3))
     peer = I2CReadPeer(ADDRESS, REGISTER, (PAYLOAD,), ack, fall_stretches=stretches)
+    trace, observations = rtl.record_sink, []
+    observe_core(rtl, trace, observations)
+    rtl.device = peer
+    try:
+        pending = loaded.submit()
+        start = pending.last
+        require(start.generation == loaded.generation and start.busy and not start.tx_accepted,
+                "Unexpected START receipt")
+        first = pending.pump()
+        require(first.tx_accepted == BUDGET, "Host did not queue the full path before any branch decision")
+        pending.wait(max_exchanges=20)
+        counters = status(rtl)
+        execution = i2c_execution(observations, image["words"])
+        require(execution["terminal"] is not None, "Did not observe the I2C terminal cut")
+    finally:
+        rtl.record_sink = trace
+    completed = pending.finish(max_exchanges=20)
+    rx, terminal, released = completed.rx_bits, completed.terminal, completed.release
+    require(counters["tx_accepted"] == BUDGET and counters["rx_produced"] == expected_slots and
+            counters["rx_popped"] == expected_slots and counters["rx_queued"] == 0,
+            "Ready changed the accepted TX count or captured/acknowledged RX ledger")
+    require(terminal.fault == deadline and (counters["phase"] == (6 if deadline else 5)),
+            "NACK must complete and an unresolved data guard must time out")
+    expected = tuple(map(bool, peer.expected()[:expected_slots]))
+    require(rx == expected, "Sampled RX prefix differs from independently resolved public bits")
+    result = asdict(completed.result)
+    case = "deadline" if deadline else next(name for name, stage in CASES.items() if stage == nack)
+    require(result == dict(outcome=case, byte=PAYLOAD if case == "read" else None),
+            "Host decoded the wrong register-read outcome")
+    held = None
+    fences = {}
+    if deadline:
+        require(released is None and
+                transport.opcode_counts[Opcode.WARM_RESET] == prior_counts[Opcode.WARM_RESET] and
+                transport.opcode_counts[Opcode.RELEASE] == prior_counts[Opcode.RELEASE],
+                "Finishing a timeout must return a live owner without sending RELEASE or WARM_RESET")
+        require(peer.bits == peer.expected()[:expected_slots] and not peer.stopped and peer.starts == 1 and
+                peer.fall_stretch_arms[-1]["fall_index"] == DEADLINE_SLOT and not rtl.observation.bit(0),
+                "Missed deadline was not a real held-low data clock")
+        require(counters["tx_consumed"] == expected_slots + 1,
+                "Data timeout failed to keep the TX reservation for the unqualified slot")
+        wire = dict(starts=peer.starts, stopped=peer.stopped, observed_bits=peer.bits,
+                    fall_stretch_arms=peer.fall_stretch_arms)
+        prior_commands = transport.transactions
+        try:
+            host.load(spi_image() if blocked_image is None else blocked_image)
+        except StreamProtocolError:
+            require(transport.transactions == prior_commands,
+                    "Runner tried to replace a blocked image at the transport")
+        else:
+            raise RuntimeError("Timed-out owner must fence the runner's next upload")
+        if blocked_image is not None:
+            for opcode, fields in (
+                (Opcode.WRITE, dict(address=0, word=blocked_image.words[0])),
+                (Opcode.COMMIT, dict(count=len(blocked_image.words), idle_levels=blocked_image.idle_levels,
+                                     idle_enabled=blocked_image.idle_enabled)),
+                (Opcode.START, dict(expected_generation=loaded.generation, bit_count=64)),
+            ):
+                denied = transport.request(opcode, **fields)
+                require(denied.code is Code.REJECTED and denied.tag == start.tag and denied.retained and
+                        denied.fault and status(rtl) == counters,
+                        f"Fault owner did not fence {opcode.name} at the hardware")
+                fences[opcode.name] = asdict(denied)
+        try:
+            pending.release()
+        except StreamRejected as error:
+            held = error.receipt
+        else:
+            raise RuntimeError("The normal RELEASE path accepted an owner with unspent TX")
+        require(held.code is Code.REJECTED and held.retained and held.fault and held.tag == start.tag and
+                held.tx_accepted == BUDGET, "Timeout unexpectedly discarded unsent TX or released custody")
+        require(completed.tx_consumed is None and completed.tx_cancelled is None,
+                "Runner inferred a timeout TX disposition without a fixed terminal path")
+        cancelled = pending.cancel()
+        require(not cancelled.retained and not cancelled.valid and cancelled.tag == start.tag,
+                "Explicit warm cancellation did not clear timeout custody")
+        ledger = (ownership(counters, terminal, held, "timeout", "retained"),
+                  ownership(counters, terminal, cancelled, "timeout", "cancelled"))
+    else:
+        wire = peer.check()
+        require(counters["tx_consumed"] == expected_slots and counters["tx_queued"] == 0 and
+                counters["tx_free"] == 2, "Ready early halt consumed or retained skipped TX")
+        require(completed.tx_consumed == counters["tx_consumed"] and
+                completed.tx_cancelled == BUDGET - counters["tx_consumed"],
+                "Runner's completed TX disposition disagrees with the hardware counters")
+        require(released is not None and released.tag == start.tag and not released.retained and not released.busy,
+                "Exact acknowledgment did not allow owner RELEASE")
+        ledger = (ownership(counters, terminal, released,
+                            "completed" if nack is None else "earlyExit", "released"),)
+        cancelled = None
+    rtl.device = None
+    require(transport.opcode_counts[Opcode.WARM_RESET] - prior_counts[Opcode.WARM_RESET] == int(deadline),
+            "Unexpected reset during segmented session")
+    wire["rising_cycles"] = peer.rising_cycles
+    result = dict(nack_stage=nack, missed_deadline=deadline, result=result, wire=wire, rx_bits=rx, counters=counters,
+                discarded_tx=0 if deadline else BUDGET - counters["tx_consumed"], receipt=asdict(terminal),
+                release=asdict(released) if released else None, rejected_release=asdict(held) if held else None,
+                cancellation=asdict(cancelled) if cancelled else None, ownership=ledger,
+                execution=execution)
+    if blocked_image is not None:
+        result.update(start=asdict(start), fault_fences=fences, settled_cut=status(rtl))
+    return result
+
+
+def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=False):
     trace = EdgeTrace(path)
-    observations = []
     try:
         with QuadRTL(vvp, executable, record_limit=0, record_sink=trace) as rtl:
             transport = QuadTransport(rtl)
@@ -298,95 +414,18 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
             host.initialize()
             loaded = host.load(CombinedI2cRead.from_manifest(image))
             require(loaded.generation == 1, "Cold image did not commit to the first generation")
-            observe_core(rtl, trace, observations)
-            rtl.device = peer
-            pending = loaded.submit()
-            start = pending.last
-            require(start.tag == 0x10001 and start.busy and not start.tx_accepted, "Unexpected START receipt")
-            first = pending.pump()
-            require(first.tx_accepted == BUDGET, "Host did not queue the full path before any branch decision")
-            pending.wait(max_exchanges=20)
-            counters = status(rtl)
-            execution = i2c_execution(observations, image["words"])
-            require(execution["terminal"] is not None, "Did not observe the I2C terminal cut")
-            rtl.record_sink = trace
-            completed = pending.finish(max_exchanges=20)
-            rx, terminal, released = completed.rx_bits, completed.terminal, completed.release
-            require(counters["tx_accepted"] == BUDGET and counters["rx_produced"] == expected_slots and
-                    counters["rx_popped"] == expected_slots and counters["rx_queued"] == 0,
-                    "Ready changed the accepted TX count or captured/acknowledged RX ledger")
-            require(terminal.fault == deadline and (counters["phase"] == (6 if deadline else 5)),
-                    "NACK must complete and an unresolved data guard must time out")
-            expected = tuple(map(bool, peer.expected()[:expected_slots]))
-            require(rx == expected, "Sampled RX prefix differs from independently resolved public bits")
-            result = asdict(completed.result)
-            case = "deadline" if deadline else next(name for name, stage in CASES.items() if stage == nack)
-            require(result == dict(outcome=case, byte=PAYLOAD if case == "read" else None),
-                    "Host decoded the wrong register-read outcome")
-            held = None
-            if deadline:
-                require(released is None and transport.opcode_counts[Opcode.WARM_RESET] == 0 and
-                        transport.opcode_counts[Opcode.RELEASE] == 0,
-                        "Finishing a timeout must return a live owner without sending RELEASE or WARM_RESET")
-                require(peer.bits == peer.expected()[:expected_slots] and not peer.stopped and peer.starts == 1 and
-                        peer.fall_stretch_arms[-1]["fall_index"] == DEADLINE_SLOT and not rtl.observation.bit(0),
-                        "Missed deadline was not a real held-low data clock")
-                require(counters["tx_consumed"] == expected_slots + 1,
-                        "Data timeout failed to keep the TX reservation for the unqualified slot")
-                wire = dict(starts=peer.starts, stopped=peer.stopped, observed_bits=peer.bits,
-                            fall_stretch_arms=peer.fall_stretch_arms)
-                prior_commands = transport.transactions
-                try:
-                    host.load(spi_image())
-                except StreamProtocolError:
-                    require(transport.transactions == prior_commands,
-                            "Runner tried to replace a blocked image at the transport")
-                else:
-                    raise RuntimeError("Timed-out owner must fence the runner's next upload")
-                try:
-                    pending.release()
-                except StreamRejected as error:
-                    held = error.receipt
-                else:
-                    raise RuntimeError("The normal RELEASE path accepted an owner with unspent TX")
-                require(held.code is Code.REJECTED and held.retained and held.fault and held.tag == start.tag and
-                        held.tx_accepted == BUDGET, "Timeout unexpectedly discarded unsent TX or released custody")
-                require(completed.tx_consumed is None and completed.tx_cancelled is None,
-                        "Runner inferred a timeout TX disposition without a fixed terminal path")
-                cancelled = pending.cancel()
-                require(not cancelled.retained and not cancelled.valid and cancelled.tag == start.tag,
-                        "Explicit warm cancellation did not clear timeout custody")
-                ledger = (ownership(counters, terminal, held, "timeout", "retained"),
-                          ownership(counters, terminal, cancelled, "timeout", "cancelled"))
-            else:
-                wire = peer.check()
-                require(counters["tx_consumed"] == expected_slots and counters["tx_queued"] == 0 and
-                        counters["tx_free"] == 2, "Ready early halt consumed or retained skipped TX")
-                require(completed.tx_consumed == counters["tx_consumed"] and
-                        completed.tx_cancelled == BUDGET - counters["tx_consumed"],
-                        "Runner's completed TX disposition disagrees with the hardware counters")
-                require(released is not None and released.tag == start.tag and not released.retained and not released.busy,
-                        "Exact acknowledgment did not allow owner RELEASE")
-                ledger = (ownership(counters, terminal, released,
-                                    "completed" if nack is None else "earlyExit", "released"),)
-                cancelled = None
-            rtl.device = None
-            following = warm_spi(rtl, host, loaded.generation) if reload else None
-            commands = transport.opcode_counts
-            require(commands[Opcode.WARM_RESET] == int(deadline), "Unexpected reset during segmented session")
+            result = i2c_exchange(rtl, host, loaded, image, nack=nack, deadline=deadline)
+            require(result["receipt"]["tag"] == 0x10001, "Unexpected first I2C owner tag")
+            result["subsequent_spi"] = warm_spi(rtl, host, loaded.generation) if reload else None
     finally:
         recorded = trace.close()
     edges = list(struct.iter_unpack("<I16B", path.read_bytes()))
     require([row[0] for row in edges if row[1]] == [1] and len(edges) == rtl.cycle,
             "Replay did not retain every physical edge or exactly one cold reset")
     if deadline:
-        wire["aperture"] = deadline_aperture(edges, peer.fall_stretch_arms[-1]["fall_edge"], image["wait_budget"])
-    wire["rising_cycles"] = peer.rising_cycles
-    return dict(nack_stage=nack, missed_deadline=deadline, result=result, wire=wire, rx_bits=rx, counters=counters,
-                discarded_tx=0 if deadline else BUDGET - counters["tx_consumed"], receipt=asdict(terminal),
-                release=asdict(released) if released else None, rejected_release=asdict(held) if held else None,
-                cancellation=asdict(cancelled) if cancelled else None, ownership=ledger,
-                subsequent_spi=following, execution=execution, trace=recorded)
+        wire = result["wire"]
+        wire["aperture"] = deadline_aperture(edges, wire["fall_stretch_arms"][-1]["fall_edge"], image["wait_budget"])
+    return {**result, "trace": recorded}
 
 
 def replay_inverted_ack(vvp, executable, path, image, reference):
@@ -455,13 +494,19 @@ def check_readback(run, lean, out, cases):
     run([*lean, witness], "check-observed-readback")
 
 
-def check_ownership(run, lean, out, cases, ethernet, split):
+def check_ownership(run, lean, out, cases, ethernet, split, switches):
     reports = {name.replace("-", "_") + "_" + summary["closure"]: summary
                for name in (*CASES.keys(), "deadline") for summary in cases[name]["ownership"]}
     reports["spi_released"] = cases["spi"]["exchange"]["ownership"]
     reports["warm_spi_released"] = cases["write-address-nack"]["subsequent_spi"]["exchange"]["ownership"]
     reports.update({"split_" + name.replace("-", "_") + "_" + summary["closure"]: summary
                     for name, case in split.items() for summary in case["ownership"]})
+    for name, replayed in switches.items():
+        for stage in ("initial_can", "crc_control", "final_can"):
+            if replayed[stage] is not None:
+                reports[f"switch_{name}_{stage}"] = replayed[stage]["ownership"]
+        for summary in replayed["i2c"]["ownership"]:
+            reports[f"switch_{name}_i2c_{summary['closure']}"] = summary
     for name, replayed in ethernet.items():
         (case,) = replayed["cases"]
         evidence = case["ownership"]
@@ -495,7 +540,7 @@ def lean_bits(bits):
     return "[" + ", ".join("true" if bit else "false" for bit in bits) + "]"
 
 
-def check_i2c_execution(run, lean, out, images, original, split):
+def check_i2c_execution(run, lean, out, images, original, split, switches):
     """Feed sampler events observed on both stores to the branch-sensitive semantics."""
     source = [
         "import Pinwheel.Program.StreamingReadyRegisterReadVariants",
@@ -506,10 +551,11 @@ def check_i2c_execution(run, lean, out, images, original, split):
         "set_option maxRecDepth 8192",
         "",
     ]
-    variants = (("standard", "registerReadImage", "(registerReadRows .standard)", original),
-                ("split", "splitImage", "(splitRows .standard)", split))
-    for variant, image_name, rows, cases in variants:
-        manifest = images[variant]
+    switched = {name: replayed["i2c"] for name, replayed in switches.items()}
+    variants = (("standard", "registerReadImage", "(registerReadRows .standard)", images["standard"], original),
+                ("split", "splitImage", "(splitRows .standard)", images["split"], split),
+                ("switch", "splitImage", "(splitRows .standard)", images["split"], switched))
+    for variant, image_name, rows, manifest, cases in variants:
         source.append(f"example : {image_name}.words.map BitVec.toNat = {manifest['words']} := by decide +kernel")
         for name, case in cases.items():
             if name == "spi":
@@ -555,6 +601,63 @@ example : {label}.any (fun r =>
     witness = out / "ObservedReadyRowExecution.lean"
     witness.write_text("\n".join(source) + "\n")
     run([*lean, witness], "check-observed-row-execution", timeout=300)
+
+
+def check_can_handoff(run, lean, out, switches):
+    """Bind the installed words, measured generations, and CAN captures to Lean."""
+    source = [
+        "import Pinwheel.Hardware.StreamingReady.CANSession",
+        "import Pinwheel.Hardware.StreamingReady.ProtocolOwnership",
+        "import Pinwheel.Program.StreamingReadyRegisterReadVariants",
+        "open Pinwheel.Hardware.StreamingReady.CANSession",
+        "open Pinwheel.Hardware.StreamingReady.ProtocolOwnership",
+        "open Pinwheel.Program.StreamingCAN Pinwheel.Program.StreamingCANCore",
+        "open Pinwheel.Program.StreamingReadyRegisterReadVariants",
+        "set_option maxRecDepth 8192",
+    ]
+    for replayed in switches.values():
+        stages = (
+            ("first_install", {"generation": 0, "transfer": 0}, replayed["initial_can"]["start"]),
+            ("to_i2c", replayed["initial_can"]["settled_cut"], replayed["i2c"]["start"]),
+            ("to_can", replayed["i2c"]["settled_cut"], (replayed["crc_control"] or replayed["final_can"])["start"]),
+        )
+        for name, settled, started in stages:
+            handoff = replayed[name]
+            image, cut = handoff["image_words"], handoff["commit_cut"]
+            compiled = "splitImage.words" if name == "to_i2c" else "receiveImage.words"
+            generation, transfer = cut["generation"], cut["transfer"]
+            source.append(f"""
+example : {compiled}.map BitVec.toNat = {image} := by decide +kernel
+example : (List.range {compiled}.length) = {[write['address'] for write in handoff['writes']]} :=
+  by decide +kernel
+example : ({generation}#16 = {settled['generation']}#16 + 1 ∧
+    {transfer}#16 = {settled['transfer']}#16 ∧
+    ownerTag {generation}#16 ({transfer}#16 + 1) = {started['tag']}) := by decide +kernel
+""")
+            if handoff["stale_start"] is not None:
+                stale = handoff["stale_cut"]
+                source.append(f"""
+example : ({generation}#16 ≠ {settled['generation']}#16 ∧
+    ownerTag {stale['generation']}#16 {stale['transfer']}#16 = {handoff['stale_start']['tag']} ∧
+    {stale['generation']}#16 = {generation}#16 ∧ {stale['transfer']}#16 = {transfer}#16) := by decide +kernel
+""")
+        for stage in ("initial_can", "crc_control", "final_can"):
+            case = replayed[stage]
+            if case is None:
+                continue
+            identifier, payload = case["source_identifier"], case["source_byte"]
+            kind = "badCRC" if case["corrupt"] == "crc" else "valid"
+            observed = lean_bits(case["captured"])
+            cuts = [sample["edge"] for sample in case["capture_cuts"]]
+            decoded = "none" if case["decoded"] is None else f"some ({identifier}#11, {payload}#8)"
+            source.append(f"""
+example : FrameCase.symbols {identifier}#11 {payload}#8 .{kind} = {observed} := by decide +kernel
+example : decodeFrame {observed} = {decoded} := by decide +kernel
+example : (apertures {case['wire']['sof']}).map (· + 2) = {cuts} := by decide +kernel
+""")
+    witness = out / "ObservedReadyHandoff.lean"
+    witness.write_text("\n".join(source) + "\n")
+    run([*lean, witness], "check-observed-handoff")
 
 
 def check_ethernet_timing(run, lean, out, ethernet):
@@ -644,8 +747,8 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v4", passed=False, commands=[], source_commit=source_commit(),
-                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={})
+    report = dict(schema="pinwheel.ready-segments.v5", passed=False, commands=[], source_commit=source_commit(),
+                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={})
     run = Commands(ROOT, logs, report["commands"])
     try:
         report["toolchain"], tools, _ = tool_config()
@@ -690,23 +793,40 @@ def main():
                     directory / f"ethernet-{name}.bin", schedule=name, observe=timing_status)
                 for name in ethernet_replay.REFILL_POLICIES
             }
+            switches = {}
+            for name, deadline in (("early_exit", False), ("timeout", True)):
+                path = directory / f"switch-{name}.bin"
+                result = replay_switch(tools["vvp"], executable, path, images["split"],
+                                       i2c_exchange, timing_status, ownership, deadline=deadline)
+                if deadline:
+                    wire = result["i2c"]["wire"]
+                    edges = list(struct.iter_unpack("<I16B", path.read_bytes()))
+                    wire["aperture"] = deadline_aperture(edges, wire["fall_stretch_arms"][-1]["fall_edge"],
+                                                         images["split"]["wait_budget"])
+                switches[name] = result
+            report["switches"][store] = switches
         require(report["stores"]["direct"] == report["stores"]["registered"],
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
         require(report["ethernet"]["direct"] == report["ethernet"]["registered"],
                 "Instruction stores changed the Ethernet timing or ownership receipts")
         require(all(report[key]["direct"] == report[key]["registered"] for key in ("split", "inverted_ack")),
                 "Instruction stores changed the split or inverted-ACK execution")
+        require(report["switches"]["direct"] == report["switches"]["registered"],
+                "Instruction stores changed the protocol handoff")
+        switches = report["switches"]["direct"]
         traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES),
-                  *(f"split-{name}" for name in report["split"]["direct"]), "inverted-ack")
+                  *(f"split-{name}" for name in report["split"]["direct"]), "inverted-ack",
+                  *(f"switch-{name}" for name in switches))
         for name in traces:
             direct = (out / "direct-replay" / f"{name}.bin").read_bytes()
             cached = (out / "registered-replay" / f"{name}.bin").read_bytes()
             require(direct == cached and direct and len(direct) % 20 == 0, f"Changed public pin trace: {name}")
         check_readback(run, lean, out, report["stores"]["direct"])
         check_ownership(run, lean, out, report["stores"]["direct"], report["ethernet"]["direct"],
-                        report["split"]["direct"])
-        check_i2c_execution(run, lean, out, images, report["stores"]["direct"], report["split"]["direct"])
+                        report["split"]["direct"], switches)
+        check_i2c_execution(run, lean, out, images, report["stores"]["direct"], report["split"]["direct"], switches)
         check_ethernet_timing(run, lean, out, report["ethernet"]["direct"])
+        check_can_handoff(run, lean, out, switches)
         require(source_commit() == report["source_commit"] and source_hashes() == report["source_sha256"],
                 "Source inputs changed during replay")
         require(all(sha(path) == expected for path, expected in frozen.items()), "Emitted inputs changed during replay")

@@ -607,6 +607,37 @@ warm-loaded on the same host after I²C early RELEASE. It checks the measured
 ownership reports in Lean, including the timeout cut before explicit
 cancellation, and compares the emitted stores with independent wire peers.
 
+### Warm CAN and I²C handoff
+
+One cold reset and one Ready host run CAN, the split I²C register read,
+and CAN again. One sequence settles the I²C register NACK with RELEASE.
+It also drains and releases a bad-CRC CAN capture after the decoder rejects
+it. The other sequence holds the I²C clock through the last poll. The
+retained fault rejects WRITE, COMMIT, START, and RELEASE while the TX
+suffix is still owned. Explicit warm cancellation clears custody and
+permits the final CAN install.
+
+The [handoff theorem](../../Pinwheel/Hardware/StreamingReady/SegmentReload.lean)
+follows the decoded core commands on both instruction stores. Accepted
+RELEASE or explicit timeout cancellation establishes an empty, free cut.
+Ordered writes and COMMIT install the new live rows and increment the
+generation. The old generation's START is rejected. The admitted START
+enters row zero with a fresh transfer, empty custody, and the new image's
+idle pads. A shorter image can leave the preceding image's words in the
+inactive tail.
+
+The [CAN theorem](../../Pinwheel/Hardware/StreamingReady/CANSession.lean)
+accepts a warm installed representation of the same image. The
+[segmented projection](../../Pinwheel/Hardware/StreamingReady/SegmentLegacy.lean)
+carries the original package observations through runtime execution of
+that live image. The bench supplies separate CAN and I²C peer waveforms
+with the appropriate digital pad connections at each session.
+
+The source gate checks both sequences on each emitted store. It compares
+the measured core writes with the Lean image words, checks each observed
+CAN capture edge and decoded verdict, and checks the I²C outcomes and
+owner accounting with the existing witnesses.
+
 ### Refill timing and ownership
 
 SPI can park between cells when it runs out of TX credit. The combined
