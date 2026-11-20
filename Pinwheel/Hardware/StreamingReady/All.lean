@@ -26,11 +26,13 @@ import Pinwheel.Hardware.StreamingReady.RegisteredStoreSession
 import Pinwheel.Hardware.StreamingReady.SegmentControl
 import Pinwheel.Hardware.StreamingReady.SegmentCustody
 import Pinwheel.Hardware.StreamingReady.SegmentExport
+import Pinwheel.Hardware.StreamingReady.SegmentHandoffFence
 import Pinwheel.Hardware.StreamingReady.SegmentLegacy
 import Pinwheel.Hardware.StreamingReady.SegmentPackage
 import Pinwheel.Hardware.StreamingReady.SegmentPathControl
 import Pinwheel.Hardware.StreamingReady.SegmentPollRefinement
 import Pinwheel.Hardware.StreamingReady.SegmentPulseRefinement
+import Pinwheel.Hardware.StreamingReady.SegmentReload
 import Pinwheel.Hardware.StreamingReady.SegmentStreamStep
 import Pinwheel.Hardware.StreamingReady.SegmentTiming
 import Pinwheel.Hardware.StreamingReady.SegmentWaitRefinement
