@@ -28,6 +28,7 @@ import Pinwheel.Hardware.StreamingReady.SegmentCustody
 import Pinwheel.Hardware.StreamingReady.SegmentExport
 import Pinwheel.Hardware.StreamingReady.SegmentLegacy
 import Pinwheel.Hardware.StreamingReady.SegmentPackage
+import Pinwheel.Hardware.StreamingReady.SegmentTiming
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
 import Pinwheel.Hardware.StreamingReady.SourceRefinement
