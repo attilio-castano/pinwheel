@@ -27,6 +27,8 @@ REQUEST_CLOSE = 90
 GRANT = 91
 READY = 143
 RESPONSE_CLOSE = 248
+CORE_BOUNDARY, CORE_COMPLETED, CORE_FREE = 2, 5, 0
+TX_STREAM_FLAGS = 9
 CASES = (('valid-width-1', 1, False), ('valid-width-2', 2, False), ('bad-fcs', 2, True))
 REFILL_POLICIES = {
     'uniform': (0,) * 8,
@@ -140,9 +142,32 @@ class SerialPHY:
                     completion_delay=completion_delay)
 
 
-def push_burst(rtl, transport, tag, offset, bits):
+def burst_timing(timing, records, start, close, offset):
+    request_close = next(record['cycle'] for record in records
+                         if start + 1 < record['cycle'] and record['pins']['csn'])
+    grant = next(edge for edge in range(request_close + 1, close)
+                 if timing[edge]['frontend_phase'] == 1 and timing[edge + 1]['frontend_phase'] == 2)
+    pushes = [edge for edge in range(grant, close) if timing[edge]['tx_push']]
+    grant_state = timing[grant]
+    require(request_close == start + REQUEST_CLOSE and grant == start + GRANT and
+            grant_state['pre_tx_free'] >= 2 and grant_state['pre_tx_accepted'] == offset and
+            pushes == [grant + 1, grant + 2], 'SNI did not reserve the two FIFO beats at the observed grant')
+    for beat, edge in enumerate(pushes, start=1):
+        accepted = offset + 32 * beat
+        require(timing[edge]['tx_push_bits'] == 32 and timing[edge]['tx_accepted'] == accepted and
+                timing[edge + 1]['pre_tx_accepted'] == accepted and
+                timing[edge + 1]['pre_tx_queued'] > 0,
+                'SNI FIFO push was not visible to the following edge')
+    return dict(request_close=request_close, grant=grant, tx_push=pushes,
+                first_visible=pushes[0] + 1, visible=pushes[-1] + 1,
+                push_bits=[timing[edge]['tx_push_bits'] for edge in pushes],
+                grant_tx_free=grant_state['pre_tx_free'], grant_tx_consumed=grant_state['pre_tx_consumed'],
+                grant_tx_queued=grant_state['pre_tx_queued'], grant_tx_valid=grant_state['pre_tx_valid'])
+
+
+def push_burst(rtl, send, tag, offset, timing):
     start = rtl.cycle
-    reply = require_accepted(transport.exchange(tag, offset, 0, bits[offset:offset + BURST_BITS]))
+    reply = send(offset)
     ready = next(record['cycle'] for record in rtl.records
                  if record['cycle'] > start and record['observation']['ready'])
     require((ready, rtl.cycle) == (start + READY, start + RESPONSE_CLOSE),
@@ -150,11 +175,60 @@ def push_burst(rtl, transport, tag, offset, bits):
     require(reply.tag == tag and reply.busy and not reply.fault and not reply.retained and
             reply.tx_accepted == offset + BURST_BITS and reply.rx_start == reply.rx_valid == 0,
             'SNI host did not accept the exact requested 64-bit burst')
-    return dict(offset=offset, start=start, request_close=start + REQUEST_CLOSE, grant=start + GRANT,
-                tx_push=[start + GRANT + 1, start + GRANT + 2], ready=ready, response_close=rtl.cycle)
+    result = dict(offset=offset, start=start, request_close=start + REQUEST_CLOSE, grant=start + GRANT,
+                  tx_push=[start + GRANT + 1, start + GRANT + 2], ready=ready, response_close=rtl.cycle)
+    if timing is not None:
+        result.update(burst_timing(timing, rtl.records, start, rtl.cycle, offset))
+    return result
 
 
-def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=None, missed_deadline=False):
+def check_reservations(timing, first, missed_deadline):
+    reservations = []
+    first_missing = None
+    for bit in range(WIRE_BITS):
+        edge = first - SETUP + BIT_CYCLES * bit
+        state = timing[edge]
+        available = bool(state['pre_tx_valid'] or state['pre_tx_queued'])
+        reserved_before, reserved_after = state['pre_tx_consumed'], state['tx_consumed']
+        phase = state['pre_phase']
+        if first_missing is None:
+            require(phase == CORE_BOUNDARY and state['pre_stream_flags'] == TX_STREAM_FLAGS and
+                    reserved_before == bit and reserved_after == bit + int(available),
+                    'SNI reservation cut did not match the core TX boundary and offset')
+            if not available:
+                first_missing = bit
+        reservations.append(dict(bit=bit, edge=edge, phase=phase, available=available,
+                                 reserved_before=reserved_before, reserved_after=reserved_after))
+    require(first_missing == (BURST_BITS if missed_deadline else None),
+            'SNI reservation availability differed from its schedule')
+    return dict(reservations=reservations, first_missing_reservation=first_missing)
+
+
+def finish_owner(rtl, pending, timing):
+    terminal_counters = timing[rtl.cycle]
+    completed = pending.finish(max_exchanges=3)
+    released_counters = timing[rtl.cycle]
+    terminal, release = completed.terminal, completed.release
+    tag = pending.tag
+    require(terminal.retained and not terminal.busy and not terminal.fault and release is not None and
+            terminal.tag == release.tag == tag and terminal.tx_accepted == WIRE_BITS and
+            completed.result == completed.rx_bits == () and completed.tx_consumed == WIRE_BITS and
+            completed.tx_cancelled == 0 and pending.terminal_retries == [],
+            'Shared runner did not finish the same SNI owner with the exact TX prefix')
+    for counters, phase, count in ((terminal_counters, CORE_COMPLETED, WIRE_BITS),
+                                   (released_counters, CORE_FREE, 0)):
+        require(counters['phase'] == phase and (counters['generation'] << 16 | counters['transfer']) == tag and
+                counters['tx_accepted'] == counters['tx_consumed'] == count and
+                counters['tx_free'] == DEPTH and
+                not any(counters[name] for name in ('tx_queued', 'rx_produced', 'rx_popped', 'rx_queued')),
+                'Observed SNI ownership counters differ from the runner settlement')
+    return dict(terminal=asdict(terminal), release=asdict(release), terminal_counters=terminal_counters,
+                released_counters=released_counters, tx_consumed=completed.tx_consumed,
+                tx_cancelled=completed.tx_cancelled, terminal_retries=pending.terminal_retries)
+
+
+def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=None, missed_deadline=False, *,
+             timing=None):
     peer = SerialPHY(high_ticks)
     rtl.device = peer
     start = rtl.cycle
@@ -162,18 +236,30 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=No
     if corrupt:
         frame = frame[:-1] + bytes([frame[-1] ^ 1])
     bits = serial_bits(frame)
-    started = require_accepted(transport.request(Opcode.START, expected_generation=loaded.generation,
-                                                 bit_count=WIRE_BITS))
+    if timing is None:
+        started = require_accepted(transport.request(Opcode.START, expected_generation=loaded.generation,
+                                                     bit_count=WIRE_BITS))
+
+        def send(offset):
+            return require_accepted(transport.exchange(started.tag, offset, 0, bits[offset:offset + BURST_BITS]))
+    else:
+        timing.clear()
+        pending = loaded.submit(bits, bit_count=WIRE_BITS)
+        started = pending.last
+
+        def send(offset):
+            require(pending.tx_accepted == offset, 'SNI refill began at a different accepted TX offset')
+            return pending.pump(scheduled_bits=BURST_BITS)
     require(started.busy and started.tx_free == DEPTH and started.tx_accepted == 0,
             'SNI START did not create an empty armed owner')
-    bursts = [push_burst(rtl, transport, started.tag, 0, bits)]
+    bursts = [push_burst(rtl, send, started.tag, 0, timing)]
     first = peer.arm(rtl.cycle)
     for index, offset in enumerate(range(BURST_BITS, WIRE_BITS, BURST_BITS)):
         delay = refill_delays[index] if refill_delays is not None else 0
         launch = first + FIRST_REFILL + (offset - BURST_BITS) * BIT_CYCLES + delay
         require(rtl.cycle < launch, 'A previous refill exceeded the next host launch deadline')
         transport.idle(launch - rtl.cycle)
-        bursts.append(push_burst(rtl, transport, started.tag, offset, bits))
+        bursts.append(push_burst(rtl, send, started.tag, offset, timing))
     done = first + BIT_CYCLES * (WIRE_BITS - 1) + 4
     transport.idle(done - rtl.cycle)
     if missed_deadline:
@@ -182,9 +268,12 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=No
             transport.idle(1)
     require(not rtl.snapshot.busy, 'SNI program did not finish at the exact final deadline')
     completion_delay = rtl.cycle - done
-    released = require_accepted(transport.request(Opcode.RELEASE, tag=started.tag))
-    require(released.tag == started.tag and not released.busy and not released.retained,
-            'SNI owner did not release after consuming the frame')
+    if timing is None:
+        released = require_accepted(transport.request(Opcode.RELEASE, tag=started.tag))
+        require(released.tag == started.tag and not released.busy and not released.retained,
+                'SNI owner did not release after consuming the frame')
+    else:
+        ownership = finish_owner(rtl, pending, timing)
     records = [record for record in rtl.records if record['cycle'] > start]
     if missed_deadline:
         trace = peer.check_missed_deadline(records, first, bits, completion_delay)
@@ -193,6 +282,9 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=No
     rtl.device = None
     result = dict(name=name, owner_tag=started.tag, tx_bits=bursts[-1]['offset'] + BURST_BITS,
                   bursts=bursts, phy=trace)
+    if timing is not None:
+        result['ownership'] = ownership
+        result['timing'] = check_reservations(timing, first, missed_deadline)
     if refill_delays is not None:
         result['refill_delays'] = [burst['start'] - first - FIRST_REFILL - index * BURST_BITS * BIT_CYCLES
                                    for index, burst in enumerate(bursts[1:])]
@@ -200,7 +292,7 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=No
     return result
 
 
-def replay(vvp, executable, trace_path, *, cases=CASES):
+def replay(vvp, executable, trace_path, *, cases=CASES, observe=None):
     trace = EdgeTrace(trace_path)
     try:
         with QuadRTL(vvp, executable, record_limit=6000, record_sink=trace) as rtl:
@@ -208,9 +300,19 @@ def replay(vvp, executable, trace_path, *, cases=CASES):
             host = ReadyHost(transport, depth=DEPTH)
             host.initialize()
             loaded = host.load(ethernet_sni_image())
-            results = [exchange(rtl, transport, loaded, *case) for case in cases]
+            timing = None
+            if observe is not None:
+                timing = {}
+
+                def record_edge(record):
+                    trace(record)
+                    timing[record['cycle']] = observe(rtl)
+
+                rtl.record_sink = record_edge
+            results = [exchange(rtl, transport, loaded, *case, timing=timing) for case in cases]
             require(transport.opcode_counts[Opcode.COMMIT] == 1 and
                     transport.opcode_counts[Opcode.EXCHANGE64] == len(cases) * (WIRE_BITS // BURST_BITS) and
+                    transport.opcode_counts[Opcode.EXCHANGE0] == (2 * len(cases) if observe else 0) and
                     all(transport.opcode_counts[op] == len(cases) for op in (Opcode.START, Opcode.RELEASE)) and
                     transport.opcode_counts[Opcode.WARM_RESET] == 0 and
                     len({case['owner_tag'] for case in results}) == len(cases),
@@ -225,6 +327,21 @@ def replay_schedules(vvp, executable, trace_path):
     """Use the independent PHY to check two refill policies and one missed reservation."""
     cases = tuple((name, 1, False, delays, name == 'late') for name, delays in REFILL_POLICIES.items())
     return replay(vvp, executable, trace_path, cases=cases)
+
+
+def replay_timed_runner(vvp, executable, trace_path, *, observe, schedule=None):
+    """Drive Ethernet with the common Ready owner and sample pre/post-edge RTL accounting.
+
+    ``grant`` and ``tx_push`` name execution edges. ``first_visible`` and
+    ``visible`` name the first pre-edge cuts with one and both committed beats.
+    """
+    if not callable(observe):
+        raise ValueError('Timed SNI replay requires an RTL accounting observer')
+    if schedule is not None and schedule not in REFILL_POLICIES:
+        raise ValueError('Unknown SNI refill schedule')
+    cases = tuple((name, 1, False, delays, name == 'late') for name, delays in REFILL_POLICIES.items()
+                  if schedule is None or name == schedule)
+    return replay(vvp, executable, trace_path, cases=cases, observe=observe)
 
 
 def run(release, models, iverilog, vvp, out):

@@ -170,6 +170,31 @@ class ReadyHostTests(unittest.TestCase):
         self.assertEqual(pending.recover().tx_accepted, 36)
         self.assertEqual(pending.tx_accepted, 36)
 
+    def test_scheduled_offer_uses_live_room_and_preserves_a_rejected_prefix(self):
+        offers = []
+
+        def respond(request):
+            if request.opcode in (Opcode.START, Opcode.EXCHANGE0):
+                return replace(reply(request), tx_free=0)
+            self.assertEqual(request.opcode, Opcode.EXCHANGE64)
+            offers.append(request)
+            if len(offers) == 1:
+                return Receipt(request.sequence, Code.REJECTED, tag=TAG,
+                               flags=int(Flags.VALID | Flags.BUSY | Flags.REJECTED))
+            return reply(request, tx_accepted=64)
+
+        backend = QuadFixture(respond)
+        host = ReadyHost(QuadTransport(backend), depth=2)
+        pending = loaded(host, receive=False).submit((True, False) * 32)
+        self.assertEqual(pending.pump().tx_free, 0)
+        self.assertEqual(decode_request(backend.frames[-1]).opcode, Opcode.EXCHANGE0)
+        with self.assertRaises(StreamRejected):
+            pending.pump(scheduled_bits=64)
+        self.assertEqual(pending.tx_accepted, 0)
+        self.assertIsNone(host.transport.inflight)
+        self.assertEqual(pending.pump(scheduled_bits=64).tx_accepted, 64)
+        self.assertEqual(offers[0].payload, offers[1].payload)
+
     def test_rejected_bulk_empty_diagnostic_does_not_discard_held_export(self):
         offers = []
         def respond(request):

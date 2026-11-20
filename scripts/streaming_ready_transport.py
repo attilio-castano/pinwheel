@@ -225,7 +225,6 @@ class ReadyPending(PendingStream):
                 reply.tx_free <= self.host.depth and reply.rx_queued <= self.host.depth):
             raise error
         before_tx, before_rx = self.tx_accepted, len(self.rx_bits)
-        self._offered = 0
         receipt = super().pump(max_bits=0)
         self.terminal_retries.append(dict(rejected_sequence=reply.sequence, empty_sequence=receipt.sequence,
             owner_tag=self.tag, unchanged_tx_accepted=before_tx, acknowledged_rx_end=before_rx))
@@ -233,18 +232,31 @@ class ReadyPending(PendingStream):
             raise StreamProtocolError('Empty terminal retry unexpectedly accepted TX')
         return receipt
 
-    def pump(self, *, max_bits=64):
+    def pump(self, *, max_bits=64, scheduled_bits=None):
+        """Send a credit-driven exchange or offer whole beats at a scheduled time.
+
+        A timed caller may schedule a refill based on device progress since
+        the last receipt. The frontend checks live room and the exact accepted
+        prefix is established only by the validated exchange receipt.
+        """
         self._local()
         if self._operation is not None or self.host.transport.inflight is not None:
             raise StreamProtocolError('Recover the uncertain Ready operation first')
-        offered = (min(len(self.tx_bits) - self.tx_accepted, max_bits,
-            64 if self.last.tx_free >= 2 else 32 if self.last.tx_free else 0)
-            if self.last is not None and self.last.busy and type(max_bits) is int and max_bits in (0, 32, 64) else 0)
-        self._offered = offered
-        try:
+        if scheduled_bits is None:
             return super().pump(max_bits=max_bits)
+        if (type(scheduled_bits) is not int or scheduled_bits not in (32, 64) or
+                type(max_bits) is not int or max_bits not in (32, 64) or scheduled_bits > max_bits):
+            raise ValueError('Scheduled TX offer must be 32 or 64 bits within the exchange budget')
+        if self.last is None or not self.last.busy or self.expected_tx - self.tx_accepted < scheduled_bits:
+            raise StreamProtocolError('Scheduled TX offer requires a busy owner with that many unsent bits')
+        return self._exchange_offer(self.tx_bits[self.tx_accepted:self.tx_accepted + scheduled_bits])
+
+    def _exchange_offer(self, bits):
+        self._offered = len(bits)
+        try:
+            return super()._exchange_offer(bits)
         except StreamRejected as error:
-            return self._terminal_retry(error, offered)
+            return self._terminal_retry(error, len(bits))
 
     def _outcome(self, receipt):
         image = self.loaded.image
