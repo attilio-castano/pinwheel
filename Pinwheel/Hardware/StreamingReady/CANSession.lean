@@ -44,11 +44,11 @@ def FrameCase.decoded (id : BitVec 11) (data : BitVec 8) : FrameCase → Option 
 /-- After START on a recessive bus, the peer supplies the CAN window. The
 package releases every protocol output and captures its 64 slots in order.
 The host acknowledges those same bits by the time RELEASE is accepted. -/
-theorem completed_frame (actualBoot : Package.State 1) (bootState : Session.State 1)
-    (initialized : BootCorrespondence.Initialized receiveImage actualBoot bootState)
+def FrameContract
+    (actualBoot : Package.State 1) (bootState : Session.State 1)
     (before : List Session.Pins) (startPin : Session.Pins) (wire drain : List Session.Pins)
-    (releasePin : Session.Pins) (beforeRuntime : Session.RuntimeTrace program false bootState before)
-    (id : BitVec 11) (data : BitVec 8) (kind : FrameCase) :
+    (releasePin : Session.Pins)
+    (id : BitVec 11) (data : BitVec 8) (kind : FrameCase) : Prop :=
     let symbols := kind.symbols id data
     let ready := bootState.run program false before
     let actualReady := actualBoot.run (Package.Components.typed 1) (before.map SessionCorrespondence.pins)
@@ -77,20 +77,30 @@ theorem completed_frame (actualBoot : Package.State 1) (bootState : Session.Stat
     captureCuts started.core inputs = (apertures peer.fall).map (· + 2) ∧
     wireEnd.core.phase = .completed ∧ result.exported = symbols ∧
     final.host.ackOffset.toNat = 64 ∧ final.host.exportBits.toNat = 0 ∧
-    decodeFrame result.exported = kind.decoded id data := by
+    decodeFrame result.exported = kind.decoded id data
+
+theorem completed_frame_from (rep : SourceRefinement.Image program)
+    (actualBoot : Package.State 1) (bootState : Session.State 1)
+    (installed : BootCorrespondence.Ready receiveImage rep actualBoot bootState)
+    (before : List Session.Pins) (startPin : Session.Pins) (wire drain : List Session.Pins)
+    (releasePin : Session.Pins) (beforeRuntime : Session.RuntimeTrace program false bootState before)
+    (id : BitVec 11) (data : BitVec 8) (kind : FrameCase) :
+    FrameContract actualBoot bootState before startPin wire drain releasePin id data kind := by
+  delta FrameContract
   intro symbols ready actualReady started actualStarted wireEnd actualWireEnd wireBits final actualFinal result inputs drives
   intro startRuntime start count recessive wireRuntime quiet peer drainRuntime beforeRelease releaseRuntime release
-  have initial : Reached receiveImage actualStarted started {} :=
-    started_run receiveImage actualBoot bootState initialized before startPin [] (by decide)
-      beforeRuntime startRuntime start trivial
-  have wired : Reached receiveImage actualWireEnd wireEnd wireBits := initial.run wire (by decide) wireRuntime
-  have reached : Reached receiveImage actualFinal final result := wired.run drain (by decide) drainRuntime
+  have initial : Reached receiveImage actualStarted started {} rep :=
+    started_run_from receiveImage rep actualBoot bootState installed.package installed.pending
+      installed.structural installed.phase before startPin [] (by decide) beforeRuntime startRuntime start trivial
+  have wired : Reached receiveImage actualWireEnd wireEnd wireBits rep := initial.run wire (by decide) wireRuntime
+  have reached : Reached receiveImage actualFinal final result rep := wired.run drain (by decide) drainRuntime
   have released := reached.release_all_bits releasePin (by decide) releaseRuntime release
-  have readyEq : actualReady = SessionCorrespondence.values (Initialization.compiledImage receiveImage) ready :=
-    initialized_run_eq receiveImage actualBoot bootState initialized before (by decide) beforeRuntime
+  have readyEq : actualReady = SessionCorrespondence.values rep ready :=
+    ready_run_eq program rep actualBoot bootState installed.package installed.pending installed.structural
+      before (by decide) beforeRuntime
   have admission := start
   rw [readyEq] at admission
-  have admitted := start_source (Initialization.compiledImage receiveImage) ready startPin startRuntime admission
+  have admitted := start_source rep ready startPin startRuntime admission
   let command := (ready.command startPin).runtime
   have coreStart : started.core = ready.core.start program command :=
     ready.core_admitted_start program false startPin startRuntime admitted
@@ -133,11 +143,11 @@ theorem completed_frame (actualBoot : Package.State 1) (bootState : Session.Stat
   refine ⟨?_, ?_, complete, exported, ?_, released.2.2.2, ?_⟩
   · change ∀ pad ∈ PublicPins.driveTrace actualStarted wire, pad.enabled = 0
     rw [initial.package]
-    have published : PublicPins.driveTrace
-        (SessionCorrespondence.values (Initialization.compiledImage receiveImage) started) wire =
+    have pending : rep.pending.getLsbD 0 = false := by rw [installed.pending]; rfl
+    have published : PublicPins.driveTrace (SessionCorrespondence.values rep started) wire =
         pinTrace program started.core inputs := by
-      simpa only [compiled_pending] using PublicPins.driveTrace_eq (Initialization.compiledImage receiveImage)
-        started wire (by decide) (by simpa only [compiled_pending] using wireRuntime) initial.custody.structural
+      simpa only [pending] using PublicPins.driveTrace_eq rep started wire (by decide)
+        (by simpa only [pending] using wireRuntime) initial.custody.structural
     rw [published, coreStart]
     exact allReleased
   · rw [coreStart]
@@ -145,5 +155,16 @@ theorem completed_frame (actualBoot : Package.State 1) (bootState : Session.Stat
   · rw [← released.2.2.1, exported, peer.count]
   · rw [exported]
     cases kind <;> simp [symbols, FrameCase.symbols, FrameCase.decoded, decode_frame, decode_badStuff, decode_badCRC]
+
+/-- The cold-installed case is the same theorem with the canonical store
+representation. A warm installation may keep unrelated words above its count. -/
+theorem completed_frame (actualBoot : Package.State 1) (bootState : Session.State 1)
+    (initialized : BootCorrespondence.Initialized receiveImage actualBoot bootState)
+    (before : List Session.Pins) (startPin : Session.Pins) (wire drain : List Session.Pins)
+    (releasePin : Session.Pins) (beforeRuntime : Session.RuntimeTrace program false bootState before)
+    (id : BitVec 11) (data : BitVec 8) (kind : FrameCase) :
+    FrameContract actualBoot bootState before startPin wire drain releasePin id data kind :=
+  completed_frame_from (Initialization.compiledImage receiveImage) actualBoot bootState initialized.asReady
+    before startPin wire drain releasePin beforeRuntime id data kind
 
 end Pinwheel.Hardware.StreamingReady.CANSession

@@ -100,6 +100,29 @@ theorem edge_of_not_fetch (registered : Bool) (i : Values Core.Input) (s : Value
   simp [fetching, both, lift, Expr.eval_bind, Core.fetching, Core.both, Core.isPhase, Expr.eval,
     selected, withFetch, phase]
 
+/-- Legacy source words in the live prefix suffice even when a shorter
+warm installation leaves extended opcodes in the inactive tail. -/
+theorem edge_of_live_words (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (coherent : registered = true → SegmentStore.Coherent s)
+    (legacy : ∀ address : BitVec 6, address.toNat < (s (.base .count)).toNat →
+      ((s (.base (.word address))).extractLsb' 0 3).toNat ≤ 4) : Edge registered i s := by
+  by_cases within : (s (.base .pc)).toNat < (s (.base .count)).toNat
+  · right
+    let address := (s (.base .pc)).extractLsb' 0 6
+    have active : address.toNat < (s (.base .count)).toNat :=
+      Nat.lt_of_le_of_lt (Nat.mod_le _ _) within
+    have picked : (word registered).eval i s = s (.base (.word address)) := by
+      cases registered with
+      | false =>
+        simp only [word, Bool.false_eq_true, if_false, lift, Expr.eval_bind, Core.entryWord,
+          Execution.readTree_correct, Expr.eval, address]
+      | true => exact coherent rfl
+    change (((word registered).eval i s).extractLsb' 0 3).toNat ≤ 4
+    rw [picked]
+    exact legacy address active
+  · left
+    simp [fetching, both, lift, Expr.eval_bind, Core.entryBounds, Expr.eval, selected, withFetch, within]
+
 theorem core_step (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (closed : s .txClosed = 0#1) (legacy : Edge registered i s)
     (coherent : registered = true → SegmentStore.Coherent s) :
@@ -137,6 +160,16 @@ theorem core_observe (registered : Bool) (i : Values Core.Input) (s : Values (Re
   simp [output, either, both, Expr.eval, quiet.accepts_tx, lift_eval]
   have identity (x : BitVec 1) : ~~~(~~~x &&& 1#1) = x := by decide +revert +kernel
   exact identity _
+
+theorem package_observe (registered : Bool) (s : SegmentPackage.State a) (pins : Package.Pins)
+    (openTX : s.core .txClosed = 0#1) (legacy : Edge registered (s.coreInputs pins) s.core) :
+    @SegmentPackage.State.observe a registered s pins =
+      @Package.State.observe a s.project (Package.Components.typed a) pins := by
+  have status : @SegmentPackage.State.status a registered s pins =
+      @Package.State.status a s.project (Package.Components.typed a) pins :=
+    core_observe registered (s.coreInputs pins) s.core openTX legacy
+  funext w port
+  cases port <;> simp only [SegmentPackage.State.observe, status] <;> rfl
 
 theorem package_step (registered : Bool) (s : SegmentPackage.State a) (pins : Package.Pins)
     (openTX : s.core .txClosed = 0#1) (legacy : Edge registered (s.coreInputs pins) s.core)
@@ -176,6 +209,65 @@ theorem package_run (registered : Bool) (s : SegmentPackage.State a) (pins : Lis
     change (rest.foldl (SegmentPackage.State.step registered) (s.step registered nextPins)).project =
       (s.project.step (Package.Components.typed a) nextPins).run (Package.Components.typed a) rest
     rw [ih (s.step registered nextPins) edge.2.1 edge.2.2 legacy.2, edge.1]
+
+/-- Lift the old package's observations at every physical input edge, in
+addition to its final state. This includes driven levels, enables and quad receipts. -/
+theorem observations_eq (registered : Bool) (s : SegmentPackage.State a) (pins : List Package.Pins)
+    (openTX : s.core .txClosed = 0#1) (coherent : registered = true → SegmentStore.Coherent s.core)
+    (legacy : Trace registered s pins) :
+    pins.zipWith (fun pin state => @SegmentPackage.State.observe a registered state pin)
+      (pins.scanl (SegmentPackage.State.step registered) s) =
+    pins.zipWith (fun pin state => @Package.State.observe a state (Package.Components.typed a) pin)
+      (pins.scanl (fun state pin => state.step (Package.Components.typed a) pin) s.project) := by
+  induction pins generalizing s with
+  | nil => rfl
+  | cons pin rest ih =>
+    have step := package_step registered s pin openTX legacy.1 coherent
+    simp only [List.scanl_cons, List.zipWith_cons_cons]
+    rw [package_observe registered s pin openTX legacy.1, ← step.1,
+      ih (s.step registered pin) step.2.1 step.2.2 legacy.2]
+
+open Pinwheel.Program.StreamingReady in
+/-- An already installed ordinary Ready program satisfies the legacy
+projection throughout a runtime history. Only live addresses are checked
+against the source, so the proof also applies following a shorter reload. -/
+theorem runtime_from_image (registered : Bool) (rep : SourceRefinement.Image p)
+    (s : SegmentPackage.State a) (source : Session.State a) (pins : List Session.Pins)
+    (related : s.project = SessionCorrespondence.values rep source)
+    (installed : rep.pending = 0#1) (structural : source.core.Structural) (depth : a ≤ 3)
+    (openTX : s.core .txClosed = 0#1) (coherent : registered = true → SegmentStore.Coherent s.core)
+    (runtime : Session.RuntimeTrace p false source pins) :
+    let physical := pins.map SessionCorrespondence.pins
+    let after := physical.foldl (SegmentPackage.State.step registered) s
+    Trace registered s physical ∧
+      after.project = SessionCorrespondence.values rep (source.run p false pins) ∧
+      after.core .txClosed = 0#1 ∧ (registered = true → SegmentStore.Coherent after.core) := by
+  induction pins generalizing s source with
+  | nil => exact ⟨trivial, related, openTX, coherent⟩
+  | cons pin rest ih =>
+    let physical := SessionCorrespondence.pins pin
+    have count := congrArg (fun state : Package.State a => state.core .count) related
+    change s.core (.base .count) = BitVec.ofNat 7 p.length at count
+    have length : (s.core (.base .count)).toNat = p.length := by
+      rw [count, BitVec.toNat_ofNat, Nat.mod_eq_of_lt]
+      exact Nat.lt_of_le_of_lt (SourceRefinement.length_le p) (by decide)
+    have edge : Edge registered (s.coreInputs physical) s.core := by
+      apply edge_of_live_words registered _ _ coherent
+      intro address active
+      rw [length] at active
+      have contents := congrArg (fun state : Package.State a => state.core (.word address)) related
+      change s.core (.base (.word address)) = rep.words address at contents
+      rw [contents, rep.source address active, (encode_fields _).operation]
+      cases p.memory[address.toNat]'(by have := address.isLt; omega) <;> simp [operation]
+    have first := package_step registered s physical openTX edge coherent
+    have pending : rep.pending.getLsbD 0 = false := by rw [installed]; rfl
+    have next : (s.step registered physical).project =
+        SessionCorrespondence.values rep (source.step p false pin) := by
+      rw [first.1, related]
+      simpa only [pending] using SessionCorrespondence.step_correct rep source pin depth runtime.1 structural
+    have tail := ih (s.step registered physical) (source.step p false pin) next
+      (source.step_structural p false pin structural) first.2.1 first.2.2 runtime.2
+    exact ⟨⟨edge, tail.1⟩, tail.2⟩
 
 /-- Close a reached fixed-length session, such as SPI, on the very same
     package that runs the extended I²C program. At the completed cut no
