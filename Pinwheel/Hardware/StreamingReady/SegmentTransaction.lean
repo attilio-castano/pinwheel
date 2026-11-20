@@ -383,58 +383,52 @@ theorem successor_wait (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)
   obtain ⟨empty, rfl⟩ := advance
   exact ⟨rfl, empty, rfl, rfl, rfl, rfl, canonical⟩
 
-/-- A timely bounded DRIVE_WAIT reaches the next FETCH with the previous
-    capture and accounting. The external inputs establish the miss history
-    and the final sample that qualifies the guard. -/
-theorem service_wait (registered : Bool) (s : Values (Register a)) (pins : Pins) (g : Guard) (n : Fin 255)
+theorem successor_wait_fields (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
+    (entry : successors rows budget cursor = some (.next following)) :
+    following.pc = cursor.pc + 1 ∧ following.slots = none ∧ following.capture = cursor.capture ∧
+      following.tx = cursor.tx ∧ following.rx = cursor.rx ∧ (Instruction.driveWait pins g).Canonical := by
+  simp [successors, row] at entry
+  obtain ⟨canonical, empty, rfl⟩ := entry
+  exact ⟨rfl, empty, rfl, rfl, rfl, canonical⟩
+
+/-- Close either kind of wait once its actual miss prefix and success edge
+    have been established. The FETCH and custody argument is shared. -/
+theorem service_wait_window (registered : Bool) (s : Values (Register a)) (pins : Pins) (g : Guard)
     (cut : Cut registered rows cursor capture s)
     (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
     (checked : successors rows budget cursor = some (.next following))
     (entry last : Values Core.Input) (misses : List (Values Core.Input))
     (entryOrdinary : NoReset entry) (lastOrdinary : ProtocolOwnership.DrainInput last)
-    (limit : g.limit = .misses n) (within : misses.length ≤ n.val)
-    (history : SegmentTiming.MissHistory registered ((circuit a registered).step entry s) misses)
-    (ready : g.matches (run registered ((circuit a registered).step entry s) misses (.base .stage2)) = true) :
+    (loadedWait : SegmentWaitRefinement.LoadedWait pins g s ((circuit a registered).step entry s))
+    (missActive : @ActiveClocks registered a ((circuit a registered).step entry s) misses)
+    (waiting : run registered ((circuit a registered).step entry s) misses (.base .phase) = 7#3)
+    (counts : run registered ((circuit a registered).step entry s) misses (.base .txConsumed) =
+      ((circuit a registered).step entry s) (.base .txConsumed))
+    (qualified : SegmentWaitRefinement.WaitSuccess ((circuit a registered).step entry s)
+      (run registered ((circuit a registered).step entry s) (misses ++ [@last]))) :
     ServiceSpan registered rows following capture s (@entry :: (misses ++ [@last])) := by
-  obtain ⟨nextPC, nextSlots, nextCapture, nextTX, nextRX, _, canonical⟩ := successor_wait row checked limit
+  obtain ⟨nextPC, nextSlots, nextCapture, nextTX, nextRX, _⟩ := successor_wait_fields row checked
   let loaded : Values (Register a) := (circuit a registered).step entry s
   let poll : Values (Register a) := run registered loaded misses
   let after : Values (Register a) := (circuit a registered).step last poll
-  have rowInBounds := (List.getElem?_eq_some_iff.mp row).1
-  have fetch : SegmentControl.AtFetch entry s :=
-    ⟨entryOrdinary.1, entryOrdinary.2, cut.boundary.phase, by
-      rw [cut.boundary.position, cut.boundary.installed.count]
-      exact rowInBounds⟩
-  obtain ⟨loadedWait, window⟩ := SegmentWaitRefinement.run_wait_row registered s entry last misses fetch
-    pins g n canonical (selected_row cut.boundary entry row) limit history within lastOrdinary
-  have qualified := window.qualified ready
   change SegmentWaitRefinement.WaitSuccess loaded (run registered loaded (misses ++ [@last])) at qualified
   rw [SegmentTiming.run_append] at qualified
-  have bounded : SegmentTiming.guardBudget loaded ≠ 0#8 := by
-    have current : loaded (.base .currentWord) = _ := loadedWait.current
-    rw [SegmentTiming.guardBudget, current, (Pinwheel.Program.StreamingReady.encode_fields (.driveWait pins g)).guardBudget]
-    change g.limit.budget ≠ 0#8
-    rw [limit]
-    exact SourceRefinement.budget_nonzero n
-  have admissible : misses.length ≤ (loaded (.base .countdown)).toNat := by
-    have delay : loaded (.base .countdown) = g.limit.initialCountdown := loadedWait.countdown
-    rw [delay, limit]
-    simpa only [Pinwheel.Program.StreamingReady.WaitLimit.initialCountdown, BitVec.toNat_ofNat,
-      Nat.mod_eq_of_lt (show n.val < 256 by omega)] using within
-  obtain ⟨missActive, counts⟩ := wait_prefix registered loaded misses loadedWait.phase bounded history admissible
   have localActive := missActive.append
-    (active_step (drain_ordinary lastOrdinary) window.waitingPrefix.phase (.inr (.inr (.inr (.inr rfl)))) .nil)
+    (active_step (drain_ordinary lastOrdinary) waiting (.inr (.inr (.inr (.inr rfl)))) .nil)
   have activity := active_step entryOrdinary cut.boundary.phase (.inl rfl) localActive
   have installed := activity.image cut.boundary.installed
   have entryCounts := fetch_counts cut.boundary entry entryOrdinary
   have counted := (wait_tx_step registered last poll (drain_ordinary lastOrdinary)
-    window.waitingPrefix.phase).trans (counts.trans entryCounts.1)
+    waiting).trans (counts.trans entryCounts.1)
   have pc : (after (.base .pc)).toNat = following.pc := by
     have advanced : after (.base .pc) = loaded (.base .pc) + 1#7 := qualified.pc
     have loadedPC : loaded (.base .pc) = s (.base .pc) := loadedWait.pc
     rw [advanced, loadedPC, BitVec.toNat_add, cut.boundary.position, nextPC]
     change (cursor.pc + 1) % 128 = cursor.pc + 1
-    exact Nat.mod_eq_of_lt (by have := cut.boundary.installed.size; omega)
+    exact Nat.mod_eq_of_lt (by
+      have := cut.boundary.installed.size
+      have := (List.getElem?_eq_some_iff.mp row).1
+      omega)
   have prior := cut.boundary.latched
   have held : HasCapture after capture := by
     have sample : after .lastCapture = s .lastCapture := qualified.latched.trans loadedWait.latched
@@ -453,6 +447,40 @@ theorem service_wait (registered : Bool) (s : Values (Register a)) (pins : Pins)
     subst registered
     exact SegmentStore.coherent_after_edge last poll
   · exact (congrArg BitVec.toNat (qualified.captured.trans entryCounts.2)).trans (cut.rx.trans nextRX.symm)
+
+/-- A timely bounded DRIVE_WAIT reaches the next FETCH with the previous
+    capture and accounting. -/
+theorem service_wait (registered : Bool) (s : Values (Register a)) (pins : Pins) (g : Guard) (n : Fin 255)
+    (cut : Cut registered rows cursor capture s)
+    (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
+    (checked : successors rows budget cursor = some (.next following))
+    (entry last : Values Core.Input) (misses : List (Values Core.Input))
+    (entryOrdinary : NoReset entry) (lastOrdinary : ProtocolOwnership.DrainInput last)
+    (limit : g.limit = .misses n) (within : misses.length ≤ n.val)
+    (history : SegmentTiming.MissHistory registered ((circuit a registered).step entry s) misses)
+    (ready : g.matches (run registered ((circuit a registered).step entry s) misses (.base .stage2)) = true) :
+    ServiceSpan registered rows following capture s (@entry :: (misses ++ [@last])) := by
+  let loaded : Values (Register a) := (circuit a registered).step entry s
+  have fetch : SegmentControl.AtFetch entry s :=
+    ⟨entryOrdinary.1, entryOrdinary.2, cut.boundary.phase, by
+      rw [cut.boundary.position, cut.boundary.installed.count]
+      exact (List.getElem?_eq_some_iff.mp row).1⟩
+  obtain ⟨loadedWait, window⟩ := SegmentWaitRefinement.run_wait_row registered s entry last misses fetch
+    pins g n (successor_wait_fields row checked).2.2.2.2.2 (selected_row cut.boundary entry row)
+    limit history within lastOrdinary
+  have bounded : SegmentTiming.guardBudget loaded ≠ 0#8 := by
+    rw [SegmentTiming.guardBudget, show loaded (.base .currentWord) = _ from loadedWait.current,
+      (Pinwheel.Program.StreamingReady.encode_fields (.driveWait pins g)).guardBudget]
+    change g.limit.budget ≠ 0#8
+    rw [limit]
+    exact SourceRefinement.budget_nonzero n
+  have admissible : misses.length ≤ (loaded (.base .countdown)).toNat := by
+    rw [show loaded (.base .countdown) = g.limit.initialCountdown from loadedWait.countdown, limit]
+    simpa only [Pinwheel.Program.StreamingReady.WaitLimit.initialCountdown, BitVec.toNat_ofNat,
+      Nat.mod_eq_of_lt (show n.val < 256 by omega)] using within
+  obtain ⟨missActive, counts⟩ := wait_prefix registered loaded misses loadedWait.phase bounded history admissible
+  exact service_wait_window registered s pins g cut row checked entry last misses entryOrdinary lastOrdinary
+    loadedWait missActive window.waitingPrefix.phase counts (window.qualified ready)
 
 theorem wait_clock_bound (row : rows[cursor.pc]? = some (.cell (.driveWait pins g)))
     (checked : successors rows budget cursor = some (.next following))

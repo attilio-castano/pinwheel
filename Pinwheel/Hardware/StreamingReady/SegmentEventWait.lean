@@ -93,6 +93,24 @@ theorem zero_budget {s : Values (Register a)} (loaded : LoadedGuard g s) (limit 
   rw [loaded.budget, limit]
   rfl
 
+/-- Each clock of an unbounded miss history is active, with the same row
+    and transaction counters when the history ends. -/
+theorem hold_misses (registered : Bool) (s : Values (Register a)) (clocks : List (Values Core.Input))
+    (waiting : s (.base .phase) = 7#3) (unbounded : guardBudget s = 0#8)
+    (history : MissHistory registered s clocks) :
+    HoldCut s (run registered s clocks) ∧ SegmentTransaction.ActiveClocks registered s clocks := by
+  induction clocks generalizing s with
+  | nil => exact ⟨HoldCut.refl s waiting, .nil⟩
+  | cons i rest ih =>
+    obtain ⟨ordinary, miss, later⟩ := history
+    let after : Values (Register a) := (circuit a registered).step i s
+    have cut : HoldCut s after := hold_edge registered i s ordinary waiting miss unbounded
+    have stillUnbounded : guardBudget after = 0#8 := by
+      simpa only [guardBudget, cut.pose.current] using unbounded
+    obtain ⟨held, active⟩ := ih after cut.phase stillUnbounded later
+    exact ⟨cut.trans held, .cons (noReset ordinary) (by simp [waiting]) (by simp [waiting])
+      (by simp [waiting]) active⟩
+
 /-- A missed event prefix can be arbitrarily long. These invariants hold
     without any bound on time to arrival of the peer signal. -/
 theorem hold_from_raw (registered : Bool) (s : Values (Register a)) (g : Guard)

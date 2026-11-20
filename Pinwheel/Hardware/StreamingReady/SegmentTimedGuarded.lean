@@ -61,10 +61,10 @@ inductive Supplied (registered : Bool) (s : Values (Register a)) (cell : Cell) (
     (n : Fin 255) (bound : Nat) (clocks : List (Values Core.Input)) : Prop where
   | qualified {plan : SlotPlan} {rest : List (Values Core.Input)}
       (split : clocks = plan.inputs ++ rest) (used : plan.inputs.length ≤ slotBudget cell n bound)
-      (service : plan.Served registered cell g n s)
+      (service : plan.Served registered cell g (.misses n) s)
   | expired {plan : AperturePlan} {rest : List (Values Core.Input)}
       (split : clocks = plan.prefix ++ @plan.poll :: rest)
-      (service : plan.Delivered registered cell n s) (elapsed : plan.misses.length = n.val)
+      (service : plan.Delivered registered cell (.misses n) s) (elapsed : plan.misses.length = n.val)
       (miss : g.matches (plan.beforePoll registered s (.base .stage2)) = false)
 
 /-- Choose reservation, LOW dwell, earliest eligible poll, and any required
@@ -134,7 +134,7 @@ theorem slot_from_clocks (registered : Bool) (s : Values (Register a)) (cell : C
   have admitted := poll_from_raw registered entered g older newer misses poll rfl rfl missedInputs waiting.phase
     loaded bounded (count ▸ withinPoll) missed
   let aperture : AperturePlan := ⟨admit, low, arm, misses, poll, parks⟩
-  have service : aperture.Delivered registered cell n s :=
+  have service : aperture.Delivered registered cell (.misses n) s :=
     ⟨history, admitInput, credit, lowLength, lowInput, armInput, admitted.history, withinPoll, pollInput⟩
   have splitAtPoll : clocks = aperture.prefix ++ @poll :: afterPoll := by
     rw [split, tailSplit, pollSplit]
@@ -188,12 +188,12 @@ inductive Slots (registered : Bool) (s : Values (Register a)) (cell : Cell) (g :
     (n : Fin 255) (count : Nat) (clocks : List (Values Core.Input)) : Prop where
   | complete {plans : List SlotPlan} {rest : List (Values Core.Input)}
       (length : plans.length = count) (split : clocks = plans.flatMap SlotPlan.inputs ++ rest)
-      (served : Served registered cell g n s plans)
+      (served : Served registered cell g (.misses n) s plans)
   | expired {plans : List SlotPlan} {aperture : AperturePlan} {rest : List (Values Core.Input)}
       (inside : plans.length < count)
       (split : clocks = plans.flatMap SlotPlan.inputs ++ (aperture.prefix ++ @aperture.poll :: rest))
-      (served : Served registered cell g n s plans)
-      (last : aperture.Delivered registered cell n (runSlots registered s plans))
+      (served : Served registered cell g (.misses n) s plans)
+      (last : aperture.Delivered registered cell (.misses n) (runSlots registered s plans))
       (elapsed : aperture.misses.length = n.val)
       (miss : g.matches (aperture.beforePoll registered (runSlots registered s plans) (.base .stage2)) = false)
 
@@ -221,7 +221,7 @@ private theorem slots_from_clocks (registered : Bool) (s : Values (Register a)) 
       | succ count =>
         have positive : 0 < (s (.base .remaining)).toNat := by rw [slots]; omega
         have repeats : 1 < (s (.base .remaining)).toNat := by rw [slots]; omega
-        obtain ⟨step, _⟩ := run_slot registered cell g n limit receive plan s entry inBounds positive service
+        obtain ⟨step, _⟩ := run_slot registered cell g (.misses n) limit receive plan s entry inBounds positive service
         have left : ((plan.after registered s) (.base .remaining)).toNat = count + 1 := by
           rw [step.remaining, slots]
           omega
@@ -273,7 +273,7 @@ theorem from_clocks (registered : Bool) (s : Values (Register a)) (cell : Cell) 
         (List.getElem?_eq_some_iff.mp row).1 slots ((congrArg BitVec.toNat load.remaining).trans liveSlots)
         rest bound enough restPolicy with
     | @complete plans tail length split served =>
-      have span := service_stream registered cell g n limit receive s fetch plans cut row checked budgetFits
+      have span := service_stream registered cell g (.misses n) limit receive s fetch plans cut row checked budgetFits
         (by rw [length]; exact armed) fetchInput served
       exact .advance (by simpa only [List.cons_append] using congrArg (List.cons (α := Values Core.Input) fetch) split) span
     | @expired plans aperture tail inside split served last elapsed miss =>
