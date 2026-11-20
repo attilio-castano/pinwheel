@@ -913,13 +913,23 @@ example :
     run([*lean, witness], "check-observed-ethernet-timing", timeout=300)
 
 
+def check_causal_policies(run, lean, out):
+    source = out / "causal-policies.c"
+    executable = out / "causal-policies"
+    run(["lake", "build", "Pinwheel:static"], "build-causal-library", timeout=1800)
+    run([*lean, "-c", source, "test/StreamingReadyCausalPolicies.lean"], "compile-causal-policies")
+    run(["lake", "env", "leanc", "-O3", "-o", executable, source,
+         ROOT / ".lake/build/lib/libpinwheel_Pinwheel.a"], "link-causal-policies")
+    return json.loads(run([executable], "check-causal-policies", timeout=300))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag", required=True)
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v8", passed=False, commands=[], source_commit=source_commit(),
+    report = dict(schema="pinwheel.ready-segments.v9", passed=False, commands=[], source_commit=source_commit(),
                   source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={})
     run = Commands(ROOT, logs, report["commands"])
     try:
@@ -929,6 +939,7 @@ def main():
         run([*lean, "test/ProofAudit.lean"], "audit-library")
         run([*lean, "test/StreamingReadyTraceContract.lean"], "check-flat-trace-deadline")
         run([*lean, "test/StreamingReadyTimingAdmission.lean"], "check-timing-admission")
+        report["causal_source"] = check_causal_policies(run, lean, out)
         run([*lean, "test/StreamingReadySegmentBehavior.lean"], "check-register-read-behavior")
         images = {name: read_image(run, lean, out, name) for name in ("standard", "split", "inverted-ack")}
         image = images["standard"]

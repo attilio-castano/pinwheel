@@ -617,9 +617,23 @@ after reservation covering LOW and the poll budget. The receive-only SWD
 stream uses drain clocks throughout its remaining list. The timing theorem
 checks both instruction stores and uses the same row providers for the
 [standard and split I²C images and the branching SWD image](../../Pinwheel/Hardware/StreamingReady/SegmentTimingImages.lean).
-Its premises use digital clocks and reached controller status. Deriving
-those premises from a standalone causal peer and host policy is a
-separate integration step.
+
+The [causal admission theorem](../../Pinwheel/Hardware/StreamingReady/SegmentPolicyTiming.lean)
+derives these service windows after an admitted START. The host uses the
+public wait flag to pace TX offers and the public accepted offset to
+select its next chunk. A tagged pop at every clock keeps at most one RX
+word queued, and a valid TX offer frees TX credit on the next edge. The
+finite horizon supplies enough clocks at reached fetches and reservations,
+legal chunks at offer edges, and the required quiet intervals through the
+policy's configured cooldown.
+
+The [causal I²C target](../../Pinwheel/Hardware/StreamingReady/SegmentCausalI2C.lean)
+advances from resolved pad levels. When the controller releases SCL at
+an SCL-only bounded poll, the target's stretch limit plus two clocks
+suffices for qualification if the poll has that much budget. The source
+gate checks the finite horizon and chronological traffic for a stretched
+read, all three early NACKs, and SWD OK and WAIT on both instruction
+stores. These runs accompany the emitted RTL replays in the same report.
 
 The [wire model](../../Pinwheel/Program/StreamingReadySegmentWire.lean)
 derives SDA from the controller and target drives. For the standard image

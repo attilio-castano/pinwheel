@@ -15,33 +15,50 @@ structure Table (R : Nat → Type) where
 def Table.read (table : Table R) (r : R w) : BitVec w :=
   BitVec.ofNat w table.values[(table.ports.position r).val]
 
+@[noinline] private def capture (ports : Interface R) (values : Values R) : Table R :=
+  ⟨ports, Vector.ofFn (fun k => (values (ports.signal k).2).toNat)⟩
+
+private theorem capture_read (ports : Interface R) (values : Values R) :
+    (fun {w} (r : R w) => (capture ports values).read r) = @values := by
+  funext w r
+  simp only [Table.read, capture, Vector.getElem_ofFn]
+  rw [ports.signal_position r]
+  simp
+
 /-- Retain the actual typed next-register expressions across clocks. -/
 structure Machine (a : Nat) where
+  inputs : Interface Core.Input
   ports : Interface (Register a)
   expressions : Vector (Sigma (E a)) ports.size
 
 @[noinline] def compile (a : Nat) (supported : a = 1 ∨ a = 2) (registered : Bool) : Machine a :=
-  let ports := (SegmentExport.core a supported registered).registers
-  ⟨ports, Vector.ofFn fun k => ⟨_, (circuit a registered).next (ports.signal k).2⟩⟩
+  let core := SegmentExport.core a supported registered
+  let ports := core.registers
+  ⟨core.inputs, ports, Vector.ofFn fun k => ⟨_, core.circuit.next (ports.signal k).2⟩⟩
 
 @[noinline] def Machine.edge (m : Machine a) (i : Values Core.Input) (s : Values (Register a)) :
     Table (Register a) :=
-  ⟨m.ports, m.expressions.map fun ⟨_, e⟩ => (e.eval i s).toNat⟩
+  let inputs := capture m.inputs i
+  ⟨m.ports, m.expressions.map fun ⟨_, e⟩ => (e.eval (fun r => inputs.read r) s).toNat⟩
 
-private theorem prepared_read (ports : Interface (Register a)) (c : Circuit Core.Input (Register a) Core.Output)
+private theorem prepared_read (inputPorts : Interface Core.Input) (ports : Interface (Register a))
+    (c : Circuit Core.Input (Register a) Core.Output)
     (i : Values Core.Input) (s : Values (Register a)) (r : Register a w) :
-    ((Machine.mk ports (Vector.ofFn fun k => ⟨_, c.next (ports.signal k).2⟩)).edge i s).read r = c.step i s r := by
+    ((Machine.mk inputPorts ports (Vector.ofFn fun k => ⟨_, c.next (ports.signal k).2⟩)).edge i s).read r = c.step i s r := by
   simp only [Table.read, Machine.edge, Vector.getElem_map]
   rw [Vector.getElem_ofFn]
-  let evaluate (p : Sigma (Register a)) : Nat := ((c.next p.2).eval i s).toNat
+  let evaluate (p : Sigma (Register a)) : Nat :=
+    ((c.next p.2).eval (fun r => (capture inputPorts i).read r) s).toNat
   change BitVec.ofNat w (evaluate (ports.signal (ports.position r))) = _
   rw [ports.signal_position r]
-  simp [evaluate, Circuit.step]
+  dsimp only [evaluate, Circuit.step]
+  rw [capture_read inputPorts i]
+  simp
 
 theorem edge_read (supported : a = 1 ∨ a = 2) (registered : Bool)
     (i : Values Core.Input) (s : Values (Register a)) (r : Register a w) :
     ((compile a supported registered).edge i s).read r = (circuit a registered).step i s r :=
-  prepared_read _ _ i s r
+  prepared_read _ _ _ i s r
 
 private def advance (m : Machine a) (registered : Bool) (host : SegmentCausal.Host H)
     (peer : SegmentCausal.Peer P) (s : SegmentCausal.State a H P) : SegmentCausal.State a H P :=
