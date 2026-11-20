@@ -53,7 +53,8 @@ private theorem step_base (registered : Bool) (i : Values Core.Input) (s : Value
 private theorem inv_one_inv (x : BitVec 1) : ~~~(1#1 &&& ~~~x) = x := by decide +revert +kernel
 
 set_option linter.unusedSimpArgs false in
-private theorem sampler_step (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+/-- Ordinary edges shift raw pins through the two sampler registers. -/
+theorem sampler_step (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (ordinary : NoReset i) :
     let after : Values (Register a) := (circuit a registered).step i s
     after (.base .stage1) = i .rawInputs ∧ after (.base .stage2) = s (.base .stage1) := by

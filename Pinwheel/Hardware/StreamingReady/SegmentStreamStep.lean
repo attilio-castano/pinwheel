@@ -41,13 +41,13 @@ structure Reservation (cell : Cell) (i : Values Core.Input) (s after : Values (R
 set_option linter.unusedSimpArgs false in
 /-- A stream at a credit-bearing boundary enters LOW with the same row and
 slot count. The TX bit and reservation counter refer to the old queue. -/
-theorem reserve (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
-    (cell : Cell) (guard : Option Guard) (ordinary : ProtocolOwnership.DrainInput i)
+theorem reserve_runtime (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (cell : Cell) (guard : Option Guard) (ordinary : SegmentPathControl.NoReset i)
     (boundary : s (.base .phase) = 2#3)
     (loaded : s (.base .currentWord) = encode (.stream cell guard))
     (credit : Core.credit.eval i (project s) = 1#1) :
     Reservation cell i s ((circuit a registered).step i s) := by
-  obtain ⟨init, cmd, _⟩ := ordinary
+  obtain ⟨init, cmd⟩ := ordinary
   have fields := encode_fields (.stream cell guard)
   have operation : (s (.base .currentWord)).extractLsb' 0 3 = 1#3 := loaded ▸ fields.operation
   have transmit : (s (.base .currentWord)).extractLsb' 34 1 = BitVec.ofBool cell.transmit :=
@@ -72,6 +72,14 @@ theorem reserve (registered : Bool) (i : Values Core.Input) (s : Values (Registe
   all_goals cases h : cell.transmit <;> simp [h] <;> rfl
   all_goals done
 
+theorem reserve (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (cell : Cell) (guard : Option Guard) (ordinary : ProtocolOwnership.DrainInput i)
+    (boundary : s (.base .phase) = 2#3)
+    (loaded : s (.base .currentWord) = encode (.stream cell guard))
+    (credit : Core.credit.eval i (project s) = 1#1) :
+    Reservation cell i s ((circuit a registered).step i s) :=
+  reserve_runtime registered i s cell guard ⟨ordinary.1, by simp [ordinary.2.1]⟩ boundary loaded credit
+
 structure CreditPark (s after : Values (Register a)) : Prop where
   phase : after (.base .phase) = 2#3
   pose : SegmentTiming.WaitPose s after
@@ -82,11 +90,11 @@ structure CreditPark (s after : Values (Register a)) : Prop where
 set_option linter.unusedSimpArgs false in
 /-- With no pre-edge credit, a boundary holds its pad pose and takes no
     reservation or sample. This includes an edge that frees future RX credit. -/
-theorem park (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
-    (ordinary : ProtocolOwnership.DrainInput i) (boundary : s (.base .phase) = 2#3)
+theorem park_runtime (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (ordinary : SegmentPathControl.NoReset i) (boundary : s (.base .phase) = 2#3)
     (credit : Core.credit.eval i (project s) = 0#1) :
     CreditPark s ((circuit a registered).step i s) := by
-  obtain ⟨init, cmd, _⟩ := ordinary
+  obtain ⟨init, cmd⟩ := ordinary
   have decoded := (credit_eval i s ((word registered).eval i s) true).trans credit
   have base := (credit_eval i s ((word registered).eval i s) false).trans credit
   simp [runtimeInput, decodedRegister, Expr.eval, withFetch, both] at decoded base
@@ -100,6 +108,12 @@ theorem park (registered : Bool) (i : Values Core.Input) (s : Values (Register a
       Core.lowEnd, Core.highEnd, Core.capture, Core.guardedLowEnd, Core.waitSuccess,
       Core.standaloneSuccess, Core.waitFault, Core.waitDecrement, Core.nextPins, Core.capturingRX,
       init, cmd, boundary, decoded, base, inv_one_inv] <;> done
+
+theorem park (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (ordinary : ProtocolOwnership.DrainInput i) (boundary : s (.base .phase) = 2#3)
+    (credit : Core.credit.eval i (project s) = 0#1) :
+    CreditPark s ((circuit a registered).step i s) :=
+  park_runtime registered i s ⟨ordinary.1, by simp [ordinary.2.1]⟩ boundary credit
 
 structure LowSpan (s after : Values (Register a)) (clocks : Nat) : Prop where
   phase : after (.base .phase) = 3#3

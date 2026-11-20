@@ -56,14 +56,14 @@ theorem SlotPlan.run_inputs (slot : SlotPlan) (registered : Bool) (s : Values (R
 
 def ParkHistory (registered : Bool) (s : Values (Register a)) : List (Values Core.Input) → Prop
   | [] => True
-  | i :: rest => DrainInput i ∧ Core.credit.eval i (project s) = 0#1 ∧
+  | i :: rest => NoReset i ∧ Core.credit.eval i (project s) = 0#1 ∧
       ParkHistory registered ((circuit a registered).step i s) rest
 
 /-- Each credit check sees the real state before the reservation edge. -/
 structure SlotPlan.Served (slot : SlotPlan) (registered : Bool) (cell : Cell)
     (s : Values (Register a)) : Prop where
   parks : ParkHistory registered s slot.parks
-  admit : DrainInput slot.admit
+  admit : NoReset slot.admit
   credit : Core.credit.eval slot.admit (project (slot.ready registered s)) = 1#1
   lowTicks : slot.low.length = cell.lowDuration.val
   low : ∀ i ∈ slot.low, DrainInput i
@@ -213,6 +213,8 @@ structure Parked (rows : List Row) (pc : Nat) (cell : Cell) (guard : Option Guar
     (s after : Values (Register a)) : Prop where
   ready : AtReservation rows pc cell guard previous after
   remaining : after (.base .remaining) = s (.base .remaining)
+  levels : after (.base .levels) = s (.base .levels)
+  enabled : after (.base .enabled) = s (.base .enabled)
   reserved : after (.base .txConsumed) = s (.base .txConsumed)
   produced : after (.base .rxProduced) = s (.base .rxProduced)
 
@@ -221,21 +223,22 @@ theorem run_parks (registered : Bool) (s : Values (Register a)) (inputs : List (
     (start : AtReservation rows pc cell guard previous s) (history : ParkHistory registered s inputs) :
     Parked rows pc cell guard previous s (SegmentTiming.run registered s inputs) ∧ ActiveClocks registered s inputs := by
   induction inputs generalizing s with
-  | nil => exact ⟨⟨start, rfl, rfl, rfl⟩, .nil⟩
+  | nil => exact ⟨⟨start, rfl, rfl, rfl, rfl, rfl⟩, .nil⟩
   | cons i rest ih =>
-    have ordinary := noReset history.1
-    have edge := SegmentStreamStep.park registered i s history.1 start.phase history.2.1
+    have ordinary := history.1
+    have edge := SegmentStreamStep.park_runtime registered i s ordinary start.phase history.2.1
     have image := image_frame registered i s ordinary (.inl (by simp [start.phase]))
     have held := hold registered i s ordinary (.inr (.inl start.phase))
     have ready := AtReservation.mk (image.installed start.installed) edge.phase
       ((congrArg BitVec.toNat edge.pc).trans start.position) (edge.pose.current.trans start.current)
       (held.capture start.latched)
     obtain ⟨tail, active⟩ := ih _ ready history.2.2
-    exact ⟨⟨tail.ready, tail.remaining.trans edge.pose.remaining, tail.reserved.trans edge.reserved,
+    exact ⟨⟨tail.ready, tail.remaining.trans edge.pose.remaining, tail.levels.trans edge.pose.levels,
+      tail.enabled.trans edge.pose.enabled, tail.reserved.trans edge.reserved,
       tail.produced.trans edge.produced⟩,
       .cons ordinary (by simp [start.phase]) (by simp [start.phase]) (by simp [start.phase]) active⟩
 
-private structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell : Cell)
+structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell : Cell)
     (previous : Option Bool) (s after : Values (Register a)) : Prop where
   remaining : (after (.base .remaining)).toNat = (s (.base .remaining)).toNat - 1
   produced : after (.base .rxProduced) = s (.base .rxProduced) + (if cell.receive then 1#16 else 0)
@@ -243,7 +246,8 @@ private structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell
   repeatCell : 1 < (s (.base .remaining)).toNat → AtReservation rows pc cell none previous after
   finished : (s (.base .remaining)).toNat = 1 → AtBoundary registered rows (pc + 1) previous after
 
-private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s : Values (Register a))
+/-- A served slot advances to its next counted reservation or completes its row. -/
+theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s : Values (Register a))
     (start : AtReservation rows pc cell none previous s) (inBounds : pc < rows.length)
     (positive : 0 < (s (.base .remaining)).toNat) (service : slot.Served registered cell s) :
     SlotEnd registered rows pc cell (if cell.receive then some (slot.sample registered cell s) else previous)
@@ -255,7 +259,7 @@ private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s 
   let lowEnd : Values (Register a) := slot.lowEnd registered s
   let entered : Values (Register a) := (circuit a registered).step slot.aperture lowEnd
   let highEnd : Values (Register a) := slot.highEnd registered s
-  have reserve := SegmentStreamStep.reserve registered slot.admit ready cell none service.admit parked.phase
+  have reserve := SegmentStreamStep.reserve_runtime registered slot.admit ready cell none service.admit parked.phase
     parked.current service.credit
   have lowTimer : (reserved (.base .countdown)).toNat = slot.low.length := by
     have programmed := congrArg BitVec.toNat reserve.countdown
@@ -268,7 +272,7 @@ private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s 
     apply BitVec.eq_of_toNat_eq
     change (lowEnd (.base .countdown)).toNat = 0
     rw [low.countdown, lowTimer, Nat.sub_self]
-  have held := (hold registered slot.admit ready (noReset service.admit) (.inr (.inl parked.phase))).trans
+  have held := (hold registered slot.admit ready service.admit (.inr (.inl parked.phase))).trans
     (held_low registered reserved slot.low reserve.phase lowWithin service.low)
   have sampled := SegmentCapture.capture registered slot.aperture lowEnd cell service.aperture
     low.phase lowExpired (low.pose.current.trans (reserve.current.trans parked.current)) (held.capture parked.latched)
@@ -295,7 +299,7 @@ private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s 
       (low.pose.remaining.trans (reserve.remaining.trans parks.remaining))))
   have installed := high.image.installed
     ((image_frame registered slot.aperture lowEnd service.aperture (.inl (by simp [low.phase]))).installed
-      (low.image.installed ((image_frame registered slot.admit ready (noReset service.admit)
+      (low.image.installed ((image_frame registered slot.admit ready service.admit
         (.inl (by simp [parked.phase]))).installed parked.installed)))
   have exit : HighStep highEnd (slot.after registered s) (decide (highEnd (.base .countdown) = 0#8))
       (decide (IsStream highEnd)) (decide (IsStream highEnd ∧ 1 < (highEnd (.base .remaining)).toNat)) :=
@@ -356,7 +360,7 @@ private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s 
     have aperture : ActiveClocks registered lowEnd ((@slot.aperture) :: (slot.high ++ [@slot.leave])) :=
       .cons service.aperture (by simp [low.phase]) (by simp [low.phase]) (by simp [low.phase])
         (highActive.append leave)
-    exact parkActive.append (.cons (noReset service.admit) (by simp [parks.ready.phase]) (by simp [parks.ready.phase])
+    exact parkActive.append (.cons service.admit (by simp [parks.ready.phase]) (by simp [parks.ready.phase])
       (by simp [parks.ready.phase]) (lowActive.append aperture))
 
 /-- A completed stream advances once, spends its count, and qualifies one
@@ -412,6 +416,29 @@ private theorem run_slots (registered : Bool) (cell : Cell) (s : Values (Registe
       · rw [tail.consumed, step.consumed]
         exact add_one_slot _ _ _
 
+/-- A fetched unguarded stream enters its first reservation boundary. -/
+theorem load_row (registered : Bool) (cell : Cell) (s : Values (Register a)) (fetch : Values Core.Input)
+    (start : AtBoundary registered rows pc previous s) (ordinary : NoReset fetch)
+    (row : rows[pc]? = some (.cell (.stream cell none)))
+    (nonzero : s (.base .remaining) ≠ 0#16) :
+    let live : Values (Register a) := (circuit a registered).step fetch s
+    AtReservation rows pc cell none previous live ∧ live (.base .remaining) = s (.base .remaining) ∧
+      live (.base .rxProduced) = s (.base .rxProduced) ∧ live (.base .txConsumed) = s (.base .txConsumed) := by
+  let live : Values (Register a) := (circuit a registered).step fetch s
+  have inBounds := (List.getElem?_eq_some_iff.mp row).1
+  have selected := selected_row start fetch row
+  have atFetch : SegmentControl.AtFetch fetch s :=
+    ⟨ordinary.1, ordinary.2, start.phase, by rw [start.position, start.installed.count]; exact inBounds⟩
+  have loaded := SegmentStreamStep.load_stream registered fetch s cell none atFetch trivial nonzero selected
+  have stream : ((word registered).eval fetch s).extractLsb' 0 3 = 1#3 := by
+    rw [selected]
+    exact (encode_fields (.stream cell none)).operation
+  have held := hold registered fetch s ordinary (.inl ⟨start.phase, stream⟩)
+  have installed := (image_frame registered fetch s ordinary (.inl (by simp [start.phase]))).installed start.installed
+  have ready : AtReservation rows pc cell none previous live := ⟨installed, loaded.phase,
+    (congrArg BitVec.toNat loaded.pc).trans start.position, loaded.current, held.capture start.latched⟩
+  exact ⟨ready, loaded.remaining, held.produced, fetch_keeps_tx registered fetch s ordinary start.phase⟩
+
 /-- Execute the installed unguarded stream from its FETCH boundary through
     all counted slots. The inputs are `fetch :: slots.flatMap SlotPlan.inputs`. -/
 theorem run_stream_row (registered : Bool) (cell : Cell) (s : Values (Register a)) (fetch : Values Core.Input)
@@ -424,26 +451,15 @@ theorem run_stream_row (registered : Bool) (cell : Cell) (s : Values (Register a
       (SegmentTiming.run registered s ((@fetch) :: slots.flatMap SlotPlan.inputs)) ∧
       ActiveClocks registered s ((@fetch) :: slots.flatMap SlotPlan.inputs) := by
   let live : Values (Register a) := (circuit a registered).step fetch s
-  have inBounds := (List.getElem?_eq_some_iff.mp row).1
-  have selected := selected_row start fetch row
-  have atFetch : SegmentControl.AtFetch fetch s :=
-    ⟨ordinary.1, ordinary.2, start.phase, by rw [start.position, start.installed.count]; exact inBounds⟩
   have nonzero : s (.base .remaining) ≠ 0#16 := by
     intro zero
     simp [zero] at count
     omega
-  have loaded := SegmentStreamStep.load_stream registered fetch s cell none atFetch trivial nonzero selected
-  have stream : ((word registered).eval fetch s).extractLsb' 0 3 = 1#3 := by
-    rw [selected]
-    exact (encode_fields (.stream cell none)).operation
-  have held := hold registered fetch s ordinary (.inl ⟨start.phase, stream⟩)
-  have installed := (image_frame registered fetch s ordinary (.inl (by simp [start.phase]))).installed start.installed
-  have ready : AtReservation rows pc cell none previous live := ⟨installed, loaded.phase,
-    (congrArg BitVec.toNat loaded.pc).trans start.position, loaded.current, held.capture start.latched⟩
-  obtain ⟨run, active⟩ := run_slots registered cell live slots ready inBounds positive
-    ((congrArg BitVec.toNat loaded.remaining).trans count) service
-  exact ⟨⟨run.boundary, run.remaining, run.produced.trans (congrArg (· + _) held.produced),
-    run.consumed.trans (congrArg (· + _) (fetch_keeps_tx registered fetch s ordinary start.phase))⟩,
+  obtain ⟨ready, loadedCount, rx, tx⟩ := load_row registered cell s fetch start ordinary row nonzero
+  obtain ⟨run, active⟩ := run_slots registered cell live slots ready (List.getElem?_eq_some_iff.mp row).1 positive
+    ((congrArg BitVec.toNat loadedCount).trans count) service
+  exact ⟨⟨run.boundary, run.remaining, run.produced.trans (congrArg (· + _) rx),
+    run.consumed.trans (congrArg (· + _) tx)⟩,
     .cons ordinary (by simp [start.phase]) (by simp [start.phase]) (by simp [start.phase]) active⟩
 
 end Pinwheel.Hardware.StreamingReady.SegmentUnguardedReceive
