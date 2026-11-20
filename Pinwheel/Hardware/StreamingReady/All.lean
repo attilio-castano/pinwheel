@@ -18,6 +18,7 @@ import Pinwheel.Hardware.StreamingReady.LoaderEquivalence
 import Pinwheel.Hardware.StreamingReady.Package
 import Pinwheel.Hardware.StreamingReady.PinCorrespondence
 import Pinwheel.Hardware.StreamingReady.PS2Session
+import Pinwheel.Hardware.StreamingReady.ProtocolOwnership
 import Pinwheel.Hardware.StreamingReady.ProtocolSwitch
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
@@ -25,6 +26,7 @@ import Pinwheel.Hardware.StreamingReady.RegisteredStoreSession
 import Pinwheel.Hardware.StreamingReady.SegmentControl
 import Pinwheel.Hardware.StreamingReady.SegmentCustody
 import Pinwheel.Hardware.StreamingReady.SegmentExport
+import Pinwheel.Hardware.StreamingReady.SegmentLegacy
 import Pinwheel.Hardware.StreamingReady.SegmentPackage
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence
 import Pinwheel.Hardware.StreamingReady.SPISession
