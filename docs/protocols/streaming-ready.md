@@ -541,6 +541,43 @@ and a warm SPI exchange following an early RELEASE.
 python3 -B scripts/check-ready-segments.py --tag ready-segments
 ```
 
+### Branch-sensitive execution and a split register read
+
+The [source execution model](../../Pinwheel/Program/StreamingReadySegmentExecution.lean)
+consumes TX data and pre-edge second-sampler observations. It records
+credit parking, reservations, drive and capture events, and branches on
+the last qualified capture. Each planned finish belongs to the image's
+checked outcomes. An expired guard returns a timeout with the TX and RX
+prefix reached at that poll.
+
+The [split image](../../Pinwheel/Program/StreamingReadyRegisterReadVariants.lean)
+moves the first address ACK to a separate one-slot stream. Each checked
+path gains two clocks for the added COUNT and stream fetch. The general
+[cell split law](../../Pinwheel/Program/StreamingReadySegmentSplit.lean)
+preserves the cell events and logical timeout slot when the cell has no
+final-slot pin modifiers. The register-read check also covers the decoded
+outcomes and coalesces repeated writes of the same pad drive. In the
+unstretched address phase of the timeout fixture, the interval before
+the ACK rise grows from 12 to 14 clocks on both stores.
+
+The source gate observes the actual instruction addresses, qualified branch
+bits, TX reservations, second-stage poll samples, and terminal counters
+from START. Lean checks their correspondence to the source model for both
+images. The independent wire peer checks START, repeated START, data,
+STOP, and digital timing. The inverted-ACK control retains the same
+structural path bounds, takes the early-exit branch on ACK, and fails
+the peer's STOP check.
+
+The [circuit proofs](../../Pinwheel/Hardware/StreamingReady/SegmentPathControl.lean)
+start an installed image at its entry row and tie each control fetch to
+the encoded row at the current PC. The
+[one-slot stream proof](../../Pinwheel/Hardware/StreamingReady/SegmentStreamStep.lean)
+connects the actual fetch, reservation, LOW dwell, qualified poll, HIGH
+dwell, and following branch in one run under its service premises.
+Standalone [bounded waits](../../Pinwheel/Hardware/StreamingReady/SegmentWaitRefinement.lean)
+advance on a qualified poll or retain ownership at expiry. A theorem
+composing every row into an arbitrary START-to-terminal run remains open.
+
 ### Shared Ready runner
 
 SPI, the combined I²C read, and Ethernet use `ReadyHost.load`,

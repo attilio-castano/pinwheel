@@ -8,7 +8,7 @@ from pathlib import Path
 import struct
 import subprocess
 
-from i2c_read_peers import I2CReadPeer
+from i2c_read_peers import I2CReadPeer, I2CReadWireError
 import streaming_8x4_ethernet as ethernet_replay
 from streaming_peers import StreamingSPIPeer
 from streaming_ready_artifacts import LOWERING_PASSES, lowering_copy
@@ -16,7 +16,8 @@ from streaming_ready_compile import spi_image
 from streaming_ready_transport import CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
 from streaming_rtl import QuadRTL
-from streaming_transport import Code, Opcode, QuadTransport, Receipt, StreamProtocolError, StreamRejected
+from streaming_transport import (Code, Opcode, QuadTransport, Receipt, StreamProtocolError, StreamRejected,
+                                 StreamTransportError)
 from streaming_wire_cases import EdgeTrace, require
 from typed_module_checks import tool_config
 from typed_ready_engine import legacy_assembly
@@ -42,6 +43,13 @@ PRE_EDGE = {
     "pre_tx_free": "dut.engine.status_tx_free",
     "pre_tx_valid": "dut.engine.core.r_tx_valid",
     "pre_stream_flags": "{dut.engine.core.r_current_word[35:34], dut.engine.core.r_current_word[2:0]}",
+    "command": "dut.engine.core_command",
+    "pc": "dut.engine.status_pc",
+    "stage2": "dut.engine.status_stage2",
+    "countdown": "dut.engine.core.r_countdown",
+    "capture_valid": "dut.engine.core.r_capture_valid",
+    "capture_bit": "dut.engine.core.r_last_capture",
+    "cell_bit": "dut.engine.core.r_cell_bit",
 }
 
 
@@ -107,14 +115,16 @@ def wire_tx():
                  for bit in (*byte_bits(byte), True)) + (True,) * 9
 
 
-def read_image(run, lean, out):
-    text = run([*lean, "--run", "test/StreamingReadySegmentImages.lean"], "compile-read-image")
+def read_image(run, lean, out, variant="standard"):
+    arguments = [] if variant == "standard" else [variant]
+    text = run([*lean, "--run", "test/StreamingReadySegmentImages.lean", *arguments], f"compile-read-{variant}")
     image = json.loads(text)
     require(image["tx_budget"] == BUDGET and tuple(image["tx_bits"]) == wire_tx(),
             "Lean image and manual wire plan disagree")
     require(0 < len(image["words"]) <= 64 and all(type(word) is int and 0 <= word < 2**64
             for word in image["words"]), "Invalid segmented image words")
-    (out / "register-read-image.json").write_text(json.dumps(image, indent=2) + "\n")
+    path = "register-read-image.json" if variant == "standard" else f"register-read-{variant}.json"
+    (out / path).write_text(json.dumps(image, indent=2) + "\n")
     return image
 
 
@@ -128,6 +138,60 @@ def timing_status(rtl):
     words = rtl.log[-3].split()
     require(len(words) == len(PRE_EDGE) + 1 and words[0] == "SEGMENT_PRE", "Missing pre-edge Ready observation")
     return {**status(rtl), **dict(zip(PRE_EDGE, map(int, words[1:]), strict=True))}
+
+
+def observe_core(rtl, trace, observations):
+    def record(edge):
+        trace(edge)
+        observations.append({"edge": edge["cycle"], **timing_status(rtl)})
+    rtl.record_sink = record
+
+
+def i2c_execution(edges, words):
+    """Project the executed rows and service from the core's clocked observations."""
+    start = next(index for index, cut in enumerate(edges)
+                 if cut["command"] == 3 and cut["pre_phase"] == 0 and cut["phase"] == 1)
+    fetches, supplies, branches, tx_bits = [], [], [], []
+    polls, parked, slots, terminal = [], 0, 0, None
+    for cut, following in zip(edges[start + 1:], edges[start + 2:]):
+        phase = cut["pre_phase"]
+        kind = cut["pre_stream_flags"] & 7
+        if phase == 1:
+            pc = cut["pc"]
+            require(pc < len(words), "Fetched outside the uploaded segmented image")
+            fetches.append(pc)
+            slots = 0
+            if words[pc] & 7 == 6:
+                require(cut["capture_valid"] == 1 and following["capture_valid"] == 0 and cut["phase"] == 1,
+                        "Branch did not consume a qualified latched sample")
+                branches.append({"pc": pc, "bit": bool(cut["capture_bit"]), "next_pc": following["pc"]})
+        if phase == 2 and kind == 1:
+            if cut["phase"] == 2:
+                parked += 1
+            else:
+                require(cut["phase"] == 3 and cut["tx_consumed"] == cut["pre_tx_consumed"] + 1,
+                        "I2C stream left its boundary without reserving its next bit")
+                tx_bits.append(bool(following["cell_bit"]))
+        if phase == 7:
+            polls.append(cut["stage2"])
+            if cut["phase"] != 7:
+                if kind == 1:
+                    supplies.append({"kind": "cell", "parked": parked, "samples": polls})
+                    parked = 0
+                    slots += 1
+                else:
+                    require(kind == 4, "Unexpected word at an I2C guard poll")
+                    supplies.append({"kind": "wait", "samples": polls})
+                polls = []
+        if cut["phase"] in (5, 6):
+            terminal = {"pc": cut["pc"], "phase": cut["phase"],
+                        "edge": cut["edge"], "clocks": cut["edge"] - edges[start]["edge"],
+                        "slot": slots - 1 if kind == 1 else 0,
+                        "poll_countdown": cut["countdown"], "tx_reserved": cut["tx_consumed"],
+                        "rx_produced": cut["rx_produced"]}
+            break
+    return {"fetches": fetches, "supplies": supplies, "branches": branches,
+            "tx_bits": tx_bits, "terminal": terminal}
 
 
 def deadline_aperture(edges, held_at, budget):
@@ -226,6 +290,7 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
     ack = tuple(int(i == nack) for i in range(3))
     peer = I2CReadPeer(ADDRESS, REGISTER, (PAYLOAD,), ack, fall_stretches=stretches)
     trace = EdgeTrace(path)
+    observations = []
     try:
         with QuadRTL(vvp, executable, record_limit=0, record_sink=trace) as rtl:
             transport = QuadTransport(rtl)
@@ -233,6 +298,7 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
             host.initialize()
             loaded = host.load(CombinedI2cRead.from_manifest(image))
             require(loaded.generation == 1, "Cold image did not commit to the first generation")
+            observe_core(rtl, trace, observations)
             rtl.device = peer
             pending = loaded.submit()
             start = pending.last
@@ -241,6 +307,9 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
             require(first.tx_accepted == BUDGET, "Host did not queue the full path before any branch decision")
             pending.wait(max_exchanges=20)
             counters = status(rtl)
+            execution = i2c_execution(observations, image["words"])
+            require(execution["terminal"] is not None, "Did not observe the I2C terminal cut")
+            rtl.record_sink = trace
             completed = pending.finish(max_exchanges=20)
             rx, terminal, released = completed.rx_bits, completed.terminal, completed.release
             require(counters["tx_accepted"] == BUDGET and counters["rx_produced"] == expected_slots and
@@ -312,11 +381,50 @@ def replay(vvp, executable, path, image, *, nack=None, deadline=False, reload=Fa
             "Replay did not retain every physical edge or exactly one cold reset")
     if deadline:
         wire["aperture"] = deadline_aperture(edges, peer.fall_stretch_arms[-1]["fall_edge"], image["wait_budget"])
+    wire["rising_cycles"] = peer.rising_cycles
     return dict(nack_stage=nack, missed_deadline=deadline, result=result, wire=wire, rx_bits=rx, counters=counters,
                 discarded_tx=0 if deadline else BUDGET - counters["tx_consumed"], receipt=asdict(terminal),
                 release=asdict(released) if released else None, rejected_release=asdict(held) if held else None,
                 cancellation=asdict(cancelled) if cancelled else None, ownership=ledger,
-                subsequent_spi=following, trace=recorded)
+                subsequent_spi=following, execution=execution, trace=recorded)
+
+
+def replay_inverted_ack(vvp, executable, path, image, reference):
+    """The structural checker permits the image. A success peer exposes its wrong branch."""
+    trace = EdgeTrace(path)
+    peer = I2CReadPeer(ADDRESS, REGISTER, (PAYLOAD,))
+    observations = []
+    try:
+        with QuadRTL(vvp, executable, record_limit=0, record_sink=trace) as rtl:
+            host = ReadyHost(QuadTransport(rtl), depth=2)
+            host.initialize()
+            loaded = host.load(CombinedI2cRead.from_manifest(image))
+            observe_core(rtl, trace, observations)
+            rtl.device = peer
+            pending = loaded.submit()
+            try:
+                pending.pump()
+                pending.wait(max_exchanges=20)
+            except StreamTransportError as error:
+                cause = error.cause
+                if not isinstance(cause, I2CReadWireError):
+                    raise
+                require(str(cause) == "I2C read STOP before requested prefix/data finished",
+                        f"Inverted ACK failed for a different wire reason: {cause}")
+                rejection = {"category": cause.category, "message": str(cause)}
+            else:
+                raise RuntimeError("Inverted ACK branch passed the independent I2C wire oracle")
+    finally:
+        recorded = trace.close()
+    execution = i2c_execution(observations, image["words"])
+    (branch,) = execution["branches"]
+    normal = reference["execution"]["branches"][0]
+    target = (image["words"][branch["pc"]] >> 3) & 63
+    require(branch["pc"] == normal["pc"] and not branch["bit"] and not normal["bit"] and
+            branch["next_pc"] == target and normal["next_pc"] == normal["pc"] + 1 and
+            len(execution["tx_bits"]) == 9 and peer.bits[:9] == peer.expected()[:9],
+            "Wire rejection did not follow the inverted branch on the first qualified ACK")
+    return {"rejection": rejection, "execution": execution, "trace": recorded}
 
 
 def source_hashes():
@@ -347,11 +455,13 @@ def check_readback(run, lean, out, cases):
     run([*lean, witness], "check-observed-readback")
 
 
-def check_ownership(run, lean, out, cases, ethernet):
+def check_ownership(run, lean, out, cases, ethernet, split):
     reports = {name.replace("-", "_") + "_" + summary["closure"]: summary
                for name in (*CASES.keys(), "deadline") for summary in cases[name]["ownership"]}
     reports["spi_released"] = cases["spi"]["exchange"]["ownership"]
     reports["warm_spi_released"] = cases["write-address-nack"]["subsequent_spi"]["exchange"]["ownership"]
+    reports.update({"split_" + name.replace("-", "_") + "_" + summary["closure"]: summary
+                    for name, case in split.items() for summary in case["ownership"]})
     for name, replayed in ethernet.items():
         (case,) = replayed["cases"]
         evidence = case["ownership"]
@@ -379,6 +489,72 @@ def check_ownership(run, lean, out, cases, ethernet):
     witness = out / "ObservedReadyOwnership.lean"
     witness.write_text("\n".join(source) + "\n")
     run([*lean, witness], "check-observed-ownership")
+
+
+def lean_bits(bits):
+    return "[" + ", ".join("true" if bit else "false" for bit in bits) + "]"
+
+
+def check_i2c_execution(run, lean, out, images, original, split):
+    """Feed sampler events observed on both stores to the branch-sensitive semantics."""
+    source = [
+        "import Pinwheel.Program.StreamingReadyRegisterReadVariants",
+        "import Pinwheel.Program.StreamingReadySegmentExecution",
+        "open Pinwheel.Program.StreamingReadySegments",
+        "open Pinwheel.Program.StreamingReadySegments.Execution",
+        "open Pinwheel.Program.StreamingReadyRegisterReadVariants",
+        "set_option maxRecDepth 8192",
+        "",
+    ]
+    variants = (("standard", "registerReadImage", "(registerReadRows .standard)", original),
+                ("split", "splitImage", "(splitRows .standard)", split))
+    for variant, image_name, rows, cases in variants:
+        manifest = images[variant]
+        source.append(f"example : {image_name}.words.map BitVec.toNat = {manifest['words']} := by decide +kernel")
+        for name, case in cases.items():
+            if name == "spi":
+                continue
+            executed = case["execution"]
+            terminal = executed["terminal"]
+            supplied = []
+            for item in executed["supplies"]:
+                samples = "[" + ", ".join(f"{sample}#2" for sample in item["samples"]) + "]"
+                supplied.append(f".cell {item['parked']} {samples}" if item["kind"] == "cell"
+                                else f".wait {samples}")
+            tx, rx = terminal["tx_reserved"], terminal["rx_produced"]
+            if case["missed_deadline"]:
+                require(terminal["poll_countdown"] == 0, "Fault did not expire at the final poll")
+                outcome = f".timeout {terminal['pc']} {terminal['slot']}"
+            else:
+                kind = "complete" if case["nack_stage"] is None else "discard"
+                path, = (path for path in manifest["exits"] if (path["kind"], path["tx"], path["rx"])
+                         == (kind, tx, rx))
+                parked = sum(item.get("parked", 0) for item in executed["supplies"])
+                require(terminal["clocks"] <= path["core_clocks"] + parked,
+                        "Observed execution exceeded the checked path bound plus measured credit delay")
+                outcome = f".planned ⟨.{kind}, {tx}, {rx}, {path['core_clocks']}⟩"
+            branches = [
+                "(" + ("true" if edge["bit"] else "false") + ", "
+                + ("true" if edge["next_pc"] != edge["pc"] + 1 else "false") + ")"
+                for edge in executed["branches"]
+            ]
+            branch_list = "[" + ", ".join(branches) + "]"
+            label = variant + "_" + name.replace("-", "_")
+            source.append(f"""
+def {label} := run {rows} {BUDGET} {lean_bits(manifest['tx_bits'])}
+  [{", ".join(supplied)}]
+
+example : {label}.any (fun r =>
+    decide (r.terminal = {outcome}) &&
+    decide (r.fetchPCs = {executed['fetches']}) &&
+    decide (r.branches = {branch_list}) &&
+    decide (r.txBits = {lean_bits(executed['tx_bits'])}) &&
+    decide (r.rxBits = {lean_bits(case['rx_bits'])}) &&
+    r.remainingObservations.isEmpty) = true := by decide +kernel
+""")
+    witness = out / "ObservedReadyRowExecution.lean"
+    witness.write_text("\n".join(source) + "\n")
+    run([*lean, witness], "check-observed-row-execution", timeout=300)
 
 
 def check_ethernet_timing(run, lean, out, ethernet):
@@ -468,16 +644,19 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v3", passed=False, commands=[], source_commit=source_commit(),
-                  source_sha256=source_hashes(), stores={}, ethernet={})
+    report = dict(schema="pinwheel.ready-segments.v4", passed=False, commands=[], source_commit=source_commit(),
+                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={})
     run = Commands(ROOT, logs, report["commands"])
     try:
         report["toolchain"], tools, _ = tool_config()
         lean = ["lake", "env", "lean", "-DwarningAsError=true"]
         run(["lake", "--no-cache", "build"], "build-library", timeout=1800)
         run([*lean, "test/ProofAudit.lean"], "audit-library")
-        image = read_image(run, lean, out)
+        run([*lean, "test/StreamingReadySegmentBehavior.lean"], "check-register-read-behavior")
+        images = {name: read_image(run, lean, out, name) for name in ("standard", "split", "inverted-ack")}
+        image = images["standard"]
         report["image"] = image
+        report["variants"] = {name: images[name] for name in ("split", "inverted-ack")}
         builds = build_rtl(run, lean, tools, out)
         frozen = {path: sha(path) for path in out.rglob("*") if path.is_file() and path.parent != logs}
         for store, executable in builds.items():
@@ -488,6 +667,24 @@ def main():
             cases["deadline"] = replay(tools["vvp"], executable, directory / "deadline.bin", image, deadline=True)
             cases["spi"] = replay_spi(tools["vvp"], executable, directory / "spi.bin")
             report["stores"][store] = cases
+            split = {name: replay(tools["vvp"], executable, directory / f"split-{name}.bin",
+                                  images["split"], nack=stage) for name, stage in CASES.items()}
+            split["deadline"] = replay(tools["vvp"], executable, directory / "split-deadline.bin",
+                                       images["split"], deadline=True)
+            report["split"][store] = split
+            for name, candidate in split.items():
+                original = cases[name]
+                require(candidate["result"] == original["result"] and candidate["rx_bits"] == original["rx_bits"]
+                        and all(candidate["wire"][key] == original["wire"][key]
+                                for key in ("starts", "stopped", "observed_bits"))
+                        and candidate["ownership"] == original["ownership"],
+                        f"Splitting the address row changed the protocol outcome: {name}")
+            before = cases["deadline"]["wire"]["rising_cycles"]
+            after = split["deadline"]["wire"]["rising_cycles"]
+            require((after[8] - after[7]) - (before[8] - before[7]) == 2,
+                    "Unstretched address ACK did not gain the two split instruction clocks")
+            report["inverted_ack"][store] = replay_inverted_ack(
+                tools["vvp"], executable, directory / "inverted-ack.bin", images["inverted-ack"], cases["read"])
             report["ethernet"][store] = {
                 name: ethernet_replay.replay_timed_runner(tools["vvp"], executable,
                     directory / f"ethernet-{name}.bin", schedule=name, observe=timing_status)
@@ -497,13 +694,18 @@ def main():
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
         require(report["ethernet"]["direct"] == report["ethernet"]["registered"],
                 "Instruction stores changed the Ethernet timing or ownership receipts")
-        traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES))
+        require(all(report[key]["direct"] == report[key]["registered"] for key in ("split", "inverted_ack")),
+                "Instruction stores changed the split or inverted-ACK execution")
+        traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES),
+                  *(f"split-{name}" for name in report["split"]["direct"]), "inverted-ack")
         for name in traces:
             direct = (out / "direct-replay" / f"{name}.bin").read_bytes()
             cached = (out / "registered-replay" / f"{name}.bin").read_bytes()
             require(direct == cached and direct and len(direct) % 20 == 0, f"Changed public pin trace: {name}")
         check_readback(run, lean, out, report["stores"]["direct"])
-        check_ownership(run, lean, out, report["stores"]["direct"], report["ethernet"]["direct"])
+        check_ownership(run, lean, out, report["stores"]["direct"], report["ethernet"]["direct"],
+                        report["split"]["direct"])
+        check_i2c_execution(run, lean, out, images, report["stores"]["direct"], report["split"]["direct"])
         check_ethernet_timing(run, lean, out, report["ethernet"]["direct"])
         require(source_commit() == report["source_commit"] and source_hashes() == report["source_sha256"],
                 "Source inputs changed during replay")
