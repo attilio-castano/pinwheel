@@ -131,20 +131,20 @@ theorem captured_qualifies (registered : Bool) (cell : Cell) (s : Values (Regist
 
 private theorem noReset (h : DrainInput i) : NoReset i := ⟨h.1, by simp [h.2.1]⟩
 
-private structure Held (s after : Values (Register a)) : Prop where
+structure Held (s after : Values (Register a)) : Prop where
   last : after .lastCapture = s .lastCapture
   valid : after .captureValid = s .captureValid
   produced : after (.base .rxProduced) = s (.base .rxProduced)
 
-private theorem Held.capture (frame : Held s after) (old : HasCapture s previous) :
+theorem Held.capture (frame : Held s after) (old : HasCapture s previous) :
     HasCapture after previous := by
   cases previous <;> simpa only [HasCapture, frame.last, frame.valid] using old
 
-private theorem Held.trans (left : Held s middle) (right : Held middle after) : Held s after :=
+theorem Held.trans (left : Held s middle) (right : Held middle after) : Held s after :=
   ⟨right.last.trans left.last, right.valid.trans left.valid, right.produced.trans left.produced⟩
 
 set_option linter.unusedSimpArgs false in
-private theorem hold (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+theorem hold (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (ordinary : NoReset i)
     (outsideAperture : (s (.base .phase) = 1#3 ∧ ((word registered).eval i s).extractLsb' 0 3 = 1#3) ∨
       s (.base .phase) = 2#3 ∨ (s (.base .phase) = 3#3 ∧ s (.base .countdown) ≠ 0#8)) :
@@ -165,7 +165,7 @@ private theorem hold (registered : Bool) (i : Values Core.Input) (s : Values (Re
   all_goals done
 
 set_option linter.unusedSimpArgs false in
-private theorem fetch_keeps_tx (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+theorem fetch_keeps_tx (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (ordinary : NoReset i) (fetch : s (.base .phase) = 1#3) :
     ((circuit a registered).step i s) (.base .txConsumed) = s (.base .txConsumed) := by
   change (bindWord (word registered) (next (.base .txConsumed))).eval i s = _
@@ -175,7 +175,7 @@ private theorem fetch_keeps_tx (registered : Bool) (i : Values Core.Input) (s : 
     Core.cmd, Core.both, Core.either, Core.free, Core.starting, Core.releasing, Core.hostOwner,
     Core.owned, Core.retained, Core.isPhase, Core.reserving, Core.takingTX, ordinary.1, ordinary.2, fetch]
 
-private theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
     (phase : s (.base .phase) = 3#3) (within : inputs.length ≤ (s (.base .countdown)).toNat)
     (ordinary : ∀ i ∈ inputs, DrainInput i) :
     Held s (SegmentTiming.run registered s inputs) := by
@@ -201,24 +201,25 @@ private theorem held_low (registered : Bool) (s : Values (Register a)) (inputs :
       (fun j hj => ordinary j (List.mem_cons_of_mem (α := Values Core.Input) i hj)))
 
 /-- The live stream word has been loaded and the next slot awaits credit. -/
-structure AtReservation (rows : List Row) (pc : Nat) (cell : Cell) (previous : Option Bool)
+structure AtReservation (rows : List Row) (pc : Nat) (cell : Cell) (guard : Option Guard) (previous : Option Bool)
     (s : Values (Register a)) : Prop where
   installed : Installed rows s
   phase : s (.base .phase) = 2#3
   position : (s (.base .pc)).toNat = pc
-  current : s (.base .currentWord) = encode (.stream cell none)
+  current : s (.base .currentWord) = encode (.stream cell guard)
   latched : HasCapture s previous
 
-private structure Parked (rows : List Row) (pc : Nat) (cell : Cell) (previous : Option Bool)
+structure Parked (rows : List Row) (pc : Nat) (cell : Cell) (guard : Option Guard) (previous : Option Bool)
     (s after : Values (Register a)) : Prop where
-  ready : AtReservation rows pc cell previous after
+  ready : AtReservation rows pc cell guard previous after
   remaining : after (.base .remaining) = s (.base .remaining)
   reserved : after (.base .txConsumed) = s (.base .txConsumed)
   produced : after (.base .rxProduced) = s (.base .rxProduced)
 
-private theorem run_parks (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
-    (start : AtReservation rows pc cell previous s) (history : ParkHistory registered s inputs) :
-    Parked rows pc cell previous s (SegmentTiming.run registered s inputs) ∧ ActiveClocks registered s inputs := by
+theorem run_parks (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+    {guard : Option Guard}
+    (start : AtReservation rows pc cell guard previous s) (history : ParkHistory registered s inputs) :
+    Parked rows pc cell guard previous s (SegmentTiming.run registered s inputs) ∧ ActiveClocks registered s inputs := by
   induction inputs generalizing s with
   | nil => exact ⟨⟨start, rfl, rfl, rfl⟩, .nil⟩
   | cons i rest ih =>
@@ -239,17 +240,17 @@ private structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell
   remaining : (after (.base .remaining)).toNat = (s (.base .remaining)).toNat - 1
   produced : after (.base .rxProduced) = s (.base .rxProduced) + (if cell.receive then 1#16 else 0)
   consumed : after (.base .txConsumed) = s (.base .txConsumed) + (if cell.transmit then 1#16 else 0)
-  repeatCell : 1 < (s (.base .remaining)).toNat → AtReservation rows pc cell previous after
+  repeatCell : 1 < (s (.base .remaining)).toNat → AtReservation rows pc cell none previous after
   finished : (s (.base .remaining)).toNat = 1 → AtBoundary registered rows (pc + 1) previous after
 
 private theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s : Values (Register a))
-    (start : AtReservation rows pc cell previous s) (inBounds : pc < rows.length)
+    (start : AtReservation rows pc cell none previous s) (inBounds : pc < rows.length)
     (positive : 0 < (s (.base .remaining)).toNat) (service : slot.Served registered cell s) :
     SlotEnd registered rows pc cell (if cell.receive then some (slot.sample registered cell s) else previous)
       s (slot.after registered s) ∧ ActiveClocks registered s slot.inputs := by
   let ready : Values (Register a) := slot.ready registered s
   obtain ⟨parks, parkActive⟩ := run_parks registered s slot.parks start service.parks
-  have parked : AtReservation rows pc cell previous ready := parks.ready
+  have parked : AtReservation rows pc cell none previous ready := parks.ready
   let reserved : Values (Register a) := (circuit a registered).step slot.admit ready
   let lowEnd : Values (Register a) := slot.lowEnd registered s
   let entered : Values (Register a) := (circuit a registered).step slot.aperture lowEnd
@@ -378,7 +379,7 @@ private theorem add_one_slot (counter : BitVec 16) (slots : Nat) (enabled : Bool
     rw [BitVec.add_comm 1#16 (BitVec.ofNat 16 slots)]
 
 private theorem run_slots (registered : Bool) (cell : Cell) (s : Values (Register a))
-    (slots : List SlotPlan) (start : AtReservation rows pc cell previous s) (inBounds : pc < rows.length)
+    (slots : List SlotPlan) (start : AtReservation rows pc cell none previous s) (inBounds : pc < rows.length)
     (positive : 0 < slots.length) (count : (s (.base .remaining)).toNat = slots.length)
     (service : Served registered cell s slots) :
     Completed registered rows pc cell (captured registered cell s previous slots) slots.length s
@@ -437,7 +438,7 @@ theorem run_stream_row (registered : Bool) (cell : Cell) (s : Values (Register a
     exact (encode_fields (.stream cell none)).operation
   have held := hold registered fetch s ordinary (.inl ⟨start.phase, stream⟩)
   have installed := (image_frame registered fetch s ordinary (.inl (by simp [start.phase]))).installed start.installed
-  have ready : AtReservation rows pc cell previous live := ⟨installed, loaded.phase,
+  have ready : AtReservation rows pc cell none previous live := ⟨installed, loaded.phase,
     (congrArg BitVec.toNat loaded.pc).trans start.position, loaded.current, held.capture start.latched⟩
   obtain ⟨run, active⟩ := run_slots registered cell live slots ready inBounds positive
     ((congrArg BitVec.toNat loaded.remaining).trans count) service

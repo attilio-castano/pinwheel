@@ -183,7 +183,8 @@ private theorem receive_edge (registered : Bool) (i : Values Core.Input) (s : Va
       init, command, waiting, matching, stream, receives, increment, inv_one_inv] <;> done
 
 set_option linter.unusedSimpArgs false in
-private theorem timeout_edge (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+/-- The final unqualified poll enters retained FAULT and restores the installed idle pads. -/
+theorem timeout_edge (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (deadline : ProtocolOwnership.AtDeadline i s) :
     TimeoutCut s ((circuit a registered).step i s) := by
   obtain ⟨retained, txCount, txValid, partialFlushed⟩ := ProtocolOwnership.deadline_step registered i s deadline

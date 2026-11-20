@@ -27,6 +27,7 @@ import Pinwheel.Hardware.StreamingReady.SegmentCapture
 import Pinwheel.Hardware.StreamingReady.SegmentControl
 import Pinwheel.Hardware.StreamingReady.SegmentCustody
 import Pinwheel.Hardware.StreamingReady.SegmentExport
+import Pinwheel.Hardware.StreamingReady.SegmentGuardedTransaction
 import Pinwheel.Hardware.StreamingReady.SegmentHandoffFence
 import Pinwheel.Hardware.StreamingReady.SegmentLegacy
 import Pinwheel.Hardware.StreamingReady.SegmentPackage
@@ -36,7 +37,10 @@ import Pinwheel.Hardware.StreamingReady.SegmentPulseRefinement
 import Pinwheel.Hardware.StreamingReady.SegmentReload
 import Pinwheel.Hardware.StreamingReady.SegmentStreamStep
 import Pinwheel.Hardware.StreamingReady.SegmentTiming
+import Pinwheel.Hardware.StreamingReady.SegmentTrace
+import Pinwheel.Hardware.StreamingReady.SegmentTraceTimeout
 import Pinwheel.Hardware.StreamingReady.SegmentTransaction
+import Pinwheel.Hardware.StreamingReady.SegmentTransactionTimeout
 import Pinwheel.Hardware.StreamingReady.SegmentUnguardedTransaction
 import Pinwheel.Hardware.StreamingReady.SegmentWaitRefinement
 import Pinwheel.Hardware.StreamingReady.SessionCorrespondence

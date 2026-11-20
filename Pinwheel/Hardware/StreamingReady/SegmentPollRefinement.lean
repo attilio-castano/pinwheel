@@ -57,7 +57,7 @@ private theorem stage2Samples_miss (registered : Bool) (s : Values (Register a))
     have tail := ih _ first.phase (first.pose.current.trans loaded) nextBounded later nextWithin
     simp [stage2Samples, miss, tail]
 
-private theorem rxBit_from_row (s : Values (Register a)) (cell : Cell) (g : Guard)
+theorem rxBit_from_row (s : Values (Register a)) (cell : Cell) (g : Guard)
     (loaded : s (.base .currentWord) = encode (.stream cell (some g))) :
     rxBit s = BitVec.ofBool ((s (.base .stage2))[cell.rxInput.val]) := by
   rw [rxBit, loaded, (encode_fields (.stream cell (some g))).rxInput]
@@ -216,7 +216,7 @@ private theorem miss_frames (registered : Bool) (s : Values (Register a)) (input
       (ih after step.phase nextStream nextBounded later nextWithin)
 
 set_option linter.unusedSimpArgs false in
-private theorem high_countdown (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+theorem high_countdown (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
     (cell : Cell) (g : Guard) (drain : DrainInput i)
     (waiting : s (.base .phase) = 7#3) (hit : g.matches (s (.base .stage2)) = true)
     (loaded : s (.base .currentWord) = encode (.stream cell (some g))) :

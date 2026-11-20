@@ -579,12 +579,37 @@ advance on a qualified poll or retain ownership at expiry. The
 [pulse proof](../../Pinwheel/Hardware/StreamingReady/SegmentPulseRefinement.lean)
 connects the fetched row to its declared LOW and HIGH dwells and next
 FETCH. The [transaction theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTransaction.lean)
-composes these cuts from admitted START. Under the supplied row service
-witnesses, the actual run reaches a checked image exit with the same
-TX/RX counts and the owner allocated by START. The [counted stream proof](../../Pinwheel/Hardware/StreamingReady/SegmentUnguardedReceive.lean)
-supplies this row evidence for unguarded streams. Guard expiry has a separate
-row theorem and source replay. Deriving the row service witnesses from one
-whole-transaction timing contract remains open.
+composes serviced rows from admitted START to a checked image exit. Both
+[unguarded](../../Pinwheel/Hardware/StreamingReady/SegmentUnguardedTransaction.lean)
+and [guarded streams](../../Pinwheel/Hardware/StreamingReady/SegmentGuardedTransaction.lean)
+supply row evidence. A guarded row can stop after any successfully served
+prefix. The failed slot reserves TX if enabled and adds no receive bit.
+The [timeout composition](../../Pinwheel/Hardware/StreamingReady/SegmentTransactionTimeout.lean)
+connects the failed poll and its exact prefix to START, drain and cancellation.
+
+### Whole clock traces
+
+The [flat trace contract](../../Pinwheel/Hardware/StreamingReady/SegmentTrace.lean)
+takes admitted START, an ordinary active clock list, and a final checked
+edge. The checker finds the completion or early-discard row at the last
+edge and obtains the actual reservation and capture histories from the
+circuit's pre-edge expressions. It proves the resulting counters and owner.
+The [flat timeout contract](../../Pinwheel/Hardware/StreamingReady/SegmentTraceTimeout.lean)
+uses the same clock list and an expired final poll. It proves the restored
+idle pads, retained prefix, exact acknowledgment after drain, and unsent TX
+custody through cancellation. Either contract can be checked without
+assembling a proof for each row. A separate remaining obligation is to
+derive successful trace admission from external peer and host timing bounds.
+
+The [wire model](../../Pinwheel/Program/StreamingReadySegmentWire.lean)
+derives SDA from the controller and target drives. For the standard image
+and the fixture request it checks every payload, all three early NACKs, and
+expiry at every streaming slot on a representative all-ACK exchange. The
+source replay uses the public raw pins two clocks before each aperture for
+both I²C and branching SWD. It checks the sampled history, host readback,
+and wire verdict on the direct and registered stores. The independent
+deadline fixture distinguishes readiness at the last eligible aperture
+from readiness one clock later.
 
 ### Shared Ready runner
 

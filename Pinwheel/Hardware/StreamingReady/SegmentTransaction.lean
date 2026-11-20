@@ -484,6 +484,86 @@ private theorem terminal_end {s : Values (Register a)}
   exact ⟨phase, (congrArg BitVec.toNat counts.1).trans h.tx,
     (congrArg BitVec.toNat counts.2).trans h.rx⟩
 
+/-- COUNT realizes the next checked cut and resets the branch latch. -/
+theorem count_cut {s : Values (Register a)} (cut : Cut registered rows cursor capture s)
+    (i : Values Core.Input) (ordinary : NoReset i)
+    (row : rows[cursor.pc]? = some (.count slots)) (nonzero : slots ≠ 0#16) :
+    Cut registered rows (countCursor cursor slots) none ((circuit a registered).step i s) := by
+  obtain ⟨boundary, armed⟩ := count_step cut.boundary i ordinary row nonzero
+  have counts := fetch_counts cut.boundary i ordinary
+  exact ⟨boundary, by simp [countCursor], by simp [countCursor, armed],
+    (congrArg BitVec.toNat counts.1).trans cut.tx, (congrArg BitVec.toNat counts.2).trans cut.rx⟩
+
+/-- BRANCH uses the actual sampled bit and clears its qualification on exit. -/
+theorem branch_cut {s : Values (Register a)} (cut : Cut registered rows cursor (some capture) s)
+    (i : Values Core.Input) (ordinary : NoReset i)
+    (row : rows[cursor.pc]? = some (.branch destination onBit)) (forward : cursor.pc < destination.toNat)
+    (inBounds : destination.toNat < rows.length)
+    (entry : successors rows budget cursor =
+      some (.both (branchCursor cursor destination false) (branchCursor cursor destination true))) :
+    Cut registered rows (branchCursor cursor destination (decide (capture = onBit))) none
+      ((circuit a registered).step i s) := by
+  have boundary := branch_step cut.boundary i ordinary row forward inBounds
+  have counts := fetch_counts cut.boundary i ordinary
+  have emptySlots : cursor.slots = none := by
+    simp only [successors, row] at entry
+    split at entry <;> simp_all
+  exact ⟨by simpa [branchCursor] using boundary, by simp [branchCursor], by simp [branchCursor, emptySlots],
+    (congrArg BitVec.toNat counts.1).trans cut.tx, (congrArg BitVec.toNat counts.2).trans cut.rx⟩
+
+/-- One checked instruction that returns to FETCH. Its proof obligations refer
+    only to the clocks for that instruction. -/
+inductive Advance (registered : Bool) (rows : List Row) (budget : Nat) :
+    Cursor → Option Bool → Values (Register a) → List (Values Core.Input) → Cursor → Option Bool → Prop where
+  | count {s : Values (Register a)} {i : Values Core.Input}
+      (row : rows[cursor.pc]? = some (.count slots)) (nonzero : slots ≠ 0#16)
+      (ordinary : NoReset i)
+      (entry : successors rows budget cursor = some (.next (countCursor cursor slots))) :
+      Advance registered rows budget cursor capture s [i] (countCursor cursor slots) none
+  | branch {s : Values (Register a)} {i : Values Core.Input}
+      (row : rows[cursor.pc]? = some (.branch destination onBit)) (ordinary : NoReset i)
+      (forward : cursor.pc < destination.toNat) (inBounds : destination.toNat < rows.length)
+      (entry : successors rows budget cursor =
+        some (.both (branchCursor cursor destination false) (branchCursor cursor destination true))) :
+      Advance registered rows budget cursor (some capture) s [i]
+        (branchCursor cursor destination (decide (capture = onBit))) none
+  | cell {s : Values (Register a)} (kind : Serviced instruction) (row : rows[cursor.pc]? = some (.cell instruction))
+      (entry : successors rows budget cursor = some (.next following))
+      (service : Cut registered rows cursor capture s → ServiceSpan registered rows following sample s clocks) :
+      Advance registered rows budget cursor capture s clocks following sample
+
+theorem Advance.refines (step : @Advance registered rows budget a cursor capture s inputs following sample)
+    (cut : Cut registered rows cursor capture s) :
+    Cut registered rows following sample (run registered s inputs) ∧ ActiveClocks registered s inputs := by
+  cases step with
+  | count row nonzero ordinary _ =>
+    exact ⟨count_cut cut _ ordinary row nonzero, active_step ordinary cut.boundary.phase (.inl rfl) .nil⟩
+  | branch row ordinary forward inBounds entry =>
+    exact ⟨branch_cut cut _ ordinary row forward inBounds entry,
+      active_step ordinary cut.boundary.phase (.inl rfl) .nil⟩
+  | cell _ _ _ service =>
+    exact ⟨(service cut).finish, (service cut).active⟩
+
+/-- A finite checked prefix may end before a dynamic guard expires. -/
+inductive Prefix (registered : Bool) (rows : List Row) (budget : Nat) :
+    Cursor → Option Bool → Values (Register a) → List (Values Core.Input) → Cursor → Option Bool → Prop where
+  | nil {s : Values (Register a)} : Prefix registered rows budget cursor capture s [] cursor capture
+  | next {s : Values (Register a)}
+      (head : Advance registered rows budget cursor capture s clocks middle bit)
+      (tail : Prefix registered rows budget middle bit (run registered s clocks) rest following sample) :
+      Prefix registered rows budget cursor capture s (clocks ++ rest) following sample
+
+theorem Prefix.refines (walk : @Prefix registered rows budget a cursor capture s inputs following sample)
+    (cut : Cut registered rows cursor capture s) :
+    Cut registered rows following sample (run registered s inputs) ∧ ActiveClocks registered s inputs := by
+  induction walk with
+  | nil => exact ⟨cut, .nil⟩
+  | next head _ ih =>
+    obtain ⟨nextCut, headActive⟩ := head.refines cut
+    obtain ⟨finalCut, tailActive⟩ := ih nextCut
+    rw [SegmentTiming.run_append]
+    exact ⟨finalCut, headActive.append tailActive⟩
+
 /-- The checked abstract path and retained endpoint describe the same actual
     sequence of circuit steps, under the supplied local service witnesses. -/
 theorem Delivered.refines (delivered : @Delivered registered rows budget a cursor capture s inputs result)
@@ -492,23 +572,10 @@ theorem Delivered.refines (delivered : @Delivered registered rows budget a curso
       OwnerFrame s (run registered s inputs) := by
   induction delivered with
   | @count slots cursor _ _ _ _ _ row nonzero ordinary entry _ ih =>
-    obtain ⟨nextBoundary, armed⟩ := count_step cut.boundary _ ordinary row nonzero
-    have counts := fetch_counts cut.boundary _ ordinary
-    have nextCut : Cut registered rows (countCursor cursor slots) none _ :=
-      ⟨nextBoundary, by simp [countCursor], by simp [countCursor, armed],
-        (congrArg BitVec.toNat counts.1).trans cut.tx, (congrArg BitVec.toNat counts.2).trans cut.rx⟩
-    obtain ⟨reached, ending, owner⟩ := ih nextCut
+    obtain ⟨reached, ending, owner⟩ := ih (count_cut cut _ ordinary row nonzero)
     exact ⟨.next entry reached, ending, frame_trans (fetch_owner cut.boundary _ ordinary) owner⟩
   | @branch cursor destination capture onBit _ result _ _ row ordinary forward inBounds entry _ ih =>
-    have nextBoundary := branch_step cut.boundary _ ordinary row forward inBounds
-    have counts := fetch_counts cut.boundary _ ordinary
-    have emptySlots : cursor.slots = none := by
-      simp only [successors, row] at entry
-      split at entry <;> simp_all
-    have nextCut : Cut registered rows (branchCursor cursor destination (decide (capture = onBit))) none _ :=
-      ⟨by simpa [branchCursor] using nextBoundary, by simp [branchCursor], by simp [branchCursor, emptySlots],
-        (congrArg BitVec.toNat counts.1).trans cut.tx, (congrArg BitVec.toNat counts.2).trans cut.rx⟩
-    obtain ⟨reached, ending, owner⟩ := ih nextCut
+    obtain ⟨reached, ending, owner⟩ := ih (branch_cut cut _ ordinary row forward inBounds entry)
     have continued : Reaches rows budget
         (if decide (capture = onBit) then branchCursor cursor destination true
           else branchCursor cursor destination false) result := by

@@ -864,6 +864,7 @@ def main():
         lean = ["lake", "env", "lean", "-DwarningAsError=true"]
         run(["lake", "--no-cache", "build"], "build-library", timeout=1800)
         run([*lean, "test/ProofAudit.lean"], "audit-library")
+        run([*lean, "test/StreamingReadyTraceContract.lean"], "check-flat-trace-deadline")
         run([*lean, "test/StreamingReadySegmentBehavior.lean"], "check-register-read-behavior")
         images = {name: read_image(run, lean, out, name) for name in ("standard", "split", "inverted-ack")}
         image = images["standard"]
