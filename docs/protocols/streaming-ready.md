@@ -575,8 +575,11 @@ the encoded row at the current PC. The
 connects the actual fetch, reservation, LOW dwell, qualified poll, HIGH
 dwell, and following branch in one run under its service premises.
 Standalone [bounded waits](../../Pinwheel/Hardware/StreamingReady/SegmentWaitRefinement.lean)
-advance on a qualified poll or retain ownership at expiry. A theorem
-composing every row into an arbitrary START-to-terminal run remains open.
+advance on a qualified poll or retain ownership at expiry. The
+[pulse proof](../../Pinwheel/Hardware/StreamingReady/SegmentPulseRefinement.lean)
+connects the fetched row to its declared LOW and HIGH dwells and next
+FETCH. A theorem composing every row into an arbitrary
+START-to-terminal run remains open.
 
 ### Shared Ready runner
 

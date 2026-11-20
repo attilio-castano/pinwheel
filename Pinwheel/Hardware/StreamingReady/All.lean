@@ -30,6 +30,7 @@ import Pinwheel.Hardware.StreamingReady.SegmentLegacy
 import Pinwheel.Hardware.StreamingReady.SegmentPackage
 import Pinwheel.Hardware.StreamingReady.SegmentPathControl
 import Pinwheel.Hardware.StreamingReady.SegmentPollRefinement
+import Pinwheel.Hardware.StreamingReady.SegmentPulseRefinement
 import Pinwheel.Hardware.StreamingReady.SegmentStreamStep
 import Pinwheel.Hardware.StreamingReady.SegmentTiming
 import Pinwheel.Hardware.StreamingReady.SegmentWaitRefinement
