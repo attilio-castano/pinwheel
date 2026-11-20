@@ -47,7 +47,7 @@ correctness and physical qualification are not implied by artifact proofs.
 | Branching foundation | Named bundles; atomic broadcast and ordered join; 27 configurations and 54 artifact certificates | Complete: `5e373bf` through `b1bf8b2` |
 | Packet switch | Buffered input queues, routing, round-robin arbitration, output stability, per-flow order and conditional fairness; multiport RTL certificates and synthesis baseline | Active |
 | Memory and accelerator | Explicit RAM read/write/collision semantics, request/response interfaces, reusable DMA-style movement and a streaming transform; memory assumptions and refinement | Active: RAMs and host accelerator certified through RTL; baseline/matched mapping complete; proved ownership optimization improves estimated delay; 24 pre-layout STA analyses complete with positive setup/hold slack but fanout violations in every case |
-| Processor system | Simple single-hart RV32I implementation, on-chip memory, GPIO, timer and UART; architectural refinement and reuse of prior components | Active: complete core/system cycle and architectural-event refinement proved; byte RAM/MMIO and four UART/MMIO configurations have imported-RTL certificates; cold loaded firmware replay passes emitted and synthesized RTL; 548 Sail cases and 39 upstream architecture-test bodies in two modes pass; full serial system integration and system artifact certificate remain open |
+| Processor system | Simple single-hart RV32I implementation, on-chip memory, GPIO, timer and UART; architectural refinement and reuse of prior components | [Deferred verification](#deferred-rv32i-microcontroller-verification). Core/system cycle and architectural-event refinement are proved. Byte RAM/MMIO and four UART/MMIO configurations have imported RTL certificates. Cold-loaded firmware replay passes emitted and synthesized RTL. 548 Sail cases and 39 upstream architecture-test bodies in two modes pass. |
 | Library release gate | Public API consolidation, independent usage example, reproducible evidence, comparative synthesis results | Active. A standalone lane client exercises simulation, RTL replay and kernel correspondence across two configurations and two FIFO backends. |
 
 Processor scope starts with a simple multicycle implementation and polling
@@ -65,8 +65,27 @@ Connected system cycle refinement and cold loaded firmware replay are complete.
 Actual-port architectural-event refinement, cancellation accounting and
 conditional service-count progress are complete. The independent Sail comparison
 and selected upstream architecture-test campaign pass in their documented model
-environments. Serial system integration and the imported whole-system artifact
-certificate remain open.
+environments.
+
+## Deferred RV32I microcontroller verification
+
+The pending goal is to connect the existing RV32I architectural refinement
+to the emitted microcontroller, including its serial interface. The typed
+four-instance cold boot at `97680742` is the last verified hierarchy
+checkpoint. The earlier core artifact probe passed the 104-endpoint solver
+check. Lean's kernel certificate stopped at `local_206` and `local_208`,
+which cover register write enable and destination selection.
+
+Resume by running `check-processor-loadable-system-boot.py` from fresh source
+and supplying that receipt to `probe-processor-core-artifact.py --scope kernel`.
+If the two equations still fail, isolate their shared decoder conditions
+before changing the circuit. The [processor artifact plan](lean-hardware-processor-plan.md#tapped-core-rtl-correspondence)
+records the commands and evidence boundary.
+
+Completion requires a kernel-checked correspondence certificate for the
+composed system's imported RTL, end-to-end UART operation under explicit
+digital timing assumptions, and a matched area and timing comparison with
+an independently validated baseline.
 
 ## First campaign: buffered packet switch
 
