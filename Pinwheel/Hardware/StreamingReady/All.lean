@@ -73,6 +73,7 @@ import Pinwheel.Program.StreamingReadySafety
 import Pinwheel.Program.StreamingReadySegmentReadback
 import Pinwheel.Program.StreamingReadySegmentExecution
 import Pinwheel.Program.StreamingReadySegmentSplit
+import Pinwheel.Program.StreamingReadySegmentWire
 import Pinwheel.Program.StreamingReadyService
 import Pinwheel.Program.StreamingReadySession
 import Pinwheel.Program.StreamingReadySessionService
