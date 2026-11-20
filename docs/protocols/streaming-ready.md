@@ -754,6 +754,39 @@ the first sampled mismatch is at bit 65, and completion slips six clocks.
 The same run accounts for all 576 accepted and reserved TX bits and
 releases the owner.
 
+### Externally timed receive and mixed sessions
+
+The [checked path planner](../../Pinwheel/Program/StreamingReadySegments.lean)
+records how many polls depend on an external event. Only paths without
+those polls have a static core clock bound. The
+[unbounded wait proof](../../Pinwheel/Hardware/StreamingReady/SegmentEventWait.lean)
+keeps the owner, pads, and capture count through any finite missed prefix.
+The [event admission theorem](../../Pinwheel/Hardware/StreamingReady/SegmentPolicyTiming.lean)
+uses the first qualifying sample to continue on the same clock tape. Its
+progress premises give the clock runway and expected peer response at
+reached wait windows. The encoded wait itself can stay active indefinitely.
+
+The checked CAN, PS/2, and UART RX images use explicit receive counts and
+START with zero TX budget. The source fixture checks delayed events,
+exact sample edges, malformed receive cases, and held-idle waits. The same
+causal host can refill unguarded SPI and JTAG rows. Their fixture compares
+two refill policies and checks that a missing chunk leaves the live owner
+parked. The [Ethernet proof](../../Pinwheel/Hardware/StreamingReady/EthernetDeadline.lean)
+derives credit from offered words and a six-clock PHY contract. Its
+same-edge control shows that a push on the reservation edge becomes
+visible a clock later.
+
+The [sequence theorem](../../Pinwheel/Hardware/StreamingReady/SegmentSequence.lean)
+composes local admission, drain, and settlement over the concatenated
+physical clocks. It preserves chronological per-session receipts and
+increments the owner counters once per session within the tag limits.
+The mixed RTL gate uses one cold reset and one host per store to run CAN,
+PS/2, UART RX, I²C, SWD, SPI, JTAG, and Ethernet. The bench selects the
+external wiring appropriate to each peer. The separate UART TX source
+fixture loads an ordinary pulse program after SPI RELEASE and checks its
+pad waveform against the UART model. It rejects a stale START and detects
+a one-clock extension of the start bit.
+
 The [guarded stream theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTiming.lean)
 starts from a reached LOW state with the encoded source row loaded. It
 connects that row's guard budget to the actual circuit countdown, then

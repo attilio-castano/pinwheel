@@ -15,6 +15,7 @@ from streaming_peers import StreamingSPIPeer
 from streaming_ready_artifacts import LOWERING_PASSES, lowering_copy
 from streaming_ready_compile import spi_image
 import streaming_ready_swd_branching_replay as swd_replay
+from streaming_ready_mixed_replay import replay_mixed
 from streaming_ready_switch_replay import replay_switch
 from streaming_ready_transport import BranchingSwdRead, CombinedI2cRead, ReadyHost, byte_bits
 from streaming_ready_wrapper import bridge_source, package_source, tt_source
@@ -76,9 +77,9 @@ def lower(run, circt, source, directory, label):
     return rtl
 
 
-def diagnostic_bridge(*, swdio_link=False):
+def diagnostic_bridge(*, swdio_link=False, selectable_swdio=False):
     """Record core accounting ports alongside, and separate from, public pads."""
-    bridge = bridge_source(2, swdio_link=swdio_link)
+    bridge = bridge_source(2, swdio_link=swdio_link, selectable_swdio=selectable_swdio)
     token = '      $display("STREAM_QUAD '
     clock = "      clk=1;#10;clk=0;"
     require(bridge.count(token) == bridge.count(clock) == 1, "Expected one clock and reply per Ready edge")
@@ -127,12 +128,12 @@ def build_rtl(run, lean, tools, out):
     return builds
 
 
-def build_swd_bridges(run, tools, out):
+def build_linked_bridges(run, tools, out, name, *, selectable_swdio=False):
     shell = out / "shell"
-    bridge = shell / "swd-bridge.sv"
-    bridge.write_text(diagnostic_bridge(swdio_link=True))
+    bridge = shell / f"{name}-bridge.sv"
+    bridge.write_text(diagnostic_bridge(swdio_link=not selectable_swdio, selectable_swdio=selectable_swdio))
     return {store: compile_bridge(run, tools, out / store / "core.sv", shell / "frontend.sv",
-                                  shell / "package.sv", shell / "tt.sv", bridge, f"compile-swd-{store}")
+                                  shell / "package.sv", shell / "tt.sv", bridge, f"compile-{name}-{store}")
             for store in STORES}
 
 
@@ -913,14 +914,13 @@ example :
     run([*lean, witness], "check-observed-ethernet-timing", timeout=300)
 
 
-def check_causal_policies(run, lean, out):
-    source = out / "causal-policies.c"
-    executable = out / "causal-policies"
-    run(["lake", "build", "Pinwheel:static"], "build-causal-library", timeout=1800)
-    run([*lean, "-c", source, "test/StreamingReadyCausalPolicies.lean"], "compile-causal-policies")
+def check_source_replay(run, lean, out, fixture, label):
+    source = out / f"{label}.c"
+    executable = out / label
+    run([*lean, "-c", source, fixture], f"compile-{label}")
     run(["lake", "env", "leanc", "-O3", "-o", executable, source,
-         ROOT / ".lake/build/lib/libpinwheel_Pinwheel.a"], "link-causal-policies")
-    return json.loads(run([executable], "check-causal-policies", timeout=300))
+         ROOT / ".lake/build/lib/libpinwheel_Pinwheel.a"], f"link-{label}")
+    return json.loads(run([executable], f"check-{label}", timeout=300))
 
 
 def main():
@@ -929,8 +929,9 @@ def main():
     out = fresh_directory(ROOT / "build/ready-segments", parser.parse_args().tag)
     logs = out / "logs"
     logs.mkdir()
-    report = dict(schema="pinwheel.ready-segments.v9", passed=False, commands=[], source_commit=source_commit(),
-                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={})
+    report = dict(schema="pinwheel.ready-segments.v10", passed=False, commands=[], source_commit=source_commit(),
+                  source_sha256=source_hashes(), stores={}, ethernet={}, split={}, inverted_ack={}, switches={}, swd={},
+                  mixed={}, ethernet_refill_boundary={})
     run = Commands(ROOT, logs, report["commands"])
     try:
         report["toolchain"], tools, _ = tool_config()
@@ -940,7 +941,12 @@ def main():
         run([*lean, "test/StreamingReadyTraceContract.lean"], "check-flat-trace-deadline")
         run([*lean, "test/StreamingReadyTimingAdmission.lean"], "check-timing-admission")
         run([*lean, "test/StreamingReadyEventPaths.lean"], "check-event-paths")
-        report["causal_source"] = check_causal_policies(run, lean, out)
+        run([*lean, "--run", "test/StreamingReadyEthernetDeadline.lean"], "check-ethernet-deadline", timeout=300)
+        run(["lake", "build", "Pinwheel:static"], "build-causal-library", timeout=1800)
+        report["causal_source"] = check_source_replay(run, lean, out, "test/StreamingReadyCausalPolicies.lean",
+                                                      "causal-policies")
+        report["event_source"] = check_source_replay(run, lean, out, "test/StreamingReadyEventPolicies.lean",
+                                                      "event-policies")
         run([*lean, "test/StreamingReadySegmentBehavior.lean"], "check-register-read-behavior")
         images = {name: read_image(run, lean, out, name) for name in ("standard", "split", "inverted-ack")}
         image = images["standard"]
@@ -948,7 +954,8 @@ def main():
         report["variants"] = {name: images[name] for name in ("split", "inverted-ack")}
         report["swd_images"] = read_swd_images(run, lean, out)
         builds = build_rtl(run, lean, tools, out)
-        swd_builds = build_swd_bridges(run, tools, out)
+        swd_builds = build_linked_bridges(run, tools, out, "swd")
+        mixed_builds = build_linked_bridges(run, tools, out, "mixed", selectable_swdio=True)
         frozen = {path: sha(path) for path in out.rglob("*") if path.is_file() and path.parent != logs}
         for store, executable in builds.items():
             directory = out / (store + "-replay")
@@ -984,6 +991,8 @@ def main():
                     directory / f"ethernet-{name}.bin", schedule=name, observe=timing_status)
                 for name in ethernet_replay.REFILL_POLICIES
             }
+            report["ethernet_refill_boundary"][store] = ethernet_replay.replay_refill_boundary(tools["vvp"],
+                executable, directory / "ethernet-refill-boundary.bin", observe=timing_status)
             switches = {}
             for name, deadline in (("early_exit", False), ("timeout", True)):
                 path = directory / f"switch-{name}.bin"
@@ -997,21 +1006,29 @@ def main():
                 switches[name] = result
             report["switches"][store] = switches
             report["swd"][store] = replay_swd(tools["vvp"], swd_builds[store], directory, report["swd_images"])
+            report["mixed"][store] = replay_mixed(tools["vvp"], mixed_builds[store], directory / "mixed.bin",
+                images["split"], report["swd_images"]["standard"], observe=timing_status, execution=segment_execution,
+                spi_exchange=spi_exchange, i2c_exchange=i2c_exchange)
         require(report["stores"]["direct"] == report["stores"]["registered"],
                 "Instruction stores changed the segmented read, custody, or warm SPI receipts")
         require(report["ethernet"]["direct"] == report["ethernet"]["registered"],
                 "Instruction stores changed the Ethernet timing or ownership receipts")
+        require(report["ethernet_refill_boundary"]["direct"] == report["ethernet_refill_boundary"]["registered"],
+                "Instruction stores changed the Ethernet refill deadline")
         require(all(report[key]["direct"] == report[key]["registered"] for key in ("split", "inverted_ack")),
                 "Instruction stores changed the split or inverted-ACK execution")
         require(report["switches"]["direct"] == report["switches"]["registered"],
                 "Instruction stores changed the protocol handoff")
         require(report["swd"]["direct"] == report["swd"]["registered"],
                 "Instruction stores changed the SWD wire events or ownership receipts")
+        require(report["mixed"]["direct"] == report["mixed"]["registered"],
+                "Instruction stores changed the mixed session")
         switches = report["switches"]["direct"]
         swd = report["swd"]["direct"]
         traces = (*report["stores"]["direct"], *(f"ethernet-{name}" for name in ethernet_replay.REFILL_POLICIES),
                   *(f"split-{name}" for name in report["split"]["direct"]), "inverted-ack",
-                  *(f"switch-{name}" for name in switches), *(f"swd-{name}" for name in swd))
+                  *(f"switch-{name}" for name in switches), *(f"swd-{name}" for name in swd),
+                  "mixed", "ethernet-refill-boundary")
         for name in traces:
             direct = (out / "direct-replay" / f"{name}.bin").read_bytes()
             cached = (out / "registered-replay" / f"{name}.bin").read_bytes()
