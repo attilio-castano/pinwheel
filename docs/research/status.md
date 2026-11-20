@@ -372,7 +372,7 @@ the source-constructed four-row image from actual accepted loading and composes
 its public runtime observations with the independent full-register circuit.
 It covers mode-0, one through four bytes and the stated sampled timing range;
 source virtual fetch and supported-leaf encoding have kernel proofs. A finite
-[Program to pins session](../explorer/index.html#session) checks payload reuse,
+[Program to pins session](https://attilio-castano.github.io/pinwheel/#session) checks payload reuse,
 retained ownership and replacement by a different SPI configuration across
 the actual digital SRAM model. The HTML remains an instrument for inspecting
 these connections and identifying the next obligation.
