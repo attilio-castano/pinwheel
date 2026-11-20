@@ -23,6 +23,7 @@ import Pinwheel.Hardware.StreamingReady.ProtocolSwitch
 import Pinwheel.Hardware.StreamingReady.PublicPins
 import Pinwheel.Hardware.StreamingReady.Readback
 import Pinwheel.Hardware.StreamingReady.RegisteredStoreSession
+import Pinwheel.Hardware.StreamingReady.SegmentCapture
 import Pinwheel.Hardware.StreamingReady.SegmentControl
 import Pinwheel.Hardware.StreamingReady.SegmentCustody
 import Pinwheel.Hardware.StreamingReady.SegmentExport

@@ -72,6 +72,35 @@ theorem reserve (registered : Bool) (i : Values Core.Input) (s : Values (Registe
   all_goals cases h : cell.transmit <;> simp [h] <;> rfl
   all_goals done
 
+structure CreditPark (s after : Values (Register a)) : Prop where
+  phase : after (.base .phase) = 2#3
+  pose : SegmentTiming.WaitPose s after
+  pc : after (.base .pc) = s (.base .pc)
+  reserved : after (.base .txConsumed) = s (.base .txConsumed)
+  produced : after (.base .rxProduced) = s (.base .rxProduced)
+
+set_option linter.unusedSimpArgs false in
+/-- With no pre-edge credit, a boundary holds its pad pose and takes no
+    reservation or sample. This includes an edge that frees future RX credit. -/
+theorem park (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (ordinary : ProtocolOwnership.DrainInput i) (boundary : s (.base .phase) = 2#3)
+    (credit : Core.credit.eval i (project s) = 0#1) :
+    CreditPark s ((circuit a registered).step i s) := by
+  obtain ⟨init, cmd, _⟩ := ordinary
+  have decoded := (credit_eval i s ((word registered).eval i s) true).trans credit
+  have base := (credit_eval i s ((word registered).eval i s) false).trans credit
+  simp [runtimeInput, decodedRegister, Expr.eval, withFetch, both] at decoded base
+  refine ⟨?_, ⟨?_, ?_, ?_, ?_⟩, ?_, ?_, ?_⟩ <;>
+    simp [step_base, selected, nextBase, originalNext, Expr.eval_bind, SegmentCore.discard,
+      SegmentCore.control, setCount, branch, fetching, both, either, Expr.eval, usesEntryWord,
+      runtimeInput, decodedRegister, lift, withFetch, Core.next, Core.nextRaw, Core.isPhase,
+      Core.fetching, Core.clearedRuntime, Core.cold, Core.warm, Core.cmd, Core.resetting, Core.either,
+      Core.both, Core.releasing, Core.starting, Core.free, Core.hostOwner, Core.owned, Core.busy,
+      Core.retained, Core.identity, Core.enteringCell, Core.reserving, Core.takingTX, Core.advancing,
+      Core.lowEnd, Core.highEnd, Core.capture, Core.guardedLowEnd, Core.waitSuccess,
+      Core.standaloneSuccess, Core.waitFault, Core.waitDecrement, Core.nextPins, Core.capturingRX,
+      init, cmd, boundary, decoded, base, inv_one_inv] <;> done
+
 structure LowSpan (s after : Values (Register a)) (clocks : Nat) : Prop where
   phase : after (.base .phase) = 3#3
   countdown : (after (.base .countdown)).toNat = (s (.base .countdown)).toNat - clocks
@@ -133,31 +162,38 @@ theorem low_span (registered : Bool) (s : Values (Register a)) (inputs : List (V
     rw [tail.countdown, first.countdown]
     simp only [List.length_cons, Nat.sub_sub, Nat.add_comm]
 
-structure LoadedStream (cell : Cell) (guard : Guard) (s after : Values (Register a)) : Prop where
+structure LoadedStream (cell : Cell) (guard : Option Guard) (s after : Values (Register a)) : Prop where
   phase : after (.base .phase) = 2#3
-  current : after (.base .currentWord) = encode (.stream cell (some guard))
+  current : after (.base .currentWord) = encode (.stream cell guard)
   remaining : after (.base .remaining) = s (.base .remaining)
   pc : after (.base .pc) = s (.base .pc)
 
 set_option linter.unusedSimpArgs false in
-/-- The fetched canonical guarded row becomes the live stream row. FETCH
+/-- The fetched canonical row becomes the live stream row. FETCH
 does not reserve credit and keeps the count already supplied by COUNT. -/
-theorem load_guarded_stream (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
-    (cell : Cell) (guard : Guard) (fetch : SegmentControl.AtFetch i s)
-    (canonical : (Instruction.stream cell (some guard)).Canonical)
+theorem load_stream (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (cell : Cell) (guard : Option Guard) (fetch : SegmentControl.AtFetch i s)
+    (canonical : (Instruction.stream cell guard).Canonical)
     (slots : s (.base .remaining) ≠ 0#16)
-    (loaded : (word registered).eval i s = encode (.stream cell (some guard))) :
+    (loaded : (word registered).eval i s = encode (.stream cell guard)) :
     LoadedStream cell guard s ((circuit a registered).step i s) := by
-  have fields := encode_fields (.stream cell (some guard))
-  have op : (encode (.stream cell (some guard))).extractLsb' 0 3 = 1#3 := fields.operation
-  have two := SourceRefinement.encode_ne_terminal (.stream cell (some guard)) 2 (by change 1#3 ≠ 2#3; decide)
-  have three := SourceRefinement.encode_ne_terminal (.stream cell (some guard)) 3 (by change 1#3 ≠ 3#3; decide)
-  have seven := SourceRefinement.encode_ne_terminal (.stream cell (some guard)) 7 (by change 1#3 ≠ 7#3; decide)
+  have fields := encode_fields (.stream cell guard)
+  have op : (encode (.stream cell guard)).extractLsb' 0 3 = 1#3 := fields.operation
+  have two := SourceRefinement.encode_ne_terminal (.stream cell guard) 2 (by change 1#3 ≠ 2#3; decide)
+  have three := SourceRefinement.encode_ne_terminal (.stream cell guard) 3 (by change 1#3 ≠ 3#3; decide)
+  have seven := SourceRefinement.encode_ne_terminal (.stream cell guard) 7 (by change 1#3 ≠ 7#3; decide)
   have selector : cell.txOutput.val % 4 < 3 := by
     have bound := cell.txOutput.isLt
     omega
-  have guardOK : guard.expected &&& ~~~guard.mask = 0#2 := canonical
-  refine ⟨?_, ?_, ?_, ?_⟩
+  have unused : (encode (.stream cell none)).extractLsb' 50 12 = 0 := by
+    unfold encode cellWord guardWord
+    repeat first
+      | rw [BitVec.extractLsb'_append_eq_of_le (by decide)]
+      | rw [BitVec.extractLsb'_append_eq_of_add_le (by decide)]
+    simp [WaitLimit.budget]
+  cases guard
+  case' some g => change g.expected &&& ~~~g.mask = 0#2 at canonical
+  all_goals refine ⟨?_, ?_, ?_, ?_⟩
   all_goals
     simp [step_base, selected, nextBase, originalNext, Expr.eval_bind, SegmentCore.discard,
       SegmentCore.control, setCount, branch, fetching, both, either, kind, field, count, target,
@@ -171,9 +207,17 @@ theorem load_guarded_stream (registered : Bool) (i : Values Core.Input) (s : Val
       Core.entryGuardCanonical, Core.entryGuardExpected, Core.entryGuardMask, Core.entryKind, Core.entryField,
       Core.entryWord, Execution.readTree_correct, loaded, op, fields.reserved, fields.highGuard,
       Instruction.hasHighGuard, fields.guardMask, fields.guardExpected, Instruction.guard,
-      fields.transmit, fields.txOutput, Instruction.cell, selector, guardOK, two, three, seven, slots,
+      fields.transmit, fields.txOutput, Instruction.cell, selector, canonical, unused, two, three, seven, slots,
       fetch.initialized, fetch.ordinary, fetch.phase, fetch.inBounds, inv_one_inv]
   all_goals done
+
+theorem load_guarded_stream (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
+    (cell : Cell) (guard : Guard) (fetch : SegmentControl.AtFetch i s)
+    (canonical : (Instruction.stream cell (some guard)).Canonical)
+    (slots : s (.base .remaining) ≠ 0#16)
+    (loaded : (word registered).eval i s = encode (.stream cell (some guard))) :
+    LoadedStream cell (some guard) s ((circuit a registered).step i s) :=
+  load_stream registered i s cell (some guard) fetch canonical slots loaded
 
 /-- The installed stream row and COUNT survive the complete run from FETCH
 through an available-credit reservation and the programmed LOW duration. -/
