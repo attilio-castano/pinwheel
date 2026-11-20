@@ -125,17 +125,17 @@ structure LowSpan (s after : Values (Register a)) (clocks : Nat) : Prop where
 
 set_option linter.unusedSimpArgs false in
 private theorem low_tick (registered : Bool) (i : Values Core.Input) (s : Values (Register a))
-    (ordinary : ProtocolOwnership.DrainInput i) (phase : s (.base .phase) = 3#3)
+    (ordinary : SegmentPathControl.NoReset i) (phase : s (.base .phase) = 3#3)
     (positive : 0 < (s (.base .countdown)).toNat) :
     LowSpan s ((circuit a registered).step i s) 1 := by
-  obtain ⟨init, cmd, _⟩ := ordinary
+  obtain ⟨init, cmd⟩ := ordinary
   have nonzero : s (.base .countdown) ≠ 0#8 := by
     intro zero
     simp [zero] at positive
   have tick : (s (.base .countdown) - 1#8).toNat = (s (.base .countdown)).toNat - 1 :=
     BitVec.toNat_sub_of_le positive
   have image := SegmentPathControl.image_frame registered i s
-    ⟨init, by simp [cmd]⟩ (Or.inl (by simp [phase]))
+    ⟨init, cmd⟩ (Or.inl (by simp [phase]))
   refine ⟨?_, ?_, ⟨?_, ?_, ?_, ?_⟩, ?_, ?_, image⟩ <;>
     simp [step_base, selected, nextBase, originalNext, Expr.eval_bind, SegmentCore.discard,
       SegmentCore.control, setCount, branch, fetching, both, either, Expr.eval, usesEntryWord,
@@ -147,11 +147,11 @@ private theorem low_tick (registered : Bool) (i : Values Core.Input) (s : Values
       Core.standaloneSuccess, Core.waitFault, Core.waitDecrement, Core.nextPins,
       init, cmd, phase, nonzero, tick, inv_one_inv] <;> done
 
-/-- An ordinary LOW prefix spends exactly its elapsed clocks and keeps the
-same selected row, pad pose, reservation and instruction position. -/
-theorem low_span (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+/-- A LOW prefix spends exactly its elapsed clocks and keeps the same row,
+pad pose, reservation and instruction position even during a host refill. -/
+theorem low_span_runtime (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
     (phase : s (.base .phase) = 3#3) (within : inputs.length ≤ (s (.base .countdown)).toNat)
-    (ordinary : ∀ i ∈ inputs, ProtocolOwnership.DrainInput i) :
+    (ordinary : ∀ i ∈ inputs, SegmentPathControl.NoReset i) :
     LowSpan s (SegmentTiming.run registered s inputs) inputs.length := by
   induction inputs generalizing s with
   | nil => exact ⟨phase, (Nat.sub_zero _).symm, ⟨rfl, rfl, rfl, rfl⟩, rfl, rfl, ⟨rfl, rfl, fun _ => rfl, rfl⟩⟩
@@ -175,6 +175,14 @@ theorem low_span (registered : Bool) (s : Values (Register a)) (inputs : List (V
     change (SegmentTiming.run registered after rest (.base .countdown)).toNat = _
     rw [tail.countdown, first.countdown]
     simp only [List.length_cons, Nat.sub_sub, Nat.add_comm]
+
+theorem low_span (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+    (phase : s (.base .phase) = 3#3) (within : inputs.length ≤ (s (.base .countdown)).toNat)
+    (ordinary : ∀ i ∈ inputs, ProtocolOwnership.DrainInput i) :
+    LowSpan s (SegmentTiming.run registered s inputs) inputs.length :=
+  low_span_runtime registered s inputs phase within fun i member =>
+    let drain := ordinary i member
+    ⟨drain.1, by simp [drain.2.1]⟩
 
 structure LoadedStream (cell : Cell) (guard : Option Guard) (s after : Values (Register a)) : Prop where
   phase : after (.base .phase) = 2#3

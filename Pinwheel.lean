@@ -168,6 +168,8 @@ import Pinwheel.Hardware.Streaming.InitializedCustody
 import Pinwheel.Program.StreamingEventualService
 import Pinwheel.Program.StreamingSessionProgress
 import Pinwheel.Program.StreamingLowTiming
+import Pinwheel.Program.StreamingReadyDuplex
+import Pinwheel.Program.StreamingReadyReceiveImages
 import Pinwheel.Hardware.StreamingReady.All
 import Pinwheel.Hardware.StreamingUART.All
 import Pinwheel.Hardware.StreamingMapped.All

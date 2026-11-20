@@ -126,8 +126,6 @@ structure Horizon (policy : Policy) (registered : Bool) (peer : Peer P)
     policy.cooldown ≤ state.host → SegmentPolicyCredit.PacketReady policy registered state
   quiet : ∀ (pc : Nat) (instruction : Instruction), rows[pc]? = some (.cell instruction) →
     requiredQuiet instruction ≤ policy.cooldown
-  receiveOnly : ∀ (pc : Nat) (cell : Cell), rows[pc]? = some (.cell (.stream cell none)) →
-    ∀ offset, policy.chunkAt offset = none
 
 private theorem drain_control (policy : Policy) (registered : Bool) (peer : Peer P) (s : State a Nat P)
     (fetch : s.core (.base .phase) = 1#3) : DrainInput (input registered (host policy) peer s) :=
@@ -300,8 +298,7 @@ theorem timing {count : Nat} (policy : Policy) (registered : Bool) (peer : Peer 
     | stream cell guard =>
       cases guard with
       | none =>
-        exact ⟨by simpa [requiredClocks, clocks_length] using room,
-          SegmentCadencedHost.all_drains policy (horizon.receiveOnly pc cell row) registered peer reached horizonLeft, service⟩
+        exact ⟨by simpa [requiredClocks, clocks_length] using room, service⟩
       | some g =>
         intro n limit
         have size := countdown g n limit

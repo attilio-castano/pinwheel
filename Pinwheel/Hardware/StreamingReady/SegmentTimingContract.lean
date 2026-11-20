@@ -27,7 +27,7 @@ def RowTiming (registered : Bool) (s : Values (Register a)) (clocks : List (Valu
       n.val + 2 ≤ clocks.length ∧ ∀ i ∈ clocks.take (n.val + 2), DrainInput i
   | .stream cell none =>
       1 + (s (.base .remaining)).toNat * SegmentTimedUnguarded.slotBudget cell parkBound ≤ clocks.length ∧
-      (∀ i ∈ clocks, DrainInput i) ∧ SegmentTimedUnguarded.CreditFrom registered s clocks parkBound
+      SegmentTimedUnguarded.CreditFrom registered s clocks parkBound
   | .stream cell (some guard) => ∀ n : Fin 255, guard.limit = .misses n →
       1 + (s (.base .remaining)).toNat * SegmentTimedGuarded.slotBudget cell n parkBound ≤ clocks.length ∧
       SegmentTimedGuarded.SupplyFrom registered s clocks cell n parkBound
@@ -90,9 +90,9 @@ theorem Timing.supply {started : Values (Register a)} (timing : Timing registere
       have count : (s (.base .remaining)).toNat = slots := cut.slots slots armed
       cases guard with
       | none =>
-        obtain ⟨room, drains, credit⟩ := timingAtRow
+        obtain ⟨room, credit⟩ := timingAtRow
         obtain ⟨used, rest, bit, shape, _, service⟩ := SegmentTimedUnguarded.from_clocks registered cell s cut row checked
-          budgetFits slots armed remaining parkBound (count ▸ room) drains credit
+          budgetFits slots armed remaining parkBound (count ▸ room) ordinary credit
         exact .advance shape service
       | some guard =>
         obtain ⟨receives, n, limit⟩ := SegmentTimingImages.guarded_stream valid

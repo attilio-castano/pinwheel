@@ -3,6 +3,8 @@ import Pinwheel.Hardware.StreamingReady.SegmentCadencedHost
 import Pinwheel.Hardware.StreamingReady.SegmentCausalI2C
 import Pinwheel.Hardware.StreamingReady.SegmentClockTable
 import Pinwheel.Hardware.StreamingReady.SegmentPolicyTiming
+import Pinwheel.Program.StreamingJTAG
+import Pinwheel.Program.StreamingReadyDuplex
 import Pinwheel.Program.StreamingReadySegmentWire
 import Pinwheel.Program.StreamingSWDBranching
 
@@ -78,14 +80,12 @@ private def rowQuiet (rows : List Row) : Nat :=
     | _ => bound) 0
 
 /-- Check the numeric timing premises on every reached snapshot, including
-    the last clock; the finite packet list gives the receive-only premise. -/
+    the last clock. -/
 private def checkHorizon (registered : Bool) (rows : List Row) (cooldown : Nat) (plan : Plan)
     (states : List (SegmentCausal.State 1 Nat P)) : IO Unit := do
   let policy := fixturePolicy cooldown plan
   for row in rows do
     match row with
-    | .cell (.stream _ none) =>
-      requireFixture plan.isEmpty "Receive-only stream requires an empty TX plan"
     | .cell instruction =>
       requireFixture (SegmentPolicyTiming.requiredQuiet instruction ≤ cooldown)
         "Host cooldown did not cover the row's TX-quiet time"
@@ -242,16 +242,179 @@ private def readSWD (registered : Bool) (short : Bool) : IO Json := do
     ("wire_clock_pairs", toJson retired.peer.rises), ("request", toJson retired.peer.request),
     ("rx_captured", toJson sent.rx), ("rx_exported", toJson returned)]
 
+private inductive Duplex
+  | spi (mode : Pinwheel.Program.StreamingSPI.Mode)
+  | jtag
+
+private def Duplex.name : Duplex → String
+  | .spi .mode0 => "spi-mode0"
+  | .spi .mode2 => "spi-mode2"
+  | .jtag => "jtag"
+
+private def Duplex.rows (protocol : Duplex) (duration : Fin 256) (count : BitVec 16) : List Row :=
+  match protocol with
+  | .spi mode => Pinwheel.Program.StreamingReadyDuplex.spiRows mode duration count
+  | .jtag => Pinwheel.Program.StreamingReadyDuplex.jtagRows duration count
+
+private def Duplex.image (protocol : Duplex) (duration : Fin 256) (count : BitVec 16) :
+    Except String (Image (protocol.rows duration count) count.toNat) :=
+  match protocol with
+  | .spi mode => Pinwheel.Program.StreamingReadyDuplex.spi mode duration count
+  | .jtag => Pinwheel.Program.StreamingReadyDuplex.jtag duration count
+
+private def Duplex.idle : Duplex → Pins
+  | .spi mode => Pinwheel.Program.StreamingSPI.idlePins mode
+  | .jtag => ⟨0, 7⟩
+
+private def Duplex.clockActive (protocol : Duplex) (pins : Pins) : Bool :=
+  pins.levels.getLsbD 1 != protocol.idle.levels.getLsbD 1
+
+private def Duplex.preamble : Duplex → Nat
+  | .spi _ => 0
+  | .jtag => 9
+
+private structure DuplexPeerState where
+  count : Nat := 0
+  active : Bool := false
+
+/-- The target indexes its reply only by physical leading clock edges.
+    The second raw input loops back the clock, and the stream samples input zero. -/
+private def duplexPeer (protocol : Duplex) (reply : List Bool) : SegmentCausal.Peer DuplexPeerState where
+  resolve state pins :=
+    let response := protocol.preamble ≤ state.count && reply[state.count - protocol.preamble]?.getD false
+    BitVec.ofBool (protocol.clockActive pins) ++ BitVec.ofBool response
+  next state raw :=
+    let clock := raw.getLsbD 1
+    ⟨state.count + if !state.active && clock then 1 else 0, clock⟩
+
+private def duplexBits (count : Nat) : List Bool × List Bool :=
+  ((List.range count).map fun n => (7 * n + 3) % 11 < 5,
+   (List.range count).map fun n => (5 * n + 1) % 13 < 6)
+
+private def readDuplex (registered : Bool) (protocol : Duplex) (slow : Bool)
+    (omitSecond := false) : IO Json := do
+  let duration : Fin 256 := 3
+  let count : BitVec 16 := 33
+  let (tx, rx) := duplexBits count.toNat
+  let cut := if slow then 17 else 32
+  let chunk (bits : List Bool) : IO SegmentCadencedHost.Chunk := do
+    if h : bits.length - 1 < 32 then pure ⟨pack bits, ⟨bits.length - 1, h⟩⟩
+    else throw (IO.userError "Invalid duplex TX chunk")
+  let first ← chunk (tx.take cut)
+  let last ← chunk (tx.drop cut)
+  let plan := if omitSecond then [(0, first)] else [(0, first), (cut, last)]
+  let rows := protocol.rows duration count
+  let .ok image := protocol.image duration count
+    | throw (IO.userError "Checked duplex compilation failed")
+  let machine := SegmentClockTable.compile 1 supported registered
+  let installed := install machine image.words protocol.idle 0
+  requireFixture (installed.read (.base .valid) == 1#1 &&
+    installed.read (.base .count) == BitVec.ofNat 7 image.words.length &&
+    (image.words.zipIdx).all (fun (word, index) => installed.read (.base (.word (BitVec.ofNat 6 index))) == word))
+    "Duplex image installation differed from its checked plan"
+  let started := start machine installed count.toNat 0
+  let opened : SegmentCausal.State 1 Nat DuplexPeerState := ⟨fun r => started.read r, 0, {}⟩
+  let cooldown := rowQuiet rows + if slow then 5 else 0
+  let host := SegmentCadencedHost.host (fixturePolicy cooldown plan)
+  let peer := duplexPeer protocol rx
+  let states := SegmentClockTable.history supported registered host peer opened 1000
+  if omitSecond then
+    let refused ← try
+      checkHorizon registered rows cooldown plan states
+      pure false
+    catch
+      | .userError reason => pure (reason.startsWith s!"Missing TX chunk at offset {cut} ")
+      | error => throw error
+    let parked := states.getLast?.getD opened
+    let progress := traceBits registered host peer states
+    requireFixture (refused && progress.tx == tx.take cut && progress.rx == rx.take cut &&
+      SegmentCausal.status registered parked .waitingTX == 1#1 &&
+      parked.core (.base .phase) == 2#3 && !protocol.clockActive (SegmentCausal.pads registered parked) &&
+      parked.core (.base .generation) == 1#16 && parked.core (.base .transfer) == 1#16)
+      "Missing TX chunk did not reject the horizon and preserve the live owner"
+    return Json.mkObj [("protocol", toJson protocol.name), ("missing_tx_offset", toJson cut)]
+  checkHorizon registered rows cooldown plan states
+  let some terminal := states.findIdx? (fun s =>
+    s.core (.base .phase) == 5#3 || s.core (.base .phase) == 6#3)
+    | throw (IO.userError s!"{protocol.name} did not reach its terminal edge")
+  let retired := states[terminal]?.getD opened
+  let drained := states.getLast?.getD opened
+  let active := states.take terminal
+  let sent := traceBits registered host peer active
+  let returned := states.flatMap (fun s => exportBits (SegmentCausal.status registered s))
+  let pins := (states.take (terminal + 1)).map (SegmentCausal.pads registered)
+  let edges := (pins.zip (pins.drop 1)).zipIdx
+  let leading := edges.filterMap fun ((old, next), k) =>
+    if !protocol.clockActive old && protocol.clockActive next then some (k, next) else none
+  let trailing := edges.filterMap fun ((old, next), k) =>
+    if protocol.clockActive old && !protocol.clockActive next then some k else none
+  let data := (leading.drop protocol.preamble).take count.toNat
+  let widths := (data.zip ((trailing.drop protocol.preamble).take count.toNat)).map
+    (fun ((edge, _), leave) => leave - edge)
+  requireFixture (sent.tx == tx && sent.rx == rx && returned == rx &&
+    data.map (·.2.levels.getLsbD 0) == tx && widths == List.replicate count.toNat 4)
+    s!"{protocol.name} changed wire data, capture order, or active clock width"
+  let waiting := (active.zip (states.drop 1)).filter fun (old, _) =>
+    SegmentCausal.status registered old .waitingTX == 1#1
+  let offsets := waiting.map fun (s, _) => (SegmentCausal.status registered s .txAccepted).toNat
+  requireFixture (offsets == List.replicate (cooldown + 1) 0 ++ List.replicate (cooldown + 1) cut &&
+    waiting.all (fun (old, next) =>
+      let before := SegmentCausal.pads registered old
+      let after := SegmentCausal.pads registered next
+      !protocol.clockActive before && before.levels == after.levels && before.enabled == after.enabled))
+    s!"{protocol.name} failed to park at its public refill boundary"
+  let tms := leading.map (·.2.levels.getLsbD 2)
+  match protocol with
+  | .spi _ =>
+    let selects := edges.filterMap (fun ((old, next), _) =>
+      if old.levels.getLsbD 2 != next.levels.getLsbD 2 then some (next.levels.getLsbD 2) else none)
+    requireFixture (selects == [false, true] && leading.length == count.toNat &&
+      tms == List.replicate count.toNat false) "SPI chip select interrupted the transfer"
+  | .jtag =>
+    let expected := Pinwheel.Program.StreamingJTAG.beforeScan duration ++
+      List.replicate (count.toNat - 1) false ++ [true] ++ Pinwheel.Program.StreamingJTAG.afterScan duration
+    requireFixture (tms == expected &&
+      decide ((Pinwheel.Program.StreamingJTAG.walk .reset tms).1 = .idle)) "JTAG changed its TAP route"
+  requireFixture (retired.peer.count == leading.length && leading.length == trailing.length &&
+    retired.core (.base .phase) == 5#3 && drained.core (.base .generation) == 1#16 &&
+    drained.core (.base .transfer) == 1#16 && drained.core (.base .txAccepted) == count &&
+    drained.core (.base .txConsumed) == count && drained.core (.base .rxPopped) == count &&
+    drained.core (.base .rxCount) == 0#4)
+    s!"{protocol.name} changed terminal ownership or clock accounting"
+  let release : Values Input := fun p => match p with
+    | .command => 4
+    | .expectedGeneration => drained.core (.base .generation)
+    | .expectedTransfer => drained.core (.base .transfer)
+    | .rawInputs => SegmentCausal.resolved registered peer drained
+    | _ => 0
+  let freed := machine.edge release drained.core
+  requireFixture (freed.read (.base .phase) == 0#3 && freed.read (.base .valid) == 1#1)
+    s!"{protocol.name} refused matched RELEASE after drain"
+  return Json.mkObj [ ("protocol", toJson protocol.name), ("cooldown", toJson cooldown),
+    ("tx_chunk_boundary", toJson cut), ("wire_clocks", toJson leading.length),
+    ("clocks_from_start", toJson terminal), ("parked_edges", toJson waiting.length),
+    ("tx", toJson sent.tx), ("rx", toJson returned)]
+
 def main : IO Unit := do
   let cases : List Target := [⟨0x96, none, 5⟩, ⟨0x96, some 0, 5⟩, ⟨0x96, some 1, 0⟩, ⟨0x96, some 2, 0⟩]
   let direct ← cases.mapM (readI2C false)
   let registered ← cases.mapM (readI2C true)
   let swdDirect ← [false, true].mapM (readSWD false)
   let swdRegistered ← [false, true].mapM (readSWD true)
+  let duplex := ([Duplex.spi .mode0, .spi .mode2, .jtag]).flatMap (fun p => [(p, false), (p, true)])
+  let duplexDirect ← duplex.mapM (fun (p, slow) => readDuplex false p slow)
+  let duplexRegistered ← duplex.mapM (fun (p, slow) => readDuplex true p slow)
+  let missingDirect ← readDuplex false (.spi .mode0) false true
+  let missingRegistered ← readDuplex true (.spi .mode0) false true
   requireFixture (direct.map Json.compress == registered.map Json.compress)
     "Causal policies changed observable behavior across instruction stores"
   requireFixture (swdDirect.map Json.compress == swdRegistered.map Json.compress)
     "Causal SWD reply changed across instruction stores"
-  IO.println (Json.mkObj [("schema", toJson "pinwheel.ready-causal-policies.v1"),
+  requireFixture (duplexDirect.map Json.compress == duplexRegistered.map Json.compress)
+    "Causal full-duplex behavior changed across instruction stores"
+  requireFixture (missingDirect.compress == missingRegistered.compress)
+    "Causal missing-credit control changed across instruction stores"
+  IO.println (Json.mkObj [("schema", toJson "pinwheel.ready-causal-policies.v2"),
     ("i2c", Json.arr direct.toArray), ("swd", Json.arr swdDirect.toArray),
+    ("duplex", Json.arr duplexDirect.toArray), ("duplex_missing_credit", missingDirect),
     ("stores", toJson ["direct", "registered"])]).compress
