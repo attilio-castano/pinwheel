@@ -153,3 +153,27 @@ same raw starting bits. It exhausts 2,048 cases for the 1×1 switch and samples
 instances in each multi-input case and requires a semantic proof failure.
 The [FIFO substitution guide](lean-hardware-fifo-substitution.md) covers
 the flat shift and circular variants.
+
+## Shared selection and buffered merge
+
+`Switch.SharedSelectionCandidate` computes the winning input once per output
+and uses it for the payload and cursor updates. The candidate's imported
+certificate binds to its own Lean circuit and covers arbitrary binary state.
+In the matched technology comparisons, the area and delay tradeoff depends on
+port count. Both architectures remain available.
+
+```sh
+python3 -B scripts/check-switch-shared-selection.py --tag shared-replay
+python3 -B scripts/check-switch-shared-artifact.py --tag shared-proof
+python3 -B scripts/check-switch-shared-artifact-negatives.py --tag shared-negatives \
+  --positive-report build/switch-shared-artifact/shared-proof/report.json
+```
+
+For wide payload expressions, the readback generator can suggest a finite
+abstraction of shared Boolean predicates, mux labels, or sets of payload
+labels. Lean proves the abstract equality and its interpretation as the
+original expression. Solver results guide proof search, and the artifact
+receipt binds the generator sources.
+
+The [buffered merge](lean-hardware-buffered-merge.md) reuses the one-hot
+selection and stream arbitration contracts with a single output slot.
