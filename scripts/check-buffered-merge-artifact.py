@@ -107,7 +107,7 @@ def main():
         paths += [cad / "bin/z3", cad / "libexec/z3"]
         report["tool_manifest"], report["tool_sha256"] = manifest, rr.tool_hashes(paths)
         run(["lake", "build", "Pinwheel.Hardware.Stream.BufferedMerge.Proofs", "Pinwheel.Hardware.Emit",
-             "Pinwheel.Hardware.Readback.Boolean"], "build", timeout=900)
+             "Pinwheel.Hardware.Artifact", "Pinwheel.Hardware.Readback.Boolean"], "build", timeout=900)
         for n, w in configs:
             directory = out / f"merge-{n}-{w}"
             directory.mkdir()
