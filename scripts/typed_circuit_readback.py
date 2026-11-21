@@ -12,6 +12,31 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _helper(name):
+    spec = importlib.util.spec_from_file_location("_typed_" + name, ROOT / "scripts" / (name + ".py"))
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+abstraction = _helper("readback_boolean_abstraction")
+mux_abstraction = _helper("readback_mux_abstraction")
+union_abstraction = _helper("readback_union_abstraction")
+
+
+def source_paths():
+    """Owning proof-generator dependencies for every client's evidence closure."""
+    return tuple(ROOT / name for name in (
+        "scripts/typed_circuit_readback.py", "scripts/backend_readback.py",
+        "scripts/typed_artifact_runner.py", "scripts/process_group.py",
+        "scripts/readback_boolean_abstraction.py", "scripts/readback_mux_abstraction.py",
+        "scripts/readback_union_abstraction.py", "Pinwheel/Hardware/Artifact.lean",
+        "Pinwheel/Hardware/Readback/Boolean.lean"))
+
+
 IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*\Z")
 HEADER = """import Design
 open Pinwheel.Hardware
@@ -21,15 +46,6 @@ set_option maxHeartbeats 16000000
 set_option backward.isDefEq.respectTransparency false
 set_option linter.unusedVariables false
 """
-
-
-def source_paths():
-    return (
-        Path(__file__).resolve(),
-        ROOT / "scripts/backend_readback.py",
-        ROOT / "Pinwheel/Hardware/Artifact.lean",
-        ROOT / "Pinwheel/Hardware/Readback/Boolean.lean",
-    )
 
 
 def validate_descriptor(descriptor):
@@ -81,22 +97,26 @@ def importer(descriptor):
     return rb
 
 
-def local_proofs(rb, pairs):
+def local_proofs(rb, pairs, *, start=0, plans=None):
     lines = ["import Lean.Elab.Command\nimport Pinwheel.Hardware.Readback.Boolean\n" + HEADER,
              "set_option linter.unusedSimpArgs false"]
-    for k, pair in enumerate(pairs):
+    for k, pair in enumerate(pairs, start=start):
+        if plans and k in plans:
+            _, helper, plan = plans[k]
+            lines.append(helper.lean_lemmas(pair, plan, f"local_{k}", rb.render_tree))
+            continue
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
         lines.append(f"theorem local_{k} {variables} :\n"
                      f"    {rb.render_tree(pair['left'])} = {rb.render_tree(pair['right'])} := by\n"
-                     "  try simp only [BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
+                     "  try simp only [ite_self, BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
                      "  all_goals first\n"
                      "  | rfl\n"
                      "  |\n"
                      "    all_goals bv_normalize\n"
-                     "    all_goals first | omega | grind\n"
+                     "    all_goals first | omega | grind (splits := 32)\n"
                      "    done\n"
                      "  | (simp [Pinwheel.Hardware.Readback.eq_bits, Fin.forall_fin_succ,\n"
-                     "      BitVec.getElem_append, BitVec.getElem_extractLsb']; all_goals grind)\n")
+                     "      BitVec.getElem_append, BitVec.getElem_extractLsb']; all_goals grind (splits := 32))\n")
         if sum(w for w, _, _ in pair["variables"]) <= 8:
             names = " ".join(f"x{j}" for j in range(len(pair["variables"])))
             # Kernel reduction closes small comparison/Boolean identities whose
@@ -115,21 +135,25 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     Each descriptor must have the corresponding Interface type. Source-hint
     endpoint proofs must reduce to the declared circuit by rfl, so metadata
     cannot silently substitute a different circuit or omit a typed endpoint.
-    A trusted client can add binding assertions checked in the design module.
+    A client can add binding assertions checked in the design module.
     The returned certificate concerns every bit, including unreachable states.
     """
     rb = importer(descriptor)
     source, actual = rb.read_hints(hints), rb.read_rtl(rtl)
-    pairs = rb.partitions(source, actual, successor="v-1", oracle=rb.cut_oracle(solver))
+    oracle = rb.cut_oracle(solver)
+    pairs = rb.partitions(source, actual, successor="v-1", oracle=oracle)
     matches = {(p["source"], p["rtl"]) for p in pairs}
     for left, right in [(source.next[name], actual.next[name]) for name in rb.REGISTERS] + [
             (source.outputs[name], actual.outputs[name]) for name in rb.OUTPUTS]:
         if (left, right) not in matches:
             # A suggested cut can erase correlations needed at an endpoint.
             # Fall back to its complete expressions, still proved by Lean.
-            variables, definitions = {}, set()
+            variables, definitions, expanded = {}, set(), {}
 
             def expand(graph, name, namespace):
+                key = (namespace, name)
+                if key in expanded:
+                    return expanded[key]
                 node = graph.nodes[name]
                 if node.op in ("input", "reg"):
                     key = (node.width, node.op, node.value)
@@ -137,12 +161,25 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
                         variables[key] = len(variables)
                     return node.width, "var", (), variables[key]
                 definitions.add(f"{namespace}.{name}")
-                return node.width, node.op, tuple(expand(graph, arg, namespace) for arg in node.args), node.value
+                tree = node.width, node.op, tuple(expand(graph, arg, namespace) for arg in node.args), node.value
+                expanded[key] = tree
+                return tree
 
             lhs, rhs = expand(source, left, "Source"), expand(actual, right, "RTL")
             pairs.append({"source": left, "rtl": right, "variables": list(variables),
                           "definitions": sorted(definitions), "dependencies": [], "left": lhs, "right": rhs})
             matches.add((left, right))
+    # Wide tag comparisons can hide a tiny Boolean identity from tactic search.
+    # Generalize shared predicates, prove the stronger finite lemma by kernel
+    # reduction, and instantiate the exact original statement. The solver only
+    # filters suggestions; it never supplies evidence accepted by the kernel.
+    plans = {}
+    for k, pair in enumerate(pairs):
+        for kind, helper in (("boolean", abstraction), ("mux", mux_abstraction), ("union", union_abstraction)):
+            plan = helper.suggest(pair, max_bits=13)
+            if plan is not None and oracle(plan.pair):
+                plans[k] = kind, helper, plan
+                break
     # Imports belong before the namespace; profiles put all imports first.
     lines = profile.splitlines()
     imports = [line for line in lines if line.startswith("import ")]
@@ -171,7 +208,18 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
 
     write("Graphs", HEADER + source.definitions("Source") + actual.definitions("RTL") +
           "end Pinwheel.TypedArtifact\n")
-    write("LocalProofs", local_proofs(rb, pairs))
+    # Each lemma is independent of the other local lemmas. Bound compilation
+    # units so large configurations retain per-unit timeout/progress evidence,
+    # without changing either the propositions or the kernel-checked proof path.
+    local_modules = []
+    if len(pairs) > 50:
+        for start in range(0, len(pairs), 50):
+            name = f"LocalProofs{start // 50:03d}"
+            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans))
+            local_modules.append(name)
+        write("LocalProofs", "\n".join(f"import {name}" for name in local_modules) + "\n")
+    else:
+        write("LocalProofs", local_proofs(rb, pairs, plans=plans))
     write("Links", rb.links_source(source, actual, pairs, "LocalProofs", "Graphs"))
 
     def value(graph, name, namespace):
@@ -248,6 +296,13 @@ elab "#audit_typed_artifact" : command => do
   logInfo m!"Typed artifact audit: {count} declarations, standard axioms only."
 #audit_typed_artifact
 """)
-    return ["Design", "Graphs", "LocalProofs", "Links", "Proof", "Audit"], {
+    return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", "Proof", "Audit"], {
         "local_equalities": len(pairs), "endpoints": endpoint_count,
+        "local_proof_units": len(local_modules) or 1,
+        "boolean_generalizations": sum(kind == "boolean" for kind, _, _ in plans.values()),
+        "mux_generalizations": sum(kind == "mux" for kind, _, _ in plans.values()),
+        "union_generalizations": sum(kind == "union" for kind, _, _ in plans.values()),
+        "max_generalized_bits": max((plan.bits for _, _, plan in plans.values()), default=0),
+        "max_mux_label_bits": max((plan.tag_width for kind, _, plan in plans.values() if kind == "mux"), default=0),
+        "max_union_label_bits": max((len(plan.leaves) for kind, _, plan in plans.values() if kind == "union"), default=0),
         "source_nodes": len(source.nodes), "rtl_nodes": len(actual.nodes)}
