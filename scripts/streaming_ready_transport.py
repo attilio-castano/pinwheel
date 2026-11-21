@@ -1,8 +1,8 @@
-"""Shared host ownership and I2C slot packing for the sampled-ready target.
+"""Shared host ownership and protocol decoding for the sampled-ready target.
 
 The quad framing implementation is shared unchanged. Ready images have their
-own validator, and a START carries the total stream-cell count independently of
-whether that stream transmits, receives, or does both.
+own validator. Fixed streams use the START cell count, while a branching
+image supplies separate TX, RX, and terminal path bounds.
 """
 from dataclasses import dataclass
 
@@ -14,6 +14,62 @@ REGISTER_READ_SCHEMA = 'pinwheel.ready-register-read.v1'
 REGISTER_READ_NACKS = ('write-address-nack', 'register-nack', 'read-address-nack')
 REGISTER_READ_EXITS = frozenset({('complete', 36, 36), ('discard', 27, 27),
                                 ('discard', 18, 18), ('discard', 9, 9)})
+SWD_READ_SCHEMA = 'pinwheel.ready-swd-read.v1'
+SWD_READ_EXITS = frozenset({('complete', 0, 3), ('complete', 0, 36)})
+SWD_ACK_OUTCOMES = {
+    (True, False, False): 'ok',
+    (False, True, False): 'wait',
+    (False, False, True): 'fault',
+}
+
+
+def _manifest_exits(records):
+    if type(records) is not list or any(type(record) is not dict for record in records):
+        raise ValueError('Expected Ready exit records')
+    return tuple((record['kind'], record['tx'], record['rx']) for record in records)
+
+
+@dataclass(frozen=True)
+class ReadyPathPlan:
+    """Bounds for a checked branching image, independent of its wire decoder."""
+    start_count: int
+    tx_bits: tuple[bool, ...]
+    exits: tuple[tuple[str, int, int], ...]
+
+    def __post_init__(self):
+        uint(self.start_count, 16, 'Ready START count')
+        if (type(self.tx_bits) is not tuple or any(type(bit) is not bool for bit in self.tx_bits) or
+                len(self.tx_bits) > self.start_count):
+            raise ValueError('Ready TX plan must fit its START count')
+        if type(self.exits) is not tuple or not self.exits:
+            raise ValueError('Ready path plan requires immutable exit records')
+        for exit_ in self.exits:
+            if type(exit_) is not tuple or len(exit_) != 3:
+                raise ValueError('Invalid Ready path exit record')
+            kind, tx, rx = exit_
+            if (type(kind) is not str or kind not in ('complete', 'discard') or
+                    uint(tx, 16, 'Ready exit TX count') > len(self.tx_bits) or
+                    (kind == 'complete' and tx != len(self.tx_bits))):
+                raise ValueError('Ready path exit is inconsistent with its TX plan')
+            uint(rx, 16, 'Ready exit RX count')
+
+    @property
+    def rx_capacity(self):
+        return max(rx for _, _, rx in self.exits)
+
+    @property
+    def can_end_tx_early(self):
+        return any(tx < len(self.tx_bits) for _, tx, _ in self.exits)
+
+    def consumed(self, kind, received, accepted):
+        """Select a single TX disposition for the decoded terminal path."""
+        matches = {tx for mode, tx, rx in self.exits if mode == kind and rx == received}
+        if len(matches) != 1:
+            raise StreamProtocolError('Ready completed with an invalid RX prefix or ambiguous terminal path')
+        (tx,) = matches
+        if not tx <= accepted <= len(self.tx_bits):
+            raise StreamProtocolError('Ready completed with an invalid TX count')
+        return tx
 
 
 @dataclass(frozen=True)
@@ -44,11 +100,8 @@ class CombinedI2cRead:
         if type(manifest) is not dict or manifest.get('schema') != REGISTER_READ_SCHEMA:
             raise ValueError('Unsupported Ready register read manifest')
         try:
-            exits = manifest['exits']
-            if type(exits) is not list or any(type(exit_) is not dict for exit_ in exits):
-                raise ValueError('Expected Ready register read exit records')
             image = cls(tuple(manifest['words']), manifest['address'], manifest['register'],
-                       tuple(manifest['tx_bits']), tuple((exit_['kind'], exit_['tx'], exit_['rx']) for exit_ in exits),
+                       tuple(manifest['tx_bits']), _manifest_exits(manifest['exits']),
                        manifest['tx_budget'], manifest['wait_budget'], manifest['idle_levels'], manifest['idle_enabled'])
         except (KeyError, TypeError) as error:
             raise ValueError('Malformed Ready register read manifest') from error
@@ -71,11 +124,12 @@ class CombinedI2cRead:
         if (type(self.tx_bits) is not tuple or any(type(bit) is not bool for bit in self.tx_bits) or
                 self.tx_bits != expected or self.tx_budget != len(expected)):
             raise ValueError('Register read TX plan differs from the declared request')
-        if (type(self.exits) is not tuple or len(self.exits) != 4 or any(
-                type(exit_) is not tuple or len(exit_) != 3 or type(exit_[0]) is not str or
-                type(exit_[1]) is not int or type(exit_[2]) is not int for exit_ in self.exits) or
-                set(self.exits) != REGISTER_READ_EXITS):
+        if len(self.path_plan.exits) != 4 or set(self.exits) != REGISTER_READ_EXITS:
             raise ValueError('Register read exits differ from the declared protocol')
+
+    @property
+    def path_plan(self):
+        return ReadyPathPlan(self.tx_budget, self.tx_bits, self.exits)
 
     def project(self, rx, accepted, *, fault):
         """Decode chronological captures and account for accepted TX at a checked exit."""
@@ -90,13 +144,81 @@ class CombinedI2cRead:
         if fault:
             return CombinedI2cResult('deadline'), None
         kind = 'discard' if nack else 'complete'
-        exit_ = next((tx for mode, tx, captured in self.exits if mode == kind and captured == len(rx)), None)
-        if len(rx) != extent or exit_ is None or accepted < exit_:
+        if len(rx) != extent:
             raise StreamProtocolError('Register read completed with an invalid RX prefix or TX count')
+        consumed = self.path_plan.consumed(kind, len(rx), accepted)
         if nack:
-            return CombinedI2cResult(nack[1]), exit_
+            return CombinedI2cResult(nack[1]), consumed
         byte = sum(int(bit) << (7 - index) for index, bit in enumerate(rx[27:35]))
-        return CombinedI2cResult('read', byte), exit_
+        return CombinedI2cResult('read', byte), consumed
+
+
+@dataclass(frozen=True)
+class BranchingSwdResult:
+    outcome: str
+    word: int | None = None
+
+
+@dataclass(frozen=True)
+class BranchingSwdRead:
+    """Transport metadata for an ACK-branching, receive-only SWD image."""
+    words: tuple[int, ...]
+    exits: tuple[tuple[str, int, int], ...]
+    tx_bits: tuple[bool, ...]
+    tx_budget: int
+    start_count: int
+    idle_levels: int
+    idle_enabled: int
+
+    @classmethod
+    def from_manifest(cls, manifest):
+        if type(manifest) is not dict or manifest.get('schema') != SWD_READ_SCHEMA:
+            raise ValueError('Unsupported Ready SWD read manifest')
+        try:
+            image = cls(tuple(manifest['words']), _manifest_exits(manifest['exits']),
+                        tuple(manifest['tx_bits']), manifest['tx_budget'], manifest['start_count'],
+                        manifest['idle_levels'], manifest['idle_enabled'])
+        except (KeyError, TypeError) as error:
+            raise ValueError('Malformed Ready SWD read manifest') from error
+        image.validate()
+        return image
+
+    @property
+    def path_plan(self):
+        return ReadyPathPlan(self.start_count, self.tx_bits, self.exits)
+
+    def validate(self):
+        plan = self.path_plan
+        if uint(self.tx_budget, 16, 'SWD TX budget') or plan.tx_bits or plan.start_count:
+            raise ValueError('SWD read requires no host TX and uses image-local slot counts')
+        if set(plan.exits) != SWD_READ_EXITS:
+            raise ValueError('SWD read exits differ from the declared ACK and data phases')
+        if uint(self.idle_levels, 3, 'Idle levels') or uint(self.idle_enabled, 3, 'Idle enables') != 1:
+            raise ValueError('SWD idle requires low SWCLK and released SWDIO')
+        if type(self.words) is not tuple or not 1 <= len(self.words) <= 64:
+            raise ValueError('SWD read requires 1..64 immutable image words')
+        for word in self.words:
+            uint(word, 64, 'SWD read word')
+
+    def project(self, rx, accepted, *, fault):
+        outcome = SWD_ACK_OUTCOMES.get(rx[:3], 'invalid-ack')
+        extent = 36 if outcome == 'ok' else 3
+        if len(rx) > extent:
+            raise StreamProtocolError('SWD RX extends beyond its ACK-selected path')
+        if fault:
+            return BranchingSwdResult('deadline'), None
+        if len(rx) != extent:
+            raise StreamProtocolError('SWD completed with an invalid RX prefix for its ACK')
+        consumed = self.path_plan.consumed('complete', len(rx), accepted)
+        if outcome != 'ok':
+            return BranchingSwdResult(outcome), consumed
+        if sum(rx[3:]) % 2:
+            return BranchingSwdResult('bad-parity'), consumed
+        word = sum(int(bit) << index for index, bit in enumerate(rx[3:-1]))
+        return BranchingSwdResult('ok', word), consumed
+
+
+_BRANCHING_IMAGES = (CombinedI2cRead, BranchingSwdRead)
 
 
 @dataclass(frozen=True)
@@ -104,13 +226,13 @@ class ReadyCompletion:
     terminal: Receipt
     release: Receipt | None
     rx_bits: tuple[bool, ...]
-    result: CombinedI2cResult | tuple[bool, ...] | None
+    result: CombinedI2cResult | BranchingSwdResult | tuple[bool, ...] | None
     tx_consumed: int | None
     tx_cancelled: int | None
 
 
 def validate_ready_image(image):
-    if type(image) is CombinedI2cRead:
+    if type(image) in _BRANCHING_IMAGES:
         image.validate()
     else:
         from streaming_ready_compile import validate_image
@@ -149,10 +271,12 @@ class ReadyHost(StreamHost):
             raise ValueError('Ready TX bits must be an immutable Boolean tuple')
         image = loaded.image
         validate_ready_image(image)
-        if type(image) is CombinedI2cRead:
+        if type(image) in _BRANCHING_IMAGES:
             if bits or bit_count is not None:
-                raise ValueError('A compiled register read supplies its own TX plan and cell count')
-            plan = dict(bits=image.tx_bits, total=image.tx_budget, transmit=True, receive=True)
+                raise ValueError('A checked branching image supplies its own TX plan and START count')
+            path_plan = image.path_plan
+            plan = dict(bits=path_plan.tx_bits, total=path_plan.start_count,
+                        transmit=bool(path_plan.tx_bits), receive=bool(path_plan.rx_capacity), path_plan=path_plan)
         else:
             plan = self._stream_plan(image, bits, bit_count)
         pending = ReadyPending(self, loaded, **plan)
@@ -181,11 +305,12 @@ class ReadyHost(StreamHost):
 
 
 class ReadyPending(PendingStream):
-    def __init__(self, host, loaded, bits, *, total, transmit, receive):
+    def __init__(self, host, loaded, bits, *, total, transmit, receive, path_plan=None):
         super().__init__(host, loaded, bits)
         self.total_bits = total
-        self.expected_tx = total if transmit else 0
-        self.expected_rx = total if receive else 0
+        self.expected_tx = len(path_plan.tx_bits) if path_plan is not None else total if transmit else 0
+        self.expected_rx = path_plan.rx_capacity if path_plan is not None else total if receive else 0
+        self.path_plan = path_plan
         self.terminal_retries = []
         self._offered = 0
 
@@ -216,7 +341,7 @@ class ReadyPending(PendingStream):
         export and learn/drain terminal RX; rejected data is never appended.
         """
         reply, old = error.receipt, self.last
-        can_end_early = type(self.loaded.image) is CombinedI2cRead
+        can_end_early = self.path_plan is not None and self.path_plan.can_end_tx_early
         if not (offered and old is not None and old.busy and reply.code is Code.REJECTED and
                 reply.tag == self.tag and reply.valid and reply.retained and (reply.fault or can_end_early) and
                 reply.tx_accepted == self.tx_accepted and
@@ -225,7 +350,6 @@ class ReadyPending(PendingStream):
                 reply.tx_free <= self.host.depth and reply.rx_queued <= self.host.depth):
             raise error
         before_tx, before_rx = self.tx_accepted, len(self.rx_bits)
-        self._offered = 0
         receipt = super().pump(max_bits=0)
         self.terminal_retries.append(dict(rejected_sequence=reply.sequence, empty_sequence=receipt.sequence,
             owner_tag=self.tag, unchanged_tx_accepted=before_tx, acknowledged_rx_end=before_rx))
@@ -233,22 +357,35 @@ class ReadyPending(PendingStream):
             raise StreamProtocolError('Empty terminal retry unexpectedly accepted TX')
         return receipt
 
-    def pump(self, *, max_bits=64):
+    def pump(self, *, max_bits=64, scheduled_bits=None):
+        """Send a credit-driven exchange or offer whole beats at a scheduled time.
+
+        A timed caller may schedule a refill based on device progress since
+        the last receipt. The frontend checks live room and the exact accepted
+        prefix is established only by the validated exchange receipt.
+        """
         self._local()
         if self._operation is not None or self.host.transport.inflight is not None:
             raise StreamProtocolError('Recover the uncertain Ready operation first')
-        offered = (min(len(self.tx_bits) - self.tx_accepted, max_bits,
-            64 if self.last.tx_free >= 2 else 32 if self.last.tx_free else 0)
-            if self.last is not None and self.last.busy and type(max_bits) is int and max_bits in (0, 32, 64) else 0)
-        self._offered = offered
-        try:
+        if scheduled_bits is None:
             return super().pump(max_bits=max_bits)
+        if (type(scheduled_bits) is not int or scheduled_bits not in (32, 64) or
+                type(max_bits) is not int or max_bits not in (32, 64) or scheduled_bits > max_bits):
+            raise ValueError('Scheduled TX offer must be 32 or 64 bits within the exchange budget')
+        if self.last is None or not self.last.busy or self.expected_tx - self.tx_accepted < scheduled_bits:
+            raise StreamProtocolError('Scheduled TX offer requires a busy owner with that many unsent bits')
+        return self._exchange_offer(self.tx_bits[self.tx_accepted:self.tx_accepted + scheduled_bits])
+
+    def _exchange_offer(self, bits):
+        self._offered = len(bits)
+        try:
+            return super()._exchange_offer(bits)
         except StreamRejected as error:
-            return self._terminal_retry(error, offered)
+            return self._terminal_retry(error, len(bits))
 
     def _outcome(self, receipt):
         image = self.loaded.image
-        if type(image) is CombinedI2cRead:
+        if self.path_plan is not None:
             return image.project(self.rx_bits, self.tx_accepted, fault=receipt.fault)
         if receipt.fault:
             return None, None

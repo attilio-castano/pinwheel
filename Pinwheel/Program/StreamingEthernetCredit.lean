@@ -1,5 +1,6 @@
 import Pinwheel.Program.StreamingEthernetCoreFrame
 import Pinwheel.Program.StreamingReadyCustodySession
+import Pinwheel.Program.StreamingReadyReservationTiming
 
 /-! A host-policy-independent check of the inputs to the timed Ethernet core
 theorem. The checker consumes the real session's runtime commands starting at
@@ -41,17 +42,30 @@ private theorem checkTimed_sound (cell : CellInputs) (good : checkTimed cell = t
     decide_eq_true_eq] at good
   exact ⟨good.1.1.1, good.1.1.2, good.1.2, good.2⟩
 
-private def checkReady (s : State a) : List CellInputs → Bool
-  | [] => true
-  | cell :: rest => checkTimed cell && s.canReserve && checkReady (run program s cell.inputs) rest
+private def slot (cell : CellInputs) : ReservationTiming.Slot :=
+  ⟨cell.reserve, [cell.low, cell.sample, cell.poll, cell.ready, cell.high]⟩
 
-private theorem checkReady_sound (s : State a) (cells : List CellInputs)
-    (good : checkReady s cells = true) : ReadySchedule s cells := by
+private theorem timed_schedule (s : State a) (cells : List CellInputs)
+    (timed : cells.all checkTimed = true)
+    (onTime : ReservationTiming.OnTime program s (cells.map slot)) : ReadySchedule s cells := by
   induction cells generalizing s with
   | nil => trivial
   | cons cell rest ih =>
-    simp only [checkReady, Bool.and_eq_true] at good
-    exact ⟨checkTimed_sound cell good.1.1, good.1.2, ih _ good.2⟩
+    simp only [List.all_cons, Bool.and_eq_true] at timed
+    exact ⟨checkTimed_sound cell timed.1, ((slot cell).ready_sound s onTime.1).2.2.2,
+      ih _ timed.2 onTime.2⟩
+
+/-- Inspect the same six-edge slots used by the wire theorem. A malformed
+trace has no slot index, so report it separately from a reservation miss. -/
+inductive ReservationResult where
+  | malformed
+  | ok (firstMiss : Option Nat)
+  deriving DecidableEq, Repr
+
+def firstReservationMiss (s : Session.State a) (pins : List Session.Pins) : ReservationResult :=
+  match splitCells (s.runtimeInputs program false pins) with
+  | none => .malformed
+  | some (cells, _) => .ok (ReservationTiming.firstMiss program s.core (cells.map slot))
 
 private def checkBoundary (s : State a) (n : Nat) : Bool :=
   decide (s.phase = .boundary ∧ s.current = streamRow ∧ s.pc = 4 ∧
@@ -66,7 +80,8 @@ private def checkCore (s : State a) (inputs : List Input) (expected : List Bool)
   match splitCells inputs with
   | none => false
   | some (cells, finish) =>
-    checkBoundary s cells.length && checkReady s cells && checkRuntime finish &&
+    checkBoundary s cells.length && cells.all checkTimed &&
+      (ReservationTiming.firstMiss program s (cells.map slot)).isNone && checkRuntime finish &&
       ((traceRun program s {} inputs).consumed == expected)
 
 /-- Check clock alignment, reservation credit, and the data consumed by the
@@ -83,10 +98,12 @@ private theorem checkCore_sound (s : State a) (inputs : List Input) (expected : 
   | none => simp [checkCore, split] at good
   | some parts =>
     obtain ⟨cells, finish⟩ := parts
-    simp only [checkCore, split, Bool.and_eq_true, checkRuntime, decide_eq_true_eq, beq_iff_eq] at good
+    simp only [checkCore, split, Bool.and_eq_true, checkRuntime, decide_eq_true_eq,
+      beq_iff_eq, Option.isNone_iff_eq_none] at good
     have grouped := splitCells_sound inputs cells finish split
-    have framed := frame_exact s cells finish {} (checkBoundary_sound s cells.length good.1.1.1)
-      (checkReady_sound s cells good.1.1.2) good.1.2
+    have onTime := (ReservationTiming.firstMiss_none program s (cells.map slot)).mp good.1.1.2
+    have framed := frame_exact s cells finish {} (checkBoundary_sound s cells.length good.1.1.1.1)
+      (timed_schedule s cells good.1.1.1.2 onTime) good.1.2
     obtain ⟨completed, sent, _, pads, consumed⟩ := framed
     rw [← grouped] at completed pads consumed
     have sentEq : sent = expected := consumed.symm.trans good.2
@@ -102,5 +119,18 @@ theorem session_frame_exact (s : Session.State a) (pins : List Session.Pins) (ex
       (s.traceRun program false {} pins).consumed = expected := by
   rw [s.run_core, s.traceRun_runtimeInputs]
   exact checkCore_sound s.core _ expected good
+
+theorem noReservationMiss (s : Session.State a) (pins : List Session.Pins) (expected : List Bool)
+    (good : check s pins expected = true) :
+    firstReservationMiss s pins = .ok none := by
+  let inputs := s.runtimeInputs program false pins
+  change checkCore s.core inputs expected = true at good
+  cases split : splitCells inputs with
+  | none => simp [checkCore, split] at good
+  | some parts =>
+    obtain ⟨cells, finish⟩ := parts
+    simp only [checkCore, split, Bool.and_eq_true, Option.isNone_iff_eq_none] at good
+    simp [firstReservationMiss, ← show inputs = s.runtimeInputs program false pins from rfl,
+      split, good.1.1.2]
 
 end Pinwheel.Program.StreamingEthernetCredit

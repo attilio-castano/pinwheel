@@ -601,7 +601,9 @@ class PendingStream:
         remaining = len(self.tx_bits) - self.tx_accepted
         offered = (min(remaining, max_bits, 64 if self.last.tx_free >= 2 else 32 if self.last.tx_free >= 1 else 0)
                    if self.last.busy else 0)
-        bits = self.tx_bits[self.tx_accepted:self.tx_accepted + offered]
+        return self._exchange_offer(self.tx_bits[self.tx_accepted:self.tx_accepted + offered])
+
+    def _exchange_offer(self, bits):
         self._operation = 'exchange'
         try:
             receipt = self.host.transport.exchange(self.tag, self.tx_accepted, len(self.rx_bits), bits,

@@ -541,10 +541,115 @@ and a warm SPI exchange following an early RELEASE.
 python3 -B scripts/check-ready-segments.py --tag ready-segments
 ```
 
-### Shared SPI and register-read runner
+### Branch-sensitive execution and a split register read
 
-Both programs use `ReadyHost.load`, `LoadedReady.submit`, and
-`ReadyPending.finish`. The runner collects contiguous RX intervals under
+The [source execution model](../../Pinwheel/Program/StreamingReadySegmentExecution.lean)
+consumes TX data and pre-edge second-sampler observations. It records
+credit parking, reservations, drive and capture events, and branches on
+the last qualified capture. Each planned finish belongs to the image's
+checked outcomes. An expired guard returns a timeout with the TX and RX
+prefix reached at that poll.
+
+The [split image](../../Pinwheel/Program/StreamingReadyRegisterReadVariants.lean)
+moves the first address ACK to a separate one-slot stream. Each checked
+path gains two clocks for the added COUNT and stream fetch. The general
+[cell split law](../../Pinwheel/Program/StreamingReadySegmentSplit.lean)
+preserves the cell events and logical timeout slot when the cell has no
+final-slot pin modifiers. The register-read check also covers the decoded
+outcomes and coalesces repeated writes of the same pad drive. In the
+unstretched address phase of the timeout fixture, the interval before
+the ACK rise grows from 12 to 14 clocks on both stores.
+
+The source gate observes the actual instruction addresses, qualified branch
+bits, TX reservations, second-stage poll samples, and terminal counters
+from START. Lean checks their correspondence to the source model for both
+images. The independent wire peer checks START, repeated START, data,
+STOP, and digital timing. The inverted-ACK control retains the same
+structural path bounds, takes the early-exit branch on ACK, and fails
+the peer's STOP check.
+
+The [circuit proofs](../../Pinwheel/Hardware/StreamingReady/SegmentPathControl.lean)
+start an installed image at its entry row and tie each control fetch to
+the encoded row at the current PC. The
+[one-slot stream proof](../../Pinwheel/Hardware/StreamingReady/SegmentStreamStep.lean)
+connects the actual fetch, reservation, LOW dwell, qualified poll, HIGH
+dwell, and following branch in one run under its service premises.
+Standalone [bounded waits](../../Pinwheel/Hardware/StreamingReady/SegmentWaitRefinement.lean)
+advance on a qualified poll or retain ownership at expiry. The
+[pulse proof](../../Pinwheel/Hardware/StreamingReady/SegmentPulseRefinement.lean)
+connects the fetched row to its declared LOW and HIGH dwells and next
+FETCH. The [transaction theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTransaction.lean)
+composes serviced rows from admitted START to a checked image exit. Both
+[unguarded](../../Pinwheel/Hardware/StreamingReady/SegmentUnguardedTransaction.lean)
+and [guarded streams](../../Pinwheel/Hardware/StreamingReady/SegmentGuardedTransaction.lean)
+supply row evidence. A guarded row can stop after any successfully served
+prefix. The failed slot reserves TX if enabled and adds no receive bit.
+The [timeout composition](../../Pinwheel/Hardware/StreamingReady/SegmentTransactionTimeout.lean)
+connects the failed poll and its exact prefix to START, drain and cancellation.
+
+### Whole clock traces
+
+The [flat trace contract](../../Pinwheel/Hardware/StreamingReady/SegmentTrace.lean)
+takes admitted START, an ordinary active clock list, and a final checked
+edge. The checker finds the completion or early-discard row at the last
+edge and obtains the actual reservation and capture histories from the
+circuit's pre-edge expressions. It proves the resulting counters and owner.
+The [flat timeout contract](../../Pinwheel/Hardware/StreamingReady/SegmentTraceTimeout.lean)
+uses the same clock list and an expired final poll. It proves the restored
+idle pads, retained prefix, exact acknowledgment after drain, and unsent TX
+custody through cancellation. Either contract can be checked without
+assembling a proof for each row.
+
+### Timing conditions for admission
+
+The [timing theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTimingContract.lean)
+derives admission from a flat list of clock inputs after START. At each
+observed FETCH the list must have room for the fetched instruction's
+worst-case duration. At an applicable stream boundary the host has a
+bounded number of clocks to clear the two wait flags. The theorem derives
+each reservation, dwell and qualified poll from the list, and follows the
+actual captured branch bit. It returns the first retained edge, the fresh
+owner and a checked planned exit or the precise guard expiry site.
+
+The command-zero service windows allow RX pops. The guarded stream
+allows host TX offers at credit recovery and requires a TX-quiet interval
+after reservation covering LOW and the poll budget. The receive-only SWD
+stream uses drain clocks throughout its remaining list. The timing theorem
+checks both instruction stores and uses the same row providers for the
+[standard and split I²C images and the branching SWD image](../../Pinwheel/Hardware/StreamingReady/SegmentTimingImages.lean).
+
+The [causal admission theorem](../../Pinwheel/Hardware/StreamingReady/SegmentPolicyTiming.lean)
+derives these service windows after an admitted START. The host uses the
+public wait flag to pace TX offers and the public accepted offset to
+select its next chunk. A tagged pop at every clock keeps at most one RX
+word queued, and a valid TX offer frees TX credit on the next edge. The
+finite horizon supplies enough clocks at reached fetches and reservations,
+legal chunks at offer edges, and the required quiet intervals through the
+policy's configured cooldown.
+
+The [causal I²C target](../../Pinwheel/Hardware/StreamingReady/SegmentCausalI2C.lean)
+advances from resolved pad levels. When the controller releases SCL at
+an SCL-only bounded poll, the target's stretch limit plus two clocks
+suffices for qualification if the poll has that much budget. The source
+gate checks the finite horizon and chronological traffic for a stretched
+read, all three early NACKs, and SWD OK and WAIT on both instruction
+stores. These runs accompany the emitted RTL replays in the same report.
+
+The [wire model](../../Pinwheel/Program/StreamingReadySegmentWire.lean)
+derives SDA from the controller and target drives. For the standard image
+and the fixture request it checks every payload, all three early NACKs, and
+expiry at every streaming slot on a representative all-ACK exchange. The
+source replay uses the public raw pins two clocks before each aperture for
+both I²C and branching SWD. It checks the sampled history, host readback,
+and wire verdict on the direct and registered stores. The emitted deadline
+replays distinguish release on the last physically qualifying sample from
+release one clock later. On the late path the peer observes SCL rise, and
+the engine still expires without capturing the new bit.
+
+### Shared Ready runner
+
+SPI, the combined I²C read, branching SWD, and Ethernet use `ReadyHost.load`,
+`LoadedReady.submit`, and `ReadyPending.finish`. The runner collects contiguous RX intervals under
 one owner and confirms the final acknowledgment before RELEASE. SPI supplies
 an exact bit count. The combined I²C read takes its request, TX plan, and
 per-exit TX/RX counts from the Lean-generated manifest. Its decoder checks
@@ -552,7 +657,9 @@ the address and register echoes and matches the captured ACK against the
 declared exit. A timeout returns the captured prefix and keeps the owner live
 until the caller explicitly invokes `cancel`. The existing quad receipts
 carry accepted TX counts. The runner derives consumed and cancelled TX
-counts for successful exits from the checked plan and decoded RX.
+counts for successful exits from the checked plan and decoded RX. I²C and
+branching SWD use the same checked path-plan interface for completion,
+early exit, and capture length.
 
 The [ownership proof](../../Pinwheel/Hardware/StreamingReady/ProtocolOwnership.lean)
 accounts for each accepted TX bit as reserved, discarded by an early exit,
@@ -566,6 +673,94 @@ The source gate uses the shared runner for standalone SPI and for SPI
 warm-loaded on the same host after I²C early RELEASE. It checks the measured
 ownership reports in Lean, including the timeout cut before explicit
 cancellation, and compares the emitted stores with independent wire peers.
+
+### Branching SWD RDBUFF read
+
+The [59-row image](../../Pinwheel/Program/StreamingSWDBranching.lean) reads
+the result of a modeled prior AP read from DP RDBUFF. It assumes a
+point-to-point target already in SWD mode, one-clock turnaround, and
+overrun detection disabled. Its three ACK bits select a path in the engine.
+OK captures the 32-bit value and parity. WAIT and FAULT take the short
+path through a released turnaround and eight driven-low idle clocks.
+A malformed ACK keeps SWDIO released through a possible 33-bit data
+phase and the following turnaround. Retrying a WAIT and resynchronizing
+after a malformed ACK are separate operations.
+[Arm ADIv5, sections B4.2.3–B4.2.5](https://documentation-service.arm.com/static/622222b2e6f58973271ebc21)
+
+Every SWD path completes in the engine and returns its capture under the
+same owner. The decoder reports OK, WAIT, FAULT, bad parity, or malformed
+ACK. The runner acknowledges all 36 captured bits on an OK path and all
+three on the other paths before RELEASE.
+
+The source gate tests these five outcomes on the direct and registered
+stores, with four core clocks per SWCLK high half-cycle. Separately captured
+ACK bits exercise RX credit backpressure while SWCLK is low and SWDIO is
+released. Lean checks the measured branch decisions, service clocks, RX
+bits, and custody. The independent wire peer rejects an inverted ACK branch
+and a driven turnaround. The same gate replays the fixed DPIDR image.
+
+### Warm CAN and I²C handoff
+
+One cold reset and one Ready host run CAN, the split I²C register read,
+and CAN again. One sequence settles the I²C register NACK with RELEASE.
+It also drains and releases a bad-CRC CAN capture after the decoder rejects
+it. The other sequence holds the I²C clock through the last poll. The
+retained fault rejects WRITE, COMMIT, START, and RELEASE while the TX
+suffix is still owned. Explicit warm cancellation clears custody and
+permits the final CAN install.
+
+The [handoff theorem](../../Pinwheel/Hardware/StreamingReady/SegmentReload.lean)
+follows the decoded core commands on both instruction stores. Accepted
+RELEASE or explicit timeout cancellation establishes an empty, free cut.
+Ordered writes and COMMIT install the new live rows and increment the
+generation. The old generation's START is rejected. The admitted START
+enters row zero with a fresh transfer, empty custody, and the new image's
+idle pads. A shorter image can leave the preceding image's words in the
+inactive tail.
+
+The [CAN theorem](../../Pinwheel/Hardware/StreamingReady/CANSession.lean)
+accepts a warm installed representation of the same image. The
+[segmented projection](../../Pinwheel/Hardware/StreamingReady/SegmentLegacy.lean)
+carries the original package observations through runtime execution of
+that live image. The bench supplies separate CAN and I²C peer waveforms
+with the appropriate digital pad connections at each session.
+
+The source gate checks both sequences on each emitted store. It compares
+the measured core writes with the Lean image words, checks each observed
+CAN capture edge and decoded verdict, and checks the I²C outcomes and
+owner accounting with the existing witnesses.
+
+### Refill timing and ownership
+
+SPI can park between cells when it runs out of TX credit. The combined
+I²C read has a bounded clock poll within a cell. Ethernet needs credit
+before each reservation on a fixed six-clock cadence. The
+[reservation checker](../../Pinwheel/Program/StreamingReadyReservationTiming.lean)
+finds the first missed cut in an executed input sequence. A same-edge
+push can supply credit at the next cut. Ethernet uses the checker to
+discharge the pre-edge obligations of its exact frame theorem.
+
+The shared runner takes an explicit Ethernet refill schedule through
+`ReadyPending.pump(scheduled_bits=64)`. The host chooses when to offer a
+burst. The frontend checks current room, and the receipt confirms the
+accepted prefix. The source gate measures the grant, both 32-bit core
+pushes, and the first pre-edge cut that sees both accepts. It checks
+those offsets against Lean and compares complete public pin traces across
+the direct and registered instruction stores.
+
+Both on-time schedules pass the independent digital PHY check. With
+the late schedule, the reservation for zero-based bit 64 misses its cut,
+the first sampled mismatch is at bit 65, and completion slips six clocks.
+The same run accounts for all 576 accepted and reserved TX bits and
+releases the owner.
+
+The [guarded stream theorem](../../Pinwheel/Hardware/StreamingReady/SegmentTiming.lean)
+starts from a reached LOW state with the encoded source row loaded. It
+connects that row's guard budget to the actual circuit countdown, then
+follows the successive polls. A qualified last poll captures the bit
+already in the second sampler stage. An unqualified last poll retains
+the owner, flushes the captured RX tail, and drives the installed idle
+pads. The same theorem covers direct and registered instruction stores.
 
 ## Depth-two TX FIFO substitution
 
