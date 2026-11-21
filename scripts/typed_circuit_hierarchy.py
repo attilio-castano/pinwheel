@@ -77,7 +77,7 @@ def lower_leaves(run, tools, directory, descriptor):
     return sources
 
 
-def import_assembly(run, tools, directory, descriptor, leaves):
+def import_assembly(run, tools, directory, descriptor, leaves, *, normalize_muxes=False):
     """Import the actual assembled hierarchy, retaining physical and canonical names."""
     from typed_module_checks import cad
     flat = normalize_descriptor(descriptor)
@@ -85,9 +85,10 @@ def import_assembly(run, tools, directory, descriptor, leaves):
     top = directory / "hierarchy_top.sv"
     actual.write_text("\n".join(p.read_text() for p in [*leaves, top]))
     raw, imported, script = (directory / n for n in ("raw.json", "import.json", "import.ys"))
+    mux_pass = "pmuxtree\n" if normalize_muxes else ""
     script.write_text(f"read_verilog -sv {cad.yosys_quote(actual)}\n"
                       f"hierarchy -check -top {flat['module']}\n"
-                      "flatten -noscopeinfo\nproc\nopt_clean\ncheck -assert\n"
+                      f"flatten -noscopeinfo\nproc\n{mux_pass}opt_clean\ncheck -assert\n"
                       f"write_json {cad.yosys_quote(raw)}\n")
     run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
     flat = prepare_json(raw, imported, descriptor)

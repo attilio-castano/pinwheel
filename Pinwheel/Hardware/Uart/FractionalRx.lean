@@ -121,7 +121,7 @@ def circuit (w : Nat) : Circuit (Input w) (Register w) Output where
 def flat (w : Nat) : TypedModule (Input w) (Register w) Output :=
   ⟨"fractional_uart_flat", circuit w, (inputPorts w).interface, registers w, outputPorts.interface⟩
 
-def source : LeafPin w b → TypedHierarchy.Source (Input w) Wire Output b
+def source : LeafPin w b → TypedHierarchy.Source (Input w) Wire b
   | .left p => .input p
   | .right p => .net p
 
