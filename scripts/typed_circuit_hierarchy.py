@@ -128,7 +128,8 @@ def swap_instance_inputs(text, instances, pin):
     return text
 
 
-def check_miswire(run, tools, directory, descriptor, leaves, mlir, profile, checks, instances, pin):
+def check_miswire(run, tools, directory, descriptor, leaves, mlir, profile, checks, instances, pin,
+                  *, normalize_muxes=False, proof_search=None, extra_lean_paths=()):
     from readback_miter import miter
     import typed_circuit_readback as readback
     from typed_module_checks import reject_semantic_certificate
@@ -137,7 +138,7 @@ def check_miswire(run, tools, directory, descriptor, leaves, mlir, profile, chec
     negative.mkdir()
     top = (directory / "hierarchy_top.sv").read_text()
     (negative / "hierarchy_top.sv").write_text(swap_instance_inputs(top, instances, pin))
-    flat = import_assembly(run, tools, negative, descriptor, leaves)
+    flat = import_assembly(run, tools, negative, descriptor, leaves, normalize_muxes=normalize_muxes)
     imported = negative / "import.json"
     rb = readback.importer(flat)
     query = negative / "mismatch.smt2"
@@ -146,5 +147,7 @@ def check_miswire(run, tools, directory, descriptor, leaves, mlir, profile, chec
         raise ValueError("Deliberate cross-instance miswire must change an endpoint")
     modules, _ = readback.generate(negative, flat, mlir, imported, tools["z3"], profile=profile,
                                    interface_checks=checks)
-    failure = reject_semantic_certificate(run, negative, modules)
+    if proof_search is not None:
+        proof_search(negative, modules)
+    failure = reject_semantic_certificate(run, negative, modules, extra_lean_paths=extra_lean_paths)
     return {"instances": instances, "input": pin, "mismatch": "sat", "kernel_rejection_module": failure}

@@ -196,7 +196,8 @@ def main():
                           "RTL correspondence, synthesis, physical timing or fabrication evidence."}
     try:
         report["source_sha256"] = source_hashes()
-        run(["lake", "build", "switch_replay", "Pinwheel.Hardware.Switch.Progress"], "build")
+        run(["lake", "build", "switch_replay", "Pinwheel.Hardware.Switch.Progress",
+             "Pinwheel.Hardware.Switch.Certified"], "build")
         run(["lake", "env", "lean", "-DwarningAsError=true", "test/SwitchContracts.lean"], "switch-contracts")
         run(["lake", "env", "lean", "-DwarningAsError=true", "--run", "test/RoundRobin.lean"], "round-robin")
         run(["lake", "env", "lean", "-DwarningAsError=true", "--run", "test/SwitchModel.lean"], "switch-model-tests")

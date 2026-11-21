@@ -1,7 +1,7 @@
 import Pinwheel.Hardware.Bank
 import Pinwheel.Hardware.Switch.PacketEncoding
 import Pinwheel.Hardware.Stream.ElasticCircuit
-import Pinwheel.Hardware.Arbitration.RoundRobinCircuit
+import Pinwheel.Hardware.Arbitration.RoundRobinMasked
 
 /-! Structural buffered packet switch. Input FIFOs store destination ++ payload;
 output registers store only payload. Source provenance is erased from physical
@@ -58,13 +58,12 @@ def request (e : DestinationEncoding (m+1)) (w depth : Nat) (o : Fin (m+1)) (k :
 def canLoad (dw w depth : Nat) (o : Fin (m+1)) : Wire n m dw w depth 1 :=
   (Expr.inv (.reg (slotReg o (.valid 0)))).bor (.input (outReady o))
 
-/-- Shared selector construction, also used for payload and cursor updates. -/
+/-- The proved masked selector is shared by grant, payload and cursor updates. -/
 def selection (e : DestinationEncoding (m+1)) (w depth : Nat) (o : Fin (m+1))
     (value : Fin (n+1) → Wire n m e.width w depth b) (fallback : Wire n m e.width w depth b) :
     Wire n m e.width w depth b :=
-  Arbitration.RoundRobinCircuit.priority (fun c => .reg (cursorReg o c))
-    (fun c => Arbitration.RoundRobinCircuit.priority (request e w depth o) value fallback (Arbitration.RoundRobin.order c))
-    fallback (List.finRange (n+1))
+  Arbitration.RoundRobinMasked.selection (fun c => .reg (cursorReg o c))
+    (request e w depth o) value fallback
 
 def gated (dw w depth : Nat) (o : Fin (m+1)) (value : Wire n m dw w depth b) : Wire n m dw w depth b :=
   .mux (.input reset) (.lit 0) (.mux (canLoad dw w depth o) value (.lit 0))
