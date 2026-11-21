@@ -31,7 +31,7 @@ private def identifiers (d : Interface P) (name : String → String := id) :
 private def asciiLetter (c : Char) : Bool :=
   ('a' ≤ c && c ≤ 'z') || ('A' ≤ c && c ≤ 'Z')
 
-private def identifier (name : String) : Bool :=
+def identifier (name : String) : Bool :=
   match name.toList with
   | [] => false
   | head :: rest =>

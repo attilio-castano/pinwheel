@@ -123,9 +123,33 @@ by exhaustive simulation and SAT equivalence on legal one-hot cursors. Invalid
 cursor behavior may differ. These are generic cell counts, not physical area or
 timing. The resource gap motivates a smaller proved selector.
 
-The packet-switch campaign remains active. Whole-switch RTL replay, complete
-artifact certificates over a representative parameter matrix, hierarchical RTL,
-matched whole-switch synthesis/timing baselines and a second integration user
-remain campaign gates. Yosys and the restricted JSON adapter remain trusted
-interpretation boundaries; kernel-checked equations do not certify these tools
-or physical behavior.
+## Typed switch hierarchy
+
+[`Switch.Export`](../../Pinwheel/Hardware/Switch/Export.lean) builds the
+existing flat shift-FIFO switch as FIFO and output-slot instances with a shared
+control module. The controller uses the flat circuit's expressions and the
+leaves' raw register taps. This preserves the state bits and cycle boundaries,
+including for malformed cursor or queue state.
+
+[`TypedHierarchy`](../../Pinwheel/Hardware/TypedHierarchy.lean) derives the
+Verilog wrapper and register paths from typed connections and register
+bindings. Emission checks that each flat register is bound exactly once and
+each wire and output has a single driver. Readback checks the paths against the
+Lean declaration, then checks each imported output and next-register equation
+against the existing flat circuit. The certificate composes with the switch's
+reset theorem. Yosys and the restricted JSON interpretation remain trusted.
+
+Run the comparisons with fresh tags and the pinned Lean and CAD tools:
+
+```sh
+python3 -B scripts/check-switch-hierarchy.py --tag hierarchy-replay
+python3 -B scripts/check-switch-hierarchy-artifact.py --tag hierarchy-proof \
+  --config 1,1,1,1 --config 2,3,2,8 --config 2,2,3,4 --miswire
+```
+
+The replay compares outputs around the edge and every next register from the
+same raw starting bits. It exhausts 2,048 cases for the 1×1 switch and samples
+512 cases for 2×3. The artifact check also swaps the data input on two FIFO
+instances in each multi-input case and requires a semantic proof failure.
+The [FIFO substitution guide](lean-hardware-fifo-substitution.md) covers
+the flat shift and circular variants.

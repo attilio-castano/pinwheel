@@ -1,6 +1,7 @@
 import Pinwheel.Hardware.BankImplementation
 import Pinwheel.Hardware.Artifact
 import Pinwheel.Hardware.TypedModule
+import Pinwheel.Hardware.TypedHierarchy
 import Pinwheel.Hardware.Stream.Bundle
 import Pinwheel.Hardware.Stream.Implementation
 import Pinwheel.Hardware.Stream.Timing

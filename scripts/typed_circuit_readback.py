@@ -108,12 +108,14 @@ def local_proofs(rb, pairs):
     return "\n".join(lines)
 
 
-def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str):
+def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str,
+             interface_checks: str = ""):
     """Profile defines Input/Register/Output, circuit, inputs/registers/outputs.
 
     Each descriptor must have the corresponding Interface type. Source-hint
     endpoint proofs must reduce to the declared circuit by rfl, so metadata
     cannot silently substitute a different circuit or omit a typed endpoint.
+    A trusted client can add binding assertions checked in the design module.
     The returned certificate concerns every bit, including unreachable states.
     """
     rb = importer(descriptor)
@@ -160,7 +162,7 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
                 label = f'"r_" ++ ({label})'
                 expected = port.get("reference", "r_" + expected)
             design += f'example : {label} = "{expected}" := by decide +kernel\n'
-    (directory / "Design.lean").write_text(design + "end Pinwheel.TypedArtifact\n")
+    (directory / "Design.lean").write_text(design + interface_checks + "\nend Pinwheel.TypedArtifact\n")
 
     def write(name, text):
         text = text.replace("Values Machine.Input", "Values Input")
