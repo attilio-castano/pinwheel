@@ -93,6 +93,8 @@ def countdown : Except String String := do
     s!"    hw.output {outRemaining}, {outActive}, {outBoundary} : i8, i1, i1\n" ++
     "  }\n}\n"
 
+def registerSymbol (label : String) : String := "r_" ++ label
+
 /-- The adapter enumerates ports/registers; expression emission supplies every next-state gate. -/
 def moduleText (name : String) (c : Circuit I R O)
     (inputs : Array (Sigma I)) (registers : Array (Sigma R)) (outputs : Array (Sigma O))
@@ -101,11 +103,12 @@ def moduleText (name : String) (c : Circuit I R O)
   let (result, buffer) ← (do
     let mut declarations : Array String := #[]
     for ⟨w, r⟩ in registers do
-      let value ← expression (fun i => "%" ++ inputLabel i) (fun r => "%r_" ++ registerLabel r) (c.next r)
-      declarations := declarations.push s!"    %r_{registerLabel r} = seq.compreg {value}, %clock : i{w}"
+      let value ← expression (fun i => "%" ++ inputLabel i) (fun r => "%" ++ registerSymbol (registerLabel r)) (c.next r)
+      declarations := declarations.push s!"    %{registerSymbol (registerLabel r)} = seq.compreg {value}, %clock : i{w}"
     let mut values : Array String := #[]
     for ⟨_, o⟩ in outputs do
-      values := values.push (← expression (fun i => "%" ++ inputLabel i) (fun r => "%r_" ++ registerLabel r) (c.output o))
+      values := values.push (← expression (fun i => "%" ++ inputLabel i)
+        (fun r => "%" ++ registerSymbol (registerLabel r)) (c.output o))
     return (declarations, values) : M _).run {}
   let ports := inputs.map (fun ⟨w, i⟩ => s!"in %{inputLabel i} : i{w}") ++
     outputs.map (fun ⟨w, o⟩ => s!"out {outputLabel o} : i{w}")

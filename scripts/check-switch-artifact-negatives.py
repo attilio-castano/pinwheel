@@ -76,7 +76,7 @@ def verify_positive(receipt, config, tools_hash):
 
 def compile_lean(run, directory, module):
     lean_path = str(directory) + os.pathsep + str(ROOT / ".lake/build/lib/lean")
-    command = ["env", "LEAN_PATH=" + lean_path, "lake", "env", "lean", "-DwarningAsError=true",
+    command = ["lake", "env", "env", "LEAN_PATH=" + lean_path, "lean", "-DwarningAsError=true",
                "-o", directory / f"{module}.olean", directory / f"{module}.lean"]
     record = {"label": directory.name + "-" + module, "argv": list(map(str, command)), "timeout_seconds": 300}
     run.records.append(record)

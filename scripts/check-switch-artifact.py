@@ -5,13 +5,12 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-import os
 from pathlib import Path
 import re
 import time
 
-import process_group
 import typed_circuit_readback as readback
+from typed_artifact_runner import compile_modules
 from validation_run import fresh_directory, sha
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,8 +19,8 @@ rr = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(rr)
 
 
-def sources():
-    pending = [ROOT / "test/SwitchCircuitEmit.lean", ROOT / "Pinwheel/Hardware/Switch/Certified.lean"]
+def sources(roots=("test/SwitchCircuitEmit.lean", "Pinwheel/Hardware/Switch/Certified.lean")):
+    pending = [ROOT / name for name in roots]
     found = set()
     while pending:
         path = pending.pop()
@@ -33,6 +32,7 @@ def sources():
     found.update(ROOT / path for path in (
         "scripts/check-switch-artifact.py", "scripts/typed_circuit_readback.py", "scripts/backend_readback.py",
         "scripts/check-round-robin-circuit.py", "scripts/validation_run.py", "scripts/process_group.py",
+        "scripts/typed_artifact_runner.py",
         "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json",
         "Pinwheel/Hardware/Readback/Boolean.lean"))
     return {str(p.relative_to(ROOT)): sha(p) for p in sorted(found)}
@@ -78,19 +78,7 @@ end Pinwheel.TypedArtifact
     audit = directory / "Audit.lean"
     audit.write_text(audit.read_text().replace("import Proof", "import Initialized"))
     modules.insert(-1, "Initialized")
-    for module in modules:
-        lean_path = str(directory) + os.pathsep + str(ROOT / ".lake/build/lib/lean")
-        argv = ["env", "LEAN_PATH=" + lean_path, "lake", "env", "lean", "-DwarningAsError=true", "-o", directory / f"{module}.olean",
-                directory / f"{module}.lean"]
-        log = directory / f"{module}.log"
-        started = time.monotonic()
-        record = {"argv": list(map(str, argv)), "label": directory.name + "-" + module, "timeout_seconds": 300}
-        run.records.append(record)
-        result = process_group.run_captured(list(map(str, argv)), cwd=ROOT, timeout=300, log_path=log)
-        record.update(exit_code=result.returncode, seconds=round(time.monotonic() - started, 3))
-        if result.returncode:
-            raise RuntimeError(f"{module} certificate failed: {log}\n{result.stdout[-3000:]}{result.stderr[-1000:]}")
-        print(f"{directory.name}/{module}: checked", flush=True)
+    compile_modules(run, directory, modules)
     return evidence
 
 

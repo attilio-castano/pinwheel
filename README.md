@@ -63,6 +63,10 @@ memory accelerator and processor system as integration targets; the switch campa
 is active. Its [buffered multiport switch](docs/engine/lean-hardware-switch.md)
 now reuses the FIFO/register circuits with proved routing, per-flow accounting,
 conditional fairness, raw-pin refinement and reset recovery.
+The [Lean hardware library](docs/engine/lean-hardware-library.md) shares typed
+RTL export and verification across the standalone lanes and the switch.
+Its [FIFO substitution contract](docs/engine/lean-hardware-fifo-substitution.md)
+lets both clients use shift or circular storage under the same pin contract.
 
 Pinwheel has executable protocol models, emitted circuits, and independent
 simulation checks. For the paired SRAM design, Lean proofs now connect a
