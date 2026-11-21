@@ -119,6 +119,25 @@ def swap_output_drivers(text, first, second):
     return text
 
 
+def reject_semantic_certificate(run, directory, modules, *, extra_lean_paths=()):
+    """Require a failed equality, not a parser, build or tool failure."""
+    try:
+        compile_modules(run, directory, modules, extra_lean_paths=extra_lean_paths)
+    except RuntimeError as error:
+        failure = re.match(r"(LocalProofs[0-9]*) certificate failed:", str(error))
+        if failure is None:
+            raise
+        log = (directory / f"{failure[1]}.log").read_text()
+        errors = re.findall(r"\.lean:\d+:\d+: error(?:\s*\([^)]*\))?: (.*)", log)
+        allowed = ("unsolved goals", "`grind` failed", "Tactic `decide` proved that the proposition")
+        if not errors or any(not any(marker in e for marker in allowed) for e in errors):
+            raise
+        run.records[-1]["expected_failure"] = True
+    else:
+        raise RuntimeError("The modified RTL received a certificate")
+    return failure[1]
+
+
 def check_output_swap(run, tools, directory, rtl, tb, descriptor, mlir, design, outputs, extra_lean_paths):
     first, second = (descriptor["outputs"][index] for index in outputs)
     negative = directory / "output-swap"
@@ -137,22 +156,9 @@ def check_output_swap(run, tools, directory, rtl, tb, descriptor, mlir, design, 
 
     imported = import_rtl(run, tools, negative, mutated, descriptor["module"], label)
     modules, _ = readback.generate(negative, descriptor, mlir, imported, tools["z3"], profile=design)
-    try:
-        compile_modules(run, negative, modules, extra_lean_paths=extra_lean_paths)
-    except RuntimeError as error:
-        failure = re.match(r"(LocalProofs[0-9]*) certificate failed:", str(error))
-        if failure is None:
-            raise
-        log = (negative / f"{failure[1]}.log").read_text()
-        errors = re.findall(r"\.lean:\d+:\d+: error(?:\s*\([^)]*\))?: (.*)", log)
-        allowed = ("unsolved goals", "`grind` failed", "Tactic `decide` proved that the proposition")
-        if not errors or any(not any(marker in e for marker in allowed) for e in errors):
-            raise
-        run.records[-1]["expected_failure"] = True
-    else:
-        raise RuntimeError("The swapped RTL received a certificate")
+    failure = reject_semantic_certificate(run, negative, modules, extra_lean_paths=extra_lean_paths)
     return {"outputs": [first["name"], second["name"]], "width": first["width"],
-            "replay_rejected": diagnostic, "kernel_rejection_module": failure[1]}
+            "replay_rejected": diagnostic, "kernel_rejection_module": failure}
 
 
 def verify(run, tools, directory, stem, design, initialized, traffic, expected, *,

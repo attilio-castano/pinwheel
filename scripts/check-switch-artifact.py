@@ -60,8 +60,14 @@ def certify(run, tools, directory, config, descriptor, rtl):
                       "flatten -noscopeinfo\nproc\nopt_clean\ncheck -assert\n"
                       f"write_json {rr.yosys_quote(imported)}\n")
     run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
+    return prove_imported(run, tools, directory, config, descriptor)
+
+
+def prove_imported(run, tools, directory, config, descriptor, *, profile_text=None, interface_checks=""):
+    imported = directory / "import.json"
     modules, evidence = readback.generate(directory, descriptor, directory / "switch.mlir", imported,
-                                         tools["z3"], profile=profile(config, descriptor["destination_width"]))
+                                         tools["z3"], profile=profile_text or profile(config, descriptor["destination_width"]),
+                                         interface_checks=interface_checks)
     n, m, d, w = config
     (directory / "Initialized.lean").write_text(f"""import Proof
 open Pinwheel.Hardware

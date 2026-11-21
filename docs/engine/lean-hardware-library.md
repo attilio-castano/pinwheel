@@ -104,6 +104,12 @@ The [FIFO substitution guide](lean-hardware-fifo-substitution.md) records the
 shared transaction theorem and the 2×2 packet-switch replay and synthesis
 comparison.
 
+`TypedHierarchy` connects single-clock `TypedModule` instances. Each child
+binds width-indexed pins to external ports or declared nets and binds its local
+registers into the flat reference. The generated wrapper and physical register
+paths use those same bindings. The [switch hierarchy](lean-hardware-switch.md#typed-switch-hierarchy)
+shows how to check the actual flattened RTL against that reference.
+
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and
 [multiport switch record](lean-hardware-switch.md) for the corresponding
