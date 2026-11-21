@@ -10,8 +10,7 @@ open Pinwheel.Hardware
 
 The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
-banks, arbitration and a buffered multiport switch. Memory and processor APIs
-are subsequent integration campaigns.
+banks, arbitration, a buffered multiport switch, and synchronous memories.
 
 ## Construction and proof layers
 
@@ -33,6 +32,13 @@ provenance. `Implementation.Reset` separately establishes initialization from
 arbitrary register bits. This interface is shared by ordinary stream components
 and the multiport switch.
 
+`Implementation.run_eq` and `Artifact.Correspondence.encoded_run` carry final
+represented state through a finite execution. This captures memory words and held
+read data that may be invisible on the current output pins.
+`DecodedImplementation` provides a projection from raw registers to a logical
+state that can omit inactive request metadata. `Timed.EventRefinement` relates
+effects sampled at completion to changes to the logical state.
+
 `Artifact.Correspondence` compares a particular imported RTL interpretation with
 every structural register/output expression. It composes with `Implementation`
 and reset recovery to obtain whole-trace correspondence. Yosys and the restricted
@@ -43,6 +49,27 @@ Protocol contracts sit above this common implementation layer. A stream
 `Certified` component includes its accepted/emitted/pending transaction law.
 `Stream.Multiport.Contract` handles per-flow accounting across independently
 handshaken lanes. Neither contract is forced onto all circuits.
+
+## Memory and stream components
+
+- `Memory.CommandFlops` provides exclusive command RAM. A read captures the
+  addressed word in Q, a write holds Q, and a disabled command holds all state.
+- `Memory.StreamFlops` adds a pending response. Reset cancels that response while
+  preserving RAM contents and Q.
+- `Memory.ByteAdapterCircuit` exposes byte, halfword, and word operations over
+  command RAM. A store commits when its response is accepted. The adapter's
+  event refinement reconstructs the memory effects from completed operations.
+- `Memory.TransferHostExport` wires the host controller and two memories with
+  `TypedHierarchy`. The imported RTL proof compares each next-state and output
+  equation with the flat reference and carries memory preservation through
+  reset and recovery.
+- `Stream.BufferedMerge` uses one elastic output slot and round-robin arbitration.
+  The multiport contract carries per-input ordering, conservation, and
+  conditional fairness into the implementation.
+
+The [memory campaign](lean-hardware-memory-plan.md) and
+[buffered merge record](lean-hardware-buffered-merge.md) give the proof
+assumptions, replay commands, and synthesis evidence for these components.
 
 ## A client example
 
