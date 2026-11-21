@@ -4,6 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 
+from pad_io import PadDrive, PadObservation, SWDIO_LINK
 from streaming_ready_compile import decode
 from streaming_ready_swd import decode_dpidr, dpidr_image
 from streaming_ready_wrapper import bridge_source
@@ -48,6 +49,18 @@ class StreamingReadySwdTests(unittest.TestCase):
         shared = bridge_source(2, swdio_link=True)
         self.assertIn('tran swdio_link(pads[1],pads[3]);', shared)
         self.assertIn('if(links!==2\'b0)', shared)
+
+    def test_selectable_push_pull_link_accepts_high_and_rejects_overlap(self):
+        high = PadObservation(status=1, levels=8, enabled=8, wires=255, known=255)
+        high.validate_drive(PadDrive(links=SWDIO_LINK))
+        with self.assertRaisesRegex(RuntimeError, 'open-drain'):
+            high.validate_drive(PadDrive(links=2))
+        with self.assertRaisesRegex(RuntimeError, 'Both devices drive'):
+            high.validate_drive(PadDrive(levels=2, enabled=2, links=SWDIO_LINK))
+        with self.assertRaises(ValueError):
+            PadDrive(links=2 | SWDIO_LINK)
+        with self.assertRaises(ValueError):
+            bridge_source(2, swdio_link=True, selectable_swdio=True)
 
 
 if __name__ == '__main__':

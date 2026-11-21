@@ -36,6 +36,8 @@ import Pinwheel.Hardware.PinBoundary
 import Pinwheel.Hardware.Emit
 import Pinwheel.Hardware.Execution.Emit
 import Pinwheel.Hardware.Reactive.Emit
+import Pinwheel.Hardware.Reactive.I2CReadFetch
+import Pinwheel.Hardware.Reactive.I2CReadTarget
 import Pinwheel.Hardware.Refinement
 import Pinwheel.Hardware.Protocols
 import Pinwheel.Hardware.Storage
@@ -166,6 +168,9 @@ import Pinwheel.Hardware.Streaming.InitializedCustody
 import Pinwheel.Program.StreamingEventualService
 import Pinwheel.Program.StreamingSessionProgress
 import Pinwheel.Program.StreamingLowTiming
+import Pinwheel.Program.StreamingReadyDuplex
+import Pinwheel.Program.StreamingReadyManifest
+import Pinwheel.Program.StreamingReadyReceiveImages
 import Pinwheel.Hardware.StreamingReady.All
 import Pinwheel.Hardware.StreamingUART.All
 import Pinwheel.Hardware.StreamingMapped.All

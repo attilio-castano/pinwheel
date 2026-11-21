@@ -31,16 +31,18 @@ theorem core_inputs (s : Package.State a) (pin : Session.Pins) (control : Pinwhe
   rw [project] at command
   rw [command]
 
-def metadata (p : Program) (n : Nat) (installed : Bool) : Metadata :=
-  if installed then (metadataAfter p n).commit (loaderGeometry p) else metadataAfter p n
+def metadata (p : Program) (n : Nat) (installed : Bool) (base : Metadata := {}) : Metadata :=
+  if installed then (metadataAfter p n base).commit (loaderGeometry p) else metadataAfter p n base
 
-structure Related (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State) (n : Nat) (installed : Bool)
-    (actual : Package.State a) (sourceCore : Carrier a) : Prop where
+
+structure Related (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
+    (n : Nat) (installed : Bool) (actual : Package.State a) (sourceCore : Carrier a)
+    (base : Metadata := {}) (generationBase transferBase : BitVec 16 := 0) : Prop where
   project : Pinwheel.Program.Streaming.Host.BootControl.project (HostCorrespondence.stateFromValues actual.frontend) = control
-  core : (fun {w} => actual.core (w := w)) = @Initialization.values a (metadata image.program n installed) sourceCore
+  core : (fun {w} => actual.core (w := w)) = @Initialization.values a (metadata image.program n installed base) sourceCore
   phase : sourceCore.phase = .free
-  generation : sourceCore.generation = if installed then 1 else 0
-  transfer : sourceCore.transfer = 0
+  generation : sourceCore.generation = if installed then generationBase + 1 else generationBase
+  transfer : sourceCore.transfer = transferBase
   structural : (ofCarrier sourceCore).Structural
   within : n ≤ image.program.length
   complete : installed = true → n = image.program.length
@@ -78,14 +80,15 @@ theorem image_row (image : Compiled source idle) (n : Nat) (within : n < image.w
   exact (compiled_row image n (by simpa only [image.wordsEqual,List.length_map] using within)).symm
 
 structure Effects (image : Compiled source idle) (n : Nat) (installed : Bool) (c : Pinwheel.Program.Streaming.Host.Command)
-    (before : Carrier a) (nextN : Nat) (nextInstalled : Bool) (after : Carrier a) : Prop where
+    (before : Carrier a) (nextN : Nat) (nextInstalled : Bool) (after : Carrier a)
+    (base : Metadata := {}) (generationBase : BitVec 16 := 0) : Prop where
   step : @Circuit.step _ _ _ (Core.circuit a) (HostCorrespondence.commandValues c)
-      (Initialization.values (metadata image.program n installed) before) =
-    @Initialization.values a (metadata image.program nextN nextInstalled) after
+      (Initialization.values (metadata image.program n installed base) before) =
+    @Initialization.values a (metadata image.program nextN nextInstalled base) after
   rejected : (Core.circuit a).observe (HostCorrespondence.commandValues c)
-      (Initialization.values (metadata image.program n installed) before) .rejected = 0
+      (Initialization.values (metadata image.program n installed base) before) .rejected = 0
   phase : after.phase = .free
-  generation : after.generation = if nextInstalled then 1 else 0
+  generation : after.generation = if nextInstalled then generationBase + 1 else generationBase
   transfer : after.transfer = before.transfer
   structural : (ofCarrier after).Structural
   within : nextN ≤ image.program.length
@@ -93,12 +96,14 @@ structure Effects (image : Compiled source idle) (n : Nat) (installed : Bool) (c
   carrier : after = if c.runtime.command = 2#4 then
     Streaming.Initialization.committed before c.runtime.rawInputs else before.sample c.runtime.rawInputs
 
-theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : Bool) (c : Pinwheel.Program.Streaming.Host.Command)
+theorem delivery_effects_from (image : Compiled source idle) (n : Nat) (installed : Bool) (c : Pinwheel.Program.Streaming.Host.Command)
     (before : Carrier a) (phase : before.phase = .free)
-    (generation : before.generation = if installed then 1 else 0) (structural : (ofCarrier before).Structural)
+    (base : Metadata) (generationBase : BitVec 16)
+    (generation : before.generation = if installed then generationBase + 1 else generationBase)
+    (space : generationBase ≠ 65535#16) (structural : (ofCarrier before).Structural)
     (within : n ≤ image.program.length) (complete : installed = true → n = image.program.length)
     (delivery : BootPins.Delivery image.words idle n installed c nextN nextInstalled) :
-    ∃ after : Carrier a, Effects image n installed c before nextN nextInstalled after := by
+    ∃ after : Carrier a, Effects image n installed c before nextN nextInstalled after base generationBase := by
   have coldInput (safe : BootPins.CommandSafe c) : HostCorrespondence.commandValues c .initialize = 0 := by
     change BitVec.ofBool c.runtime.initialize = 0
     rw [safe.cold]
@@ -137,15 +142,15 @@ theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : B
     have actualCommit : Commit image.program (HostCorrespondence.commandValues c) :=
       ⟨coldInput safe,command,count.trans (congrArg (BitVec.ofNat 7) (image_length image)),
         congrArg Engine.Reactive.Pins.levels pins,congrArg Engine.Reactive.Pins.enabled pins⟩
-    have pending : (metadataAfter image.program nextN).pending = 1 :=
-      metadata_pending _ _ (by rw [allRows]; exact Initialization.length_positive _)
+    have pending : (metadataAfter image.program nextN base).pending = 1 :=
+      metadata_pending_from _ _ _ (by rw [allRows]; exact Initialization.length_positive _)
     have room : before.generation ≠ 65535#16 := by
       rw [generation,uninstalled]
-      decide
+      exact space
     have covered : ∀ k : Fin 64, k.val < image.program.length →
-        (metadataAfter image.program nextN).written.getLsbD k.val = true := by
+        (metadataAfter image.program nextN base).written.getLsbD k.val = true := by
       rw [allRows]
-      exact metadata_covered _ _ (Initialization.length_le _)
+      exact metadata_covered_from _ _ _ (Initialization.length_le _)
     refine ⟨Streaming.Initialization.committed before c.runtime.rawInputs,?_,?_,phase,?_,rfl,
       ⟨structural.accepted,structural.txValid,structural.rxUsed,structural.reservationCredit,structural.partialCredit⟩,
       within,fun _ => allRows,?_⟩
@@ -154,11 +159,21 @@ theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : B
       exact commit_step _ _ _ _ actualCommit phase pending room covered port
     · subst installed
       exact rejected_commit _ _ _ _ actualCommit phase pending room covered (txInput safe) (rxInput safe)
-    · change before.generation + 1#16 = 1#16
+    · change before.generation + 1#16 = generationBase + 1#16
       rw [generation,uninstalled]
-      rfl
+      simp
     · rw [command]
       rfl
+
+theorem delivery_effects (image : Compiled source idle) (n : Nat) (installed : Bool)
+    (c : Pinwheel.Program.Streaming.Host.Command) (before : Carrier a)
+    (phase : before.phase = .free) (generation : before.generation = if installed then 1 else 0)
+    (structural : (ofCarrier before).Structural) (within : n ≤ image.program.length)
+    (complete : installed = true → n = image.program.length)
+    (delivery : BootPins.Delivery image.words idle n installed c nextN nextInstalled) :
+    ∃ after : Carrier a, Effects image n installed c before nextN nextInstalled after :=
+  delivery_effects_from image n installed c before phase {} 0 generation (by decide)
+    structural within complete delivery
 
 theorem frontend_project (actual : Package.State a) (pin : Session.Pins) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
     (project : Pinwheel.Program.Streaming.Host.BootControl.project (HostCorrespondence.stateFromValues actual.frontend) = control)
@@ -188,17 +203,19 @@ theorem frontend_project (actual : Package.State a) (pin : Session.Pins) (contro
   unfold Pinwheel.Program.Streaming.Host.BootControl.step
   rw [fields]
 
-theorem Related.step (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
+theorem Related.stepFrom (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
     (n : Nat) (installed : Bool) (actual : Package.State a) (sourceCore : Carrier a)
-    (related : Related image control n installed actual sourceCore) (pin : Session.Pins)
+    (related : Related image control n installed actual sourceCore base generationBase transferBase)
+    (room : generationBase ≠ 65535#16) (pin : Session.Pins)
     (safe : Pinwheel.Program.Streaming.Host.BootControl.Safe control)
     (delivery : BootPins.Delivery image.words idle n installed
       (Pinwheel.Program.Streaming.Host.BootControl.command (pin.host {}) control) nextN nextInstalled) :
     ∃ after : Carrier a, Related image (Pinwheel.Program.Streaming.Host.BootControl.step false (pin.host {}) control)
-      nextN nextInstalled (actual.step (Package.Components.typed a) (SessionCorrespondence.pins pin)) after := by
+      nextN nextInstalled (actual.step (Package.Components.typed a) (SessionCorrespondence.pins pin))
+      after base generationBase transferBase := by
   have input := core_inputs actual pin control related.project
-  obtain ⟨after,effects⟩ := delivery_effects image n installed _ sourceCore related.phase
-    related.generation related.structural related.within related.complete delivery
+  obtain ⟨after,effects⟩ := delivery_effects_from image n installed _ sourceCore related.phase base generationBase
+    related.generation room related.structural related.within related.complete delivery
   have rejected : actual.status (Package.Components.typed a) (SessionCorrespondence.pins pin) .rejected = 0 := by
     unfold Package.State.status Streaming.Package.State.status
     rw [input,related.core]
@@ -209,6 +226,16 @@ theorem Related.step (image : Compiled source idle) (control : Pinwheel.Program.
     (actual.coreInputs (Package.Components.typed a) (SessionCorrespondence.pins pin)) actual.core = _
   rw [input,related.core]
   exact effects.step
+
+theorem Related.step (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
+    (n : Nat) (installed : Bool) (actual : Package.State a) (sourceCore : Carrier a)
+    (related : Related image control n installed actual sourceCore) (pin : Session.Pins)
+    (safe : Pinwheel.Program.Streaming.Host.BootControl.Safe control)
+    (delivery : BootPins.Delivery image.words idle n installed
+      (Pinwheel.Program.Streaming.Host.BootControl.command (pin.host {}) control) nextN nextInstalled) :
+    ∃ after : Carrier a, Related image (Pinwheel.Program.Streaming.Host.BootControl.step false (pin.host {}) control)
+      nextN nextInstalled (actual.step (Package.Components.typed a) (SessionCorrespondence.pins pin)) after :=
+  Related.stepFrom image control n installed actual sourceCore related (by decide) pin safe delivery
 
 structure Initialized (image : Compiled source idle) (actual : Package.State a)
     (final : Session.State a) : Prop where
@@ -221,25 +248,61 @@ structure Initialized (image : Compiled source idle) (actual : Package.State a)
   ready : final.host.ready = false
   active : final.host.active = false
 
-theorem certified_run (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
+/-- The installed image at an idle host boundary. Its representation may
+retain unused words and stamps from an earlier installation. -/
+structure Ready (image : Compiled source idle) (rep : SourceRefinement.Image image.program)
+    (actual : Package.State a) (final : Session.State a) : Prop where
+  package : actual = SessionCorrespondence.values rep final
+  structural : final.core.Structural
+  free : final.core.phase = .free
+  pending : rep.pending = 0#1
+  phase : final.host.phase = 0
+  ready : final.host.ready = false
+  active : final.host.active = false
+
+theorem Initialized.asReady (initialized : Initialized image actual final) :
+    Ready image (compiledImage image) actual final :=
+  ⟨initialized.package, initialized.structural, initialized.free, rfl,
+    initialized.phase, initialized.ready, initialized.active⟩
+
+/-- The committed descriptor is for the new program, even when older words
+still occupy addresses past its live length. -/
+theorem Ready.descriptor (ready : Ready image rep actual final) :
+    actual.core .valid = 1 ∧ actual.core .pending = 0 ∧
+      actual.core .count = BitVec.ofNat 7 image.program.length ∧
+      actual.core .idleLevels = image.program.idle.levels ∧
+      actual.core .idleEnabled = image.program.idle.enabled := by
+  rw [ready.package]
+  exact ⟨rfl,ready.pending,rfl,rfl,rfl⟩
+
+theorem Ready.retainsTail (ready : Ready image (compiledImageFrom image base) actual final)
+    (k : BitVec 6) (tail : image.program.length ≤ k.toNat) :
+    actual.core (.word k) = base.words k := by
+  rw [ready.package]
+  exact metadata_tail_from image.program base image.program.length (length_le _) k tail
+
+theorem certified_run_from (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
     (n : Nat) (installed : Bool) (pins : List Session.Pins)
     (certificate : BootPins.Certified image.words idle control n installed pins)
     (actual : Package.State a) (sourceCore : Carrier a)
-    (related : Related image control n installed actual sourceCore) :
-    ∃ final : Session.State a, Initialized image
-      (actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)) final := by
+    (related : Related image control n installed actual sourceCore base generationBase transferBase)
+    (room : generationBase ≠ 65535#16) :
+    ∃ final : Session.State a, Ready image (compiledImageFrom image base)
+      (actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)) final ∧
+      final.core.generation = generationBase + 1 ∧ final.core.transfer = transferBase := by
   induction certificate generalizing actual sourceCore with
   | nil control n installed complete done phase ready active =>
     have allRows : n = image.program.length := complete.trans (image_length image)
     have core : (fun {w} => actual.core (w := w)) =
-        @SourceRefinement.values image.program a (compiledImage image) (ofCarrier sourceCore) := by
+        @SourceRefinement.values image.program a (compiledImageFrom image base) (ofCarrier sourceCore) := by
       rw [related.core]
       simp only [metadata,done,↓reduceIte,allRows]
-      exact values_installed image.program (@compiledCanonical source idle image) sourceCore
-    have generation : sourceCore.generation = 1 := by
+      exact values_installed_from image.program base (@compiledCanonical source idle image) sourceCore
+    have generation : sourceCore.generation = generationBase + 1 := by
       simpa only [done,↓reduceIte] using related.generation
-    refine ⟨⟨HostCorrespondence.stateFromValues actual.frontend,ofCarrier sourceCore⟩,?_,related.structural,
-      (by change phaseLift sourceCore.phase = .free; rw [related.phase]; rfl),generation,related.transfer,?_,?_,?_⟩
+    refine ⟨⟨HostCorrespondence.stateFromValues actual.frontend,ofCarrier sourceCore⟩,
+      ⟨?_,related.structural,(by change phaseLift sourceCore.phase = .free; rw [related.phase]; rfl),
+        rfl,?_,?_,?_⟩,generation,related.transfer⟩
     · apply InitializedSession.state_ext
       · exact (HostCorrespondence.state_roundtrip actual.frontend).symm
       · exact core
@@ -247,8 +310,46 @@ theorem certified_run (image : Compiled source idle) (control : Pinwheel.Program
     · exact (congrArg Pinwheel.Program.Streaming.Host.BootControl.State.ready related.project).trans ready
     · exact (congrArg Pinwheel.Program.Streaming.Host.BootControl.State.active related.project).trans active
   | cons safe delivery after ih =>
-    obtain ⟨next,nextRelated⟩ := Related.step image _ _ _ actual sourceCore related _ safe delivery
+    obtain ⟨next,nextRelated⟩ := Related.stepFrom image _ _ _ actual sourceCore related room _ safe delivery
     exact ih _ _ nextRelated
+
+theorem certified_run (image : Compiled source idle) (control : Pinwheel.Program.Streaming.Host.BootControl.State)
+    (n : Nat) (installed : Bool) (pins : List Session.Pins)
+    (certificate : BootPins.Certified image.words idle control n installed pins)
+    (actual : Package.State a) (sourceCore : Carrier a)
+    (related : Related image control n installed actual sourceCore) :
+    ∃ final : Session.State a, Initialized image
+      (actual.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)) final := by
+  obtain ⟨final,reached,generation,transfer⟩ :=
+    certified_run_from image control n installed pins certificate actual sourceCore related (by decide)
+  exact ⟨final,reached.package,reached.structural,reached.free,generation.trans rfl,transfer,
+    reached.phase,reached.ready,reached.active⟩
+
+/-- The upload may start immediately after the accepted RELEASE delivery.
+The certificate can include its remaining reply clocks before writing row
+zero. Higher old rows remain in the physical bank; the newly committed
+count alone defines the live image. -/
+theorem reload_after_release (image : Compiled source idle) (oldRep : SourceRefinement.Image oldProgram)
+    (actualFree : Package.State a) (sourceFree : Session.State a) (before : State a) (releaseInput : Input)
+    (package : actualFree = SessionCorrespondence.values oldRep sourceFree)
+    (core : sourceFree.core = before.release oldProgram releaseInput)
+    (pins : List Session.Pins)
+    (certified : BootPins.Certified image.words idle
+      (Pinwheel.Program.Streaming.Host.BootControl.project sourceFree.host) 0 false pins)
+    (room : before.generation ≠ 65535#16) :
+    ∃ final : Session.State a, Ready image (compiledImageFrom image (installedMetadata oldRep))
+      (actualFree.run (Package.Components.typed a) (pins.map SessionCorrespondence.pins)) final ∧
+      final.core.generation = before.generation + 1 ∧ final.core.transfer = before.transfer := by
+  let carrier := releaseCarrier oldProgram before releaseInput
+  apply certified_run_from image _ 0 false pins certified actualFree carrier _ room
+  refine ⟨?_,?_,rfl,rfl,rfl,?_,Nat.zero_le _,fun h => Bool.noConfusion h⟩
+  · rw [package,SessionCorrespondence.values,InitializedSession.frontend_source_roundtrip]
+  · rw [package]
+    change @SourceRefinement.values oldProgram a oldRep sourceFree.core =
+      @Initialization.values a (installedMetadata oldRep) carrier
+    rw [core,values_ofCarrier,ofCarrier_release]
+  · rw [ofCarrier_release]
+    exact before.release_structural oldProgram releaseInput
 
 theorem cold_related (image : Compiled source idle) :
     Related image BootPins.initialControl 0 false

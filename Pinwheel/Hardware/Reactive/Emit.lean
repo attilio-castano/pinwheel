@@ -18,10 +18,24 @@ def registerLabel (label : {w : Nat} → M w → String) : {w : Nat} → Registe
   | _, .core r => Reactive.registerLabel r | _, .memory r => label r
   | _, .idleLevels => "idle_levels" | _, .idleEnabled => "idle_enabled" | _, .last => "last"
 
+/-- Named wire boundary between the selected combinational read and the
+    scheduler. A registered schedule may add state and hold one core edge. -/
+structure FetchWires where
+  successor : String
+  hold : Option String := none
+  extraRegisters : Array String := #[]
+  monitor : Option String := none
+
+private def emitHold (hold current next : String) (width : Nat) : Hardware.Emit.M String :=
+  Hardware.Emit.expression (fun p => if p then hold else next) (fun _ => current)
+    (.mux (.input true) (.reg ()) (.input false) : Expr (fun _ => Bool) (fun _ => Unit) width)
+
 /-- Emit the proved bindings as named wires, avoiding exponential tree expansion.
 The adapter and CIRCT translation remain outside Lean's proof boundary. -/
-def moduleText (name : String) (f : Frontend M) (memory : Array (Sigma M))
-    (label : {w : Nat} → M w → String) : Except String String := do
+def moduleTextScheduled (name : String) (f : Frontend M) (memory : Array (Sigma M))
+    (label : {w : Nat} → M w → String)
+    (schedule : String → Hardware.Emit.M FetchWires) :
+    Except String String := do
   let regName : {w : Nat} → Register M w → String := fun r => "%r_" ++ registerLabel label r
   let inpName : {w : Nat} → Input w → String := fun i => "%" ++ inputLabel i
   let (result, buffer) ← (do
@@ -34,32 +48,43 @@ def moduleText (name : String) (f : Frontend M) (memory : Array (Sigma M))
     let address ← Hardware.Emit.expression baseName coreName Reactive.target
     let successor ← Hardware.Emit.expression (fun _ => address) regName
       (f.read memoryReg (.input .address))
+    let scheduled ← schedule successor
     let schedName : {w : Nat} → Reactive.Input w → String := fun port => match port with
-      | .successor => successor | _ => baseName port
+      | .successor => scheduled.successor | _ => baseName port
     let write ← Hardware.Emit.expression inpName regName (memoryInputs (M := M) .write)
     let busy ← Hardware.Emit.expression inpName regName (memoryInputs (M := M) .busy)
     let bank ← Hardware.Emit.expression inpName regName (memoryInputs (M := M) .indexBank)
     let memName : {w : Nat} → Execution.Input w → String := fun port => match port with
       | .write => write | .busy => busy | .indexBank => bank | .address => "%address"
       | .data => "%data" | .readA => address | .readB => address
-    let mut declarations : Array String := #[]
+    let mut declarations := scheduled.extraRegisters
     for ⟨w, r⟩ in registers memory do
       let value ← match r with
-        | .core r => Hardware.Emit.expression schedName coreName (Reactive.circuit.next r)
+        | .core r => do
+          let value ← Hardware.Emit.expression schedName coreName (Reactive.circuit.next r)
+          match scheduled.hold with
+          | none => pure value
+          | some hold => emitHold hold (coreName r) value w
         | .memory r => Hardware.Emit.expression memName (fun r => regName (.memory r)) (f.next r)
         | _ => Hardware.Emit.expression inpName regName ((circuit f).next r)
       declarations := declarations.push s!"    {regName r} = seq.compreg {value}, %clock : i{w}"
     let mut outputs : Array String := #[]
     for ⟨_, o⟩ in Reactive.outputs do
       outputs := outputs.push (← Hardware.Emit.expression schedName coreName (Reactive.circuit.output o))
-    return (declarations, outputs) : Hardware.Emit.M _).run {}
+    return (declarations, outputs, scheduled.monitor) : Hardware.Emit.M _).run {}
   let ports := #["in %clk : i1"] ++ inputs.map (fun ⟨w, i⟩ => s!"in %{inputLabel i} : i{w}") ++
-    Reactive.outputs.map (fun ⟨w, o⟩ => s!"out {Reactive.outputLabel o} : i{w}")
-  let output := "    hw.output " ++ String.intercalate ", " result.2.toList ++ " : " ++
-    String.intercalate ", " (Reactive.outputs.toList.map (fun ⟨w, _⟩ => s!"i{w}"))
+    Reactive.outputs.map (fun ⟨w, o⟩ => s!"out {Reactive.outputLabel o} : i{w}") ++
+    (if result.2.2.isSome then #["out fetch_wait : i1"] else #[])
+  let output := "    hw.output " ++ String.intercalate ", " (result.2.1.toList ++ result.2.2.toList) ++
+    " : " ++ String.intercalate ", " (Reactive.outputs.toList.map (fun ⟨w, _⟩ => s!"i{w}") ++
+      result.2.2.toList.map (fun _ => "i1"))
   return "module attributes {circt.loweringOptions = \"disallowPackedArrays,disallowLocalVariables,locationInfoStyle=none\"} {\n  hw.module @" ++ name ++
     "(" ++ String.intercalate ", " ports.toList ++ ") {\n    %clock = seq.to_clock %clk\n" ++
     String.intercalate "\n" (buffer.lines ++ result.1 ++ #[output]).toList ++ "\n  }\n}\n"
+
+def moduleText (name : String) (f : Frontend M) (memory : Array (Sigma M))
+    (label : {w : Nat} → M w → String) : Except String String :=
+  moduleTextScheduled name f memory label (fun successor => pure { successor })
 
 def directModule : Except String String :=
   moduleText "pinwheel_reactive_direct" direct Execution.directRegisters Execution.directRegisterLabel

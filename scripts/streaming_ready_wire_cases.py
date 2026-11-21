@@ -62,14 +62,28 @@ def audit_deadline_trace(path, alignment, expected_bit):
         stage2_scope='Stage2 readiness time is the explicit two-register sampling contract, not a private-state observation')
 
 
-def run_i2c_case(vvp, executable, directory, *, depth, direction, profile):
+def check_deadline_alignment(alignment, measured, *, budget, late=False, deadline_slot=11):
+    release, callback = alignment.get('master_release', 0), alignment.get('release_callback', 0)
+    require(alignment.get('slot') == deadline_slot and release > 0 and callback == release + budget - 3 + late and
+        alignment.get('first_raw_high') == callback + 1 and alignment.get('expected_stage2_ready') == callback + 3 and
+        alignment.get('expected_last_poll') == release + budget and 'output-enable' in alignment.get('access', ''),
+        'I2C deadline fixture lacks exact declared sampling chronology')
+    require(measured.get('public_master_release') == release and measured.get('target_release_callback') == callback and
+        measured.get('measured_first_raw_high') == callback + 1 and
+        measured.get('fresh_low_raw_edges_before_release') == 3 and
+        measured.get('independent_sda_stable_raw_edges') == 4,
+        'I2C deadline fixture lacks actual pre-edge raw-input trace verification')
+
+
+def run_i2c_case(vvp, executable, directory, *, depth, direction, profile, image=None):
     if depth not in (2, 4) or direction not in ('read', 'write') or profile not in PROFILES:
         raise ValueError('Expected one declared Ready I2C depth/direction/profile')
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     write_data, read_data = payloads()
     plan = pack_read(0x52, 64) if direction == 'read' else pack_write(0x52, write_data)
-    image = i2c_image()
+    if image is None:
+        image = i2c_image()
     validate_image(image)
     stream = image.source.instructions[image.certificate.stream_row]
     address_ack = profile != 'address_nack'
@@ -245,18 +259,8 @@ def check_i2c_cases(result):
         if case['profile'] in ('varying', 'lastpoll', 'timeout'):
             require(peer.get('target_stretch_edges', 0) > 0, 'I2C stretching fixture did not stretch')
         if case['profile'] == 'lastpoll':
-            alignment = peer.get('deadline_alignment') or {}
-            measured = peer.get('deadline_trace') or {}
-            release, callback = alignment.get('master_release', 0), alignment.get('release_callback', 0)
-            require(alignment.get('slot') == 11 and release > 0 and callback == release + 28 and
-                alignment.get('first_raw_high') == callback + 1 and alignment.get('expected_stage2_ready') == callback + 3 and
-                alignment.get('expected_last_poll') == release + 31 and 'output-enable' in alignment.get('access', ''),
-                'Last-poll fixture lacks exact declared sampling chronology')
-            require(measured.get('public_master_release') == release and measured.get('target_release_callback') == callback and
-                measured.get('measured_first_raw_high') == callback + 1 and
-                measured.get('fresh_low_raw_edges_before_release') == 3 and
-                measured.get('independent_sda_stable_raw_edges') == 4,
-                'Last-poll fixture lacks actual pre-edge raw-input trace verification')
+            check_deadline_alignment(peer.get('deadline_alignment') or {},
+                peer.get('deadline_trace') or {}, budget=31)
         if case['profile'] == 'varying':
             require(any(row.get('slot') == 585 and row.get('stimulus') == 'resolved fall timer'
                 for row in peer.get('stretches', [])), 'Varying I2C case did not include a STOP stretch')

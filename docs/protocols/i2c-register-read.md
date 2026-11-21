@@ -40,3 +40,61 @@ The runner audits every public read-compiler theorem and writes coverage, the st
 The physical execution-record experiment must support eight-bit addresses and four-bit sample destinations. The current PWL V0 format is unchanged and does not encode the wider read directly. A new load-image version is a separate interface decision; the hardware experiment can consume the compiled typed read and lower existing decoded V0 programs to the same execution-record semantics.
 
 The [E64 record layout](../storage/execution-records.md) and [decoder/store measurement](../storage/execution-hardware.md) now implement this comparison. Both direct and indexed packed backends pass the same 4,468-transaction read matrix, and their circuit reads/writes/decoder outputs have structural proofs and independent RTL checks. The indexed candidate reduces storage and generic cell count while increasing selection depth. The complete reactive scheduler circuit, atomic physical loader, and electrical I/O timing remain separate integration work.
+
+## Fetch retiming at the first ACK
+
+The direct Reactive circuit runs the same 155-row program in three variants.
+The baseline fetches the successor combinationally. The registered variant
+requests and stores the successor on the final SCL-low edge after the first
+address ACK, then resumes on the following edge. The request holds the core
+and its loaded image, and the saved successor depends on the already-captured
+ACK. The timing control moves the same register stage to the last SCL-high
+edge before the ACK has been sampled.
+
+The [circuit refinement](../../Pinwheel/Hardware/Reactive/I2CReadFetch.lean)
+relates the installed baseline and registered circuits to the existing
+combined-read model. It proves that the hardware-requested hold is a low
+edge and that the next edge consumes the response. For stage-aligned peer
+drives, the [timing contract](../../Pinwheel/I2C/RegisterReadFetch.lean)
+proves that one such hold preserves the ordered wire transitions, captures,
+and outcome and checks the additional clock against the low-time budget.
+The timing coordinates refer to the resolved transitions and capture in the
+trace. The Lean proof starts at the installed execution state. Independent
+RTL replay covers setup, loading, START, the real pad trace and terminal
+outputs for the emitted variants.
+
+The directed window allows sampling four to five clocks after the resolved
+ACK rise. In the nominal read the baseline and low-fetch variant sample at
+clock five, while the low interval below that ACK grows from eight to nine
+clocks. The high-fetch control samples at clock six. It still decodes the
+target's `0x96`, and the timing check rejects it. The positive replays also
+cover stretching and each of the three early-NACK paths. This scoped
+experiment uses direct digital samples and a declared synthetic timing window.
+
+The [closed-loop refinement](../../Pinwheel/Hardware/Reactive/I2CReadConnected.lean)
+connects each circuit to a separate copy of the same target. Each target
+chooses its drive from its state, then advances on its own resolved SCL and
+SDA. At the fetch cut, repeating the low observation must preserve the
+target's drive and leave it in the same state as a single observation.
+The proof derives the aligned schedules from this local condition.
+
+The [bounded target theorem](../../Pinwheel/Hardware/Reactive/I2CReadTarget.lean)
+discharges that condition for address `0x53`, register `0xA6`, four-clock
+phases and an eight-clock wait budget. The target follows the observed
+transaction slots and can return any byte or NACK at any of the three ACK
+positions. It can hold SCL for zero to five clocks after the first resolved
+fall, adding up to two bus wait clocks. For every target in this family,
+both installed circuits finish with the expected outcome and frame counts,
+the same ordered wire changes and captures, and a five-clock first-ACK
+capture. The registered circuit adds exactly one clock, extending the first
+ACK low interval from eight to nine clocks. RTL replay also tests targets
+that stretch later in the frame.
+
+```sh
+python3 -B scripts/check-i2c-fetch-retiming.py --tag fetch-retiming
+```
+
+The gate builds and audits the Lean source, lowers all three variants,
+replays an independent open-drain target, and checks the measured ACK
+windows and their one-cycle shifts in Lean. Find the commands, source and
+artifact hashes, and traces under `build/i2c-fetch-retiming/fetch-retiming`.

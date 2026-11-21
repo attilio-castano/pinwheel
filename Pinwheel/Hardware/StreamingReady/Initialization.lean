@@ -56,13 +56,14 @@ theorem commit_step (p : Program) (metadata : Metadata) (s : Carrier a) (i : Val
 
 def rowWord (p : Program) (k : Nat) : BitVec 64 := encode (p.memory[k % 64]'(Nat.mod_lt _ (by decide)))
 
-def metadataAfter (p : Program) : Nat → Metadata
-  | 0 => {}
-  | k+1 => (metadataAfter p k).write (BitVec.ofNat 6 k) (rowWord p k)
+def metadataAfter (p : Program) (n : Nat) (base : Metadata := {}) : Metadata :=
+  match n with
+  | 0 => base
+  | k+1 => (metadataAfter p k base).write (BitVec.ofNat 6 k) (rowWord p k)
 
-theorem metadata_word (p : Program) (n : Nat) (bound : n ≤ 64) (k : BitVec 6)
+theorem metadata_word_from (p : Program) (base : Metadata) (n : Nat) (bound : n ≤ 64) (k : BitVec 6)
     (live : k.toNat < n) :
-    (metadataAfter p n).words k = encode (p.memory[k.toNat]'k.isLt) := by
+    (metadataAfter p n base).words k = encode (p.memory[k.toNat]'k.isLt) := by
   induction n with
   | zero => omega
   | succ n ih =>
@@ -81,8 +82,8 @@ theorem metadata_word (p : Program) (n : Nat) (bound : n ≤ 64) (k : BitVec 6)
         exact last equal.symm
       simpa only [metadataAfter,Streaming.Initialization.Metadata.write,distinct,ite_false] using ih previous priorLive
 
-theorem metadata_covered (p : Program) (n : Nat) (bound : n ≤ 64) (k : Fin 64)
-    (live : k.val < n) : (metadataAfter p n).written.getLsbD k.val = true := by
+theorem metadata_covered_from (p : Program) (base : Metadata) (n : Nat) (bound : n ≤ 64) (k : Fin 64)
+    (live : k.val < n) : (metadataAfter p n base).written.getLsbD k.val = true := by
   induction n with
   | zero => omega
   | succ n ih =>
@@ -95,11 +96,29 @@ theorem metadata_covered (p : Program) (n : Nat) (bound : n ≤ 64) (k : Fin 64)
     · have priorLive : k.val < n := by omega
       simp [ih previous priorLive]
 
-theorem metadata_pending (p : Program) (n : Nat) (positive : 0 < n) :
-    (metadataAfter p n).pending = 1 := by
+theorem metadata_pending_from (p : Program) (base : Metadata) (n : Nat) (positive : 0 < n) :
+    (metadataAfter p n base).pending = 1 := by
   cases n with
   | zero => omega
   | succ n => rfl
+
+theorem metadata_tail_from (p : Program) (base : Metadata) (n : Nat) (bound : n ≤ 64)
+    (k : BitVec 6) (tail : n ≤ k.toNat) :
+    (metadataAfter p n base).words k = base.words k := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    have distinct : BitVec.ofNat 6 n ≠ k := by
+      intro same
+      have equal := congrArg BitVec.toNat same
+      rw [BitVec.toNat_ofNat, Nat.mod_eq_of_lt (by omega : n < 64)] at equal
+      omega
+    simpa only [metadataAfter, Streaming.Initialization.Metadata.write, distinct, ite_false]
+      using ih (by omega) (by omega)
+
+abbrev metadata_word (p : Program) := metadata_word_from p {}
+abbrev metadata_covered (p : Program) := metadata_covered_from p {}
+abbrev metadata_pending (p : Program) := metadata_pending_from p {}
 
 def sampled (s : Carrier a) (samples : List (Values Core.Input)) : Carrier a :=
   Streaming.Initialization.sampled s samples
@@ -164,16 +183,19 @@ def ofCarrier (s : Carrier a) : State a :=
 def CanonicalProgram (p : Program) : Prop :=
   ∀ k : Fin 64, k.val < p.length → (p.memory[k.val]).Canonical
 
-def installedImage (p : Program) (canonical : CanonicalProgram p) : SourceRefinement.Image p where
-  words := (metadataAfter p p.length).words
-  written := (metadataAfter p p.length).written
+def installedImageFrom (p : Program) (base : Metadata) (canonical : CanonicalProgram p) : SourceRefinement.Image p where
+  words := (metadataAfter p p.length base).words
+  written := (metadataAfter p p.length base).written
   pending := 0
-  source k live := metadata_word p p.length (length_le p) k live
+  source k live := metadata_word_from p base p.length (length_le p) k live
   canonical := canonical
 
-theorem values_installed (p : Program) (canonical : CanonicalProgram p) (s : Carrier a) :
-    @values a ((metadataAfter p p.length).commit (loaderGeometry p)) s =
-      @SourceRefinement.values p a (installedImage p canonical) (ofCarrier s) := by
+def installedMetadata (image : SourceRefinement.Image p) : Metadata :=
+  { words := image.words, written := image.written, pending := image.pending, valid := 1
+    count := BitVec.ofNat 7 p.length, idle := p.idle }
+
+theorem values_ofCarrier (image : SourceRefinement.Image p) (s : Carrier a) :
+    @values a (installedMetadata image) s = @SourceRefinement.values p a image (ofCarrier s) := by
   funext w port
   cases port <;> try rfl
   case phase =>
@@ -181,6 +203,21 @@ theorem values_installed (p : Program) (canonical : CanonicalProgram p) (s : Car
     cases s.phase <;> rfl
   case currentWord => exact (encode_lift s.current).symm
   done
+
+theorem values_installed_from (p : Program) (base : Metadata) (canonical : CanonicalProgram p) (s : Carrier a) :
+    @values a ((metadataAfter p p.length base).commit (loaderGeometry p)) s =
+      @SourceRefinement.values p a (installedImageFrom p base canonical) (ofCarrier s) :=
+  values_ofCarrier (installedImageFrom p base canonical) s
+
+def releaseCarrier (p : Program) (s : State a) (i : Input) : Carrier a :=
+  { pins := p.idle, generation := s.generation, transfer := s.transfer
+    samplerFirst := i.rawInputs, samplerSecond := s.samplerFirst }
+
+theorem ofCarrier_release (p : Program) (s : State a) (i : Input) :
+    ofCarrier (releaseCarrier p s i) = s.release p i := rfl
+
+abbrev installedImage (p : Program) := installedImageFrom p {}
+abbrev values_installed {a : Nat} (p : Program) := @values_installed_from a p {}
 
 theorem compiled_canonical (image : Compiled source idle) (k : Fin 64)
     (live : k.val < image.program.length) : (image.program.memory[k.val]).Canonical := by
@@ -191,8 +228,10 @@ theorem compiled_canonical (image : Compiled source idle) (k : Fin 64)
 theorem compiledCanonical (image : Compiled source idle) : CanonicalProgram image.program :=
   @compiled_canonical source idle image
 
-def compiledImage (image : Compiled source idle) : SourceRefinement.Image image.program :=
-  @installedImage image.program (@compiledCanonical source idle image)
+def compiledImageFrom (image : Compiled source idle) (base : Metadata) : SourceRefinement.Image image.program :=
+  @installedImageFrom image.program base (@compiledCanonical source idle image)
+
+abbrev compiledImage (image : Compiled source idle) := compiledImageFrom image {}
 
 theorem compiled_row (image : Compiled source idle) (k : Nat) (within : k < source.length) :
     rowWord image.program k = (image.words[k]'(by simpa only [image.wordsEqual,List.length_map] using within)) := by
