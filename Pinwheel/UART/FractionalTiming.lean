@@ -46,6 +46,27 @@ theorem sample_at_beat (p : Period) (n symbol : Nat)
       omega
   exact Nat.eq_of_mul_eq_mul_left p.positive scaled
 
+theorem reaches_center (p : Period) (n symbol : Nat) :
+    2 * symbol + 1 ≤ (run p n).beats ↔ sampleEdge p symbol ≤ n := by
+  have before : n < sampleEdge p symbol ↔ n * p.denominator ≤ center p symbol - 1 := by
+    change n < Nat.succ ((center p symbol - 1) / p.denominator) ↔ _
+    rw [Nat.lt_succ_iff, Nat.le_div_iff_mul_le p.positive]
+  rw [beat_deadline]
+  have positive : 0 < center p symbol :=
+    Nat.mul_pos (by omega) (Nat.lt_of_lt_of_le p.positive p.atMostOne)
+  unfold center at *
+  omega
+
+/-- Every center is reached on exactly its designated half-beat. -/
+theorem at_center (p : Period) (n symbol : Nat) (edge : n + 1 = sampleEdge p symbol) :
+    (run p n).beats = 2 * symbol ∧ beat p (run p n).phase = true := by
+  have before : ¬2 * symbol + 1 ≤ (run p n).beats := by
+    rw [reaches_center, ← edge]
+    omega
+  have atEdge : 2 * symbol + 1 ≤ (run p (n + 1)).beats :=
+    (reaches_center p (n + 1) symbol).2 (by omega)
+  cases fire : beat p (run p n).phase <;> simp [run, fire] at atEdge ⊢ <;> omega
+
 /-- Affine timing margins are checked at the START and STOP centers. Between
 them the sample error changes linearly with the symbol index. Detection may
 lag the sampled frame start by as much as `late` scaled units. -/

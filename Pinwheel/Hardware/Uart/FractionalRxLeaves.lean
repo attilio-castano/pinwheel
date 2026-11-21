@@ -1,7 +1,6 @@
 import Pinwheel.Hardware.Timebase.Circuit
 import Pinwheel.Hardware.Stream.Ports
 import Pinwheel.Hardware.TypedModule
-import Pinwheel.UART.RxBuffer
 
 namespace Pinwheel.Hardware.Uart.FractionalRx
 open Pinwheel.Hardware.Stream

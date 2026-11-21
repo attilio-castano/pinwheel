@@ -17,16 +17,64 @@ from validation_run import fresh_directory, sha
 ROOT = Path(__file__).resolve().parents[1]
 EMITTER = ROOT / "test/FractionalUartRxEmit.lean"
 MODULE = "Pinwheel.Hardware.Uart.FractionalRx"
-PROFILE = checks.profile(MODULE, MODULE + ".flat 6")
+PROOFS = "Pinwheel.Hardware.Uart.FractionalRxTiming"
+PROFILE = checks.profile(PROOFS, MODULE + ".flat 6")
 SCALE = 16
 HALF_BIT = 60
 FRAMES = (0xA6, 0x59)
+TIMING_BINDING = """import Proof
+open Pinwheel.Hardware Pinwheel.Hardware.Timebase Pinwheel.UART.FractionalTiming
+open Pinwheel.Hardware.Uart.FractionalRx
+namespace Pinwheel.TypedArtifact
+
+def runRx (inputs : Nat → Values Input) (initial : Values Register) : Nat → Values Register
+  | 0 => initial
+  | n + 1 => rtlComponent.step (inputs (n + 1)) (runRx inputs initial n)
+
+def resolve (inputs : Nat → Values Input) (initial : Values Register) (n : Nat) :
+    Values (Sampler.Input 6) :=
+  samplerDrive (inputs n) (runRx inputs initial (n - 1))
+
+theorem sampler_path (inputs : Nat → Values Input) (initial : Values Register) (n : Nat) :
+    @Eq (Values (Sampler.Register 6)) (samplerState (runRx inputs initial n))
+      (Sampler.runEdges (resolve inputs initial) (samplerState initial) n) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    funext b r
+    change rtlComponent.step (inputs (n + 1)) (runRx inputs initial n) (sampleReg r) = _
+    rw [congrFun (congrFun (correspondence.step_eq (inputs (n + 1)) (runRx inputs initial n)) b) (sampleReg r)]
+    change (Pinwheel.Hardware.Uart.FractionalRx.circuit 6).step _ _ (sampleReg r) = _
+    rw [sampler_step]
+    simp only [Sampler.runEdges, resolve, Nat.add_sub_cancel]
+    exact congrArg (fun s : Values (Sampler.Register 6) =>
+      (Sampler.circuit 6).step (samplerDrive (inputs (n + 1)) (runRx inputs initial n)) s r) ih
+
+theorem sample_window_rtl (p : Period) (inputs : Nat → Values Input) (initial : Values Register)
+    (aligned : Sampler.Aligned p 0 (samplerState initial))
+    (active : samplerState initial Sampler.activeReg = 1#1)
+    (resetFree : ∀ k, inputs k (.at 0) ≠ 1#1)
+    (goodStart : resolve inputs initial (sampleEdge p 0) Sampler.line = 0#1)
+    (symbol : Fin 10) (n : Nat) (edge : n + 1 = sampleEdge p symbol.val)
+    (safe : Safe p senderBit late) (delay : lag ≤ late) :
+    rtlComponent.observe (inputs (n + 1)) (runRx inputs initial n) (.at 5) = 1#1 ∧
+    symbol.val * senderBit ≤ lag + p.denominator * (n + 1) ∧
+    lag + p.denominator * (n + 1) < (symbol.val + 1) * senderBit := by
+  have clean : ∀ k, resolve inputs initial k Sampler.reset ≠ 1#1 := resetFree
+  rw [congrFun (congrFun (correspondence.output_eq (inputs (n + 1)) (runRx inputs initial n)) 1) (.at 5)]
+  change (Pinwheel.Hardware.Uart.FractionalRx.circuit 6).observe _ _ (.at 5) = 1#1 ∧ _
+  rw [sampler_observe _ _ (resetFree _), sampler_path inputs initial n]
+  exact Sampler.frame_centers p (resolve inputs initial) _ aligned active clean goodStart symbol n edge safe delay
+
+end Pinwheel.TypedArtifact
+"""
 
 
 def source_hashes():
     paths = {*checks.source_paths(), *hierarchy.source_paths(), Path(__file__).resolve(),
              ROOT / "lean-toolchain", ROOT / "lakefile.toml", ROOT / "lake-manifest.json"}
-    pending = [EMITTER, *(path for path in paths if path.suffix == ".lean")]
+    pending = [EMITTER, ROOT / (PROOFS.replace(".", "/") + ".lean"),
+               *(path for path in paths if path.suffix == ".lean")]
     visited = set()
     while pending:
         path = pending.pop()
@@ -135,7 +183,7 @@ def main():
         manifest, tools, tool_paths = checks.tool_config()
         report["tool_manifest"] = manifest
         report["tool_sha256"] = checks.cad.tool_hashes(tool_paths)
-        run(["lake", "--no-cache", "build", MODULE, "Pinwheel.UART.FractionalTiming",
+        run(["lake", "--no-cache", "build", PROOFS,
              "Pinwheel.Hardware.Artifact", "Pinwheel.Hardware.Readback.Boolean"], "lean-build")
         directory = out / "uart"
         directory.mkdir()
@@ -161,6 +209,10 @@ def main():
         modules, report["rtl"] = readback.generate(directory, flat, directory / "flat.mlir",
                                                   directory / "import.json", tools["z3"], profile=profile,
                                                   interface_checks=hierarchy.path_checks(descriptor, "assembly"))
+        (directory / "TimingBinding.lean").write_text(TIMING_BINDING)
+        audit = directory / "Audit.lean"
+        audit.write_text(audit.read_text().replace("import Proof", "import TimingBinding"))
+        modules.insert(-1, "TimingBinding")
         compile_modules(run, directory, modules)
         if "standard axioms only" not in (directory / "Audit.log").read_text():
             raise RuntimeError("Missing RTL proof audit marker")
