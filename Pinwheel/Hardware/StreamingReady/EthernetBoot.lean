@@ -32,8 +32,9 @@ private theorem loader_status (loader : Loader) (n : Nat) (pin : Session.Pins) (
   cases port <;> try rfl
   case valid =>
     change (metadata program n loader.installed).valid = BitVec.ofBool loader.installed
-    cases loader.installed <;> simp [metadata, Pinwheel.Hardware.Streaming.Initialization.Metadata.commit,
-      metadata_valid]
+    cases loader.installed
+    · exact metadata_valid program n
+    · rfl
   case pending =>
     change (metadata program n loader.installed).pending = BitVec.ofBool (loader.written && !loader.installed)
     rw [written]

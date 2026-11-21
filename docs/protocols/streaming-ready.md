@@ -398,6 +398,175 @@ reconstructed configuration under the existing protocol assumptions.
 Find the shared frontend, per-depth certificates, replay traces and axiom
 audits under `build/typed-ready/protocol-matrix`.
 
+## Shared session and deadline proofs
+
+The [session proof](../../Pinwheel/Hardware/StreamingReady/SessionProof.lean)
+gives SPI and I²C the same START, segment, and RELEASE argument. START
+establishes ownership and the core start state. Each segment returns the
+next reached state and accumulated bit custody, with its public drive trace
+related to the source trace. A later segment can use that reached state
+directly. An admitted RELEASE accounts for the last acknowledgment.
+
+The [guarded-cell theorem](../../Pinwheel/Program/StreamingReadyGuardedCell.lean)
+handles both outcomes of a bounded wait. Prior misses preserve the capture
+prefix. The first ready poll captures the bit from the second sampler,
+including when it is the final permitted poll. A miss at the deadline
+faults. With the custody invariant, the earlier captures remain available
+in the export and RX queue.
+The [I²C deadline proof](../../Pinwheel/Hardware/StreamingReady/I2CReadSession.lean)
+derives both outcomes for profiles with at least three polls using the
+resolved open-drain inputs. It counts elapsed polls from the sampled wait
+entry and distinguishes the raw edge from the two-clock-later aperture.
+
+The depth-two FIFO substitution workflow replays budgets 31 and 19 on
+both layouts. At each budget the last-poll case completes the 64-byte read.
+The one-poll-late case retains and acknowledges the 11 captured slots,
+refuses RELEASE with unused TX, and clears custody on explicit warm
+cancellation. The second late case waits until slot 42 and drains a 32-bit
+word followed by a 10-bit remainder. The peer observes 43 physical rises
+in that case, and the host acknowledges exactly 42 captures. Lean binds the
+image words from both budgets to the profiles used by the proofs.
+
+### Complete reads under service and exact fault prefixes
+
+The [completion proof](../../Pinwheel/Hardware/StreamingReady/I2CReadSuccess.lean)
+derives a finite completed read for an admitted START. The peer supplies
+resolved SDA at each capture aperture and meets each guard deadline. The
+host offers the prescribed TX plan, eventually provides reservation credit,
+and supplies a finite drain with an admissible RELEASE after completion.
+The theorem gives START, 585 qualified slots, and STOP at the resolved bus,
+the exact exported payload and acknowledgment, and the empty export at
+RELEASE. The schedule and proof use the supplied `I2cProfile`.
+
+The [fault proof](../../Pinwheel/Hardware/StreamingReady/I2CReadTimeout.lean)
+starts from an initialized image and admitted START. At any reachable data
+WAIT, a peer that holds SCL low through every eligible aperture forces a
+timeout. The proof derives the slot ordinal from the remaining count and
+checks the earlier resolved samples against the peer's payload. After an
+ordinary host drain, the exported and acknowledged bits are exactly the
+payload-dependent wire prefix before the failed slot.
+
+The [layout proof](../../test/StreamingReadyTxShiftProof.lean) uses one package
+simulation to transport both contracts, including the host reply pads across
+drain and RELEASE. The gate checks both theorem instances and the certified
+cold-upload sequence for each replayed profile.
+
+### Warm I²C to SPI switch
+
+The [RELEASE proof](../../Pinwheel/Hardware/StreamingReady/SessionProof.lean)
+establishes a free, drained package with preserved generation and transfer
+counters and cleared host export fields. The
+[warm loader proof](../../Pinwheel/Hardware/StreamingReady/BootCorrespondence.lean)
+uses a certified WRITE/COMMIT pin sequence from that exact frontend state.
+COMMIT increments the generation, preserves the transfer counter, and
+installs the new length and idle configuration. The physical word bank keeps
+older rows beyond the new length. SPI runs from the new compiled program
+through the same START-to-RELEASE proof used for a cold upload.
+
+The [switch proof](../../test/StreamingReadyProtocolSwitchProof.lean) composes
+the I²C result, RELEASE, warm upload and SPI exchange on one package state
+history for both imported FIFO layouts. A separate admission theorem proves
+that a delivered stale-generation START is rejected while the free owner,
+generation, transfer counter and driven pads remain stable.
+
+The independent replay drives one cold reset, a 64-byte I²C read and RELEASE,
+and a four-row mode-0 SPI upload over the seven-row I²C image. The wire
+receipt rejects a generation-1 START after generation 2 is installed. The
+public pads hold the prior I²C idle drive through this rejection. A valid SPI
+START exchanges 33 bits and RELEASE returns the SPI idle drive. Both layouts
+match on all 13,987 edges in this sequence.
+
+### Registered instruction reads
+
+The [registered store](../../Pinwheel/Hardware/StreamingReady/RegisteredStore.lean)
+reads the word for the next program counter and captures it in a 64-bit
+register on the edge that updates the counter. The decoder consumes that
+value in the existing fetch phase. An admitted write to the selected word
+forwards the new data to the read register. Cold reset establishes agreement
+from an arbitrary read-register value. The same image format and host
+frontend work with both stores.
+
+The [public session proof](../../Pinwheel/Hardware/StreamingReady/RegisteredStoreSession.lean)
+transports the full clock-indexed pad and host transcript. Each execution
+obtains inputs from its own environment, which advances on that execution's
+observations. The two executions produce identical inputs and outputs on
+every edge, so the store change preserves sampling apertures as well as
+captured bits and ownership. The [causal I²C bridge](../../Pinwheel/Hardware/StreamingReady/CausalSession.lean)
+derives input samples from the resolved bus and retains the host-service,
+target data setup, and deadline premises of the read theorem.
+
+```sh
+python3 -B scripts/check-ready-registered-store.py --tag ready-store
+```
+
+The gate emits and replays both stores on the same images. It compares all
+public edges across the warm I²C-to-SPI handoff and stale START, and checks
+last-poll success and exact late-poll fault prefixes at budgets 31 and 19.
+The same gate reruns the independent Reactive late-fetch control to check
+that crossing the ACK aperture still fails even if read data agrees. The
+evidence concerns digital circuit semantics and emitted RTL replay.
+
+### Checked segments and combined register reads
+
+The [segment compiler](../../Pinwheel/Program/StreamingReadySegments.lean)
+extends the Ready cell language with a per-segment count, a forward branch
+on a qualified receive bit, and a terminal instruction that discards
+accepted but unsent TX. The checker enumerates both sides of every branch.
+It checks row and branch bounds, capture availability, finite guards and
+path-level TX/RX counts. Its clock bounds apply when queue credit is
+immediately available and guards succeed within their declared windows.
+Certification binds the source rows to their encoded image before upload.
+
+One 24-row image performs the register-address write, repeated START and
+one-byte read. The target's ACKs select whether to continue or execute STOP.
+The host can queue all 36 TX bits before any branch. On each early NACK the
+engine preserves the accepted and consumed counters, closes TX, and discards
+the pending suffix. RX drains under the same owner before ordinary RELEASE.
+A guard timeout uses the existing fault path and retains unused accepted TX
+until explicit cancellation. The [control proof](../../Pinwheel/Hardware/StreamingReady/SegmentControl.lean)
+checks the instruction fields, count and latched branch decision. The
+[custody proof](../../Pinwheel/Hardware/StreamingReady/SegmentCustody.lean)
+checks discard, TX rejection, RX drain and owner-checked RELEASE.
+
+The [package simulation](../../Pinwheel/Hardware/StreamingReady/SegmentPackage.lean)
+transports the complete timed pad and host transcript across both instruction
+stores, including branches that redirect the fetch address. The
+[readback theorem](../../Pinwheel/Program/StreamingReadySegmentReadback.lean)
+relates the exact receive prefixes to the independent combined-read
+outcomes. A source gate checks those prefixes from emitted RTL against a
+wire-reactive target, including success, the three NACKs, a guard timeout,
+and a warm SPI exchange following an early RELEASE.
+
+```sh
+python3 -B scripts/check-ready-segments.py --tag ready-segments
+```
+
+### Shared SPI and register-read runner
+
+Both programs use `ReadyHost.load`, `LoadedReady.submit`, and
+`ReadyPending.finish`. The runner collects contiguous RX intervals under
+one owner and confirms the final acknowledgment before RELEASE. SPI supplies
+an exact bit count. The combined I²C read takes its request, TX plan, and
+per-exit TX/RX counts from the Lean-generated manifest. Its decoder checks
+the address and register echoes and matches the captured ACK against the
+declared exit. A timeout returns the captured prefix and keeps the owner live
+until the caller explicitly invokes `cancel`. The existing quad receipts
+carry accepted TX counts. The runner derives consumed and cancelled TX
+counts for successful exits from the checked plan and decoded RX.
+
+The [ownership proof](../../Pinwheel/Hardware/StreamingReady/ProtocolOwnership.lean)
+accounts for each accepted TX bit as reserved, discarded by an early exit,
+or still owned at the drained cut. The captured RX count is exactly the
+acknowledged end offset. A timeout can reserve the next TX bit before it
+misses its guard, so the reservation count can exceed the number of observed
+wire cells. [Legacy refinement](../../Pinwheel/Hardware/StreamingReady/SegmentLegacy.lean)
+lets the fixed-length SPI proof close on the same segmented package.
+
+The source gate uses the shared runner for standalone SPI and for SPI
+warm-loaded on the same host after I²C early RELEASE. It checks the measured
+ownership reports in Lean, including the timeout cut before explicit
+cancellation, and compares the emitted stores with independent wire peers.
+
 ## Depth-two TX FIFO substitution
 
 The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
@@ -424,7 +593,8 @@ The check emits and independently certifies both cores, imports the shared
 wrapper, and audits the composed Lean proof. Both replays exercise the full
 push/pop edge directly and then run the existing SPI backpressure cases,
 I²C read/write and deadline cases, and Ethernet refill schedules including
-the missed credit control. The 13 unchanged trace files must agree byte for
+the missed credit control. It also runs the one-boot I²C-to-SPI switch.
+The 18 trace files must agree byte for
 byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
 
 ## Verification boundaries
@@ -436,10 +606,11 @@ unbounded peer-readiness fairness are separate. Bounded guards may terminate
 in FAULT and do not require the peer eventually to become ready.
 
 The new correspondence covers every represented register and output equation,
-source runtime steps/runs, actual cold/upload/COMMIT initialization, and warm
-cancellation. Concrete cold boot is a 1,961-clock public-pin sequence, derived
-from arbitrary startup. A second warm upload is not part of that concrete cold
-boot theorem.
+source runtime steps/runs, actual cold/upload/COMMIT initialization, warm
+cancellation, and certified warm upload after RELEASE. Concrete I²C cold boot
+is a 1,961-clock public-pin sequence derived from arbitrary startup. The warm
+proof starts from the reached RELEASE boundary and an upload certificate for
+that frontend state.
 
 Development and fresh committed-source qualification are distinct. The full
 Ready gate must regenerate raw artifact certificates, actual wrapper proofs,

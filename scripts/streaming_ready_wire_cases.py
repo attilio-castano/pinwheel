@@ -62,9 +62,9 @@ def audit_deadline_trace(path, alignment, expected_bit):
         stage2_scope='Stage2 readiness time is the explicit two-register sampling contract, not a private-state observation')
 
 
-def check_deadline_alignment(alignment, measured, *, budget, late=False):
+def check_deadline_alignment(alignment, measured, *, budget, late=False, deadline_slot=11):
     release, callback = alignment.get('master_release', 0), alignment.get('release_callback', 0)
-    require(alignment.get('slot') == 11 and release > 0 and callback == release + budget - 3 + late and
+    require(alignment.get('slot') == deadline_slot and release > 0 and callback == release + budget - 3 + late and
         alignment.get('first_raw_high') == callback + 1 and alignment.get('expected_stage2_ready') == callback + 3 and
         alignment.get('expected_last_poll') == release + budget and 'output-enable' in alignment.get('access', ''),
         'I2C deadline fixture lacks exact declared sampling chronology')

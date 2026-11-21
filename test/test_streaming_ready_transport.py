@@ -8,7 +8,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from streaming_ready_transport import (LoadedReady, ReadyHost, pack_read, pack_write, project)
+from streaming_ready_transport import (CombinedI2cRead, LoadedReady, ReadyHost, byte_bits, pack_read, pack_write, project)
 from streaming_ready_compile import Cell, Instruction, lower
 from streaming_transport import (Code, Flags, Opcode, QuadTransport, Receipt,
     StreamProtocolError, StreamRejected, StreamTransportError, decode_request)
@@ -152,6 +152,24 @@ class ReadyHostTests(unittest.TestCase):
         self.assertEqual(len(pending.terminal_retries), 1)
         self.assertIsNone(host.transport.inflight)
 
+    def test_pending_tx_recovery_keeps_the_original_offer_after_blocked_pump(self):
+        def respond(request):
+            if request.opcode is Opcode.START:
+                return reply(request)
+            self.assertEqual(request.opcode, Opcode.EXCHANGE64)
+            return reply(request, tx_accepted=36)
+
+        backend = QuadFixture(respond)
+        host = ReadyHost(QuadTransport(backend), depth=2)
+        pending = loaded(host).submit((False,) * 36)
+        backend.fail_at = backend.cycle + 90
+        with self.assertRaises(StreamTransportError):
+            pending.pump()
+        with self.assertRaises(StreamProtocolError):
+            pending.pump(max_bits=0)
+        self.assertEqual(pending.recover().tx_accepted, 36)
+        self.assertEqual(pending.tx_accepted, 36)
+
     def test_rejected_bulk_empty_diagnostic_does_not_discard_held_export(self):
         offers = []
         def respond(request):
@@ -256,6 +274,144 @@ class I2cPackingTests(unittest.TestCase):
             with self.assertRaises(ValueError): call()
         with self.assertRaises(ValueError): project(pack_read(0x52, 1), (True,) * 19)
         with self.assertRaises(ValueError): project(pack_read(0x52, 1), (1,))
+
+
+class UnifiedCompletionTests(unittest.TestCase):
+    @staticmethod
+    def manifest():
+        tx = [bit for value in (0xa6, 0xa6, 0xa7) for bit in (*byte_bits(value), True)] + [True] * 9
+        return dict(schema='pinwheel.ready-register-read.v1', words=[77, 7], address=0x53, register=0xa6,
+                    tx_bits=tx, tx_budget=36, wait_budget=31, idle_levels=0, idle_enabled=0,
+                    exits=[dict(kind='complete' if size == 36 else 'discard', tx=size, rx=size)
+                           for size in (36, 27, 18, 9)])
+
+    def fixture(self, raw, *, accepted, fault=False):
+        terminal = Flags.VALID | Flags.RETAINED | (Flags.FAULT if fault else 0)
+
+        def respond(request):
+            if request.opcode in (Opcode.WRITE, Opcode.COMMIT, Opcode.RELEASE):
+                return reply(request, flags=Flags.VALID)
+            if request.opcode is Opcode.START:
+                return reply(request)
+            if request.opcode in (Opcode.EXCHANGE32, Opcode.EXCHANGE64):
+                data = sum(bit << index for index, bit in enumerate(reversed(raw)))
+                return reply(request, flags=terminal, tx_accepted=accepted, rx_valid=len(raw), data=data)
+            if request.opcode is Opcode.EXCHANGE0:
+                self.assertEqual((request.payload >> 64) & 65535, len(raw))
+                return reply(request, flags=terminal, tx_accepted=accepted, rx_start=len(raw))
+            if request.opcode is Opcode.WARM_RESET:
+                return reply(request, flags=Flags(0))
+            raise AssertionError(request.opcode)
+
+        link = QuadFixture(respond)
+        return ReadyHost(QuadTransport(link), depth=2), link
+
+    def test_spi_and_every_i2c_exit_use_the_same_runner(self):
+        program = CombinedI2cRead.from_manifest(self.manifest())
+        signed = (('write-address-nack', 9), ('register-nack', 18), ('read-address-nack', 27), ('read', 36))
+        for name, consumed in signed:
+            with self.subTest(name=name):
+                raw = list(program.tx_bits[:consumed])
+                for offset in (8, 17, 26):
+                    if offset < consumed:
+                        raw[offset] = offset + 1 == consumed
+                if consumed == 36:
+                    raw[27:35] = byte_bits(0x96)
+                host, link = self.fixture(raw, accepted=36)
+                pending = host.load(program).submit()
+                result = pending.finish(max_exchanges=1)
+                self.assertEqual(result.result.outcome, name)
+                self.assertEqual(result.result.byte, 0x96 if consumed == 36 else None)
+                self.assertEqual((result.tx_consumed, result.tx_cancelled), (consumed, 36 - consumed))
+                self.assertEqual(result.rx_bits, tuple(raw))
+                self.assertEqual((result.terminal.rx_start, result.terminal.rx_valid), (consumed, 0))
+                self.assertEqual(result.release.tag, pending.tag)
+                self.assertEqual([decode_request(packet).opcode for packet in link.frames][-4:],
+                                 [Opcode.START, Opcode.EXCHANGE64, Opcode.EXCHANGE0, Opcode.RELEASE])
+
+        host, link = self.fixture((True, False), accepted=2)
+        spi = host.load(image()).submit((False, True))
+        result = spi.finish(max_exchanges=1)
+        self.assertEqual((result.result, result.tx_consumed, result.tx_cancelled), ((True, False), 2, 0))
+        self.assertIs(result.release, host._last)
+        self.assertIsNone(host._pending)
+
+    def test_timeout_is_acknowledged_but_cancellation_is_explicit_and_recoverable(self):
+        program = CombinedI2cRead.from_manifest(self.manifest())
+        raw = program.tx_bits[:8] + (False,) + program.tx_bits[9:13]
+        host, link = self.fixture(raw, accepted=36, fault=True)
+        loaded_program = host.load(program)
+        pending = loaded_program.submit()
+        with self.assertRaises(StreamProtocolError):
+            pending.cancel()
+        result = pending.finish(max_exchanges=1)
+        self.assertIsNone(result.release)
+        self.assertIsNone(result.tx_consumed)
+        self.assertIsNone(result.tx_cancelled)
+        self.assertEqual(result.result.outcome, 'deadline')
+        self.assertEqual(result.rx_bits, raw)
+        self.assertEqual((result.terminal.rx_start, result.terminal.rx_valid), (13, 0))
+        self.assertIs(host._pending, pending)
+        self.assertEqual([decode_request(packet).opcode for packet in link.frames][-3:],
+                         [Opcode.START, Opcode.EXCHANGE64, Opcode.EXCHANGE0])
+
+        link.fail_at = link.cycle + 90
+        with self.assertRaises(StreamTransportError):
+            pending.cancel()
+        self.assertIs(host._pending, pending)
+        self.assertEqual(pending.recover().tag, pending.tag)
+        self.assertEqual(host.transport.opcode_counts[Opcode.WARM_RESET], 1)
+        self.assertIsNone(host._pending)
+        with self.assertRaises(StreamProtocolError):
+            loaded_program.submit()
+
+    def test_early_rejection_preserves_the_prior_accepted_tx_and_drains_one_prefix(self):
+        program = CombinedI2cRead.from_manifest(self.manifest())
+        terminal = Flags.VALID | Flags.RETAINED
+        captured = sum(bit << index for index, bit in enumerate(reversed(program.tx_bits[:9])))
+
+        def respond(request):
+            if request.opcode in (Opcode.WRITE, Opcode.COMMIT, Opcode.RELEASE):
+                return reply(request, flags=Flags.VALID)
+            if request.opcode is Opcode.START:
+                return reply(request)
+            if request.opcode is Opcode.EXCHANGE32:
+                if (request.payload >> 80) & 65535 == 0:
+                    return reply(request, tx_accepted=32)
+                return Receipt(request.sequence, Code.REJECTED, tag=TAG, tx_accepted=32,
+                               flags=int(terminal | Flags.REJECTED), tx_free=2, rx_queued=1)
+            if request.opcode is Opcode.EXCHANGE0:
+                if (request.payload >> 64) & 65535 == 0:
+                    return reply(request, flags=terminal, tx_accepted=32, data=captured, rx_valid=9)
+                return reply(request, flags=terminal, tx_accepted=32, rx_start=9)
+            raise AssertionError(request.opcode)
+
+        host = ReadyHost(QuadTransport(QuadFixture(respond)), depth=2)
+        pending = host.load(program).submit()
+        pending.pump(max_bits=32)
+        result = pending.finish(max_exchanges=1)
+        self.assertEqual(len(pending.terminal_retries), 1)
+        self.assertEqual(result.terminal.tx_accepted, 32)
+        self.assertEqual(result.result.outcome, 'write-address-nack')
+        self.assertEqual((result.tx_consumed, result.tx_cancelled), (9, 23))
+
+    def test_invalid_manifest_and_invalid_exit_never_release_owner(self):
+        source = self.manifest()
+        with self.assertRaises(ValueError):
+            CombinedI2cRead.from_manifest(dict(source, exits=source['exits'][:-1]))
+        with self.assertRaises(ValueError):
+            CombinedI2cRead.from_manifest(dict(source, tx_bits=[False] * 36))
+        program = CombinedI2cRead.from_manifest(source)
+        bad = replace(program, words=(1 << 64,))
+        host, link = self.fixture(program.tx_bits[:8] + (False,), accepted=36)
+        with self.assertRaises(ValueError):
+            host.load(bad)
+        self.assertEqual(link.cycle, 0)
+        pending = host.load(program).submit()
+        with self.assertRaisesRegex(StreamProtocolError, 'invalid RX prefix'):
+            pending.finish(max_exchanges=1)
+        self.assertEqual(host.transport.opcode_counts[Opcode.RELEASE], 0)
+        self.assertIs(host._pending, pending)
 
 
 if __name__ == '__main__': unittest.main()

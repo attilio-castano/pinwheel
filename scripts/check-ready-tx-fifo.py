@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 READY = "Pinwheel.Hardware.StreamingReady"
 POINTERS = {"r_tx_head", "r_tx_tail"}
 FIXTURE = "StreamingReadyTxShiftProof"
+SWITCH_FIXTURE = "StreamingReadyProtocolSwitchProof"
 
 
 def emit(run, tools, out):
@@ -47,6 +48,29 @@ def emit(run, tools, out):
     return inventories, ring, shift
 
 
+def i2c_replay_profiles(replays):
+    """Bind each completed read and missed data slot to the same uploaded image."""
+    profiles = {}
+    for budget, profile in ((31, "I2cProfile.standard"), (19, "I2CReadSession.shortDeadlineProfile")):
+        uploads = []
+        for layout in ("ring", "shift"):
+            replayed = replays[layout]
+            late = replayed["i2c_late_slot_42"][f"budget-{budget}"]
+            if budget == 31:
+                success, = [case for case in replayed["i2c"]["cases"]
+                            if case["direction"] == "read" and case["profile"] == "lastpoll"]
+            else:
+                success = replayed["i2c_short_budget"]["last_poll"]
+            if late["budget"] != budget or late["image_words"] != success["image_words"]:
+                raise RuntimeError(f"I²C replays used different images at poll budget {budget}")
+            uploads.append(success["image_words"])
+        ring, shift = uploads
+        if ring != shift:
+            raise RuntimeError(f"I²C FIFO layouts loaded different images at poll budget {budget}")
+        profiles[budget] = (profile, ring)
+    return profiles
+
+
 def certify_composition(run, tools, gate, out, report):
     wrapper = report["wrapper_certificate"]
     proof_dirs = [out / key / "proof" for key in ("ring", "shift", "frontend")]
@@ -59,15 +83,54 @@ def certify_composition(run, tools, gate, out, report):
     ((module, source),) = composition.generate(1).items()
     path = directory / f"{module}.lean"
     path.write_text(source)
-    fixture = ROOT / "test" / f"{FIXTURE}.lean"
-    imports = [line.removeprefix("import ") for text in (source, fixture.read_text())
+    fixtures = [ROOT / "test" / f"{name}.lean" for name in (FIXTURE, SWITCH_FIXTURE)]
+    imports = [line.removeprefix("import ") for text in [source, *(fixture.read_text() for fixture in fixtures)]
                for line in text.splitlines() if line.startswith("import Pinwheel.")]
     run([tools["lake"], "--no-cache", "build", *imports], "build-composition-dependencies", timeout=1800)
     gate.compile_lean(run, tools, directory, module, paths=proof_dirs)
-    (directory / fixture.name).write_bytes(fixture.read_bytes())
-    gate.compile_lean(run, tools, directory, FIXTURE, paths=proof_dirs)
+    for fixture in fixtures:
+        (directory / fixture.name).write_bytes(fixture.read_bytes())
+        gate.compile_lean(run, tools, directory, fixture.stem, paths=proof_dirs)
+    targets = "ReadyTxI2CProfiles"
+    profiles = i2c_replay_profiles(report["replays"])
+    ring_reload = report["replays"]["ring"]["i2c_to_spi"]
+    shift_reload = report["replays"]["shift"]["i2c_to_spi"]
+    i2c_words, spi_words = [ring_reload[protocol]["image_words"] for protocol in ("i2c", "spi")]
+    if (i2c_words != profiles[31][1] or i2c_words != shift_reload["i2c"]["image_words"] or
+            spi_words != shift_reload["spi"]["image_words"] or len(spi_words) >= len(i2c_words)):
+        raise RuntimeError("Warm reload did not use the same validated read and shorter SPI images on both layouts")
+    (directory / f"{targets}.lean").write_text(f"""import {SWITCH_FIXTURE}
+open Pinwheel.Hardware Pinwheel.Hardware.StreamingReady Pinwheel.Program.StreamingReady
+open Pinwheel.Artifact.StreamingReadyTxShift Pinwheel.Artifact.StreamingReadySessionD2
+
+example : (Pinwheel.Program.StreamingSPI.image .mode0 3).words = {spi_words} := by decide +kernel
+example : (Pinwheel.Program.StreamingSPI.image .mode0 3).program.length < (i2cImage .standard).program.length := by
+  decide +kernel
+
+abbrev switchMode0 := fun l r started related frame drain release payload peer read =>
+  Pinwheel.Artifact.StreamingReadyProtocolSwitch.i2c_to_spi .standard l r started related frame drain
+    release payload peer read .mode0 3
+
+abbrev rejectStaleStart := @Pinwheel.Artifact.StreamingReadyProtocolSwitch.rejects_stale_start
+""" + "".join(f"""
+example : {profile}.budgetMinusOne.val + 1 = {budget} := by decide +kernel
+example : (i2cImage {profile}).words = {words} := by decide +kernel
+
+abbrev completeBudget{budget} := i2c_completed_from_service {profile}
+abbrev missBudget{budget} := i2c_read_to_missed_deadline {profile}
+
+theorem bootBudget{budget} (l r : Package.State 1) :
+    let image := i2cImage {profile}
+    let pins := BootPins.coldPin :: BootPins.compiled image
+    ∃ boot, BootCorrespondence.Initialized image (physicalRun r (pins.map PublicPins.embed)) boot ∧
+      TxShiftPackage.Related (shiftRun l pins) (physicalRun r (pins.map PublicPins.embed)) := by
+  apply boot_i2c_profile {profile}
+  apply Pinwheel.Program.Streaming.BootPins.check_sound
+  decide +kernel
+""" for budget, (profile, words) in profiles.items()))
+    gate.compile_lean(run, tools, directory, targets, paths=proof_dirs)
     audit = gate.audit_source((ROOT / "test/ProofAudit.lean").read_text(),
-                             [*generated, module, FIXTURE], root_module=FIXTURE)
+                             [*generated, module, FIXTURE, SWITCH_FIXTURE, targets], root_module=targets)
     (directory / "ReadyTxFifoAudit.lean").write_text(audit)
     report["axiom_audit"] = gate.compile_lean(run, tools, directory, "ReadyTxFifoAudit", paths=proof_dirs).strip()
 
@@ -114,7 +177,6 @@ def main():
         replay_dirs = {}
         sources = [out / "ring/core.sv", out / "shift/core.sv", frontend, package, tt, bridge]
         report["rtl_sha256"] = {str(path.relative_to(out)): gate.digest(path) for path in sources}
-        certify_composition(run, tools, gate, out, report)
         for name in ("ring", "shift"):
             replay_dirs[name] = out / f"{name}-replay"
             report["replays"][name] = replay.replay(
@@ -122,6 +184,7 @@ def main():
                 [out / name / "core.sv", frontend, package, tt, bridge]
             )
         report["identical_public_traces"] = replay.compare(replay_dirs["ring"], replay_dirs["shift"])
+        certify_composition(run, tools, gate, out, report)
         gate.assert_hashes(out, report["rtl_sha256"])
         report["passed"] = True
     except BaseException as error:

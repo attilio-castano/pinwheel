@@ -635,6 +635,9 @@ class PendingStream:
         self.pump()
         if not self.last.retained or self.last.rx_queued:
             raise StreamProtocolError('RX data remains after the final acknowledgement')
+        return self._release_acknowledged()
+
+    def _release_acknowledged(self):
         self._operation = 'release'
         try:
             receipt = require_accepted(self.host.transport.request(Opcode.RELEASE, tag=self.tag,
