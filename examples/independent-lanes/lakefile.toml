@@ -1,0 +1,13 @@
+name = "independent-lanes"
+version = "0.1.0"
+defaultTargets = ["LaneClient"]
+
+[leanOptions]
+warningAsError = true
+
+[[require]]
+name = "pinwheel"
+path = "../.."
+
+[[lean_lib]]
+name = "LaneClient"

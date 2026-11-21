@@ -23,6 +23,15 @@ set_option linter.unusedVariables false
 """
 
 
+def source_paths():
+    return (
+        Path(__file__).resolve(),
+        ROOT / "scripts/backend_readback.py",
+        ROOT / "Pinwheel/Hardware/Artifact.lean",
+        ROOT / "Pinwheel/Hardware/Readback/Boolean.lean",
+    )
+
+
 def validate_descriptor(descriptor):
     if not isinstance(descriptor.get("module"), str) or not IDENTIFIER.fullmatch(descriptor["module"]):
         raise ValueError("Invalid top module name")
