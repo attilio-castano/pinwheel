@@ -1,24 +1,27 @@
 import Pinwheel.Hardware.Timebase.Fractional
-import Pinwheel.Hardware.AddressWindow
+import Pinwheel.Hardware.WordOps
 
 namespace Pinwheel.Hardware.Timebase
 
+private def widen (x : Expr I R w) : Expr I R (w + 1) :=
+  WordOps.cast (by omega) (.concat (.lit (0#1)) x)
+
 /-- Use an extra bit for the addition before testing and removing a full period. -/
 def sum (phase : Expr I R (w + 1)) (denominator : Expr I R w) : Expr I R (w + 1) :=
-  WordOps.add phase (AddressWindow.widen denominator)
+  WordOps.add phase (widen denominator)
 
 def beatExpr (phase : Expr I R (w + 1)) (numerator denominator : Expr I R w) : Expr I R 1 :=
-  .inv (.ult (sum phase denominator) (AddressWindow.widen numerator))
+  .inv (.ult (sum phase denominator) (widen numerator))
 
 def advanceExpr (phase : Expr I R (w + 1)) (numerator denominator : Expr I R w) :
     Expr I R (w + 1) :=
   let total := sum phase denominator
   .mux (beatExpr phase numerator denominator)
-    (.sub total (AddressWindow.widen numerator)) total
+    (.sub total (widen numerator)) total
 
 private theorem widened_toNat (x : Expr I R w) (i : Values I) (s : Values R) :
-    ((AddressWindow.widen x).eval i s).toNat = (x.eval i s).toNat := by
-  simp [AddressWindow.widen_eval, BitVec.toNat_setWidth_of_le (by omega : w ≤ w + 1)]
+    ((widen x).eval i s).toNat = (x.eval i s).toNat := by
+  simp [widen, Expr.eval]
 
 private theorem sum_toNat (p : Period)
     (phase : Expr I R (w + 1)) (numerator denominator : Expr I R w)
@@ -53,7 +56,7 @@ theorem expressions_correct (p : Period)
   have num := widened_toNat numerator i s
   by_cases fire : p.numerator ≤ (phase.eval i s).toNat + p.denominator
   · have canSubtract :
-        (AddressWindow.widen numerator).eval i s ≤ (sum phase denominator).eval i s := by
+        (widen numerator).eval i s ≤ (sum phase denominator).eval i s := by
       simpa only [BitVec.le_def, num, hp, total] using fire
     simp only [advanceExpr, Expr.eval, event, advance, beat, fire, decide_true, BitVec.ofBool_true,
       eq_self, if_true, BitVec.toNat_sub_of_le canSubtract, total, num, hp]
