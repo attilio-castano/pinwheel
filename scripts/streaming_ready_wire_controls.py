@@ -15,6 +15,7 @@ import time
 
 from streaming_ready_compile import i2c_image, validate_image
 from streaming_ready_peers import StreamingI2cPeer, expected_rx, payloads
+from streaming_ready_readback import mutation_specs
 from streaming_ready_transport import ReadyHost, pack_read
 from streaming_ready_wire_cases import audit_deadline_trace, packed
 from streaming_rtl import QuadRTL
@@ -51,19 +52,16 @@ def wire_events(path):
 
 
 def mutate_core(text, kind):
-    if kind == 'sampler-stage':
-        pattern = r"(?m)^(\s*r_stage2 <= [^\n;]+: )r_stage1(;)"
-        replacement = r'\g<1>raw_inputs\g<2>'
-        operation = 'Replace exactly the second sampler register driver with reset-or-raw_inputs'
-    elif kind == 'guard-bypass':
-        pattern = r"(?m)^(\s*r_current_word <= .* \? )(_GEN_\d+)( : r_current_word;)$"
-        replacement = r"\g<1>(\g<2> & 64'hbfffffffffffffff)\g<3>"
-        operation = 'Clear only stream guard-enable bit62 on the current-word entry assignment'
-    else:
+    operations = {
+        'sampler-stage': 'Replace exactly the second sampler register driver with reset-or-raw_inputs',
+        'guard-bypass': 'Clear only stream guard-enable bit62 on the current-word entry assignment',
+    }
+    if kind not in operations:
         raise ValueError('Unknown Ready wire mutation')
+    _, pattern, replacement, _ = next(spec for spec in mutation_specs('core') if spec[0] == kind)
     result, changes = re.subn(pattern, replacement, text)
     require(changes == 1 and result != text, 'Mutation must change exactly one recognized actual SV driver')
-    return result, operation
+    return result, operations[kind]
 
 
 def prepare_controls(sources, directory, tools, run, *, freeze=None):
@@ -93,13 +91,16 @@ def prepare_controls(sources, directory, tools, run, *, freeze=None):
     return result
 
 
-def observe(vvp, executable, directory, *, depth, profile):
+def observe(vvp, executable, directory, *, depth, profile, image=None):
     """Observe the whole outcome, then ask the independent schedule oracle."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=False)
     _, read_data = payloads()
-    plan, image = pack_read(0x52, 64), i2c_image()
+    plan = pack_read(0x52, 64)
+    if image is None:
+        image = i2c_image()
     validate_image(image)
+    stream = image.source.instructions[image.certificate.stream_row]
     trace = EdgeTrace(directory / 'wire.bin')
     peer, pending, rtl, oracle_rejected = None, None, None, False
     error_text, native_exit = None, None
@@ -111,7 +112,9 @@ def observe(vvp, executable, directory, *, depth, profile):
             host = ReadyHost(transport, depth=depth)
             host.initialize()
             loaded = host.load(image)
-            peer = StreamingI2cPeer(plan, read_data, profile=profile)
+            peer = StreamingI2cPeer(plan, read_data, profile=profile,
+                low_cycles=stream.cell.low_cycles, high_cycles=stream.cell.high_cycles,
+                wait_budget=stream.guard.limit.budget)
             rtl.device = peer
             pending = loaded.submit(plan.tx_bits, bit_count=585)
             transport.idle(64)
@@ -161,6 +164,19 @@ def observe(vvp, executable, directory, *, depth, profile):
     return result
 
 
+def check_late_custody(value):
+    require(value.get('native_exit_code') == 0 and value.get('oracle_rejected') is False and
+        value.get('error') is None, 'I2C late-poll control did not complete its expected fault path')
+    observed = value.get('observation', {})
+    require(observed.get('fault') is True and observed.get('retained') is True and
+        observed.get('captured_bits') == 11 and observed.get('physical_data_rises') in (11, 12) and
+        observed.get('owner_tag') == 65537 and observed.get('tx_accepted') == 32 and
+        observed.get('rx_sha256') == hashlib.sha256(packed(expected_rx(pack_read(0x52, 64), payloads()[1])[:11])).hexdigest() and
+        all(observed.get(name) is True for name in
+            ('prefix_acknowledged', 'unused_tx_release_refused', 'warm_cancelled')),
+        'Correct two-stage late readiness did not retain exactly its 11-bit prefix')
+
+
 def check_controls(result):
     require(result.get('schema') == SCHEMA and result.get('passed') is True and result.get('depth') in (2, 4),
         'Incomplete Ready wire-control scope')
@@ -174,14 +190,7 @@ def check_controls(result):
             (isinstance(value.get('error'), str) and 'I2C ' in value['error'] if index else value.get('error') is None),
             'Ready wire control used a native failure or the wrong distinguishing oracle')
         if index == 0:
-            observed = value.get('observation', {})
-            require(observed.get('fault') is True and observed.get('retained') is True and
-                observed.get('captured_bits') == 11 and observed.get('physical_data_rises') in (11, 12) and
-                observed.get('owner_tag') == 65537 and observed.get('tx_accepted') == 32 and
-                observed.get('rx_sha256') == hashlib.sha256(packed(expected_rx(pack_read(0x52, 64), payloads()[1])[:11])).hexdigest() and
-                all(observed.get(name) is True for name in
-                    ('prefix_acknowledged', 'unused_tx_release_refused', 'warm_cancelled')),
-                'Correct two-stage late readiness did not retain exactly its11-bit prefix')
+            check_late_custody(value)
         if index < 2:
             observed = value.get('observation', {})
             alignment = observed.get('deadline_alignment', {})

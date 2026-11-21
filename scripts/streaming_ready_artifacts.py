@@ -119,7 +119,11 @@ def load_gate():
     return module
 
 
-def component(kind, addr_bits, emitted, out, tools, run, *, gate=None):
+def component(kind, addr_bits, emitted, out, tools, run, *, gate=None, tx_layout='ring'):
+    rb = adapter.backend(kind,addr_bits,tx_layout=tx_layout)
+    prefix = ('ReadyCoreD'+str(2**addr_bits)) if kind=='core' else 'ReadyQuadFrontend'
+    if tx_layout == 'shift':
+        prefix += 'Shift'
     gate = load_gate() if gate is None else gate
     emitted, out = Path(emitted), Path(out)
     out.mkdir(parents=True, exist_ok=False)
@@ -127,14 +131,14 @@ def component(kind, addr_bits, emitted, out, tools, run, *, gate=None):
     proof.mkdir()
     report = dict(passed=False, kind=kind, addr_bits=addr_bits,
         boundary='All raw two-state register and output equations; no standalone initialized source-session claim.')
+    if kind == 'core':
+        report['tx_layout'] = tx_layout
     started = time.monotonic()
     freeze = lambda paths: gate.freeze_inputs(report,out,paths)
     # Inputs outside this component's directory are inventoried before use too.
     input_hashes = {str(p.resolve()):gate.digest(p) for p in emitted.iterdir() if p.is_file()}
     report['emitted_input_sha256_before'] = input_hashes
     try:
-        rb = adapter.backend(kind,addr_bits)
-        prefix = ('ReadyCoreD'+str(2**addr_bits)) if kind=='core' else 'ReadyQuadFrontend'
         stem = 'core' if kind=='core' else 'frontend'
         mlir = emitted/(stem+'.mlir')
         assembly = emitted/('assembly.json' if kind=='core' else 'frontend-assembly.json')
@@ -199,6 +203,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--kind',choices=('core','frontend'),required=True)
     p.add_argument('--addr-bits',type=int,choices=(1,2),default=1)
+    p.add_argument('--tx-layout',choices=('ring','shift'),default='ring')
     p.add_argument('--emitted',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--circt',default=str(ROOT/'build/tools/firtool-1.159.0/bin/circt-opt'))
@@ -213,7 +218,8 @@ def main():
     tools = dict(circt=a.circt,yosys=a.yosys,solver=a.solver,lake=str(prefix/'bin/lake'))
     report = dict(standalone_qualification=False,commands=run.records)
     try:
-        report['component'] = component(a.kind,a.addr_bits,a.emitted,a.out/'component',tools,run)
+        report['component'] = component(a.kind,a.addr_bits,a.emitted,a.out/'component',tools,run,
+                                       tx_layout=a.tx_layout)
         report['passed'] = True
     finally:
         load_gate().write_json(a.out/'report.json',report)

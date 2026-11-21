@@ -3,6 +3,7 @@ import Pinwheel.Hardware.StreamingReady.BootUpload
 import Pinwheel.Hardware.StreamingReady.CANSession
 import Pinwheel.Hardware.StreamingReady.Core
 import Pinwheel.Hardware.StreamingReady.CoreEmit
+import Pinwheel.Hardware.StreamingReady.EthernetRefill
 import Pinwheel.Hardware.StreamingReady.EthernetSession
 import Pinwheel.Hardware.StreamingReady.I2CReadSession
 import Pinwheel.Hardware.StreamingReady.Initialization
@@ -22,6 +23,8 @@ import Pinwheel.Hardware.StreamingReady.SourceRefinement
 import Pinwheel.Hardware.StreamingReady.StepCorrespondence
 import Pinwheel.Hardware.StreamingReady.SWDSession
 import Pinwheel.Hardware.StreamingReady.TinyWiring
+import Pinwheel.Hardware.StreamingReady.TxShiftPackage
+import Pinwheel.Hardware.StreamingReady.TypedExportShift
 import Pinwheel.Hardware.StreamingReady.WarmReset
 import Pinwheel.Hardware.StreamingReady.Wiring
 import Pinwheel.Program.StreamingI2CService

@@ -158,6 +158,17 @@ python3.12 -B scripts/streaming_8x4_spi_modes.py \
   --out build/spi-modes-frozen
 ```
 
+The [typed export](../../Pinwheel/Hardware/StreamingReady/TypedExport.lean)
+uses `TypedModule` for the existing sampled-ready core and shared quad frontend.
+The depth-two SPI-only entry point uses the same
+[typed protocol workflow](#typed-protocol-matrix).
+
+```sh
+python3 -B scripts/check-typed-spi.py --tag spi-local
+```
+
+The report and generated certificates are in `build/typed-spi/spi-local`.
+
 ## JTAG DR scan
 
 The existing 13-row JTAG image uses unguarded instructions and has the same
@@ -329,6 +340,92 @@ python3.12 -B scripts/streaming_8x4_ethernet.py \
   --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
   --out build/ethernet-frozen
 ```
+
+### Host refill policies
+
+The [credit checker](../../Pinwheel/Program/StreamingEthernetCredit.lean)
+uses the session's runtime commands to establish the PHY slot levels, TX
+credit and next bit at each reservation. The shared frame theorem then
+establishes the exact wire trace. The original uniform policy launches
+refills 384 clocks apart. The staggered policy delays every other refill by
+24 clocks. Lean checks both policies for one- and two-clock sampled PHY high
+widths.
+
+With the pinned hardware tools installed, run the depth-two typed workflow
+with a fresh tag.
+
+```sh
+python3 -B scripts/typed_ready_workflow.py --ethernet-only --tag refill-policies
+```
+
+The replay uses the independent PHY at high width one and compares legacy
+and typed RTL traces byte for byte. Lean binds the replay's frame bytes,
+image and observed refill launch cuts to the two proved schedules. The
+late control delays the first refill by 180 clocks and the second by 64.
+Lean checks that the engine lacks credit at the reservation after bit 64.
+The host admits all 576 bits and releases the owner. The PHY sees the first
+incorrect bit at index 65, counted from zero, with completion six clocks
+late. Find the generated proofs and traces under
+`build/typed-ethernet/refill-policies`.
+
+## Typed protocol matrix
+
+With the pinned hardware tools installed, run SPI and I²C at FIFO depths two
+and four with a fresh tag.
+
+```sh
+python3 -B scripts/typed_ready_workflow.py --tag protocol-matrix
+```
+
+The workflow builds the legacy and typed emitters from Lean source and
+requires identical port and register inventories, MLIR, and lowered RTL.
+Each depth shares one core and wrapper certificate across both protocols.
+The frontend certificate serves both depths after the workflow verifies
+identical frontend RTL. Each depth's simulations use the same certified
+digital core and wrapper bytes.
+
+SPI runs the existing six exchanges against both emissions and compares the
+public traces byte for byte. Its
+[artifact proof](../../test/StreamingReadyTypedSPIProof.lean) carries cold
+boot and START-to-RELEASE onto the reconstructed RTL. I²C runs the existing
+read and write cases, including last-poll success. The separate one-poll-late
+control checks retained fault and acknowledgment, and sampler-stage and
+guard-bypass mutations must fail the independent wire oracle. The
+[I²C artifact proof](../../test/StreamingReadyTypedI2CProof.lean) carries
+cold boot, the completed 64-byte read, and both deadline theorems onto each
+reconstructed configuration under the existing protocol assumptions.
+
+Find the shared frontend, per-depth certificates, replay traces and axiom
+audits under `build/typed-ready/protocol-matrix`.
+
+## Depth-two TX FIFO substitution
+
+The [shift implementation](../../Pinwheel/Hardware/StreamingReady/TxShiftCore.lean)
+keeps the transmit head in a fixed slot and moves each word with its valid-bit
+count. Its emitted register inventory has 103 entries. The ring has 105,
+including separate TX head and tail pointers. The implementations share the
+core port interface, quad frontend, and package wiring.
+
+The [queue law](../../Pinwheel/Hardware/StreamingReady/TxQueue.lean) relates the
+stored slots in head order. Admission and dequeue both inspect pre-edge
+occupancy. A full simultaneous push and pop removes the old head and rejects
+the push. A push into an empty queue supplies data on a later edge. The
+[package proof](../../test/StreamingReadyTxShiftProof.lean) relates the actual
+imported RTL of both layouts. One cold edge establishes the relation from
+independent startup assignments. Every public pad then agrees after any
+finite input prefix, and the SPI, I²C, and Ethernet pin contracts use the same
+reference trace.
+
+```sh
+python3 -B scripts/check-ready-tx-fifo.py --tag tx-layout
+```
+
+The check emits and independently certifies both cores, imports the shared
+wrapper, and audits the composed Lean proof. Both replays exercise the full
+push/pop edge directly and then run the existing SPI backpressure cases,
+I²C read/write and deadline cases, and Ethernet refill schedules including
+the missed credit control. The 13 unchanged trace files must agree byte for
+byte. Reports and traces are under `build/ready-tx-fifo/tx-layout`.
 
 ## Verification boundaries
 

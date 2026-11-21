@@ -58,13 +58,13 @@ def exchange(rtl, transport, loaded, mode, count):
                 tx_bytes=tx.hex(), rx_bytes=rx.hex(), end_edge=rtl.cycle, peer=observation)
 
 
-def run_cases(vvp, executable, trace_path):
+def run_cases(vvp, executable, trace_path, *, depth=DEPTH):
     trace = EdgeTrace(trace_path)
     images, cases = [], []
     try:
         with QuadRTL(vvp, executable, record_limit=0, record_sink=trace) as rtl:
             transport = QuadTransport(rtl)
-            host = ReadyHost(transport, depth=DEPTH)
+            host = ReadyHost(transport, depth=depth)
             host.initialize()
             for mode in (0, 2):
                 loaded = host.load(spi_image(mode=mode))

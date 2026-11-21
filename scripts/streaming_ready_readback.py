@@ -3,20 +3,34 @@ import streaming_readback as base
 from streaming_readback import (CORE_INPUTS, CORE_OUTPUTS, CORE_REGISTERS,
     FRONTEND_INPUTS, FRONTEND_REGISTERS, adapt, check_interface, hints_source,
     graphs_source, sources_source, helper_source, boolean_abstractions,
-    links_source, model_source, endpoints_source, proof_source, prefix_imports,
+    links_source, model_source, endpoints_source, proof_source, prefix_imports, register_term,
     mutation_specs, mutation_sources)
 shared, decomposition = base.shared, base.decomposition
 
 
-def backend(kind, addr_bits=1):
+def backend(kind, addr_bits=1, *, tx_layout='ring'):
+    if tx_layout not in ('ring', 'shift') or (tx_layout == 'shift' and (kind != 'core' or addr_bits != 1)):
+        raise ValueError('Unsupported Ready TX layout for this component or depth')
     rb = base.backend(kind, addr_bits)
+    shift_import = ''
     if kind == 'core':
         rb.TOP = 'pinwheel_streaming_ready_core_d' + str(2**addr_bits)
         rb.CIRCUIT = '(Pinwheel.Hardware.StreamingReady.Core.circuit ' + str(addr_bits) + ')'
         rb.NAMESPACE = 'Pinwheel.Artifact.StreamingReadyCoreD' + str(2**addr_bits)
+        if tx_layout == 'shift':
+            shift_import = 'import Pinwheel.Hardware.StreamingReady.TxShiftCore\n'
+            shift = 'Pinwheel.Hardware.StreamingReady.TxShiftCore'
+            rb.CIRCUIT = shift + '.circuit'
+            rb.REGISTER_TYPE = shift + '.Register'
+            rb.NAMESPACE += 'Shift'
+            rb.RETAINED_REGISTER = shift + '.retained'
+            del rb.REGISTERS['r_tx_head'], rb.REGISTERS['r_tx_tail']
+            rb.REGISTER_PATTERNS = {name: f'⟨{ctor}, _⟩' for name, (_, ctor) in rb.REGISTERS.items()}
+            rb.REGISTERS = {name: (width, register_term(rb, ctor))
+                            for name, (width, ctor) in rb.REGISTERS.items()}
     else:
         rb.NAMESPACE = 'Pinwheel.Artifact.StreamingReadyFrontend'
-    rb.HEADER = ('import Pinwheel.Hardware.StreamingReady.CoreEmit\n'
+    rb.HEADER = (shift_import + 'import Pinwheel.Hardware.StreamingReady.CoreEmit\n'
         'import Pinwheel.Hardware.Streaming.FrontendEmit\n'
         'open Pinwheel.Hardware Pinwheel.Hardware.Streaming\nnamespace ' + rb.NAMESPACE + '\n'
         'set_option maxRecDepth 100000\nset_option maxHeartbeats 8000000\n'
