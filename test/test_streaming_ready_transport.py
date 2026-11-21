@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from streaming_ready_transport import (BranchingSwdRead, CombinedI2cRead, LoadedReady, ReadyHost,
-    byte_bits, pack_read, pack_write, project)
+from streaming_ready_transport import (BranchingSwdRead, CheckedReadyImage, CombinedI2cRead, LoadedReady,
+    ReadyHost, byte_bits, pack_read, pack_write, project)
 from streaming_ready_compile import Cell, Instruction, lower
 from streaming_transport import (Code, Flags, Opcode, QuadTransport, Receipt,
     StreamProtocolError, StreamRejected, StreamTransportError, decode_request)
@@ -316,6 +316,13 @@ class UnifiedCompletionTests(unittest.TestCase):
         return dict(schema='pinwheel.ready-swd-read.v1', words=[13, 2], tx_bits=[], tx_budget=0, start_count=0,
                     idle_levels=0, idle_enabled=1, exits=[dict(kind='complete', tx=0, rx=size) for size in (3, 36)])
 
+    @staticmethod
+    def checked_manifest(*, start_count=0, tx_bits=None, exits=None):
+        return dict(schema='pinwheel.ready-image.v1', words=[13, 2], start_count=start_count,
+                    tx_bits=[] if tx_bits is None else tx_bits, idle_levels=0, idle_enabled=0,
+                    exits=[dict(kind='complete', tx=0, rx=3, core_clocks=None, external_polls=3)]
+                    if exits is None else exits)
+
     def fixture(self, raw, *, accepted, fault=False):
         terminal = Flags.VALID | Flags.RETAINED | (Flags.FAULT if fault else 0)
 
@@ -368,6 +375,78 @@ class UnifiedCompletionTests(unittest.TestCase):
         self.assertEqual((result.result, result.tx_consumed, result.tx_cancelled), ((True, False), 2, 0))
         self.assertIs(result.release, host._last)
         self.assertIsNone(host._pending)
+
+    def test_checked_receive_uses_manifest_count_and_returns_chronological_bits(self):
+        manifest = self.checked_manifest()
+        program = CheckedReadyImage.from_manifest(manifest)
+        manifest['exits'][0]['rx'] = 9
+        host, link = self.fixture((True, False, False), accepted=0)
+        loaded = host.load(program)
+        with self.assertRaisesRegex(ValueError, 'supplies its own TX plan and START count'):
+            loaded.submit(bit_count=3)
+        pending = loaded.submit()
+        with self.assertRaisesRegex(TimeoutError, 'owner remains live'):
+            pending.wait(max_exchanges=0)
+        self.assertIs(host._pending, pending)
+        finished = pending.finish(max_exchanges=1)
+        self.assertEqual(finished.result, finished.rx_bits)
+        self.assertEqual(finished.rx_bits, (True, False, False))
+        self.assertEqual((finished.tx_consumed, finished.tx_cancelled), (0, 0))
+        self.assertEqual(finished.release.tag, pending.tag)
+        self.assertIsNone(host._pending)
+        requests = [decode_request(packet) for packet in link.frames]
+        self.assertEqual([request.opcode for request in requests],
+                         [Opcode.WRITE, Opcode.WRITE, Opcode.COMMIT, Opcode.START,
+                          Opcode.EXCHANGE0, Opcode.EXCHANGE0, Opcode.RELEASE])
+        self.assertEqual((requests[3].payload >> 96) & 65535, 0)
+        self.assertEqual((program.exits[0].core_clocks, program.exits[0].external_polls), (None, 3))
+
+    def test_checked_manifest_accounts_for_discard_and_retains_a_fault_prefix(self):
+        exits = [dict(kind=kind, tx=tx, rx=rx, core_clocks=20, external_polls=0)
+                 for kind, tx, rx in [('complete', 4, 4), ('discard', 2, 2), ('fault', 3, 5)]]
+        program = CheckedReadyImage.from_manifest(self.checked_manifest(start_count=4, tx_bits=[True] * 4, exits=exits))
+        for raw, fault, consumed in (((False, True), False, 2), ((True, False, True, True, False), True, None)):
+            with self.subTest(fault=fault):
+                host, _ = self.fixture(raw, accepted=4, fault=fault)
+                pending = host.load(program).submit()
+                finished = pending.finish(max_exchanges=1)
+                self.assertEqual(finished.rx_bits, raw)
+                self.assertEqual(finished.terminal.rx_start, len(raw))
+                self.assertEqual(finished.tx_consumed, consumed)
+                if fault:
+                    self.assertIsNone(finished.result)
+                    self.assertIsNone(finished.release)
+                    self.assertIsNone(finished.tx_cancelled)
+                    self.assertIs(host._pending, pending)
+                    pending.cancel()
+                    self.assertIsNone(host._pending)
+                else:
+                    self.assertEqual(finished.result, raw)
+                    self.assertEqual(finished.tx_cancelled, 2)
+                    self.assertEqual(finished.release.tag, pending.tag)
+
+    def test_checked_manifest_rejects_incoherent_metadata_and_ambiguous_accounting(self):
+        manifest = self.checked_manifest()
+        exit_ = manifest['exits'][0]
+        candidates = (dict(manifest, words=[True]), dict(manifest, start_count=True),
+                      dict(manifest, idle_enabled=8), dict(manifest, exits=[]),
+                      dict(manifest, exits=[dict(exit_, core_clocks=7)]),
+                      dict(manifest, exits=[dict(exit_, external_polls=0)]),
+                      dict(manifest, exits=[dict(exit_, core_clocks=0, external_polls=0)]),
+                      dict(manifest, exits=[dict(exit_, external_polls=True)]),
+                      dict(manifest, exits=[dict(exit_, rx=65536)]))
+        for candidate in candidates:
+            with self.subTest(candidate=candidate), self.assertRaises(ValueError):
+                CheckedReadyImage.from_manifest(candidate)
+        with self.assertRaisesRegex(ValueError, 'TX payload length must equal its START budget'):
+            CheckedReadyImage.from_manifest(dict(manifest, start_count=1))
+        program = CheckedReadyImage.from_manifest(self.checked_manifest(start_count=2, tx_bits=[True, False],
+            exits=[dict(exit_, tx=2), dict(exit_, kind='discard', tx=1, rx=2)]))
+        inconsistent = replace(program, exits=(program.exits[0], replace(program.exits[1], rx=3)))
+        host, link = self.fixture((), accepted=0)
+        with self.assertRaisesRegex(ValueError, 'same RX length disagree on TX consumed'):
+            host.load(inconsistent)
+        self.assertEqual(link.cycle, 0)
 
     def test_swd_ack_selects_terminal_length_and_decoded_status(self):
         program = BranchingSwdRead.from_manifest(self.swd_manifest())

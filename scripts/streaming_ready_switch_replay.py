@@ -14,12 +14,13 @@ FRESH_IDENTIFIER = 0x2D4
 FRESH_BYTE = 0x69
 
 
-def free_cut(rtl, observe, generation, transfer):
+def free_cut(rtl, observe, generation, transfer, *, idle=(0, 0)):
     state = observe(rtl)
+    pins = rtl.observation.logical
     require(state["phase"] == 0 and state["generation"] == generation and state["transfer"] == transfer and
             state["tx_free"] == can.DEPTH and all(state[field] == 0 for field in (
                 "tx_accepted", "tx_consumed", "tx_queued", "rx_produced", "rx_popped", "rx_queued")) and
-            not rtl.observation.status and not rtl.observation.logical.enabled,
+            not pins.status and (pins.levels, pins.enabled) == idle,
             "Protocol handoff did not leave a released, empty engine with the same transfer counter")
     return state
 
@@ -27,6 +28,8 @@ def free_cut(rtl, observe, generation, transfer):
 def install(rtl, host, image, observe, *, previous_generation, transfer, start_count):
     generation = previous_generation + 1
     sink, commands = rtl.record_sink, []
+    pins = rtl.observation.logical
+    idle = (pins.levels, pins.enabled)
 
     def record(edge):
         sink(edge)
@@ -39,7 +42,7 @@ def install(rtl, host, image, observe, *, previous_generation, transfer, start_c
     try:
         loaded = host.load(image)
         require(loaded.generation == generation, "COMMIT did not establish the next generation")
-        committed = free_cut(rtl, observe, generation, transfer)
+        committed = free_cut(rtl, observe, generation, transfer, idle=idle)
         stale = None
         stale_cut = None
         if previous_generation:
@@ -51,7 +54,7 @@ def install(rtl, host, image, observe, *, previous_generation, transfer, start_c
                     receipt.tx_free == can.DEPTH,
                     "Stale START changed the freshly installed image or acquired custody")
             stale = asdict(receipt)
-            stale_cut = free_cut(rtl, observe, generation, transfer)
+            stale_cut = free_cut(rtl, observe, generation, transfer, idle=idle)
     finally:
         rtl.record_sink = sink
 

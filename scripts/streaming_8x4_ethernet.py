@@ -35,6 +35,8 @@ REFILL_POLICIES = {
     'staggered': (0, 24) * 4,
     'late': (180, 64) + (0,) * 6,
 }
+DEADLINE_REFILLS = (0, 173, 64, 173, 64, 160, 28, 128)
+SAME_EDGE_REFILLS = (175, 64) + (0,) * 6
 
 
 def fixture_frame():
@@ -227,8 +229,8 @@ def finish_owner(rtl, pending, timing):
                 tx_cancelled=completed.tx_cancelled, terminal_retries=pending.terminal_retries)
 
 
-def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=None, missed_deadline=False, *,
-             timing=None):
+def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=None, missed_deadline=False,
+             missed_reservation=False, *, timing=None):
     peer = SerialPHY(high_ticks)
     rtl.device = peer
     start = rtl.cycle
@@ -284,7 +286,7 @@ def exchange(rtl, transport, loaded, name, high_ticks, corrupt, refill_delays=No
                   bursts=bursts, phy=trace)
     if timing is not None:
         result['ownership'] = ownership
-        result['timing'] = check_reservations(timing, first, missed_deadline)
+        result['timing'] = check_reservations(timing, first, missed_deadline or missed_reservation)
     if refill_delays is not None:
         result['refill_delays'] = [burst['start'] - first - FIRST_REFILL - index * BURST_BITS * BIT_CYCLES
                                    for index, burst in enumerate(bursts[1:])]
@@ -342,6 +344,21 @@ def replay_timed_runner(vvp, executable, trace_path, *, observe, schedule=None):
     cases = tuple((name, 1, False, delays, name == 'late') for name, delays in REFILL_POLICIES.items()
                   if schedule is None or name == schedule)
     return replay(vvp, executable, trace_path, cases=cases, observe=observe)
+
+
+def replay_refill_boundary(vvp, executable, trace_path, *, observe):
+    """Contrast both legal PHY widths with a push on the first missed reservation edge."""
+    cases = (('on-deadline-1', 1, False, DEADLINE_REFILLS, False),
+             ('on-deadline-2', 2, False, DEADLINE_REFILLS, False),
+             ('same-edge-late', 1, False, SAME_EDGE_REFILLS, False, True))
+    result = replay(vvp, executable, trace_path, cases=cases, observe=observe)
+    _, _, same_edge = result['cases']
+    missed = same_edge['timing']['reservations'][BURST_BITS]
+    require(same_edge['bursts'][1]['tx_push'][0] == missed['edge'] and
+            same_edge['bursts'][1]['first_visible'] == missed['edge'] + 1 and
+            missed['reserved_before'] == missed['reserved_after'] == BURST_BITS,
+            'A same-edge SNI push incorrectly supplied pre-edge credit')
+    return result
 
 
 def run(release, models, iverilog, vvp, out):

@@ -1,4 +1,5 @@
 import Pinwheel.Program.StreamingReadyRegisterReadVariants
+import Pinwheel.Program.StreamingReadyDuplex
 import Pinwheel.Program.StreamingSWDBranching
 
 /-! Row capabilities of the flat timing providers and the images that use them. -/
@@ -52,5 +53,11 @@ theorem split_i2c : SupportedRows (Pinwheel.Program.StreamingReadyRegisterReadVa
 
 theorem standard_swd : SupportedRows (Pinwheel.Program.StreamingSWDBranching.rows 3 .standard) := by
   decide +kernel
+
+theorem spi (mode : Pinwheel.Program.StreamingSPI.Mode) (duration : Fin 256) (slots : BitVec 16) :
+    SupportedRows (Pinwheel.Program.StreamingReadyDuplex.spiRows mode duration slots) := rfl
+
+theorem jtag (duration : Fin 256) (slots : BitVec 16) :
+    SupportedRows (Pinwheel.Program.StreamingReadyDuplex.jtagRows duration slots) := rfl
 
 end Pinwheel.Hardware.StreamingReady.SegmentTimingImages

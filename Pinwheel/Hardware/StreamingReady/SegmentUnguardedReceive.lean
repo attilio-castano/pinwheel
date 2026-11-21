@@ -66,7 +66,7 @@ structure SlotPlan.Served (slot : SlotPlan) (registered : Bool) (cell : Cell)
   admit : NoReset slot.admit
   credit : Core.credit.eval slot.admit (project (slot.ready registered s)) = 1#1
   lowTicks : slot.low.length = cell.lowDuration.val
-  low : ∀ i ∈ slot.low, DrainInput i
+  low : ∀ i ∈ slot.low, NoReset i
   aperture : NoReset slot.aperture
   highTicks : slot.high.length = cell.highDuration.val
   high : ∀ i ∈ slot.high, NoReset i
@@ -175,9 +175,9 @@ theorem fetch_keeps_tx (registered : Bool) (i : Values Core.Input) (s : Values (
     Core.cmd, Core.both, Core.either, Core.free, Core.starting, Core.releasing, Core.hostOwner,
     Core.owned, Core.retained, Core.isPhase, Core.reserving, Core.takingTX, ordinary.1, ordinary.2, fetch]
 
-theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+theorem held_low_runtime (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
     (phase : s (.base .phase) = 3#3) (within : inputs.length ≤ (s (.base .countdown)).toNat)
-    (ordinary : ∀ i ∈ inputs, DrainInput i) :
+    (ordinary : ∀ i ∈ inputs, NoReset i) :
     Held s (SegmentTiming.run registered s inputs) := by
   induction inputs generalizing s with
   | nil => exact ⟨rfl, rfl, rfl⟩
@@ -186,11 +186,11 @@ theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (V
       simp only [List.length_cons, List.length_nil]
       simp only [List.length_cons] at within
       omega
-    have drain := ordinary i (by simp)
+    have clean := ordinary i (by simp)
     let after : Values (Register a) := (circuit a registered).step i s
     have step : SegmentStreamStep.LowSpan s after 1 :=
-      SegmentStreamStep.low_span registered s [@i] phase one (by simpa using drain)
-    have preserved := hold registered i s (noReset drain) (.inr (.inr ⟨phase, by
+      SegmentStreamStep.low_span_runtime registered s [@i] phase one (by simpa using clean)
+    have preserved := hold registered i s clean (.inr (.inr ⟨phase, by
       intro zero
       simp [zero] at one⟩))
     have nextWithin : rest.length ≤ (after (.base .countdown)).toNat := by
@@ -199,6 +199,12 @@ theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (V
       omega
     exact preserved.trans (ih after step.phase nextWithin
       (fun j hj => ordinary j (List.mem_cons_of_mem (α := Values Core.Input) i hj)))
+
+theorem held_low (registered : Bool) (s : Values (Register a)) (inputs : List (Values Core.Input))
+    (phase : s (.base .phase) = 3#3) (within : inputs.length ≤ (s (.base .countdown)).toNat)
+    (ordinary : ∀ i ∈ inputs, DrainInput i) :
+    Held s (SegmentTiming.run registered s inputs) :=
+  held_low_runtime registered s inputs phase within fun i member => noReset (ordinary i member)
 
 /-- The live stream word has been loaded and the next slot awaits credit. -/
 structure AtReservation (rows : List Row) (pc : Nat) (cell : Cell) (guard : Option Guard) (previous : Option Bool)
@@ -238,6 +244,21 @@ theorem run_parks (registered : Bool) (s : Values (Register a)) (inputs : List (
       tail.produced.trans edge.produced⟩,
       .cons ordinary (by simp [start.phase]) (by simp [start.phase]) (by simp [start.phase]) active⟩
 
+/-- Every prefix of a refill park holds the wire pose and reservation cut
+    even when the host pushes TX or pops RX on one of those clocks. -/
+theorem park_prefix (registered : Bool) (s : Values (Register a)) {guard : Option Guard}
+    (start : AtReservation rows pc cell guard previous s) (history : ParkHistory registered s inputs)
+    (n : Nat) : Parked rows pc cell guard previous s (SegmentTiming.run registered s (inputs.take n)) := by
+  have initialClocks (state : Values (Register a)) (tape : List (Values Core.Input)) (k : Nat)
+      (parks : ParkHistory registered state tape) : ParkHistory registered state (tape.take k) := by
+    induction k generalizing state tape with
+    | zero => trivial
+    | succ k ih =>
+      cases tape with
+      | nil => trivial
+      | cons i rest => exact ⟨parks.1, parks.2.1, ih _ rest parks.2.2⟩
+  exact (run_parks registered s _ start (initialClocks s inputs n history)).1
+
 structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell : Cell)
     (previous : Option Bool) (s after : Values (Register a)) : Prop where
   remaining : (after (.base .remaining)).toNat = (s (.base .remaining)).toNat - 1
@@ -267,13 +288,13 @@ theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s : Values
     simpa [Nat.mod_eq_of_lt cell.lowDuration.isLt, service.lowTicks] using programmed
   have lowWithin : slot.low.length ≤ (reserved (.base .countdown)).toNat := Nat.le_of_eq lowTimer.symm
   have low : SegmentStreamStep.LowSpan reserved lowEnd slot.low.length :=
-    SegmentStreamStep.low_span registered reserved slot.low reserve.phase lowWithin service.low
+    SegmentStreamStep.low_span_runtime registered reserved slot.low reserve.phase lowWithin service.low
   have lowExpired : lowEnd (.base .countdown) = 0#8 := by
     apply BitVec.eq_of_toNat_eq
     change (lowEnd (.base .countdown)).toNat = 0
     rw [low.countdown, lowTimer, Nat.sub_self]
   have held := (hold registered slot.admit ready service.admit (.inr (.inl parked.phase))).trans
-    (held_low registered reserved slot.low reserve.phase lowWithin service.low)
+    (held_low_runtime registered reserved slot.low reserve.phase lowWithin service.low)
   have sampled := SegmentCapture.capture registered slot.aperture lowEnd cell service.aperture
     low.phase lowExpired (low.pose.current.trans (reserve.current.trans parked.current)) (held.capture parked.latched)
   have highTimer : (entered (.base .countdown)).toNat = slot.high.length := by
@@ -334,10 +355,9 @@ theorem run_slot (registered : Bool) (cell : Cell) (slot : SlotPlan) (s : Values
       (fun h => by rw [remaining, one] at h; exact (Nat.lt_irrefl 1) h.2)
       installed position inBounds high.latched
   · have lowActive : ActiveClocks registered reserved slot.low := by
-      apply ActiveClocks.of_prefixes registered reserved slot.low 3 (by decide) (by decide) (by decide)
-        (fun i member => noReset (service.low i member))
+      apply ActiveClocks.of_prefixes registered reserved slot.low 3 (by decide) (by decide) (by decide) service.low
       intro before after i split
-      apply (SegmentStreamStep.low_span registered reserved before reserve.phase ?_ ?_).phase
+      apply (SegmentStreamStep.low_span_runtime registered reserved before reserve.phase ?_ ?_).phase
       · rw [split, List.length_append] at lowWithin
         omega
       · intro input member

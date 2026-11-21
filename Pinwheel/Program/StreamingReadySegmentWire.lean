@@ -77,7 +77,7 @@ def timelyExpected (request : I2C.RegisterRead.Request) (target : I2C.RegisterRe
     | none => 1598
     | some stage => if stage.val == 0 then 458 else if stage.val == 1 then 821 else 1236
   let extent := target.stopAfter
-  let terminal := Terminal.planned ⟨if target.nack.isSome then .discard else .complete, extent, extent, clocks⟩
+  let terminal := Terminal.planned ⟨if target.nack.isSome then .discard else .complete, extent, extent, clocks, 0⟩
   ⟨terminal, expectedRegisterRead request target, (registerReadTX request).take extent,
     (registerReadTX request).drop extent, [], some (.drive {})⟩
 

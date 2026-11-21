@@ -417,7 +417,8 @@ inductive Settlement (i : Values Core.Input) (s : Values (Register a)) : Prop
   | cancelTimeout (fault : s (.base .phase) = 6#3) (cold : i .initialize = 0#1)
       (command : i .command = 15#4)
 
-private theorem Settlement.closes {i : Values Core.Input} {s : Values (Register a)}
+/-- Settling a retained owner frees the loader and preserves the last owner tag. -/
+theorem Settlement.closes {i : Values Core.Input} {s : Values (Register a)}
     (settlement : Settlement i s) (registered : Bool) :
     let after : Values (Register a) := (circuit a registered).step i s
     SegmentHandoffFence.FreeCut registered after ∧

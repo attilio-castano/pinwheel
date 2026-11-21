@@ -14,7 +14,7 @@ private def pins : Pinwheel.Program.StreamingReady.Pins := ⟨0, 1⟩
 private def guard : Pinwheel.Program.StreamingReady.Guard := ⟨1, 1, .misses 0⟩
 private def rows : List Row := [.cell (.driveWait pins guard), .cell .halt]
 
-private def image : Image rows 0 := ⟨[⟨.complete, 0, 0, 3⟩], by decide +kernel⟩
+private def image : Image rows 0 := ⟨[⟨.complete, 0, 0, 3, 0⟩], by decide +kernel⟩
 
 private def installedState : Values (Register 1)
   | _, .base .valid => 1

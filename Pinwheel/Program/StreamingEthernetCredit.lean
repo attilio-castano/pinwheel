@@ -8,13 +8,13 @@ the first reservation and ending on the HALT edge. -/
 namespace Pinwheel.Program.StreamingEthernetCredit
 open StreamingReady StreamingEthernetCore
 
-private def splitCells : List Input → Option (List CellInputs × Input)
+def splitCells : List Input → Option (List CellInputs × Input)
   | [finish] => some ([], finish)
   | reserve :: low :: sample :: poll :: ready :: high :: rest =>
     (splitCells rest).map fun (cells, finish) => (⟨reserve, low, sample, poll, ready, high⟩ :: cells, finish)
   | _ => none
 
-private theorem splitCells_sound (inputs : List Input) (cells : List CellInputs) (finish : Input)
+theorem splitCells_sound (inputs : List Input) (cells : List CellInputs) (finish : Input)
     (split : splitCells inputs = some (cells, finish)) : inputs = blocks cells ++ [finish] := by
   fun_induction splitCells inputs generalizing cells finish
   case case1 last =>

@@ -10,7 +10,7 @@ open Pinwheel.Hardware SegmentCore SegmentPathControl SegmentCausal
 open SegmentCadencedHost (Policy host)
 open SegmentUnguardedReceive (ParkHistory)
 open ProtocolOwnership (DrainInput)
-open Pinwheel.Program.StreamingReady (Instruction Cell)
+open Pinwheel.Program.StreamingReady (Instruction Cell Guard)
 open Pinwheel.Program.StreamingReadySegments
 
 private theorem clock_split (registered : Bool) (driver : Host H) (peer : Peer P)
@@ -126,8 +126,6 @@ structure Horizon (policy : Policy) (registered : Bool) (peer : Peer P)
     policy.cooldown ≤ state.host → SegmentPolicyCredit.PacketReady policy registered state
   quiet : ∀ (pc : Nat) (instruction : Instruction), rows[pc]? = some (.cell instruction) →
     requiredQuiet instruction ≤ policy.cooldown
-  receiveOnly : ∀ (pc : Nat) (cell : Cell), rows[pc]? = some (.cell (.stream cell none)) →
-    ∀ offset, policy.chunkAt offset = none
 
 private theorem drain_control (policy : Policy) (registered : Bool) (peer : Peer P) (s : State a Nat P)
     (fetch : s.core (.base .phase) = 1#3) : DrainInput (input registered (host policy) peer s) :=
@@ -300,8 +298,7 @@ theorem timing {count : Nat} (policy : Policy) (registered : Bool) (peer : Peer 
     | stream cell guard =>
       cases guard with
       | none =>
-        exact ⟨by simpa [requiredClocks, clocks_length] using room,
-          SegmentCadencedHost.all_drains policy (horizon.receiveOnly pc cell row) registered peer reached horizonLeft, service⟩
+        exact ⟨by simpa [requiredClocks, clocks_length] using room, service⟩
       | some g =>
         intro n limit
         have size := countdown g n limit
@@ -325,5 +322,27 @@ theorem from_start (image : Image rows budget) (supported : SegmentTimingImages.
   intro opened tape horizon
   exact SegmentTimingContract.from_start image supported registered boot start tape (policy.cooldown + 1)
     installed admitted (timing policy registered peer opened boot start rfl admitted depth horizon)
+
+/-- The same causal host supplies bounded rows in a program that can also
+    await independently timed peer events. The event contract supplies only
+    progress at those waits; ownership and the selected edge are derived. -/
+theorem from_start_with_events (image : Image rows budget)
+    (policy : Policy) (registered : Bool) (peer : Peer P) (boot : Values (Register a))
+    (start : Values Core.Input) (hostAge : Nat) (peerState : P) (count : Nat)
+    (installed : Installed rows boot) (admitted : Core.starting.eval start (project boot) = 1#1)
+    (depth : a ≤ 3)
+    (receiving : ∀ (pc : Nat) (cell : Cell) (g : Guard),
+      rows[pc]? = some (Row.cell (.stream cell (some g))) → cell.receive = true) :
+    let opened : State a Nat P := ⟨(circuit a registered).step start boot, hostAge, peerState⟩
+    let tape := clocks registered (host policy) peer opened count
+    Horizon policy registered peer opened rows count →
+    SegmentTimingContract.Events registered rows opened.core tape (policy.cooldown + 1) →
+    ∃ (active : List (Values Core.Input)) (last : Values Core.Input) (rest : List (Values Core.Input))
+      (ending : Execution.Terminal), tape = active ++ @last :: rest ∧
+      SegmentAdmission.Admitted image registered boot start active last ending := by
+  intro opened tape horizon events
+  exact SegmentTimingContract.from_start_with_events image registered boot start tape (policy.cooldown + 1)
+    installed admitted (timing policy registered peer opened boot start rfl admitted depth horizon)
+    events receiving
 
 end Pinwheel.Hardware.StreamingReady.SegmentPolicyTiming

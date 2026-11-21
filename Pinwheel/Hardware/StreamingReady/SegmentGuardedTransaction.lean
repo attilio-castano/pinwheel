@@ -1,7 +1,8 @@
 import Pinwheel.Hardware.StreamingReady.SegmentUnguardedReceive
 import Pinwheel.Hardware.StreamingReady.SegmentTransactionTimeout
+import Pinwheel.Hardware.StreamingReady.SegmentEventWait
 
-/-! Execution of bounded guarded stream slots through qualification or expiry. -/
+/-! Execution of guarded stream slots through qualification or bounded expiry. -/
 namespace Pinwheel.Hardware.StreamingReady.SegmentGuardedTransaction
 
 open Pinwheel.Hardware SegmentCore SegmentPathControl SegmentTiming
@@ -54,7 +55,7 @@ theorem AperturePlan.run_prefix (plan : AperturePlan) (registered : Bool) (s : V
   rw [run_append]
   rfl
 
-structure AperturePlan.Delivered (plan : AperturePlan) (registered : Bool) (cell : Cell) (n : Fin 255)
+structure AperturePlan.Delivered (plan : AperturePlan) (registered : Bool) (cell : Cell) (limit : WaitLimit)
     (s : Values (Register a)) : Prop where
   parks : ParkHistory registered s plan.parks
   admit : NoReset plan.admit
@@ -63,7 +64,9 @@ structure AperturePlan.Delivered (plan : AperturePlan) (registered : Bool) (cell
   low : ∀ i ∈ plan.low, DrainInput i
   arm : DrainInput plan.arm
   history : MissHistory registered (plan.entered registered s) plan.misses
-  within : plan.misses.length ≤ n.val
+  within : match limit with
+    | .unbounded => True
+    | .misses n => plan.misses.length ≤ n.val
   poll : DrainInput plan.poll
 
 structure SlotPlan extends AperturePlan where
@@ -90,18 +93,18 @@ theorem SlotPlan.run_inputs (plan : SlotPlan) (registered : Bool) (s : Values (R
   rw [run_append]
   rfl
 
-structure SlotPlan.Served (plan : SlotPlan) (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
+structure SlotPlan.Served (plan : SlotPlan) (registered : Bool) (cell : Cell) (g : Guard) (limit : WaitLimit)
     (s : Values (Register a)) : Prop where
-  aperture : plan.toAperturePlan.Delivered registered cell n s
+  aperture : plan.toAperturePlan.Delivered registered cell limit s
   qualified : g.matches (plan.beforePoll registered s (.base .stage2)) = true
   highTicks : plan.high.length = cell.highDuration.val
   high : ∀ i ∈ plan.high, NoReset i
   leave : NoReset plan.leave
 
-def Served (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255) (s : Values (Register a)) :
+def Served (registered : Bool) (cell : Cell) (g : Guard) (limit : WaitLimit) (s : Values (Register a)) :
     List SlotPlan → Prop
   | [] => True
-  | plan :: rest => plan.Served registered cell g n s ∧ Served registered cell g n (plan.after registered s) rest
+  | plan :: rest => plan.Served registered cell g limit s ∧ Served registered cell g limit (plan.after registered s) rest
 
 private theorem noReset (h : DrainInput i) : NoReset i := ⟨h.1, by simp [h.2.1]⟩
 
@@ -171,12 +174,13 @@ private theorem arm_preserves_rx (registered : Bool) (i : Values Core.Input) (s 
     Core.stream, ordinary.1, ordinary.2.1, low, guarded, operation]
 
 private structure Prepared (registered : Bool) (plan : AperturePlan) (cell : Cell) (g : Guard)
-    (n : Fin 255) (s : Values (Register a)) : Prop where
+    (limit : WaitLimit) (s : Values (Register a)) : Prop where
   low : plan.lowEnd registered s (.base .phase) = 3#3
   elapsed : plan.lowEnd registered s (.base .countdown) = 0#8
   lowWord : plan.lowEnd registered s (.base .currentWord) = encode (.stream cell (some g))
   waiting : plan.beforePoll registered s (.base .phase) = 7#3
-  countdown : (plan.beforePoll registered s (.base .countdown)).toNat = n.val - plan.misses.length
+  countdown : (plan.beforePoll registered s (.base .countdown)).toNat =
+    limit.initialCountdown.toNat - plan.misses.length
   current : plan.beforePoll registered s (.base .currentWord) = encode (.stream cell (some g))
   pc : plan.beforePoll registered s (.base .pc) = s (.base .pc)
   remaining : plan.beforePoll registered s (.base .remaining) = s (.base .remaining)
@@ -186,9 +190,9 @@ private structure Prepared (registered : Bool) (plan : AperturePlan) (cell : Cel
   active : ActiveClocks registered s plan.prefix
 
 private theorem prepare (registered : Bool) (plan : AperturePlan) (cell : Cell) (g : Guard)
-    (n : Fin 255) (limit : g.limit = .misses n) (s : Values (Register a))
-    (start : AtReservation rows pc cell (some g) previous s) (service : plan.Delivered registered cell n s) :
-    Prepared registered plan cell g n s := by
+    (schedule : WaitLimit) (limit : g.limit = schedule) (s : Values (Register a))
+    (start : AtReservation rows pc cell (some g) previous s) (service : plan.Delivered registered cell schedule s) :
+    Prepared registered plan cell g schedule s := by
   let ready : Values (Register a) := plan.ready registered s
   let reserved : Values (Register a) := (circuit a registered).step plan.admit ready
   let lowEnd : Values (Register a) := plan.lowEnd registered s
@@ -213,26 +217,42 @@ private theorem prepare (registered : Bool) (plan : AperturePlan) (cell : Cell) 
   have arm := enter_guarded_aperture registered plan.arm lowEnd cell g service.arm low.phase expired lowWord
   have entryWord : entered (.base .currentWord) = encode (.stream cell (some g)) := arm.current.trans lowWord
   have fields := encode_fields (.stream cell (some g))
-  have bounded : guardBudget entered ≠ 0#8 := by
-    rw [guardBudget, entryWord, fields.guardBudget]
-    change g.limit.budget ≠ 0#8
-    rw [limit]
-    exact SourceRefinement.budget_nonzero n
-  have waitCount : (entered (.base .countdown)).toNat = n.val := by
-    have timer : entered (.base .countdown) = g.limit.initialCountdown := arm.countdown
-    rw [timer, limit]
-    simpa [WaitLimit.initialCountdown, BitVec.toNat_ofNat] using
-      (Nat.mod_eq_of_lt (show n.val < 256 by omega))
-  have waitWithin : plan.misses.length ≤ (entered (.base .countdown)).toNat := by
-    simpa only [waitCount] using service.within
-  have miss := miss_prefix registered entered plan.misses arm.phase bounded service.history waitWithin
   have isStream (state : Values (Register a))
       (loaded : state (.base .currentWord) = encode (.stream cell (some g))) : IsStream state := by
     change (state (.base .currentWord)).extractLsb' 0 3 = 1#3
     rw [loaded]
     exact fields.operation
-  obtain ⟨wait, activeWait⟩ := misses_frame registered entered plan.misses arm.phase
-    (isStream entered entryWord) bounded service.history waitWithin
+  let poll : Values (Register a) := plan.beforePoll registered s
+  have encodedBudget : guardBudget entered = schedule.budget := by
+    rw [guardBudget, entryWord, fields.guardBudget]
+    exact congrArg WaitLimit.budget limit
+  have waitCount : entered (.base .countdown) = schedule.initialCountdown :=
+    arm.countdown.trans (congrArg WaitLimit.initialCountdown limit)
+  have waited : poll (.base .phase) = 7#3 ∧
+      (poll (.base .countdown)).toNat = schedule.initialCountdown.toNat - plan.misses.length ∧
+      WaitPose entered poll ∧ poll (.base .rxProduced) = entered (.base .rxProduced) ∧
+      WaitFrame entered poll ∧ ActiveClocks registered entered plan.misses := by
+    cases schedule with
+    | unbounded =>
+      obtain ⟨held, active⟩ := SegmentEventWait.hold_misses registered entered plan.misses arm.phase
+        encodedBudget service.history
+      have timer := congrArg BitVec.toNat (held.countdown.trans waitCount)
+      exact ⟨held.phase, by
+        change (run registered entered plan.misses (.base .countdown)).toNat = _
+        simpa [WaitLimit.initialCountdown] using timer, held.pose, held.captured,
+        ⟨held.pc, held.reserved⟩, active⟩
+    | misses n =>
+      have bounded : guardBudget entered ≠ 0#8 := encodedBudget ▸ SourceRefinement.budget_nonzero n
+      have elapsed : plan.misses.length ≤ (entered (.base .countdown)).toNat := by
+        rw [waitCount]
+        simpa [WaitLimit.initialCountdown, BitVec.toNat_ofNat, Nat.mod_eq_of_lt (show n.val < 256 by omega)]
+          using service.within
+      have held := miss_prefix registered entered plan.misses arm.phase bounded service.history elapsed
+      obtain ⟨frame, active⟩ := misses_frame registered entered plan.misses arm.phase
+        (isStream entered entryWord) bounded service.history elapsed
+      exact ⟨held.phase, held.countdown.trans (congrArg (· - _) (congrArg BitVec.toNat waitCount)),
+        held.pose, held.captured, frame, active⟩
+  obtain ⟨waitPhase, waitTimer, waitPose, waitCapture, wait, activeWait⟩ := waited
   have armFrame := wait_frame registered plan.arm lowEnd service.arm (.inl low.phase)
     (isStream lowEnd lowWord)
   have lowActive : ActiveClocks registered reserved plan.low := by
@@ -255,26 +275,26 @@ private theorem prepare (registered : Bool) (plan : AperturePlan) (cell : Cell) 
   have held := (SegmentUnguardedReceive.hold registered plan.admit ready service.admit
     (.inr (.inl park.phase))).trans
     (SegmentUnguardedReceive.held_low registered reserved plan.low reserve.phase lowWithin service.low)
-  refine ⟨low.phase, expired, lowWord, miss.phase, miss.countdown.trans (congrArg (· - _) waitCount),
-    miss.pose.current.trans entryWord, ?_, ?_, ?_, ?_, active⟩
+  refine ⟨low.phase, expired, lowWord, waitPhase, waitTimer,
+    waitPose.current.trans entryWord, ?_, ?_, ?_, ?_, active⟩
   · exact wait.pc.trans (armFrame.pc.trans (low.pc.trans (reserve.pc.trans
       ((BitVec.eq_of_toNat_eq ((park.position).trans start.position.symm))))))
-  · exact miss.pose.remaining.trans (arm.remaining.trans
+  · exact waitPose.remaining.trans (arm.remaining.trans
       (low.pose.remaining.trans (reserve.remaining.trans parks.remaining)))
   · exact wait.reserved.trans (armFrame.reserved.trans (low.reserved.trans (reserve.txConsumed.trans
       (congrArg (· + _) parks.reserved))))
-  · exact miss.captured.trans ((arm_preserves_rx registered plan.arm lowEnd service.arm low.phase (isStream lowEnd lowWord)
+  · exact waitCapture.trans ((arm_preserves_rx registered plan.arm lowEnd service.arm low.phase (isStream lowEnd lowWord)
       (lowWord ▸ fields.highGuard)).trans (held.produced.trans parks.produced))
 
 /-- The guarded slot's verdict uses the same inclusive window as executable
     segment source, including qualification on the last eligible clock. -/
 theorem aperture_poll (registered : Bool) (plan : AperturePlan) (cell : Cell) (g : Guard)
     (n : Fin 255) (limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
-    (start : AtReservation rows pc cell (some g) previous s) (service : plan.Delivered registered cell n s) :
+    (start : AtReservation rows pc cell (some g) previous s) (service : plan.Delivered registered cell (.misses n) s) :
     let sample := plan.beforePoll registered s (.base .stage2)
     pollWindow g (plan.samples registered s) = if g.matches sample then some (some sample)
       else if plan.misses.length == n.val then some none else none := by
-  have prepared := prepare registered plan cell g n limit s start service
+  have prepared := prepare registered plan cell g (.misses n) limit s start service
   exact (SegmentPollRefinement.guarded_stream_poll registered (plan.lowEnd registered s) cell g n
     limit receive plan.arm plan.poll plan.misses service.arm service.poll prepared.low prepared.elapsed
     prepared.lowWord service.history service.within).1
@@ -302,16 +322,17 @@ structure Deadline (registered : Bool) (plan : AperturePlan) (cell : Cell) (g : 
 theorem deadline_slot (registered : Bool) (plan : AperturePlan) (cell : Cell) (g : Guard)
     (n : Fin 255) (limit : g.limit = .misses n) (s : Values (Register a))
     (start : AtReservation rows pc cell (some g) previous s)
-    (service : plan.Delivered registered cell n s) (last : plan.misses.length = n.val)
+    (service : plan.Delivered registered cell (.misses n) s) (last : plan.misses.length = n.val)
     (miss : g.matches (plan.beforePoll registered s (.base .stage2)) = false) :
     Deadline registered plan cell g s := by
-  have reached := prepare registered plan cell g n limit s start service
+  have reached := prepare registered plan cell g (.misses n) limit s start service
   have ready : ready plan.poll (plan.beforePoll registered s) = 0#1 := by
     rw [ready_from_row _ _ cell g reached.current, miss]
     rfl
   have elapsed : plan.beforePoll registered s (.base .countdown) = 0#8 := by
     apply BitVec.eq_of_toNat_eq
-    rw [reached.countdown, last, Nat.sub_self, BitVec.toNat_zero]
+    rw [reached.countdown, last, BitVec.toNat_zero]
+    simp [WaitLimit.initialCountdown, BitVec.toNat_ofNat, Nat.mod_eq_of_lt (show n.val < 256 by omega)]
   exact ⟨reached.active, ⟨service.poll, reached.waiting, ready, bounded_word reached.current limit, elapsed⟩,
     reached.current, reached.pc, reached.remaining, reached.reserved, reached.produced⟩
 
@@ -323,17 +344,17 @@ structure SlotEnd (registered : Bool) (rows : List Row) (pc : Nat) (cell : Cell)
   repeatCell : 1 < (s (.base .remaining)).toNat → AtReservation rows pc cell (some g) (some sample) after
   finished : (s (.base .remaining)).toNat = 1 → AtBoundary registered rows (pc + 1) (some sample) after
 
-theorem run_slot (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true)
+theorem run_slot (registered : Bool) (cell : Cell) (g : Guard) (schedule : WaitLimit)
+    (limit : g.limit = schedule) (receive : cell.receive = true)
     (plan : SlotPlan) (s : Values (Register a)) (start : AtReservation rows pc cell (some g) previous s)
     (inBounds : pc < rows.length) (positive : 0 < (s (.base .remaining)).toNat)
-    (service : plan.Served registered cell g n s) :
+    (service : plan.Served registered cell g schedule s) :
     SlotEnd registered rows pc cell g (plan.sample registered cell s) s (plan.after registered s) ∧
       ActiveClocks registered s plan.inputs := by
   let atPoll : Values (Register a) := plan.beforePoll registered s
   let raised : Values (Register a) := plan.afterPoll registered s
   let highEnd : Values (Register a) := plan.highEnd registered s
-  have prepared := prepare registered plan.toAperturePlan cell g n limit s start service.aperture
+  have prepared := prepare registered plan.toAperturePlan cell g schedule limit s start service.aperture
   have waiting : atPoll (.base .phase) = 7#3 := prepared.waiting
   have stream : IsStream atPoll := by
     change (atPoll (.base .currentWord)).extractLsb' 0 3 = 1#3
@@ -347,9 +368,8 @@ theorem run_slot (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
   have ready : ready plan.poll atPoll = 1#1 := by
     rw [ready_from_row _ _ cell g prepared.current, service.qualified]
     rfl
-  have window := bounded_poll registered atPoll [] plan.poll prepared.waiting
-    (bounded_word prepared.current limit) trivial (by simp) service.aperture.poll
-  have received : ReceiveCut atPoll atPoll raised := window.receive ready stream receiveBit
+  have received : ReceiveCut atPoll atPoll raised :=
+    receive_edge registered plan.poll atPoll service.aperture.poll prepared.waiting ready stream receiveBit
   have kept := wait_frame registered plan.poll atPoll service.aperture.poll (.inr prepared.waiting) stream
   have highTimer : (raised (.base .countdown)).toNat = plan.high.length := by
     have timer : raised (.base .countdown) = BitVec.ofNat 8 cell.highDuration.val :=
@@ -473,11 +493,11 @@ private structure Traversed (registered : Bool) (rows : List Row) (pc : Nat) (ce
   repeatCell : slots < (s (.base .remaining)).toNat → AtReservation rows pc cell (some g) last after
   finished : (s (.base .remaining)).toNat = slots → 0 < slots → AtBoundary registered rows (pc + 1) last after
 
-private theorem run_slots (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true)
+private theorem run_slots (registered : Bool) (cell : Cell) (g : Guard) (schedule : WaitLimit)
+    (limit : g.limit = schedule) (receive : cell.receive = true)
     (s : Values (Register a)) (plans : List SlotPlan) (start : AtReservation rows pc cell (some g) previous s)
     (inBounds : pc < rows.length) (within : plans.length ≤ (s (.base .remaining)).toNat)
-    (service : Served registered cell g n s plans) :
+    (service : Served registered cell g schedule s plans) :
     Traversed registered rows pc cell g (captured registered cell s previous plans) plans.length s
       (runSlots registered s plans) ∧ ActiveClocks registered s (plans.flatMap SlotPlan.inputs) := by
   induction plans generalizing s previous with
@@ -494,7 +514,7 @@ private theorem run_slots (registered : Bool) (cell : Cell) (g : Guard) (n : Fin
     have positive : 0 < (s (.base .remaining)).toNat := by
       simp only [List.length_cons] at within
       omega
-    obtain ⟨step, active⟩ := run_slot registered cell g n limit receive plan s start inBounds positive service.1
+    obtain ⟨step, active⟩ := run_slot registered cell g schedule limit receive plan s start inBounds positive service.1
     have activeWith (tail : ActiveClocks registered (plan.after registered s) (rest.flatMap SlotPlan.inputs)) :
         ActiveClocks registered s ((plan :: rest).flatMap SlotPlan.inputs) := by
       apply active.append
@@ -560,14 +580,14 @@ theorem load_row (registered : Bool) (cell : Cell) (g : Guard) (s : Values (Regi
 
 /-- A complete guarded receive row advances PC only after the last slot and
     produces exactly one capture per timely poll. -/
-theorem run_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true)
+theorem run_stream_row (registered : Bool) (cell : Cell) (g : Guard) (schedule : WaitLimit)
+    (limit : g.limit = schedule) (receive : cell.receive = true)
     (s : Values (Register a)) (fetch : Values Core.Input) (plans : List SlotPlan)
     (start : AtBoundary registered rows pc previous s) (ordinary : NoReset fetch)
     (row : rows[pc]? = some (.cell (.stream cell (some g))))
     (canonical : (Instruction.stream cell (some g)).Canonical)
     (positive : 0 < plans.length) (count : (s (.base .remaining)).toNat = plans.length)
-    (service : Served registered cell g n ((circuit a registered).step fetch s) plans) :
+    (service : Served registered cell g schedule ((circuit a registered).step fetch s) plans) :
     SegmentUnguardedReceive.Completed registered rows pc cell
       (captured registered cell ((circuit a registered).step fetch s) previous plans) plans.length s
       (run registered s (@fetch :: plans.flatMap SlotPlan.inputs)) ∧
@@ -580,7 +600,7 @@ theorem run_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 25
   have loaded := load_row registered cell g s fetch start ordinary row canonical nonzero
   have exactCount : (live (.base .remaining)).toNat = plans.length :=
     (congrArg BitVec.toNat loaded.remaining).trans count
-  obtain ⟨finished, active⟩ := run_slots registered cell g n limit receive live plans loaded.ready
+  obtain ⟨finished, active⟩ := run_slots registered cell g schedule limit receive live plans loaded.ready
     (List.getElem?_eq_some_iff.mp row).1 (Nat.le_of_eq exactCount.symm) service
   refine ⟨⟨finished.finished exactCount positive, BitVec.eq_of_toNat_eq ?_, ?_, ?_⟩,
     .cons ordinary (by simp [start.phase]) (by simp [start.phase]) (by simp [start.phase]) active⟩
@@ -592,30 +612,14 @@ theorem run_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 25
 
 theorem successor_stream {cursor following : Cursor}
     (row : rows[cursor.pc]? = some (.cell (.stream cell (some g)))) (armed : cursor.slots = some slots)
-    (limit : g.limit = .misses n) (checked : successors rows budget cursor = some (.next following)) :
+    (checked : successors rows budget cursor = some (.next following)) :
     (Instruction.stream cell (some g)).Canonical ∧ following.pc = cursor.pc + 1 ∧
       following.slots = none ∧ following.capture = cell.receive ∧
       following.tx = cursor.tx + (if cell.transmit then slots else 0) ∧
       following.rx = cursor.rx + (if cell.receive then slots else 0) ∧
       0 < slots ∧ following.tx ≤ budget ∧ following.rx < 65536 := by
-  rcases g with ⟨mask, expected, budgetLimit⟩
-  change budgetLimit = .misses n at limit
-  subst budgetLimit
   simp [successors, row, armed] at checked
-  obtain ⟨canonical, advance⟩ := checked
-  change (if (0 < slots ∧ cursor.tx + (if cell.transmit then slots else 0) ≤ budget) ∧
-      cursor.rx + (if cell.receive then slots else 0) < 65536 then
-    some (Successors.next {
-      pc := cursor.pc + 1
-      slots := none
-      capture := cell.receive
-      tx := cursor.tx + if cell.transmit then slots else 0
-      rx := cursor.rx + if cell.receive then slots else 0
-      coreClocks := cursor.coreClocks + (1 + slots *
-        (1 + (cell.lowDuration.val + 1) + (cell.highDuration.val + 1) + (n.val + 1)))
-    }) else none) = some (.next following) at advance
-  simp at advance
-  obtain ⟨⟨⟨positive, txFits⟩, rxFits⟩, rfl⟩ := advance
+  obtain ⟨canonical, ⟨⟨⟨positive, txFits⟩, rxFits⟩, rfl⟩⟩ := checked
   exact ⟨canonical, rfl, rfl, rfl, rfl, rfl, positive, txFits, rxFits⟩
 
 private theorem count_without_wrap (before : BitVec 16) (enabled : Bool) (slots : Nat)
@@ -630,19 +634,19 @@ private theorem count_without_wrap (before : BitVec 16) (enabled : Bool) (slots 
 
 /-- A timely guarded row realizes the checked successor with concrete FIFO
     counts and the actual last qualified sample. -/
-theorem service_stream (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
+theorem service_stream (registered : Bool) (cell : Cell) (g : Guard) (schedule : WaitLimit)
+    (limit : g.limit = schedule) (receive : cell.receive = true) (s : Values (Register a))
     (fetch : Values Core.Input) (plans : List SlotPlan) (cut : Cut registered rows cursor previous s)
     (row : rows[cursor.pc]? = some (.cell (.stream cell (some g))))
     (checked : successors rows budget cursor = some (.next following)) (budgetFits : budget < 65536)
     (armed : cursor.slots = some plans.length) (ordinary : NoReset fetch)
-    (served : Served registered cell g n ((circuit a registered).step fetch s) plans) :
+    (served : Served registered cell g schedule ((circuit a registered).step fetch s) plans) :
     ServiceSpan registered rows following
       (captured registered cell ((circuit a registered).step fetch s) previous plans) s
       (@fetch :: plans.flatMap SlotPlan.inputs) := by
   obtain ⟨canonical, nextPC, nextSlots, _, nextTX, nextRX, positive, txFits, rxFits⟩ :=
-    successor_stream row armed limit checked
-  obtain ⟨completed, active⟩ := run_stream_row registered cell g n limit receive s fetch plans cut.boundary
+    successor_stream row armed checked
+  obtain ⟨completed, active⟩ := run_stream_row registered cell g schedule limit receive s fetch plans cut.boundary
     ordinary row canonical positive (cut.slots _ armed) served
   refine ⟨by simp, active, ⟨nextPC ▸ completed.boundary, ?_, by simp [nextSlots], ?_, ?_⟩⟩
   · intro _
@@ -680,8 +684,8 @@ theorem timeout_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fi
     (row : rows[pc]? = some (.cell (.stream cell (some g))))
     (canonical : (Instruction.stream cell (some g)).Canonical)
     (within : plans.length < (s (.base .remaining)).toNat)
-    (service : Served registered cell g n ((circuit a registered).step fetch s) plans)
-    (finalService : last.Delivered registered cell n (runSlots registered ((circuit a registered).step fetch s) plans))
+    (service : Served registered cell g (.misses n) ((circuit a registered).step fetch s) plans)
+    (finalService : last.Delivered registered cell (.misses n) (runSlots registered ((circuit a registered).step fetch s) plans))
     (elapsed : last.misses.length = n.val)
     (miss : g.matches (last.beforePoll registered (runSlots registered ((circuit a registered).step fetch s) plans)
       (.base .stage2)) = false) :
@@ -695,7 +699,7 @@ theorem timeout_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fi
   have left : plans.length < (live (.base .remaining)).toNat := by
     have remaining : live (.base .remaining) = s (.base .remaining) := loaded.remaining
     rwa [remaining]
-  obtain ⟨prior, activePrior⟩ := run_slots registered cell g n limit receive live plans loaded.ready
+  obtain ⟨prior, activePrior⟩ := run_slots registered cell g (.misses n) limit receive live plans loaded.ready
     (List.getElem?_eq_some_iff.mp row).1 (Nat.le_of_lt left) service
   have still := prior.repeatCell left
   have lastSlot := deadline_slot registered last cell g n limit reached still finalService elapsed miss
@@ -724,7 +728,7 @@ theorem timeout_stream_row (registered : Bool) (cell : Cell) (g : Guard) (n : Fi
 /-- The expired row accounts for its completed slots and the in-flight TX
     reservation against the same checked path and bounded counter budget. -/
 theorem timeout_span (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
-    (limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
+    (_limit : g.limit = .misses n) (receive : cell.receive = true) (s : Values (Register a))
     (cut : Cut registered rows cursor previous s) (row : rows[cursor.pc]? = some (.cell (.stream cell (some g))))
     (checked : successors rows budget cursor = some (.next following)) (budgetFits : budget < 65536)
     (armed : cursor.slots = some slots) (inside : slot < slots)
@@ -732,7 +736,7 @@ theorem timeout_span (registered : Bool) (cell : Cell) (g : Guard) (n : Fin 255)
     TimeoutSpan registered rows budget cursor slot
       (cursor.tx + if cell.transmit then slot + 1 else 0)
       (cursor.rx + if cell.receive then slot else 0) s inputs poll := by
-  obtain ⟨_, _, _, _, nextTX, nextRX, _, txFits, rxFits⟩ := successor_stream row armed limit checked
+  obtain ⟨_, _, _, _, nextTX, nextRX, _, txFits, rxFits⟩ := successor_stream row armed checked
   refine ⟨expired.active, ⟨.stream cell (some g), row, .stream armed inside, expired.current⟩,
     ⟨following, checked⟩, expired.position, ?_, ?_, expired.deadline⟩
   · have full : cursor.tx + (if cell.transmit then slots else 0) < 65536 := by

@@ -7,12 +7,8 @@ namespace Pinwheel.Hardware.StreamingReady.SegmentTimedUnguarded
 
 open Pinwheel.Hardware SegmentCore SegmentPathControl SegmentUnguardedReceive
 open SegmentHostService (BoundedCredit reserve_within)
-open ProtocolOwnership (DrainInput)
 open SegmentTiming (run)
 open Pinwheel.Program.StreamingReady (Cell)
-
-private theorem noReset {i : Values Core.Input} (ordinary : DrainInput i) : NoReset i :=
-  ⟨ordinary.1, by simp [ordinary.2.1]⟩
 
 private theorem split_clock (inputs : List (Values Core.Input)) (n : Nat) (room : n < inputs.length) :
     ∃ (before : List (Values Core.Input)) (edge : Values Core.Input) (rest : List (Values Core.Input)),
@@ -35,16 +31,16 @@ def slotBudget (cell : Cell) (parkBound : Nat) : Nat :=
   parkBound + 3 + cell.lowDuration.val + cell.highDuration.val
 
 /-- Derive both dwell boundaries and the sample edge from the first actual
-    credit opportunity. An RX drain may occur on any clock. -/
+    credit opportunity. Ordinary host refills and drains can occur throughout. -/
 theorem slot_from_clocks (registered : Bool) (s : Values (Register a)) (cell : Cell)
     (entry : AtReservation rows pc cell none previous s)
     (inputs : List (Values Core.Input)) (parkBound : Nat) (room : slotBudget cell parkBound ≤ inputs.length)
-    (ordinary : ∀ i ∈ inputs, DrainInput i) (service : BoundedCredit registered s inputs parkBound) :
+    (ordinary : ∀ i ∈ inputs, NoReset i) (service : BoundedCredit registered s inputs parkBound) :
     ∃ (slot : SlotPlan) (rest : List (Values Core.Input)),
       inputs = slot.inputs ++ rest ∧ slot.inputs.length ≤ slotBudget cell parkBound ∧
       slot.Served registered cell s := by
   obtain ⟨parks, admit, afterAdmit, split, within, history, _, _, clean, credit, _⟩ :=
-    reserve_within registered s inputs parkBound entry (fun i hi => noReset (ordinary i hi)) service
+    reserve_within registered s inputs parkBound entry ordinary service
   rw [split, List.length_append, List.length_cons] at room
   simp only [slotBudget] at room
   have enoughLow : cell.lowDuration.val < afterAdmit.length := by omega
@@ -57,7 +53,7 @@ theorem slot_from_clocks (registered : Bool) (s : Values (Register a)) (cell : C
   have partition : inputs = slot.inputs ++ rest := by
     rw [split, splitLow, splitHigh]
     simp only [slot, SlotPlan.inputs, List.append_assoc, List.cons_append, List.nil_append]
-  have beforeRest : ∀ i ∈ slot.inputs, DrainInput i := by
+  have beforeRest : ∀ i ∈ slot.inputs, NoReset i := by
     intro i hi
     apply ordinary i
     rw [partition]
@@ -69,10 +65,10 @@ theorem slot_from_clocks (registered : Bool) (s : Values (Register a)) (cell : C
   refine ⟨slot, rest, partition, length, ⟨history, clean, credit, lowTicks, ?_, ?_, highTicks, ?_, ?_⟩⟩
   · intro i hi
     exact beforeRest i (by simp [slot, SlotPlan.inputs, hi])
-  · exact noReset (beforeRest aperture (by simp [slot, SlotPlan.inputs]))
+  · exact beforeRest aperture (by simp [slot, SlotPlan.inputs])
   · intro i hi
-    exact noReset (beforeRest i (by simp [slot, SlotPlan.inputs, hi]))
-  · exact noReset (beforeRest leave (by simp [slot, SlotPlan.inputs]))
+    exact beforeRest i (by simp [slot, SlotPlan.inputs, hi])
+  · exact beforeRest leave (by simp [slot, SlotPlan.inputs])
 
 /-- A bound on host credit at any reservation cut reached along the input
     tape. Each suffix keeps the same bound. -/
@@ -99,7 +95,7 @@ theorem slots_from_clocks (registered : Bool) (s : Values (Register a)) (cell : 
     (entry : AtReservation rows pc cell none previous s) (inBounds : pc < rows.length)
     (slots : Nat) (count : (s (.base .remaining)).toNat = slots)
     (inputs : List (Values Core.Input)) (parkBound : Nat)
-    (room : slots * slotBudget cell parkBound ≤ inputs.length) (ordinary : ∀ i ∈ inputs, DrainInput i)
+    (room : slots * slotBudget cell parkBound ≤ inputs.length) (ordinary : ∀ i ∈ inputs, NoReset i)
     (service : CreditFrom registered s inputs parkBound) :
     ∃ (plans : List SlotPlan) (rest : List (Values Core.Input)), plans.length = slots ∧
       inputs = plans.flatMap SlotPlan.inputs ++ rest ∧
@@ -126,7 +122,7 @@ theorem slots_from_clocks (registered : Bool) (s : Values (Register a)) (cell : 
       have roomRest : (slots + 1) * slotBudget cell parkBound ≤ afterSlot.length := by
         rw [Nat.succ_mul, split, List.length_append] at room
         omega
-      have quietRest : ∀ i ∈ afterSlot, DrainInput i := by
+      have cleanRest : ∀ i ∈ afterSlot, NoReset i := by
         intro i hi
         apply ordinary i
         rw [split]
@@ -134,7 +130,7 @@ theorem slots_from_clocks (registered : Bool) (s : Values (Register a)) (cell : 
       have suffix := service.suffix split
       rw [plan.run_inputs] at suffix
       obtain ⟨nextPlans, rest, nextCount, nextSplit, nextLength, nextServed⟩ :=
-        ih (plan.after registered s) (step.repeatCell repeats) left afterSlot roomRest quietRest suffix
+        ih (plan.after registered s) (step.repeatCell repeats) left afterSlot roomRest cleanRest suffix
       refine ⟨plan :: nextPlans, rest, by simp [nextCount], ?_, ?_, ⟨served, nextServed⟩⟩
       · rw [split, nextSplit]
         simp only [List.flatMap_cons, List.append_assoc]
@@ -149,7 +145,7 @@ theorem from_clocks (registered : Bool) (cell : Cell) (s : Values (Register a))
     (checked : Pinwheel.Program.StreamingReadySegments.successors rows budget cursor = some (.next following))
     (budgetFits : budget < 65536) (slots : Nat) (armed : cursor.slots = some slots)
     (inputs : List (Values Core.Input)) (parkBound : Nat)
-    (room : 1 + slots * slotBudget cell parkBound ≤ inputs.length) (ordinary : ∀ i ∈ inputs, DrainInput i)
+    (room : 1 + slots * slotBudget cell parkBound ≤ inputs.length) (ordinary : ∀ i ∈ inputs, NoReset i)
     (service : CreditFrom registered s inputs parkBound) :
     ∃ (used rest : List (Values Core.Input)) (bit : Option Bool), inputs = used ++ rest ∧
       used.length ≤ 1 + slots * slotBudget cell parkBound ∧
@@ -157,7 +153,7 @@ theorem from_clocks (registered : Bool) (cell : Cell) (s : Values (Register a))
   cases inputs with
   | nil => simp at room
   | cons fetch clocks =>
-    have fetchInput := noReset (ordinary fetch (by simp))
+    have fetchInput := ordinary fetch (by simp)
     have positive : 0 < slots := by
       cases slots with
       | zero => simp [Pinwheel.Program.StreamingReadySegments.successors, row, armed] at checked
@@ -173,7 +169,7 @@ theorem from_clocks (registered : Bool) (cell : Cell) (s : Values (Register a))
     have enough : slots * slotBudget cell parkBound ≤ clocks.length := by
       simp only [List.length_cons] at room
       omega
-    have ordinaryClocks : ∀ i ∈ clocks, DrainInput i := fun i hi =>
+    have ordinaryClocks : ∀ i ∈ clocks, NoReset i := fun i hi =>
       ordinary i (List.mem_cons_of_mem (α := Values Core.Input) fetch hi)
     obtain ⟨plans, rest, complete, split, length, served⟩ := slots_from_clocks registered live cell entry
       (List.getElem?_eq_some_iff.mp row).1 slots ((congrArg BitVec.toNat remaining).trans count)

@@ -90,14 +90,11 @@ private theorem dispatch {next : Successors} (entry : successors rows budget cur
         exact .timed row .pulse
       | driveWait pins guard =>
         simp [successors, row] at entry
-        obtain ⟨clocks, _, checked⟩ := Option.bind_eq_some_iff.mp entry.2
-        simp at checked
-        cases checked.2
+        cases entry.2.2
         exact .timed row .wait
       | stream cell guard =>
         simp [successors, row] at entry
-        obtain ⟨slots, _, afterSlots⟩ := Option.bind_eq_some_iff.mp entry.2
-        obtain ⟨polls, _, checked⟩ := Option.bind_eq_some_iff.mp afterSlots
+        obtain ⟨slots, _, checked⟩ := Option.bind_eq_some_iff.mp entry.2
         simp at checked
         cases checked.2
         exact .timed row .stream

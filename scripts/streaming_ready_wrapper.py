@@ -97,16 +97,24 @@ endmodule
 '''
 
 
-def bridge_source(depth, *, swdio_link=False):
+def bridge_source(depth, *, swdio_link=False, selectable_swdio=False):
     if type(depth) is not int or depth not in (2, 4):
         raise ValueError('Qualified streaming depth must be 2 or 4')
-    if type(swdio_link) is not bool:
+    if type(swdio_link) is not bool or type(selectable_swdio) is not bool:
         raise ValueError('SWDIO link selection must be Boolean')
+    if swdio_link and selectable_swdio:
+        raise ValueError('SWDIO wiring cannot be fixed and selectable')
     # Both devices drive pad 3 so the pre/post-edge OE checks see any overlap.
     data_link = ('  tran swdio_link(pads[1],pads[3]);' if swdio_link else
                  '  tranif1 sda_link(pads[1],pads[3],links[1]);')
     link_check = ("""\n      if(links!==2'b0) $fatal(1,"SWD fixture uses a fixed board link");"""
                   if swdio_link else '')
+    swdio_overlap = swdio_required = ''
+    if selectable_swdio:
+        data_link = '  tranif1 sda_link(pads[1],pads[3],links[1] | links[2]);'
+        swdio_overlap = ("\n      if(links[2] && (output_enabled & 8'h0a) != 0 && (peer_enabled & 8'h0a) != 0)"
+                         '\n        $fatal(1,"Both devices drive the linked SWDIO pads");')
+        swdio_required = "\n      if(links[2]) required=required|8'h0a;"
     return f'''`timescale 1ns/1ps
 // Public TT ports only. MISO/raw inputs are sampled before the core edge;
 // READY, BUSY and protocol pads are observed afterward. No private DUT state.
@@ -115,7 +123,7 @@ module streaming_quad_host_bridge;
   reg initialize=0, csn=1, sck=0;
   reg [3:0] mosi=0;
   reg [7:0] peer_levels=0, peer_enabled=0, pullups=255;
-  reg [1:0] links=0;
+  reg [{2 if selectable_swdio else 1}:0] links=0;
   tri [7:0] pads;
   wire [7:0] ui_in={{mosi[3:1],pads[1:0],mosi[0],sck,csn}};
   wire [7:0] uo_out,uio_out,uio_oe;
@@ -149,13 +157,13 @@ module streaming_quad_host_bridge;
       if(code!=8 || ( ^{{in_initialize,in_csn,in_sck,in_mosi,in_peer_levels,in_peer_enabled,in_links,in_pullups}})===1'bx ||
         in_initialize<0 || in_initialize>1 || in_csn<0 || in_csn>1 || in_sck<0 || in_sck>1 ||
         in_mosi<0 || in_mosi>15 || in_peer_levels<0 || in_peer_levels>255 ||
-        in_peer_enabled<0 || in_peer_enabled>255 || in_links<0 || in_links>3 || in_pullups<0 || in_pullups>255)
+        in_peer_enabled<0 || in_peer_enabled>255 || in_links<0 || in_links>{4 if selectable_swdio else 3} || in_pullups<0 || in_pullups>255)
         $fatal(1,"Malformed streaming quad pin input");
       initialize=in_initialize;csn=in_csn;sck=in_sck;mosi=in_mosi;
       peer_levels=in_peer_levels;peer_enabled=in_peer_enabled;links=in_links;pullups=in_pullups;{link_check}
       clk=0;#10;
       if((^uo_out[3:0])===1'bx || (^pads[1:0])===1'bx) $fatal(1,"Unknown streaming pre-edge pins");
-      if((output_enabled & peer_enabled)!==8'b0) $fatal(1,"External peer drives a DUT output");
+      if((output_enabled & peer_enabled)!==8'b0) $fatal(1,"External peer drives a DUT output");{swdio_overlap}
       connected=0;
       if(links[0]) connected=connected|8'h05;
       if(links[1]) connected=connected|8'h0a;
@@ -169,9 +177,9 @@ module streaming_quad_host_bridge;
       for(j=0;j<8;j=j+1) if(pads[j]===1'b0 || pads[j]===1'b1) begin
         known[j]=1;wire_values[j]=pads[j];
       end
-      required=8'h03|output_enabled|peer_enabled|connected;
+      required=8'h03|output_enabled|peer_enabled|connected;{swdio_required}
       if((known & required)!==required) $fatal(1,"Unknown/contention on streaming pads");
-      if((output_enabled & peer_enabled)!==0) $fatal(1,"External peer drives a post-edge DUT output");
+      if((output_enabled & peer_enabled)!==0) $fatal(1,"External peer drives a post-edge DUT output");{swdio_overlap}
       $display("STREAM_QUAD %0d %0d %0d %0d %0d %0d %0d %0d",edge_miso,uo_out[4],uo_out[5],
         uio_out[2:0],uio_oe[2:0],wire_values,known,edge_inputs);
       $fflush();
