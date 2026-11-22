@@ -48,6 +48,24 @@ set_option linter.unusedVariables false
 """
 
 
+AUDIT = """import Lean
+import Proof
+open Lean Elab Command
+elab "#audit_typed_artifact" : command => do
+  let env ← getEnv
+  let mut count : Nat := 0
+  for (name, _) in env.constants.toList do
+    if name.toString.startsWith "Pinwheel.TypedArtifact." then
+      count := count + 1
+      let axioms ← collectAxioms name
+      let bad := axioms.filter fun a => a != ``propext && a != ``Classical.choice && a != ``Quot.sound
+      unless bad.isEmpty do throwError "Unapproved axioms in {name}: {bad}"
+  if count == 0 then throwError "Empty artifact proof audit"
+  logInfo m!"Typed artifact audit: {count} declarations, standard axioms only."
+#audit_typed_artifact
+"""
+
+
 def validate_descriptor(descriptor):
     if not isinstance(descriptor.get("module"), str) or not IDENTIFIER.fullmatch(descriptor["module"]):
         raise ValueError("Invalid top module name")
@@ -132,9 +150,12 @@ def render_shared(rb, root):
     return "(" + "".join(bindings) + output + ")"
 
 
-def local_proofs(rb, pairs, *, start=0, plans=None, compact=False):
+def local_proofs(rb, pairs, *, start=0, plans=None, compact=False, guard_proofs=None):
     lines = ["import Lean.Elab.Command\nimport Pinwheel.Hardware.Readback.Boolean\n" + HEADER,
              "set_option linter.unusedSimpArgs false"]
+    if guard_proofs:
+        lines[0] = "".join(f"import GuardProof{k}\n" for k in range(start, start + len(pairs))
+                           if k in guard_proofs) + lines[0]
     for k, pair in enumerate(pairs, start=start):
         if plans and k in plans:
             _, helper, plan = plans[k]
@@ -142,6 +163,12 @@ def local_proofs(rb, pairs, *, start=0, plans=None, compact=False):
             continue
         render = (lambda t: render_shared(rb, t)) if compact and pair["size"] > 2000 else rb.render_tree
         variables = " ".join(f"(x{j} : BitVec {w})" for j, (w, _, _) in enumerate(pair["variables"]))
+        if guard_proofs and k in guard_proofs:
+            args = " ".join(f"x{j}" for j in range(len(pair["variables"])))
+            lines.append(f"theorem local_{k} {variables} :\n"
+                         f"    {render(pair['left'])} = {render(pair['right'])} := by\n"
+                         f"  exact guard_{k} {args}\n")
+            continue
         lines.append(f"theorem local_{k} {variables} :\n"
                      f"    {render(pair['left'])} = {render(pair['right'])} := by\n"
                      "  try simp only [ite_self, BitVec.sub_eq_add_neg, Pinwheel.Hardware.Readback.zero_lt_bit]\n"
@@ -165,7 +192,8 @@ def local_proofs(rb, pairs, *, start=0, plans=None, compact=False):
 
 
 def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, *, profile: str,
-             interface_checks: str = "", compact: bool = False):
+             interface_checks: str = "", compact: bool = False, guard_solver=None,
+             guard_outputs=(), focused=False):
     """Profile defines Input/Register/Output, circuit, inputs/registers/outputs.
 
     Each descriptor must have the corresponding Interface type. Source-hint
@@ -176,7 +204,12 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     rb = importer(descriptor)
     source, actual = rb.read_hints(hints), rb.read_rtl(rtl)
     oracle = rb.cut_oracle(solver)
-    pairs = rb.partitions(source, actual, successor="v-1", oracle=oracle)
+    if guard_solver:
+        # A source enable may match an RTL inverter while subsequent muxes
+        # actually consume its input. Preserve that physical cut and polarity.
+        actual.views.update({n: node.args[0] for n, node in actual.nodes.items() if node.op == "not"})
+    small_cut = (lambda trial: tree_size(trial["left"], trial["right"]) <= 10000) if guard_solver else None
+    pairs = rb.partitions(source, actual, successor="v-1", oracle=oracle, keep_asymmetric=small_cut)
     matches = {(p["source"], p["rtl"]) for p in pairs}
     for left, right in [(source.next[name], actual.next[name]) for name in rb.REGISTERS] + [
             (source.outputs[name], actual.outputs[name]) for name in rb.OUTPUTS]:
@@ -204,6 +237,17 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
             pairs.append({"source": left, "rtl": right, "variables": list(variables),
                           "definitions": sorted(definitions), "dependencies": [], "left": lhs, "right": rhs, "size": tree_size(lhs, rhs)})
             matches.add((left, right))
+    selected = {source.outputs[port]: actual.outputs[port] for port in guard_outputs}
+    if focused:
+        needed = {k for k,p in enumerate(pairs) if selected.get(p["source"]) == p["rtl"]}
+        if len(needed) != len(guard_outputs):
+            raise ValueError("Incomplete focused endpoints")
+        for k in reversed(range(len(pairs))):
+            if k in needed:
+                needed.update(pairs[k]["dependencies"])
+        indices = {old: new for new,old in enumerate(sorted(needed))}
+        pairs = [dict(pairs[k], dependencies=[indices[d] for d in pairs[k]["dependencies"]])
+                 for k in sorted(needed)]
     # Wide tag comparisons can hide a tiny Boolean identity from tactic search.
     # Generalize shared predicates, prove the stronger finite lemma by kernel
     # reduction, and instantiate the exact original statement. The solver only
@@ -248,15 +292,35 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     # Each lemma is independent of the other local lemmas. Bound compilation
     # units so large configurations retain per-unit timeout/progress evidence,
     # without changing either the propositions or the kernel-checked proof path.
+    guard_proofs = set()
+    if guard_solver:
+        from readback_guard_proofs import GuardProblem
+        for k,pair in enumerate(pairs):
+            if selected.get(pair["source"]) != pair["rtl"]:
+                continue
+            proof = GuardProblem(rb, pair).prove(guard_solver, f"guard_{k}")
+            if proof is None:
+                raise ValueError(f"Guard abstraction needs more data relationships at {pair['source']}")
+            helper, body = proof
+            render = render_shared if compact and pair["size"] > 2000 else None
+            def term(t):
+                return render(rb,t) if render else rb.render_tree(t)
+            variables = " ".join(f"(x{j} : BitVec {w})" for j,(w,_,_) in enumerate(pair["variables"]))
+            write(f"GuardProof{k}", "import Pinwheel.Hardware.Readback.Guard\n" + HEADER +
+                  helper + f"\ntheorem guard_{k} {variables} :\n    {term(pair['left'])} = {term(pair['right'])} := by\n" +
+                  body + "\nend Pinwheel.TypedArtifact\n")
+            guard_proofs.add(k)
+            plans.pop(k, None)
+    guard_modules = [f"GuardProof{k}" for k in sorted(guard_proofs)]
     local_modules = []
     if len(pairs) > 50:
         for start in range(0, len(pairs), 50):
             name = f"LocalProofs{start // 50:03d}"
-            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans, compact=compact))
+            write(name, local_proofs(rb, pairs[start:start + 50], start=start, plans=plans, compact=compact, guard_proofs=guard_proofs))
             local_modules.append(name)
         write("LocalProofs", "\n".join(f"import {name}" for name in local_modules) + "\n")
     else:
-        write("LocalProofs", local_proofs(rb, pairs, plans=plans, compact=compact))
+        write("LocalProofs", local_proofs(rb, pairs, plans=plans, compact=compact, guard_proofs=guard_proofs))
     write("Links", rb.links_source(source, actual, pairs, "LocalProofs", "Graphs"))
 
     def value(graph, name, namespace):
@@ -268,6 +332,21 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     source_lines = ["import Graphs\n" + HEADER]
     parameters = "(i : Values Input) (s : Values Register)"
     endpoint_count = 0
+    if focused:
+        for port in guard_outputs:
+            _, ctor = rb.OUTPUTS[port]
+            sn, rn = source.outputs[port], actual.outputs[port]
+            k = matches[sn, rn]
+            lines.append(f"theorem checked_{ctor} {parameters} :\n"
+                         f"    {value(actual, rn, 'RTL')} = circuit.observe i s {ctor} := by\n"
+                         f"  have binding : {value(source, sn, 'Source')} = (circuit.output {ctor}).eval i s := by\n"
+                         f"    bind_source ({value(source, sn, 'Source')}) to (circuit.output {ctor}) under i s\n"
+                         f"  exact (link_{k} i s).symm.trans binding\n")
+        lines[0] = "import Links\nimport Pinwheel.Hardware.Readback.SourceBinding\n" + HEADER
+        write("Proof", "\n".join([*lines, "end Pinwheel.TypedArtifact\n"]))
+        write("Audit", AUDIT)
+        return ["Design", "Graphs", *guard_modules, *local_modules, "LocalProofs", "Links", "Proof", "Audit"], {
+            "local_equalities": len(pairs), "endpoints": len(guard_outputs), "outputs": list(guard_outputs)}
     for kind, mapping, constructors, desc, typ, operation in (
             ("next", source.next, rb.REGISTERS, "registers", "Register", "step"),
             ("output", source.outputs, rb.OUTPUTS, "outputs", "Output", "observe")):
@@ -320,23 +399,8 @@ end Pinwheel.TypedArtifact
     if compact:
         write("SourceBindings", "\n".join([*source_lines, "end Pinwheel.TypedArtifact\n"]))
     write("Proof", "\n".join(lines))
-    write("Audit", """import Lean
-import Proof
-open Lean Elab Command
-elab "#audit_typed_artifact" : command => do
-  let env ← getEnv
-  let mut count : Nat := 0
-  for (name, _) in env.constants.toList do
-    if name.toString.startsWith "Pinwheel.TypedArtifact." then
-      count := count + 1
-      let axioms ← collectAxioms name
-      let bad := axioms.filter fun a => a != ``propext && a != ``Classical.choice && a != ``Quot.sound
-      unless bad.isEmpty do throwError "Unapproved axioms in {name}: {bad}"
-  if count == 0 then throwError "Empty artifact proof audit"
-  logInfo m!"Typed artifact audit: {count} declarations, standard axioms only."
-#audit_typed_artifact
-""")
-    return ["Design", "Graphs", *local_modules, "LocalProofs", "Links", *(["SourceBindings"] if compact else []), "Proof", "Audit"], {
+    write("Audit", AUDIT)
+    return ["Design", "Graphs", *guard_modules, *local_modules, "LocalProofs", "Links", *(["SourceBindings"] if compact else []), "Proof", "Audit"], {
         "local_equalities": len(pairs), "endpoints": endpoint_count,
         "local_proof_units": len(local_modules) or 1,
         "boolean_generalizations": sum(kind == "boolean" for kind, _, _ in plans.values()),

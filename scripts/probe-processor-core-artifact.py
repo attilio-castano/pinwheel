@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import re
 import shutil
+import subprocess
 import time
 import typed_circuit_readback as readback
 import readback_miter
@@ -50,6 +51,9 @@ def sources():
     for p in (
         *readback.source_paths(),
         Path(__file__),
+        ROOT / "scripts/readback_guard_proofs.py",
+        ROOT / "Pinwheel/Hardware/Readback/Guard.lean",
+        ROOT / "Pinwheel/Hardware/Readback/SourceBinding.lean",
         ROOT / "scripts/readback_control_proofs.py",
         ROOT / "scripts/readback_slice_proofs.py",
         ROOT / "scripts/readback_mux_proofs.py",
@@ -112,7 +116,7 @@ abbrev outputs := Processor.SystemExport.tapInterface Processor.CoreInterface.ou
 """
 
 
-def generate(directory, solver):
+def generate(directory, solver, cadical, scope):
     data = json.loads((directory / "interface.json").read_text())
     modules, evidence = readback.generate(
         directory,
@@ -122,11 +126,14 @@ def generate(directory, solver):
         solver,
         profile=profile(),
         compact=True,
+        guard_solver=cadical if scope != "solver" else None,
+        guard_outputs=("out_state_15", "out_state_16"),
+        focused=scope == "writeback",
     )
     evidence["finite_control_proof_search"] = split_two_bit_controls(directory, modules)
     evidence["slice_bound_proof_search"] = prove_slice_bounds(directory, modules)
     evidence["mux_algebra_proof_search"] = add_mux_algebra(directory, modules)
-    if evidence["endpoints"] != 104:
+    if evidence["endpoints"] != (2 if scope == "writeback" else 104):
         raise AssertionError("Incomplete core next/output/tap coverage")
     (directory / "generation.json").write_text(
         json.dumps(dict(modules=modules, evidence=evidence), indent=2) + "\n"
@@ -206,14 +213,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tag")
     parser.add_argument("--cold-report", type=Path)
-    parser.add_argument("--scope", choices=("kernel", "solver"), default="kernel")
+    parser.add_argument("--scope", choices=("kernel", "solver", "writeback"), default="kernel")
     parser.add_argument("--generate", type=Path)
     parser.add_argument("--solver", type=Path)
+    parser.add_argument("--cadical", type=Path)
     args = parser.parse_args()
     if args.generate:
         if not args.solver:
             parser.error("--generate requires --solver")
-        generate(args.generate, args.solver)
+        generate(args.generate, args.solver, args.cadical, args.scope)
         return
     if not args.tag or not args.cold_report:
         parser.error("--tag and --cold-report required")
@@ -243,8 +251,11 @@ def main():
         tools["z3"] = cad / "bin/z3"
         paths += [cad / "bin/z3", cad / "libexec/z3"]
         report["tool_sha256"] = rr.tool_hashes(paths)
+        cadical = Path(subprocess.check_output(["lean", "--print-prefix"], text=True).strip()) / "bin/cadical"
+        report["cadical_sha256"] = rr.sha(cadical)
         run(
-            ["lake", "build", "Pinwheel.Hardware.Readback.Mux"],
+            ["lake", "build", "Pinwheel.Hardware.Readback.Mux", "Pinwheel.Hardware.Readback.Guard",
+             "Pinwheel.Hardware.Readback.SourceBinding"],
             "mux-helper-build",
             timeout=120,
         )
@@ -295,6 +306,7 @@ def main():
                 directory,
                 "--solver",
                 tools["z3"],
+                "--scope", args.scope, "--cadical", cadical,
             ],
             "core-generate",
             timeout=180,
@@ -302,14 +314,17 @@ def main():
         generation = json.loads((directory / "generation.json").read_text())
         report["evidence"] = generation["evidence"]
         report["direct_kernel"] = check_direct(run, directory, leaf, rb, source, actual)
-        if args.scope == "kernel":
+        if args.scope in ("kernel", "writeback"):
             remaining = [
                 m for m in generation["modules"] if m not in ("Design", "Graphs")
             ]
             compile_modules(run, directory, remaining, timeout=120)
             if "standard axioms only" not in (directory / "Audit.log").read_text():
                 raise AssertionError("Missing complete core audit")
-            report["kernel_correspondence"] = True
+            report["kernel_correspondence"] = args.scope == "kernel"
+            report["checked_writeback"] = True
+        if rr.sha(cadical) != report["cadical_sha256"]:
+            raise RuntimeError("SAT tool changed")
         if report["source_sha256"] != sources() or report[
             "tool_sha256"
         ] != rr.tool_hashes(paths):
