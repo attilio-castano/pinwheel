@@ -72,8 +72,9 @@ def main():
         report.update(toolchain=manifest, tools={str(p): sha(p) for p in paths}, source_commit=segments.source_commit())
         report['source_sha256'] = sources(tb)
         lean = ["lake", "env", "lean", "-DwarningAsError=true"]
-        run(["lake", "build", "Pinwheel.Hardware.Processor.ReadyHostCircuit", "Pinwheel.Hardware.Processor.LoadableSystemExport",
-             "Pinwheel.Hardware.Processor.Examples.ReadySPIProofs", "Pinwheel.Hardware.StreamingReady.SegmentExport"], "build")
+        run(["lake", "build", "Pinwheel.Hardware.Processor.Examples.ReadySPIExchange",
+             "Pinwheel.Hardware.Processor.Examples.ReadySPISampling", "Pinwheel.Hardware.Processor.LoadableSystemExport",
+             "Pinwheel.Hardware.StreamingReady.SegmentExport"], "build")
         requests = session()
         collect = len(requests)-3
         table = out / "requests.bin"

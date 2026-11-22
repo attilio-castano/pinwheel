@@ -64,4 +64,25 @@ theorem receive_word (frames collect : Nat) (s : State) (word : BitVec 32) :
     simp +decide
   | k+32 => omega
 
+/-- The result in x25 depends only on the eight payload nibbles. The status
+and upper bits of the GPIO loads and the initial accumulator are arbitrary. -/
+theorem collected_gpio_word (frames collect : Nat) (s : State) (samples : List (BitVec 32))
+    (word : BitVec 32)
+    (nibbles : samples.map (· &&& 15) = [28,24,20,16,12,8,4,0].map
+      (fun k : Nat => (word >>> k) &&& 15)) :
+    let assembled := samples.foldl (receiveSample frames collect) s
+    read (step assembled (program frames collect)[33]!).state.registers 25 = word := by
+  dsimp only
+  rw [collect_value, receive_fold]
+  let appendNibble := fun (acc nibble : BitVec 32) => (acc <<< 4) ||| nibble
+  have normalized (xs : List (BitVec 32)) (initial : BitVec 32) :
+      xs.foldl (fun acc x => appendNibble acc (x &&& 15)) initial =
+        (xs.map (· &&& 15)).foldl appendNibble initial := by
+    simp [List.foldl_map]
+  have reference := receive_word frames collect s word
+  dsimp only at reference
+  rw [receive_fold, normalized] at reference
+  rw [normalized, nibbles]
+  simpa only [List.map_map, Function.comp_def] using reference
+
 end Pinwheel.Hardware.Processor.ReadySPI
