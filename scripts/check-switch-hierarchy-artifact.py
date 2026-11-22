@@ -6,7 +6,6 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
-import re
 import time
 
 import typed_circuit_hierarchy as hierarchy
@@ -20,23 +19,9 @@ SPEC.loader.exec_module(base)
 
 
 def sources():
-    found = base.sources()
-    pending = [ROOT / "test/SwitchHierarchyEmit.lean"]
-    while pending:
-        path = pending.pop()
-        key = str(path.relative_to(ROOT))
-        if key in found:
-            continue
-        found[key] = sha(path)
-        for line in path.read_text().splitlines():
-            match = re.match(r"^import\s+(.+)$", line)
-            if match:
-                for module in match[1].split("--", 1)[0].split():
-                    if module == "Pinwheel" or module.startswith(("Pinwheel.", "test.")):
-                        pending.append(ROOT / (module.replace(".", "/") + ".lean"))
-    for name in ("scripts/check-switch-hierarchy-artifact.py", "scripts/readback_miter.py",
-                 *(str(p.relative_to(ROOT)) for p in (*hierarchy.source_paths(), *module_checks.source_paths()))):
-        found[name] = sha(ROOT / name)
+    found = base.sources(("test/SwitchHierarchyEmit.lean", "Pinwheel/Hardware/Switch/Certified.lean"))
+    for path in (Path(__file__).resolve(), *hierarchy.source_paths(), *module_checks.source_paths()):
+        found[str(path.relative_to(ROOT))] = sha(path)
     return dict(sorted(found.items()))
 
 

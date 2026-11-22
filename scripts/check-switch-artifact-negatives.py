@@ -160,7 +160,7 @@ def rtl_negative(run, tools, directory, config, descriptor, control):
     try:
         artifact.certify(run, tools, directory, config, descriptor, rtl)
     except RuntimeError as error:
-        failure = re.match(r"(LocalProofs(?:[0-9]+)?) certificate failed:", str(error))
+        failure = re.match(r"(LocalProofs[0-9]*) certificate failed:", str(error))
         if not failure:
             raise
         stage = failure[1]

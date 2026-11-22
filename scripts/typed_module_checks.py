@@ -28,6 +28,8 @@ def tool_config():
 
 def source_paths():
     return (*readback.source_paths(), Path(__file__).resolve(),
+            ROOT / "scripts/typed_artifact_runner.py",
+            ROOT / "scripts/process_group.py",
             ROOT / "scripts/check-round-robin-circuit.py",
             ROOT / "scripts/validation_run.py",
             ROOT / "tools/hardware-toolchain.json")

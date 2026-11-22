@@ -171,6 +171,7 @@ def generate(directory: Path, descriptor, hints: Path, rtl: Path, solver: Path, 
     Each descriptor must have the corresponding Interface type. Source-hint
     endpoint proofs must reduce to the declared circuit by rfl, so metadata
     cannot silently substitute a different circuit or omit a typed endpoint.
+    A client can add binding assertions checked in the design module.
     The returned certificate concerns every bit, including unreachable states.
     """
     rb = importer(descriptor)

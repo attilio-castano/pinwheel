@@ -183,5 +183,5 @@ The [bounded SPI continuation](buffered-spi-source.md) now connects a typed
 four-leaf source to its accepted resident image and composes the binary runtime
 observations. The [source-execution continuation](buffered-source-execution.md)
 proves decoded-image interpreter agreement; its packed circuit state relation
-remains open. The [Program to pins explorer](../explorer/index.html#session) follows
+remains open. The [Program to pins explorer](https://attilio-castano.github.io/pinwheel/#session) follows
 finite source/image/actual-model evidence, payload reuse and replacement.

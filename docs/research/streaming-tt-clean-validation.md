@@ -53,6 +53,13 @@ CAD result, final-target correspondence, extracted timing or physical acceptance
 Machine-specific PDK/archive dependencies remain outside this portability change.
 
 The synthetic controls use independent Git history without original commit
-objects. Their positive result is source identity only. They also exercise
+objects. A pinned Git revision supplies the fixture bytes. The Git-only CI
+job runs the following command from a checkout that contains that revision:
+
+```sh
+PINWHEEL_RUN_HISTORICAL_TESTS=1 python3 -B -m unittest discover -s test -p test_streaming_clean_source.py -v
+```
+
+Their positive result is source identity only. The controls also exercise
 source/policy/adapter/manifest/membership drift, parent-repository leakage,
 archive mismatch, fake pass, explicit staged-data use and historical refusals.

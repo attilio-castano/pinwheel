@@ -1,12 +1,13 @@
 # Pinwheel design explorer
 
 Open the [interactive design explorer](https://attilio-castano.github.io/pinwheel/)
-directly in your browser. After cloning the repository, you can also open
-[index.html](index.html) from the checkout. The page contains its data, styles,
+directly in your browser. For offline use, run `python3 -B scripts/build-explorer.py`
+from the checkout and open `build/explorer-site/index.html`. The page contains its data, styles,
 scripts and source excerpts, so it works offline without a server or dependencies.
-Source dialogs offer the corresponding GitHub revision when its bytes match the
-snapshot and that revision is reachable from a local `origin` tracking ref at
-build time. When opened as a local file, they also link to the full local source.
+Recording source dialogs show the verified historical Git tree. Editorial
+source dialogs show the current checkout and offer a local source link when
+opened from disk. Both link to GitHub when their source revision is known to
+an `origin` tracking ref at build time.
 
 The default **Start here** view introduces the project through a recorded demonstration:
 run a four-byte SPI transfer, change its payload while reusing the same program,
@@ -113,10 +114,10 @@ follows the current PC; its full view also shows rows skipped by the selected ca
 
 ## Validate or rebuild the retained snapshot
 
-The committed `index.html` retains the frozen recordings needed for offline
-use. [recordings.json](recordings.json) keeps concise source and semantic-hash
-receipts for them. The large I²C and buffered-session JSON exports are local
-build outputs under the ignored `build/explorer/` directory.
+The committed UART, SPI, [I²C](i2c-traces.json), and
+[buffered SPI](buffered-session.json) JSON files contain the retained recordings.
+[recordings.json](recordings.json) stores their source and semantic-hash receipts.
+The builder renders them into a standalone page under `build/explorer-site/`.
 
 From a fresh checkout, Python can validate the retained recordings or rebuild
 the page without running Lean:
@@ -127,29 +128,30 @@ python3 -B scripts/test-explorer-recordings.py
 python3 -B scripts/build-explorer.py
 ```
 
-The builder uses a local `build/explorer/` recording when present; otherwise
-it reads the matching frozen recording embedded in `index.html`. Both paths
-check the tracked receipts, source bytes, image fields, session structure and
-source references. Rebuilding refreshes the presentation and source excerpts;
-it does not execute the model again. Changed recording sources require the
-corresponding exporter and replay below.
+Routine builds read the committed JSON files and check all recording digests,
+source hashes and session structure. Source hashes and
+recording excerpts resolve against the recording's verified Git tree, so
+checkout edits can publish with the same recordings. A normal rebuild refreshes
+the presentation and editorial source excerpts. To demonstrate behavior at a
+new revision, rerun the corresponding exporter and replay below.
 
 ## Publish with GitHub Pages
 
 The [Pages workflow](../../.github/workflows/explorer-pages.yml) publishes the
 explorer when changes reach `main`; it can also be dispatched manually on `main`.
-GitHub Actions validates the retained recordings and source inputs, rebuilds the
-page while preserving its frozen recordings, then deploys only `index.html` at
-the website root. Source excerpts are embedded, and online source links open the
-verified GitHub revision.
+GitHub Actions fetches history, validates the retained recordings and source
+inputs, rebuilds the page, then deploys only `index.html` at the website root.
+Keep every verified source tree reachable in the fetched Git history. Source
+excerpts are embedded, and recording links open the verified GitHub revision.
 
-Pages uses GitHub Actions as its publishing source. Publishing the page does not
-rerun the Lean models or extend the recordings' evidence scope. Refresh changed
-recordings and their receipts with the commands below before publishing.
+Pages uses GitHub Actions as its publishing source. Recording refresh runs the
+Lean models and comparisons. Publishing checks and displays that retained
+evidence.
 
 ## Refresh from source
 
-From the repository root, using the existing pinned Lean toolchain:
+From the repository root, using the existing pinned Lean toolchain and committed
+recording inputs:
 
 ```sh
 lake build Pinwheel.Compile.UART Pinwheel.Compile.SPITransaction Pinwheel.Compile.I2CWriteTransactionProofs
@@ -164,31 +166,29 @@ python3 -B scripts/build-explorer.py --refresh-receipts
 
 The buffered exporter writes `build/explorer/buffered-session.json`. After
 the exporters have rerun their comparisons, `--refresh-receipts` validates
-the regenerated recordings and updates both `recordings.json` and the
-standalone HTML. Normal builds and `--check` require matching receipts;
-they do not accept a changed recording as a new result.
+the I²C and buffered SPI candidates from `build/explorer/` and writes them
+to `docs/explorer/` as compact JSON. It also updates `recordings.json`
+and rebuilds the offline page. Routine builds and `--check` require matching
+receipts for the retained JSON.
 
-The trace exporter records the repository base and SHA-256 hashes of its source
-inputs. Generation is deterministic for those inputs. The page builder refuses
-a trace with changed source bytes, validates every
-source path/range and embeds the actual referenced excerpts. It suppresses
-revision links for excerpts that differ from the Git base, are new local files,
-or belong to a commit absent from local `origin` tracking refs. This uses local
-Git knowledge; generation does not contact GitHub.
-The trace keeps its original generation revision; unrelated commits do not
-invalidate it when every recorded source hash still matches.
+Each exporter records a generation revision and SHA-256 hashes of its input
+files. The builder checks those hashes against the generation revision by
+default. The `sourceTrees` bindings in `recordings.json` handle older traces
+whose recorded bytes were first committed after their generation base. The
+existing bindings resolve all ten retained traces to `c46786f2`, which contains
+the matching source bytes. The original generation revisions stay in the traces.
 
-The buffered exporter also compares the exact Python images to fresh typed
-Lean constructor exports. The builder rechecks image bytes, decoded instruction
-and loop descriptions, storage accounting and session structure. These bundle
-checks do not re-execute the Lean model; regenerate the recording for that.
+The buffered exporter compares the exact Python images to fresh typed Lean
+constructor exports. When accepting a new buffered receipt, the builder checks
+image bytes, decoded instructions and loops, and storage accounting against
+the model from the committed source inputs. Routine builds verify the accepted
+receipt and the retained transcript, observations, and session structure.
 
 `content.json` contains curated component descriptions, claims and design
 decisions. Review those descriptions and their line references when the design
 changes; excerpt validation alone cannot establish that prose is still accurate.
-`explorer.template.html` owns the UI, while `index.html` is its generated bundle.
-The generated HTML and UART/SPI waveform snapshots are collapsed in GitHub
-diffs; the template, descriptions, exporters and recording receipts remain
+`explorer.template.html` owns the UI. GitHub collapses generated waveform JSON
+in diffs. The template, descriptions, exporters and recording receipts are
 visible for review.
 
 After refresh, inspect both targets, source dialogs, all four SPI modes, I²C

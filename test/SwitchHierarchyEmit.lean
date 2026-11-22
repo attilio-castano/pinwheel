@@ -7,7 +7,8 @@ elab "#audit_switch_export" : command => do
   let env ← getEnv
   let mut count : Nat := 0
   for (name, _) in env.constants.toList do
-    if name.toString.startsWith "Pinwheel.Hardware.Switch.Export." then
+    if name.toString.startsWith "Pinwheel.Hardware.Switch.Export." ||
+        name.toString.startsWith "Pinwheel.Hardware.TypedHierarchy." then
       count := count + 1
       let axioms ← collectAxioms name
       let bad := axioms.filter fun a => a != ``propext && a != ``Classical.choice && a != ``Quot.sound

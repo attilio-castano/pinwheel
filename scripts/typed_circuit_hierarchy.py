@@ -8,9 +8,10 @@ from __future__ import annotations
 
 from copy import deepcopy
 import json
+from pathlib import Path
 import re
 
-from typed_circuit_readback import validate_descriptor
+from typed_circuit_readback import IDENTIFIER, validate_descriptor
 
 PATH = re.compile(r"[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*\Z")
 
@@ -22,6 +23,8 @@ def normalize_descriptor(descriptor):
         raise ValueError("Missing register enumeration")
     mapping, paths = {}, []
     for actual, normalized in zip(registers, flat["registers"], strict=True):
+        if not isinstance(actual, dict):
+            raise ValueError("Malformed hierarchy register")
         canonical, path = actual.get("flat_reference"), actual.get("reference")
         if not isinstance(canonical, str) or not isinstance(path, str) or not PATH.fullmatch(path):
             raise ValueError("Invalid hierarchical state reference")
@@ -54,12 +57,10 @@ def prepare_json(original, destination, descriptor):
 
 
 def source_paths():
-    from pathlib import Path
-    return (Path(__file__).resolve(),)
+    return (Path(__file__).resolve(), Path(__file__).with_name("readback_miter.py"))
 
 
 def lower_leaves(run, tools, directory, descriptor):
-    from typed_circuit_readback import IDENTIFIER
     leaves = descriptor.get("leaves")
     if (not isinstance(leaves, list) or not leaves
             or any(not isinstance(n, str) or not IDENTIFIER.fullmatch(n) for n in leaves)
@@ -84,11 +85,11 @@ def import_assembly(run, tools, directory, descriptor, leaves, *, normalize_muxe
     top = directory / "hierarchy_top.sv"
     actual.write_text("\n".join(p.read_text() for p in [*leaves, top]))
     raw, imported, script = (directory / n for n in ("raw.json", "import.json", "import.ys"))
+    mux_pass = "pmuxtree\n" if normalize_muxes else ""
     script.write_text(f"read_verilog -sv {cad.yosys_quote(actual)}\n"
                       f"hierarchy -check -top {flat['module']}\n"
-                      "flatten -noscopeinfo\nproc\n"
-                      + ("pmuxtree\n" if normalize_muxes else "")
-                      + f"opt_clean\ncheck -assert\nwrite_json {cad.yosys_quote(raw)}\n")
+                      f"flatten -noscopeinfo\nproc\n{mux_pass}opt_clean\ncheck -assert\n"
+                      f"write_json {cad.yosys_quote(raw)}\n")
     run([tools["yosys"], "-Q", "-T", "-s", script], directory.name + "-import")
     flat = prepare_json(raw, imported, descriptor)
     (directory / "canonical-interface.json").write_text(json.dumps(flat, indent=2) + "\n")

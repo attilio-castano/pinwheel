@@ -101,7 +101,7 @@ def main():
         paths += [cad / "bin/z3", cad / "libexec/z3"]
         report["tool_manifest"], report["tool_sha256"] = manifest, rr.tool_hashes(paths)
         run(["lake", "build", "Pinwheel.Hardware.Memory.TransferCircuitProofs", "Pinwheel.Hardware.Emit",
-             "Pinwheel.Hardware.Readback.Boolean"], "build", timeout=900)
+             "Pinwheel.Hardware.Artifact", "Pinwheel.Hardware.Readback.Boolean"], "build", timeout=900)
         checks.prepare_support(run, out)
         for a, wi, wo in checks.MATRIX:
             directory = out / f"transfer-{a}-{wi}-{wo}"

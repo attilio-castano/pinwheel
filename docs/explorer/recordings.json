@@ -305,7 +305,17 @@
         "scripts/ExplorerI2CTrace.lean": "8f0cc3988a1c91c93a6f23594afa7d9f3fe663478d7ad7d0823a0be81302ba33",
         "test/I2CWriteTransactions.lean": "b1d0c72d0a7de35b70db0865b305783a99addfb4cc97855d84bde4baa84895d1"
       }
+    },
+    "spi-traces.json": {
+      "sha256": "0f44da72d344b6d6ac3359f4012c2beb16d451e0d724f24a9868fac35d1e6676"
+    },
+    "uart-trace.json": {
+      "sha256": "0dbb6aa3c1d605efd4c20cb453097767b26a86a7a8cbdd52fa591dd365a1602e"
     }
   },
-  "schema": "pinwheel-explorer-recording-receipts-v1"
+  "schema": "pinwheel-explorer-recording-receipts-v2",
+  "sourceTrees": {
+    "6c3233654f3054bc370e024677d76dbd3d37324e": "c46786f27e14ba07aceda4f65aa2a5b5d3eec528",
+    "ba7da30901f18b715079a0b1973866d0853f9b37": "c46786f27e14ba07aceda4f65aa2a5b5d3eec528"
+  }
 }

@@ -77,8 +77,8 @@ lake env lean -DwarningAsError=true --run test/FifoSubstitution.lean
 The simulation checks all six physical registers through wraparound, a blocked
 write, full-rate replacement and reset with retained storage. It also runs both
 composed lanes through cancellation, stalls, repeated payloads and modular
-overflow. Emitted-RTL certificates and matched synthesis measurements for these
-instances remain future work.
+overflow. The standalone client described in the [library guide](lean-hardware-library.md)
+checks emitted lane RTL against the same contract.
 
 ## Replacing the input queues in a packet switch
 
@@ -125,18 +125,16 @@ packet-switch oracle against both emitted designs. On the shift version, the
 runner also interchanges the two 4-bit payload drivers and checks that the
 modified RTL fails both replay and kernel correspondence.
 
-| Depth-three input FIFO | RTL next-register equations | RTL output equations | Mapped flip-flops | Other generic cells | Total generic cells |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Shift | 20 | 6 | 50 | 142 | 192 |
-| Circular | 20 | 6 | 56 | 182 | 238 |
+The runner compares the two layouts under the same CIRCT lowering and Yosys
+generic synthesis. These counts describe this 2×2 switch with depth three and
+four-bit payloads, using the arbitration circuit from the flat switch.
 
-Each circular queue spends six bits on its count and pointers. Each shift
-queue spends three bits on validity. Across two inputs that accounts for the
-six additional flip-flops. Both rows use the same CIRCT lowering and Yosys
-generic synthesis. These counts apply to this width and depth. Timing, physical
-area and correspondence of the mapped gates fall outside the RTL certificate.
+| Input FIFO | RTL next-register equations | RTL output equations | Generic flip-flops | Total generic cells |
+| --- | ---: | ---: | ---: | ---: |
+| Shift | 20 | 6 | 50 | 208 |
+| Circular | 20 | 6 | 56 | 255 |
 
-Reproduce both rows with a fresh tag. The report under
+Run the matched comparison with a fresh tag. The report under
 `build/switch-fifo-backends/<tag>/report.json` records the commands, endpoint
 coverage, cell breakdown, source and tool hashes, and hashes of the generated
 proofs and artifacts.

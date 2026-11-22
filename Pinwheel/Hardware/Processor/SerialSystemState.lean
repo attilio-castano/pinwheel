@@ -59,7 +59,7 @@ theorem view_valid (s : Values (Register aw d)) (h : Valid layout rom d s) :
 theorem preserved (i : Values (Input aw)) (s : Values (Register aw d))
     (h : Valid layout rom d s) : Valid layout rom d ((circuit layout rom romFits ramFits d).step i s) := by
   constructor
-  · change SystemCircuit.Valid layout rom (systemState _) 
+  · change SystemCircuit.Valid layout rom (systemState _)
     rw [system_state_step]
     exact LoadableSystem.preserved layout rom romFits ramFits _ _ h.1
   · change SerialCircuit.Valid d (serialState _)

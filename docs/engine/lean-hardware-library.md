@@ -10,10 +10,7 @@ open Pinwheel.Hardware
 
 The library is under active development. It currently covers synchronous
 two-state circuits, complete typed interfaces, stream composition, independent
-banks, arbitration, a buffered multiport switch and exclusive-command memory.
-The memory adapter also supports backpressured requests and read responses.
-A memory-transfer specification, completion proof and certified host accelerator
-are available; comparative synthesis and processor integration are ongoing campaigns.
+banks, arbitration, a buffered multiport switch, and synchronous memories.
 
 ## Construction and proof layers
 
@@ -347,6 +344,27 @@ narrowing with reconstruction and no-alias theorems. The
 [processor contract](lean-hardware-processor-plan.md) records its environment
 choices and independent validation.
 
+## Memory and stream components
+
+- `Memory.CommandFlops` provides exclusive command RAM. A read captures the
+  addressed word in Q, a write holds Q, and a disabled command holds all state.
+- `Memory.StreamFlops` adds a pending response. Reset cancels that response while
+  preserving RAM contents and Q.
+- `Memory.ByteAdapterCircuit` exposes byte, halfword, and word operations over
+  command RAM. A store commits when its response is accepted. The adapter's
+  event refinement reconstructs the memory effects from completed operations.
+- `Memory.TransferHostExport` wires the host controller and two memories with
+  `TypedHierarchy`. The imported RTL proof compares each next-state and output
+  equation with the flat reference and carries memory preservation through
+  reset and recovery.
+- `Stream.BufferedMerge` uses one elastic output slot and round-robin arbitration.
+  The multiport contract carries per-input ordering, conservation, and
+  conditional fairness into the implementation.
+
+The [memory campaign](lean-hardware-memory-plan.md) and
+[buffered merge record](lean-hardware-buffered-merge.md) give the proof
+assumptions, replay commands, and synthesis evidence for these components.
+
 ## A client example
 
 [`IndependentLanes.lean`](../../examples/IndependentLanes.lean) constructs a bank
@@ -403,23 +421,18 @@ reject a same-width output swap on the shift variants with at least two lanes.
 Clients supply their traffic and reset theorem. The lane simulator materializes
 each register snapshot to avoid reevaluating prior edges.
 
-`TypedHierarchy` adds typed instance wiring for single-clock assemblies.
-Each child connects width-indexed pins to external ports or declared internal
-nets, and binds its registers into the flat reference state. The exporter checks
-driver coverage and the state bijection, then derives the wrapper and physical
-register paths from those bindings. The shared readback workflow checks those
-paths against the Lean declaration and proves the flattened, imported RTL
-equivalent to the flat reference. The switch uses FIFO and output-slot instances.
-The host accelerator uses a controller and two memory instances.
-
 The [FIFO substitution guide](lean-hardware-fifo-substitution.md) records the
 shared transaction theorem and the 2×2 packet-switch replay and synthesis
 comparison.
+
+`TypedHierarchy` connects single-clock `TypedModule` instances. Each child
+binds width-indexed pins to external ports or declared nets and binds its local
+registers into the flat reference. The generated wrapper and physical register
+paths use those same bindings. The [switch hierarchy](lean-hardware-switch.md#typed-switch-hierarchy)
+shows how to check the actual flattened RTL against that reference.
 
 See the [stream foundation](lean-stream-hardware.md),
 [bundle/fork-join guide](lean-stream-graphs.md), and
 [multiport switch record](lean-hardware-switch.md) for the corresponding
 semantics, validation commands and current limitations. The
-[memory campaign](lean-hardware-memory-plan.md) distinguishes its two existing
-read/write contracts and records command-memory validation. The
 [roadmap](lean-hardware-roadmap.md) records the remaining integration gates.

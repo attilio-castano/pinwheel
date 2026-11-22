@@ -212,8 +212,9 @@
     };
     const SCENARIO_LABELS={'i2c-success':'ACK · address and payload','i2c-stretch':'Clock stretching · 3 extra cycles','i2c-nack':'Address NACK · skip the payload','i2c-timeout':'Stuck SCL · timeout before START'};
     const target=()=>DATA.targets.find(t=>t.id===targetId);
-    const sourceKey=r=>`${r.path}:${r.start}:${r.end}`;
-    const sourceLinks=refs=>(refs||[]).map(r=>`<button type="button" class="source-link" data-source="${esc(sourceKey(r))}">${esc(r.label||r.path)} <span aria-hidden="true">↗</span><span class="source-path">${esc(r.path)}:${r.start}–${r.end}</span></button>`).join('');
+    const sourceTree=t=>DATA.snapshot.recordingSourceTrees[t.id];
+    const sourceKey=(r,tree)=>`${tree}:${r.path}:${r.start}:${r.end}`;
+    const sourceLinks=(refs,tree='checkout')=>(refs||[]).map(r=>`<button type="button" class="source-link" data-source="${esc(sourceKey(r,tree))}">${esc(r.label||r.path)} <span aria-hidden="true">↗</span><span class="source-path">${esc(r.path)}:${r.start}–${r.end}</span></button>`).join('');
     const announce=text=>{$('selection-announcement').textContent=text;};
     $('revision').textContent=DATA.snapshot.revision.slice(0,7);
     function setView(next){
@@ -329,7 +330,7 @@
       $('session-title').textContent=s.title||'One circuit. New programs.';
       $('session-meta').innerHTML=['Recorded Lean model',s.target,`${s.images.length} resident images`,`${s.transfers.length} transfers`].map((v,i)=>`<span class="pill${i===0?' accent':''}">${esc(v)}</span>`).join('');
       $('session-scope').innerHTML=`<strong>Evidence boundary.</strong> ${esc(s.scope)}`;
-      $('session-obligations').innerHTML='<h2>Use this to guide the design</h2>'+(s.obligations||[]).map(o=>`<div class="session-obligation"><span class="evidence-kind">${esc(o.status)}</span><h3>${esc(o.title)}</h3><p>${esc(o.description)}</p><div class="source-list">${sourceLinks(o.sources)}</div></div>`).join('');
+      $('session-obligations').innerHTML='<h2>Use this to guide the design</h2>'+(s.obligations||[]).map(o=>`<div class="session-obligation"><span class="evidence-kind">${esc(o.status)}</span><h3>${esc(o.title)}</h3><p>${esc(o.description)}</p><div class="source-list">${sourceLinks(o.sources,sourceTree(s))}</div></div>`).join('');
       $('session-range').max=s.frames.length-1;
       $('session-signal-note').textContent='The recording applies controller commands directly to the digital SRAM model. Pin rows show commanded levels; Drive en. shows whether the outputs drive them. State is after each edge; command rejection reports admission before that edge. Raw inputs enter sampler stage 1 on the edge, while RX append uses the previous stage-2 sample. Upload packet delivery, pad delay and electrical SRAM timing have separate evidence obligations.';
       $('session-checks').textContent=JSON.stringify(s.checks,null,2);
@@ -357,7 +358,7 @@
       }else if(frame){
         extra=`<dl class="definition"><dt>Recorded entry</dt><dd>Edge ${frame.edge} · ${esc(frame.event||'controller transition')}</dd><dt>Command</dt><dd class="mono">${esc(sessionText(frame.command))}</dd></dl>`;
       }
-      $('session-stage-detail').innerHTML=`<p class="eyebrow">${s.firstFrame===null?'Program and representation':'Accepted controller history'}</p><h2>${esc(s.title)}</h2><p>${esc(s.description)}</p>${extra}<div class="source-list">${sourceLinks(s.sources)}</div>`;
+      $('session-stage-detail').innerHTML=`<p class="eyebrow">${s.firstFrame===null?'Program and representation':'Accepted controller history'}</p><h2>${esc(s.title)}</h2><p>${esc(s.description)}</p>${extra}<div class="source-list">${sourceLinks(s.sources,sourceTree(session()))}</div>`;
     }
     function renderSessionFrame(spoken=false){
       const s=session();if(!s)return;const f=s.frames[sessionFrame],state=f.state,last=s.frames.length-1;
@@ -484,7 +485,7 @@
       if(protocolId==='i2c')meta.push('Same loaded program','Address '+hex(p.address),'Payload '+p.payload.map(b=>hex(b)).join(' '),'Phase '+p.phaseCycles+' cycles','Wait budget '+p.waitCycles+' edges');
       $('lesson-meta').innerHTML=meta.map((v,i)=>`<span class="pill${i===0?' accent':''}">${esc(v)}</span>`).join('');
       $('cycle-range').max=t.frames.length-1;$('trace-scope').textContent=t.scope;$('trace-convention').textContent=t.convention;
-      $('trace-sources').innerHTML=sourceLinks(t.sources);
+      $('trace-sources').innerHTML=sourceLinks(t.sources,sourceTree(t));
       $('signal-note').textContent=protocolId==='spi'?'MISO is the input value consumed by this model at the displayed edge. Package sampling delay is outside this recording.':protocolId==='i2c'?'Chip / peer low = 1 means pulling the wire low. Either driver can hold it low; it is high when both release. The displayed resolved wires feed the next engine edge.':'Each row shows the interval immediately after an engine edge.';
       $('stage-nav').innerHTML=Object.entries(PROTOCOL_COPY).map(([id,c],i)=>`${i?'<span aria-hidden="true">→</span>':''}<button type="button" data-protocol="${id}" aria-pressed="${id===protocolId}">${esc(c.name)} · ${esc(c.lesson)}</button>`).join('');
       $('program-size').textContent=`${t.program.length} source rows`;
@@ -559,12 +560,12 @@
     }
     function showSource(key){
       const s=DATA.sources[key];if(!s)return;
-      $('source-title').textContent=s.label||s.path;$('source-location').textContent=`${s.path} · lines ${s.start}–${s.end}`;
+      $('source-title').textContent=s.label||s.path;$('source-location').textContent=`${s.path} · lines ${s.start}–${s.end}${s.revision?' · '+s.revision.slice(0,7):''}`;
       $('source-code').textContent=s.text.split('\n').map((line,i)=>`${String(s.start+i).padStart(4,' ')}  ${line}`).join('\n');
       const local='../../'+s.path.split('/').map(encodeURIComponent).join('/');
-      const remote=DATA.snapshot.repository+'/blob/'+DATA.snapshot.revision+'/'+s.path.split('/').map(encodeURIComponent).join('/')+`#L${s.start}-L${s.end}`;
-      const localLink=location.protocol==='file:'?`<a href="${esc(local)}" target="_blank" rel="noopener">Open local source</a>`:'';
-      const remoteLink=s.atRevision===true&&DATA.snapshot.revisionOnRemote===true?`<a href="${esc(remote)}" target="_blank" rel="noopener">Open repository revision ↗</a>`:'';
+      const remote=DATA.snapshot.repository+'/blob/'+s.revision+'/'+s.path.split('/').map(encodeURIComponent).join('/')+`#L${s.start}-L${s.end}`;
+      const localLink=s.fromCheckout&&location.protocol==='file:'?`<a href="${esc(local)}" target="_blank" rel="noopener">Open local source</a>`:'';
+      const remoteLink=s.revisionOnRemote?`<a href="${esc(remote)}" target="_blank" rel="noopener">Open repository revision ↗</a>`:'';
       $('source-footer').innerHTML=`${localLink}${remoteLink}<small>Excerpt bundled with the explorer. File SHA-256: <span class="mono">${esc(s.sha256)}</span></small>`;
       $('source-dialog').showModal();
     }
@@ -609,7 +610,7 @@
     $('source-dialog').addEventListener('click',e=>{if(e.target===$('source-dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)e.target.close();}});
     $('snapshot-details').addEventListener('click',()=>{
       $('source-title').textContent='Snapshot provenance';$('source-location').textContent='Generated from the local repository';
-      const t=['overview','session'].includes(view)&&session()?session():recording();$('source-code').textContent=JSON.stringify({repositoryBase:DATA.snapshot.revision,revisionOnRemote:DATA.snapshot.revisionOnRemote,generatedAt:DATA.snapshot.generatedAt,selectedRecording:t.id,target:t.target,traceGenerationBase:t.sourceRevision,traceOrigin:t.origin,traceScope:t.scope,recordingHashes:DATA.snapshot.recordingHashes,recordingDigestConventions:DATA.snapshot.recordingDigestConventions,traceSourceHashes:t.sourceHashes,...(['overview','session'].includes(view)?{recordingChecks:t.checks}:{}),sourceExcerpts:Object.keys(DATA.sources).length},null,2);
+      const t=['overview','session'].includes(view)&&session()?session():recording();$('source-code').textContent=JSON.stringify({repositoryBase:DATA.snapshot.revision,revisionOnRemote:DATA.snapshot.revisionOnRemote,generatedAt:DATA.snapshot.generatedAt,selectedRecording:t.id,target:t.target,traceGenerationBase:t.sourceRevision,verifiedSourceTree:sourceTree(t),traceOrigin:t.origin,traceScope:t.scope,recordingHashes:DATA.snapshot.recordingHashes,recordingDigestConventions:DATA.snapshot.recordingDigestConventions,traceSourceHashes:t.sourceHashes,...(['overview','session'].includes(view)?{recordingChecks:t.checks}:{}),sourceExcerpts:Object.keys(DATA.sources).length},null,2);
       $('source-footer').innerHTML='<small>Refresh instructions live in docs/explorer/README.md. This is a frozen explanatory snapshot; playback does not run the proof checker or hardware tools.</small>';$('source-dialog').showModal();
     });
     $('path-source').innerHTML=sourceLinks(DATA.pathSources);

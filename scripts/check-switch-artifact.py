@@ -34,12 +34,8 @@ def sources(roots=("test/SwitchCircuitEmit.lean", "Pinwheel/Hardware/Switch/Cert
                     if module == "Pinwheel" or module.startswith(("Pinwheel.", "test.")):
                         pending.append(ROOT / (module.replace(".", "/") + ".lean"))
     found.update(ROOT / path for path in (
-        "scripts/check-switch-artifact.py", "scripts/typed_circuit_readback.py", "scripts/backend_readback.py",
-        "scripts/typed_artifact_runner.py",
-        "scripts/readback_boolean_abstraction.py",
-        "scripts/check-round-robin-circuit.py", "scripts/validation_run.py", "scripts/process_group.py",
-        "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json",
-        "Pinwheel/Hardware/Readback/Boolean.lean"))
+        "scripts/check-switch-artifact.py", "scripts/check-round-robin-circuit.py", "scripts/validation_run.py",
+        "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json"))
     found.update(readback.source_paths())
     return {str(p.relative_to(ROOT)): sha(p) for p in sorted(found)}
 

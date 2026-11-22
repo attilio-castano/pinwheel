@@ -199,7 +199,7 @@ def main():
               "boundary": "Atomic admission; ordered join; two-state RTL; trusted Yosys/JSON interpretation."}
     try:
         report["provenance"] = provenance()
-        run.command(["lake", "build", "stream_graph", "stream_example"], root / "build.log", timeout=300)
+        run.command(["lake", "build", "stream_graph", "stream_example", "Pinwheel.Hardware.Readback.Boolean"], root / "build.log", timeout=300)
         for name in ("StreamBundle", "StreamForkJoin", "StreamGraph", "StreamAudit"):
             run.command(["lake", "env", "lean", "-DwarningAsError=true", f"test/{name}.lean"], root / f"{name}.log")
         run.command(["python3", "-B", "-m", "unittest", "discover", "-s", "test", "-p", "test_stream_graph.py", "-v"],

@@ -2,7 +2,7 @@
 
 The design question is whether a short, reusable SPI source really identifies
 the program admitted by the buffered SRAM controller. The explorer's
-[Program to pins session](../explorer/index.html#session) makes that connection
+[Program to pins session](https://attilio-castano.github.io/pinwheel/#session) makes that connection
 inspectable through source, exact image, accepted loading, pin execution and
 retained result ownership. It is also a place to expose the next proof gap.
 
@@ -118,12 +118,11 @@ python3 -B scripts/build-explorer.py --check
 
 The session exporter executes the comparisons and writes the ignored local
 output `build/explorer/buffered-session.json`. `--refresh-receipts` validates
-the regenerated evidence and updates the concise tracked
-[recording receipts](../explorer/recordings.json) and standalone HTML. Normal
-builds and `--check` require the recording to match those receipts. Bundle
-validation checks source freshness, canonical image bytes, decoded display
-fields, structural consistency and source navigation; it does not rerun Lean
-execution.
+the regenerated evidence, updates the retained JSON and its
+[recording receipt](../explorer/recordings.json), and builds
+`build/explorer-site/index.html`. Routine builds and `--check` verify the
+recording and its pinned source tree. The exporter runs the Lean comparisons
+when creating a new recording.
 
 On a fresh checkout, the builder can recover this frozen session from the
 committed HTML and validate or rebuild the bundle using Python alone. When a
