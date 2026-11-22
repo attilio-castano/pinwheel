@@ -60,10 +60,52 @@ def sources(tb):
     return {**segments.source_hashes(), str(tb.relative_to(ROOT)): sha(tb)}
 
 
+def bind_certified_core(system, receipt):
+    """Carry an existing complete core certificate into this ROM-specific hierarchy."""
+    spec = importlib.util.spec_from_file_location("processor_core", ROOT / "scripts/probe-processor-core-artifact.py")
+    probe = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(probe)
+    report = json.loads(receipt.read_bytes())
+    if (report.get("status") != "passed" or report.get("scope") != "kernel"
+            or report.get("kernel_correspondence") is not True or report.get("evidence", {}).get("endpoints") != 104
+            or report.get("source_sha256") != probe.sources()):
+        raise ValueError("A complete source-current 104-endpoint core certificate is required")
+    bundle = receipt.parent
+    artifacts = report["artifact_sha256"]
+    files = {p.relative_to(bundle).as_posix(): p for p in bundle.rglob("*") if p.is_file() and p != receipt}
+    if files.keys() != artifacts.keys() or any(p.is_symlink() or not p.resolve().is_relative_to(bundle)
+            or sha(p) != artifacts[name] for name, p in files.items()):
+        raise ValueError("The retained core proof inventory has changed")
+    if not {"core/Proof.lean", "core/Proof.olean", "core/Audit.lean", "core/Audit.olean",
+            "core/Audit.log"} <= artifacts.keys():
+        raise ValueError("Missing checked correspondence or axiom audit")
+    if ("standard axioms only" not in files["core/Audit.log"].read_text()
+            or files["core/Audit.lean"].read_text() != probe.readback.AUDIT):
+        raise ValueError("The core certificate lacks its standard-axiom audit")
+    cold = json.loads(files["cold-report.json"].read_bytes())
+    if artifacts["cold-report.json"] != report["cold_report"]["sha256"] or cold["status"] != "passed":
+        raise ValueError("Cold-boot hierarchy receipt does not match the core certificate")
+    leaf = json.loads((system / "interface.json").read_bytes())["leaf_interfaces"][0]
+    if leaf != json.loads(files["core/interface.json"].read_bytes()):
+        raise ValueError("The firmware core port inventory differs from the certified one")
+    identities = {}
+    for name in ("core.sv", "core.mlir", "top.sv", "ram.sv", "mmio.sv"):
+        digest = sha(system / name)
+        if cold["artifact_sha256"]["system/" + name] != digest:
+            raise ValueError("Different firmware hierarchy artifact: " + name)
+        if name.startswith("core.") and artifacts["core/" + name] != digest:
+            raise ValueError("Different certified core artifact: " + name)
+        identities[name] = digest
+    return dict(receipt_sha256=sha(receipt), core_endpoints=104, matched=identities,
+                firmware_bus_sha256=sha(system / "bus.sv"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tag', required=True)
-    out = fresh_directory(ROOT / "build/processor-ready-spi", parser.parse_args().tag)
+    parser.add_argument('--core-report', type=Path, help='bind a complete checked core to the emitted CPU instance')
+    args = parser.parse_args()
+    out = fresh_directory(ROOT / "build/processor-ready-spi", args.tag)
     report = dict(passed=False, commands=[], cases={})
     run = Commands(ROOT, out, report["commands"])
     tb = ROOT / "test/processor_ready_spi_tb.sv"
@@ -88,6 +130,8 @@ def main():
                                 "--lower-hw-to-sv", "--hw-legalize-modules", "--export-verilog", "-o", "/dev/null"],
                                "lower-cpu-" + name))
             cpu.append(rtl)
+        if args.core_report:
+            report["core_binding"] = bind_certified_core(system, args.core_report.resolve())
         stores = segments.build_rtl(run, lean, tools, out)
         shell = out / "shell"
         for store in stores:

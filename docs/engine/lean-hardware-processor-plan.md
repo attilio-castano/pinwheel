@@ -637,29 +637,38 @@ For the retained core, Z3 found the disjunction of all 104 mismatches
 unsatisfiable (37 next-register values and 67 outputs). Inverting one observed
 output made the same query satisfiable.
 
-Lean independently proves 45 imported RTL output equations by definitional
-equality with the typed circuit. These include all 37 state taps. It also checks
-50 source MLIR equations against that circuit (one next-register value and 49
-outputs). These inventories overlap. The full RTL-to-typed trace theorem still
-requires kernel proofs for the remaining logic. The current run first stops in
-`LocalProofs004`, on `local_206` and `local_208`. They cover write enable
-and destination selection. The next proof step is to isolate the decoder
-conditions shared by those two equations, prove their smaller equalities,
-then rerun the full correspondence and axiom audit.
+The complete kernel run now proves all 104 imported RTL equations against
+the typed circuit. The earlier run stopped at the shared decoder for register
+write enable and destination. The new proof checks those mux conditions
+using ordinary Lean terms. It proves register write data one bit at a time
+and reuses intermediate equalities when binding the source graph to the
+typed circuit. SAT supplies candidate proof steps. Lean checks each step.
 
-Run each scope with a fresh tag and a passing cold-boot receipt:
+The `core-complete` run checked 633 local equalities and assembled the
+all-input, all-register step and output equations into a finite-trace
+correspondence theorem. The audit covered 84,681 generated declarations
+with standard axioms only. The direct checks remain available separately
+for 45 RTL outputs and 50 source MLIR equations. The independent solver
+comparison and its inverted-output control also passed.
+
+Reproduce the CPU certificate and bind it to the SPI firmware replay with
+fresh tags from the repository root.
 
 ```sh
+python3 -B scripts/check-processor-loadable-system-boot.py --tag cold-boot-local
 python3 -B scripts/probe-processor-core-artifact.py --scope solver --tag core-solver-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
+python3 -B scripts/probe-processor-core-artifact.py --scope writeback --tag core-writeback-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
 python3 -B scripts/probe-processor-core-artifact.py --scope kernel --tag core-kernel-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
+python3 -B scripts/check-processor-ready-spi.py --tag firmware-local --core-report build/processor-core-artifact/core-kernel-local/report.json
 ```
 
-Each receipt records the solver control, direct theorem inventories and
-`kernel_correspondence`. Only a successful complete Lean audit sets that field.
-The core probe checks its cold-boot receipt against the current source hashes,
-so generate that receipt with the current exporter before running the probe.
-The top-level CPU/UART reset and image-loading theorems apply to the typed
-circuit. Extending artifact correspondence to that hierarchy is a separate gate.
+The solver and writeback scopes are optional diagnostic runs. Only the
+complete kernel scope sets `kernel_correspondence`. The SPI gate checks the
+retained proof inventory and the emitted core MLIR, core SystemVerilog and
+leaf interface against the kernel receipt. It also checks identity of the
+top-level wiring and the RAM and MMIO Verilog against the boot receipt.
+The bus changes with the firmware ROM. Certifying this bus and composing
+the leaf certificates across the wiring remain the hierarchy obligations.
 
 ## Atomic peripheral model
 
