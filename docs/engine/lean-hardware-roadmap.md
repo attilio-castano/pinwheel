@@ -99,12 +99,14 @@ use that common pin history, and a store replacement can reuse the CPU proof.
   accepted bits, MISO supplies the exported bits and the entire count is
   acknowledged. Proving the ROM reaches those service points is the next
   firmware obligation.
-- `scripts/check-processor-ready-spi.py --tag TAG` emits both store variants
-  and the processor, checks mode-0 MOSI at the peer, and decodes all ten
+- `scripts/check-processor-ready-spi.py --tag TAG --mode 0` and its mode-2
+  counterpart emit both store variants and the processor. An independent
+  peer checks MOSI on each mode's leading edge. The checker decodes all ten
   firmware-read replies including CRC and sequence. Two independent MISO
   words reach x25 on both stores. Each run takes 29,723 clocks, including
   29,717 post-loader clocks checked against the Lean processor model. The
-  inverse-MISO control changes both the receipt and x25 on each store.
+  inverse-MISO control changes both the receipt and x25. A peer configured
+  for the opposite clock polarity rejects the exchange at select.
 - The full RV32I core certificate proves trace agreement for arbitrary raw
   registers and finite input histories. It covers all 37 next-register
   values and 67 outputs. The SPI gate's `--core-report` option checks the
@@ -119,7 +121,7 @@ use that common pin history, and a store replacement can reuse the CPU proof.
 | --- | --- |
 | 1. Certify the processor hierarchy | The tapped core and its identity in the firmware hierarchy are checked. Certify the ROM-specific bus, bind the exact RAM and MMIO implementations, then compose the four leaf certificates over the typed top-level wires. Re-run the cold-load and feedback clients. |
 | 2. Prove firmware service | Give the ROM loop an invariant over PC, frame number, nibble index, receive accumulator and Ready owner. Prove its GPIO stores produce one rising host-clock edge per nibble and its loads sample the corresponding reply. Derive acknowledgement, RELEASE and x25 from the peer's sampled word. State readiness, reset and peer timing assumptions, then derive a cycle bound under bounded service. |
-| 3. Demonstrate reuse | Run a different transfer length or SPI mode, then a UART firmware exchange through the existing serial interface. Reuse the CPU and memory proofs. Identify and discharge only the new framing, device, buffer and timing obligations. Check changed firmware images through their own ROM binding. |
+| 3. Demonstrate reuse | SPI modes 0 and 2 already reuse the CPU instructions, core certificate and protocol theorem. Extend to a different transfer length, then a UART firmware exchange through the existing serial interface. Discharge the new framing, device, buffer and timing obligations and check each changed ROM binding. |
 | 4. Map the same system to FPGA | Freeze RTL, ROM, pin map and clock constraints. Synthesize and place-and-route for one named part. Check the mapped logic against the RTL at the same interfaces, replay the firmware and report utilization, unconstrained paths and worst constrained slack. Board measurement adds a separate trace of the peer exchange. |
 | 5. Compare ASIC implementations | Start with the pinned IHP SG13CMOS5L typical and slow cell libraries. Map both Ready stores with the same firmware, clock, loads and flow settings. Measure area and the critical path and replay the mapped result. Carry the selected implementation through routing, extracted timing and physical checks. Record pad, memory, clock and electrical assumptions at the target boundary. |
 

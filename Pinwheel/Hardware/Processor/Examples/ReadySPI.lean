@@ -64,4 +64,10 @@ def rom (requests : Array (BitVec 8)) (frames collect : Nat) : SystemModel.Rom 8
       let byte (k : Nat) := requests[start+k]?.getD 0
       byte 3 ++ byte 2 ++ byte 1 ++ byte 0
 
+/-- Replacing the peripheral program and request data preserves the CPU's
+instruction region when frame count and collection index stay fixed. -/
+theorem same_code (requests other : Array (BitVec 8)) (frames collect : Nat)
+    (addr : BitVec 8) (inCode : addr.toNat < 64) :
+    rom requests frames collect addr = rom other frames collect addr := by simp [rom, inCode]
+
 end Pinwheel.Hardware.Processor.ReadySPI

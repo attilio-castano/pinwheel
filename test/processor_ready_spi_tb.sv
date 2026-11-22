@@ -7,7 +7,8 @@ module tb;
   wire retire, writing, trapping;
   wire [4:0] rd;
   wire [7:0] uo, levels, enables;
-  integer cycle = 0, edges = 0, transfers = 0, index = 0;
+  integer cycle = 0, edges = 0, transfers = 0, index = 0, mode = 0;
+  wire idle_sck = mode == 2;
   reg selected = 0, previous_sck = 0;
   reg [31:0] transmitted = 0;
   wire raw = reply[31-index] ^ $test$plusargs("invert-peer");
@@ -27,6 +28,7 @@ module tb;
   always #5 clk = !clk;
   initial begin
     if (!$value$plusargs("reply=%h", reply)) $fatal(1, "missing peer reply");
+    if ($value$plusargs("mode=%d", mode) && mode != 0 && mode != 2) $fatal(1, "unsupported mode");
     repeat (2) @(negedge clk);
     reset = 0;
     valid = 1;
@@ -42,19 +44,20 @@ module tb;
   always @(negedge clk) if (!loading && enables[2:0] === 3'b111) begin
     if (!levels[2]) begin
       if (!selected) begin
-        if (levels[1] !== 0 || transfers != 0) $fatal(1, "bad select");
+        if (levels[1] !== idle_sck || transfers != 0) $fatal(1, "bad select");
         selected = 1;
+        previous_sck = idle_sck;
         transfers = transfers + 1;
       end
-      if (levels[1] && !previous_sck) begin
+      if (levels[1] != idle_sck && previous_sck == idle_sck) begin
         if (edges >= 32) $fatal(1, "extra clock");
         transmitted = {transmitted[30:0],levels[0]};
         edges = edges + 1;
       end
-      if (!levels[1] && previous_sck && index < 31) index = index + 1;
+      if (levels[1] == idle_sck && previous_sck != idle_sck && index < 31) index = index + 1;
       previous_sck = levels[1];
     end else if (selected) begin
-      if (levels[1] !== 0 || edges != 32) $fatal(1, "incomplete transfer");
+      if (levels[1] !== idle_sck || edges != 32) $fatal(1, "incomplete transfer");
       selected = 0;
     end
   end
@@ -72,7 +75,7 @@ module tb;
     if (trapping) begin
       if (trap_pc !== 152 || trap_instruction !== 32'h00100073)
         $fatal(1, "unexpected trap at %x instruction %x",trap_pc,trap_instruction);
-      if (transfers != 1 || selected || edges != 32 || levels[2:1] !== 2'b10)
+      if (transfers != 1 || selected || edges != 32 || levels[2:1] !== {1'b1,idle_sck})
         $fatal(1, "bad terminal pins");
       $display("DONE %0d %08x",cycle,transmitted);
       $finish;

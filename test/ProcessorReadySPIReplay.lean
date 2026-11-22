@@ -36,7 +36,8 @@ elab "#audit_ready_firmware" : command => do
   for name in [``ReadyHost.read_reply, ``ReadyHost.write_drives_next, ``ReadyHost.held_clock,
       ``ReadyHost.store_substitution, ``ReadyHost.gpio_output, ``ReadyHost.feedback_refines,
       ``ReadySPI.receiveNibble_value, ``ReadySPI.collect_value, ``ReadySPI.receive_word,
-      ``ReadySPI.sample_retirement, ``ReadySPI.collected_gpio_word, ``ReadySPI.completed_feedback] do
+      ``ReadySPI.sample_retirement, ``ReadySPI.collected_gpio_word, ``ReadySPI.completed_feedback,
+      ``ReadySPI.same_code] do
     let axioms ← collectAxioms name
     let bad := axioms.filter fun a => a != ``propext && a != ``Classical.choice && a != ``Quot.sound
     unless bad.isEmpty do throwError "Unexpected axioms for {name}: {bad}"

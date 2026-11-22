@@ -20,8 +20,8 @@ TRANSMIT = 0xD31C65AE
 REPLIES = (0xA53CD872, 0x719B06E4)
 
 
-def session():
-    image = spi_image(mode=0)
+def session(mode=0):
+    image = spi_image(mode=mode)
     queue = [(Opcode.WRITE, dict(address=i, word=word)) for i, word in enumerate(image.words)]
     queue.extend([
         (Opcode.COMMIT, dict(count=len(image.words), idle_enabled=image.idle_enabled, idle_levels=image.idle_levels)),
@@ -103,10 +103,11 @@ def bind_certified_core(system, receipt):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--tag', required=True)
+    parser.add_argument('--mode', type=int, choices=(0, 2), default=0, help='leading-edge SPI mode')
     parser.add_argument('--core-report', type=Path, help='bind a complete checked core to the emitted CPU instance')
     args = parser.parse_args()
     out = fresh_directory(ROOT / "build/processor-ready-spi", args.tag)
-    report = dict(passed=False, commands=[], cases={})
+    report = dict(passed=False, spi_mode=args.mode, commands=[], cases={})
     run = Commands(ROOT, out, report["commands"])
     tb = ROOT / "test/processor_ready_spi_tb.sv"
     try:
@@ -117,7 +118,7 @@ def main():
         run(["lake", "build", "Pinwheel.Hardware.Processor.Examples.ReadySPIExchange",
              "Pinwheel.Hardware.Processor.Examples.ReadySPISampling", "Pinwheel.Hardware.Processor.LoadableSystemExport",
              "Pinwheel.Hardware.StreamingReady.SegmentExport"], "build")
-        requests = session()
+        requests = session(args.mode)
         collect = len(requests)-3
         table = out / "requests.bin"
         table.write_bytes(bytes(int(n, 16) for frame in requests for n in frame.bytes.hex()))
@@ -140,7 +141,7 @@ def main():
                  shell / "frontend.sv", shell / "package.sv", shell / "tt.sv", tb], "compile-firmware-" + store)
             for reply in REPLIES:
                 label = f"{store}-{reply:08x}"
-                trace = run([tools["vvp"], exe, f"+reply={reply:x}"], label, timeout=180)
+                trace = run([tools["vvp"], exe, f"+mode={args.mode}", f"+reply={reply:x}"], label, timeout=180)
                 report["cases"][label] = check(trace, requests, collect, reply)
                 rows = re.findall(r'^EDGE ([0-9a-f]{8}) ([0-9a-f]{2})$', trace, re.M)
                 if len(rows) + 6 != report["cases"][label]["edges"]:
@@ -151,7 +152,8 @@ def main():
                     "model-" + label, timeout=180)
                 if store == "registered" and edges.read_bytes() != (out / f"direct-{reply:08x}.bin").read_bytes():
                     raise ValueError("Store variants disagree on the timed GPIO exchange")
-            control = run([tools["vvp"], exe, f"+reply={REPLIES[0]:x}", "+invert-peer"], "inverted-" + store)
+            control = run([tools["vvp"], exe, f"+mode={args.mode}", f"+reply={REPLIES[0]:x}", "+invert-peer"],
+                          "inverted-" + store)
             try:
                 check(control, requests, collect, REPLIES[0])
             except ValueError as error:
@@ -161,6 +163,8 @@ def main():
                 raise ValueError("Inverted peer escaped detection")
             # Verify the changed receipt, writeback and RELEASE actually completed.
             check(control, requests, collect, REPLIES[0] ^ 0xffffffff)
+            run([tools["vvp"], exe, f"+mode={2 - args.mode}", f"+reply={REPLIES[0]:x}"],
+                "opposite-polarity-" + store, reject="bad select")
         if report["source_sha256"] != sources(tb) or report["tools"] != {str(p): sha(p) for p in paths}:
             raise ValueError("Source or tool inputs changed during replay")
         report['passed'] = True

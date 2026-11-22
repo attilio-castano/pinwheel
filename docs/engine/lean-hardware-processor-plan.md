@@ -660,6 +660,7 @@ python3 -B scripts/probe-processor-core-artifact.py --scope solver --tag core-so
 python3 -B scripts/probe-processor-core-artifact.py --scope writeback --tag core-writeback-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
 python3 -B scripts/probe-processor-core-artifact.py --scope kernel --tag core-kernel-local --cold-report build/processor-loadable-system-boot/cold-boot-local/report.json
 python3 -B scripts/check-processor-ready-spi.py --tag firmware-local --core-report build/processor-core-artifact/core-kernel-local/report.json
+python3 -B scripts/check-processor-ready-spi.py --mode 2 --tag firmware-mode2-local --core-report build/processor-core-artifact/core-kernel-local/report.json
 ```
 
 The solver and writeback scopes are optional diagnostic runs. Only the
