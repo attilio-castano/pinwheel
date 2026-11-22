@@ -352,7 +352,7 @@ set_option linter.unusedVariables false
 """
 
 
-def partitions(source: Graph, rtl: Graph, limit=None, *, successor, oracle):
+def partitions(source: Graph, rtl: Graph, limit=None, *, successor, oracle, keep_asymmetric=None):
     """Suggest acyclic proof partitions. Simulation never discharges a theorem."""
     ss, rs = source.signatures(1024), rtl.signatures(1024)
     candidates = defaultdict(list)
@@ -419,6 +419,12 @@ def partitions(source: Graph, rtl: Graph, limit=None, *, successor, oracle):
             rc = set(used)
             remove = lcuts ^ rc
             if not remove: break
+            # An optimizer can mask a cut on just one side. Keep it abstract
+            # when the stronger equation already holds for arbitrary cut bits.
+            if keep_asymmetric is not None and sn in forced:
+                trial = dict(left=left, right=right, variables=tuple(variables))
+                if keep_asymmetric(trial) and oracle(trial):
+                    break
             allowed -= remove
         sizes = {}
         def size(t):

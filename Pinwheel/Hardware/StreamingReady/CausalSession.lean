@@ -129,7 +129,9 @@ theorem Backend.final_eq (backend : Backend S) (env : Environment E) (state : S)
   | zero => rfl
   | succ n ih => exact ih _ _
 
-private theorem driveTrace_eq (env : Environment E) (actual : Package.State a) (before : E) (n : Nat) :
+/-- The open-loop drive trace for the inputs produced in feedback is exactly
+the recorded drives followed by the drive of the final state. -/
+theorem driveTrace_eq (env : Environment E) (actual : Package.State a) (before : E) (n : Nat) :
     let run := (canonical a).run env actual before n
     PublicPins.driveTrace actual (run.edges.map Edge.input) =
       run.edges.map Edge.drive ++ [PublicPins.drive run.final] := by

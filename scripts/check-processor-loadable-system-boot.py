@@ -304,9 +304,31 @@ def mutations(sources,data):
         lambda rhs:f"(~reset & request_valid & (device == 2'd0) & write & (word == 6'd1)) ? r_gpio : ({rhs})")
     yield "corrupt-loader-word","ram",boot.mutate_assignment(sources["ram"],word,
         lambda rhs:f"(~state_0 & state_9 & state_10 & (state_11 == 2'd0)) ? (({rhs}) ^ 32'd1) : ({rhs})")
+    yield "suppress-retired-write","core",boot.mutate_assignment(sources["core"],"out_state_15",
+        lambda rhs:f"({rhs}) & ~out_state_11",output=True)
+    yield "redirect-retired-write","core",boot.mutate_assignment(sources["core"],"out_state_16",
+        lambda rhs:f"(out_state_11 & out_state_15) ? (({rhs}) ^ 5'd1) : ({rhs})",output=True)
 
 
 def semantic_witness(name,error,startup):
+    if name in ("suppress-retired-write", "redirect-retired-write"):
+        w = error.witness
+        rows = {(r[0], r[1]): r[2:] for r in error.observations}
+        if w["observation"] not in ("PRE", "POST"):
+            raise AssertionError("Expected a retirement output mismatch")
+        outputs = rows[w["observation"], w["cycle"]]
+        inputs = rows["IN", w["cycle"]]
+        suppress = name == "suppress-retired-write"
+        enabled = w["expected"] if suppress else outputs[15]
+        rd = outputs[16] if suppress else w["expected"]
+        if (inputs[0] or inputs[6] or outputs[11] != 1 or enabled != 1 or rd == 0
+                or w["index"] != (15 if suppress else 16)
+                or w["actual"] != (0 if suppress else rd ^ 1)):
+            raise AssertionError("Mismatch lacks an active architectural writeback")
+        return {**w, "input": list(inputs), "complete_binary_defined_trace": True,
+                "uninitialized_raw_fields_scoped": True,
+                "active_conditions": {"retire_valid": 1, "expected_write_enable": enabled,
+                                      "expected_destination": rd}}
     if name!="corrupt-loader-word":
         witness=boot.semantic_witness(name,error,startup)
         witness.pop("complete_binary_trace")
