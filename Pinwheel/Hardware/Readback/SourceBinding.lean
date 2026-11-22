@@ -3,23 +3,65 @@ import Pinwheel.Hardware.Circuit
 open Lean Meta Elab Tactic
 open Pinwheel.Hardware
 namespace Pinwheel.Hardware.Readback.SourceBinding
-private theorem bind_band {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R w} {b : BitVec w} (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.band x y).eval i s = (a &&& b) := by
+
+private theorem bind_band {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R w} {b : BitVec w}
+    (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.band x y).eval i s = (a &&& b) := by
   simp only [Hardware.Expr.eval, hx, hy]
-private theorem bind_inv {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} (hx : x.eval i s = a) : (Hardware.Expr.inv x).eval i s = (~~~a) := by
+
+private theorem bind_inv {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    (hx : x.eval i s = a) :
+    (Hardware.Expr.inv x).eval i s = (~~~a) := by
   simp only [Hardware.Expr.eval, hx]
-private theorem bind_sub {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R w} {b : BitVec w} (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.sub x y).eval i s = (a - b) := by
+
+private theorem bind_sub {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R w} {b : BitVec w}
+    (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.sub x y).eval i s = (a - b) := by
   simp only [Hardware.Expr.eval, hx, hy]
-private theorem bind_equal {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R w} {b : BitVec w} (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.equal x y).eval i s = (BitVec.ofBool (decide (a = b))) := by
+
+private theorem bind_equal {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R w} {b : BitVec w}
+    (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.equal x y).eval i s = (BitVec.ofBool (decide (a = b))) := by
   simp only [Hardware.Expr.eval, hx, hy]
-private theorem bind_zero {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} (hx : x.eval i s = a) : (Hardware.Expr.zero x).eval i s = (BitVec.ofBool (decide (a = 0))) := by
+
+private theorem bind_zero {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    (hx : x.eval i s = a) :
+    (Hardware.Expr.zero x).eval i s = (BitVec.ofBool (decide (a = 0))) := by
   simp only [Hardware.Expr.eval, hx]
-private theorem bind_ult {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R w} {b : BitVec w} (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.ult x y).eval i s = (BitVec.ofBool (decide (a.toNat < b.toNat))) := by
+
+private theorem bind_ult {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R w} {b : BitVec w}
+    (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.ult x y).eval i s = (BitVec.ofBool (decide (a.toNat < b.toNat))) := by
   simp only [Hardware.Expr.eval, hx, hy]
-private theorem bind_mux {i : Values I} {s : Values R} {g : Hardware.Expr I R 1} {c : BitVec 1} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R w} {b : BitVec w} (hg : g.eval i s = c) (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.mux g x y).eval i s = (if c = 1 then a else b) := by
+
+private theorem bind_mux {i : Values I} {s : Values R}
+    {g : Hardware.Expr I R 1} {c : BitVec 1}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R w} {b : BitVec w}
+    (hg : g.eval i s = c) (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.mux g x y).eval i s = (if c = 1 then a else b) := by
   simp only [Hardware.Expr.eval, hg, hx, hy]
-private theorem bind_concat {i : Values I} {s : Values R} {x : Hardware.Expr I R w} {a : BitVec w} {y : Hardware.Expr I R v} {b : BitVec v} (hx : x.eval i s = a) (hy : y.eval i s = b) : (Hardware.Expr.concat x y).eval i s = (a ++ b) := by
+
+private theorem bind_concat {i : Values I} {s : Values R}
+    {x : Hardware.Expr I R w} {a : BitVec w}
+    {y : Hardware.Expr I R v} {b : BitVec v}
+    (hx : x.eval i s = a) (hy : y.eval i s = b) :
+    (Hardware.Expr.concat x y).eval i s = (a ++ b) := by
   simp only [Hardware.Expr.eval, hx, hy]
-private theorem bind_slice {i : Values I} {s : Values R} (first len : Nat) (fits : first + len ≤ w) {x : Hardware.Expr I R w} {a : BitVec w} (hx : x.eval i s = a) : (Hardware.Expr.slice first len fits x).eval i s = ((a.extractLsb' first len)) := by
+
+private theorem bind_slice {i : Values I} {s : Values R} (first len : Nat) (fits : first + len ≤ w) {x : Hardware.Expr I R w} {a : BitVec w}
+    (hx : x.eval i s = a) :
+    (Hardware.Expr.slice first len fits x).eval i s = ((a.extractLsb' first len)) := by
   simp only [Hardware.Expr.eval, hx]
 
 /-! Bind an imported source hint to the actual typed expression one constructor
@@ -89,5 +131,26 @@ elab "bind_source " source:term " to " hw:term " under " inputs:ident regs:ident
     let proof ← bindNode src ast i s (← IO.mkRef {})
     (← getMainGoal).assign (← mkEqSymm proof)
     replaceMainGoal []
+
+private partial def bindConjunction (goal i s : Lean.Expr)
+    (memo : IO.Ref (Std.HashMap (Lean.Expr × Lean.Expr) Lean.Expr)) : MetaM Lean.Expr := do
+  if goal.isAppOfArity ``And 2 then
+    let args := goal.getAppArgs
+    let first ← bindConjunction args[0]! i s memo
+    let rest ← bindConjunction args[1]! i s memo
+    return mkApp4 (mkConst ``And.intro) args[0]! args[1]! first rest
+  if goal.isConstOf ``True then return mkConst ``True.intro
+  let some (_, src, rhs) := goal.eq? | throwError "expected an endpoint equality"
+  unless rhs.isAppOfArity ``Hardware.Expr.eval 6 do throwError "expected a typed evaluation"
+  mkEqSymm (← bindNode src rhs.appArg! i s memo)
+
+/-- Share intermediate proofs across every endpoint in a group. -/
+elab "bind_sources " inputs:ident regs:ident : tactic => withMainContext do
+  let i ← getFVarFromUserName inputs.getId
+  let s ← getFVarFromUserName regs.getId
+  let g ← getMainGoal
+  let p ← bindConjunction (← g.getType) i s (← IO.mkRef {})
+  g.assign p
+  replaceMainGoal []
 
 end Pinwheel.Hardware.Readback.SourceBinding

@@ -52,7 +52,9 @@ def sources():
         *readback.source_paths(),
         Path(__file__),
         ROOT / "scripts/readback_guard_proofs.py",
+        ROOT / "test/test_readback_guard_proofs.py",
         ROOT / "Pinwheel/Hardware/Readback/Guard.lean",
+        ROOT / "Pinwheel/Hardware/Readback/Bits.lean",
         ROOT / "Pinwheel/Hardware/Readback/SourceBinding.lean",
         ROOT / "scripts/readback_control_proofs.py",
         ROOT / "scripts/readback_slice_proofs.py",
@@ -127,13 +129,13 @@ def generate(directory, solver, cadical, scope):
         profile=profile(),
         compact=True,
         guard_solver=cadical if scope != "solver" else None,
-        guard_outputs=("out_state_15", "out_state_16"),
+        guard_outputs=("out_state_15", "out_state_16", "out_state_17"),
         focused=scope == "writeback",
     )
     evidence["finite_control_proof_search"] = split_two_bit_controls(directory, modules)
     evidence["slice_bound_proof_search"] = prove_slice_bounds(directory, modules)
     evidence["mux_algebra_proof_search"] = add_mux_algebra(directory, modules)
-    if evidence["endpoints"] != (2 if scope == "writeback" else 104):
+    if evidence["endpoints"] != (3 if scope == "writeback" else 104):
         raise AssertionError("Incomplete core next/output/tap coverage")
     (directory / "generation.json").write_text(
         json.dumps(dict(modules=modules, evidence=evidence), indent=2) + "\n"
@@ -253,8 +255,9 @@ def main():
         report["tool_sha256"] = rr.tool_hashes(paths)
         cadical = Path(subprocess.check_output(["lean", "--print-prefix"], text=True).strip()) / "bin/cadical"
         report["cadical_sha256"] = rr.sha(cadical)
+        run(["python3", "-B", "test/test_readback_guard_proofs.py"], "guard-regression-tests")
         run(
-            ["lake", "build", "Pinwheel.Hardware.Readback.Mux", "Pinwheel.Hardware.Readback.Guard",
+            ["lake", "build", "Pinwheel.Hardware.Readback.Mux", "Pinwheel.Hardware.Readback.Bits",
              "Pinwheel.Hardware.Readback.SourceBinding"],
             "mux-helper-build",
             timeout=120,
@@ -318,7 +321,11 @@ def main():
             remaining = [
                 m for m in generation["modules"] if m not in ("Design", "Graphs")
             ]
-            compile_modules(run, directory, remaining, timeout=120)
+            for unit in remaining:
+                # These units cover a full port family. Their source bindings
+                # share proofs of the same decoder and register-file nodes.
+                budget = 600 if unit in ("BoundNext", "BoundOutput", "Links", "Proof") else 240
+                compile_modules(run, directory, [unit], timeout=budget)
             if "standard axioms only" not in (directory / "Audit.log").read_text():
                 raise AssertionError("Missing complete core audit")
             report["kernel_correspondence"] = args.scope == "kernel"
