@@ -153,11 +153,12 @@ class TraceTests(unittest.TestCase):
 
 
 class MutationTests(unittest.TestCase):
-    def test_five_actual_assignment_mutations(self):
-        source={"core":"r_state_1 <= next_x2;\nassign out_state_12 = pc;\n","ram":"r_state_0 <= next_word;\n",
+    def test_actual_assignment_mutations(self):
+        source={"core":("r_state_1 <= next_x2;\nassign out_state_12 = pc;\n"
+                        "assign out_state_15 = we;\nassign out_state_16 = rd;\n"),"ram":"r_state_0 <= next_word;\n",
                 "mmio":"r_gpio <= next_gpio;\n","bus":"unchanged"}
         changes=list(cold.mutations(source,descriptor()))
-        self.assertEqual(len(changes),5)
+        self.assertEqual(len(changes),7)
         for _,leaf,text in changes:self.assertNotEqual(text,source[leaf])
         self.assertIn("~state_9",changes[2][2]);self.assertIn("state_10",changes[4][2])
 
