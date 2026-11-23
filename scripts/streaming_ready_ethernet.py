@@ -5,9 +5,15 @@ from streaming_compile import Cell
 from streaming_ready_compile import Guard, Instruction, Pins, lower
 
 
+# Lean `StreamingEthernetClock`: the image is proved only with exactly six core
+# clocks per SNI bit, so a 60 MHz core locked to the PHY's 10 MHz TX_CLK, with
+# TX_CLK high for under three core clocks. This is above the 20 ns physical
+# target (50 MHz).
 CORE_HZ = 60_000_000
 BIT_RATE = 10_000_000
 BIT_CYCLES = CORE_HZ // BIT_RATE
+if CORE_HZ % BIT_RATE or BIT_CYCLES != 6:
+    raise ValueError('The Ethernet transmit image is proved only at six core clocks per bit')
 PREAMBLE = b'\x55' * 7 + b'\xd5'
 FRAME_BYTES = 64
 WIRE_BITS = (len(PREAMBLE) + FRAME_BYTES) * 8

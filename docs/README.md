@@ -62,6 +62,7 @@ proofs state when a loaded engine program or sampled pin matches each reference.
 | Record | Use it for |
 | --- | --- |
 | [UART transmitter model](protocols/uart-model.md) | The original byte transmitter, its timing specification, proofs, and runnable trace. |
+| [Board clock guide](board-clock-guide.md) | Which board clock and settings each example program needs, computed from the Lean clock contracts. |
 | [SPI model](protocols/spi-model.md) | Original mode-0 byte model and its sampling/timing proofs. |
 | [SPI transactions](protocols/spi-transactions.md) | All four modes, one/two-byte continuous-CS transactions, program/refinement and resolved-pad evidence. |
 | [I²C reference model](protocols/i2c-model.md) | Open-drain writes, acknowledgment, and clock stretching in an ideal bus model. |

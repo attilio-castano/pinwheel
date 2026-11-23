@@ -4,7 +4,12 @@ from streaming_ready_compile import Guard, Instruction, lower
 
 
 FRAME_BITS = 11
+# Lean `StreamingPS2Clock.spec_admits_iff`: PS/2 half-periods of 30-50 us fit
+# the image's 120-200 sample window only with a 4 MHz core. The fixed 217-clock
+# cell depends on that window, so changing the clock needs a new proof.
 CORE_HZ = 4_000_000
+if CORE_HZ != 4_000_000:
+    raise ValueError('The PS/2 receive image is proved only with a 4 MHz core clock')
 
 
 def ps2_receive_image():

@@ -3,9 +3,15 @@ from streaming_compile import Cell
 from streaming_ready_compile import Guard, Instruction, Pins, lower
 
 
+# Lean `StreamingCANClock.Admits`: the receive image below is proved only at
+# exactly 32 core clocks per bit, i.e. a 4 MHz core for 125 kbit/s. Its cell
+# durations are fixed, so changing either rate needs a new proof, not just a
+# new constant.
 CORE_HZ = 4_000_000
 BIT_RATE = 125_000
 BIT_CYCLES = CORE_HZ // BIT_RATE
+if CORE_HZ % BIT_RATE or BIT_CYCLES != 32:
+    raise ValueError('The CAN receive image is proved only at 32 core clocks per bit')
 CAPTURE_BITS = 64
 PROTECTED_BITS = 42
 

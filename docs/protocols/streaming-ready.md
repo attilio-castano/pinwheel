@@ -4,6 +4,8 @@ The opt-in `streaming-ready` target extends the bounded streaming engine with
 sampled input guards. Its first application is a 64-byte I²C read or write with
 clock stretching. The existing `streaming` target and its receipts remain
 separate. This name identifies an instruction contract, not a project release.
+The [board clock guide](../board-clock-guide.md) lists the clock and settings
+each example needs.
 
 ## Mechanism
 
@@ -79,6 +81,36 @@ STOP clears stale HIGH sampler history. The external peer can stretch data and
 STOP using resolved-edge timers. A last-poll diagnostic explicitly observes the
 public SCL output-enable transition to align its deadline; it does not read
 private engine registers.
+
+The clock-stretch deadline is counted in core clocks, so its length in time
+depends on the board clock. The [I²C clock contract](../../Pinwheel/Program/StreamingI2CClock.lean)
+states it in real time: a target that releases SCL within `budget − 3` core
+periods of the wait's first sample is served, and one that holds SCL longer
+faults the transfer (`served`, `faulted`). There is no gap between the two
+cases. The standard profile tolerates 28 core clocks, 7 µs at 4 MHz. No profile
+tolerates more than 252 clocks, which is 5.04 µs at the 20 ns physical target
+(`at_50MHz`). Targets that stretch longer than that, as SMBus devices may,
+need a slower core clock.
+
+The [I²C waveform proofs](../../Pinwheel/Program/StreamingI2CWaveform.lean)
+state the controller's pins within each data slot, one observation per core
+clock. SCL is driven low for the boundary clock and `LOW` more clocks, with
+SDA set on the first of them (`low_window`). Once the guard sees SCL high, in
+a sample taken two clocks earlier, SCL stays released for that clock and
+`HIGH` more (`high_window`, `ready_sample`). Here `LOW` and `HIGH` are the
+builder's `low_cycles` and `high_cycles`. On the bus this gives SCL LOW of at
+least `LOW + 1` core periods, SCL HIGH of at least `HIGH + 3`, and SDA setup
+of at least `LOW`, before pad delays and rise times.
+
+The standard profile (4/4) therefore meets standard mode only with a core
+clock up to about 1.06 MHz (`standard_meets_standard_iff`). At 4 MHz it meets
+Fast-mode Plus but not Fast mode, whose 1.3 µs LOW minimum exceeds its 1.25 µs
+(`standard_at_4MHz`). Standard mode remains reachable at the 20 ns target with
+LOW 256 and HIGH 240 (`standardModeAt50MHz_meets`). One controller timing is
+zero: the clock that starts the next slot drives SCL low and releases SDA
+together, so after a zero bit SDA rises on the same core clock edge where SCL
+falls (`boundary_pins`). The I²C standard permits a zero hold time, but this
+leaves the ordering of those two edges to the pads and board.
 
 An address NACK invalidates the projected payload. This image continues its
 clock sequence through STOP; it has no immediate NACK branch or repeated START.
@@ -235,6 +267,17 @@ and the first falling edge may arrive any time after the three-clock setup
 following an admitted START for 11 bits. The receiver takes the DATA bit
 present at each keyboard falling edge. [Freescale AN1723, Figure 5](https://www.nxp.com/docs/en/application-note/AN1723.pdf#page=9)
 
+The [PS/2 clock contract](../../Pinwheel/Program/StreamingPS2Clock.lean)
+builds this sample-level contract from a real-time keyboard waveform
+(`peerFrame`). Half-periods between 120 and 200 core periods are seen as
+120 through 200 samples, because sampling rounds both edges of a half-period
+the same way. The standard 30–50 µs range therefore fits at exactly one core
+clock, 4 MHz (`spec_admits_iff`). A keyboard with a narrower range is admitted
+over a band of clocks, but the standard range is not covered at the 20 ns
+physical target (`spec_not_admits_50MHz`). The keyboard must also hold each
+DATA bit for at least one core period after its falling edge, and keep CLK
+released for 221 core periods after the last fall.
+
 The sampled CLK-low guard captures two core clocks after each raw falling
 edge. The next poll starts 220 core clocks after the previous capture, after
 the previous low phase has ended and before the next possible falling edge.
@@ -267,7 +310,11 @@ representing dominant and HIGH representing recessive. The package releases
 its protocol output enables throughout. The peer waveform includes a dominant
 ACK from another receiver and a recessive idle tail. [Bosch CAN Specification 2.0, Part B](https://www.canlab.cz/sites/default/files/pages/download/Can2spec.pdf#page=43)
 
-The modeled 4 MHz core gives 32 clocks per bit at 125 kbit/s. START arms
+The modeled 4 MHz core gives 32 clocks per bit at 125 kbit/s. The
+[CAN clock contract](../../Pinwheel/Program/StreamingCANClock.lean) makes this
+exact: the compiled image receives 125 kbit/s only with a 4 MHz core. A bus
+whose bit boundaries stay within 1 µs of nominal then satisfies the
+cycle-level peer contract described below (`captured_at_4MHz`). START arms
 the guard while the bus is recessive. After the first dominant sample at
 index `f`, the program uses raw samples `f + 16 + 32k` for `k` from 0 through
 63. The capture events use the second sampler two clocks later. The peer
@@ -340,6 +387,30 @@ python3.12 -B scripts/streaming_8x4_ethernet.py \
   --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
   --out build/ethernet-frozen
 ```
+
+### Clock requirements
+
+The proofs count core clocks. The [Ethernet clock contract](../../Pinwheel/Program/StreamingEthernetClock.lean)
+states which real TX_CLK waveforms produce the six-clock `PhyClock` pattern
+they assume. A TX_CLK whose rise in each cell falls after core sample `6k+1`
+and no later than sample `6k+2`, and whose fall comes after sample `6k+2` and
+no later than sample `6k+4`, produces it (`phyClock`). That makes three board
+requirements explicit:
+
+- The core clock must be exactly six times the 10 MHz TX_CLK: 60 MHz. This is
+  above the 20 ns (50 MHz) physical target, so the demo is not covered at the
+  clock the layout was closed for (`not_admits_50MHz`).
+- TX_CLK must be locked to the core clock, for example by deriving one from
+  the other. If its period differs from six core periods by any amount, its
+  rise leaves the sample window (`drift_excluded`). A free-running PHY
+  oscillator beside a separate core oscillator is not covered. The replay's PHY
+  model generates TX_CLK from core clock edges, so it is locked by construction.
+- TX_CLK must be high for fewer than three core clocks, under half its period
+  (`high_lt_three`). A locked TX_CLK with 50% duty never fits
+  (`half_duty_excluded`). Check the selected PHY's TX_CLK duty cycle before
+  relying on this demo.
+
+TXD setup and hold at the PHY and the pad delays remain outside this contract.
 
 ### Host refill policies
 
@@ -772,7 +843,9 @@ exact sample edges, malformed receive cases, and held-idle waits. The same
 causal host can refill unguarded SPI and JTAG rows. Their fixture compares
 two refill policies and checks that a missing chunk leaves the live owner
 parked. The [Ethernet proof](../../Pinwheel/Hardware/StreamingReady/EthernetDeadline.lean)
-derives credit from offered words and a six-clock PHY contract. Its
+derives credit from offered words and a six-clock PHY contract; the
+[clock requirements](#clock-requirements) state what that contract asks of
+the board. Its
 same-edge control shows that a push on the reservation edge becomes
 visible a clock later.
 
