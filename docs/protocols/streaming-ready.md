@@ -80,6 +80,18 @@ STOP using resolved-edge timers. A last-poll diagnostic explicitly observes the
 public SCL output-enable transition to align its deadline; it does not read
 private engine registers.
 
+The clock-stretch deadline is counted in core clocks, so its length in time
+depends on the board clock. The [I²C clock contract](../../Pinwheel/Program/StreamingI2CClock.lean)
+states it in real time: a target that releases SCL within `budget − 3` core
+periods of the wait's first sample is served, and one that holds SCL longer
+faults the transfer (`served`, `faulted`). There is no gap between the two
+cases. The standard profile tolerates 28 core clocks, 7 µs at 4 MHz. No profile
+tolerates more than 252 clocks, which is 5.04 µs at the 20 ns physical target
+(`at_50MHz`). Targets that stretch longer than that, as SMBus devices may,
+need a slower core clock. The I²C standard's SCL LOW/HIGH and SDA setup
+minimums are not yet stated as waveform durations in Lean, so their
+conversion to real time is still open.
+
 An address NACK invalidates the projected payload. This image continues its
 clock sequence through STOP; it has no immediate NACK branch or repeated START.
 A timeout at data slot 50 preserves 50 RX bits, including an 18-bit partial word.

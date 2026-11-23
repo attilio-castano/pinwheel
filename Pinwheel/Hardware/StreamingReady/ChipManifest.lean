@@ -4,6 +4,7 @@ import Pinwheel.Hardware.Streaming.FrontendEmit
 import Pinwheel.Program.StreamingCANClock
 import Pinwheel.Program.StreamingEthernetClock
 import Pinwheel.Program.StreamingPS2Clock
+import Pinwheel.Program.StreamingI2CClock
 
 /-! A machine-readable description of the sampled-ready Tiny Tapeout top.
 
@@ -275,5 +276,29 @@ target: the Ethernet transmit image (60 MHz against 50 MHz). -/
 theorem programClocks_over_target :
     (programClocks.filter (!·.withinTarget)).map (·.program) = ["ethernet_sni_tx"] := by
   decide
+
+/-! ## I²C clock stretching
+
+The I²C image takes its durations from a profile rather than a fixed clock.
+Its clock-stretch deadline is a whole number of core clocks
+(`StreamingI2CClock.served`, `faulted`), so its length in time depends on the
+board clock. -/
+
+open Pinwheel.Program.StreamingReady in
+/-- The standard profile as the Python builder spells it: durations in clocks
+(the encoding stores one less), the poll budget, and the peer bounds. -/
+def i2cStandard : List (String × Nat) :=
+  [("low_cycles", I2cProfile.standard.lowDuration.val + 1),
+   ("high_cycles", I2cProfile.standard.highDuration.val + 1),
+   ("wait_budget", I2cProfile.standard.budgetMinusOne.val + 1),
+   ("peer_tco", I2cProfile.standard.peerTco),
+   ("stretch_bound", I2cProfile.standard.stretchBound)]
+
+/-- The longest stretch any profile tolerates, in core clocks. -/
+def i2cMaxToleranceClocks : Nat := 252
+
+theorem i2c_tolerance_le (profile : Pinwheel.Program.StreamingReady.I2cProfile) :
+    Pinwheel.Program.StreamingI2CClock.tolerance profile ≤ i2cMaxToleranceClocks :=
+  Pinwheel.Program.StreamingI2CClock.tolerance_le profile
 
 end Pinwheel.Hardware.StreamingReady.ChipManifest

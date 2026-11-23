@@ -282,6 +282,21 @@ def check_program_clocks(report, manifest, files):
         report.warning(path, 'CORE_HZ', None, core, 'no Lean clock contract' + excess)
 
 
+def check_i2c_profile(report, manifest, i2c_image):
+    """The Python builder's default profile must be the Lean standard profile."""
+    import inspect
+    stretch = manifest.get('i2c_clock_stretch')
+    if stretch is None:
+        report.missing('manifest', 'i2c_clock_stretch', 'manifest predates the I2C clock contract')
+        return
+    defaults = {name: parameter.default for name, parameter in inspect.signature(i2c_image).parameters.items()}
+    copy = 'scripts/streaming_ready_compile.py i2c_image defaults'
+    for name, value in stretch['standard_profile'].items():
+        report.compare(copy, name, value, defaults.get(name))
+    report.compare(copy, 'stretch tolerance (wait_budget - 3)', stretch['standard_tolerance_core_clocks'],
+                   defaults.get('wait_budget', 0) - 3)
+
+
 # ---------------------------------------------------------------- driver
 
 def emit_manifest(path):
@@ -319,6 +334,9 @@ def run(manifest):
     check_allocation(report, manifest, allocation, prepared['DIE_AREA'], geometry.public_names())
     check_sdc(report, manifest, (ROOT / 'physical/streaming-tt.sdc').read_text())
     check_release_workflow(report, manifest, (ROOT / 'physical/streaming_8x4/ttihp27a-custom-gds.yml').read_text())
+
+    import streaming_ready_compile
+    check_i2c_profile(report, manifest, streaming_ready_compile.i2c_image)
 
     import streaming_8x4_bringup as bringup
     report.compare('scripts/streaming_8x4_bringup.py', 'TOP', manifest['top'], bringup.TOP)

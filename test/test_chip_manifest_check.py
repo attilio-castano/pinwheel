@@ -150,6 +150,23 @@ class ChipManifestCheck(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '4 MHz core clock'):
             exec(compile(changed, 'streaming_ready_ps2.py', 'exec'), {'__name__': 'ps2_variant'})
 
+    def test_i2c_standard_profile(self):
+        import streaming_ready_compile
+        report = C.Report()
+        C.check_i2c_profile(report, self.manifest, streaming_ready_compile.i2c_image)
+        self.assertEqual(report.mismatches, [])
+        self.assertEqual(len(report.rows), 6)
+        stretch = self.manifest['i2c_clock_stretch']
+        self.assertEqual((stretch['standard_tolerance_core_clocks'], stretch['max_tolerance_ns_at_target']),
+                         (28, 5040))
+
+        def drifted(low_cycles=4, high_cycles=4, wait_budget=40, *, peer_tco=1, stretch_bound=28):
+            pass
+        report = C.Report()
+        C.check_i2c_profile(report, self.manifest, drifted)
+        self.assertEqual({field for _, field in self.fields(report)},
+                         {'wait_budget', 'stretch tolerance (wait_budget - 3)'})
+
     def test_over_target_contract_warns(self):
         report, _ = C.run(self.manifest)
         warnings = {(row['copy'], row['field']) for row in report.rows if row['kind'] == 'warning'}

@@ -28,7 +28,8 @@ private def theorems : List Name :=
    ``TinyWiring.Certificate.step_eq, ``TinyWiring.Certificate.observe_eq,
    ``programClocks_over_target, ``Pinwheel.Program.StreamingCANClock.captured,
    ``Pinwheel.Program.StreamingEthernetClock.phyClock, ``Pinwheel.Program.StreamingPS2Clock.peerFrame,
-   ``programClocks_admitted]
+   ``programClocks_admitted, ``Pinwheel.Program.StreamingI2CClock.served,
+   ``Pinwheel.Program.StreamingI2CClock.faulted, ``i2c_tolerance_le]
 
 def manifest (a : Nat) : Json :=
   let top := TinyWiring.canonical a
@@ -71,6 +72,12 @@ def manifest (a : Nat) : Json :=
       ("program", toJson p.program), ("core_hz", toJson p.coreHz),
       ("contract", toJson p.contract.toString), ("requirement", toJson p.requirement),
       ("within_target", toJson p.withinTarget)]).toArray),
+    ("i2c_clock_stretch", Json.mkObj [
+      ("standard_profile", Json.mkObj (i2cStandard.map fun (k, v) => (k, toJson v))),
+      ("standard_tolerance_core_clocks",
+        toJson (Pinwheel.Program.StreamingI2CClock.tolerance .standard)),
+      ("max_tolerance_core_clocks", toJson i2cMaxToleranceClocks),
+      ("max_tolerance_ns_at_target", toJson (i2cMaxToleranceClocks * targets.clockPeriodNs))]),
     ("lean_theorems", toJson (theorems.map toString))]
 
 def main (args : List String) : IO Unit := do
