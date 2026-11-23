@@ -256,7 +256,8 @@ def check_state_literals(report, manifest, files):
 
 # Scripts whose clock constants have a Lean clock contract in the manifest.
 CONTRACTED_CLOCKS = {'scripts/streaming_ready_can.py': 'can_receive',
-                     'scripts/streaming_ready_ethernet.py': 'ethernet_sni_tx'}
+                     'scripts/streaming_ready_ethernet.py': 'ethernet_sni_tx',
+                     'scripts/streaming_ready_ps2.py': 'ps2_receive'}
 
 
 def check_program_clocks(report, manifest, files):
@@ -275,7 +276,6 @@ def check_program_clocks(report, manifest, files):
         if program in contracts:
             contract = contracts[program]
             report.compare(path, 'CORE_HZ', contract['core_hz'], constants['CORE_HZ'])
-            report.compare(path, 'BIT_RATE', contract['bit_rate'], constants.get('BIT_RATE'))
             continue
         core = constants['CORE_HZ']
         excess = f'; {core / 1e6:g} MHz exceeds the {limit / 1e6:g} MHz target' if core > limit else ''

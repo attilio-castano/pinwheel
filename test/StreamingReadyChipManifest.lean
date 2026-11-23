@@ -27,7 +27,8 @@ private def theorems : List Name :=
    ``initialize_canonical, ``input_bit, ``pad_bit, ``release_state_bits,
    ``TinyWiring.Certificate.step_eq, ``TinyWiring.Certificate.observe_eq,
    ``programClocks_over_target, ``Pinwheel.Program.StreamingCANClock.captured,
-   ``Pinwheel.Program.StreamingEthernetClock.phyClock]
+   ``Pinwheel.Program.StreamingEthernetClock.phyClock, ``Pinwheel.Program.StreamingPS2Clock.peerFrame,
+   ``programClocks_admitted]
 
 def manifest (a : Nat) : Json :=
   let top := TinyWiring.canonical a
@@ -67,8 +68,8 @@ def manifest (a : Nat) : Json :=
       ("clock_period_ns", toJson targets.clockPeriodNs),
       ("max_core_hz", toJson targetMaxHz)]),
     ("program_clocks", Json.arr (programClocks.map fun p => Json.mkObj [
-      ("program", toJson p.program), ("core_hz", toJson p.coreHz), ("bit_rate", toJson p.bitRate),
-      ("cycles_per_bit", toJson p.cyclesPerBit), ("skew_samples", toJson p.skewSamples),
+      ("program", toJson p.program), ("core_hz", toJson p.coreHz),
+      ("contract", toJson p.contract.toString), ("requirement", toJson p.requirement),
       ("within_target", toJson p.withinTarget)]).toArray),
     ("lean_theorems", toJson (theorems.map toString))]
 

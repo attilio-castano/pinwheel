@@ -69,4 +69,26 @@ theorem firstSample_skew (period cycles samples slack start event k : Nat) (posi
     simp only [Nat.succ_mul, Nat.add_mul]
     omega
 
+theorem firstSample_mono (period x y : Nat) (le : x ≤ y) :
+    firstSample period x ≤ firstSample period y :=
+  Nat.div_le_div_right (by omega)
+
+/-- An interval of real length between `low` and `high` periods spans between
+`low` and `high` samples: the sample counts round the same way at both ends. -/
+theorem firstSample_gap (period low high a b : Nat) (positive : 0 < period)
+    (atLeast : a + low * period ≤ b) (atMost : b ≤ a + high * period) :
+    firstSample period a + low ≤ firstSample period b ∧
+      firstSample period b ≤ firstSample period a + high := by
+  have s := firstSample_spec period a positive
+  have e := firstSample_spec period b positive
+  constructor
+  · apply Nat.le_of_lt_succ
+    apply lt_of_mul period
+    simp only [Nat.succ_mul, Nat.add_mul]
+    omega
+  · apply Nat.le_of_lt_succ
+    apply lt_of_mul period
+    simp only [Nat.succ_mul, Nat.add_mul]
+    omega
+
 end Pinwheel.Timing

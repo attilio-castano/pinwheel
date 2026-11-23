@@ -102,7 +102,7 @@ class ChipManifestCheck(unittest.TestCase):
         report = C.Report()
         C.check_program_clocks(report, self.manifest, [('scripts/streaming_ready_can.py', can)])
         self.assertEqual(report.mismatches, [])
-        self.assertEqual({row['field'] for row in report.rows if row['kind'] == 'ok'}, {'CORE_HZ', 'BIT_RATE'})
+        self.assertEqual({row['field'] for row in report.rows if row['kind'] == 'ok'}, {'CORE_HZ'})
         changed = can.replace('CORE_HZ = 4_000_000', 'CORE_HZ = 8_000_000')
         self.assertNotEqual(changed, can)
         report = C.Report()
@@ -131,11 +131,24 @@ class ChipManifestCheck(unittest.TestCase):
         C.check_program_clocks(report, self.manifest, [(path, source)])
         self.assertEqual(report.mismatches, [])
         contract = {row['program']: row for row in self.manifest['program_clocks']}['ethernet_sni_tx']
-        self.assertEqual((contract['core_hz'], contract['cycles_per_bit'], contract['within_target']),
-                         (60000000, 6, False))
+        self.assertEqual((contract['core_hz'], contract['within_target']), (60000000, False))
+        self.assertTrue(contract['contract'].endswith('StreamingEthernetClock.phyClock'))
         changed = source.replace('CORE_HZ = 60_000_000', 'CORE_HZ = 50_000_000')
         with self.assertRaisesRegex(ValueError, 'six core clocks per bit'):
             exec(compile(changed, 'streaming_ready_ethernet.py', 'exec'), {'__name__': 'ethernet_variant'})
+
+    def test_ps2_clock_contract(self):
+        path = 'scripts/streaming_ready_ps2.py'
+        source = (ROOT / path).read_text()
+        report = C.Report()
+        C.check_program_clocks(report, self.manifest, [(path, source)])
+        self.assertEqual([row['kind'] for row in report.rows], ['ok'])
+        contract = {row['program']: row for row in self.manifest['program_clocks']}['ps2_receive']
+        self.assertEqual((contract['core_hz'], contract['within_target']), (4000000, True))
+        changed = source.replace('CORE_HZ = 4_000_000\n', 'CORE_HZ = 8_000_000\n', 1)
+        self.assertNotEqual(changed, source)
+        with self.assertRaisesRegex(ValueError, '4 MHz core clock'):
+            exec(compile(changed, 'streaming_ready_ps2.py', 'exec'), {'__name__': 'ps2_variant'})
 
     def test_over_target_contract_warns(self):
         report, _ = C.run(self.manifest)

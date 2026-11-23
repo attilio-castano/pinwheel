@@ -235,6 +235,17 @@ and the first falling edge may arrive any time after the three-clock setup
 following an admitted START for 11 bits. The receiver takes the DATA bit
 present at each keyboard falling edge. [Freescale AN1723, Figure 5](https://www.nxp.com/docs/en/application-note/AN1723.pdf#page=9)
 
+The [PS/2 clock contract](../../Pinwheel/Program/StreamingPS2Clock.lean)
+builds this sample-level contract from a real-time keyboard waveform
+(`peerFrame`). Half-periods between 120 and 200 core periods are seen as
+120 through 200 samples, because sampling rounds both edges of a half-period
+the same way. The standard 30–50 µs range therefore fits at exactly one core
+clock, 4 MHz (`spec_admits_iff`). A keyboard with a narrower range is admitted
+over a band of clocks, but the standard range is not covered at the 20 ns
+physical target (`spec_not_admits_50MHz`). The keyboard must also hold each
+DATA bit for at least one core period after its falling edge, and keep CLK
+released for 221 core periods after the last fall.
+
 The sampled CLK-low guard captures two core clocks after each raw falling
 edge. The next poll starts 220 core clocks after the previous capture, after
 the previous low phase has ended and before the next possible falling edge.

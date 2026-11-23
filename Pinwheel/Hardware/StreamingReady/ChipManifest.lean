@@ -3,6 +3,7 @@ import Pinwheel.Hardware.StreamingReady.CoreEmit
 import Pinwheel.Hardware.Streaming.FrontendEmit
 import Pinwheel.Program.StreamingCANClock
 import Pinwheel.Program.StreamingEthernetClock
+import Pinwheel.Program.StreamingPS2Clock
 
 /-! A machine-readable description of the sampled-ready Tiny Tapeout top.
 
@@ -240,20 +241,29 @@ clock gives those cycles their intended real-time meaning. Each entry here is
 backed by a theorem that derives the cycle-level peer contract from a
 real-time bus description at that clock. -/
 
+/-- `contract` names the theorem or definition that derives the cycle-level
+peer contract from real time; `requirement` restates its conditions. -/
 structure ProgramClock where
   program : String
   coreHz : Nat
-  bitRate : Nat
-  cyclesPerBit : Nat
-  skewSamples : Nat
+  contract : Lean.Name
+  requirement : String
 
 def programClocks : List ProgramClock :=
-  [⟨"can_receive", Pinwheel.Program.StreamingCANClock.coreHz, Pinwheel.Program.StreamingCANClock.bitRate,
-    Pinwheel.Program.StreamingCANClock.cyclesPerBit, Pinwheel.Program.StreamingCANClock.skewSamples⟩,
-   -- Skew zero: every TX_CLK rise must stay in one fixed sample window, so
-   -- TX_CLK must be locked to the core clock (`StreamingEthernetClock`).
+  [⟨"can_receive", Pinwheel.Program.StreamingCANClock.coreHz, ``Pinwheel.Program.StreamingCANClock.captured,
+    "32 core clocks per 125 kbit/s bit; bit boundaries within 4 core clocks (1 us) of nominal"⟩,
    ⟨"ethernet_sni_tx", Pinwheel.Program.StreamingEthernetClock.coreHz,
-    Pinwheel.Program.StreamingEthernetClock.bitRate, Pinwheel.Program.StreamingEthernetClock.cyclesPerBit, 0⟩]
+    ``Pinwheel.Program.StreamingEthernetClock.phyClock,
+    "6 core clocks per 10 MHz TX_CLK period; TX_CLK locked to the core clock and high for under 3 core clocks"⟩,
+   ⟨"ps2_receive", Pinwheel.Program.StreamingPS2Clock.coreHz, ``Pinwheel.Program.StreamingPS2Clock.peerFrame,
+    "PS/2 half-periods of 30-50 us must span 120-200 core clocks, which holds only at 4 MHz"⟩]
+
+/-- Each listed clock is the one its contract admits. -/
+theorem programClocks_admitted :
+    Pinwheel.Program.StreamingCANClock.Admits Pinwheel.Program.StreamingCANClock.coreHz ∧
+    Pinwheel.Program.StreamingEthernetClock.Admits Pinwheel.Program.StreamingEthernetClock.coreHz ∧
+    Pinwheel.Program.StreamingPS2Clock.SpecAdmits Pinwheel.Program.StreamingPS2Clock.coreHz := by
+  decide
 
 /-- The fastest core clock the declared period allows, rounded down. -/
 def targetMaxHz : Nat := 1000000000 / targets.clockPeriodNs
