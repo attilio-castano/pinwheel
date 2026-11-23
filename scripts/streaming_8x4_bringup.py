@@ -25,9 +25,19 @@ UART_QUARTERS = 4
 UART_BYTE = 0x96
 SPI_BITS = 64
 I2C_ADDRESS = 0x52
+# I2C SCL timing (low_cycles, high_cycles) by bus mode at a 4 MHz core clock,
+# from the board clock guide (docs/board-clock-guide.md, Lean `guide`).
+# "default" keeps the frozen bring-up program, which meets only Fast-mode Plus.
+I2C_MODES = {"default": (4, 4), "fast": (5, 3), "standard": (18, 18)}
 
 
-def fixture():
+def fixture(i2c_mode="default"):
+    low_cycles, high_cycles = I2C_MODES[i2c_mode]
+    i2c = i2c_image(low_cycles, high_cycles)
+    # Non-default modes say which timing they carry; the default output stays byte-identical.
+    timing = {} if i2c_mode == "default" else {"i2c_mode": i2c_mode, "low_cycles": low_cycles,
+                                                "high_cycles": high_cycles, "core_hz": 4_000_000}
+
     spi_tx, spi_rx, _, _ = stream_payloads("spi", SPI_BITS)
     i2c_write, i2c_read = i2c_payloads()
 
@@ -45,10 +55,10 @@ def fixture():
                            protocol_input=0, expected_rx_hex=f"{UART_BYTE:02x}"),
         "spi_duplex": program(ready_image("spi"), start_cells=SPI_BITS, half_cycles=4,
                               tx_hex=spi_tx.hex(), expected_rx_hex=spi_rx.hex()),
-        "i2c_read": program(i2c_image(), address_7bit=I2C_ADDRESS,
+        "i2c_read": program(i2c, address_7bit=I2C_ADDRESS, **timing,
                             start_cells=pack_read(I2C_ADDRESS, len(i2c_read)).bit_count,
                             expected_rx_hex=i2c_read.hex()),
-        "i2c_write": program(i2c_image(), address_7bit=I2C_ADDRESS,
+        "i2c_write": program(i2c, address_7bit=I2C_ADDRESS, **timing,
                              start_cells=pack_write(I2C_ADDRESS, i2c_write).bit_count,
                              tx_hex=i2c_write.hex()),
     }
@@ -131,14 +141,16 @@ def simulate(vvp, executable, expected_digest):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("fixture", help="Print the deterministic board bring-up vectors")
+    vectors = commands.add_parser("fixture", help="Print the deterministic board bring-up vectors")
+    vectors.add_argument("--i2c-mode", choices=sorted(I2C_MODES), default="default",
+                         help="I2C SCL timing for a 4 MHz core clock (default: the frozen bring-up program)")
     dry_run = commands.add_parser("simulate", help="Exercise the vectors with Icarus and a public-pin model")
     dry_run.add_argument("--vvp", type=Path, required=True)
     dry_run.add_argument("--executable", type=Path, required=True)
     dry_run.add_argument("--executable-sha256", required=True)
     args = parser.parse_args()
     try:
-        result = (fixture() if args.command == "fixture" else
+        result = (fixture(args.i2c_mode) if args.command == "fixture" else
                   simulate(args.vvp.resolve(strict=True), args.executable.absolute(), args.executable_sha256))
     except (OSError, RuntimeError, ValueError) as error:
         parser.exit(1, f"Pinwheel bring-up check failed: {error}\n")

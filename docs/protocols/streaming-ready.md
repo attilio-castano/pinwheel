@@ -100,7 +100,11 @@ a sample taken two clocks earlier, SCL stays released for that clock and
 `HIGH` more (`high_window`, `ready_sample`). Here `LOW` and `HIGH` are the
 builder's `low_cycles` and `high_cycles`. On the bus this gives SCL LOW of at
 least `LOW + 1` core periods, SCL HIGH of at least `HIGH + 3`, and SDA setup
-of at least `LOW`, before pad delays and rise times.
+of at least `LOW`, before pad delays and rise times. At the frame ends, START
+holds SDA low for `2 × HIGH + 2` core periods before SCL falls
+(`start_window`), and STOP keeps SCL high for at least `2 × HIGH + 6` periods
+before SDA is released (`stop_window`, `stop_ready_sample`). Bus-free time
+between transactions is set by the host.
 
 The standard profile (4/4) therefore meets standard mode only with a core
 clock up to about 1.06 MHz (`standard_meets_standard_iff`). At 4 MHz it meets

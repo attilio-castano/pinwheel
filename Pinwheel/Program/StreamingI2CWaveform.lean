@@ -1,5 +1,6 @@
 import Pinwheel.Program.StreamingI2CDeadline
 import Pinwheel.Program.StreamingCellWaveform
+import Pinwheel.Program.StreamingI2CTrace
 
 /-! # SCL and SDA waveforms of one I²C data slot
 
@@ -164,6 +165,109 @@ theorem boundary_pins (last : Bool) :
 
 end
 
+/-! ## Frame ends
+
+The START hold row and the STOP hold row are pulses with SDA low and SCL
+released for both phases (`holdCell`). -/
+
+def holdCell (profile : I2cProfile) : Cell :=
+  {lowDuration := profile.highDuration, highDuration := profile.highDuration,
+   lowPins := ⟨0, 2⟩, highPins := ⟨0, 2⟩}
+
+theorem hold_row (profile : I2cProfile) : i2cHold profile 2 = .pulse (holdCell profile) := rfl
+
+theorem hold_base (profile : I2cProfile) : (holdCell profile).basePins false false = ⟨0, 2⟩ := by
+  simp [holdCell, Streaming.Cell.basePins]
+
+private theorem pc_toNat (pc : BitVec 7) (n : Nat) (h : pc.toNat = n) (small : n < 127) :
+    (pc + 1).toNat = n + 1 := by
+  have one : (1 : BitVec 7).toNat = 1 := rfl
+  rw [BitVec.toNat_add, one, h]
+  omega
+
+private theorem hold_list (H : Nat) (x : Engine.Reactive.Pins) :
+    List.replicate (H + 2) x ++ List.replicate (H + 1) x ++ [x] = List.replicate (2 * H + 4) x := by
+  rw [List.replicate_append_replicate, ← List.replicate_succ']
+  congr 1
+  omega
+
+/-- START: from the FETCH of row 1, SDA is held low with SCL released for
+`2H + 4` observations; the next observation is the first data slot's
+boundary, which drives SCL low and releases SDA. -/
+theorem start_window (s : State a) (fetch : s.phase = .fetch) (pc : s.pc.toNat = 1) (live : s.remaining ≠ 0)
+    (inputs : List Input) (ordinary : ∀ i ∈ inputs, Ordinary i)
+    (length : inputs.length = 2 * profile.highDuration.val + 5) :
+    pinTrace (programFor profile) s inputs =
+      s.pins :: (List.replicate (2 * profile.highDuration.val + 4) ⟨0, 2⟩ ++ [⟨0, 1⟩]) := by
+  have row1 : (programFor profile).fetch s.pc.toNat = some (.pulse (holdCell profile)) := by
+    rw [pc]; exact StreamingI2CTrace.Profiled.fetch profile 1 (by decide)
+  obtain ⟨pulse, last, rfl, pulseLength⟩ : ∃ pulse last, inputs = pulse ++ [last] ∧
+      pulse.length = (holdCell profile).lowDuration.val + (holdCell profile).highDuration.val + 4 := by
+    have nonempty : inputs ≠ [] := by intro nil; simp [nil] at length
+    exact ⟨inputs.dropLast, inputs.getLast nonempty, (List.dropLast_concat_getLast nonempty).symm,
+      by simp only [List.length_dropLast, holdCell]; omega⟩
+  have ordinaryPulse : ∀ i ∈ pulse, Ordinary i := fun i mem => ordinary i (List.mem_append_left _ mem)
+  obtain ⟨trace, phase, pc2, remaining, pins⟩ :=
+    pulse_window (programFor profile) s (holdCell profile) fetch row1 pulse ordinaryPulse pulseLength
+  generalize ht : run (programFor profile) s pulse = t at phase pc2 remaining pins
+  have row2 : (programFor profile).fetch t.pc.toNat =
+      some (.stream (i2cCell profile) (some (i2cGuard profile 1 1))) := by
+    rw [pc2, pc_toNat s.pc 1 pc (by decide)]; exact StreamingI2CTrace.Profiled.fetch profile 2 (by decide)
+  have eq := step_clock (programFor profile) t last (by rw [phase]; decide)
+    (ordinary last (List.mem_append_right _ List.mem_cons_self))
+  have first := clock_fetch_stream (programFor profile) t last _ _ phase row2 (by rw [remaining]; exact live)
+  rw [pinTrace_snoc, trace, ht, eq, first, cell_base, hold_base]
+  simp only [holdCell]
+  rw [List.cons_append, hold_list]
+  rfl
+
+/-- STOP: from the ready wait of row 4 (SDA low, SCL released and seen high),
+SDA stays low with SCL released for `2H + 6` observations; HALT then
+releases SDA. -/
+theorem stop_window (s : State a) (waiting : s.phase = .waiting) (pc : s.pc.toNat = 4)
+    (row : s.current = .driveWait ⟨0, 2⟩ (i2cGuard profile 1 1)) (ready : s.waitReady = true)
+    (held : s.pins = ⟨0, 2⟩) (inputs : List Input) (ordinary : ∀ i ∈ inputs, Ordinary i)
+    (length : inputs.length = 2 * profile.highDuration.val + 6) :
+    pinTrace (programFor profile) s inputs =
+      List.replicate (2 * profile.highDuration.val + 6) ⟨0, 2⟩ ++ [⟨0, 0⟩] := by
+  obtain ⟨first, rest, rfl⟩ : ∃ first rest, inputs = first :: rest := by
+    cases inputs with
+    | nil => simp at length
+    | cons first rest => exact ⟨first, rest, rfl⟩
+  obtain ⟨pulse, last, rfl, pulseLength⟩ : ∃ pulse last, rest = pulse ++ [last] ∧
+      pulse.length = (holdCell profile).lowDuration.val + (holdCell profile).highDuration.val + 4 := by
+    have nonempty : rest ≠ [] := by intro nil; simp [nil] at length
+    exact ⟨rest.dropLast, rest.getLast nonempty, (List.dropLast_concat_getLast nonempty).symm,
+      by simp only [List.length_dropLast, holdCell]; simp only [List.length_cons] at length; omega⟩
+  have eq1 := step_clock (programFor profile) s first (by rw [waiting]; decide) (ordinary first List.mem_cons_self)
+  obtain ⟨phase1, pc1, pins1, _⟩ := clock_wait_ready (programFor profile) s first _ _ waiting row ready
+  generalize ht1 : clock (programFor profile) first s = t1 at eq1 phase1 pc1 pins1
+  have row5 : (programFor profile).fetch t1.pc.toNat = some (.pulse (holdCell profile)) := by
+    rw [pc1, pc_toNat s.pc 4 pc (by decide)]; exact StreamingI2CTrace.Profiled.fetch profile 5 (by decide)
+  have ordinaryPulse : ∀ i ∈ pulse, Ordinary i := fun i mem =>
+    ordinary i (List.mem_cons_of_mem _ (List.mem_append_left _ mem))
+  obtain ⟨trace, phase, pc6, _, _⟩ :=
+    pulse_window (programFor profile) t1 (holdCell profile) phase1 row5 pulse ordinaryPulse pulseLength
+  generalize ht : run (programFor profile) t1 pulse = t at phase pc6
+  have row6 : (programFor profile).fetch t.pc.toNat = some .halt := by
+    rw [pc6, pc_toNat t1.pc 5 (by rw [pc1, pc_toNat s.pc 4 pc (by decide)]) (by decide)]
+    exact StreamingI2CTrace.Profiled.fetch profile 6 (by decide)
+  have eq := step_clock (programFor profile) t last (by rw [phase]; decide)
+    (ordinary last (List.mem_cons_of_mem _ (List.mem_append_right _ List.mem_cons_self)))
+  have halt := clock_fetch_halt (programFor profile) t last phase row6
+  simp only [pinTrace, eq1]
+  rw [pinTrace_snoc, trace, ht, eq, halt, pins1, held, hold_base]
+  simp only [holdCell]
+  rw [List.cons_append, hold_list]
+  rfl
+
+/-- The STOP wait is ready only when its sample, two clocks old, shows SCL high. -/
+theorem stop_ready_sample (s : State a) (row : s.current = .driveWait ⟨0, 2⟩ (i2cGuard profile 1 1))
+    (ready : s.waitReady = true) : s.samplerSecond.getLsbD 0 = true := by
+  have bit : ∀ raw : BitVec 2, ((raw &&& 1#2) == 1#2) = raw.getLsbD 0 := by decide
+  rw [← bit]
+  simpa [State.waitReady, row, Instruction.guard, i2cGuard, Guard.matches] using ready
+
 /-! ## Real time
 
 Reading each pin observation as one core period and the guard's sample as the
@@ -177,6 +281,13 @@ bus level at its clock, the windows give lower bounds on what the bus shows:
   assumes the target does not pull SCL low again during HIGH.
 * SDA is stable for at least `L + 1` periods before SCL is released.
 * The controller's data hold after SCL falls is zero periods (`boundary_pins`).
+* START hold (SDA low to SCL low) lasts `2H + 4` periods (`start_window`).
+* STOP setup (SCL high to SDA released) lasts at least `2H + 8` periods: the
+  SCL-high sample is two clocks older than the ready STOP wait
+  (`stop_ready_sample`), which is followed by `2H + 6` observations before HALT
+  releases SDA (`stop_window`).
+* Bus-free time between transactions depends on when the host starts the next
+  one, so it is not bounded here.
 
 Pad delays, rise times and the sampler's analog behavior are outside this
 model. `Meets` compares these bounds with an I²C mode's minimum times. -/
@@ -184,20 +295,25 @@ model. `Meets` compares these bounds with an I²C mode's minimum times. -/
 def lowPeriods (profile : I2cProfile) : Nat := profile.lowDuration.val + 2
 def highPeriods (profile : I2cProfile) : Nat := profile.highDuration.val + 4
 def setupPeriods (profile : I2cProfile) : Nat := profile.lowDuration.val + 1
+def startHoldPeriods (profile : I2cProfile) : Nat := 2 * profile.highDuration.val + 4
+def stopSetupPeriods (profile : I2cProfile) : Nat := 2 * profile.highDuration.val + 8
 
 /-- Controller-side minimum times of an I²C bus mode, in nanoseconds: SCL LOW,
-SCL HIGH, SDA setup, and the shortest SCL period (1 / maximum frequency). -/
+SCL HIGH, SDA setup, the shortest SCL period (1 / maximum frequency), START
+hold and STOP setup. -/
 structure Mode where
   name : String
   lowNs : Nat
   highNs : Nat
   setupNs : Nat
   periodNs : Nat
+  startHoldNs : Nat
+  stopSetupNs : Nat
   deriving Repr
 
-def standardMode : Mode := ⟨"standard", 4700, 4000, 250, 10000⟩
-def fastMode : Mode := ⟨"fast", 1300, 600, 100, 2500⟩
-def fastPlusMode : Mode := ⟨"fast_plus", 500, 260, 50, 1000⟩
+def standardMode : Mode := ⟨"standard", 4700, 4000, 250, 10000, 4000, 4000⟩
+def fastMode : Mode := ⟨"fast", 1300, 600, 100, 2500, 600, 600⟩
+def fastPlusMode : Mode := ⟨"fast_plus", 500, 260, 50, 1000, 260, 260⟩
 
 def modes : List Mode := [standardMode, fastMode, fastPlusMode]
 
@@ -207,18 +323,20 @@ def Meets (profile : I2cProfile) (mode : Mode) (hz : Nat) : Prop :=
   mode.lowNs * hz ≤ lowPeriods profile * 1000000000 ∧
   mode.highNs * hz ≤ highPeriods profile * 1000000000 ∧
   mode.setupNs * hz ≤ setupPeriods profile * 1000000000 ∧
-  mode.periodNs * hz ≤ (lowPeriods profile + highPeriods profile) * 1000000000
+  mode.periodNs * hz ≤ (lowPeriods profile + highPeriods profile) * 1000000000 ∧
+  mode.startHoldNs * hz ≤ startHoldPeriods profile * 1000000000 ∧
+  mode.stopSetupNs * hz ≤ stopSetupPeriods profile * 1000000000
 
 instance (profile : I2cProfile) (mode : Mode) (hz : Nat) : Decidable (Meets profile mode hz) :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _))
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _ ∧ _ ∧ _ ∧ _))
 
 /-- The standard profile meets standard mode only up to about 1.06 MHz: its
 4-clock LOW must last 4.7 µs. -/
 theorem standard_meets_standard_iff (hz : Nat) :
     Meets .standard standardMode hz ↔ hz ≤ 1063829 := by
-  simp only [Meets, standardMode, lowPeriods, highPeriods, setupPeriods]
+  simp only [Meets, standardMode, lowPeriods, highPeriods, setupPeriods, startHoldPeriods, stopSetupPeriods]
   change 4700 * hz ≤ 5 * 1000000000 ∧ 4000 * hz ≤ 7 * 1000000000 ∧ 250 * hz ≤ 4 * 1000000000 ∧
-    10000 * hz ≤ (5 + 7) * 1000000000 ↔ _
+    10000 * hz ≤ (5 + 7) * 1000000000 ∧ 4000 * hz ≤ 10 * 1000000000 ∧ 4000 * hz ≤ 14 * 1000000000 ↔ _
   omega
 
 /-- At 4 MHz the standard profile meets Fast-mode Plus but not Fast mode:

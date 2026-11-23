@@ -308,6 +308,21 @@ def check_board_guide(report, manifest):
     report.compare(copy, 'generated table', guide.splice(current, guide.render(manifest)) == current, True)
 
 
+def check_bringup_i2c_modes(report, manifest, modes):
+    """Each named bring-up I2C mode must be a 4 MHz guide row that meets that mode."""
+    copy = 'scripts/streaming_8x4_bringup.py I2C_MODES'
+    rows = {(r['setting'].get('low_cycles'), r['setting'].get('high_cycles')): r
+            for r in manifest.get('board_clock_guide', []) if r['program'] == 'i2c' and r['core_hz'] == 4000000}
+    for name, cycles in modes.items():
+        row = rows.get(cycles)
+        if row is None:
+            report.missing(copy, name, f'no 4 MHz I2C guide row for {cycles}')
+        elif name == 'default':
+            report.compare(copy, 'default is a guide row', True, True)
+        else:
+            report.compare(copy, f'{name} meets {name} mode', True, name in row['meets'])
+
+
 # ---------------------------------------------------------------- driver
 
 def emit_manifest(path):
@@ -354,6 +369,7 @@ def run(manifest):
     import streaming_8x4_bringup as bringup
     report.compare('scripts/streaming_8x4_bringup.py', 'TOP', manifest['top'], bringup.TOP)
     report.compare('scripts/streaming_8x4_bringup.py', 'DEPTH', depth, bringup.DEPTH)
+    check_bringup_i2c_modes(report, manifest, bringup.I2C_MODES)
 
     tracked = subprocess.run(['git', 'ls-files', 'scripts/*.py', 'test/*.py'], cwd=ROOT, check=True,
                              capture_output=True, text=True).stdout.split()

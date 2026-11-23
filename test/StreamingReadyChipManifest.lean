@@ -33,7 +33,8 @@ private def theorems : List Name :=
    ``Pinwheel.Program.StreamingI2CWaveform.low_window, ``Pinwheel.Program.StreamingI2CWaveform.high_window,
    ``Pinwheel.Program.StreamingI2CWaveform.standard_meets_standard_iff, ``i2cStandardModesAt4MHz_eq,
    ``Pinwheel.Program.StreamingUARTClock.received, ``Pinwheel.Program.StreamingCellWaveform.cell_window,
-   ``Pinwheel.Program.StreamingCellWaveform.capture_sample, ``guide_usable]
+   ``Pinwheel.Program.StreamingCellWaveform.capture_sample, ``guide_usable,
+   ``Pinwheel.Program.StreamingI2CWaveform.start_window, ``Pinwheel.Program.StreamingI2CWaveform.stop_window]
 
 def manifest (a : Nat) : Json :=
   let top := TinyWiring.canonical a
@@ -87,6 +88,8 @@ def manifest (a : Nat) : Json :=
       ("high_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.highPeriods .standard)),
       ("setup_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.setupPeriods .standard)),
       ("data_hold_core_clocks", toJson (0 : Nat)),
+      ("start_hold_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.startHoldPeriods .standard)),
+      ("stop_setup_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.stopSetupPeriods .standard)),
       ("standard_profile_modes_at_4MHz", toJson i2cStandardModesAt4MHz)]),
     ("board_clock_guide", Json.arr (guide.map fun r => Json.mkObj [
       ("program", toJson r.program), ("core_hz", toJson r.coreHz),

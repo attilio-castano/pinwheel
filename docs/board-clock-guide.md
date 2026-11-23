@@ -52,10 +52,13 @@ by `scripts/board_clock_guide.py` and checked by `scripts/check-chip-manifest.py
   must also accept the listed bit clock rate.
 - **I²C** ([waveforms](../Pinwheel/Program/StreamingI2CWaveform.lean),
   [stretching](../Pinwheel/Program/StreamingI2CClock.lean)): the listed modes
-  are those whose SCL LOW, SCL HIGH, SDA setup and SCL period minimums the
-  profile meets (`Meets`). The controller's data hold time is zero, and a
-  target may stretch SCL for at most the listed number of core clocks before
-  the transfer faults.
+  are those whose SCL LOW, SCL HIGH, SDA setup, SCL period, START hold and
+  STOP setup minimums the profile meets (`Meets`, `start_window`,
+  `stop_window`). The controller's data hold time is zero, and a target may
+  stretch SCL for at most the listed number of core clocks before the
+  transfer faults. Bus-free time between transactions depends on when the
+  host starts the next one. The bring-up fixture emits the Fast and standard
+  rows with `--i2c-mode fast` and `--i2c-mode standard`.
 - **CAN, PS/2 and Ethernet** use fixed images proved at one clock: 4 MHz for
   CAN and PS/2, and 60 MHz locked to the PHY for Ethernet, which is above the
   layout target. See [streaming-ready.md](protocols/streaming-ready.md).
