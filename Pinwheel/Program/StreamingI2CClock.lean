@@ -20,8 +20,7 @@ standard profile allows 28 clocks, 7 µs at 4 MHz, and no profile allows more
 than 252 clocks, 5.04 µs at the 20 ns physical target (`tolerance_le`).
 
 The SCL LOW/HIGH durations and SDA setup times that the I²C standard bounds in
-real time are not covered here: the existing proofs do not yet state them as
-waveform durations, so they cannot be converted. -/
+real time are in `StreamingI2CWaveform`. -/
 namespace Pinwheel.Program.StreamingI2CClock
 open Pinwheel.Timing Pinwheel.Program.StreamingReady Pinwheel.Program.StreamingI2CDeadline
 

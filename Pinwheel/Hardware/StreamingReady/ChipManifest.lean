@@ -5,6 +5,7 @@ import Pinwheel.Program.StreamingCANClock
 import Pinwheel.Program.StreamingEthernetClock
 import Pinwheel.Program.StreamingPS2Clock
 import Pinwheel.Program.StreamingI2CClock
+import Pinwheel.Program.StreamingI2CWaveform
 
 /-! A machine-readable description of the sampled-ready Tiny Tapeout top.
 
@@ -300,5 +301,12 @@ def i2cMaxToleranceClocks : Nat := 252
 theorem i2c_tolerance_le (profile : Pinwheel.Program.StreamingReady.I2cProfile) :
     Pinwheel.Program.StreamingI2CClock.tolerance profile ≤ i2cMaxToleranceClocks :=
   Pinwheel.Program.StreamingI2CClock.tolerance_le profile
+
+open Pinwheel.Program.StreamingI2CWaveform in
+/-- I²C modes the standard profile meets with a 4 MHz core clock. -/
+def i2cStandardModesAt4MHz : List String :=
+  (modes.filter fun m => decide (Meets .standard m 4000000)).map (·.name)
+
+theorem i2cStandardModesAt4MHz_eq : i2cStandardModesAt4MHz = ["fast_plus"] := by decide
 
 end Pinwheel.Hardware.StreamingReady.ChipManifest

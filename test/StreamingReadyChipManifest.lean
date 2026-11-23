@@ -29,7 +29,9 @@ private def theorems : List Name :=
    ``programClocks_over_target, ``Pinwheel.Program.StreamingCANClock.captured,
    ``Pinwheel.Program.StreamingEthernetClock.phyClock, ``Pinwheel.Program.StreamingPS2Clock.peerFrame,
    ``programClocks_admitted, ``Pinwheel.Program.StreamingI2CClock.served,
-   ``Pinwheel.Program.StreamingI2CClock.faulted, ``i2c_tolerance_le]
+   ``Pinwheel.Program.StreamingI2CClock.faulted, ``i2c_tolerance_le,
+   ``Pinwheel.Program.StreamingI2CWaveform.low_window, ``Pinwheel.Program.StreamingI2CWaveform.high_window,
+   ``Pinwheel.Program.StreamingI2CWaveform.standard_meets_standard_iff, ``i2cStandardModesAt4MHz_eq]
 
 def manifest (a : Nat) : Json :=
   let top := TinyWiring.canonical a
@@ -78,6 +80,12 @@ def manifest (a : Nat) : Json :=
         toJson (Pinwheel.Program.StreamingI2CClock.tolerance .standard)),
       ("max_tolerance_core_clocks", toJson i2cMaxToleranceClocks),
       ("max_tolerance_ns_at_target", toJson (i2cMaxToleranceClocks * targets.clockPeriodNs))]),
+    ("i2c_waveform", Json.mkObj [
+      ("low_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.lowPeriods .standard)),
+      ("high_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.highPeriods .standard)),
+      ("setup_core_clocks_min", toJson (Pinwheel.Program.StreamingI2CWaveform.setupPeriods .standard)),
+      ("data_hold_core_clocks", toJson (0 : Nat)),
+      ("standard_profile_modes_at_4MHz", toJson i2cStandardModesAt4MHz)]),
     ("lean_theorems", toJson (theorems.map toString))]
 
 def main (args : List String) : IO Unit := do

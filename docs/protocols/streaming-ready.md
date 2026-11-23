@@ -88,9 +88,27 @@ faults the transfer (`served`, `faulted`). There is no gap between the two
 cases. The standard profile tolerates 28 core clocks, 7 µs at 4 MHz. No profile
 tolerates more than 252 clocks, which is 5.04 µs at the 20 ns physical target
 (`at_50MHz`). Targets that stretch longer than that, as SMBus devices may,
-need a slower core clock. The I²C standard's SCL LOW/HIGH and SDA setup
-minimums are not yet stated as waveform durations in Lean, so their
-conversion to real time is still open.
+need a slower core clock.
+
+The [I²C waveform proofs](../../Pinwheel/Program/StreamingI2CWaveform.lean)
+state the controller's pins within each data slot, one observation per core
+clock. SCL is driven low for the boundary clock and `LOW` more clocks, with
+SDA set on the first of them (`low_window`). Once the guard sees SCL high, in
+a sample taken two clocks earlier, SCL stays released for that clock and
+`HIGH` more (`high_window`, `ready_sample`). Here `LOW` and `HIGH` are the
+builder's `low_cycles` and `high_cycles`. On the bus this gives SCL LOW of at
+least `LOW + 1` core periods, SCL HIGH of at least `HIGH + 3`, and SDA setup
+of at least `LOW`, before pad delays and rise times.
+
+The standard profile (4/4) therefore meets standard mode only with a core
+clock up to about 1.06 MHz (`standard_meets_standard_iff`). At 4 MHz it meets
+Fast-mode Plus but not Fast mode, whose 1.3 µs LOW minimum exceeds its 1.25 µs
+(`standard_at_4MHz`). Standard mode remains reachable at the 20 ns target with
+LOW 256 and HIGH 240 (`standardModeAt50MHz_meets`). One controller timing is
+zero: the clock that starts the next slot drives SCL low and releases SDA
+together, so after a zero bit SDA rises on the same core clock edge where SCL
+falls (`boundary_pins`). The I²C standard permits a zero hold time, but this
+leaves the ordering of those two edges to the pads and board.
 
 An address NACK invalidates the projected payload. This image continues its
 clock sequence through STOP; it has no immediate NACK branch or repeated START.

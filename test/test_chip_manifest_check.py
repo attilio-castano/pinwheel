@@ -167,6 +167,12 @@ class ChipManifestCheck(unittest.TestCase):
         self.assertEqual({field for _, field in self.fields(report)},
                          {'wait_budget', 'stretch tolerance (wait_budget - 3)'})
 
+    def test_i2c_waveform_manifest(self):
+        waveform = self.manifest['i2c_waveform']
+        self.assertEqual((waveform['low_core_clocks_min'], waveform['high_core_clocks_min'],
+                          waveform['setup_core_clocks_min'], waveform['data_hold_core_clocks']), (5, 7, 4, 0))
+        self.assertEqual(waveform['standard_profile_modes_at_4MHz'], ['fast_plus'])
+
     def test_over_target_contract_warns(self):
         report, _ = C.run(self.manifest)
         warnings = {(row['copy'], row['field']) for row in report.rows if row['kind'] == 'warning'}
