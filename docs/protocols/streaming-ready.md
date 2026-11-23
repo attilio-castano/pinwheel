@@ -267,7 +267,11 @@ representing dominant and HIGH representing recessive. The package releases
 its protocol output enables throughout. The peer waveform includes a dominant
 ACK from another receiver and a recessive idle tail. [Bosch CAN Specification 2.0, Part B](https://www.canlab.cz/sites/default/files/pages/download/Can2spec.pdf#page=43)
 
-The modeled 4 MHz core gives 32 clocks per bit at 125 kbit/s. START arms
+The modeled 4 MHz core gives 32 clocks per bit at 125 kbit/s. The
+[CAN clock contract](../../Pinwheel/Program/StreamingCANClock.lean) makes this
+exact: the compiled image receives 125 kbit/s only with a 4 MHz core. A bus
+whose bit boundaries stay within 1 µs of nominal then satisfies the
+cycle-level peer contract described below (`captured_at_4MHz`). START arms
 the guard while the bus is recessive. After the first dominant sample at
 index `f`, the program uses raw samples `f + 16 + 32k` for `k` from 0 through
 63. The capture events use the second sampler two clocks later. The peer
@@ -340,6 +344,30 @@ python3.12 -B scripts/streaming_8x4_ethernet.py \
   --iverilog "$PINWHEEL_IVERILOG" --vvp "$PINWHEEL_VVP" \
   --out build/ethernet-frozen
 ```
+
+### Clock requirements
+
+The proofs count core clocks. The [Ethernet clock contract](../../Pinwheel/Program/StreamingEthernetClock.lean)
+states which real TX_CLK waveforms produce the six-clock `PhyClock` pattern
+they assume. A TX_CLK whose rise in each cell falls after core sample `6k+1`
+and no later than sample `6k+2`, and whose fall comes after sample `6k+2` and
+no later than sample `6k+4`, produces it (`phyClock`). That makes three board
+requirements explicit:
+
+- The core clock must be exactly six times the 10 MHz TX_CLK: 60 MHz. This is
+  above the 20 ns (50 MHz) physical target, so the demo is not covered at the
+  clock the layout was closed for (`not_admits_50MHz`).
+- TX_CLK must be locked to the core clock, for example by deriving one from
+  the other. If its period differs from six core periods by any amount, its
+  rise leaves the sample window (`drift_excluded`). A free-running PHY
+  oscillator beside a separate core oscillator is not covered. The replay's PHY
+  model generates TX_CLK from core clock edges, so it is locked by construction.
+- TX_CLK must be high for fewer than three core clocks, under half its period
+  (`high_lt_three`). A locked TX_CLK with 50% duty never fits
+  (`half_duty_excluded`). Check the selected PHY's TX_CLK duty cycle before
+  relying on this demo.
+
+TXD setup and hold at the PHY and the pad delays remain outside this contract.
 
 ### Host refill policies
 
@@ -772,7 +800,9 @@ exact sample edges, malformed receive cases, and held-idle waits. The same
 causal host can refill unguarded SPI and JTAG rows. Their fixture compares
 two refill policies and checks that a missing chunk leaves the live owner
 parked. The [Ethernet proof](../../Pinwheel/Hardware/StreamingReady/EthernetDeadline.lean)
-derives credit from offered words and a six-clock PHY contract. Its
+derives credit from offered words and a six-clock PHY contract; the
+[clock requirements](#clock-requirements) state what that contract asks of
+the board. Its
 same-edge control shows that a push on the reservation edge becomes
 visible a clock later.
 

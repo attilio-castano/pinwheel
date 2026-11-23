@@ -9,8 +9,10 @@ open Pinwheel.Program.StreamingEthernetDeadline Pinwheel.Program.StreamingEthern
 open Pinwheel.Hardware.StreamingReady.InitializedCustody
 
 /-- Starting at the aligned reservation of a reached Ethernet session,
-an independent PHY clock and permitted full-word host offers determine
-the exact typed package wire trace and the ordered consumed payload. -/
+a PHY clock satisfying `PhyClock` (independent of host timing) and permitted
+full-word host offers determine the exact typed package wire trace and the
+ordered consumed payload. `StreamingEthernetClock` gives the real-time TX_CLK
+conditions behind `PhyClock`, including its lock to the core clock. -/
 theorem wire_from_offers (actual : Package.State 1) (s : Session.State 1) (trace : BitTrace)
     (reached : Reached image actual s trace) (pins : List Session.Pins)
     (runtime : Session.RuntimeTrace program false s pins) (cells : List CellInputs) (finish : Input)
