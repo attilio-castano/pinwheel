@@ -17,6 +17,26 @@ records the remaining gates. No editor extension is required for this workflow.
 Use the [validation guide](validation.md) for the local pre-push commands,
 whole-library axiom audit, independent model checks, and hardware fixture order.
 
+### Release RTL regression check
+
+A change meant to preserve the entry chip should leave its four release RTL
+files byte-identical. This command regenerates `core.sv`, `frontend.sv`,
+`package.sv` and `tt.sv` from the current tree with the pinned CIRCT, and
+compares them with the hashes pinned in the release workflow
+(`physical/streaming_8x4/ttihp27a-custom-gds.yml`). With `--simulate` it also
+compiles the public-pin bridge with the pinned Icarus and runs the bring-up
+simulation in every I²C fixture mode. It takes under a minute.
+
+```sh
+PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --tag NAME --simulate
+```
+
+`PINWHEEL_TOOLS` defaults to this checkout's `build/tools`; `--circt`,
+`--iverilog` and `--vvp` override single tools. Results go to
+`build/release-rtl/NAME/report.json`, and exit status 1 means a file differed
+or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
+that changes `tt.sv` and expects the check to fail.
+
 ## Toolchain
 
 The project pins **Lean 4.33.1** using `leanprover/lean4:v4.33.1` in `lean-toolchain`. This was the latest non-prerelease reported by the official release API during setup. Lake is included with the Lean toolchain. Elan manages installation and chooses the pinned version when commands run in the repository.
