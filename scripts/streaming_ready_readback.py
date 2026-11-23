@@ -8,9 +8,17 @@ from streaming_readback import (CORE_INPUTS, CORE_OUTPUTS, CORE_REGISTERS,
 shared, decomposition = base.shared, base.decomposition
 
 
-def backend(kind, addr_bits=1, *, tx_layout='ring'):
+def backend(kind, addr_bits=1, *, tx_layout='ring', descriptor=None):
+    """Configure the importer for one Ready module.
+
+    With `descriptor` (a path or loaded Lean read-back descriptor), the module,
+    types, circuit and port tables come from Lean instead of the hand-typed
+    tables; `test/test_readback_descriptor.py` checks both give the same
+    configuration. The shift TX layout is only available from the tables."""
     if tx_layout not in ('ring', 'shift') or (tx_layout == 'shift' and (kind != 'core' or addr_bits != 1)):
         raise ValueError('Unsupported Ready TX layout for this component or depth')
+    if descriptor is not None and tx_layout != 'ring':
+        raise ValueError('Read-back descriptors cover the ring TX layout only')
     rb = base.backend(kind, addr_bits)
     shift_import = ''
     if kind == 'core':
@@ -35,6 +43,10 @@ def backend(kind, addr_bits=1, *, tx_layout='ring'):
         'open Pinwheel.Hardware Pinwheel.Hardware.Streaming\nnamespace ' + rb.NAMESPACE + '\n'
         'set_option maxRecDepth 100000\nset_option maxHeartbeats 8000000\n'
         'set_option linter.unusedVariables false\n')
+    if descriptor is not None:
+        import readback_descriptor
+        loaded = readback_descriptor.load(descriptor) if not isinstance(descriptor, dict) else descriptor
+        readback_descriptor.apply(rb, loaded)
     return rb
 
 

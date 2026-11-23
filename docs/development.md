@@ -37,6 +37,28 @@ PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --ta
 or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
 that changes `tt.sv` and expects the check to fail.
 
+### Read-back descriptors (pilot)
+
+The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
+top name, Lean types and circuit, and every port's RTL name, width and Lean
+constructor term. `test/StreamingReadyReadbackDescriptor.lean` emits these as
+JSON descriptors for the sampled-ready core (depth two and four) and frontend,
+from the same enumerations and labels the emitter uses.
+`scripts/readback_descriptor.py` applies a descriptor to the importer, and
+`streaming_ready_readback.backend(..., descriptor=PATH)` uses it in place of
+the hand-typed tables in `streaming_readback.py`.
+
+```sh
+lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean build/readback-descriptors
+python3 -B test/test_readback_descriptor.py
+```
+
+The test checks that both ways produce the same importer configuration, table
+by table and in order; the generated proof files depend only on that
+configuration and the RTL. It also checks that a changed term or a reordered
+port is caught. The hand tables remain the default and still feed the mapped,
+wrapper and Buffered read-backs.
+
 ## Toolchain
 
 The project pins **Lean 4.33.1** using `leanprover/lean4:v4.33.1` in `lean-toolchain`. This was the latest non-prerelease reported by the official release API during setup. Lake is included with the Lean toolchain. Elan manages installation and chooses the pinned version when commands run in the repository.
