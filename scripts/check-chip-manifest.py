@@ -297,6 +297,17 @@ def check_i2c_profile(report, manifest, i2c_image):
                    defaults.get('wait_budget', 0) - 3)
 
 
+def check_board_guide(report, manifest):
+    """docs/board-clock-guide.md must show the manifest's current guide."""
+    import board_clock_guide as guide
+    copy = 'docs/board-clock-guide.md'
+    if 'board_clock_guide' not in manifest:
+        report.missing('manifest', 'board_clock_guide', 'manifest predates the board clock guide')
+        return
+    current = guide.DOC.read_text()
+    report.compare(copy, 'generated table', guide.splice(current, guide.render(manifest)) == current, True)
+
+
 # ---------------------------------------------------------------- driver
 
 def emit_manifest(path):
@@ -337,6 +348,8 @@ def run(manifest):
 
     import streaming_ready_compile
     check_i2c_profile(report, manifest, streaming_ready_compile.i2c_image)
+
+    check_board_guide(report, manifest)
 
     import streaming_8x4_bringup as bringup
     report.compare('scripts/streaming_8x4_bringup.py', 'TOP', manifest['top'], bringup.TOP)

@@ -173,6 +173,22 @@ class ChipManifestCheck(unittest.TestCase):
                           waveform['setup_core_clocks_min'], waveform['data_hold_core_clocks']), (5, 7, 4, 0))
         self.assertEqual(waveform['standard_profile_modes_at_4MHz'], ['fast_plus'])
 
+    def test_board_guide(self):
+        import board_clock_guide as guide
+        rows = {(r['program'], r['core_hz'], tuple(sorted(r['setting'].items()))): r
+                for r in self.manifest['board_clock_guide']}
+        uart = rows[('uart_rx', 4000000, (('baud', 115200), ('quarter_cycles', 9)))]
+        self.assertTrue(uart['usable'])
+        self.assertFalse(rows[('uart_rx', 50000000, (('baud', 9600), ('quarter_cycles', 1302)))]['usable'])
+        self.assertEqual(rows[('spi', 50000000, (('half_cycles', 3),))]['result']['peer_output_window_ns'], 20)
+        self.assertEqual(rows[('i2c', 4000000, (('high_cycles', 18), ('low_cycles', 18)))]['meets'],
+                         ['standard', 'fast', 'fast_plus'])
+        report = C.Report()
+        C.check_board_guide(report, self.manifest)
+        self.assertEqual(report.mismatches, [])
+        stale = guide.splice(guide.DOC.read_text(), guide.render(self.manifest).replace('| yes |', '| no |', 1))
+        self.assertNotEqual(stale, guide.DOC.read_text())
+
     def test_over_target_contract_warns(self):
         report, _ = C.run(self.manifest)
         warnings = {(row['copy'], row['field']) for row in report.rows if row['kind'] == 'warning'}

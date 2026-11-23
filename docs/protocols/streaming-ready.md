@@ -4,6 +4,8 @@ The opt-in `streaming-ready` target extends the bounded streaming engine with
 sampled input guards. Its first application is a 64-byte I²C read or write with
 clock stretching. The existing `streaming` target and its receipts remain
 separate. This name identifies an instruction contract, not a project release.
+The [board clock guide](../board-clock-guide.md) lists the clock and settings
+each example needs.
 
 ## Mechanism
 

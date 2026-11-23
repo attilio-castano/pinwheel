@@ -6,6 +6,8 @@ import Pinwheel.Program.StreamingEthernetClock
 import Pinwheel.Program.StreamingPS2Clock
 import Pinwheel.Program.StreamingI2CClock
 import Pinwheel.Program.StreamingI2CWaveform
+import Pinwheel.Program.StreamingUARTClock
+import Pinwheel.Program.StreamingSerialClock
 
 /-! A machine-readable description of the sampled-ready Tiny Tapeout top.
 
@@ -308,5 +310,66 @@ def i2cStandardModesAt4MHz : List String :=
   (modes.filter fun m => decide (Meets .standard m 4000000)).map (·.name)
 
 theorem i2cStandardModesAt4MHz_eq : i2cStandardModesAt4MHz = ["fast_plus"] := by decide
+
+/-! ## Board clock guide
+
+For each example program and a candidate board clock, the setting to use and
+what it achieves. Every number is computed from the clock contracts above;
+`contract` names the theorem that gives it meaning. -/
+
+structure GuideRow where
+  program : String
+  coreHz : Nat
+  setting : List (String × Nat)
+  result : List (String × Nat)
+  meets : List String
+  usable : Bool
+  contract : Lean.Name
+
+open Pinwheel.Program in
+/-- UART receive: the nearest quarter count and whether its sample points fit. -/
+def uartRow (hz baud : Nat) : GuideRow :=
+  let q := (hz + 2 * baud) / (4 * baud)
+  ⟨"uart_rx", hz, [("baud", baud), ("quarter_cycles", q)], [("bit_core_clocks", 4 * q)], [],
+    decide (4 ≤ q ∧ q ≤ 128 ∧ StreamingUARTClock.FitsAt q hz baud), ``StreamingUARTClock.received⟩
+
+open Pinwheel.Program in
+/-- SPI and JTAG: the bit clock limit and the peer's output-delay window. -/
+def serialRow (program : String) (hz half : Nat) : GuideRow :=
+  ⟨program, hz, [("half_cycles", half)],
+    [("max_clock_hz", hz / (StreamingSerialClock.idlePeriods half + StreamingSerialClock.activePeriods half)),
+     ("peer_output_window_ns", StreamingSerialClock.inputWindow half * 1000000000 / hz)], [],
+    decide (3 ≤ half), ``StreamingCellWaveform.capture_sample⟩
+
+open Pinwheel.Program Pinwheel.Program.StreamingI2CWaveform in
+/-- I²C: the bus modes a profile meets at this clock. -/
+def i2cRow (hz : Nat) (profile : StreamingReady.I2cProfile) : GuideRow :=
+  let met := (modes.filter fun m => decide (Meets profile m hz)).map (·.name)
+  ⟨"i2c", hz, [("low_cycles", profile.lowDuration.val + 1), ("high_cycles", profile.highDuration.val + 1)],
+    [("stretch_tolerance_core_clocks", StreamingI2CClock.tolerance profile)], met, !met.isEmpty,
+    ``StreamingI2CWaveform.low_window⟩
+
+/-- Fixed-clock demos: usable only at their contract's clock. -/
+def fixedRow (program : String) (hz : Nat) (contract : ProgramClock) : GuideRow :=
+  ⟨program, hz, [], [("required_core_hz", contract.coreHz)], [], hz == contract.coreHz, contract.contract⟩
+
+def boardClocks : List Nat := [4000000, 50000000]
+
+open Pinwheel.Program.StreamingI2CWaveform in
+def guide : List GuideRow :=
+  [uartRow 4000000 115200, uartRow 4000000 9600, serialRow "spi" 4000000 4, serialRow "jtag" 4000000 4,
+   i2cRow 4000000 .standard, i2cRow 4000000 fastModeAt4MHz, i2cRow 4000000 standardModeAt4MHz,
+   uartRow 50000000 115200, uartRow 50000000 9600, serialRow "spi" 50000000 3, serialRow "jtag" 50000000 3,
+   i2cRow 50000000 .standard, i2cRow 50000000 standardModeAt50MHz] ++
+  (boardClocks.flatMap fun hz => programClocks.map fun c => fixedRow c.program hz c)
+
+/-- The guide's verdicts, checked by the kernel. -/
+theorem guide_usable :
+    (guide.filter (·.usable)).map (fun r => (r.program, r.coreHz)) =
+      [("uart_rx", 4000000), ("uart_rx", 4000000), ("spi", 4000000), ("jtag", 4000000),
+       ("i2c", 4000000), ("i2c", 4000000), ("i2c", 4000000),
+       ("uart_rx", 50000000), ("spi", 50000000), ("jtag", 50000000), ("i2c", 50000000),
+       ("can_receive", 4000000), ("ps2_receive", 4000000)] := by
+  decide
 
 end Pinwheel.Hardware.StreamingReady.ChipManifest
