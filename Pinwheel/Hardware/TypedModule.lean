@@ -47,6 +47,11 @@ private def portsJson (ports : Array (String × Nat)) (registers : Bool := false
     Json.mkObj ([("index", toJson index), ("width", toJson width), ("name", toJson name)] ++
       (if registers then [("reference", toJson name)] else [])))
 
+/-- Check every declared width without building a circuit expression or emitting MLIR. -/
+def validateWidths (m : TypedModule I R O) : Except String Unit := do
+  for (name, width) in identifiers m.inputs ++ identifiers m.registers Emit.registerSymbol ++ identifiers m.outputs do
+    if width == 0 then throw s!"Zero-width signal: {name}"
+
 /-- Emit RTL source and its readback descriptor together. The current readback
 flow uses a single clock, positive widths and simple identifiers. -/
 def emit (m : TypedModule I R O) : Except String Export := do
@@ -55,9 +60,9 @@ def emit (m : TypedModule I R O) : Except String Export := do
   let outputs := identifiers m.outputs
   unless identifier m.name do throw s!"Invalid module name: {m.name}"
   if registers.isEmpty then throw "Synchronous module export requires at least one register"
-  for (name, width) in inputs ++ registers ++ outputs do
+  m.validateWidths
+  for (name, _) in inputs ++ registers ++ outputs do
     unless identifier name do throw s!"Invalid signal name: {name}"
-    if width == 0 then throw s!"Zero-width signal: {name}"
   let names := "clk" :: (inputs ++ registers ++ outputs).toList.map Prod.fst
   if names.length != names.eraseDups.length then
     throw "Signal names must be distinct across inputs, outputs, registers, and clk"

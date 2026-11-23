@@ -8,6 +8,7 @@ privileged conformance, ACT4 coverage closure, or emitted-RTL validation.
 """
 from __future__ import annotations
 import argparse
+import errno
 import hashlib
 import importlib.util
 import json
@@ -21,6 +22,7 @@ import struct
 import subprocess
 import sys
 import tarfile
+import tempfile
 import time
 import urllib.request
 import isa_reference_check as ref
@@ -53,31 +55,67 @@ def hashes(paths): return {str(p):sha(p) for p in sorted(paths)}
 def source_hashes(): return {str(p.relative_to(ROOT)):sha(p) for p in source_paths()}
 
 
+def ensure_archive(entry, fetch):
+    archive = CACHE / entry["filename"]
+    if archive.exists() and sha(archive) == entry["sha256"]:
+        return archive
+    if not fetch:
+        if archive.exists():
+            raise RuntimeError(f"Archive hash mismatch: {archive}")
+        raise RuntimeError(f"Missing {archive}; use --fetch")
+    with tempfile.TemporaryDirectory(dir=CACHE) as staging:
+        pending = Path(staging) / "download"
+        with urllib.request.urlopen(entry["url"], timeout=120) as response, pending.open("wb") as out:
+            shutil.copyfileobj(response, out)
+        if sha(pending) != entry["sha256"]:
+            raise RuntimeError(f"Archive hash mismatch: {archive}")
+        pending.replace(archive)
+    return archive
+
+
+def verify_extraction(directory, root, tar, members):
+    for member in members:
+        path = directory / member.name
+        if not path.resolve().is_relative_to((directory / root).resolve()):
+            raise RuntimeError('Escaping archive link')
+        if member.issym():
+            if not path.is_symlink() or os.readlink(path) != member.linkname:
+                raise RuntimeError('Changed archive symlink')
+        elif member.isfile() or member.islnk():
+            if not path.is_file() or sha(path) != hashlib.sha256(tar.extractfile(member).read()).hexdigest():
+                raise RuntimeError(f'Changed extracted file {path}')
+
+
+def ensure_extraction(archive, root):
+    target = CACHE / root
+    with tarfile.open(archive) as tar:
+        members = tar.getmembers()
+        for member in members:
+            parts = Path(member.name).parts
+            if not parts or parts[0] != root or '..' in parts or not (
+                    member.isdir() or member.isfile() or member.issym() or member.islnk()):
+                raise RuntimeError('Unsafe dependency archive member')
+        if not target.exists():
+            with tempfile.TemporaryDirectory(dir=CACHE) as staging:
+                directory = Path(staging)
+                tar.extractall(directory, filter='data')
+                verify_extraction(directory, root, tar, members)
+                try:
+                    (directory / root).rename(target)
+                    return
+                except OSError as error:
+                    # Another process can publish the same tree before this rename.
+                    if error.errno not in (errno.ENOTEMPTY, errno.EEXIST):
+                        raise
+        verify_extraction(CACHE, root, tar, members)
+
+
 def dependencies(fetch=False):
     pin=json.loads(MANIFEST.read_text())
     CACHE.mkdir(parents=True,exist_ok=True)
     for key in ('upstream','compiler'):
-        e=pin[key]; archive=CACHE/e['filename']
-        if not archive.exists():
-            if not fetch: raise RuntimeError(f'Missing {archive}; use --fetch')
-            with urllib.request.urlopen(e['url'],timeout=120) as response,archive.open('wb') as out:
-                shutil.copyfileobj(response,out)
-        if sha(archive)!=e['sha256']: raise RuntimeError(f'Archive hash mismatch: {archive}')
-        with tarfile.open(archive) as tar:
-            members=tar.getmembers()
-            for m in members:
-                parts=Path(m.name).parts
-                if not parts or parts[0]!=e['root'] or '..' in parts or not (m.isdir() or m.isfile() or m.issym() or m.islnk()):
-                    raise RuntimeError('Unsafe dependency archive member')
-            if not (CACHE/e['root']).exists(): tar.extractall(CACHE,filter='data')
-            for m in members:
-                p=CACHE/m.name
-                if not p.resolve().is_relative_to((CACHE/e['root']).resolve()): raise RuntimeError('Escaping archive link')
-                if m.issym():
-                    if not p.is_symlink() or os.readlink(p)!=m.linkname: raise RuntimeError('Changed archive symlink')
-                elif m.isfile() or m.islnk():
-                    if not p.is_file() or hashlib.sha256(p.read_bytes()).digest()!=hashlib.sha256(tar.extractfile(m).read()).digest():
-                        raise RuntimeError(f'Changed extracted file {p}')
+        entry = pin[key]
+        ensure_extraction(ensure_archive(entry, fetch), entry["root"])
     reference,binary=ref.dependencies(fetch)
     return pin,CACHE/pin['upstream']['root'],CACHE/pin['compiler']['root'],reference,binary
 

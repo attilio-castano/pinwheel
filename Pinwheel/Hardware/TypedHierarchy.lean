@@ -97,6 +97,9 @@ structure Layout where
 may supply existing net labels when replay or tooling already names those nets. -/
 def layout (h : TypedHierarchy I R O W)
     (wireLabel : {b : Nat} → W b → String := h.netName) : Except String Layout := do
+  h.flat.validateWidths
+  for instance_ in h.instances do
+    instance_.design.validateWidths
   unless TypedModule.identifier h.name && h.name != h.flat.name do
     throw "Invalid or conflicting hierarchy module name"
   let entries := h.stateEntries

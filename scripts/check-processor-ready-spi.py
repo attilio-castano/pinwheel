@@ -165,6 +165,8 @@ def main():
             check(control, requests, collect, REPLIES[0] ^ 0xffffffff)
             run([tools["vvp"], exe, f"+mode={2 - args.mode}", f"+reply={REPLIES[0]:x}"],
                 "opposite-polarity-" + store, reject="bad select")
+            run([tools["vvp"], exe, f"+mode={args.mode}", f"+reply={REPLIES[0]:x}", "+drop-drive"],
+                "lost-drive-" + store, reject="SPI pads lost drive or have unknown levels")
         if report["source_sha256"] != sources(tb) or report["tools"] != {str(p): sha(p) for p in paths}:
             raise ValueError("Source or tool inputs changed during replay")
         report['passed'] = True

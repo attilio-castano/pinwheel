@@ -257,10 +257,11 @@ def main():
         report["cadical_sha256"] = rr.sha(cadical)
         run(["python3", "-B", "test/test_readback_guard_proofs.py"], "guard-regression-tests")
         run(
-            ["lake", "build", "Pinwheel.Hardware.Readback.Mux", "Pinwheel.Hardware.Readback.Bits",
+            ["lake", "build", "Pinwheel.Hardware.Processor.CoreCertified", "Pinwheel.Hardware.Processor.SystemExport",
+             "Pinwheel.Hardware.Readback.Mux", "Pinwheel.Hardware.Readback.Bits",
              "Pinwheel.Hardware.Readback.SourceBinding"],
-            "mux-helper-build",
-            timeout=120,
+            "core-proof-dependencies",
+            timeout=900,
         )
         run(
             [

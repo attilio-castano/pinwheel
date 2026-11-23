@@ -1,11 +1,55 @@
 import copy
+import hashlib
+import io
 import json
 from pathlib import Path
 import struct
 import sys
+import tarfile
+import tempfile
 import unittest
+from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'scripts'))
 import architecture_test_check as a
+
+class DependencyCacheTests(unittest.TestCase):
+    def test_interrupted_download_can_retry(self):
+        class Interrupted(io.BytesIO):
+            def read(self, size=-1):
+                if self.tell():
+                    raise OSError("interrupted")
+                return super().read(size)
+
+        payload = b"verified archive"
+        entry = dict(filename="source.tar", url="https://example.invalid/source.tar",
+                     sha256=hashlib.sha256(payload).hexdigest())
+        with tempfile.TemporaryDirectory() as tmp, patch.object(a, "CACHE", Path(tmp)):
+            with patch.object(a.urllib.request, "urlopen", side_effect=[Interrupted(b"partial"), io.BytesIO(payload)]):
+                with self.assertRaisesRegex(OSError, "interrupted"):
+                    a.ensure_archive(entry, True)
+                self.assertEqual(list(Path(tmp).iterdir()), [])
+                # A partial archive left by an older version can also be recovered.
+                (Path(tmp) / entry["filename"]).write_bytes(b"partial")
+                self.assertEqual(a.ensure_archive(entry, True).read_bytes(), payload)
+                self.assertEqual(a.ensure_archive(entry, False).read_bytes(), payload)
+
+    def test_interrupted_extraction_can_retry(self):
+        def interrupt(tar, directory, **kwargs):
+            tar.extract("source/file", directory, **kwargs)
+            raise OSError("interrupted")
+
+        with tempfile.TemporaryDirectory() as tmp, patch.object(a, "CACHE", Path(tmp)):
+            archive = Path(tmp) / "source.tar"
+            with tarfile.open(archive, "w") as tar:
+                item = tarfile.TarInfo("source/file")
+                item.size = 2
+                tar.addfile(item, io.BytesIO(b"ok"))
+            with patch.object(tarfile.TarFile, "extractall", interrupt):
+                with self.assertRaisesRegex(OSError, "interrupted"):
+                    a.ensure_extraction(archive, "source")
+            self.assertFalse((Path(tmp) / "source").exists())
+            a.ensure_extraction(archive, "source")
+            self.assertEqual((Path(tmp) / "source/file").read_bytes(), b"ok")
 
 class ArchitectureAdapterTests(unittest.TestCase):
     def setUp(self):
