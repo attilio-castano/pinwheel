@@ -1,0 +1,25 @@
+{
+  "model": "riscv/sail-riscv",
+  "release": "0.16",
+  "commit": "e5acebb04ff573e93203596486b831a5974117c3",
+  "upstream": "https://github.com/riscv/sail-riscv",
+  "archive": {
+    "url": "https://github.com/riscv/sail-riscv/releases/download/0.16/sail-riscv-Mac-arm64.tar.gz",
+    "filename": "sail-riscv-Mac-arm64-0.16.tar.gz",
+    "sha256": "4684b20d263785ce9cbb4956d526c559582958ea3f14fb73e76a8ac2d6f82eaf",
+    "root": "sail-riscv-Mac-arm64"
+  },
+  "source": {
+    "url": "https://codeload.github.com/riscv/sail-riscv/tar.gz/e5acebb04ff573e93203596486b831a5974117c3",
+    "filename": "sail-riscv-source-e5acebb.tar.gz",
+    "sha256": "ed2a584601eb2961fde4dd17eb73695af46efa17a8042c50fa3179ddfaeb6ab2",
+    "root": "sail-riscv-e5acebb04ff573e93203596486b831a5974117c3"
+  },
+  "native_platform": "Darwin-arm64",
+  "isa_target": "RV32I 2.1",
+  "primary_sources": [
+    "https://github.com/riscv/sail-riscv/tree/e5acebb04ff573e93203596486b831a5974117c3/model/extensions/I",
+    "https://github.com/riscv/sail-riscv/blob/e5acebb04ff573e93203596486b831a5974117c3/c_emulator/gdb/README.md",
+    "https://github.com/riscv/sail-riscv/blob/e5acebb04ff573e93203596486b831a5974117c3/c_emulator/gdb/target_regs.cpp"
+  ]
+}

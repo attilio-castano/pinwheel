@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-def miter(rb, source, actual):
+def miter(rb, source, actual, *, invert_first_output=False):
     lines = ["(set-logic QF_BV)"]
     for name, (width, _) in {**rb.INPUTS, **rb.REGISTERS}.items():
         lines.append(f"(declare-fun {name} () (_ BitVec {width}))")
@@ -42,7 +42,26 @@ def miter(rb, source, actual):
     ):
         if names.keys() != lhs.keys() or names.keys() != rhs.keys():
             raise ValueError("Incomplete endpoint inventory")
-        for name in names:
-            differences.append(f"(distinct {left[lhs[name]]} {right[rhs[name]]})")
+        for j, name in enumerate(names):
+            observed = right[rhs[name]]
+            if invert_first_output and kind == "output" and j == 0:
+                observed = f"(bvnot {observed})"
+            differences.append(f"(distinct {left[lhs[name]]} {observed})")
     lines.extend([f"(assert (or {' '.join(differences)}))", "(check-sat)"])
     return "\n".join(lines) + "\n"
+
+
+def check(run, tools, rb, source, actual, directory):
+    for mutated, expected in ((False, "unsat"), (True, "sat")):
+        label = "core-miter" + ("-inverted-output" if mutated else "")
+        path = directory / (label + ".smt2")
+        path.write_text(miter(rb, source, actual, invert_first_output=mutated))
+        output = run([tools["z3"], "-smt2", path], label, timeout=180)
+        if output.strip() != expected:
+            raise ValueError(f"{label} expected {expected}, received {output.strip()}")
+    return {
+        "next_registers": len(rb.REGISTERS),
+        "outputs": len(rb.OUTPUTS),
+        "all_state_mismatch": "unsat",
+        "inverted_output_mismatch": "sat",
+    }

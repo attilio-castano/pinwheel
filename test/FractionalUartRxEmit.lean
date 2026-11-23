@@ -3,6 +3,14 @@ import Pinwheel.Hardware.Uart.FractionalRx
 open Lean Pinwheel.Hardware
 open Pinwheel.Hardware.Uart.FractionalRx
 
+private def rejectsZeroWidth (result : Except String α) : Bool :=
+  match result with
+  | .error msg => msg == "Zero-width signal: half_num"
+  | .ok _ => false
+
+#guard rejectsZeroWidth (hierarchy 0).layout
+#guard rejectsZeroWidth (hierarchy 0).emit
+
 private def checkedInput (d : Interface P) (row : Array Nat) : Except String (Values P) := do
   unless row.size == d.size do throw "Wrong input vector length"
   for (n, ⟨width, port⟩) in row.zip d.ports do

@@ -27,8 +27,12 @@ def sources(roots=("test/SwitchCircuitEmit.lean", "Pinwheel/Hardware/Switch/Cert
         if path in found:
             continue
         found.add(path)
-        for module in re.findall(r"^import (Pinwheel\.[A-Za-z0-9_.]+)$", path.read_text(), re.M):
-            pending.append(ROOT / (module.replace(".", "/") + ".lean"))
+        for line in path.read_text().splitlines():
+            match = re.match(r"^import\s+(.+)$", line)
+            if match:
+                for module in match[1].split("--", 1)[0].split():
+                    if module == "Pinwheel" or module.startswith(("Pinwheel.", "test.")):
+                        pending.append(ROOT / (module.replace(".", "/") + ".lean"))
     found.update(ROOT / path for path in (
         "scripts/check-switch-artifact.py", "scripts/check-round-robin-circuit.py", "scripts/validation_run.py",
         "lakefile.toml", "lake-manifest.json", "lean-toolchain", "tools/hardware-toolchain.json"))

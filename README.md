@@ -53,8 +53,10 @@ part of the record.
 
 ## Where things stand
 
-A [reusable Lean stream-hardware library](docs/engine/lean-stream-hardware.md)
-adds parameterized FIFOs and elastic pipelines, compositional transaction and
+A [reusable Lean hardware library](docs/engine/lean-hardware-library.md)
+provides typed interfaces, circuits and implementation certificates. Its
+[stream foundation](docs/engine/lean-stream-hardware.md) adds parameterized FIFOs
+and elastic pipelines, compositional transaction and
 timing proofs, and checks of freshly emitted flat and hierarchical RTL.
 [Typed bundles and fork/join graphs](docs/engine/lean-stream-graphs.md) extend it
 with named payload fields and proved result pairing across unequal branch depths.
