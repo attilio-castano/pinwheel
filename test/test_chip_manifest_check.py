@@ -97,6 +97,51 @@ class ChipManifestCheck(unittest.TestCase):
                                                                ('b.py', 'nothing')])
         self.assertEqual(hits, {'a.py': 1})
 
+    def test_can_clock_contract(self):
+        can = (ROOT / 'scripts/streaming_ready_can.py').read_text()
+        report = C.Report()
+        C.check_program_clocks(report, self.manifest, [('scripts/streaming_ready_can.py', can)])
+        self.assertEqual(report.mismatches, [])
+        self.assertEqual({row['field'] for row in report.rows if row['kind'] == 'ok'}, {'CORE_HZ', 'BIT_RATE'})
+        changed = can.replace('CORE_HZ = 4_000_000', 'CORE_HZ = 8_000_000')
+        self.assertNotEqual(changed, can)
+        report = C.Report()
+        C.check_program_clocks(report, self.manifest, [('scripts/streaming_ready_can.py', changed)])
+        self.assertEqual(self.fields(report), {('scripts/streaming_ready_can.py', 'CORE_HZ')})
+
+    def test_uncontracted_clock_warns(self):
+        report = C.Report()
+        C.check_program_clocks(report, self.manifest, [('scripts/demo.py', 'CORE_HZ = 60_000_000\n'),
+                                                       ('scripts/slow.py', 'CORE_HZ = 1_000_000\n')])
+        self.assertEqual(report.mismatches, [])
+        reasons = {row['copy']: row['reason'] for row in report.rows if row['kind'] == 'warning'}
+        self.assertIn('exceeds the 50 MHz target', reasons['scripts/demo.py'])
+        self.assertNotIn('exceeds', reasons['scripts/slow.py'])
+
+    def test_can_script_rejects_unproved_clock(self):
+        source = (ROOT / 'scripts/streaming_ready_can.py').read_text()
+        changed = source.replace('CORE_HZ = 4_000_000', 'CORE_HZ = 50_000_000')
+        with self.assertRaisesRegex(ValueError, '32 core clocks per bit'):
+            exec(compile(changed, 'streaming_ready_can.py', 'exec'), {'__name__': 'can_variant'})
+
+    def test_ethernet_clock_contract(self):
+        path = 'scripts/streaming_ready_ethernet.py'
+        source = (ROOT / path).read_text()
+        report = C.Report()
+        C.check_program_clocks(report, self.manifest, [(path, source)])
+        self.assertEqual(report.mismatches, [])
+        contract = {row['program']: row for row in self.manifest['program_clocks']}['ethernet_sni_tx']
+        self.assertEqual((contract['core_hz'], contract['cycles_per_bit'], contract['within_target']),
+                         (60000000, 6, False))
+        changed = source.replace('CORE_HZ = 60_000_000', 'CORE_HZ = 50_000_000')
+        with self.assertRaisesRegex(ValueError, 'six core clocks per bit'):
+            exec(compile(changed, 'streaming_ready_ethernet.py', 'exec'), {'__name__': 'ethernet_variant'})
+
+    def test_over_target_contract_warns(self):
+        report, _ = C.run(self.manifest)
+        warnings = {(row['copy'], row['field']) for row in report.rows if row['kind'] == 'warning'}
+        self.assertIn(('manifest program_clocks', 'ethernet_sni_tx'), warnings)
+
     def test_verilog_bits(self):
         widths = {'miso': 4, 'busy': 1}
         self.assertEqual(C.verilog_bits("{2'b0, busy, miso[3:2]}", widths),

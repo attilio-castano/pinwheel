@@ -5,8 +5,10 @@ reads files; it never rewrites a copy. Each finding names the copy, the field,
 the manifest value and the value found. Exit status 1 means a copy disagrees.
 
 A finding of kind "note" is a known, deliberate difference (for example the
-committed 6x4 physical baseline that preparation patches to 8x4). Notes do not
-fail the check, but they are printed so the difference stays visible.
+committed 6x4 physical baseline that preparation patches to 8x4). A "warning"
+is a gap the manifest cannot settle yet, such as a demo that assumes a core
+clock with no Lean clock contract. Neither fails the check, but both are
+printed so the difference stays visible.
 """
 from __future__ import annotations
 
@@ -44,6 +46,10 @@ class Report:
 
     def note(self, copy, field, expected, actual, reason):
         self.rows.append(dict(copy=copy, field=field, kind='note', expected=expected,
+                              actual=actual, reason=reason))
+
+    def warning(self, copy, field, expected, actual, reason):
+        self.rows.append(dict(copy=copy, field=field, kind='warning', expected=expected,
                               actual=actual, reason=reason))
 
     def missing(self, copy, field, reason):
@@ -248,6 +254,34 @@ def check_state_literals(report, manifest, files):
     return hits
 
 
+# Scripts whose clock constants have a Lean clock contract in the manifest.
+CONTRACTED_CLOCKS = {'scripts/streaming_ready_can.py': 'can_receive',
+                     'scripts/streaming_ready_ethernet.py': 'ethernet_sni_tx'}
+
+
+def check_program_clocks(report, manifest, files):
+    """Compare demo clock constants with the manifest's program clock contracts.
+
+    `files` holds (path, text) for tracked scripts. A module-level CORE_HZ in a
+    script without a contract is a warning, with the target excess called out."""
+    contracts = {row['program']: row for row in manifest.get('program_clocks', [])}
+    limit = manifest['targets']['max_core_hz']
+    for path, text in files:
+        constants = {name: int(value.replace('_', '')) for name, value in
+                     re.findall(r'^(CORE_HZ|BIT_RATE|BIT_CYCLES)\s*=\s*([\d_]+)\s*$', text, re.M)}
+        if 'CORE_HZ' not in constants:
+            continue
+        program = CONTRACTED_CLOCKS.get(path)
+        if program in contracts:
+            contract = contracts[program]
+            report.compare(path, 'CORE_HZ', contract['core_hz'], constants['CORE_HZ'])
+            report.compare(path, 'BIT_RATE', contract['bit_rate'], constants.get('BIT_RATE'))
+            continue
+        core = constants['CORE_HZ']
+        excess = f'; {core / 1e6:g} MHz exceeds the {limit / 1e6:g} MHz target' if core > limit else ''
+        report.warning(path, 'CORE_HZ', None, core, 'no Lean clock contract' + excess)
+
+
 # ---------------------------------------------------------------- driver
 
 def emit_manifest(path):
@@ -292,7 +326,17 @@ def run(manifest):
 
     tracked = subprocess.run(['git', 'ls-files', 'scripts/*.py', 'test/*.py'], cwd=ROOT, check=True,
                              capture_output=True, text=True).stdout.split()
-    hits = check_state_literals(report, manifest, [(path, (ROOT / path).read_text()) for path in tracked])
+    texts = [(path, (ROOT / path).read_text()) for path in tracked]
+    hits = check_state_literals(report, manifest, texts)
+    check_program_clocks(report, manifest, [(path, text) for path, text in texts if path.startswith('scripts/')])
+    limit = manifest['targets']['max_core_hz']
+    for contract in manifest.get('program_clocks', []):
+        if contract['core_hz'] > limit:
+            report.warning('manifest program_clocks', contract['program'], limit, contract['core_hz'],
+                           f"Lean contract needs {contract['core_hz'] / 1e6:g} MHz, above the "
+                           f"{limit / 1e6:g} MHz target")
+        else:
+            report.compare('manifest program_clocks', f"{contract['program']} within target", True, True)
     return report, hits
 
 
@@ -318,8 +362,10 @@ def main(argv=None):
             reason = f"  ({row['reason']})" if row.get('reason') else ''
             print(f"{row['kind'].upper():8} {row['copy']} :: {row['field']}: "
                   f"manifest={row['expected']!r} found={row['actual']!r}{reason}")
-        counts = {kind: sum(row['kind'] == kind for row in report.rows) for kind in ('ok', 'note', 'mismatch')}
-        print(f"{manifest['top']}: {counts['ok']} agree, {counts['note']} notes, {counts['mismatch']} mismatches")
+        counts = {kind: sum(row['kind'] == kind for row in report.rows)
+                  for kind in ('ok', 'note', 'warning', 'mismatch')}
+        print(f"{manifest['top']}: {counts['ok']} agree, {counts['note']} notes, "
+              f"{counts['warning']} warnings, {counts['mismatch']} mismatches")
     return 1 if report.mismatches else 0
 
 

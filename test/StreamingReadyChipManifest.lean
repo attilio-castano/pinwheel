@@ -25,7 +25,9 @@ private def wire (inputSide : Bool) (x : Wire) : Json :=
 private def theorems : List Name :=
   [``labels_match_interface, ``inputWires_canonical, ``outputWires_canonical, ``zeroBits_canonical,
    ``initialize_canonical, ``input_bit, ``pad_bit, ``release_state_bits,
-   ``TinyWiring.Certificate.step_eq, ``TinyWiring.Certificate.observe_eq]
+   ``TinyWiring.Certificate.step_eq, ``TinyWiring.Certificate.observe_eq,
+   ``programClocks_over_target, ``Pinwheel.Program.StreamingCANClock.captured,
+   ``Pinwheel.Program.StreamingEthernetClock.phyClock]
 
 def manifest (a : Nat) : Json :=
   let top := TinyWiring.canonical a
@@ -62,7 +64,12 @@ def manifest (a : Nat) : Json :=
     ("targets", Json.mkObj [
       ("declared_not_proved", toJson true),
       ("tiles", toJson targets.tiles),
-      ("clock_period_ns", toJson targets.clockPeriodNs)]),
+      ("clock_period_ns", toJson targets.clockPeriodNs),
+      ("max_core_hz", toJson targetMaxHz)]),
+    ("program_clocks", Json.arr (programClocks.map fun p => Json.mkObj [
+      ("program", toJson p.program), ("core_hz", toJson p.coreHz), ("bit_rate", toJson p.bitRate),
+      ("cycles_per_bit", toJson p.cyclesPerBit), ("skew_samples", toJson p.skewSamples),
+      ("within_target", toJson p.withinTarget)]).toArray),
     ("lean_theorems", toJson (theorems.map toString))]
 
 def main (args : List String) : IO Unit := do

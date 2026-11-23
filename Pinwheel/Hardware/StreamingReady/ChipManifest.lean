@@ -1,6 +1,8 @@
 import Pinwheel.Hardware.StreamingReady.TinyWiring
 import Pinwheel.Hardware.StreamingReady.CoreEmit
 import Pinwheel.Hardware.Streaming.FrontendEmit
+import Pinwheel.Program.StreamingCANClock
+import Pinwheel.Program.StreamingEthernetClock
 
 /-! A machine-readable description of the sampled-ready Tiny Tapeout top.
 
@@ -230,5 +232,38 @@ structure Targets where
   clockPeriodNs : Nat
 
 def targets : Targets := ⟨"8x4", 20⟩
+
+/-! ## Program clock contracts
+
+Programs are proved in core clock cycles. A clock contract says which core
+clock gives those cycles their intended real-time meaning. Each entry here is
+backed by a theorem that derives the cycle-level peer contract from a
+real-time bus description at that clock. -/
+
+structure ProgramClock where
+  program : String
+  coreHz : Nat
+  bitRate : Nat
+  cyclesPerBit : Nat
+  skewSamples : Nat
+
+def programClocks : List ProgramClock :=
+  [⟨"can_receive", Pinwheel.Program.StreamingCANClock.coreHz, Pinwheel.Program.StreamingCANClock.bitRate,
+    Pinwheel.Program.StreamingCANClock.cyclesPerBit, Pinwheel.Program.StreamingCANClock.skewSamples⟩,
+   -- Skew zero: every TX_CLK rise must stay in one fixed sample window, so
+   -- TX_CLK must be locked to the core clock (`StreamingEthernetClock`).
+   ⟨"ethernet_sni_tx", Pinwheel.Program.StreamingEthernetClock.coreHz,
+    Pinwheel.Program.StreamingEthernetClock.bitRate, Pinwheel.Program.StreamingEthernetClock.cyclesPerBit, 0⟩]
+
+/-- The fastest core clock the declared period allows, rounded down. -/
+def targetMaxHz : Nat := 1000000000 / targets.clockPeriodNs
+
+def ProgramClock.withinTarget (p : ProgramClock) : Bool := p.coreHz ≤ targetMaxHz
+
+/-- Exactly one contracted program needs a faster core clock than the declared
+target: the Ethernet transmit image (60 MHz against 50 MHz). -/
+theorem programClocks_over_target :
+    (programClocks.filter (!·.withinTarget)).map (·.program) = ["ethernet_sni_tx"] := by
+  decide
 
 end Pinwheel.Hardware.StreamingReady.ChipManifest
