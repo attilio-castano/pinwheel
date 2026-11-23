@@ -311,7 +311,7 @@ def check_board_guide(report, manifest):
 def check_bringup_i2c_modes(report, manifest, modes):
     """Each named bring-up I2C mode must be a 4 MHz guide row that meets that mode."""
     copy = 'scripts/streaming_8x4_bringup.py I2C_MODES'
-    rows = {(r['setting'].get('low_cycles'), r['setting'].get('high_cycles')): r
+    rows = {(r['setting'].get('low_cycles'), r['setting'].get('high_cycles'), r['setting'].get('wait_budget')): r
             for r in manifest.get('board_clock_guide', []) if r['program'] == 'i2c' and r['core_hz'] == 4000000}
     for name, cycles in modes.items():
         row = rows.get(cycles)

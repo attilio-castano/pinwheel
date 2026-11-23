@@ -345,7 +345,8 @@ open Pinwheel.Program Pinwheel.Program.StreamingI2CWaveform in
 /-- I²C: the bus modes a profile meets at this clock. -/
 def i2cRow (hz : Nat) (profile : StreamingReady.I2cProfile) : GuideRow :=
   let met := (modes.filter fun m => decide (Meets profile m hz)).map (·.name)
-  ⟨"i2c", hz, [("low_cycles", profile.lowDuration.val + 1), ("high_cycles", profile.highDuration.val + 1)],
+  ⟨"i2c", hz, [("low_cycles", profile.lowDuration.val + 1), ("high_cycles", profile.highDuration.val + 1),
+      ("wait_budget", profile.budgetMinusOne.val + 1)],
     [("stretch_tolerance_core_clocks", StreamingI2CClock.tolerance profile)], met, !met.isEmpty,
     ``StreamingI2CWaveform.low_window⟩
 

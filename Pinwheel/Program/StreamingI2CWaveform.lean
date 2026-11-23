@@ -346,17 +346,21 @@ theorem standard_at_4MHz :
   decide
 
 /-- Standard mode is reachable at the 20 ns target with long cell durations
-(LOW 256 and HIGH 240 clocks in the Python builder). -/
-def standardModeAt50MHz : I2cProfile := ⟨255, 239, 30, 1, 28, by decide, by decide, by decide, by decide⟩
+(LOW 256 and HIGH 240 clocks in the Python builder). Like the other
+mode-specific profiles it uses the largest poll budget (255), so a target may
+stretch for 252 core clocks: longer SCL phases go with longer stretches. -/
+def standardModeAt50MHz : I2cProfile := ⟨255, 239, 254, 1, 28, by decide, by decide, by decide, by decide⟩
 
 theorem standardModeAt50MHz_meets : Meets standardModeAt50MHz standardMode 50000000 := by
   decide
 
-/-- Standard mode at 4 MHz: LOW 18 and HIGH 18 clocks in the Python builder. -/
-def standardModeAt4MHz : I2cProfile := ⟨17, 17, 30, 1, 28, by decide, by decide, by decide, by decide⟩
+/-- Standard mode at 4 MHz: LOW 18 and HIGH 18 clocks and a 255-poll budget in
+the Python builder. -/
+def standardModeAt4MHz : I2cProfile := ⟨17, 17, 254, 1, 28, by decide, by decide, by decide, by decide⟩
 
-/-- Fast mode at 4 MHz: LOW 5 and HIGH 3 clocks in the Python builder. -/
-def fastModeAt4MHz : I2cProfile := ⟨4, 2, 30, 1, 28, by decide, by decide, by decide, by decide⟩
+/-- Fast mode at 4 MHz: LOW 5 and HIGH 3 clocks and a 255-poll budget in the
+Python builder. -/
+def fastModeAt4MHz : I2cProfile := ⟨4, 2, 254, 1, 28, by decide, by decide, by decide, by decide⟩
 
 theorem profiles_at_4MHz :
     Meets standardModeAt4MHz standardMode 4000000 ∧ Meets fastModeAt4MHz fastMode 4000000 := by

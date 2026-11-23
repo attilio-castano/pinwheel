@@ -183,7 +183,7 @@ class ChipManifestCheck(unittest.TestCase):
         self.assertTrue(uart['usable'])
         self.assertFalse(rows[('uart_rx', 50000000, (('baud', 9600), ('quarter_cycles', 1302)))]['usable'])
         self.assertEqual(rows[('spi', 50000000, (('half_cycles', 3),))]['result']['peer_output_window_ns'], 20)
-        self.assertEqual(rows[('i2c', 4000000, (('high_cycles', 18), ('low_cycles', 18)))]['meets'],
+        self.assertEqual(rows[('i2c', 4000000, (('high_cycles', 18), ('low_cycles', 18), ('wait_budget', 255)))]['meets'],
                          ['standard', 'fast', 'fast_plus'])
         report = C.Report()
         C.check_board_guide(report, self.manifest)
@@ -198,10 +198,10 @@ class ChipManifestCheck(unittest.TestCase):
         self.assertEqual(report.mismatches, [])
         self.assertEqual(len(report.rows), 3)
         report = C.Report()
-        C.check_bringup_i2c_modes(report, self.manifest, {'standard': (4, 4)})
+        C.check_bringup_i2c_modes(report, self.manifest, {'standard': (4, 4, 31)})
         self.assertEqual({field for _, field in self.fields(report)}, {'standard meets standard mode'})
         report = C.Report()
-        C.check_bringup_i2c_modes(report, self.manifest, {'fast': (6, 6)})
+        C.check_bringup_i2c_modes(report, self.manifest, {'fast': (5, 3, 31)})
         self.assertEqual({field for _, field in self.fields(report)}, {'fast'})
 
     def test_over_target_contract_warns(self):

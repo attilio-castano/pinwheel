@@ -25,18 +25,21 @@ UART_QUARTERS = 4
 UART_BYTE = 0x96
 SPI_BITS = 64
 I2C_ADDRESS = 0x52
-# I2C SCL timing (low_cycles, high_cycles) by bus mode at a 4 MHz core clock,
-# from the board clock guide (docs/board-clock-guide.md, Lean `guide`).
+# I2C timing (low_cycles, high_cycles, wait_budget) by bus mode at a 4 MHz core
+# clock, from the board clock guide (docs/board-clock-guide.md, Lean `guide`).
 # "default" keeps the frozen bring-up program, which meets only Fast-mode Plus.
-I2C_MODES = {"default": (4, 4), "fast": (5, 3), "standard": (18, 18)}
+# The mode-specific programs use the largest poll budget: a target may then
+# stretch SCL for 252 core clocks (63 us), since slower modes stretch longer.
+I2C_MODES = {"default": (4, 4, 31), "fast": (5, 3, 255), "standard": (18, 18, 255)}
 
 
 def fixture(i2c_mode="default"):
-    low_cycles, high_cycles = I2C_MODES[i2c_mode]
-    i2c = i2c_image(low_cycles, high_cycles)
+    low_cycles, high_cycles, wait_budget = I2C_MODES[i2c_mode]
+    i2c = i2c_image(low_cycles, high_cycles, wait_budget)
     # Non-default modes say which timing they carry; the default output stays byte-identical.
     timing = {} if i2c_mode == "default" else {"i2c_mode": i2c_mode, "low_cycles": low_cycles,
-                                                "high_cycles": high_cycles, "core_hz": 4_000_000}
+                                                "high_cycles": high_cycles, "wait_budget": wait_budget,
+                                                "core_hz": 4_000_000}
 
     spi_tx, spi_rx, _, _ = stream_payloads("spi", SPI_BITS)
     i2c_write, i2c_read = i2c_payloads()
@@ -112,17 +115,20 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def simulate(vvp, executable, expected_digest):
+def simulate(vvp, executable, expected_digest, i2c_mode="default"):
     if digest(executable) != expected_digest:
         raise ValueError("Pin simulator model differs from the supplied SHA-256")
-    profiles = fixture()
+    profiles = fixture(i2c_mode)
+    # The default leaves image=None so the frozen run is unchanged.
+    i2c = None if i2c_mode == "default" else i2c_image(*I2C_MODES[i2c_mode])
     with TemporaryDirectory(prefix="pinwheel-bringup-") as temporary:
         scratch = Path(temporary)
         cases = {"uart_rx": simulate_uart(vvp, executable, scratch / "uart-wire.bin"),
                  "spi_duplex": simulate_spi(vvp, executable)}
         for direction, profile in (("read", "varying"), ("write", "clean")):
             key = f"i2c_{direction}"
-            row = run_i2c_case(vvp, executable, scratch / key, depth=DEPTH, direction=direction, profile=profile)
+            row = run_i2c_case(vvp, executable, scratch / key, depth=DEPTH, direction=direction, profile=profile,
+                               image=i2c)
             if not row["passed"]:
                 raise RuntimeError(f"{key} did not pass: {row['error']}")
             expected = profiles[key].get("expected_rx_hex", profiles[key].get("tx_hex"))
@@ -133,9 +139,14 @@ def simulate(vvp, executable, expected_digest):
                           "target_stretch_edges": row["peer"]["target_stretch_edges"], "edges": row["physical_edges"]}
     if digest(executable) != expected_digest:
         raise ValueError("Pin simulator model changed during the dry run")
-    return {"schema": "pinwheel.streaming-ready-pin-dry-run.v1", "passed": True,
-            "scope": "Local public-pin simulation", "board_exercised": False,
-            "model_sha256": expected_digest, "cases": cases}
+    result = {"schema": "pinwheel.streaming-ready-pin-dry-run.v1", "passed": True,
+              "scope": "Local public-pin simulation", "board_exercised": False,
+              "model_sha256": expected_digest, "cases": cases}
+    if i2c_mode != "default":
+        low_cycles, high_cycles, wait_budget = I2C_MODES[i2c_mode]
+        result.update(i2c_mode=i2c_mode, i2c_low_cycles=low_cycles, i2c_high_cycles=high_cycles,
+                      i2c_wait_budget=wait_budget)
+    return result
 
 
 def main():
@@ -148,10 +159,13 @@ def main():
     dry_run.add_argument("--vvp", type=Path, required=True)
     dry_run.add_argument("--executable", type=Path, required=True)
     dry_run.add_argument("--executable-sha256", required=True)
+    dry_run.add_argument("--i2c-mode", choices=sorted(I2C_MODES), default="default",
+                         help="Run the I2C cases with this fixture mode (default: the frozen program)")
     args = parser.parse_args()
     try:
         result = (fixture(args.i2c_mode) if args.command == "fixture" else
-                  simulate(args.vvp.resolve(strict=True), args.executable.absolute(), args.executable_sha256))
+                  simulate(args.vvp.resolve(strict=True), args.executable.absolute(), args.executable_sha256,
+                           args.i2c_mode))
     except (OSError, RuntimeError, ValueError) as error:
         parser.exit(1, f"Pinwheel bring-up check failed: {error}\n")
     print(json.dumps(result, indent=2, sort_keys=True))

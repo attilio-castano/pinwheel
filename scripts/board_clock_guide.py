@@ -38,7 +38,8 @@ def describe(row):
         outcome = (f"bit clock up to {result['max_clock_hz']:,} Hz; peer output delay at most "
                    f"{result['peer_output_window_ns']} ns")
     elif program == 'i2c':
-        text = f"`low_cycles={setting['low_cycles']}`, `high_cycles={setting['high_cycles']}`"
+        text = (f"`low_cycles={setting['low_cycles']}`, `high_cycles={setting['high_cycles']}`, "
+                f"`wait_budget={setting['wait_budget']}`")
         modes = ', '.join(MODES[m] for m in row['meets']) or 'no I²C mode'
         outcome = f"meets {modes}; clock stretch up to {result['stretch_tolerance_core_clocks']} core clocks"
     else:
