@@ -2,6 +2,7 @@ import Pinwheel.Hardware.StreamingReady.BootCorrespondence
 import Pinwheel.Hardware.StreamingReady.BootUpload
 import Pinwheel.Hardware.StreamingReady.CausalSession
 import Pinwheel.Hardware.StreamingReady.CANSession
+import Pinwheel.Hardware.StreamingReady.ChipManifest
 import Pinwheel.Hardware.StreamingReady.Core
 import Pinwheel.Hardware.StreamingReady.CoreEmit
 import Pinwheel.Hardware.StreamingReady.EthernetDeadline
