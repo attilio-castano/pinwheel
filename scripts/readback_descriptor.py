@@ -29,7 +29,8 @@ OWNED = ('TOP', 'INPUTS', 'REGISTERS', 'OUTPUTS', 'FAMILIES', 'INPUT_TYPE', 'REG
          'CIRCUIT')
 COMPARED = OWNED + ('NAMESPACE', 'HEADER', 'KIND', 'ADDR_BITS')
 DIRECTORY = Path(__file__).resolve().parent / 'readback_descriptors'
-NAMES = ('streaming-core-d2', 'streaming-core-d4', 'ready-core-d2', 'ready-core-d4', 'frontend')
+NAMES = ('streaming-core-d2', 'streaming-core-d4', 'ready-core-d2', 'ready-core-d4', 'frontend',
+         'buffered-sram', 'buffered-serial')
 
 
 def load(path):
@@ -78,6 +79,37 @@ def plain(descriptor, key):
     """(RTL name, constructor) of every field without an index, in order. Field
     lists stay whole when an adapter edits the importer's tables afterwards."""
     return [(port['name'], port['term'][1:]) for port in descriptor[key] if INDEXED.fullmatch(port['term']) is None]
+
+
+def fields(descriptor, key, wrapper=None, *, strip=''):
+    """(name, width, constructor) tables in descriptor order, for adapters that
+    work with constructor names. Without `wrapper`: fields that are a single
+    constructor (`.sck`). With it: fields wrapped once (`.status .valid`), giving
+    the inner constructor. `strip` is removed from the front of each RTL name."""
+    found = []
+    for port in descriptor[key]:
+        parts = port['term'].split(' ')
+        if wrapper is None and len(parts) == 1:
+            ctor = parts[0][1:]
+        elif wrapper is not None and len(parts) == 2 and parts[0] == '.' + wrapper and parts[1].startswith('.'):
+            ctor = parts[1][1:]
+        else:
+            continue
+        if not port['name'].startswith(strip):
+            raise ValueError(f"{port['name']}: expected the prefix {strip!r}")
+        found.append((port['name'][len(strip):], port['width'], ctor))
+    return found
+
+
+def apply_ports(rb, descriptor):
+    """Set only the module and port tables, for adapters that name their Lean
+    types and circuit themselves."""
+    rb.TOP = descriptor['module']
+    rb.INPUTS = table(descriptor['inputs'])
+    rb.REGISTERS = table(descriptor['registers'])
+    rb.OUTPUTS = table(descriptor['outputs'])
+    rb.DESCRIPTOR = descriptor
+    return rb
 
 
 def apply(rb, descriptor):

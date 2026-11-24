@@ -1,4 +1,4 @@
-"""Lean-emitted read-back descriptors configure the Streaming importers.
+"""Lean-emitted read-back descriptors configure the Streaming and Buffered importers.
 
 The importer reads checked-in copies (scripts/readback_descriptors); they must
 equal a fresh `lake env lean --run` emission byte for byte. The emission tests
@@ -88,6 +88,23 @@ class CheckedIn(unittest.TestCase):
         explicit = adapter.backend('core', 1, tx_layout='shift', descriptor=D.DIRECTORY / 'streaming-core-d2.json')
         self.assertEqual(D.configuration(explicit), D.configuration(adapter.backend('core', 1, tx_layout='shift')))
         self.assertNotIn('r_tx_head', explicit.REGISTERS)
+
+    def test_buffered_tables_cover_every_port(self):
+        """The Buffered adapters' constructor tables leave no descriptor field out."""
+        import buffered_serial_readback as serial
+        import buffered_sram_readback as sram
+        counts = lambda d: [len(d[key]) for key in ('inputs', 'registers', 'outputs')]
+        self.assertEqual(counts(serial.DESCRIPTOR), [len(serial.RAW_INPUTS) + len(serial.STATUS),
+                                                    len(serial.REGISTERS), len(serial.CORE_OUTPUTS) + 2])
+        # Two memory data inputs; 64 metadata, 16 branch, branch_written and start_word
+        # registers; five memory port outputs.
+        self.assertEqual(counts(sram.DESCRIPTOR), [len(sram.BASE_INPUTS) + 2, len(sram.CORE_REGISTERS) + 82,
+                                                  len(sram.BASE_OUTPUTS) + 5])
+
+    def test_nested_terms_keep_their_parentheses(self):
+        outputs = D.table(D.checked_in('buffered-sram')['outputs'])
+        self.assertEqual(outputs['mem_addr1'], (6, '.port (.address true)'))
+        self.assertEqual(outputs['mem_data'], (64, '.port .data'))
 
     def test_unknown_name_is_rejected(self):
         with self.assertRaises(ValueError):

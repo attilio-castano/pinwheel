@@ -13,54 +13,19 @@ from pathlib import Path
 import random
 import sys
 
+import readback_descriptor
+
 
 ROOT = Path(__file__).resolve().parents[1]
-TOP = 'pinwheel_buffered_shared_branches_sram_controller'
 NAMESPACE = 'Pinwheel.Artifact.BufferedSram'
-
-BASE_INPUTS = [
-    ('initialize', 1, 'initialize'), ('command', 3, 'command'),
-    ('address', 6, 'address'), ('word', 64, 'word'),
-    ('control', 24, 'control'), ('branch', 56, 'branch'),
-    ('count', 7, 'count'), ('virtual_span', 11, 'virtualSpan'),
-    ('idle_levels', 3, 'idleLevels'), ('idle_enabled', 3, 'idleEnabled'),
-    ('tx_data', 32, 'txData'), ('tx_length', 6, 'txLength'),
-    ('rx_capacity', 6, 'rxCapacity'),
-    ('expected_generation', 16, 'expectedGeneration'),
-    ('expected_transfer', 16, 'expectedTransfer'),
-    ('read_index', 5, 'readIndex'), ('raw_inputs', 2, 'rawInputs'),
-]
-CORE_REGISTERS = [
-    ('written', 64, 'written'), ('pending', 1, 'pending'),
-    ('valid', 1, 'valid'), ('count', 7, 'count'),
-    ('idle_levels', 3, 'idleLevels'), ('idle_enabled', 3, 'idleEnabled'),
-    ('generation', 16, 'generation'), ('transfer', 16, 'transfer'),
-    ('phase', 3, 'phase'), ('retained', 1, 'retained'), ('pc', 7, 'pc'),
-    ('virtual_pc', 10, 'virtualPC'), ('virtual_span', 11, 'virtualSpan'),
-    ('current_control', 22, 'currentControl'),
-    ('outer', 3, 'outer'), ('inner', 3, 'inner'), ('remaining', 8, 'remaining'),
-    ('levels', 3, 'levels'), ('enabled', 3, 'enabled'),
-    ('tx_data', 32, 'txData'), ('tx_length', 6, 'txLength'),
-    ('tx_consumed', 6, 'txConsumed'), ('rx_data', 32, 'rxData'),
-    ('rx_length', 6, 'rxLength'), ('rx_capacity', 6, 'rxCapacity'),
-    ('stage1', 2, 'stage1'), ('stage2', 2, 'stage2'),
-    ('wait_left', 8, 'waitLeft'), ('scratch', 16, 'scratch'),
-    ('cached_duration', 8, 'cachedDuration'), ('cached_budget', 8, 'cachedBudget'),
-    ('cached_check', 4, 'cachedCheck'), ('cached_wait', 2, 'cachedWait'),
-    ('cached_terminal', 6, 'cachedTerminal'), ('cached_branch', 54, 'cachedBranch'),
-]
-BASE_OUTPUTS = [
-    ('valid', 1, 'valid'), ('busy', 1, 'busy'), ('retained', 1, 'retained'),
-    ('pending', 1, 'pending'), ('rejected', 1, 'rejected'), ('mode', 2, 'mode'),
-    ('pc', 8, 'pc'), ('remaining', 8, 'remaining'), ('levels', 3, 'levels'),
-    ('enabled', 3, 'enabled'), ('tx_consumed', 6, 'txConsumed'),
-    ('rx_length', 6, 'rxLength'), ('rx_data', 32, 'rxData'),
-    ('read_valid', 1, 'readValid'), ('read_bit', 1, 'readBit'),
-    ('generation', 16, 'generation'), ('transfer', 16, 'transfer'),
-    ('exhausted', 1, 'exhausted'), ('stage1', 2, 'stage1'), ('stage2', 2, 'stage2'),
-    ('virtual_pc', 10, 'virtualPC'), ('env0', 3, 'env0'), ('env1', 3, 'env1'),
-    ('phase', 3, 'phase'), ('wait_left', 8, 'waitLeft'), ('scratch', 16, 'scratch'),
-]
+# Port facts come from the checked-in Lean read-back descriptor. The inner
+# tables, (name, width, constructor) of the wrapped Reactive fields, are also
+# used by the reference read-backs.
+DESCRIPTOR = readback_descriptor.checked_in('buffered-sram')
+TOP = DESCRIPTOR['module']
+BASE_INPUTS = readback_descriptor.fields(DESCRIPTOR, 'inputs', 'base')
+CORE_REGISTERS = readback_descriptor.fields(DESCRIPTOR, 'registers', 'core', strip='r_')
+BASE_OUTPUTS = readback_descriptor.fields(DESCRIPTOR, 'outputs', 'base')
 
 
 def read_json(path):
@@ -81,25 +46,7 @@ def backend():
     rb = importlib.util.module_from_spec(spec)
     sys.modules[name] = rb
     spec.loader.exec_module(rb)
-    rb.TOP = TOP
-    rb.INPUTS = {name: (width, f'.base .{ctor}')
-                 for name, width, ctor in BASE_INPUTS}
-    rb.INPUTS.update({'mem_q0': (64, '.q false'), 'mem_q1': (64, '.q true')})
-    rb.REGISTERS = {f'r_metadata{k}': (28, f'.metadata {k}#6') for k in range(64)}
-    rb.REGISTERS.update({f'r_branch{k}': (56, f'.branch {k}#4') for k in range(16)})
-    rb.REGISTERS['r_branch_written'] = (16, '.branchWritten')
-    rb.REGISTERS.update({'r_' + name: (width, f'.core .{ctor}')
-                         for name, width, ctor in CORE_REGISTERS})
-    rb.REGISTERS['r_start_word'] = (64, '.startWord')
-    rb.OUTPUTS = {name: (width, f'.base .{ctor}')
-                  for name, width, ctor in BASE_OUTPUTS}
-    rb.OUTPUTS.update({
-        'mem_addr0': (6, '.port (.address false)'),
-        'mem_addr1': (6, '.port (.address true)'),
-        'mem_data': (64, '.port .data'),
-        'mem_write': (1, '.port .write'),
-        'mem_read': (1, '.port .read'),
-    })
+    readback_descriptor.apply_ports(rb, DESCRIPTOR)
     rb.HEADER = f'''import Pinwheel.Hardware.Buffered.Sram
 open Pinwheel.Hardware
 open Pinwheel.Hardware.Buffered

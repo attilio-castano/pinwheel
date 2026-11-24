@@ -42,17 +42,25 @@ that changes `tt.sv` and expects the check to fail.
 The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
 top name, Lean types and circuit, and every port's RTL name, width and Lean
 constructor term. `test/StreamingReadyReadbackDescriptor.lean` emits these as
-JSON descriptors for the Streaming and sampled-ready cores (depth two and four)
-and the shared frontend, from the same enumerations, labels and module names
-the emitters use. `scripts/readback_descriptor.py` applies a descriptor to the
+JSON descriptors for the Streaming and sampled-ready cores (depth two and four),
+their shared frontend, and the Buffered chip's SRAM controller and serial
+frontend, from the same enumerations, labels and module names the emitters
+use. `scripts/readback_descriptor.py` applies a descriptor to the
 importer.
 
-The Streaming importers have no hand-typed port tables. The adapters
+No importer keeps hand-typed port tables. The Streaming adapters
 (`streaming_readback.py`, `streaming_ready_readback.py`) and everything built
 on them (the gate-level component and package read-backs and the wrapper
 read-backs) read the checked-in copies in `scripts/readback_descriptors`. The
 shift TX layout starts from the Streaming core's descriptor and edits its
 register table. The adapters keep only the artifact namespace and Lean header.
+
+The Buffered adapters (`buffered_sram_readback.py`,
+`buffered_serial_readback.py`) take only the module and port tables from their
+descriptors (`apply_ports`), since they name their Lean types by rewriting the
+generated text. Their constructor tables (`BASE_INPUTS`, `CORE_REGISTERS`,
+`STATUS` and so on), which the SRAM reference read-backs also use, are derived
+from the same descriptors.
 
 The certificate pipeline (`streaming_ready_artifacts.component`, used by
 `check-streaming-ready.py`, `check-streaming-uart.py`, `check-ready-tx-fifo.py`
@@ -69,9 +77,6 @@ and run the test, which fails while any copy differs from a fresh emission:
 lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean scripts/readback_descriptors
 python3 -B test/test_readback_descriptor.py
 ```
-
-The Buffered chip's read-backs (`buffered_sram_readback.py`,
-`buffered_serial_readback.py`) still keep their own tables.
 
 ## Toolchain
 
