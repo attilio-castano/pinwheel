@@ -82,7 +82,7 @@ class LoweringInputTests(unittest.TestCase):
             self.assertEqual(hints,[emitted/'frontend.mlir']);self.assertEqual(len(calls),1)
             receipt=json.loads((out/'component-report.json').read_text())
             self.assertFalse(receipt['passed']);self.assertTrue(receipt['frozen_inputs_unchanged'])
-            self.assertEqual(receipt['port_tables'],'lean-descriptor')
+            self.assertEqual(receipt['port_tables'],'fresh-lean-descriptor')
             self.assertIn(str(out/'readback-descriptors'/'frontend.json'),frozen)
             self.assertEqual(receipt['lowering_input']['original_hints_authority'],str((emitted/'frontend.mlir').resolve()))
             self.assertEqual(set(Path(p).name for p in receipt['emitted_input_sha256_before']),

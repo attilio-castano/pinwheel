@@ -12,15 +12,18 @@ import re
 
 import buffered_sram_readback as shared
 import paired_readback as decomposition
+import readback_descriptor
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_INPUTS = [["initialize",1,"initialize"],["command",4,"command"],["address",6,"address"],["word",64,"word"],["count",7,"count"],["idle_levels",3,"idleLevels"],["idle_enabled",3,"idleEnabled"],["start_count",16,"startCount"],["expected_generation",16,"expectedGeneration"],["expected_transfer",16,"expectedTransfer"],["tx_push",1,"txPush"],["tx_data",32,"txData"],["tx_bits",6,"txBits"],["rx_pop",1,"rxPop"],["raw_inputs",2,"rawInputs"]]
-CORE_OUTPUTS = [["valid",1,"valid"],["busy",1,"busy"],["retained",1,"retained"],["pending",1,"pending"],["rejected",1,"rejected"],["stalled",1,"stalled"],["fault",1,"fault"],["waiting_tx",1,"waitingTX"],["waiting_rx",1,"waitingRX"],["generation",16,"generation"],["transfer",16,"transfer"],["phase",3,"phase"],["pc",7,"pc"],["remaining",16,"remaining"],["total",16,"total"],["levels",3,"levels"],["enabled",3,"enabled"],["tx_free",4,"txFree"],["tx_queued",4,"txQueued"],["rx_queued",4,"rxQueued"],["rx_data",32,"rxData"],["rx_bits",6,"rxBits"],["tx_accepted",16,"txAccepted"],["tx_consumed",16,"txConsumed"],["rx_produced",16,"rxProduced"],["rx_popped",16,"rxPopped"],["stage1",2,"stage1"],["stage2",2,"stage2"]]
-CORE_REGISTERS = [["written",64,"written"],["pending",1,"pending"],["valid",1,"valid"],["count",7,"count"],["idle_levels",3,"idleLevels"],["idle_enabled",3,"idleEnabled"],["generation",16,"generation"],["transfer",16,"transfer"],["phase",3,"phase"],["pc",7,"pc"],["current_word",64,"currentWord"],["total",16,"total"],["remaining",16,"remaining"],["countdown",8,"countdown"],["cell_bit",1,"cellBit"],["levels",3,"levels"],["enabled",3,"enabled"],["tx_head","a","txHead"],["tx_tail","a","txTail"],["tx_count",4,"txCount"],["rx_head","a","rxHead"],["rx_tail","a","rxTail"],["rx_count",4,"rxCount"],["tx_shift",32,"txShift"],["tx_valid",6,"txValid"],["rx_partial",32,"rxPartial"],["rx_used",6,"rxUsed"],["tx_accepted",16,"txAccepted"],["tx_consumed",16,"txConsumed"],["rx_produced",16,"rxProduced"],["rx_popped",16,"rxPopped"],["stage1",2,"stage1"],["stage2",2,"stage2"]]
-FRONTEND_INPUTS = [["initialize",1,"initialize"],["sck",1,"sck"],["csn",1,"csn"],["mosi",4,"mosi"],["raw_inputs",2,"rawInputs"]]
-FRONTEND_REGISTERS = [["sck_prev",1,"sckPrev"],["csn_prev",1,"csnPrev"],["active",1,"active"],["reading",1,"reading"],["count",7,"count"],["request",176,"request"],["request_crc",16,"requestCRC"],["phase",3,"phase"],["code",4,"code"],["sequence",16,"sequence"],["cache_reply",1,"cacheReply"],["response",208,"response"],["ready",1,"ready"],["last_valid",1,"lastValid"],["last_request",176,"lastRequest"],["last_reply",208,"lastReply"],["tx_left",7,"txLeft"],["tx_staging",64,"txStaging"],["rx_pending",1,"rxPending"],["work_bulk",1,"workBulk"],["export_data",64,"exportData"],["export_start",16,"exportStart"],["export_bits",7,"exportBits"],["ack_offset",16,"ackOffset"],["reply_logical",192,"replyLogical"],["crc_work",192,"crcWork"],["crc",16,"crc"],["crc_count",6,"crcCount"]]
+# The frontend's physical inputs (not the core status it observes), as
+# (RTL name, width, constructor); the wrapper read-backs claim these pins.
+FRONTEND_INPUTS = [(port['name'], port['width'], port['term'][1:])
+    for port in readback_descriptor.checked_in('frontend')['inputs'] if not port['term'].startswith('.status ')]
+
 
 def backend(kind, addr_bits=1):
+    """Configure the importer for one Streaming module from its checked-in Lean
+    read-back descriptor; the namespace and Lean header stay here."""
     if kind not in ('core', 'frontend') or type(addr_bits) is not int or addr_bits not in (1,2):
         raise ValueError('Unsupported streaming artifact configuration')
     name = '_streaming_readback_' + kind + str(addr_bits)
@@ -29,32 +32,10 @@ def backend(kind, addr_bits=1):
     sys.modules[name] = rb
     spec.loader.exec_module(rb)
     rb.KIND, rb.ADDR_BITS = kind, addr_bits
-    if kind == 'core':
-        rb.TOP = 'pinwheel_streaming_core_d' + str(2**addr_bits)
-        rb.INPUTS = {n:(w,'.'+c) for n,w,c in CORE_INPUTS}
-        rb.REGISTERS = {'r_word'+str(k):(64,'.word '+str(k)+'#6') for k in range(64)}
-        rb.FAMILIES = [('word','word',64,6)]
-        for k in range(2**addr_bits):
-            for n,w,c in [('tx_word',32,'txWord'),('tx_bits',6,'txBits'),('rx_word',32,'rxWord'),('rx_bits',6,'rxBits')]:
-                rb.REGISTERS['r_'+n+str(k)] = (w,'.'+c+' '+str(k)+'#'+str(addr_bits))
-        rb.FAMILIES += [(n,c,2**addr_bits,addr_bits) for n,c in
-            [('tx_word','txWord'),('tx_bits','txBits'),('rx_word','rxWord'),('rx_bits','rxBits')]]
-        rb.REGISTERS.update({'r_'+n:(addr_bits if w=='a' else w,'.'+c) for n,w,c in CORE_REGISTERS})
-        rb.OUTPUTS = {n:(w,'.'+c) for n,w,c in CORE_OUTPUTS}
-        rb.INPUT_TYPE, rb.REGISTER_TYPE, rb.OUTPUT_TYPE = 'Pinwheel.Hardware.Streaming.Core.Input', '(Pinwheel.Hardware.Streaming.Core.Register '+str(addr_bits)+')', 'Pinwheel.Hardware.Streaming.Core.Output'
-        rb.CIRCUIT = '(Pinwheel.Hardware.Streaming.Core.circuit '+str(addr_bits)+')'
-        rb.NAMESPACE = 'Pinwheel.Artifact.StreamingCoreD'+str(2**addr_bits)
-    else:
-        rb.TOP = 'pinwheel_streaming_quad_frontend'
-        rb.INPUTS = {n:(w,'.'+c) for n,w,c in FRONTEND_INPUTS}
-        rb.INPUTS.update({'status_'+n:(w,'.status .'+c) for n,w,c in CORE_OUTPUTS})
-        rb.REGISTERS = {'r_'+n:(w,'.'+c) for n,w,c in FRONTEND_REGISTERS}
-        rb.OUTPUTS = {'core_'+n:(w,'.core .'+c) for n,w,c in CORE_INPUTS}
-        rb.OUTPUTS.update({'miso':(4,'.miso'),'ready':(1,'.ready')})
-        rb.FAMILIES = []
-        rb.INPUT_TYPE, rb.REGISTER_TYPE, rb.OUTPUT_TYPE = 'Pinwheel.Hardware.Streaming.Frontend.Input', 'Pinwheel.Hardware.Streaming.Frontend.Register', 'Pinwheel.Hardware.Streaming.Frontend.Output'
-        rb.CIRCUIT = 'Pinwheel.Hardware.Streaming.Frontend.circuit'
-        rb.NAMESPACE = 'Pinwheel.Artifact.StreamingFrontend'
+    readback_descriptor.apply(rb, readback_descriptor.checked_in(
+        'streaming-core-d'+str(2**addr_bits) if kind == 'core' else 'frontend'))
+    rb.NAMESPACE = ('Pinwheel.Artifact.StreamingCoreD'+str(2**addr_bits) if kind == 'core'
+        else 'Pinwheel.Artifact.StreamingFrontend')
     rb.HEADER = ('import Pinwheel.Hardware.Streaming.FrontendEmit\n'
         'open Pinwheel.Hardware Pinwheel.Hardware.Streaming\nnamespace '+rb.NAMESPACE+'\n'
         'set_option maxRecDepth 100000\nset_option maxHeartbeats 8000000\n'
@@ -386,8 +367,8 @@ def model_source(rb,graph):
         if method == 'Step':
             retained = getattr(rb, 'RETAINED_REGISTER', None)
             if retained:
-                for name,_,ctor in CORE_REGISTERS:
-                    if 'r_'+name not in interface:
+                for name,ctor in readback_descriptor.plain(rb.DESCRIPTOR,'registers'):
+                    if name not in interface:
                         lines.append(f'  | _, ⟨.{ctor}, kept⟩ => by simp [{retained}] at kept')
             for name,ctor,count,width in rb.FAMILIES:
                 values = ', '.join('('+rb.graph_value(graph,roots['r_'+name+str(k)],'RTL')+')' for k in range(count))
@@ -442,26 +423,29 @@ def proof_source(rb):
                 '    have h : ∀ j : Fin '+str(count)+', rtlStep i s ('+register+') =',
                 '        '+rb.CIRCUIT+'.step i s ('+register+') := '+term,
                 '    exact h k.toFin']
-        for name,_,ctor in CORE_REGISTERS:
-            if retained and 'r_'+name not in rb.REGISTERS:
+        for name,ctor in readback_descriptor.plain(rb.DESCRIPTOR,'registers'):
+            if retained and name not in rb.REGISTERS:
                 lines.append(f'  | {ctor} => simp [{retained}] at kept')
             else:
-                lines.append('  | '+ctor+' => exact rtl_next_r_'+name+' i s')
+                lines.append('  | '+ctor+' => exact rtl_next_'+name+' i s')
     else:
-        for name,_,ctor in FRONTEND_REGISTERS:
-            lines.append('  | '+ctor+' => exact rtl_next_r_'+name+' i s')
+        for name,ctor in readback_descriptor.plain(rb.DESCRIPTOR,'registers'):
+            lines.append('  | '+ctor+' => exact rtl_next_'+name+' i s')
     lines += ['theorem observe_correct (i : Values '+rb.INPUT_TYPE+') (s : Values '+rb.REGISTER_TYPE+')',
         '    (o : '+rb.OUTPUT_TYPE+' w) : rtlObserve i s o = '+rb.CIRCUIT+'.observe i s o := by',
         '  cases o with']
     if rb.KIND == 'core':
-        for name,_,ctor in CORE_OUTPUTS:
+        for name,ctor in readback_descriptor.plain(rb.DESCRIPTOR,'outputs'):
             lines.append('  | '+ctor+' => exact rtl_output_'+name+' i s')
     else:
         lines += ['  | miso => exact rtl_output_miso i s','  | ready => exact rtl_output_ready i s',
             '  | core p =>','    cases p with']
-        for name,_,ctor in CORE_INPUTS:
+        for name,term in readback_descriptor.plain(rb.DESCRIPTOR,'outputs'):
+            if not term.startswith('core .'):
+                continue
+            ctor = term.removeprefix('core .')
             pattern = '«initialize»' if ctor=='initialize' else ctor
-            lines.append('    | '+pattern+' => exact rtl_output_core_'+name+' i s')
+            lines.append('    | '+pattern+' => exact rtl_output_'+name+' i s')
     lines += ['def behavior : Pinwheel.Hardware.Streaming.Package.Behavior '+
         rb.INPUT_TYPE+' '+rb.REGISTER_TYPE+' '+rb.OUTPUT_TYPE+' := ⟨rtlStep,rtlObserve⟩']
     return adapt(rb,'\n'.join(lines)+'\nend '+rb.NAMESPACE+'\n')

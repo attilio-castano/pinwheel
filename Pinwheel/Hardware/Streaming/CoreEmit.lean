@@ -136,8 +136,11 @@ def registerIndex : {w : Nat} → Register a w → Nat
   | _, .rxPopped => 64 + 4*(2^a) + 30
   | _, .stage1 => 64 + 4*(2^a) + 31
   | _, .stage2 => 64 + 4*(2^a) + 32
+/-- The emitted module's name, shared with the read-back descriptor. -/
+def moduleName (a : Nat) : String := s!"pinwheel_streaming_core_d{2^a}"
+
 def moduleText (a : Nat) : Except String String := Buffered.MemoEmit.moduleText
-  s!"pinwheel_streaming_core_d{2^a}" (circuit a) inputs (registers a) outputs
+  (moduleName a) (circuit a) inputs (registers a) outputs
   inputLabel registerLabel outputLabel
 
 end Pinwheel.Hardware.Streaming.Core

@@ -2,7 +2,8 @@ import Pinwheel.Hardware.StreamingReady.CoreEmit
 import Pinwheel.Hardware.Streaming.FrontendEmit
 import Lean
 
-/-! Write read-back import descriptors for the sampled-ready core and frontend.
+/-! Write read-back import descriptors for the Streaming and sampled-ready cores
+and the shared frontend.
 
 A descriptor tells the RTL importer everything it needs about one emitted
 module: its name, the Lean types and circuit it refines, and for every input,
@@ -13,7 +14,11 @@ no longer keeps hand-typed copies.
 Constructor terms are printed by derived `Repr` instances (with decimal
 `BitVec` indices) and shortened to dot notation, e.g. `.word 3#6`.
 
-    lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean [OUT]
+The importer reads checked-in copies from `scripts/readback_descriptors`;
+`test/test_readback_descriptor.py` fails if they differ from a fresh run.
+Regenerate them with
+
+    lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean scripts/readback_descriptors
 -/
 
 open Lean Pinwheel.Hardware
@@ -49,10 +54,12 @@ def descriptor (module inputType registerType outputType circuit : String)
     ("output_type", toJson outputType), ("circuit", toJson circuit),
     ("inputs", Json.arr inputs), ("registers", Json.arr registers), ("outputs", Json.arr outputs)]
 
-def coreDescriptor (a : Nat) : Json :=
-  descriptor (StreamingReady.Core.moduleName a) (toString ``Pinwheel.Hardware.Streaming.Core.Input)
+/-- The Streaming and sampled-ready cores share their ports and registers; only
+the module and the circuit differ. -/
+def coreDescriptor (module : String) (circuit : Lean.Name) (a : Nat) : Json :=
+  descriptor module (toString ``Pinwheel.Hardware.Streaming.Core.Input)
     s!"({``Pinwheel.Hardware.Streaming.Core.Register} {a})" (toString ``Pinwheel.Hardware.Streaming.Core.Output)
-    s!"({``Pinwheel.Hardware.StreamingReady.Core.circuit} {a})"
+    s!"({circuit} {a})"
     (StreamingReady.Core.inputs.map fun ⟨w, p⟩ => port (StreamingReady.Core.inputLabel p) w p)
     ((StreamingReady.Core.registers a).map fun ⟨w, r⟩ => port ("r_" ++ StreamingReady.Core.registerLabel r) w r)
     (StreamingReady.Core.outputs.map fun ⟨w, o⟩ => port (StreamingReady.Core.outputLabel o) w o)
@@ -68,6 +75,10 @@ def frontendDescriptor : Json :=
 def main (args : List String) : IO Unit := do
   let out := args.headD "build/readback-descriptors"
   IO.FS.createDirAll out
-  for (name, json) in [("core-d2", coreDescriptor 1), ("core-d4", coreDescriptor 2), ("frontend", frontendDescriptor)] do
+  let streaming a := coreDescriptor (Streaming.Core.moduleName a) ``Pinwheel.Hardware.Streaming.Core.circuit a
+  let ready a := coreDescriptor (StreamingReady.Core.moduleName a) ``Pinwheel.Hardware.StreamingReady.Core.circuit a
+  let files := [("streaming-core-d2", streaming 1), ("streaming-core-d4", streaming 2),
+    ("ready-core-d2", ready 1), ("ready-core-d4", ready 2), ("frontend", frontendDescriptor)]
+  for (name, json) in files do
     IO.FS.writeFile s!"{out}/{name}.json" (json.pretty ++ "\n")
-  IO.println s!"wrote core-d2, core-d4 and frontend descriptors to {out}"
+  IO.println s!"wrote {", ".intercalate (files.map (·.1))} descriptors to {out}"

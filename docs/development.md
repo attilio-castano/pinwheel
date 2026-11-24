@@ -42,27 +42,36 @@ that changes `tt.sv` and expects the check to fail.
 The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
 top name, Lean types and circuit, and every port's RTL name, width and Lean
 constructor term. `test/StreamingReadyReadbackDescriptor.lean` emits these as
-JSON descriptors for the sampled-ready core (depth two and four) and frontend,
-from the same enumerations, labels and module names the emitter uses.
-`scripts/readback_descriptor.py` applies a descriptor to the importer.
+JSON descriptors for the Streaming and sampled-ready cores (depth two and four)
+and the shared frontend, from the same enumerations, labels and module names
+the emitters use. `scripts/readback_descriptor.py` applies a descriptor to the
+importer.
+
+The Streaming importers have no hand-typed port tables. The adapters
+(`streaming_readback.py`, `streaming_ready_readback.py`) and everything built
+on them (the gate-level component and package read-backs and the wrapper
+read-backs) read the checked-in copies in `scripts/readback_descriptors`. The
+shift TX layout starts from the Streaming core's descriptor and edits its
+register table. The adapters keep only the artifact namespace and Lean header.
 
 The certificate pipeline (`streaming_ready_artifacts.component`, used by
 `check-streaming-ready.py`, `check-streaming-uart.py`, `check-ready-tx-fifo.py`
-and `typed_ready_workflow.py`) emits descriptors into its output directory,
-records their hash and configures the importer from them by default. Each
-component report says which source it used (`port_tables`). The shift TX
-layout, `--hand-tables` on the direct CLI and `descriptors=False` use the
-hand-typed tables in `streaming_readback.py`, which also still feed the mapped,
-wrapper and Buffered read-backs.
+and `typed_ready_workflow.py`) emits the descriptors fresh into its output
+directory. With `descriptors=False` (`--checked-in-descriptors` on the direct
+CLI), or for the shift layout, it copies the checked-in one there instead.
+Either way the descriptor is frozen with the run's inputs, and the component
+report records its hash and its source (`port_tables`).
+
+After changing a port, register, label or module name, regenerate the copies
+and run the test, which fails while any copy differs from a fresh emission:
 
 ```sh
-lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean build/readback-descriptors
+lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean scripts/readback_descriptors
 python3 -B test/test_readback_descriptor.py
 ```
 
-The test checks that descriptors and hand tables produce the same importer
-configuration, table by table and in order, and that a changed term or a
-reordered port is caught.
+The Buffered chip's read-backs (`buffered_sram_readback.py`,
+`buffered_serial_readback.py`) still keep their own tables.
 
 ## Toolchain
 

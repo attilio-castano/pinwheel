@@ -6,6 +6,10 @@ its RTL name, width and Lean constructor term. Adapters have typed these tables
 by hand. A descriptor (test/StreamingReadyReadbackDescriptor.lean) carries the
 same facts, generated from the enumerations the emitter uses.
 
+Checked-in copies live in scripts/readback_descriptors, so importing does not
+need a Lean run; test/test_readback_descriptor.py fails if they differ from a
+fresh emission.
+
 `apply` writes a descriptor's facts into an importer module. Artifact naming
 (namespace, Lean header) stays with the adapter. `configuration` snapshots
 every table in order, so two ways of configuring the importer can be compared
@@ -14,6 +18,7 @@ RTL.
 """
 from __future__ import annotations
 
+import functools
 import json
 from pathlib import Path
 import re
@@ -23,6 +28,8 @@ SCHEMA = 'pinwheel.readback-descriptor.v1'
 OWNED = ('TOP', 'INPUTS', 'REGISTERS', 'OUTPUTS', 'FAMILIES', 'INPUT_TYPE', 'REGISTER_TYPE', 'OUTPUT_TYPE',
          'CIRCUIT')
 COMPARED = OWNED + ('NAMESPACE', 'HEADER', 'KIND', 'ADDR_BITS')
+DIRECTORY = Path(__file__).resolve().parent / 'readback_descriptors'
+NAMES = ('streaming-core-d2', 'streaming-core-d4', 'ready-core-d2', 'ready-core-d4', 'frontend')
 
 
 def load(path):
@@ -36,6 +43,14 @@ def load(path):
     return descriptor
 
 
+@functools.cache
+def checked_in(name):
+    """A checked-in descriptor by name. Shared between callers: do not mutate."""
+    if name not in NAMES:
+        raise ValueError(f'Unknown read-back descriptor {name!r}')
+    return load(DIRECTORY / f'{name}.json')
+
+
 def table(ports):
     return {port['name']: (port['width'], port['term']) for port in ports}
 
@@ -47,13 +62,22 @@ def families(registers):
     named by its RTL name without the trailing number."""
     found = {}
     for port in registers:
-        match = re.fullmatch(r'\.(\w+) \d+#(\d+)', port['term'])
+        match = INDEXED.fullmatch(port['term'])
         if match is None:
             continue
         prefix = re.sub(r'\d+$', '', port['name'].removeprefix('r_'))
         key = (prefix, match.group(1), int(match.group(2)))
         found[key] = found.get(key, 0) + 1
     return [(prefix, ctor, count, width) for (prefix, ctor, width), count in found.items()]
+
+
+INDEXED = re.compile(r'\.(\w+) \d+#(\d+)')
+
+
+def plain(descriptor, key):
+    """(RTL name, constructor) of every field without an index, in order. Field
+    lists stay whole when an adapter edits the importer's tables afterwards."""
+    return [(port['name'], port['term'][1:]) for port in descriptor[key] if INDEXED.fullmatch(port['term']) is None]
 
 
 def apply(rb, descriptor):
@@ -66,6 +90,7 @@ def apply(rb, descriptor):
     rb.REGISTER_TYPE = descriptor['register_type']
     rb.OUTPUT_TYPE = descriptor['output_type']
     rb.CIRCUIT = descriptor['circuit']
+    rb.DESCRIPTOR = descriptor
     return rb
 
 

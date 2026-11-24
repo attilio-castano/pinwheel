@@ -14,6 +14,7 @@ from pathlib import Path
 import sys
 import time
 
+import readback_descriptor
 import streaming_ready_readback as adapter
 from buffered_rtl_session_full import recorded_solver
 from validation_run import Commands
@@ -122,43 +123,44 @@ def load_gate():
 DESCRIPTOR_EMITTER = 'test/StreamingReadyReadbackDescriptor.lean'
 
 
-def descriptor_name(kind, addr_bits):
-    return ('core-d' + str(2**addr_bits)) if kind == 'core' else 'frontend'
-
-
 def component(kind, addr_bits, emitted, out, tools, run, *, gate=None, tx_layout='ring', descriptors=True):
     """Certify one emitted Ready module against its Lean circuit.
 
-    By default the importer's module, types, circuit and port tables come from
-    a Lean read-back descriptor emitted into out/readback-descriptors; its
-    hash is recorded. `descriptors=False`, and the shift TX layout, use the
-    hand-typed tables in streaming_readback.py instead."""
+    The importer's module, types, circuit and port tables come from a Lean
+    read-back descriptor, by default one emitted fresh into
+    out/readback-descriptors. `descriptors=False` uses the checked-in copy in
+    scripts/readback_descriptors, and the shift TX layout starts from the
+    checked-in Streaming core descriptor. The descriptor used is frozen and its
+    hash recorded."""
     prefix = ('ReadyCoreD'+str(2**addr_bits)) if kind=='core' else 'ReadyQuadFrontend'
     if tx_layout == 'shift':
         prefix += 'Shift'
     gate = load_gate() if gate is None else gate
     emitted, out = Path(emitted), Path(out)
     out.mkdir(parents=True, exist_ok=False)
-    descriptor = None
-    if descriptors and tx_layout == 'ring':
-        directory = out/'readback-descriptors'
+    fresh = descriptors and tx_layout == 'ring'
+    directory = out/'readback-descriptors'
+    name = adapter.descriptor_name(kind,addr_bits,tx_layout)
+    descriptor = directory/(name+'.json')
+    if fresh:
         run([tools.get('lake','lake'),'env','lean','-DwarningAsError=true','--run',DESCRIPTOR_EMITTER,directory],
             'readback-descriptors',timeout=600)
-        descriptor = directory/(descriptor_name(kind,addr_bits)+'.json')
+    else:
+        # Copied in so it is frozen with the run's other inputs.
+        directory.mkdir()
+        descriptor.write_bytes((readback_descriptor.DIRECTORY/(name+'.json')).read_bytes())
     rb = adapter.backend(kind,addr_bits,tx_layout=tx_layout,descriptor=descriptor)
     proof = out/'proof'
     proof.mkdir()
     report = dict(passed=False, kind=kind, addr_bits=addr_bits,
         boundary='All raw two-state register and output equations; no standalone initialized source-session claim.',
-        port_tables='lean-descriptor' if descriptor is not None else 'hand-typed')
-    if descriptor is not None:
-        report['readback_descriptor'] = dict(path=str(descriptor), sha256=gate.digest(descriptor))
+        port_tables='fresh-lean-descriptor' if fresh else 'checked-in-lean-descriptor',
+        readback_descriptor=dict(path=str(descriptor), sha256=gate.digest(descriptor)))
     if kind == 'core':
         report['tx_layout'] = tx_layout
     started = time.monotonic()
     freeze = lambda paths: gate.freeze_inputs(report,out,paths)
-    if descriptor is not None:
-        freeze([descriptor])
+    freeze([descriptor])
     # Inputs outside this component's directory are inventoried before use too.
     input_hashes = {str(p.resolve()):gate.digest(p) for p in emitted.iterdir() if p.is_file()}
     report['emitted_input_sha256_before'] = input_hashes
@@ -233,8 +235,8 @@ def main():
     p.add_argument('--circt',default=str(ROOT/'build/tools/firtool-1.159.0/bin/circt-opt'))
     p.add_argument('--yosys',default=str(ROOT/'build/tools/oss-cad-suite/bin/yosys'))
     p.add_argument('--solver',default=str(ROOT/'build/tools/oss-cad-suite/bin/z3'))
-    p.add_argument('--hand-tables',action='store_true',
-                   help='configure the importer from the hand-typed tables instead of a Lean descriptor')
+    p.add_argument('--checked-in-descriptors',action='store_true',
+                   help='use the checked-in read-back descriptors instead of emitting them fresh')
     a = p.parse_args()
     a.out.mkdir(parents=True,exist_ok=False)
     logs = a.out/'logs'
@@ -245,7 +247,7 @@ def main():
     report = dict(standalone_qualification=False,commands=run.records)
     try:
         report['component'] = component(a.kind,a.addr_bits,a.emitted,a.out/'component',tools,run,
-                                       tx_layout=a.tx_layout,descriptors=not a.hand_tables)
+                                       tx_layout=a.tx_layout,descriptors=not a.checked_in_descriptors)
         report['passed'] = True
     finally:
         load_gate().write_json(a.out/'report.json',report)

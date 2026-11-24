@@ -10,6 +10,7 @@ from pathlib import Path
 import json
 import re
 
+import readback_descriptor
 from streaming_mapped_liberty import Library, require
 from streaming_mapped_netlist import parse_mapped
 from streaming_mapped_certificate import namespace_name
@@ -325,19 +326,17 @@ def generate_component(rb, source_json, mapped_json, library, word_modules, *, n
                 universal += [f'  | {ctor} k =>',f'    have equal : ∀ j : Fin {count}, step i s (.{ctor} (BitVec.ofFin j)) =',
                     f'        {rb.CIRCUIT}.step i s (.{ctor} (BitVec.ofFin j)) := {term}','    exact equal k.toFin']
                 consumed.update('r_'+family+str(j) for j in range(count))
-        if rb.KIND=='core':
-            from streaming_readback import CORE_REGISTERS, CORE_OUTPUTS
-            entries=CORE_REGISTERS if kind=='next' else CORE_OUTPUTS
-            for name,_,ctor in entries:universal.append(f'  | {ctor} => exact endpoint_{kind}_'+('r_' if kind=='next' else '')+name+' i s')
+        # Plain fields, in Lean descriptor order; indexed families were handled above.
+        fields=readback_descriptor.plain(rb.DESCRIPTOR,'registers' if kind=='next' else 'outputs')
+        if rb.KIND=='core' or kind=='next':
+            for name,ctor in fields:universal.append(f'  | {ctor} => exact endpoint_{kind}_{name} i s')
         else:
-            from streaming_readback import FRONTEND_REGISTERS,CORE_INPUTS
-            if kind=='next':
-                for name,_,ctor in FRONTEND_REGISTERS:universal.append(f'  | {ctor} => exact endpoint_next_r_{name} i s')
-            else:
-                universal += ['  | miso => exact endpoint_output_miso i s','  | ready => exact endpoint_output_ready i s','  | core field =>','    cases field with']
-                for name,_,ctor in CORE_INPUTS:
-                    case='«initialize»' if ctor=='initialize' else ctor
-                    universal.append(f'    | {case} => exact endpoint_output_core_{name} i s')
+            universal += ['  | miso => exact endpoint_output_miso i s','  | ready => exact endpoint_output_ready i s','  | core field =>','    cases field with']
+            for name,term in fields:
+                if not term.startswith('core .'):continue
+                ctor=term.removeprefix('core .')
+                case='«initialize»' if ctor=='initialize' else ctor
+                universal.append(f'    | {case} => exact endpoint_output_{name} i s')
     universal += [f'def behavior : Pinwheel.Hardware.Streaming.Package.Behavior {rb.INPUT_TYPE} {rb.REGISTER_TYPE} {rb.OUTPUT_TYPE} := ⟨step,observe⟩']
     proof_text='import '+graphs_name+'\n'+header+'\n'+'\n\n'.join(model+endpoint+universal)+'\nend '+namespace+'\n'
     metadata=dict(top=rb.TOP,namespace=namespace,modules=[graphs_name,proof_name],source_word_instances=len(source_cells),
