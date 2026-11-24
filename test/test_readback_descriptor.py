@@ -26,7 +26,7 @@ class ReadbackDescriptor(unittest.TestCase):
     def setUpClass(cls):
         cls.out = ROOT / 'build' / f'readback-descriptors-test-{os.getpid()}'
         subprocess.run(['lake', 'build', 'Pinwheel.Hardware.StreamingReady.CoreEmit',
-                        'Pinwheel.Hardware.StreamingReady.Wiring', 'Pinwheel.Hardware.Streaming.FrontendEmit'],
+                        'Pinwheel.Hardware.Streaming.FrontendEmit'],
                        cwd=ROOT, check=True, capture_output=True)
         subprocess.run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run',
                         'test/StreamingReadyReadbackDescriptor.lean', str(cls.out)],

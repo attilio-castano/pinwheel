@@ -37,27 +37,32 @@ PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --ta
 or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
 that changes `tt.sv` and expects the check to fail.
 
-### Read-back descriptors (pilot)
+### Read-back descriptors
 
 The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
 top name, Lean types and circuit, and every port's RTL name, width and Lean
 constructor term. `test/StreamingReadyReadbackDescriptor.lean` emits these as
 JSON descriptors for the sampled-ready core (depth two and four) and frontend,
-from the same enumerations and labels the emitter uses.
-`scripts/readback_descriptor.py` applies a descriptor to the importer, and
-`streaming_ready_readback.backend(..., descriptor=PATH)` uses it in place of
-the hand-typed tables in `streaming_readback.py`.
+from the same enumerations, labels and module names the emitter uses.
+`scripts/readback_descriptor.py` applies a descriptor to the importer.
+
+The certificate pipeline (`streaming_ready_artifacts.component`, used by
+`check-streaming-ready.py`, `check-streaming-uart.py`, `check-ready-tx-fifo.py`
+and `typed_ready_workflow.py`) emits descriptors into its output directory,
+records their hash and configures the importer from them by default. Each
+component report says which source it used (`port_tables`). The shift TX
+layout, `--hand-tables` on the direct CLI and `descriptors=False` use the
+hand-typed tables in `streaming_readback.py`, which also still feed the mapped,
+wrapper and Buffered read-backs.
 
 ```sh
 lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean build/readback-descriptors
 python3 -B test/test_readback_descriptor.py
 ```
 
-The test checks that both ways produce the same importer configuration, table
-by table and in order; the generated proof files depend only on that
-configuration and the RTL. It also checks that a changed term or a reordered
-port is caught. The hand tables remain the default and still feed the mapped,
-wrapper and Buffered read-backs.
+The test checks that descriptors and hand tables produce the same importer
+configuration, table by table and in order, and that a changed term or a
+reordered port is caught.
 
 ## Toolchain
 

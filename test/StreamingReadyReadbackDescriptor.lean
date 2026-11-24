@@ -1,5 +1,4 @@
 import Pinwheel.Hardware.StreamingReady.CoreEmit
-import Pinwheel.Hardware.StreamingReady.Wiring
 import Pinwheel.Hardware.Streaming.FrontendEmit
 import Lean
 
@@ -51,8 +50,7 @@ def descriptor (module inputType registerType outputType circuit : String)
     ("inputs", Json.arr inputs), ("registers", Json.arr registers), ("outputs", Json.arr outputs)]
 
 def coreDescriptor (a : Nat) : Json :=
-  let module := ((StreamingReady.Wiring.canonical a).instances.find? (·.1 == "core")).map (·.2) |>.getD ""
-  descriptor module (toString ``Pinwheel.Hardware.Streaming.Core.Input)
+  descriptor (StreamingReady.Core.moduleName a) (toString ``Pinwheel.Hardware.Streaming.Core.Input)
     s!"({``Pinwheel.Hardware.Streaming.Core.Register} {a})" (toString ``Pinwheel.Hardware.Streaming.Core.Output)
     s!"({``Pinwheel.Hardware.StreamingReady.Core.circuit} {a})"
     (StreamingReady.Core.inputs.map fun ⟨w, p⟩ => port (StreamingReady.Core.inputLabel p) w p)
@@ -60,8 +58,7 @@ def coreDescriptor (a : Nat) : Json :=
     (StreamingReady.Core.outputs.map fun ⟨w, o⟩ => port (StreamingReady.Core.outputLabel o) w o)
 
 def frontendDescriptor : Json :=
-  let module := ((StreamingReady.Wiring.canonical 1).instances.find? (·.1 == "frontend")).map (·.2) |>.getD ""
-  descriptor module (toString ``Pinwheel.Hardware.Streaming.Frontend.Input)
+  descriptor Streaming.Frontend.moduleName (toString ``Pinwheel.Hardware.Streaming.Frontend.Input)
     (toString ``Pinwheel.Hardware.Streaming.Frontend.Register) (toString ``Pinwheel.Hardware.Streaming.Frontend.Output)
     (toString ``Pinwheel.Hardware.Streaming.Frontend.circuit)
     (Streaming.Frontend.inputs.map fun ⟨w, p⟩ => port (Streaming.Frontend.inputLabel p) w p)
