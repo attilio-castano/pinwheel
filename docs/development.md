@@ -37,6 +37,25 @@ PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --ta
 or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
 that changes `tt.sv` and expects the check to fail.
 
+### Witness library
+
+`PinwheelWitness` holds proofs that conditional theorems are not vacuous:
+concrete scenarios that satisfy every hypothesis. They replay long executions
+in the kernel, so the default `lake build` skips them. A change that touches
+the theorems they instantiate should run
+
+```sh
+python3 -B scripts/check-witness.py --tag NAME
+```
+
+It builds the library, requires every file under `PinwheelWitness/` to be
+imported from `PinwheelWitness.lean`, and runs the axiom audit with the witness
+modules loaded. Results go to `build/witness/NAME/report.json`. The I²C read
+witness takes about 3 minutes and 8 GB. Its settled state is a checked-in
+literal; after changing the scenario, regenerate it with
+`lake env lean --run scripts/print_i2c_witness_settled.lean`. A stale literal
+fails the build.
+
 ### Read-back descriptors
 
 The RTL read-back importer (`scripts/backend_readback.py`) needs each module's

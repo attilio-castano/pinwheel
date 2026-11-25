@@ -258,38 +258,152 @@ theorem sameLoop_iff {a b : Loop} : sameLoop a b = true ↔ a = b := by
     simp_all
   · rintro rfl; simp [sameLoop, sameCore_iff]
 
-/-! ### The checked facts
+/-! ### The settled state
 
-Each fact is its own kernel check: the kernel keeps its work until a
-declaration ends, so one combined check would hold all of them at once. Each
-recomputes the loop and costs about one to two minutes. -/
+The loop after `settle` clocks, written out. It is printed by
+`scripts/print_i2c_witness_settled.lean`; `scan_settles` checks it against the
+scenario, so a stale copy fails the build. Facts about the final state are then
+checked on this literal in seconds instead of rerunning the scenario. -/
+
+instance : NeZero (Streaming.queueDepth 1) := ⟨by decide⟩
+
+def settledState : Loop where
+  s := { host := { sckPrev := false,
+                   csnPrev := true,
+                   active := false,
+                   reading := true,
+                   count := 0x34#7,
+                   request := 0xa728002500010001024902200000000000000000f701#176,
+                   requestCRC := 0x0000#16,
+                   phase := 0x0#3,
+                   code := 0x0#4,
+                   sequence := 0x0025#16,
+                   cacheReply := true,
+                   response := 0x5a20002500000000c58b59f6000100010249022040400600ad46#208,
+                   ready := false,
+                   lastValid := true,
+                   lastRequest := 0xa728002500010001024902200000000000000000f701#176,
+                   lastReply := 0x5a20002500000000c58b59f6000100010249022040400600ad46#208,
+                   txLeft := 0x00#7,
+                   txStaging := 0x0000000000000000#64,
+                   rxPending := false,
+                   workBulk := true,
+                   exportData := 0x00000000c58b59f6#64,
+                   exportStart := 0x0220#16,
+                   exportBits := 0x20#7,
+                   ackOffset := 0x0220#16,
+                   replyLogical := 0x5a20002500000000c58b59f6000100010249022040400600#192,
+                   crcWork := 0x000000000000000000000000000000000000000000000000#192,
+                   crc := 0xad46#16,
+                   crcCount := 0x30#6 },
+         core := { phase := Pinwheel.Program.StreamingReady.Phase.completed,
+                   pc := 0x06#7,
+                   current := Pinwheel.Program.StreamingReady.Instruction.pulse
+                                { lowDuration := 3,
+                                  highDuration := 3,
+                                  lowPins := { levels := 0x0#3, enabled := 0x2#3 },
+                                  highPins := { levels := 0x0#3, enabled := 0x2#3 },
+                                  txOutput := 0,
+                                  rxInput := 0,
+                                  transmit := false,
+                                  receive := false,
+                                  lastLowLevels := 0x0#3,
+                                  lastHighLevels := 0x0#3,
+                                  txInvert := false,
+                                  txEnableMode := false,
+                                  lastLowEnabled := 0x0#3,
+                                  lastHighEnabled := 0x0#3 },
+                   total := 0x0249#16,
+                   remaining := 0x0000#16,
+                   countdown := 0x00#8,
+                   cellBit := false,
+                   tx := { memory := #v[{ data := 0xff800000#32, validMinusOne := 8 },
+                                                    { data := 0xf7fbfdfe#32, validMinusOne := 31 }],
+                           head := 1,
+                           tail := 1,
+                           count := 0 },
+                   rx := { memory := #v[{ data := 0x00000041#32, validMinusOne := 8 },
+                                                    { data := 0xc58b59f6#32, validMinusOne := 31 }],
+                           head := 0,
+                           tail := 1,
+                           count := 1 },
+                   txShift := 0x00000000#32,
+                   txValid := 0x00#6,
+                   rxPartial := 0x00000000#32,
+                   rxUsed := 0x00#6,
+                   samplerFirst := 0x3#2,
+                   samplerSecond := 0x3#2,
+                   pins := { levels := 0x0#3, enabled := 0x0#3 },
+                   generation := 0x0001#16,
+                   transfer := 0x0001#16,
+                   txAccepted := 0x0249#16,
+                   txConsumed := 0x0249#16,
+                   rxProduced := 0x0249#16,
+                   rxPopped := 0x0240#16 } }
+  queue := []
+  started := true
+  idle := true
+  raw1 := 0x3#2
+  raw2 := 0x3#2
+  peer1 := { scl := Pinwheel.I2C.Drive.release, sda := Pinwheel.I2C.Drive.release }
+  peer2 := { scl := Pinwheel.I2C.Drive.release, sda := Pinwheel.I2C.Drive.release }
+  captures := 585
+  accepted := 585
+
+/-! ### The checked facts -/
+
+theorem scan_fst (n t : Nat) (l : Loop) : (scan n t l).1 = runLoop n l := by
+  induction n generalizing t l with
+  | zero => rfl
+  | succ n ih => exact ih (t+1) l.step
 
 set_option maxRecDepth 100000 in
 set_option maxHeartbeats 0 in
-/-- Every clock before `settle` meets the per-clock premises. -/
-theorem scan_ok : (scan settle 0 origin).2 = true := by decide +kernel
+/-- The one long kernel check (about 2.5 minutes, 8 GB): every clock before
+`settle` meets the per-clock premises, and the loop then equals
+`settledState`. -/
+theorem scan_settles :
+    ((scan settle 0 origin).2 && sameLoop (scan settle 0 origin).1 settledState) = true := by
+  decide +kernel
+
+theorem scan_ok : (scan settle 0 origin).2 = true := by
+  have h := scan_settles
+  simp only [Bool.and_eq_true] at h
+  exact h.1
+
+theorem settled_eq_state : settled = settledState := by
+  have h := scan_settles
+  simp only [Bool.and_eq_true] at h
+  rw [← sameLoop_iff.mp h.2, scan_fst]
+  rfl
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem settled_same : sameLoop settled.step settled = true := by decide +kernel
-
-theorem settled_fixed : settled.step = settled := sameLoop_iff.mp settled_same
+theorem state_same : sameLoop settledState.step settledState = true := by decide +kernel
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem settled_good : good settle settled = true := by decide +kernel
+theorem state_good : good settle settledState = true := by decide +kernel
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem settled_reserve : settled.s.core.canReserve = true := by decide +kernel
+theorem state_reserve : settledState.s.core.canReserve = true := by decide +kernel
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
-theorem settled_completed : settled.s.core.phase = .completed := by decide +kernel
+theorem state_completed : settledState.s.core.phase = .completed := by decide +kernel
 
 set_option maxRecDepth 100000 in
-set_option maxHeartbeats 0 in
 /-- From the settled loop, two pops and a RELEASE drain the transfer. -/
-theorem settled_drain : drainOK settled.s = true := by decide +kernel
+theorem state_drain : drainOK settledState.s = true := by decide +kernel
+
+theorem settled_fixed : settled.step = settled := by
+  rw [settled_eq_state]; exact sameLoop_iff.mp state_same
+
+theorem settled_good : good settle settled = true := by rw [settled_eq_state]; exact state_good
+
+theorem settled_reserve : settled.s.core.canReserve = true := by
+  rw [settled_eq_state]; exact state_reserve
+
+theorem settled_completed : settled.s.core.phase = .completed := by
+  rw [settled_eq_state]; exact state_completed
+
+theorem settled_drain : drainOK settled.s = true := by rw [settled_eq_state]; exact state_drain
 
 end Pinwheel.Program.StreamingI2CReadWitness

@@ -1,6 +1,6 @@
 import Pinwheel.Hardware.StreamingReady.LoaderBoot
 import Pinwheel.Hardware.StreamingReady.I2CReadSuccess
-import Pinwheel.Program.StreamingI2CReadPremises
+import PinwheelWitness.I2CReadPremises
 
 /-! The I²C read-completion theorem is not vacuous: from any power-up state of
 the typed package, the checked boot upload, the scenario host and the scenario

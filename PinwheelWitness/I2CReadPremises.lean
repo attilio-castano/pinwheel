@@ -1,4 +1,4 @@
-import Pinwheel.Program.StreamingI2CReadWitness
+import PinwheelWitness.I2CReadScenario
 
 /-! The checked scenario satisfies each source-level premise of the I²C
 read-completion theorem. Loop facts are proved for an arbitrary starting loop by
@@ -155,11 +155,6 @@ theorem qualified_at (s : State 1) (inputs : List Input) (k : Nat) (q : State 1)
         simp [capCount, hc, count]; omega
 
 /-! ### The checked execution -/
-
-theorem scan_fst (n t : Nat) (l : Loop) : (scan n t l).1 = runLoop n l := by
-  induction n generalizing t l with
-  | zero => rfl
-  | succ n ih => exact ih (t+1) l.step
 
 theorem scan_good (n t : Nat) (l : Loop) (h : (scan n t l).2 = true) :
     ∀ k < n, good (t+k) (runLoop k l) = true := by

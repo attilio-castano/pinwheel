@@ -8,6 +8,10 @@ warningAsError = true
 [[lean_lib]]
 name = "Pinwheel"
 
+# Expensive witness proofs, outside the default build; see scripts/check-witness.py.
+[[lean_lib]]
+name = "PinwheelWitness"
+
 [[lean_exe]]
 name = "backend_emit"
 root = "test.Backend"
