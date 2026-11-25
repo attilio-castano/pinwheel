@@ -11,11 +11,13 @@ import Pinwheel.Hardware.StreamingReady.EthernetSession
 import Pinwheel.Hardware.StreamingReady.I2CReadSession
 import Pinwheel.Hardware.StreamingReady.I2CReadSuccess
 import Pinwheel.Hardware.StreamingReady.I2CReadTimeout
+import Pinwheel.Hardware.StreamingReady.I2CReadWitness
 import Pinwheel.Hardware.StreamingReady.Initialization
 import Pinwheel.Hardware.StreamingReady.InitializedCustody
 import Pinwheel.Hardware.StreamingReady.InitializedSession
 import Pinwheel.Hardware.StreamingReady.InputCorrespondence
 import Pinwheel.Hardware.StreamingReady.JTAGSession
+import Pinwheel.Hardware.StreamingReady.LoaderBoot
 import Pinwheel.Hardware.StreamingReady.LoaderEquivalence
 import Pinwheel.Hardware.StreamingReady.Package
 import Pinwheel.Hardware.StreamingReady.PinCorrespondence

@@ -513,6 +513,22 @@ The theorem gives START, 585 qualified slots, and STOP at the resolved bus,
 the exact exported payload and acknowledgment, and the empty export at
 RELEASE. The schedule and proof use the supplied `I2cProfile`.
 
+The [witness](../../Pinwheel/Hardware/StreamingReady/I2CReadWitness.lean)
+shows these service premises can all hold at once, so the theorem is not
+vacuous. From any power-up state of the typed package, the certified boot
+upload, a concrete quad-link host and an I²C target satisfy every hypothesis
+of the standard-profile theorem, and `completes` instantiates its
+conclusion. The host sends START for 585 bits, then sizes each exchange by
+the free TX words. The target releases at START and STOP and drives SDA from
+a 64-byte payload. The [scenario](../../Pinwheel/Program/StreamingI2CReadWitness.lean)
+steps host, target and source session as one loop. It completes 7,294
+clocks after START and is a fixed point from clock 7,505. The scenario's
+kernel checks cover every clock up to that point. They are six separate
+theorems because the kernel holds a declaration's work until it ends. The
+module adds about 7 minutes and 8.6 GB to a cold build. The
+[premises](../../Pinwheel/Program/StreamingI2CReadPremises.lean) carry the
+finite checks to every clock through the fixed point.
+
 The [fault proof](../../Pinwheel/Hardware/StreamingReady/I2CReadTimeout.lean)
 starts from an initialized image and admitted START. At any reachable data
 WAIT, a peer that holds SCL low through every eligible aperture forces a
