@@ -19,14 +19,16 @@ macro "output_cases" o:ident : tactic => `(tactic| (
     _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | _ | k
   all_goals try (exfalso; omega)))
 
-macro "output_simp" : tactic => `(tactic|
-  simp_all [Circuit.observe,circuit,CoreInterface.outputValues,CoreModel.observe,CoreModel.event,CoreModel.tick,
+macro "output_simp" : tactic => `(tactic| (
+    unfold Circuit.observe circuit CoreInterface.outputValues
+    try simp only
+    simp_all [CoreModel.observe,CoreModel.event,CoreModel.tick,
     CoreInterface.decode,CoreInterface.eventWrite,CoreInterface.retired,CoreInterface.trapped,
     active,inPhase,pcAligned_eval,executing,dataOffer,dataWaiting,retiring,immediateRetire,
     dataSuccess,dataCompletion,atomicCompletion,deferredCompletion,fenceRetire,
     writeEnabled,writeRd,writeData,trapping,fetchMisaligned,fetchFault,executeTrap,dataTrap,trapHasWord,
     isLoad,isStore,nextPC,newCause,newFaultAddress,CoreModel.terminal,CoreModel.acceptOutcome,RV32I.Semantics.finish,RV32I.Semantics.next,
-    Expr.eval,arch,architecture,CoreInterface.causeCode,CoreInterface.faultAddress])
+    Expr.eval,arch,architecture,CoreInterface.causeCode,CoreInterface.faultAddress]))
 
 theorem fetch_request_output (i : Values Input) (raw : Values Register)
     (hr : i reset = 0) (hp : raw phase = 0) (o : Output b) :
@@ -105,14 +107,16 @@ theorem fence_output (i : Values Input) (raw : Values Register) (c : RV32I.Seman
   all_goals output_simp
   all_goals rfl
 
-macro "data_output_simp" : tactic => `(tactic|
-  simp [*,Circuit.observe,circuit,CoreInterface.outputValues,CoreModel.observe,CoreModel.event,CoreModel.tick,
+macro "data_output_simp" : tactic => `(tactic| (
+    unfold Circuit.observe circuit CoreInterface.outputValues
+    try simp only
+    simp [*,CoreModel.observe,CoreModel.event,CoreModel.tick,
     CoreInterface.decode,CoreInterface.eventWrite,CoreInterface.retired,CoreInterface.trapped,
     active,inPhase,pcAligned_eval,executing,dataOffer,dataWaiting,retiring,immediateRetire,
     dataSuccess,dataCompletion,atomicCompletion,deferredCompletion,fenceRetire,
     writeEnabled,writeRd,writeData,trapping,fetchMisaligned,fetchFault,executeTrap,dataTrap,trapHasWord,
     isLoad,isStore,nextPC,newCause,newFaultAddress,CoreInterface.reply,replyFault,replyData,CoreModel.DataRequest.intent,CoreModel.DataRequest.pending,CoreModel.DataRequest.reply,CoreModel.DataRequest.finish,RV32I.Semantics.Pending.intent,CoreModel.terminal,CoreModel.acceptOutcome,RV32I.Semantics.finish,RV32I.Semantics.next,
-    Expr.eval,CoreInterface.causeCode,CoreInterface.faultAddress])
+    Expr.eval,CoreInterface.causeCode,CoreInterface.faultAddress]))
 
 macro "finish_store_outputs" o:ident : tactic => `(tactic| (
   rcases ($o) with ⟨⟨k,hk⟩⟩
@@ -231,8 +235,10 @@ theorem data_load_output (i : Values Input) (raw : Values Register) (p : BitVec 
       · finish_load_outputs o dest
       · by_cases hmis : i dataResponseFault = (1#2) <;> finish_load_outputs o dest
 
-macro "execute_output_simp" : tactic => `(tactic|
-  simp_all [Circuit.observe,circuit,CoreInterface.outputValues,CoreModel.observe,CoreModel.event,CoreModel.tick,
+macro "execute_output_simp" : tactic => `(tactic| (
+    unfold Circuit.observe circuit CoreInterface.outputValues
+    try simp only
+    simp_all [CoreModel.observe,CoreModel.event,CoreModel.tick,
     CoreModel.acceptOutcome,CoreInterface.decode,CoreInterface.eventWrite,CoreInterface.retired,CoreInterface.trapped,
     active,inPhase,executing,dataOffer,dataWaiting,retiring,immediateRetire,
     dataSuccess,dataCompletion,atomicCompletion,deferredCompletion,fenceRetire,
@@ -241,7 +247,7 @@ macro "execute_output_simp" : tactic => `(tactic|
     execution_eval,RV32I.ExecuteCircuit.project,RV32I.ExecuteCircuit.retired,RV32I.ExecuteCircuit.trapped,
     RV32I.ExecuteCircuit.loading,RV32I.ExecuteCircuit.storing,RV32I.ExecuteCircuit.fencing,
     RV32I.ExecuteCircuit.Result.values,Expr.eval,CoreInterface.causeCode,CoreInterface.faultAddress,
-    RV32I.ExecuteCircuit.bool_beq,bne])
+    RV32I.ExecuteCircuit.bool_beq,bne]))
 
 theorem execute_retired_output (i : Values Input) (raw : Values Register)
     (hr : i reset = 0) (hp : raw phase = 2) (context : RV32I.Semantics.Context)
