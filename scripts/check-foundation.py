@@ -14,6 +14,7 @@ import sys
 import time
 from pathlib import Path
 
+import lean_libraries
 import process_group
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -65,43 +66,17 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def check_imports():
-    modules = {'.'.join(p.relative_to(ROOT).with_suffix('').parts): p
-               for p in (ROOT / 'Pinwheel').rglob('*.lean')}
-    modules['Pinwheel'] = ROOT / 'Pinwheel.lean'
-    seen = set()
-    def visit(name):
-        if name in seen or name not in modules:
-            return
-        seen.add(name)
-        for child in re.findall(r'^import (\S+)', modules[name].read_text(), re.M):
-            visit(child)
-    visit('Pinwheel')
-    missing = sorted(modules.keys() - seen)
-    if missing:
-        raise RuntimeError(f'Library files outside the default build: {missing}')
-    return len(seen)
+def check_imports(root=ROOT):
+    """Every Lean file belongs to a declared library; return the gated module count."""
+    libs, modules = lean_libraries.check_coverage(root)
+    return len(lean_libraries.ordered_modules(lean_libraries.gated(libs), modules))
 
 
 def serial_modules(root=ROOT):
-    """Compile each local dependency before its importer, once per process."""
-    modules = {'.'.join(p.relative_to(root).with_suffix('').parts): p
-               for p in (root / 'Pinwheel').rglob('*.lean')}
-    modules['Pinwheel'] = root / 'Pinwheel.lean'
-    ordered, active, seen = [], set(), set()
-    def visit(name):
-        if name in seen or name not in modules:
-            return
-        if name in active:
-            raise RuntimeError('Cyclic local Lean imports: ' + name)
-        active.add(name)
-        for child in re.findall(r'^\s*(?:public\s+)?import\s+(\S+)', modules[name].read_text(), re.M):
-            visit(child)
-        active.remove(name); seen.add(name); ordered.append((name, modules[name]))
-    visit('Pinwheel')
-    if set(modules) != seen:
-        raise RuntimeError('Serial build does not cover the complete default library')
-    return ordered
+    """Compile each local dependency before its importer, once per process,
+    over every library the gate checks."""
+    libs, modules = lean_libraries.check_coverage(root)
+    return lean_libraries.ordered_modules(lean_libraries.gated(libs), modules)
 
 
 def serial_limits(memory_mib=4096):
@@ -133,13 +108,16 @@ def main():
     if not lake:
         raise RuntimeError('Install the pinned Lean toolchain and put lake on PATH')
     modules = check_imports()
+    libs, library_sources = lean_libraries.check_coverage(ROOT)
+    checked = lean_libraries.gated(libs)
     sources = [ROOT / p for p in ['Pinwheel.lean', 'lean-toolchain', 'lakefile.toml',
                                  'lake-manifest.json', 'scripts/check-foundation.py',
-                                 'scripts/process_group.py',
+                                 'scripts/lean_libraries.py', 'scripts/process_group.py',
                                  'scripts/binary_v0.py',
                                  'scripts/check-uart-rx.py', 'scripts/uart_rx_oracle.py',
                                  'scripts/reactive-core-vectors.py', 'scripts/execution-vectors.py']]
     sources += sorted((ROOT / 'Pinwheel').rglob('*.lean')) + sorted((ROOT / 'test').glob('*.lean'))
+    sources += sorted(set(library_sources.values()) - set(sources))
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in sources}
     out.mkdir(parents=True)
     commands = []
@@ -179,12 +157,14 @@ def main():
             run([*lean, '-o', str(artifacts)+'.olean', '-i', str(artifacts)+'.ilean',
                  '-c', generated, relative], 'build-' + name)
     else:
-        run([lake, 'build'], 'build')
-    audit = run([*lean, 'test/ProofAudit.lean'], 'axioms')
+        run([lake, 'build', *[name for name, _ in checked]], 'build')
+    audit_text = lean_libraries.audit_source((ROOT / 'test/ProofAudit.lean').read_text(), checked)
+    audit_file = out / 'ProofAudit.lean'
+    audit_file.write_text(audit_text)
+    audit = run([*lean, audit_file], 'axioms')
     counts = re.search(r'Pinwheel audit: (\d+) declarations, (\d+) theorems;', audit)
     if not counts:
         raise RuntimeError('Missing whole-library audit summary')
-    audit_text = (ROOT / 'test/ProofAudit.lean').read_text()
     mutant = out / 'RejectAxiom.lean'
     mutant.write_text(audit_text.removesuffix('#audit_pinwheel\n') +
                       'axiom Pinwheel.CI.untrusted : False\n#audit_pinwheel\n')
@@ -217,6 +197,8 @@ def main():
         if sha(path) != hashes[str(path.relative_to(ROOT))]:
             raise RuntimeError(f'Source changed during validation: {path}')
     report = dict(lean=version, modules=modules, audited_declarations=int(counts[1]),
+                  libraries=[name for name, _ in checked],
+                  checked_elsewhere=lean_libraries.CHECKED_ELSEWHERE,
                   serial_build=args.serial_build, lean_resource_limits=limits,
                   timeout_seconds=args.timeout_seconds if args.serial_build else None,
                   audited_theorems=int(counts[2]), executable_suites=len(SUITES),

@@ -37,6 +37,24 @@ PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --ta
 or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
 that changes `tt.sv` and expects the check to fail.
 
+### Libraries
+
+`lakefile.toml` declares three libraries, and every Lean file must be imported
+from one of their roots:
+
+| Library | Contents | Built by |
+|---|---|---|
+| `Pinwheel` | the streaming chip stack: protocols, engine, compilers, hardware proofs | `lake build` (default) |
+| `PinwheelHardwareLibrary` | the reusable hardware library: RV32I processor and systems, memory adapters, stream composition, switches, UART timebases | `lake build PinwheelHardwareLibrary`, the foundation gate |
+| `PinwheelWitness` | non-vacuity witnesses | `scripts/check-witness.py` |
+
+A library can import any other, so proofs still connect across them; the split
+decides only what `lake build` checks by default. The foundation gate rejects
+a file that no library imports, so a new module must be added to a library
+root (usually through an existing `All.lean` or the library's root file). The
+hardware library takes about nine CPU-minutes to build. Five of those are one
+module, `Processor/CoreCircuitOutputs.lean`.
+
 ### Witness library
 
 `PinwheelWitness` holds proofs that conditional theorems are not vacuous:
@@ -132,7 +150,7 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the protocol models, engine, compilers, and structural hardware proofs, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks all proofs as well as the original toolchain example. Run the executable model checks with:
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the protocol models, engine, compilers, and structural hardware proofs, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks those proofs as well as the original toolchain example; the other declared libraries are described under [Libraries](#libraries). Run the executable model checks with:
 
 ```sh
 lake env lean -DwarningAsError=true --run test/UART.lean

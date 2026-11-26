@@ -11,6 +11,7 @@ spec = importlib.util.spec_from_file_location('foundation_serial', ROOT/'scripts
 F = importlib.util.module_from_spec(spec); spec.loader.exec_module(F)
 spec = importlib.util.spec_from_file_location('foundation_snapshot_serial', ROOT/'scripts/check-foundation-snapshot.py')
 S = importlib.util.module_from_spec(spec); spec.loader.exec_module(S)
+import lean_libraries as L
 
 
 class SerialCoverage(unittest.TestCase):
@@ -22,6 +23,9 @@ class SerialCoverage(unittest.TestCase):
                 F.serial_limits(memory)
 
     def fixture(self, root):
+        (root/'lakefile.toml').write_text('[[lean_lib]]\nname = "Pinwheel"\n\n'
+                                          '[[lean_lib]]\nname = "PinwheelWitness"\n')
+        (root/'PinwheelWitness.lean').write_text('import Pinwheel\n')
         (root/'Pinwheel').mkdir()
         (root/'Pinwheel.lean').write_text('import Pinwheel.Parent\n')
         (root/'Pinwheel/Parent.lean').write_text('public import Pinwheel.Child\nimport Lean\n')
@@ -31,8 +35,11 @@ class SerialCoverage(unittest.TestCase):
         ordered = F.serial_modules()
         self.assertEqual(len(ordered), F.check_imports())
         self.assertEqual(len({name for name, _ in ordered}), len(ordered))
-        self.assertEqual(ordered[-1][0], 'Pinwheel')
-        self.assertTrue(any(name == 'Pinwheel.Hardware.StreamingPhysical.Clock' for name, _ in ordered))
+        names = [name for name, _ in ordered]
+        self.assertLess(names.index('Pinwheel'), names.index('PinwheelHardwareLibrary'))
+        self.assertIn('Pinwheel.Hardware.StreamingPhysical.Clock', names)
+        self.assertIn('Pinwheel.Hardware.Processor.CoreCircuitOutputs', names)
+        self.assertNotIn('PinwheelWitness', names)
 
     def test_public_imports_and_diamonds_are_compiled_once(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -45,8 +52,33 @@ class SerialCoverage(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary); self.fixture(root)
             (root/'Pinwheel/Orphan.lean').write_text('import Lean\n')
-            with self.assertRaisesRegex(RuntimeError, 'complete default library'):
+            with self.assertRaisesRegex(RuntimeError, 'outside every declared library'):
                 F.serial_modules(root)
+
+    def test_second_library_covers_its_files_and_is_built_after_the_default(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); self.fixture(root)
+            (root/'lakefile.toml').write_text((root/'lakefile.toml').read_text() +
+                                              '\n[[lean_lib]]\nname = "PinwheelExtra"\n')
+            (root/'Pinwheel/Extra.lean').write_text('import Pinwheel.Child\n')
+            (root/'PinwheelExtra.lean').write_text('import Pinwheel.Extra\n')
+            self.assertEqual([name for name, _ in F.serial_modules(root)],
+                             ['Pinwheel.Child', 'Pinwheel.Parent', 'Pinwheel', 'Pinwheel.Extra', 'PinwheelExtra'])
+
+    def test_separately_checked_library_counts_for_coverage_only(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); self.fixture(root)
+            (root/'PinwheelWitness').mkdir()
+            (root/'PinwheelWitness/Slow.lean').write_text('import Pinwheel\n')
+            with self.assertRaisesRegex(RuntimeError, 'PinwheelWitness.Slow'):
+                F.serial_modules(root)
+            (root/'PinwheelWitness.lean').write_text('import PinwheelWitness.Slow\n')
+            self.assertNotIn('PinwheelWitness.Slow', [name for name, _ in F.serial_modules(root)])
+
+    def test_audit_imports_every_gated_library(self):
+        libs = [('Pinwheel', ['Pinwheel']), ('PinwheelExtra', ['PinwheelExtra'])]
+        text = (ROOT/'test/ProofAudit.lean').read_text()
+        self.assertIn('import Pinwheel\nimport PinwheelExtra\n', L.audit_source(text, libs))
 
     def test_cycle_is_rejected_before_compiler_launch(self):
         with tempfile.TemporaryDirectory() as temporary:
