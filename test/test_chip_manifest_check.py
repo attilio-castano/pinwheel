@@ -170,7 +170,9 @@ class ChipManifestCheck(unittest.TestCase):
     def test_i2c_waveform_manifest(self):
         waveform = self.manifest['i2c_waveform']
         self.assertEqual((waveform['low_core_clocks_min'], waveform['high_core_clocks_min'],
-                          waveform['setup_core_clocks_min'], waveform['data_hold_core_clocks']), (5, 7, 4, 0))
+                          waveform['setup_core_clocks_min'], waveform['data_hold_core_clocks'],
+                          waveform['start_hold_core_clocks_min'], waveform['stop_setup_core_clocks_min']),
+                         (5, 7, 4, 0, 10, 14))
         self.assertEqual(waveform['standard_profile_modes_at_4MHz'], ['fast_plus'])
 
     def test_board_guide(self):
@@ -181,13 +183,26 @@ class ChipManifestCheck(unittest.TestCase):
         self.assertTrue(uart['usable'])
         self.assertFalse(rows[('uart_rx', 50000000, (('baud', 9600), ('quarter_cycles', 1302)))]['usable'])
         self.assertEqual(rows[('spi', 50000000, (('half_cycles', 3),))]['result']['peer_output_window_ns'], 20)
-        self.assertEqual(rows[('i2c', 4000000, (('high_cycles', 18), ('low_cycles', 18)))]['meets'],
+        self.assertEqual(rows[('i2c', 4000000, (('high_cycles', 18), ('low_cycles', 18), ('wait_budget', 255)))]['meets'],
                          ['standard', 'fast', 'fast_plus'])
         report = C.Report()
         C.check_board_guide(report, self.manifest)
         self.assertEqual(report.mismatches, [])
         stale = guide.splice(guide.DOC.read_text(), guide.render(self.manifest).replace('| yes |', '| no |', 1))
         self.assertNotEqual(stale, guide.DOC.read_text())
+
+    def test_bringup_i2c_modes(self):
+        import streaming_8x4_bringup as bringup
+        report = C.Report()
+        C.check_bringup_i2c_modes(report, self.manifest, bringup.I2C_MODES)
+        self.assertEqual(report.mismatches, [])
+        self.assertEqual(len(report.rows), 3)
+        report = C.Report()
+        C.check_bringup_i2c_modes(report, self.manifest, {'standard': (4, 4, 31)})
+        self.assertEqual({field for _, field in self.fields(report)}, {'standard meets standard mode'})
+        report = C.Report()
+        C.check_bringup_i2c_modes(report, self.manifest, {'fast': (5, 3, 31)})
+        self.assertEqual({field for _, field in self.fields(report)}, {'fast'})
 
     def test_over_target_contract_warns(self):
         report, _ = C.run(self.manifest)

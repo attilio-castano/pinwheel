@@ -16,6 +16,7 @@ import Pinwheel.Hardware.StreamingReady.InitializedCustody
 import Pinwheel.Hardware.StreamingReady.InitializedSession
 import Pinwheel.Hardware.StreamingReady.InputCorrespondence
 import Pinwheel.Hardware.StreamingReady.JTAGSession
+import Pinwheel.Hardware.StreamingReady.LoaderBoot
 import Pinwheel.Hardware.StreamingReady.LoaderEquivalence
 import Pinwheel.Hardware.StreamingReady.Package
 import Pinwheel.Hardware.StreamingReady.PinCorrespondence

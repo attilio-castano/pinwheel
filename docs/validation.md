@@ -224,10 +224,13 @@ experiment outputs when rerunning them. A failure produces no success receipt.
 
 The gate:
 
-1. Checks that every library module is reachable from `Pinwheel.lean` and that
-   the actual compiler matches the repository pin, then runs `lake build` with
-   warnings treated as errors.
-2. Audits every Pinwheel declaration in the compiled environment, including
+1. Checks that every Lean file is imported from the root of a library declared
+   in `lakefile.toml` (`scripts/lean_libraries.py`) and that the actual
+   compiler matches the repository pin, then builds every library except
+   `PinwheelWitness` (checked by `scripts/check-witness.py`) with warnings
+   treated as errors.
+2. Audits every Pinwheel declaration in the compiled environment of those
+   libraries, including
    private and generated declarations and definitions containing proofs. Only
    `propext`, `Classical.choice`, and `Quot.sound` are allowed. An injected custom
    axiom must fail for the expected diagnostic. Counts include generated

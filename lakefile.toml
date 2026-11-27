@@ -5,8 +5,19 @@ defaultTargets = ["Pinwheel"]
 [leanOptions]
 warningAsError = true
 
+# Every Lean file must be imported from one of these library roots; the
+# foundation gate (scripts/check-foundation.py) enforces it. `lake build`
+# builds only the default `Pinwheel`.
 [[lean_lib]]
 name = "Pinwheel"
+
+# The reusable hardware library, about nine CPU-minutes; built by the foundation gate.
+[[lean_lib]]
+name = "PinwheelHardwareLibrary"
+
+# Expensive witness proofs; checked by scripts/check-witness.py.
+[[lean_lib]]
+name = "PinwheelWitness"
 
 [[lean_exe]]
 name = "backend_emit"

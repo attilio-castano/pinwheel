@@ -100,7 +100,11 @@ a sample taken two clocks earlier, SCL stays released for that clock and
 `HIGH` more (`high_window`, `ready_sample`). Here `LOW` and `HIGH` are the
 builder's `low_cycles` and `high_cycles`. On the bus this gives SCL LOW of at
 least `LOW + 1` core periods, SCL HIGH of at least `HIGH + 3`, and SDA setup
-of at least `LOW`, before pad delays and rise times.
+of at least `LOW`, before pad delays and rise times. At the frame ends, START
+holds SDA low for `2 × HIGH + 2` core periods before SCL falls
+(`start_window`), and STOP keeps SCL high for at least `2 × HIGH + 6` periods
+before SDA is released (`stop_window`, `stop_ready_sample`). Bus-free time
+between transactions is set by the host.
 
 The standard profile (4/4) therefore meets standard mode only with a core
 clock up to about 1.06 MHz (`standard_meets_standard_iff`). At 4 MHz it meets
@@ -508,6 +512,24 @@ and supplies a finite drain with an admissible RELEASE after completion.
 The theorem gives START, 585 qualified slots, and STOP at the resolved bus,
 the exact exported payload and acknowledgment, and the empty export at
 RELEASE. The schedule and proof use the supplied `I2cProfile`.
+
+The [witness](../../PinwheelWitness/I2CRead.lean)
+shows these service premises can all hold at once, so the theorem is not
+vacuous. From any power-up state of the typed package, the certified boot
+upload, a concrete quad-link host and an I²C target satisfy every hypothesis
+of the standard-profile theorem, and `completes` instantiates its
+conclusion. The host sends START for 585 bits, then sizes each exchange by
+the free TX words. The target releases at START and STOP and drives SDA from
+a 64-byte payload. The [scenario](../../PinwheelWitness/I2CReadScenario.lean)
+steps host, target and source session as one loop. It completes 7,294
+clocks after START and is a fixed point from clock 7,505. One kernel check
+replays those clocks, checks every per-clock premise, and equates the final
+loop with a written-out state. Facts about the final state are then checked
+on that literal in seconds. The
+[premises](../../PinwheelWitness/I2CReadPremises.lean) carry the finite
+checks to every clock through the fixed point. The witness library builds in
+about 3 minutes at 8 GB, outside the default build; `scripts/check-witness.py`
+checks it.
 
 The [fault proof](../../Pinwheel/Hardware/StreamingReady/I2CReadTimeout.lean)
 starts from an initialized image and admitted START. At any reachable data

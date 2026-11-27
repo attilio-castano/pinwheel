@@ -12,8 +12,11 @@ def outputLabel : {w : Nat} → Output w → String := Streaming.Core.outputLabe
 def registerLabel : {w : Nat} → Register a w → String := Streaming.Core.registerLabel
 def registerIndex : {w : Nat} → Register a w → Nat := Streaming.Core.registerIndex
 
+/-- The emitted module's name, shared with the read-back descriptor. -/
+def moduleName (a : Nat) : String := s!"pinwheel_streaming_ready_core_d{2^a}"
+
 def moduleText (a : Nat) : Except String String := Buffered.MemoEmit.moduleText
-  s!"pinwheel_streaming_ready_core_d{2^a}" (circuit a) inputs (registers a) outputs
+  (moduleName a) (circuit a) inputs (registers a) outputs
   inputLabel registerLabel outputLabel
 
 end Pinwheel.Hardware.StreamingReady.Core

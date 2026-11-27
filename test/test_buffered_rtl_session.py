@@ -106,7 +106,9 @@ class BufferedRtlProvenanceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='unqualified-full-membership-') as directory:
             fixture = GitFixture(directory, 'full')
             self.assertTrue(gate.FULL_REQUIRED <= set(fixture.paths))
-            for relative in ('physical/buffered_sram_memory.sv', 'scripts/buffered_rtl_session_full.py'):
+            for relative in ('physical/buffered_sram_memory.sv', 'scripts/buffered_rtl_session_full.py',
+                             'scripts/readback_descriptors/buffered-sram.json',
+                             'scripts/readback_descriptors/buffered-serial.json'):
                 tree = dict(fixture.tree)
                 del tree[relative]
                 with self.subTest(missing=relative), self.assertRaisesRegex(RuntimeError, 'not committed'):

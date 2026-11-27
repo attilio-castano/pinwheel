@@ -1,25 +1,47 @@
 """Exact Ready circuit adapter over the shared raw graph/certificate machinery."""
 import streaming_readback as base
-from streaming_readback import (CORE_INPUTS, CORE_OUTPUTS, CORE_REGISTERS,
-    FRONTEND_INPUTS, FRONTEND_REGISTERS, adapt, check_interface, hints_source,
+import readback_descriptor
+from streaming_readback import (FRONTEND_INPUTS, adapt, check_interface, hints_source,
     graphs_source, sources_source, helper_source, boolean_abstractions,
     links_source, model_source, endpoints_source, proof_source, prefix_imports, register_term,
     mutation_specs, mutation_sources)
 shared, decomposition = base.shared, base.decomposition
 
 
-def backend(kind, addr_bits=1, *, tx_layout='ring'):
+def descriptor_name(kind, addr_bits, tx_layout='ring'):
+    """The checked-in descriptor for a Ready module. The shift TX layout has no
+    descriptor of its own: it starts from the Streaming core's, whose ports and
+    registers it shares, and edits the register table."""
+    if kind == 'frontend':
+        return 'frontend'
+    return ('streaming' if tx_layout == 'shift' else 'ready') + '-core-d' + str(2**addr_bits)
+
+
+def backend(kind, addr_bits=1, *, tx_layout='ring', descriptor=None):
+    """Configure the importer for one Ready module.
+
+    The module, types, circuit and port tables come from a Lean read-back
+    descriptor: `descriptor` (a path or a loaded descriptor) when given, else
+    the checked-in copy named by `descriptor_name`. A descriptor for another
+    module is rejected."""
     if tx_layout not in ('ring', 'shift') or (tx_layout == 'shift' and (kind != 'core' or addr_bits != 1)):
         raise ValueError('Unsupported Ready TX layout for this component or depth')
+    expected = readback_descriptor.checked_in(descriptor_name(kind, addr_bits, tx_layout))
+    if descriptor is None:
+        descriptor = expected
+    elif not isinstance(descriptor, dict):
+        descriptor = readback_descriptor.load(descriptor)
+    if descriptor['module'] != expected['module']:
+        raise ValueError(f"Descriptor for {descriptor['module']}, expected {expected['module']}")
     rb = base.backend(kind, addr_bits)
+    readback_descriptor.apply(rb, descriptor)
     shift_import = ''
     if kind == 'core':
-        rb.TOP = 'pinwheel_streaming_ready_core_d' + str(2**addr_bits)
-        rb.CIRCUIT = '(Pinwheel.Hardware.StreamingReady.Core.circuit ' + str(addr_bits) + ')'
         rb.NAMESPACE = 'Pinwheel.Artifact.StreamingReadyCoreD' + str(2**addr_bits)
         if tx_layout == 'shift':
             shift_import = 'import Pinwheel.Hardware.StreamingReady.TxShiftCore\n'
             shift = 'Pinwheel.Hardware.StreamingReady.TxShiftCore'
+            rb.TOP = readback_descriptor.checked_in(descriptor_name(kind, addr_bits))['module']
             rb.CIRCUIT = shift + '.circuit'
             rb.REGISTER_TYPE = shift + '.Register'
             rb.NAMESPACE += 'Shift'

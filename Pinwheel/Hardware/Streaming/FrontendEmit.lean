@@ -75,8 +75,11 @@ def registerIndex : {w : Nat} → Register w → Nat
   | _, .crcWork => 25
   | _, .crc => 26
   | _, .crcCount => 27
+/-- The emitted module's name, shared with the read-back descriptor. -/
+def moduleName : String := "pinwheel_streaming_quad_frontend"
+
 def moduleText : Except String String := Buffered.MemoEmit.moduleText
-  "pinwheel_streaming_quad_frontend" circuit inputs registers outputs
+  moduleName circuit inputs registers outputs
   inputLabel registerLabel outputLabel
 
 end Pinwheel.Hardware.Streaming.Frontend

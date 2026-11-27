@@ -2,6 +2,7 @@ import Pinwheel.Program.StreamingEthernetCore
 import Pinwheel.Program.StreamingEthernetFrame
 import Pinwheel.Program.StreamingReadyBootPins
 import Pinwheel.Program.StreamingReadyCustodySession
+import Pinwheel.Program.StreamingReadyLoader
 
 /-! The host drives a complete Ethernet transmit session through sampled
 quad-link transactions. The first pair of TX words is staged while GO is low.
@@ -10,27 +11,9 @@ the shifter and stages both new words before the shifter runs out. -/
 namespace Pinwheel.Program.StreamingEthernetSchedule
 open StreamingReady StreamingEthernetCore StreamingEthernetFrame
 
-structure Loader where
-  host : Streaming.Host.State := {csnPrev := true}
-  written : Bool := false
-  installed : Bool := false
-
-def loaderCore (s : Loader) : State 1 := { generation := if s.installed then 1 else 0 }
-
-def loaderStatus (s : Loader) (pin : Session.Pins) : Streaming.Host.Status :=
-  { (loaderCore s).status (s.written && !s.installed) (s.host.command (pin.host {})).runtime with
-    valid := s.installed, rejected := false }
-
-def loaderStep (s : Loader) (pin : Session.Pins) : Loader :=
-  let command := (s.host.command (pin.host {})).runtime.command
-  ⟨Streaming.Host.step (pin.host (loaderStatus s pin)) s.host,
-    s.written || command == 1, s.installed || command == 2⟩
-
 def bootPins : List Session.Pins := Streaming.BootPins.upload image.words idlePins 0
 
-def bootState : Loader := bootPins.foldl loaderStep {}
-
-def seed : Session.State 1 := ⟨bootState.host, loaderCore bootState⟩
+def seed : Session.State 1 := Loader.seed bootPins
 
 def startRequest : BitVec 176 := Streaming.BootPins.request 3 7 (1#16 ++ (576#16 ++ 0#96))
 

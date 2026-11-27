@@ -19,15 +19,15 @@ by `scripts/board_clock_guide.py` and checked by `scripts/check-chip-manifest.py
 | 4 MHz | UART receive | 9600 baud, `quarter_cycles=104` | bit = 416 core clocks; every sample point lands in its bit | yes |
 | 4 MHz | SPI | `half_cycles=4` | bit clock up to 444,444 Hz; peer output delay at most 500 ns | yes |
 | 4 MHz | JTAG | `half_cycles=4` | bit clock up to 444,444 Hz; peer output delay at most 500 ns | yes |
-| 4 MHz | I²C | `low_cycles=4`, `high_cycles=4` | meets Fast-mode Plus; clock stretch up to 28 core clocks | yes |
-| 4 MHz | I²C | `low_cycles=5`, `high_cycles=3` | meets Fast, Fast-mode Plus; clock stretch up to 28 core clocks | yes |
-| 4 MHz | I²C | `low_cycles=18`, `high_cycles=18` | meets standard, Fast, Fast-mode Plus; clock stretch up to 28 core clocks | yes |
+| 4 MHz | I²C | `low_cycles=4`, `high_cycles=4`, `wait_budget=31` | meets Fast-mode Plus; clock stretch up to 28 core clocks | yes |
+| 4 MHz | I²C | `low_cycles=5`, `high_cycles=3`, `wait_budget=255` | meets Fast, Fast-mode Plus; clock stretch up to 252 core clocks | yes |
+| 4 MHz | I²C | `low_cycles=18`, `high_cycles=18`, `wait_budget=255` | meets standard, Fast, Fast-mode Plus; clock stretch up to 252 core clocks | yes |
 | 50 MHz | UART receive | 115200 baud, `quarter_cycles=109` | bit = 436 core clocks; every sample point lands in its bit | yes |
 | 50 MHz | UART receive | 9600 baud, `quarter_cycles=1302` | needs `quarter_cycles` above the limit of 128 | no |
 | 50 MHz | SPI | `half_cycles=3` | bit clock up to 7,142,857 Hz; peer output delay at most 20 ns | yes |
 | 50 MHz | JTAG | `half_cycles=3` | bit clock up to 7,142,857 Hz; peer output delay at most 20 ns | yes |
-| 50 MHz | I²C | `low_cycles=4`, `high_cycles=4` | meets no I²C mode; clock stretch up to 28 core clocks | no |
-| 50 MHz | I²C | `low_cycles=256`, `high_cycles=240` | meets standard, Fast, Fast-mode Plus; clock stretch up to 28 core clocks | yes |
+| 50 MHz | I²C | `low_cycles=4`, `high_cycles=4`, `wait_budget=31` | meets no I²C mode; clock stretch up to 28 core clocks | no |
+| 50 MHz | I²C | `low_cycles=256`, `high_cycles=240`, `wait_budget=255` | meets standard, Fast, Fast-mode Plus; clock stretch up to 252 core clocks | yes |
 | 4 MHz | CAN receive | fixed image | needs a 4 MHz core clock | yes |
 | 4 MHz | Ethernet SNI transmit | fixed image | needs a 60 MHz core clock | no |
 | 4 MHz | PS/2 receive | fixed image | needs a 4 MHz core clock | yes |
@@ -52,10 +52,17 @@ by `scripts/board_clock_guide.py` and checked by `scripts/check-chip-manifest.py
   must also accept the listed bit clock rate.
 - **I²C** ([waveforms](../Pinwheel/Program/StreamingI2CWaveform.lean),
   [stretching](../Pinwheel/Program/StreamingI2CClock.lean)): the listed modes
-  are those whose SCL LOW, SCL HIGH, SDA setup and SCL period minimums the
-  profile meets (`Meets`). The controller's data hold time is zero, and a
-  target may stretch SCL for at most the listed number of core clocks before
-  the transfer faults.
+  are those whose SCL LOW, SCL HIGH, SDA setup, SCL period, START hold and
+  STOP setup minimums the profile meets (`Meets`, `start_window`,
+  `stop_window`). The controller's data hold time is zero, and a target may
+  stretch SCL for at most the listed number of core clocks before the
+  transfer faults. Bus-free time between transactions depends on when the
+  host starts the next one. The bring-up fixture emits the Fast and standard
+  rows with `--i2c-mode fast` and `--i2c-mode standard`, and its `simulate`
+  command runs them through the public-pin RTL model with the same option.
+  These rows use the largest poll budget (`wait_budget=255`), so a target may
+  stretch for 252 core clocks: in simulation, a target whose STOP stretch grows
+  with the slower SCL phases faulted the transfer at the default budget.
 - **CAN, PS/2 and Ethernet** use fixed images proved at one clock: 4 MHz for
   CAN and PS/2, and 60 MHz locked to the PHY for Ethernet, which is above the
   layout target. See [streaming-ready.md](protocols/streaming-ready.md).

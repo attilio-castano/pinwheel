@@ -12,38 +12,18 @@ import sys
 from collections import defaultdict
 
 import paired_readback as decomposition
+import readback_descriptor
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = 'Pinwheel.Artifact.Buffered.Serial'
 
-RAW_INPUTS = [('initialize', 1, 'initialize'), ('sck', 1, 'sck'),
-              ('mosi', 1, 'mosi'), ('csn', 1, 'csn'), ('raw_inputs', 2, 'rawInputs')]
-STATUS = [
-    ('valid', 1, 'valid'), ('busy', 1, 'busy'), ('retained', 1, 'retained'),
-    ('pending', 1, 'pending'), ('rejected', 1, 'rejected'), ('mode', 2, 'mode'),
-    ('pc', 8, 'pc'), ('remaining', 8, 'remaining'), ('levels', 3, 'levels'),
-    ('enabled', 3, 'enabled'), ('tx_consumed', 6, 'txConsumed'),
-    ('rx_length', 6, 'rxLength'), ('rx_data', 32, 'rxData'),
-    ('read_valid', 1, 'readValid'), ('read_bit', 1, 'readBit'),
-    ('generation', 16, 'generation'), ('transfer', 16, 'transfer'),
-    ('exhausted', 1, 'exhausted'), ('stage1', 2, 'stage1'), ('stage2', 2, 'stage2'),
-    ('virtual_pc', 10, 'virtualPC'), ('env0', 3, 'env0'), ('env1', 3, 'env1'),
-    ('phase', 3, 'phase'), ('wait_left', 8, 'waitLeft'), ('scratch', 16, 'scratch')]
-REGISTERS = [
-    ('sck_prev', 1, 'sckPrev'), ('csn_prev', 1, 'csnPrev'), ('active', 1, 'active'),
-    ('reading', 1, 'reading'), ('count', 9, 'count'), ('request', 160, 'request'),
-    ('dispatch', 1, 'dispatch'), ('capture', 1, 'capture'), ('code', 4, 'code'),
-    ('sequence', 16, 'sequence'), ('rejected', 1, 'rejected'),
-    ('response', 192, 'response'), ('ready', 1, 'ready')]
-CORE_OUTPUTS = [
-    ('initialize', 1, 'initialize'), ('command', 3, 'command'),
-    ('address', 6, 'address'), ('word', 64, 'word'), ('control', 24, 'control'),
-    ('branch', 56, 'branch'), ('count', 7, 'count'), ('virtual_span', 11, 'virtualSpan'),
-    ('idle_levels', 3, 'idleLevels'), ('idle_enabled', 3, 'idleEnabled'),
-    ('tx_data', 32, 'txData'), ('tx_length', 6, 'txLength'),
-    ('rx_capacity', 6, 'rxCapacity'), ('expected_generation', 16, 'expectedGeneration'),
-    ('expected_transfer', 16, 'expectedTransfer'), ('read_index', 5, 'readIndex'),
-    ('raw_inputs', 2, 'rawInputs')]
+# Port facts come from the checked-in Lean read-back descriptor; the tables
+# give (name, width, constructor) with the RTL prefix removed.
+DESCRIPTOR = readback_descriptor.checked_in('buffered-serial')
+RAW_INPUTS = readback_descriptor.fields(DESCRIPTOR, 'inputs')
+STATUS = readback_descriptor.fields(DESCRIPTOR, 'inputs', 'status', strip='status_')
+REGISTERS = readback_descriptor.fields(DESCRIPTOR, 'registers', strip='r_')
+CORE_OUTPUTS = readback_descriptor.fields(DESCRIPTOR, 'outputs', 'core', strip='core_')
 
 
 def backend():
@@ -52,12 +32,7 @@ def backend():
     rb = importlib.util.module_from_spec(spec)
     sys.modules[name] = rb
     spec.loader.exec_module(rb)
-    rb.TOP = 'pinwheel_buffered_sram_serial_frontend'
-    rb.INPUTS = {n: (w, '.' + ctor) for n, w, ctor in RAW_INPUTS}
-    rb.INPUTS.update({'status_' + n: (w, '.status .' + ctor) for n, w, ctor in STATUS})
-    rb.REGISTERS = {'r_' + n: (w, '.' + ctor) for n, w, ctor in REGISTERS}
-    rb.OUTPUTS = {'core_' + n: (w, '.core .' + ctor) for n, w, ctor in CORE_OUTPUTS}
-    rb.OUTPUTS.update({'miso': (1, '.miso'), 'ready': (1, '.ready')})
+    readback_descriptor.apply_ports(rb, DESCRIPTOR)
     rb.HEADER = '''import Pinwheel.Hardware.Buffered.Serial
 open Pinwheel.Hardware Pinwheel.Hardware.Buffered
 namespace Pinwheel.Artifact.Buffered.Serial

@@ -67,6 +67,11 @@ class LoweringInputTests(unittest.TestCase):
                 def write_json(path,value):Path(path).write_text(json.dumps(value))
             backend=SimpleNamespace(read_hints=lambda path:hints.append(path) or object())
             def run(argv,label,**options):
+                if label=='readback-descriptor-imports':
+                    self.assertEqual(argv[1:3],['build','Pinwheel.Hardware.StreamingReady.CoreEmit']);return ''
+                if label=='readback-descriptors':
+                    self.assertIn('test/StreamingReadyReadbackDescriptor.lean',argv);target=Path(argv[-1]);target.mkdir()
+                    (target/'frontend.json').write_text('{}');return ''
                 calls.append(argv);self.assertEqual(label,'circt-export')
                 self.assertNotIn('--canonicalize',argv);self.assertEqual(argv[2:],list(A.LOWERING_PASSES))
                 self.assertIn(str(argv[1]),frozen);self.assertIn(str(out/'lowering-input.json'),frozen)
@@ -79,6 +84,8 @@ class LoweringInputTests(unittest.TestCase):
             self.assertEqual(hints,[emitted/'frontend.mlir']);self.assertEqual(len(calls),1)
             receipt=json.loads((out/'component-report.json').read_text())
             self.assertFalse(receipt['passed']);self.assertTrue(receipt['frozen_inputs_unchanged'])
+            self.assertEqual(receipt['port_tables'],'fresh-lean-descriptor')
+            self.assertIn(str(out/'readback-descriptors'/'frontend.json'),frozen)
             self.assertEqual(receipt['lowering_input']['original_hints_authority'],str((emitted/'frontend.mlir').resolve()))
             self.assertEqual(set(Path(p).name for p in receipt['emitted_input_sha256_before']),
                 {'core.mlir','frontend.mlir','assembly.json','frontend-assembly.json'})

@@ -190,8 +190,11 @@ def registerLabel : {w : Nat} → Register w → String
   | _, .dispatch => "dispatch" | _, .capture => "capture" | _, .code => "code"
   | _, .sequence => "sequence" | _, .rejected => "rejected"
   | _, .response => "response" | _, .ready => "ready"
+/-- The emitted module's name, shared with the read-back descriptor. -/
+def moduleName : String := "pinwheel_buffered_sram_serial_frontend"
+
 def moduleText : Except String String := MemoEmit.moduleText
-  "pinwheel_buffered_sram_serial_frontend" circuit inputs registers outputs
+  moduleName circuit inputs registers outputs
   inputLabel registerLabel outputLabel
 
 end Pinwheel.Hardware.Buffered.Serial

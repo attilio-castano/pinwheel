@@ -77,6 +77,7 @@ def endpoints():
 def backend():
     rb = sram.backend()
     rb.TOP = 'pinwheel_buffered_artifact_reactive_reference'
+    rb.DESCRIPTOR = None  # every port table below replaces the SRAM controller's
     rb.INPUTS = {n: (w, '.' + ctor) for n, w, ctor in sram.BASE_INPUTS}
     rb.REGISTERS = {f'r_word{k}': (144, f'.word {k}#6') for k in range(64)}
     rb.REGISTERS.update({'r_' + n: (w, '.' + ctor) for n, w, ctor in sram.CORE_REGISTERS})

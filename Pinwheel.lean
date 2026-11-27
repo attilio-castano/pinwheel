@@ -43,6 +43,13 @@ import Pinwheel.Hardware.Protocols
 import Pinwheel.Hardware.Storage
 import Pinwheel.Hardware.Storage.BackendEmit
 import Pinwheel.Hardware.Storage.BackendReadback
+import Pinwheel.Hardware.Readback.Bits
+import Pinwheel.Hardware.Readback.Mux
+import Pinwheel.Hardware.Readback.SourceBinding
+import Pinwheel.Hardware.USB.Emit
+import Pinwheel.Hardware.USB.IN
+import Pinwheel.Hardware.USB.Proof
+import Pinwheel.Program.USB.Custody
 import Pinwheel.Hardware.Storage.BankSelect
 import Pinwheel.Hardware.Storage.BankSelectReadback
 import Pinwheel.Hardware.Storage.CacheEnable
@@ -88,6 +95,7 @@ import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency
 import Pinwheel.Compile.SPILatency
 import Pinwheel.Hardware.Readback.Boolean
+import Pinwheel.Hardware.Readback.Descriptor
 import Pinwheel.Hardware.Reactive.FetchChoice
 import Pinwheel.Hardware.UARTRx
 import Pinwheel.Hardware.Storage.SramController

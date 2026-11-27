@@ -17,6 +17,109 @@ records the remaining gates. No editor extension is required for this workflow.
 Use the [validation guide](validation.md) for the local pre-push commands,
 whole-library axiom audit, independent model checks, and hardware fixture order.
 
+### Release RTL regression check
+
+A change meant to preserve the entry chip should leave its four release RTL
+files byte-identical. This command regenerates `core.sv`, `frontend.sv`,
+`package.sv` and `tt.sv` from the current tree with the pinned CIRCT, and
+compares them with the hashes pinned in the release workflow
+(`physical/streaming_8x4/ttihp27a-custom-gds.yml`). With `--simulate` it also
+compiles the public-pin bridge with the pinned Icarus and runs the bring-up
+simulation in every I²C fixture mode. It takes under a minute.
+
+```sh
+PINWHEEL_TOOLS=/path/to/build/tools python3 -B scripts/check-release-rtl.py --tag NAME --simulate
+```
+
+`PINWHEEL_TOOLS` defaults to this checkout's `build/tools`; `--circt`,
+`--iverilog` and `--vvp` override single tools. Results go to
+`build/release-rtl/NAME/report.json`, and exit status 1 means a file differed
+or a simulation failed. `test/test_check_release_rtl.py` includes a mutation
+that changes `tt.sv` and expects the check to fail.
+
+### Libraries
+
+`lakefile.toml` declares three libraries, and every Lean file must be imported
+from one of their roots:
+
+| Library | Contents | Built by |
+|---|---|---|
+| `Pinwheel` | the streaming chip stack: protocols, engine, compilers, hardware proofs | `lake build` (default) |
+| `PinwheelHardwareLibrary` | the reusable hardware library: RV32I processor and systems, memory adapters, stream composition, switches, UART timebases | `lake build PinwheelHardwareLibrary`, the foundation gate |
+| `PinwheelWitness` | non-vacuity witnesses | `scripts/check-witness.py` |
+
+A library can import any other, so proofs still connect across them; the split
+decides only what `lake build` checks by default. The foundation gate rejects
+a file that no library imports, so a new module must be added to a library
+root (usually through an existing `All.lean` or the library's root file). The
+hardware library takes about nine CPU-minutes to build. Five of those are one
+module, `Processor/CoreCircuitOutputs.lean`.
+
+### Witness library
+
+`PinwheelWitness` holds proofs that conditional theorems are not vacuous:
+concrete scenarios that satisfy every hypothesis. They replay long executions
+in the kernel, so the default `lake build` skips them. A change that touches
+the theorems they instantiate should run
+
+```sh
+python3 -B scripts/check-witness.py --tag NAME
+```
+
+It builds the library, requires every file under `PinwheelWitness/` to be
+imported from `PinwheelWitness.lean`, and runs the axiom audit with the witness
+modules loaded. Results go to `build/witness/NAME/report.json`. The I²C read
+witness takes about 3 minutes and 8 GB. Its settled state is a checked-in
+literal; after changing the scenario, regenerate it with
+`lake env lean --run scripts/print_i2c_witness_settled.lean`. A stale literal
+fails the build.
+
+### Read-back descriptors
+
+The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
+top name, Lean types and circuit, and every port's RTL name, width and Lean
+constructor term. Two Lean files emit these as JSON descriptors, from the same
+enumerations, labels and module names the emitters use:
+`test/StreamingReadyReadbackDescriptor.lean` for the Streaming and
+sampled-ready cores (depth two and four) and their shared frontend, and
+`test/BufferedReadbackDescriptor.lean` for the Buffered chip's SRAM controller
+and serial frontend. They are separate so a Streaming check never needs the
+Buffered modules built. Both use the format in
+`Pinwheel/Hardware/Readback/Descriptor.lean`. `scripts/readback_descriptor.py`
+lists the emitters (`EMITTERS`) and applies a descriptor to the importer.
+
+No importer keeps hand-typed port tables. The Streaming adapters
+(`streaming_readback.py`, `streaming_ready_readback.py`) and everything built
+on them (the gate-level component and package read-backs and the wrapper
+read-backs) read the checked-in copies in `scripts/readback_descriptors`. The
+shift TX layout starts from the Streaming core's descriptor and edits its
+register table. The adapters keep only the artifact namespace and Lean header.
+
+The Buffered adapters (`buffered_sram_readback.py`,
+`buffered_serial_readback.py`) take only the module and port tables from their
+descriptors (`apply_ports`), since they name their Lean types by rewriting the
+generated text. Their constructor tables (`BASE_INPUTS`, `CORE_REGISTERS`,
+`STATUS` and so on), which the SRAM reference read-backs also use, are derived
+from the same descriptors.
+
+The certificate pipeline (`streaming_ready_artifacts.component`, used by
+`check-streaming-ready.py`, `check-streaming-uart.py`, `check-ready-tx-fifo.py`
+and `typed_ready_workflow.py`) emits the descriptors fresh into its output
+directory, building the emitter's imports first. With `descriptors=False`
+(`--checked-in-descriptors` on the direct CLI), or for the shift layout, it
+copies the checked-in one there instead.
+Either way the descriptor is frozen with the run's inputs, and the component
+report records its hash and its source (`port_tables`).
+
+After changing a port, register, label or module name, regenerate the copies
+and run the test, which fails while any copy differs from a fresh emission:
+
+```sh
+lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean scripts/readback_descriptors
+lake env lean -DwarningAsError=true --run test/BufferedReadbackDescriptor.lean scripts/readback_descriptors
+python3 -B test/test_readback_descriptor.py
+```
+
 ## Toolchain
 
 The project pins **Lean 4.33.1** using `leanprover/lean4:v4.33.1` in `lean-toolchain`. This was the latest non-prerelease reported by the official release API during setup. Lake is included with the Lean toolchain. Elan manages installation and chooses the pinned version when commands run in the repository.
@@ -52,7 +155,7 @@ lake --version
 lake build
 ```
 
-`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the protocol models, engine, compilers, and structural hardware proofs, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks all proofs as well as the original toolchain example. Run the executable model checks with:
+`lakefile.toml` declares the `Pinwheel` library as the default build target and treats Lean warnings as errors. `Pinwheel.lean` imports the protocol models, engine, compilers, and structural hardware proofs, and retains the setup definition `Pinwheel.Setup.invertByte` and its proof. Thus `lake build` checks those proofs as well as the original toolchain example; the other declared libraries are described under [Libraries](#libraries). Run the executable model checks with:
 
 ```sh
 lake env lean -DwarningAsError=true --run test/UART.lean

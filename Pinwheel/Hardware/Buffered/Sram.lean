@@ -218,8 +218,11 @@ def outputLabel : {w : Nat} → Output w → String
   | _, .base o => SharedBranches.outputLabel o
   | _, .port p => portLabel p
 
+/-- The emitted module's name, shared with the read-back descriptor. -/
+def moduleName : String := "pinwheel_buffered_shared_branches_sram_controller"
+
 def moduleText : Except String String := MemoEmit.moduleText
-  "pinwheel_buffered_shared_branches_sram_controller" circuit inputs registers outputs
+  moduleName circuit inputs registers outputs
   inputLabel registerLabel outputLabel
 
 end Pinwheel.Hardware.Buffered.Sram
