@@ -120,7 +120,6 @@ def load_gate():
     return module
 
 
-DESCRIPTOR_EMITTER = 'test/StreamingReadyReadbackDescriptor.lean'
 
 
 def component(kind, addr_bits, emitted, out, tools, run, *, gate=None, tx_layout='ring', descriptors=True):
@@ -143,7 +142,10 @@ def component(kind, addr_bits, emitted, out, tools, run, *, gate=None, tx_layout
     name = adapter.descriptor_name(kind,addr_bits,tx_layout)
     descriptor = directory/(name+'.json')
     if fresh:
-        run([tools.get('lake','lake'),'env','lean','-DwarningAsError=true','--run',DESCRIPTOR_EMITTER,directory],
+        emitter = readback_descriptor.emitter_for(name)
+        run([tools.get('lake','lake'),'build',*readback_descriptor.emitter_imports(emitter)],
+            'readback-descriptor-imports',timeout=3600)
+        run([tools.get('lake','lake'),'env','lean','-DwarningAsError=true','--run',emitter,directory],
             'readback-descriptors',timeout=600)
     else:
         # Copied in so it is frozen with the run's other inputs.

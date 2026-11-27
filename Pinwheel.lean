@@ -95,6 +95,7 @@ import Pinwheel.SPI.Latency
 import Pinwheel.I2C.Latency
 import Pinwheel.Compile.SPILatency
 import Pinwheel.Hardware.Readback.Boolean
+import Pinwheel.Hardware.Readback.Descriptor
 import Pinwheel.Hardware.Reactive.FetchChoice
 import Pinwheel.Hardware.UARTRx
 import Pinwheel.Hardware.Storage.SramController

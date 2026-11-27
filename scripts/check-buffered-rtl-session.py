@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DRIVER = 'scripts/check-buffered-rtl-session.py'
 REQUIRED = frozenset((DRIVER, 'lean-toolchain', 'lakefile.toml', 'lake-manifest.json',
     'tools/hardware-toolchain.json', 'scripts/buffered_serial_readback.py',
+    'scripts/readback_descriptors/buffered-serial.json',
     'scripts/paired_readback.py', 'scripts/backend_readback.py', 'scripts/validation_run.py',
     'scripts/process_group.py', 'test/SerialArtifactEmit.lean', 'test/ProofAudit.lean',
     'test/test_buffered_serial_readback.py', 'test/test_buffered_rtl_session.py'))
@@ -35,7 +36,8 @@ REQUIRED_TARGETS = ('Serial.next_correct: all 13 register fields',
                     'one injected custom axiom rejection', 'unchanged universal RTL reimport',
                     'five distinguishing actual-Verilog mutation rejections')
 FULL_REQUIRED = frozenset(('scripts/buffered_rtl_session_full.py',
-    'scripts/buffered_sram_readback.py', 'scripts/buffered_sram_reference.py',
+    'scripts/buffered_sram_readback.py', 'scripts/readback_descriptors/buffered-sram.json',
+    'scripts/buffered_sram_reference.py',
     'scripts/buffered_reactive_reference.py', 'scripts/buffered_sram_selection.py',
     'scripts/buffered_sram_mutations.py', 'scripts/artifact_wrapper_readback.py',
     'test/SramArtifactEmit.lean', 'test/test_buffered_sram_readback.py',

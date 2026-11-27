@@ -78,12 +78,15 @@ fails the build.
 
 The RTL read-back importer (`scripts/backend_readback.py`) needs each module's
 top name, Lean types and circuit, and every port's RTL name, width and Lean
-constructor term. `test/StreamingReadyReadbackDescriptor.lean` emits these as
-JSON descriptors for the Streaming and sampled-ready cores (depth two and four),
-their shared frontend, and the Buffered chip's SRAM controller and serial
-frontend, from the same enumerations, labels and module names the emitters
-use. `scripts/readback_descriptor.py` applies a descriptor to the
-importer.
+constructor term. Two Lean files emit these as JSON descriptors, from the same
+enumerations, labels and module names the emitters use:
+`test/StreamingReadyReadbackDescriptor.lean` for the Streaming and
+sampled-ready cores (depth two and four) and their shared frontend, and
+`test/BufferedReadbackDescriptor.lean` for the Buffered chip's SRAM controller
+and serial frontend. They are separate so a Streaming check never needs the
+Buffered modules built. Both use the format in
+`Pinwheel/Hardware/Readback/Descriptor.lean`. `scripts/readback_descriptor.py`
+lists the emitters (`EMITTERS`) and applies a descriptor to the importer.
 
 No importer keeps hand-typed port tables. The Streaming adapters
 (`streaming_readback.py`, `streaming_ready_readback.py`) and everything built
@@ -102,8 +105,9 @@ from the same descriptors.
 The certificate pipeline (`streaming_ready_artifacts.component`, used by
 `check-streaming-ready.py`, `check-streaming-uart.py`, `check-ready-tx-fifo.py`
 and `typed_ready_workflow.py`) emits the descriptors fresh into its output
-directory. With `descriptors=False` (`--checked-in-descriptors` on the direct
-CLI), or for the shift layout, it copies the checked-in one there instead.
+directory, building the emitter's imports first. With `descriptors=False`
+(`--checked-in-descriptors` on the direct CLI), or for the shift layout, it
+copies the checked-in one there instead.
 Either way the descriptor is frozen with the run's inputs, and the component
 report records its hash and its source (`port_tables`).
 
@@ -112,6 +116,7 @@ and run the test, which fails while any copy differs from a fresh emission:
 
 ```sh
 lake env lean -DwarningAsError=true --run test/StreamingReadyReadbackDescriptor.lean scripts/readback_descriptors
+lake env lean -DwarningAsError=true --run test/BufferedReadbackDescriptor.lean scripts/readback_descriptors
 python3 -B test/test_readback_descriptor.py
 ```
 

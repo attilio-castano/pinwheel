@@ -3,7 +3,7 @@
 `backend_readback.py` is configured through module-level tables: the top
 module, the Lean types and circuit, and for every input, register and output
 its RTL name, width and Lean constructor term. Adapters have typed these tables
-by hand. A descriptor (test/StreamingReadyReadbackDescriptor.lean) carries the
+by hand. A descriptor (emitted by the files in EMITTERS) carries the
 same facts, generated from the enumerations the emitter uses.
 
 Checked-in copies live in scripts/readback_descriptors, so importing does not
@@ -29,8 +29,22 @@ OWNED = ('TOP', 'INPUTS', 'REGISTERS', 'OUTPUTS', 'FAMILIES', 'INPUT_TYPE', 'REG
          'CIRCUIT')
 COMPARED = OWNED + ('NAMESPACE', 'HEADER', 'KIND', 'ADDR_BITS')
 DIRECTORY = Path(__file__).resolve().parent / 'readback_descriptors'
-NAMES = ('streaming-core-d2', 'streaming-core-d4', 'ready-core-d2', 'ready-core-d4', 'frontend',
-         'buffered-sram', 'buffered-serial')
+# Each emitter writes these descriptors; together they write every name in NAMES.
+EMITTERS = {'test/StreamingReadyReadbackDescriptor.lean': ('streaming-core-d2', 'streaming-core-d4',
+                                                           'ready-core-d2', 'ready-core-d4', 'frontend'),
+            'test/BufferedReadbackDescriptor.lean': ('buffered-sram', 'buffered-serial')}
+NAMES = tuple(name for names in EMITTERS.values() for name in names)
+LOCAL_IMPORT = re.compile(r'^import\s+(Pinwheel\.\S+)', re.M)
+
+
+def emitter_imports(emitter, root=DIRECTORY.parent.parent):
+    """The local modules an emitter imports. `lake env lean --run` loads them
+    from the build without building them, so build these first."""
+    return LOCAL_IMPORT.findall((Path(root) / emitter).read_text())
+
+
+def emitter_for(name):
+    return next(emitter for emitter, names in EMITTERS.items() if name in names)
 
 
 def load(path):

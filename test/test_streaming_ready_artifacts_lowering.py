@@ -67,8 +67,10 @@ class LoweringInputTests(unittest.TestCase):
                 def write_json(path,value):Path(path).write_text(json.dumps(value))
             backend=SimpleNamespace(read_hints=lambda path:hints.append(path) or object())
             def run(argv,label,**options):
+                if label=='readback-descriptor-imports':
+                    self.assertEqual(argv[1:3],['build','Pinwheel.Hardware.StreamingReady.CoreEmit']);return ''
                 if label=='readback-descriptors':
-                    self.assertIn(A.DESCRIPTOR_EMITTER,argv);target=Path(argv[-1]);target.mkdir()
+                    self.assertIn('test/StreamingReadyReadbackDescriptor.lean',argv);target=Path(argv[-1]);target.mkdir()
                     (target/'frontend.json').write_text('{}');return ''
                 calls.append(argv);self.assertEqual(label,'circt-export')
                 self.assertNotIn('--canonicalize',argv);self.assertEqual(argv[2:],list(A.LOWERING_PASSES))

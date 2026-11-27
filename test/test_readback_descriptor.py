@@ -25,27 +25,52 @@ class FreshEmission(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.out = ROOT / 'build' / f'readback-descriptors-test-{os.getpid()}'
-        subprocess.run(['lake', 'build', 'Pinwheel.Hardware.StreamingReady.CoreEmit',
-                        'Pinwheel.Hardware.Streaming.FrontendEmit'],
-                       cwd=ROOT, check=True, capture_output=True)
-        subprocess.run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run',
-                        'test/StreamingReadyReadbackDescriptor.lean', str(cls.out)],
-                       cwd=ROOT, check=True, capture_output=True)
+        for emitter in D.EMITTERS:
+            subprocess.run(['lake', 'build', *D.emitter_imports(emitter)],
+                           cwd=ROOT, check=True, capture_output=True)
+            subprocess.run(['lake', 'env', 'lean', '-DwarningAsError=true', '--run', emitter,
+                            str(cls.out / Path(emitter).stem)],
+                           cwd=ROOT, check=True, capture_output=True)
+
+    def emitted(self, name):
+        return self.out / Path(D.emitter_for(name)).stem / f'{name}.json'
+
+    def test_each_emitter_writes_only_its_descriptors(self):
+        for emitter, names in D.EMITTERS.items():
+            with self.subTest(emitter=emitter):
+                self.assertEqual(sorted(p.name for p in (self.out / Path(emitter).stem).iterdir()),
+                                 sorted(n + '.json' for n in names))
 
     def test_checked_in_copies_are_current(self):
-        self.assertEqual(sorted(p.name for p in self.out.iterdir()), sorted(n + '.json' for n in D.NAMES))
+        self.assertEqual(sorted(p.name for p in D.DIRECTORY.iterdir()), sorted(n + '.json' for n in D.NAMES))
         for name in D.NAMES:
             with self.subTest(descriptor=name):
-                self.assertEqual((self.out / f'{name}.json').read_bytes(),
+                self.assertEqual(self.emitted(name).read_bytes(),
                                  (D.DIRECTORY / f'{name}.json').read_bytes(),
                                  'stale checked-in descriptor; regenerate it (see docs/development.md)')
 
     def test_fresh_descriptor_configures_like_checked_in(self):
         for kind, addr_bits in READY:
             with self.subTest(kind=kind, addr_bits=addr_bits):
-                fresh = self.out / (adapter.descriptor_name(kind, addr_bits) + '.json')
+                fresh = self.emitted(adapter.descriptor_name(kind, addr_bits))
                 self.assertEqual(D.configuration(adapter.backend(kind, addr_bits, descriptor=fresh)),
                                  D.configuration(adapter.backend(kind, addr_bits)))
+
+
+class Emitters(unittest.TestCase):
+    def test_emitters_split_the_names(self):
+        names = [name for names in D.EMITTERS.values() for name in names]
+        self.assertEqual(len(names), len(set(names)))
+
+    def test_streaming_emitter_does_not_import_buffered_modules(self):
+        imports = D.emitter_imports('test/StreamingReadyReadbackDescriptor.lean')
+        self.assertIn('Pinwheel.Hardware.StreamingReady.CoreEmit', imports)
+        self.assertFalse([m for m in imports if '.Buffered.' in m])
+
+    def test_buffered_emitter_imports_its_modules(self):
+        self.assertEqual(D.emitter_imports('test/BufferedReadbackDescriptor.lean'),
+                         ['Pinwheel.Hardware.Buffered.Sram', 'Pinwheel.Hardware.Buffered.Serial',
+                          'Pinwheel.Hardware.Readback.Descriptor'])
 
 
 class CheckedIn(unittest.TestCase):
